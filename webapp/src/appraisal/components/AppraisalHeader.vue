@@ -83,7 +83,7 @@ class AppraisalHeader extends Vue {
 
         let total = 0;
         for (let item of this.appraisal.items) {
-            total += item.buy.max * item.quantity;
+            total += item.buy.max;
         }
         return total;
     }
@@ -99,7 +99,7 @@ class AppraisalHeader extends Vue {
 
         let total = 0;
         for (let item of this.appraisal.items) {
-            total += item.sell.min * item.quantity;
+            total += item.sell.min;
         }
         return total;
     }
