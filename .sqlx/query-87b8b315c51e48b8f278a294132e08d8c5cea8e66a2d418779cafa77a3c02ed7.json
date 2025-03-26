@@ -1,0 +1,34 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT *\n            FROM appraisal_invalid\n            WHERE appraisal_id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "appraisal_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "raw",
+        "type_info": "Varchar"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "87b8b315c51e48b8f278a294132e08d8c5cea8e66a2d418779cafa77a3c02ed7"
+}

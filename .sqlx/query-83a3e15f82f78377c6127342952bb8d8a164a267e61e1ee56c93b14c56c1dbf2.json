@@ -1,0 +1,20 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT corporation_id\n            FROM characters\n            WHERE corporation_id != 0\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "corporation_id",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "83a3e15f82f78377c6127342952bb8d8a164a267e61e1ee56c93b14c56c1dbf2"
+}

@@ -1,0 +1,32 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE structures\n            SET\n                type_id   = $3,\n                rigs      = $4,\n                services  = $5,\n                security  = $6,\n                name      = $7,\n                system_id = $8\n            WHERE owner = $1\n              AND id    = $2\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Uuid",
+        "Int4",
+        "Int4Array",
+        "Int4Array",
+        {
+          "Custom": {
+            "name": "system_security",
+            "kind": {
+              "Enum": [
+                "NULLSEC",
+                "LOWSEC",
+                "HIGHSEC"
+              ]
+            }
+          }
+        },
+        "Varchar",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "a9d99f1601a16577a3ef861e20d950e0dddea9751f5f68f399bcb284867fb32f"
+}

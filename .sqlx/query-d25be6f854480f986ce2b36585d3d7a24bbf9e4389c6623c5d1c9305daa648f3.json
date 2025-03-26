@@ -1,0 +1,52 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                i.type_id     AS \"type_id!\",\n                i.category_id AS \"category_id!\",\n                i.group_id    AS \"group_id!\",\n                i.volume      AS \"volume!\",\n                i.name        AS \"name!\",\n                i.base_price\n            FROM items i\n            WHERE name = ANY($1::VARCHAR[])\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "type_id!",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "category_id!",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "group_id!",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "volume!",
+        "type_info": "Float4"
+      },
+      {
+        "ordinal": 4,
+        "name": "name!",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "base_price",
+        "type_info": "Float4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "VarcharArray"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "d25be6f854480f986ce2b36585d3d7a24bbf9e4389c6623c5d1c9305daa648f3"
+}

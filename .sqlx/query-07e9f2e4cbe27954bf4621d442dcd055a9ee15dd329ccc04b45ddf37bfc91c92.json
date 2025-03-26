@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                UPDATE industry_jobs\n                SET ignore = true\n                WHERE job_id = $1\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "07e9f2e4cbe27954bf4621d442dcd055a9ee15dd329ccc04b45ddf37bfc91c92"
+}

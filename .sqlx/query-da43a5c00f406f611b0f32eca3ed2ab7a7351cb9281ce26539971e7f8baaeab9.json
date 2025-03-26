@@ -1,0 +1,37 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                UPDATE project_jobs\n                SET cost   =       data.cost,\n                    status =       data.status,\n                    job_id =       data.job_id,\n                    character_id = data.character_id\n                FROM (\n                    SELECT\n                        UNNEST($2::UUID[]) AS id,\n                        UNNEST($3::REAL[]) AS cost,\n                        UNNEST($4::PROJECT_JOB_STATUS[]) AS status,\n                        UNNEST($5::INTEGER[]) AS job_id,\n                        UNNEST($6::INTEGER[]) AS character_id\n                ) AS data\n                WHERE project_id = $1\n                AND project_jobs.id = data.id\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "UuidArray",
+        "Float4Array",
+        {
+          "Custom": {
+            "name": "project_job_status[]",
+            "kind": {
+              "Array": {
+                "Custom": {
+                  "name": "project_job_status",
+                  "kind": {
+                    "Enum": [
+                      "WAITING_FOR_MATERIALS",
+                      "BUILDING",
+                      "DONE"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "Int4Array",
+        "Int4Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "da43a5c00f406f611b0f32eca3ed2ab7a7351cb9281ce26539971e7f8baaeab9"
+}

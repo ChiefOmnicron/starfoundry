@@ -1,0 +1,40 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT\n                    i.type_id,\n                    i.name AS item_name,\n                    remaining,\n                    price\n                FROM market_orders_latest mol\n                JOIN items i ON i.type_id = mol.type_id\n                WHERE mol.type_id = ANY($1)\n                AND mol.structure_id = 60003760\n                AND is_buy = false\n                ORDER BY price ASC\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "type_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "item_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "remaining",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "price",
+        "type_info": "Float8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4Array"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "57cac3eb287b9047c79f1fcb17e45f593a2b2980c3566ac2663ec0304a1e5065"
+}

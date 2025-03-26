@@ -1,0 +1,20 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT COUNT(1) AS count\n            FROM event_queue\n            WHERE task = 'CLEANUP_APPRAISALS'\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "count",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "d724e62f46a848f3fdc7d39b18cb2520d874007cff8c35b3a9539e2e797b9584"
+}

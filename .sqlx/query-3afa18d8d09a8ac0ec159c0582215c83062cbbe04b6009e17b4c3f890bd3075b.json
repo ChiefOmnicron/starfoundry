@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE project_group_members\n            SET\n                accepted = TRUE,\n                projects = 'READ',\n                structures = 'READ'\n            WHERE group_id = $1\n            AND character_id = $2\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "3afa18d8d09a8ac0ec159c0582215c83062cbbe04b6009e17b4c3f890bd3075b"
+}

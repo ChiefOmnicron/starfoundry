@@ -1,0 +1,32 @@
+[profile.release]
+codegen-units = 1
+debug = true
+lto = true
+opt-level = 3
+panic = 'abort'
+
+[workspace]
+members = [
+  'api',
+  'collector',
+  'database_upgrade',
+  'event_worker',
+
+  'libs/appraisal',
+  'libs/compression',
+  'libs/eve_api',
+  'libs/eve_sde_parser',
+  'libs/items',
+  'libs/notification',
+  'libs/structures',
+  'libs/types',
+]
+resolver = "2"
+
+[workspace.package]
+authors = [
+  "ChiefOmnicron <eistonen.kodan.sasen@gmail.com>"
+]
+edition = "2024"
+version = "0.1.0"
+license = "MIT OR Apache-2.0"

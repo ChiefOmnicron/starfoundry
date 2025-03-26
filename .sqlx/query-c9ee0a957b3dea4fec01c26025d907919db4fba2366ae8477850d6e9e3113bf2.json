@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO event_queue (task, additional_data)\n            SELECT 'INDUSTRY_JOBS_CHARACTER', * FROM UNNEST(\n                $1::JSONB[]\n            )\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "JsonbArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "c9ee0a957b3dea4fec01c26025d907919db4fba2366ae8477850d6e9e3113bf2"
+}

@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO project_group_default_markets (\n                project_group_id,\n                structure_id\n            )\n            SELECT $1, * FROM UNNEST(\n                $2::UUID[]\n            )\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "UuidArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "d7db88b8a17ca037811256c71825d09663bbfac19f74f967477ad81f9bdd79cf"
+}

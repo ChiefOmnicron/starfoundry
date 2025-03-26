@@ -1,0 +1,29 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                UPDATE event_queue\n                SET\n                    status = $2,\n                    logs = $3,\n                    error = $4,\n                    finished_at = NOW()\n                WHERE id = $1\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        {
+          "Custom": {
+            "name": "event_task_status",
+            "kind": {
+              "Enum": [
+                "WAITING",
+                "IN_PROGRESS",
+                "DONE",
+                "ERROR"
+              ]
+            }
+          }
+        },
+        "Varchar",
+        "Varchar"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "c26e626406fa8e57e6be436e0f041d7e871a93e9a317616519465090dff37b5e"
+}

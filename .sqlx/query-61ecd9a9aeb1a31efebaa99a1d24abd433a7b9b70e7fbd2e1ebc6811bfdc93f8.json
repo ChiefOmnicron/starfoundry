@@ -1,0 +1,61 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE event_queue\n            SET\n                worker_id = $1,\n                status = 'IN_PROGRESS',\n                started_at = NOW()\n            WHERE id = (\n                SELECT id\n                FROM event_queue\n                WHERE worker_id IS NULL\n                  AND status = 'WAITING'\n                  AND process_after < NOW()\n                LIMIT 1\n                FOR UPDATE SKIP LOCKED\n            )\n            RETURNING\n                task AS \"task!: WorkerTask\",\n                additional_data,\n                id\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "task!: WorkerTask",
+        "type_info": {
+          "Custom": {
+            "name": "event_worker_task",
+            "kind": {
+              "Enum": [
+                "ASSET_CHECK",
+                "ASSET_CHARACTER_BLUEPRINTS",
+                "ASSET_CORPORATION_BLUEPRINTS",
+                "CLEANUP_CHECK",
+                "CLEANUP_APPRAISALS",
+                "CLEANUP_INDUSTRY_INDEX",
+                "CLEANUP_SELF",
+                "INDUSTRY_CHECK",
+                "INDUSTRY_JOBS_CHARACTER",
+                "INDUSTRY_JOBS_CORPORATION",
+                "INDUSTRY_INDEX",
+                "MARKET_CHECK",
+                "MARKET_LATEST_NPC",
+                "MARKET_LATEST_PLAYER",
+                "MARKET_PRICES",
+                "SDE_CHECK",
+                "SDE_DOWNLOAD",
+                "STOCK_CHECK",
+                "STOCK_BLUEPRINT"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "additional_data",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 2,
+        "name": "id",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      true,
+      false
+    ]
+  },
+  "hash": "61ecd9a9aeb1a31efebaa99a1d24abd433a7b9b70e7fbd2e1ebc6811bfdc93f8"
+}

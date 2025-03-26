@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM structure_dynamic_groups\n            WHERE id = $1\n              AND owner = $2\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "3506597b6aac9b8d886997d0368647e546a15dbcc8cdafeaedb777f9a393deca"
+}

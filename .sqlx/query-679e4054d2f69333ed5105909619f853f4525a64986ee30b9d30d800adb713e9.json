@@ -1,0 +1,34 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                quantity,\n                material_efficiency,\n                pp.type_id AS \"type_id: _\"\n            FROM  project_products pp\n            JOIN  items i ON i.type_id = pp.type_id\n            WHERE pp.project_id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "quantity",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "material_efficiency",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "type_id: _",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "679e4054d2f69333ed5105909619f853f4525a64986ee30b9d30d800adb713e9"
+}

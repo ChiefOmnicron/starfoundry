@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                INSERT INTO job_detection_ignore_hangars (location_id)\n                SELECT * FROM UNNEST(\n                    $1::BIGINT[]\n                )\n                ON CONFLICT (location_id) DO NOTHING\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "f46c72101fb15bbf909db1911280b67d64111cacb4497ae4166ff93d4f5f51c9"
+}

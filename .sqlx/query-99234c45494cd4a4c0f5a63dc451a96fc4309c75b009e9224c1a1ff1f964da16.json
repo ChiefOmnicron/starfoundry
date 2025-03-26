@@ -1,0 +1,20 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT COUNT(1) AS count\n            FROM event_queue\n            WHERE task = 'CLEANUP_INDUSTRY_INDEX'\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "count",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "99234c45494cd4a4c0f5a63dc451a96fc4309c75b009e9224c1a1ff1f964da16"
+}

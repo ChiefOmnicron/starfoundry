@@ -1,0 +1,38 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT\n                    url,\n                    target AS \"target!: NotificationTarget\"\n                FROM stock_blueprints sb\n                JOIN notifications n ON n.id = ANY(sb.notifications)\n                WHERE sb.id = $1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "url",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 1,
+        "name": "target!: NotificationTarget",
+        "type_info": {
+          "Custom": {
+            "name": "notification_target",
+            "kind": {
+              "Enum": [
+                "DISCORD",
+                "JSON"
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "89fe86670566e8bac390be017a93f4aaa0724f385929911a15247cc9e6b566aa"
+}

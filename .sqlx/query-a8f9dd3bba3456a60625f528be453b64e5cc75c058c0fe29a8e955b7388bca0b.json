@@ -1,0 +1,20 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM event_workers\n            WHERE id IN (\n                SELECT id\n                FROM event_workers\n                WHERE last_seen < NOW() - INTERVAL '5 minutes'\n                LIMIT 1\n            )\n            RETURNING id\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "a8f9dd3bba3456a60625f528be453b64e5cc75c058c0fe29a8e955b7388bca0b"
+}

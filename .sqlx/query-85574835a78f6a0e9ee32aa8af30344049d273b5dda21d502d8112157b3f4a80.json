@@ -1,0 +1,26 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT\n                    refresh_token,\n                    character_id AS \"character_id!\"\n                FROM   credentials cred\n                WHERE  character_id IS NOT NULL\n                AND    refresh_token IS NOT NULL\n                AND    credential_type = 'CORPORATION'\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "refresh_token",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 1,
+        "name": "character_id!",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      true,
+      true
+    ]
+  },
+  "hash": "85574835a78f6a0e9ee32aa8af30344049d273b5dda21d502d8112157b3f4a80"
+}

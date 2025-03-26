@@ -1,0 +1,16 @@
+.env
+./target
+**/*.rs.bk
+
+pkg/
+dist/
+node_modules
+
+sde_parser/output
+sde_parser/input
+sde_parser/sde
+
+temp
+.git
+.vscode
+.github

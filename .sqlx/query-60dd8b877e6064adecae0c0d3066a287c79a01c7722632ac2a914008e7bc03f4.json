@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT character_id AS \"character_id!: CharacterId\"\n                FROM   credentials\n                WHERE\n                    (character_id = $1 OR character_main = $1) AND\n                    credential_type = 'CHARACTER' AND\n                    character_id IS NOT NULL\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "character_id!: CharacterId",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "60dd8b877e6064adecae0c0d3066a287c79a01c7722632ac2a914008e7bc03f4"
+}

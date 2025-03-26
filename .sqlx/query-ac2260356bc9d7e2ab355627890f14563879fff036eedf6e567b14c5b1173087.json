@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM project_jobs\n            WHERE id = ANY($1::UUID[])\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "UuidArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "ac2260356bc9d7e2ab355627890f14563879fff036eedf6e567b14c5b1173087"
+}

@@ -1,0 +1,43 @@
+[package]
+name = "starfoundry_bin-api"
+authors.workspace = true
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+default-run = "starfoundry_bin-api"
+
+[dependencies]
+async-trait = "0.1.87"
+base64 = "0.22.1"
+chrono = { version = "0.4.40", features = ["serde"] }
+dotenvy = "0.15.7"
+headers = "0.4.0"
+hmac = "0.12.1"
+jsonwebtoken = "9.3.1"
+rand = "0.9.0"
+rand_chacha = "0.9.0"
+reqwest = "0.12.12"
+serde = { version = "1.0.218", features = ["derive"] }
+serde_json = "1.0.140"
+sha2 = "0.10.8"
+sqlx = { version = "0.8.3", features = ["chrono", "runtime-tokio-rustls", "postgres", "uuid", "json"] }
+starfoundry_libs-appraisal = { path = "../libs/appraisal" }
+starfoundry_libs-eve_api = { path = "../libs/eve_api" }
+starfoundry_libs-items = { path = "../libs/items" }
+starfoundry_libs-notification = { path = "../libs/notification" }
+starfoundry_libs-projects = { path = "../libs/projects" }
+starfoundry_libs-structures = { path = "../libs/structures" }
+starfoundry_libs-types = { path = "../libs/types" }
+thiserror = "2.0.12"
+tokio = { version = "1.43.0", features = ["full"] }
+tracing = "0.1.41"
+tracing-subscriber =  { version = "0.3.19", features = ["env-filter"] }
+utoipa = { version = "5.3.1", features = ["uuid", "yaml"] }
+uuid = { version = "1.15.1", features = ["v4", "serde"] }
+warp = "0.3.7"
+
+[features]
+# enables special routes
+test = []
+appraisal = []

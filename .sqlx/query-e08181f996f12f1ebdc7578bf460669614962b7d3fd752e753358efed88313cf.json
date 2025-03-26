@@ -1,0 +1,50 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                type_id,\n                category_id,\n                group_id,\n                volume,\n                name,\n                base_price\n            FROM items\n            WHERE category_id = 9\n            AND (\n                meta_group_id = 1\n            OR meta_group_id = 54\n            OR meta_group_id IS NULL\n            )\n            AND base_price IS NOT NULL\n            AND category_id != ALL(ARRAY[\n                8\n            ])\n            AND group_id != ALL(ARRAY[\n                1993\n            ])\n            AND type_id != ALL(ARRAY[\n                40311\n            ])\n            ORDER BY NAME ASC\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "type_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "category_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "group_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "volume",
+        "type_info": "Float4"
+      },
+      {
+        "ordinal": 4,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "base_price",
+        "type_info": "Float4"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "e08181f996f12f1ebdc7578bf460669614962b7d3fd752e753358efed88313cf"
+}

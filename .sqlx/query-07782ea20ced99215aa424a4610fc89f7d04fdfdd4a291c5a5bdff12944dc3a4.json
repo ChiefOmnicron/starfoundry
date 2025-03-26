@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                DELETE FROM industry_index\n                WHERE id = ANY($1)\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "UuidArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "07782ea20ced99215aa424a4610fc89f7d04fdfdd4a291c5a5bdff12944dc3a4"
+}

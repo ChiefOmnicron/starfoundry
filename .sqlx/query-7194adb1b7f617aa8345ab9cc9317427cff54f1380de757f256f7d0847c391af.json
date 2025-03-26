@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM project_market\n            WHERE type_id = ANY(ARRAY[\n                34, 35, 36, 37, 38, 39, 40\n            ])\n              AND project_id = $1\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "7194adb1b7f617aa8345ab9cc9317427cff54f1380de757f256f7d0847c391af"
+}

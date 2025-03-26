@@ -1,0 +1,64 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                s.name AS \"source\",\n                s.id AS \"structure_id\",\n                mol.type_id,\n                i.name AS item_name,\n                i.volume,\n                pm.quantity,\n                mol.remaining,\n                mol.price\n            FROM projects p\n            JOIN project_market_structures pms ON pms.project_id = p.id\n            JOIN structures s ON s.id = pms.structure_id\n            JOIN project_market pm ON pm.project_id = p.id\n            JOIN market_orders_latest mol ON (mol.structure_id = s.structure_id AND mol.type_id = pm.type_id)\n            JOIN items i ON i.type_id = mol.type_id\n            WHERE\n                p.id = $1\n                AND pm.source IS NULL\n                AND pm.cost IS NULL\n                AND mol.is_buy = false\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "source",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 1,
+        "name": "structure_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "type_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "item_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "volume",
+        "type_info": "Float4"
+      },
+      {
+        "ordinal": 5,
+        "name": "quantity",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "remaining",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "price",
+        "type_info": "Float8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "c7edaf25361baaa82e208a988a41cd3540caf03c2eead77ef71af848805f3690"
+}

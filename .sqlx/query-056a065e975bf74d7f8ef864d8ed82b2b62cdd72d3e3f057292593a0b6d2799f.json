@@ -1,0 +1,52 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                ps.type_id,\n                ps.quantity,\n                ps.cost,\n                i.name AS \"item_name\",\n                i.category_id,\n                i.group_id\n            FROM project_stocks ps\n            JOIN items i\n              ON i.type_id = ps.type_id\n            WHERE ps.project_id = $1\n            ORDER BY i.name\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "type_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "quantity",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "cost",
+        "type_info": "Float8"
+      },
+      {
+        "ordinal": 3,
+        "name": "item_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "category_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "group_id",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "056a065e975bf74d7f8ef864d8ed82b2b62cdd72d3e3f057292593a0b6d2799f"
+}

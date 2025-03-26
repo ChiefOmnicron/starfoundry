@@ -1,0 +1,64 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                timestamp,\n                system_id,\n                reaction,\n                manufacturing,\n                invention,\n                copying,\n                research_material,\n                research_time\n            FROM industry_index\n            WHERE system_id = $1 AND\n                timestamp >= NOW() - INTERVAL '2 MONTHS'\n            ORDER BY timestamp DESC\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "timestamp",
+        "type_info": "Timestamp"
+      },
+      {
+        "ordinal": 1,
+        "name": "system_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "reaction",
+        "type_info": "Float4"
+      },
+      {
+        "ordinal": 3,
+        "name": "manufacturing",
+        "type_info": "Float4"
+      },
+      {
+        "ordinal": 4,
+        "name": "invention",
+        "type_info": "Float4"
+      },
+      {
+        "ordinal": 5,
+        "name": "copying",
+        "type_info": "Float4"
+      },
+      {
+        "ordinal": 6,
+        "name": "research_material",
+        "type_info": "Float4"
+      },
+      {
+        "ordinal": 7,
+        "name": "research_time",
+        "type_info": "Float4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "d925c1fa12fdfb0d0944c825a3a9d12c3aab24c2264a80d7f1b21b6b7f303036"
+}

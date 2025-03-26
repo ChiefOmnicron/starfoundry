@@ -1,0 +1,20 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO systems\n            (\n                region_id,\n                region_name,\n                constellation_id,\n                constellation_name,\n                system_id,\n                system_name,\n                security\n            )\n            SELECT * FROM UNNEST(\n                $1::INTEGER[],\n                $2::VARCHAR[],\n                $3::INTEGER[],\n                $4::VARCHAR[],\n                $5::INTEGER[],\n                $6::VARCHAR[],\n                $7::REAL[]\n            )\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4Array",
+        "VarcharArray",
+        "Int4Array",
+        "VarcharArray",
+        "Int4Array",
+        "VarcharArray",
+        "Float4Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "09be00fb0ee051d6ce9a0922da8463acfc8822980cc136fded561ac0e65a6bae"
+}

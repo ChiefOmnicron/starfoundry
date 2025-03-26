@@ -1,0 +1,23 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT p.id\n                FROM projects p\n                JOIN project_group_members pgm ON pgm.group_id = project_group_id\n                WHERE p.id = $1\n                AND (\n                    pgm.character_id = $2 OR\n                    p.owner = $2\n                )\n                AND (\n                    pgm.projects = 'WRITE' OR\n                    pgm.projects = 'READ'\n                )\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "d5f927db5f47672bd929077c171439fc3b81dcbff93c5d56584260aa0ec91bf4"
+}

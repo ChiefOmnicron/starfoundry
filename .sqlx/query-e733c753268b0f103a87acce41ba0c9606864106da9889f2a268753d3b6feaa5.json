@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                DELETE FROM appraisals\n                WHERE DATE(created_at) < DATE(NOW() - INTERVAL '90 DAY')\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "e733c753268b0f103a87acce41ba0c9606864106da9889f2a268753d3b6feaa5"
+}

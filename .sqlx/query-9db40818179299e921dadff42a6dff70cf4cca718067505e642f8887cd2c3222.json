@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT job_id AS \"job_id!\"\n            FROM project_jobs\n            WHERE job_id = ANY($1)\n            AND status = 'DONE'\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "job_id!",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4Array"
+      ]
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "9db40818179299e921dadff42a6dff70cf4cca718067505e642f8887cd2c3222"
+}

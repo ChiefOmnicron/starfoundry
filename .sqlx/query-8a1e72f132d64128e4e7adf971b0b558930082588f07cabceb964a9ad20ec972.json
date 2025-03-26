@@ -1,0 +1,50 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                type_id,\n                category_id,\n                group_id,\n                volume,\n                name,\n                base_price\n            FROM items\n            -- Exclude some of the categories that we won´t need\n            WHERE category_id != ALL(ARRAY[30, 63, 91, 2118])\n            ORDER BY name\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "type_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "category_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "group_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "volume",
+        "type_info": "Float4"
+      },
+      {
+        "ordinal": 4,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "base_price",
+        "type_info": "Float4"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "8a1e72f132d64128e4e7adf971b0b558930082588f07cabceb964a9ad20ec972"
+}

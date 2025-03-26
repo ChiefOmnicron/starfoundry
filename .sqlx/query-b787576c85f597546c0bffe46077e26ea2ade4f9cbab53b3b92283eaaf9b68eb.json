@@ -1,0 +1,41 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT\n                    AVG(price) AS \"avg!\",\n                    MIN(price) AS \"min!\",\n                    MAX(price) AS \"max!\",\n                    SUM(remaining) AS \"total_orders!\"\n                FROM market_orders_latest\n                WHERE is_buy = false\n                AND structure_id = $1\n                AND type_id = $2\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "avg!",
+        "type_info": "Float8"
+      },
+      {
+        "ordinal": 1,
+        "name": "min!",
+        "type_info": "Float8"
+      },
+      {
+        "ordinal": 2,
+        "name": "max!",
+        "type_info": "Float8"
+      },
+      {
+        "ordinal": 3,
+        "name": "total_orders!",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "b787576c85f597546c0bffe46077e26ea2ade4f9cbab53b3b92283eaaf9b68eb"
+}

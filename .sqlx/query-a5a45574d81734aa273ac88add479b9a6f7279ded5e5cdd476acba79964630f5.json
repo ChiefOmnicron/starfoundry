@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO event_queue (task, additional_data)\n            SELECT 'MARKET_LATEST_PLAYER', * FROM UNNEST(\n                $1::JSONB[]\n            )\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "JsonbArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "a5a45574d81734aa273ac88add479b9a6f7279ded5e5cdd476acba79964630f5"
+}

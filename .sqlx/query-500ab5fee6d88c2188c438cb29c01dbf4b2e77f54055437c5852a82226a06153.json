@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE job_detection_logs\n            SET project_id = $1\n            WHERE job_id = $2\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "500ab5fee6d88c2188c438cb29c01dbf4b2e77f54055437c5852a82226a06153"
+}
