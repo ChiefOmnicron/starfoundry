@@ -5,7 +5,7 @@ use starfoundry_libs_items::{load_items, load_type_ids, parse};
 use starfoundry_libs_types::TypeId;
 use std::collections::HashMap;
 
-use crate::{generate_code, Error, Result};
+use crate::{generate_code, Error, Persistance, Result};
 use super::{Appraisal, AppraisalItem, MarketEntry, MarketEntyPerItem};
 
 pub async fn create_raw(
@@ -212,7 +212,7 @@ async fn create(
         }
     }
 
-    let (code, timestamp) = if options.store {
+    let (code, timestamp) = if options.store.is_persistent() {
         let code = generate_code();
             let mut transaction = pool
             .begin()
@@ -368,7 +368,7 @@ async fn create(
 
 #[derive(Clone, Debug)]
 pub struct AppraisalOptions {
-    pub store:          bool,
+    pub store:          Persistance,
     pub market_id:      i64,
     pub comment:        Option<String>,
     pub price_modifier: i16,
@@ -380,7 +380,7 @@ impl AppraisalOptions {
 
     pub fn set_store(
         &mut self,
-        store: Option<bool>,
+        store: Option<Persistance>,
     ) {
         if let Some(x) = store {
             self.store = x;
@@ -416,7 +416,7 @@ impl AppraisalOptions {
 impl Default for AppraisalOptions {
     fn default() -> Self {
         Self {
-            store:          true,
+            store:          Persistance::Persist,
             market_id:      Self::DEFAULT_MARKET,
             comment:        None,
             price_modifier: Self::DEFAULT_PRICE_MODIFIER,

@@ -7,6 +7,7 @@ use warp::reply::Reply;
 
 use crate::ReplyError;
 use crate::api_docs::{BadRequest, InternalServerError, UnsupportedMediaType};
+use starfoundry_libs_appraisal::Persistance;
 
 /// /api/v1/appraisal
 /// 
@@ -71,7 +72,8 @@ pub struct AppraisalCreateBody {
     /// raw entry of the items that should be appraised
     pub appraisal:      String,
     /// whether or not the apprisal should be stored, true per default
-    pub store:          Option<bool>,
+    #[serde(default, deserialize_with = "Persistance::deserialize")]
+    pub store:          Option<Persistance>,
     /// market that should be used, jita is the default
     pub market_id:      Option<i64>,
     /// modifier for the price, default is 100%

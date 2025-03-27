@@ -30,7 +30,7 @@ async fn internal(
         .map_err(Error::AppraisalError)?
         .items
         .into_iter()
-        .map(|x| (x.type_id.into(), x.total_sell as f32))
+        .map(|x| (x.type_id.into(), x.sell.min as f32))
         .collect::<HashMap<_, _>>();
     Ok(entries)
 }

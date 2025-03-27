@@ -94,7 +94,7 @@ pub async fn compression(
 
     let mut appraisal_options = AppraisalOptions::default();
     appraisal_options.set_market_id(Some(appraisal.market_id));
-    appraisal_options.set_store(Some(false));
+    appraisal_options.set_store(Some(crate::Persistance::NonPersistent));
 
     let appraisal_overage = if !compressed_minerals.is_empty() {
         let overage = overage(

@@ -3,9 +3,8 @@ mod janice;
 pub use self::janice::*;
 
 use starfoundry_libs_types::TypeId;
-use std::fmt;
 
-use crate::Error;
+use crate::{Error, Persistance};
 
 /// Generalized trait for communicating with appraisal site.
 #[async_trait::async_trait]
@@ -25,20 +24,6 @@ pub trait ExternalAppraisal<T> {
         persist: Persistance,
         entries: Vec<AppraisalEntry>,
     ) -> Result<T, Error>;
-}
-
-pub enum Persistance {
-    Persist,
-    NonPersistent,
-}
-
-impl fmt::Display for Persistance {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::Persist       => write!(f, "true"),
-            Self::NonPersistent => write!(f, "false"),
-        }
-    }
 }
 
 #[derive(Debug)]
