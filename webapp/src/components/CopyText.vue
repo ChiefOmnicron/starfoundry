@@ -25,6 +25,13 @@
                 v-else-if="number"
             />
 
+            <n-icon
+                v-else-if="icon"
+                @click="copyToClipboard(value)"
+            >
+                <Copy />
+            </n-icon>
+
             <span
                 @click="copyToClipboard(value)"
                 :style="{
@@ -43,14 +50,18 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
-import { NTooltip } from 'naive-ui';
+import { NIcon, NTooltip } from 'naive-ui';
 
+import { Copy } from '@vicons/fa';
 import FormatNumber from '@/components/FormatNumber.vue';
 import Item from '@/components/Item.vue';
 
 @Component({
     components: {
         NTooltip,
+        NIcon,
+
+        Copy,
 
         FormatNumber,
         Item,
@@ -98,6 +109,13 @@ class CopyText extends Vue {
         default: false
     })
     public withComma!: boolean;
+
+    @Prop({
+        type: Boolean,
+        required: false,
+        default: false,
+    })
+    public icon!: boolean;
 
     public copyToClipboard(value: string | number) {
         if (!value) {

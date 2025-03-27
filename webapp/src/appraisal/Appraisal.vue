@@ -460,9 +460,28 @@ class AppraisalShow extends Vue {
         return '';
     }
 
+    public clipboardData() {
+        if (!this.appraisal) {
+            return;
+        }
+
+        let content: string[] = [];
+        for (let item of this.appraisal.items) {
+            let volume = 0;
+            if (item.meta.repackaged) {
+                volume = item.meta.repackaged * item.quantity;
+            } else {
+                volume = item.meta.volume * item.quantity;
+            }
+
+            content.push(`${item.meta.name}\t${item.quantity}\t${volume}\t${item.buy.max}\t${item.sell.min}`);
+        }
+
+        return content.join('\n');
+    }
+
     public columns() {
         return [{
-            title: '',
             key: 'icon',
             width: 32,
             render: (row: IAppraisalItem) => {
@@ -470,6 +489,15 @@ class AppraisalShow extends Vue {
                     EveIcon,
                     {
                         id: row.type_id,
+                    },
+                )
+            },
+            title: () => {
+                return h(
+                    CopyText,
+                    {
+                        icon: true,
+                        value: this.clipboardData(),
                     },
                 )
             }
@@ -489,7 +517,6 @@ class AppraisalShow extends Vue {
             align: 'right',
             title: 'Quantity',
             row: 'quantity',
-            sorter: (row1: IAppraisalItem, row2: IAppraisalItem) => row1.quantity > row2.quantity,
             render: (row: IAppraisalItem) => {
                 return h(
                     CopyText,
