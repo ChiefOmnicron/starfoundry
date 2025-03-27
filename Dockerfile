@@ -15,7 +15,6 @@ COPY        ./event_worker/ ./event_worker
 COPY        ./libs/ ./libs
 
 COPY        ./Cargo.toml Cargo.toml
-COPY        ./Cargo.lock Cargo.lock
 COPY        ./.sqlx ./.sqlx
 
 RUN         apt-get update && \
@@ -44,7 +43,6 @@ COPY        ./event_worker/ ./event_worker
 COPY        ./libs/ ./libs
 
 COPY        ./Cargo.toml Cargo.toml
-COPY        ./Cargo.lock Cargo.lock
 COPY        ./.sqlx ./.sqlx
 
 RUN         apt-get update && \
@@ -104,7 +102,7 @@ COPY        --from=builder-all /usr/src/starfoundry/target/x86_64-unknown-linux-
 RUN         apt-get update && \
             apt-get install -y coinor-libcbc3.1 ca-certificates && \
             ln -s /usr/lib/x86_64-linux-gnu/libCbcSolver.so.3.10.11 /usr/lib/x86_64-linux-gnu/libCbcSolver.so.3
-RUN apt-get clean && \
+RUN         apt-get clean && \
             rm -rf /var/lib/apt/lists/*
 
 EXPOSE      10101

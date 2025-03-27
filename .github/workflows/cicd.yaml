@@ -52,7 +52,7 @@ jobs:
 
   release:
     name: release
-    runs-on: [self-hosted, linux, docker]
+    runs-on: [self-hosted, linux]
     needs: [check, test-backend, test-web]
     steps:
       - name: Checkout
@@ -69,7 +69,7 @@ jobs:
 
   trivy-docker-api:
     name: trivy docker api image
-    runs-on: [self-hosted, linux, docker]
+    runs-on: [self-hosted, linux]
     needs: [release]
     steps:
       - name: Run Trivy vulnerability scanner
@@ -85,7 +85,7 @@ jobs:
 
   trivy-docker-collector:
     name: trivy docker collector image
-    runs-on: [self-hosted, linux, docker]
+    runs-on: [self-hosted, linux]
     needs: [release]
     steps:
       - name: Run Trivy vulnerability scanner
@@ -101,7 +101,7 @@ jobs:
 
   trivy-docker-web:
     name: trivy docker web image
-    runs-on: [self-hosted, linux, docker]
+    runs-on: [self-hosted, linux]
     needs: [release]
     steps:
       - name: Run Trivy vulnerability scanner
@@ -110,7 +110,7 @@ jobs:
 
   trivy-repo:
     name: trivy repository
-    runs-on: [self-hosted, linux, docker]
+    runs-on: [self-hosted, linux]
     needs: [release]
     steps:
       - name: Checkout code 
