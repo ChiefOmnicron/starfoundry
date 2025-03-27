@@ -474,7 +474,10 @@ class AppraisalShow extends Vue {
                 volume = item.meta.volume * item.quantity;
             }
 
-            content.push(`${item.meta.name}\t${item.quantity}\t${volume}\t${item.buy.max}\t${item.sell.min}`);
+            let buy = (Math.floor(item.buy.max * 100)) / 100;
+            let sell = (Math.floor(item.sell.min * 100)) / 100;
+
+            content.push(`${item.meta.name}\t${item.quantity}\t${volume}\t${buy}\t${sell}`);
         }
 
         return content.join('\n');
