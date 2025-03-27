@@ -57,7 +57,7 @@ RUN         rustup update && \
 ################################################################################
 # webapp
 ################################################################################
-FROM node as builder-webapp
+FROM        node as builder-webapp
 
 WORKDIR     /app
 
@@ -75,7 +75,7 @@ RUN         npm run build
 ################################################################################
 # webapp-appraisal
 ################################################################################
-FROM node as builder-webapp-appraisal
+FROM        node as builder-webapp-appraisal
 
 ENV         VITE_APPRAISAL=true
 
@@ -95,7 +95,7 @@ RUN         npm run build
 ################################################################################
 # Running api container
 ################################################################################
-FROM    ubuntu:24.04 as api
+FROM        ubuntu:24.04 as api
 
 COPY        --from=builder-all /usr/src/starfoundry/target/x86_64-unknown-linux-gnu/release/starfoundry_bin-api /usr/local/bin/api
 
@@ -111,7 +111,7 @@ CMD         ["/usr/local/bin/api"]
 ################################################################################
 # Running api-appraisal container
 ################################################################################
-FROM    ubuntu:24.04 as api-appraisal
+FROM        ubuntu:24.04 as api-appraisal
 
 COPY        --from=builder-appraisal /usr/src/starfoundry/target/x86_64-unknown-linux-gnu/release/starfoundry_bin-api /usr/local/bin/api
 
@@ -127,7 +127,7 @@ CMD         ["/usr/local/bin/api"]
 ################################################################################
 # Running collector container
 ################################################################################
-FROM    ubuntu:24.04 as collector
+FROM        ubuntu:24.04 as collector
 
 RUN         apt-get update && \
             apt-get install -y ca-certificates
@@ -156,7 +156,7 @@ CMD         ["/usr/local/bin/event_worker"]
 ################################################################################
 # Running event_worker container
 ################################################################################
-FROM    ubuntu:24.04 as event_worker-appraisal
+FROM        ubuntu:24.04 as event_worker-appraisal
 
 RUN         apt-get update && \
             apt-get install -y ca-certificates unzip
