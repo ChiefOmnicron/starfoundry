@@ -187,7 +187,7 @@
                                         striped
                                     />
                                 </n-tab-pane>
-                                <n-tab-pane name="overage" tab="Overage">
+                                <n-tab-pane name="compressedOverage" tab="Overage">
                                     <appraisal-header
                                         :appraisal="appraisalCompression.overage_appraisal"
                                         v-if="appraisalCompression && appraisalCompression.overage_appraisal && appraisalCompression.overage_appraisal.items.length > 0"
@@ -319,6 +319,8 @@ class AppraisalShow extends Vue {
     public loadingAppraisalCompression: boolean = false;
     public loadingAppraisalReprocessing: boolean = false;
 
+    public currentTab: 'appraisal' | 'compression' | 'compressionOverage' | 'reprocessing' = 'appraisal';
+
     public notFound: boolean = false;
     public noSolution: boolean = false;
 
@@ -403,11 +405,19 @@ class AppraisalShow extends Vue {
 
     public tabSwitch(tab: string) {
         if (tab === 'compression') {
+            this.currentTab = 'compression';
+
             this.loadingAppraisalCompression = true;
             this.fetchCompression();
+        } else if (tab === 'compressedOverage') {
+            this.currentTab = 'compressionOverage';
         } else if (tab === 'reprocessing') {
+            this.currentTab = 'reprocessing';
+
             this.loadingAppraisalReprocessing = true;
             this.fetchReprocessing();
+        } else {
+            this.currentTab = 'appraisal';
         }
     }
 
@@ -461,26 +471,80 @@ class AppraisalShow extends Vue {
     }
 
     public clipboardData() {
-        if (!this.appraisal) {
-            return;
+        let content = [];
+
+        switch (this.currentTab) {
+            case 'appraisal':
+                if (this.appraisal) {
+                    for (let item of this.appraisal.items) {
+                        let volume = 0;
+                        if (item.meta.repackaged) {
+                            volume = item.meta.repackaged * item.quantity;
+                        } else {
+                            volume = item.meta.volume * item.quantity;
+                        }
+
+                        let buy = (Math.floor(item.buy.max * 100)) / 100;
+                        let sell = (Math.floor(item.sell.min * 100)) / 100;
+
+                        content.push(`${item.meta.name}\t${item.quantity}\t${volume}\t${buy}\t${sell}`);
+                    }
+                }
+                return content.join('\n');
+            case 'compression':
+                if (this.appraisalCompression) {
+                    for (let item of this.appraisalCompression.compression_appraisal.items) {
+                        let volume = 0;
+                        if (item.meta.repackaged) {
+                            volume = item.meta.repackaged * item.quantity;
+                        } else {
+                            volume = item.meta.volume * item.quantity;
+                        }
+
+                        let buy = (Math.floor(item.buy.max * 100)) / 100;
+                        let sell = (Math.floor(item.sell.min * 100)) / 100;
+
+                        content.push(`${item.meta.name}\t${item.quantity}\t${volume}\t${buy}\t${sell}`);
+                    }
+                }
+                return content.join('\n');
+            case 'compressionOverage':
+                if (this.appraisalCompression && this.appraisalCompression.overage_appraisal) {
+                    for (let item of this.appraisalCompression.overage_appraisal.items) {
+                        let volume = 0;
+                        if (item.meta.repackaged) {
+                            volume = item.meta.repackaged * item.quantity;
+                        } else {
+                            volume = item.meta.volume * item.quantity;
+                        }
+
+                        let buy = (Math.floor(item.buy.max * 100)) / 100;
+                        let sell = (Math.floor(item.sell.min * 100)) / 100;
+
+                        content.push(`${item.meta.name}\t${item.quantity}\t${volume}\t${buy}\t${sell}`);
+                    }
+                }
+                return content.join('\n');
+            case 'reprocessing':
+                if (this.appraisalReprocessing) {
+                    for (let item of this.appraisalReprocessing.items) {
+                        let volume = 0;
+                        if (item.meta.repackaged) {
+                            volume = item.meta.repackaged * item.quantity;
+                        } else {
+                            volume = item.meta.volume * item.quantity;
+                        }
+
+                        let buy = (Math.floor(item.buy.max * 100)) / 100;
+                        let sell = (Math.floor(item.sell.min * 100)) / 100;
+
+                        content.push(`${item.meta.name}\t${item.quantity}\t${volume}\t${buy}\t${sell}`);
+                    }
+                }
+                return content.join('\n');
+            default:
+                return ''
         }
-
-        let content: string[] = [];
-        for (let item of this.appraisal.items) {
-            let volume = 0;
-            if (item.meta.repackaged) {
-                volume = item.meta.repackaged * item.quantity;
-            } else {
-                volume = item.meta.volume * item.quantity;
-            }
-
-            let buy = (Math.floor(item.buy.max * 100)) / 100;
-            let sell = (Math.floor(item.sell.min * 100)) / 100;
-
-            content.push(`${item.meta.name}\t${item.quantity}\t${volume}\t${buy}\t${sell}`);
-        }
-
-        return content.join('\n');
     }
 
     public columns() {
