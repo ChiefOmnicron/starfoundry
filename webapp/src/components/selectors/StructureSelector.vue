@@ -37,7 +37,8 @@ class StructureSelector extends Vue {
     // service that the structure needs to have
     @Prop({
         type: Number,
-        default: [],
+        default: undefined,
+        required: false
     })
     public service!: TypeId;
 
