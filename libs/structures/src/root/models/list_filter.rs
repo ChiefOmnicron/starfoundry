@@ -26,6 +26,7 @@ pub struct StructureListFilter {
     )]
     pub structure_type_id: Option<i32>,
 
+    /// [TypeId] of a structure service
     #[serde(default)]
     #[param(
         example = json!("35892"),

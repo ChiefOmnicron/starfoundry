@@ -33,10 +33,10 @@
             <tfoot>
                 <tr>
                     <td colspan="1" width="93%">
-                        <structure-market-selector
+                        <structure-selector
                             :selected-structures="structures"
+                            :service="35892"
                             v-model:value="newStructure"
-                            show-npc-markets
                         />
                     </td>
                     <td width="7%">
@@ -60,8 +60,8 @@ import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
 
 import { NButton, NIcon, NTable } from 'naive-ui';
 import { ExternalLinkAlt } from '@vicons/fa';
-import StructureMarketSelector from '@/components/selectors/StructureMarketSelector.vue';
 import StructureReference from '@/components/StructureReference.vue';
+import StructureSelector from '@/components/selectors/StructureSelector.vue';
 import StructureWrapper from '@/components/StructureWrapper.vue';
 
 @Component({
@@ -72,7 +72,7 @@ import StructureWrapper from '@/components/StructureWrapper.vue';
 
         ExternalLinkAlt,
 
-        StructureMarketSelector,
+        StructureSelector,
         StructureReference,
         StructureWrapper,
     },

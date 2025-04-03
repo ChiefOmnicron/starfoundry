@@ -17,7 +17,7 @@ pub async fn list(
                 NOT (system_id = $3) IS FALSE AND
                 NOT (type_id = $4) IS FALSE AND
                 NOT ($5 = ANY(services)) IS FALSE AND
-                owner = $1
+                (owner = $1 OR owner = 0)
                 ORDER BY name
         "#,
             *character_id,

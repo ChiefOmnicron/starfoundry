@@ -1,9 +1,9 @@
 <template>
     <n-select
-        :options="available_options()"
+        :options="availableOptions()"
         :loading="loading"
-        :render-label="render_entry"
-        :render-tag="render_selected"
+        :render-label="renderEntry"
+        :render-tag="renderSelected"
         @clear="options = []"
         v-model:value="value"
         clearable
@@ -13,10 +13,12 @@
 
 <script lang="ts">
 import { Component, Vue, toNative, Prop } from 'vue-facing-decorator';
-import { NAvatar, NText, NSelect, type SelectOption } from 'naive-ui';
 import { h } from 'vue';
+
+import type { StructureId, TypeId } from '@/sdk/utils';
 import { Structure, StructureService } from '@/sdk/structure';
-import type { StructureId } from '@/sdk/utils';
+
+import { NAvatar, NText, NSelect, type SelectOption } from 'naive-ui';
 
 @Component({
     components: {
@@ -27,9 +29,24 @@ import type { StructureId } from '@/sdk/utils';
 })
 class StructureSelector extends Vue {
     @Prop({
+        type: Array,
         default: [],
     })
-    public exclude: StructureId[] = [];
+    public exclude!: StructureId[];
+
+    // service that the structure needs to have
+    @Prop({
+        type: Number,
+        default: [],
+    })
+    public service!: TypeId;
+
+    @Prop({
+        default: [],
+        required: false,
+        type: Array<String>,
+    })
+    public selectedStructures!: number[];
 
     public options: SelectOption[] = [];
     public loading: boolean = false;
@@ -42,7 +59,9 @@ class StructureSelector extends Vue {
     public async created() {
         this.loading = true;
         await StructureService
-            .list({})
+            .list({
+                service_id: this.service ? this.service : undefined,
+            })
             .then((x: Structure[]) => {
                 x.map((x: Structure) => {
                     this.options.push({
@@ -60,15 +79,16 @@ class StructureSelector extends Vue {
             });
     }
 
-    public available_options(): SelectOption[] {
-        return this.options.filter(x => this.exclude.indexOf(<StructureId>x.value) === -1);
+    public availableOptions(): SelectOption[] {
+        return this.options
+            .filter(x => this.selectedStructures.indexOf(<number> x.value) === -1);
     }
 
-    public render_selected({ option }: any): string {
+    public renderSelected({ option }: any): string {
         return option.label;
     }
 
-    public render_entry(option: SelectOption) {
+    public renderEntry(option: SelectOption) {
         let structure = this.structures[<string>option.value];
 
         return h(

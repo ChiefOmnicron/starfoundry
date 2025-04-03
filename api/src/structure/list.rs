@@ -2,6 +2,7 @@ use sqlx::PgPool;
 use starfoundry_libs_structures::{StructureListFilter, StructureService};
 use warp::{Reply, Rejection};
 
+use crate::api_docs::{InternalServerError, Unauthorized};
 use crate::{ReplyError, Identity};
 
 #[utoipa::path(
@@ -21,14 +22,8 @@ use crate::{ReplyError, Identity};
             description = "Invalid parameter",
             status = BAD_REQUEST,
         ),
-        (
-            description = "The requester is not authenticated",
-            status = UNAUTHORIZED,
-        ),
-        (
-            description = "Unknown error",
-            status = INTERNAL_SERVER_ERROR,
-        ),
+        Unauthorized,
+        InternalServerError,
     ),
 )]
 pub async fn list(

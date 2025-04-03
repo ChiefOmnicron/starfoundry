@@ -244,6 +244,14 @@ export class Structure {
     }
 
     get structureName(): string {
+        // special case for NPC stations
+        if (
+            this.id === '00000000-0000-0000-0000-000000000001' ||
+            this.id === '00000000-0000-0000-0000-000000000002'
+        ) {
+            return 'NPC Station';
+        }
+
         return STRUCTURE_TYPE_ID_NAME(this._info.structure_type_id);
     }
 
