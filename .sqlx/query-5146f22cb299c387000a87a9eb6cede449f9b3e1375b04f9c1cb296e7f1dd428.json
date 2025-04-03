@@ -1,0 +1,26 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT id\n            FROM structures\n            WHERE\n                NOT (LOWER(name) LIKE '%' || LOWER($2) || '%') IS FALSE AND\n                NOT (system_id = $3) IS FALSE AND\n                NOT (type_id = $4) IS FALSE AND\n                NOT ($5 = ANY(services)) IS FALSE AND\n                (owner = $1 OR owner = 0)\n                ORDER BY name\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Text",
+        "Int4",
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "5146f22cb299c387000a87a9eb6cede449f9b3e1375b04f9c1cb296e7f1dd428"
+}

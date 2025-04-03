@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO structures (\n                id,\n                structure_id,\n                system_id,\n                type_id,\n                security,\n                name,\n                owner,\n                services\n            )\n            VALUES\n            ('00000000-0000-0000-0000-000000000001', 60003760, 30000142, 0, 'HIGHSEC', 'Jita 4-4', 0, '{35878}'),\n            ('00000000-0000-0000-0000-000000000002', 60008494, 30002187, 0, 'HIGHSEC', 'Amarr', 0, '{35878}')\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "6fca56204a99ee6cb5c0cbbe2858b780e4bf57c689282f1a4aaef7180add15db"
+}
