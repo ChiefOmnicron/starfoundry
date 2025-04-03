@@ -4,11 +4,12 @@
             <eve-icon :id="structure.structureTypeId" />
         </n-grid-item>
         <n-grid-item span="10">
-            <structure-reference
-                :structure-id="structure.id"
+            <reference
+                :params="{ structureId: structure.id }"
+                :route="routeStructure"
             >
                 {{ structure.name }}
-            </structure-reference>
+            </reference>
         </n-grid-item>
         <n-grid-item span="6">
             <system :system-id="structure.systemId" dotlan />
@@ -27,7 +28,7 @@ import type { Uuid } from '@/sdk/utils';
 import { NButton, NGrid, NGridItem } from 'naive-ui';
 import { ExternalLinkAlt } from '@vicons/fa';
 import EveIcon from '@/components/EveIcon.vue';
-import StructureReference from '@/components/StructureReference.vue';
+import Reference from './Reference.vue';
 import System from '@/components/System.vue';
 
 @Component({
@@ -39,7 +40,7 @@ import System from '@/components/System.vue';
         ExternalLinkAlt,
 
         EveIcon,
-        StructureReference,
+        Reference,
         System,
     }
 })
@@ -49,6 +50,8 @@ class StructureCard extends Vue {
         required: true,
     })
     public structureId!: string;
+
+    public routeStructure: string = ROUTE_STRUCTURE;
 
     public structure!: Structure;
 

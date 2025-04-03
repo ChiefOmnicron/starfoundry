@@ -10,12 +10,12 @@
                 >
                     <tr>
                         <td>
-                            <structure-reference
-                                :structure-id="entry.id"
-                                v-if="entry.id"
+                            <reference
+                                :route="routeStructure"
+                                :params="{ structureId: entry.id }"
                             >
                                 {{ entry.name }}
-                            </structure-reference>
+                            </reference>
                         </td>
                         <td>
                             <n-button
@@ -58,9 +58,11 @@
 <script lang="ts">
 import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
 
+import { ROUTE_STRUCTURE } from '@/structure/router';
+
 import { NButton, NIcon, NTable } from 'naive-ui';
 import { ExternalLinkAlt } from '@vicons/fa';
-import StructureReference from '@/components/StructureReference.vue';
+import Reference from '@/components/Reference.vue';
 import StructureSelector from '@/components/selectors/StructureSelector.vue';
 import StructureWrapper from '@/components/StructureWrapper.vue';
 
@@ -72,8 +74,8 @@ import StructureWrapper from '@/components/StructureWrapper.vue';
 
         ExternalLinkAlt,
 
+        Reference,
         StructureSelector,
-        StructureReference,
         StructureWrapper,
     },
     emits: [
@@ -87,6 +89,8 @@ class ProjectGroupDefaultPlayerMarket extends Vue {
         required: true,
     })
     public structures!: string[];
+
+    public routeStructure: string = ROUTE_STRUCTURE;
 
     public newStructure: string | null = null;
 

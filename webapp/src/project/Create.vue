@@ -43,23 +43,20 @@
                 <br>
                 <template v-if="projectGroupId !== '00000000-0000-0000-0000-000000000000'">
                     The default NPC markets are set from the configured defaults of the
-                    <n-button
-                        quaternary
-                        type="primary"
-                        @click="$router.push({ name: routeProjectGroupDetail, params: { groupId: projectGroupId } })"
+                    <reference
+                        :params="{ groupId: projectGroupId }"
+                        :route="routeProjectGroupDetail"
                     >
                         Project Group
-                    </n-button>
+                    </reference>
                 </template>
                 <template v-else>
                     Ypu can set the default values by creating a
-                    <n-button
-                        quaternary
-                        type="primary"
-                        @click="$router.push({ name: routeProjectGroup })"
+                    <reference
+                        :route="routeProjectGroup"
                     >
                         Project Group
-                    </n-button>
+                    </reference>
                 </template>
             </p>
 
@@ -76,13 +73,12 @@
                 <br>
                 <template v-if="projectGroupId !== '00000000-0000-0000-0000-000000000000'">
                     The default blacklist are set from the configured defaults of the selected
-                    <n-button
-                        quaternary
-                        type="primary"
-                        @click="$router.push({ name: routeProjectGroupDetail, params: { groupId: projectGroupId } })"
+                    <reference
+                        :params="{ groupId: projectGroupId }"
+                        :route="routeProjectGroupDetail"
                     >
                         Project Group
-                    </n-button>
+                    </reference>
                 </template>
                 <template v-else>
                     Ypu can set the default values by creating a
@@ -173,10 +169,7 @@
 
 <script lang="ts">
 import { Component, Vue, toNative } from 'vue-facing-decorator';
-import {
-    NButton, NCard, NForm, NFormItem, NInput, NInputNumber,
-  NSpace, NSwitch, NText,
-} from 'naive-ui';
+import { ROUTE_PROJECT_GROUP, ROUTE_PROJECT_GROUPS } from '@/project_group/router';
 
 import { ProjectService, type ICreateProject, type IProduct } from '@/sdk/project';
 import { ItemService } from '@/services/item';
@@ -184,6 +177,10 @@ import { Structure } from '@/sdk/structure';
 import { StructureGroupService } from '@/sdk/structure_group';
 import { ProjectGroupService } from '@/project_group/service';
 
+import {
+    NButton, NCard, NForm, NFormItem, NInput, NInputNumber,
+  NSpace, NSwitch, NText,
+} from 'naive-ui';
 import ActionGroup from '@/components/ActionGroup.vue';
 import AdditionalProductSelector from '@/project/selectors/AdditionalProductSelector.vue';
 import Blacklist from '@/project_group/components/DefaultBlacklist.vue';
@@ -194,9 +191,9 @@ import GeneralInfo from '@/project/components/GeneralInfoV2.vue';
 import Market from '@/project_group/components/DefaultMarket.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import ProductSelector from '@/project/selectors/ProductSelector.vue';
+import Reference from '@/components/Reference.vue';
 import StructureCard from '@/components/StructureCard.vue';
 import StructureGroupSelector from '@/components/selectors/StructureGroupSelector.vue';
-import { ROUTE_PROJECT_GROUP, ROUTE_PROJECT_GROUPS } from '@/project_group/router';
 
 @Component({
     components: {
@@ -220,6 +217,7 @@ import { ROUTE_PROJECT_GROUP, ROUTE_PROJECT_GROUPS } from '@/project_group/route
         Market,
         PageHeader,
         ProductSelector,
+        Reference,
         StructureCard,
         StructureGroupSelector,
     }
