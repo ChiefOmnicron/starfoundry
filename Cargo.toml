@@ -11,6 +11,7 @@ members = [
   'collector',
   'database_upgrade',
   'event_worker',
+  'meta_webserver',
 
   'libs/appraisal',
   'libs/compression',

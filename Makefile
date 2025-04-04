@@ -102,12 +102,16 @@ docker-build:
 		--target collector \
 		.
 	docker build \
-		-t ${DOCKER_REPO}/starfoundry/event_worker \
-		--target event_worker \
+		-t ${DOCKER_REPO}/starfoundry/event-worker \
+		--target event-worker \
 		.
 	docker build \
-		-t ${DOCKER_REPO}/starfoundry/event_worker-appraisal \
-		--target event_worker-appraisal \
+		-t ${DOCKER_REPO}/starfoundry/event-worker-appraisal \
+		--target event-worker-appraisal \
+		.
+	docker build \
+		-t ${DOCKER_REPO}/starfoundry/meta-webserver \
+		--target meta-webserver \
 		.
 	docker build \
 		-t ${DOCKER_REPO}/starfoundry/web \

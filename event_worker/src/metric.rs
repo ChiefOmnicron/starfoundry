@@ -1,11 +1,11 @@
 use prometheus_client::encoding::EncodeLabelSet;
 use prometheus_client::metrics::counter::Counter;
 use prometheus_client::metrics::family::Family;
+use prometheus_client::metrics::histogram::Histogram;
 use prometheus_client::registry::Registry;
 use uuid::Uuid;
 
 use crate::task::WorkerTask;
-use prometheus_client::metrics::histogram::Histogram;
 
 #[derive(Clone, Debug, Hash, PartialEq, Eq, EncodeLabelSet)]
 pub struct MetricLabel {

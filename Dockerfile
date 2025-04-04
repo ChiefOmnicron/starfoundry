@@ -11,6 +11,7 @@ COPY        ./api/ ./api
 COPY        ./collector/ ./collector
 COPY        ./database_upgrade ./database_upgrade
 COPY        ./event_worker/ ./event_worker
+COPY        ./meta_webserver/ ./meta_webserver
 
 COPY        ./libs/ ./libs
 
@@ -20,11 +21,11 @@ COPY        ./.sqlx ./.sqlx
 RUN         apt-get update && \
             apt-get install -y coinor-cbc coinor-libcbc-dev
 
-RUN         rustup update && \
-            cargo build --release --target x86_64-unknown-linux-gnu && \
+RUN         cargo build --release --target x86_64-unknown-linux-gnu && \
             strip target/x86_64-unknown-linux-gnu/release/starfoundry_bin-api && \
             strip target/x86_64-unknown-linux-gnu/release/starfoundry_bin-collector && \
-            strip target/x86_64-unknown-linux-gnu/release/starfoundry_bin-event_worker
+            strip target/x86_64-unknown-linux-gnu/release/starfoundry_bin-event_worker && \
+            strip target/x86_64-unknown-linux-gnu/release/starfoundry_bin-meta_webserver
 
 ################################################################################
 # APPRAISAL only
@@ -39,6 +40,7 @@ COPY        ./api/ ./api
 COPY        ./collector/ ./collector
 COPY        ./database_upgrade ./database_upgrade
 COPY        ./event_worker/ ./event_worker
+COPY        ./meta_webserver/ ./meta_webserver
 
 COPY        ./libs/ ./libs
 
@@ -48,11 +50,12 @@ COPY        ./.sqlx ./.sqlx
 RUN         apt-get update && \
             apt-get install -y coinor-cbc coinor-libcbc-dev
 
-RUN         rustup update && \
-            cd api; cargo build --release --target x86_64-unknown-linux-gnu --features "appraisal"; cd .. && \
+RUN         cd api; cargo build --release --target x86_64-unknown-linux-gnu --features "appraisal"; cd .. && \
             cd event_worker; cargo build --release --target x86_64-unknown-linux-gnu --features "appraisal"; cd .. && \
+            cd meta_webserver; cargo build --release --target x86_64-unknown-linux-gnu; cd .. && \
             strip target/x86_64-unknown-linux-gnu/release/starfoundry_bin-api && \
-            strip target/x86_64-unknown-linux-gnu/release/starfoundry_bin-event_worker
+            strip target/x86_64-unknown-linux-gnu/release/starfoundry_bin-event_worker && \
+            strip target/x86_64-unknown-linux-gnu/release/starfoundry_bin-meta_webserver
 
 ################################################################################
 # webapp
@@ -139,9 +142,9 @@ COPY        --from=builder-all /usr/src/starfoundry/target/x86_64-unknown-linux-
 CMD         ["/usr/local/bin/collector"]
 
 ################################################################################
-# Running event_worker container
+# Running event-worker container
 ################################################################################
-FROM    ubuntu:24.04 as event_worker
+FROM    ubuntu:24.04 as event-worker
 
 RUN         apt-get update && \
             apt-get install -y ca-certificates unzip
@@ -154,9 +157,9 @@ COPY        --from=builder-all /usr/src/starfoundry/target/x86_64-unknown-linux-
 CMD         ["/usr/local/bin/event_worker"]
 
 ################################################################################
-# Running event_worker container
+# Running event-worker appraisal container
 ################################################################################
-FROM        ubuntu:24.04 as event_worker-appraisal
+FROM        ubuntu:24.04 as event-worker-appraisal
 
 RUN         apt-get update && \
             apt-get install -y ca-certificates unzip
@@ -167,6 +170,20 @@ RUN         apt-get clean && \
 COPY        --from=builder-appraisal /usr/src/starfoundry/target/x86_64-unknown-linux-gnu/release/starfoundry_bin-event_worker /usr/local/bin/event_worker
 
 CMD         ["/usr/local/bin/event_worker"]
+
+################################################################################
+# Running meta-webserver container
+################################################################################
+FROM        ubuntu:24.04 as meta-webserver
+
+RUN         apt-get update && \
+            apt-get install -y ca-certificates
+RUN         apt-get clean && \
+            rm -rf /var/lib/apt/lists/*
+
+COPY        --from=builder-all /usr/src/starfoundry/target/x86_64-unknown-linux-gnu/release/starfoundry_bin-meta_webserver /usr/local/bin/meta-webserver
+
+CMD         ["/usr/local/bin/meta-webserver"]
 
 ################################################################################
 # Running webapp container
