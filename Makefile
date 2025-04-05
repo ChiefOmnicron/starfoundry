@@ -87,6 +87,14 @@ web-test-dev:
 		run --component --browser chrome --spec src/notification/overview/integration/**.cy.ts
 	sudo chown -R $(id -u):$(id -g) ./webapp/node_modules ./webapp/cypress
 
+aaa:
+	echo ${VITE_SENTRY}
+	docker build \
+		-t ${DOCKER_REPO}/starfoundry/web-appraisal \
+		--build-arg VITE_SENTRY=${VITE_SENTRY} \
+		--target webapp-appraisal \
+		.
+
 .PHONY: docker-build
 docker-build:
 	docker build \
@@ -116,11 +124,13 @@ docker-build:
 	docker build \
 		-t ${DOCKER_REPO}/starfoundry/web \
 		--build-arg VITE_SENTRY=${VITE_SENTRY} \
+		--build-arg SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN} \
 		--target webapp \
 		.
 	docker build \
 		-t ${DOCKER_REPO}/starfoundry/web-appraisal \
 		--build-arg VITE_SENTRY=${VITE_SENTRY} \
+		--build-arg SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN} \
 		--target webapp-appraisal \
 		.
 

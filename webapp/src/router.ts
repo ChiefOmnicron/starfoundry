@@ -19,98 +19,100 @@ export const ROUTE_ABOUT = 'about';
 
 let router;
 
-if (import.meta.env.VITE_APPRAISAL) {
-    const routes: Array<RouteRecordRaw> = [
-        ...appraisalRoutes,
-        {
-            path: '/',
-            redirect: '/appraisal'
-        },
-        {
-            path: '/about',
-            name: 'about',
-            component: () => import(
-                /* webpackChunkName: "about-appraisal" */
-                '@/AboutAppraisal.vue'
-            )
-        },
-        {
-            path: '/legal',
-            name: 'legal',
-            component: () => import(
-                /* webpackChunkName: "legal" */
-                '@/Legal.vue'
-            )
-        },
-    ]
+// #v-ifdef VITE_APPRAISAL
+const routesAppraisal: Array<RouteRecordRaw> = [
+    ...appraisalRoutes,
+    {
+        path: '/',
+        redirect: '/appraisal'
+    },
+    {
+        path: '/about',
+        name: 'about',
+        component: () => import(
+            /* webpackChunkName: "about-appraisal" */
+            '@/AboutAppraisal.vue'
+        )
+    },
+    {
+        path: '/legal',
+        name: 'legal',
+        component: () => import(
+            /* webpackChunkName: "legal" */
+            '@/Legal.vue'
+        )
+    },
+]
 
-    router = createRouter({
-        history: createWebHistory(import.meta.env.BASE_URL),
-        routes
-    });
-} else {
-    const routes: Array<RouteRecordRaw> = [
-        ...appraisalRoutes,
-        ...characterRoutes,
-        ...industryRoutes,
-        ...jobDetectionRoutes,
-        ...notificationRoutes,
-        ...projectGroupRoutes,
-        ...projectRoutes,
-        ...stockRoutes,
-        ...structureDynamicGroupsRoutes,
-        ...structureGroupsRoutes,
-        ...structureRoutes,
-        {
-            path: '/',
-            redirect: '/projects'
-        },
-        {
-            path: '/about',
-            name: 'about',
-            component: () => import(
-                /* webpackChunkName: "about" */
-                '@/About.vue'
-            )
-        },
-        {
-            path: '/legal',
-            name: 'legal',
-            component: () => import(
-                /* webpackChunkName: "legal" */
-                '@/Legal.vue'
-            )
-        },
-    ]
+router = createRouter({
+    history: createWebHistory(import.meta.env.BASE_URL),
+    routes: routesAppraisal,
+});
+// #v-endif
 
-    router = createRouter({
-        history: createWebHistory(import.meta.env.BASE_URL),
-        routes
-    });
+// #v-ifdef VITE_APPRAISAL==false
+const routesIndustry: Array<RouteRecordRaw> = [
+    ...appraisalRoutes,
+    ...characterRoutes,
+    ...industryRoutes,
+    ...jobDetectionRoutes,
+    ...notificationRoutes,
+    ...projectGroupRoutes,
+    ...projectRoutes,
+    ...stockRoutes,
+    ...structureDynamicGroupsRoutes,
+    ...structureGroupsRoutes,
+    ...structureRoutes,
+    {
+        path: '/',
+        redirect: '/projects'
+    },
+    {
+        path: '/about',
+        name: 'about',
+        component: () => import(
+            /* webpackChunkName: "about" */
+            '@/About.vue'
+        )
+    },
+    {
+        path: '/legal',
+        name: 'legal',
+        component: () => import(
+            /* webpackChunkName: "legal" */
+            '@/Legal.vue'
+        )
+    },
+]
 
-    router.afterEach((to, _) => {
-        if (
-            to &&
-            to.name &&
-            to?.name?.toString().indexOf('project') >= 0 &&
-            [
-                ROUTE_PROJECT_ASSIGNMENTS,
-                ROUTE_PROJECT_READY_JOBS,
+router = createRouter({
+    history: createWebHistory(import.meta.env.BASE_URL),
+    routes: routesIndustry,
+});
 
-                ROUTE_PROJECT_CREATE,
+router.afterEach((to, _) => {
+    if (
+        to &&
+        to.name &&
+        to?.name?.toString().indexOf('project') >= 0 &&
+        [
+            ROUTE_PROJECT_ASSIGNMENTS,
+            ROUTE_PROJECT_READY_JOBS,
 
-                ROUTE_PROJECT_GROUP,
-                ROUTE_PROJECT_GROUP_CREATE,
-                ROUTE_PROJECT_GROUP_INVITE,
-                ROUTE_PROJECT_GROUPS,
-            ].indexOf(to?.name?.toString()) === -1
-        ) {
-            events.$emit(PROJECT_ROUTE, to.name.toString());
-        } else {
-            document.title = 'StarFoundry';
-            events.$emit(ROUTE_CHANGE, to?.name?.toString());
-        }
-    });
-}
+            ROUTE_PROJECT_CREATE,
+
+            ROUTE_PROJECT_GROUP,
+            ROUTE_PROJECT_GROUP_CREATE,
+            ROUTE_PROJECT_GROUP_INVITE,
+            ROUTE_PROJECT_GROUPS,
+        ].indexOf(to?.name?.toString()) === -1
+    ) {
+        events.$emit(PROJECT_ROUTE, to.name.toString());
+    } else {
+        document.title = 'StarFoundry';
+        events.$emit(ROUTE_CHANGE, to?.name?.toString());
+    }
+});
+// #v-endif
 
 export default router;

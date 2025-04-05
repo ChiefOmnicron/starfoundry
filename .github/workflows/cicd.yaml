@@ -61,6 +61,8 @@ jobs:
         env:
           SQLX_OFFLINE: true
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          VITE_SENTRY: ${{ vars.VITE_SENTRY }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: |
           make docker-login
           make docker-build

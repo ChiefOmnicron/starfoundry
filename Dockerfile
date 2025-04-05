@@ -63,6 +63,7 @@ RUN         cd api; cargo build --release --target x86_64-unknown-linux-gnu --fe
 FROM        node as builder-webapp
 
 ARG         VITE_SENTRY
+ARG         SENTRY_AUTH_TOKEN
 
 WORKDIR     /app
 
@@ -84,6 +85,7 @@ FROM        node as builder-webapp-appraisal
 
 ARG         VITE_APPRAISAL=true
 ARG         VITE_SENTRY
+ARG         SENTRY_AUTH_TOKEN
 
 WORKDIR     /app
 

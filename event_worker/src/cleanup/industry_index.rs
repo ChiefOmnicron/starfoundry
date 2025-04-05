@@ -127,8 +127,6 @@ pub async fn task(
                 Error::BeginTransaction(e)
             })?;
 
-        dbg!("Deleting {}", ids.len());
-
         sqlx::query!("
                 DELETE FROM industry_index
                 WHERE id = ANY($1)

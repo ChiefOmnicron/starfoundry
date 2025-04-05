@@ -191,7 +191,6 @@ import { ROUTE_ABOUT } from './router';
         LoadingBar,
     }
 })
-//export default class App extends Vue {
 class App extends Vue {
     public dark = darkTheme;
 
@@ -250,6 +249,7 @@ class App extends Vue {
             this.headerName = 'StarFoundry Appraisal';
         }
 
+        // #v-ifdef VITE_APPRAISAL==false
         const default_options = [{
             label: () => h(
                 RouterLink,
@@ -366,6 +366,7 @@ class App extends Vue {
             .catch(e => {
                 this.options = []
             });
+        // #v-endif
     }
 
     public redirect_login() {
@@ -381,6 +382,10 @@ class App extends Vue {
 
     // FIXME:
     public no_login_required(): boolean {
+        if (this.isAppraisal()) {
+            return true;
+        }
+
         return this.$route.name === project_routes.ROUTE_PROJECT_ASSIGNMENTS ||
             this.$route.name === project_routes.ROUTE_PROJECT_STATISTICS ||
             this.$route.name === ROUTE_APPRAISAL ||

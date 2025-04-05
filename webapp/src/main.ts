@@ -10,12 +10,12 @@ export const events = new Events();
 
 let app = createApp(App);
 
-if (import.meta.env.VITE_SENTRY) {
-    Sentry.init({
-        app,
-        dsn: import.meta.env.VITE_SENTRY
-    });
-}
+// #v-ifdef VITE_SENTRY
+Sentry.init({
+    app,
+    dsn: import.meta.env.VITE_SENTRY
+});
+// #v-endif
 
 app
     .use(router)
