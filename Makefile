@@ -136,13 +136,17 @@ docker-push: docker-build
 	docker push ${DOCKER_REPO}/starfoundry/collector:latest
 	docker push ${DOCKER_REPO}/starfoundry/collector:${GIT_REV}
 
-	docker tag ${DOCKER_REPO}/starfoundry/event_worker:latest ${DOCKER_REPO}/starfoundry/event_worker:${GIT_REV}
-	docker push ${DOCKER_REPO}/starfoundry/event_worker:latest
-	docker push ${DOCKER_REPO}/starfoundry/event_worker:${GIT_REV}
+	docker tag ${DOCKER_REPO}/starfoundry/event-worker:latest ${DOCKER_REPO}/starfoundry/event-worker:${GIT_REV}
+	docker push ${DOCKER_REPO}/starfoundry/event-worker:latest
+	docker push ${DOCKER_REPO}/starfoundry/event-worker:${GIT_REV}
 
-	docker tag ${DOCKER_REPO}/starfoundry/event_worker-appraisal:latest ${DOCKER_REPO}/starfoundry/event_worker-appraisal:${GIT_REV}
-	docker push ${DOCKER_REPO}/starfoundry/event_worker-appraisal:latest
-	docker push ${DOCKER_REPO}/starfoundry/event_worker-appraisal:${GIT_REV}
+	docker tag ${DOCKER_REPO}/starfoundry/event-worker-appraisal:latest ${DOCKER_REPO}/starfoundry/event-worker-appraisal:${GIT_REV}
+	docker push ${DOCKER_REPO}/starfoundry/event-worker-appraisal:latest
+	docker push ${DOCKER_REPO}/starfoundry/event-worker-appraisal:${GIT_REV}
+
+	docker tag ${DOCKER_REPO}/starfoundry/meta-webserver:latest ${DOCKER_REPO}/starfoundry/meta-webserver:${GIT_REV}
+	docker push ${DOCKER_REPO}/starfoundry/meta-webserver:latest
+	docker push ${DOCKER_REPO}/starfoundry/meta-webserver:${GIT_REV}
 
 	docker tag ${DOCKER_REPO}/starfoundry/web:latest ${DOCKER_REPO}/starfoundry/web:${GIT_REV}
 	docker push ${DOCKER_REPO}/starfoundry/web:latest

@@ -149,6 +149,7 @@ jobs:
           cd starfoundry-k8s-infra/apps/appraisal;
           kustomize edit set image appraisal-api=175554084336.dkr.ecr.eu-central-1.amazonaws.com/starfoundry/api:${{ env.COMMIT_SHORT_SHA }}
           kustomize edit set image appraisal-web=175554084336.dkr.ecr.eu-central-1.amazonaws.com/starfoundry/web-appraisal:${{ env.COMMIT_SHORT_SHA }}
+          kustomize edit set image meta-webserver=175554084336.dkr.ecr.eu-central-1.amazonaws.com/starfoundry/meta-webserver:${{ env.COMMIT_SHORT_SHA }}
       - name: Commit and push
         run: |
           cd starfoundry-k8s-infra
