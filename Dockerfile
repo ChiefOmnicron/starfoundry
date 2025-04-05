@@ -202,7 +202,7 @@ CMD         ["nginx", "-g", "daemon off;"]
 FROM        nginx:stable-alpine as webapp-appraisal
 
 COPY        --from=builder-webapp-appraisal /app/dist /usr/share/nginx/html
-COPY        webapp/nginx.conf /etc/nginx/conf.d/default.conf
+COPY        webapp/nginx_appraisal.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE      80
 CMD         ["nginx", "-g", "daemon off;"]
