@@ -388,6 +388,10 @@ class App extends Vue {
     }
 
     public async whoami_req() {
+        if (this.isAppraisal()) {
+            return;
+        }
+
         await Service
             .whoami()
             .then(x => {
@@ -436,7 +440,7 @@ class App extends Vue {
     }
 
     public isAppraisal(): boolean {
-        return window.location.host.indexOf('appraisal') > -1
+        return window.location.host.indexOf('appraisal') > -1;
     }
 }
 

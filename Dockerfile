@@ -62,6 +62,8 @@ RUN         cd api; cargo build --release --target x86_64-unknown-linux-gnu --fe
 ################################################################################
 FROM        node as builder-webapp
 
+ARG         VITE_SENTRY
+
 WORKDIR     /app
 
 COPY        webapp/package*.json ./
@@ -80,7 +82,8 @@ RUN         npm run build
 ################################################################################
 FROM        node as builder-webapp-appraisal
 
-ENV         VITE_APPRAISAL=true
+ARG         VITE_APPRAISAL=true
+ARG         VITE_SENTRY
 
 WORKDIR     /app
 
@@ -144,7 +147,7 @@ CMD         ["/usr/local/bin/collector"]
 ################################################################################
 # Running event-worker container
 ################################################################################
-FROM    ubuntu:24.04 as event-worker
+FROM        ubuntu:24.04 as event-worker
 
 RUN         apt-get update && \
             apt-get install -y ca-certificates unzip

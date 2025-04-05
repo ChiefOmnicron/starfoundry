@@ -115,10 +115,12 @@ docker-build:
 		.
 	docker build \
 		-t ${DOCKER_REPO}/starfoundry/web \
+		--build-arg VITE_SENTRY=${VITE_SENTRY} \
 		--target webapp \
 		.
 	docker build \
 		-t ${DOCKER_REPO}/starfoundry/web-appraisal \
+		--build-arg VITE_SENTRY=${VITE_SENTRY} \
 		--target webapp-appraisal \
 		.
 
