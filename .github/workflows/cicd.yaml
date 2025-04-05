@@ -142,7 +142,7 @@ jobs:
           cd starfoundry-k8s-infra/apps/industry;
           kustomize edit set image industry-api=175554084336.dkr.ecr.eu-central-1.amazonaws.com/starfoundry/api:${{ env.COMMIT_SHORT_SHA }}
           kustomize edit set image industry-collector=175554084336.dkr.ecr.eu-central-1.amazonaws.com/starfoundry/collector:${{ env.COMMIT_SHORT_SHA }}
-          kustomize edit set image industry-event_worker=175554084336.dkr.ecr.eu-central-1.amazonaws.com/starfoundry/event_worker:${{ env.COMMIT_SHORT_SHA }}
+          kustomize edit set image industry-event_worker=175554084336.dkr.ecr.eu-central-1.amazonaws.com/starfoundry/event-worker:${{ env.COMMIT_SHORT_SHA }}
           kustomize edit set image industry-web=175554084336.dkr.ecr.eu-central-1.amazonaws.com/starfoundry/web:${{ env.COMMIT_SHORT_SHA }}
       - name: Updates appraisal repository
         run: |
