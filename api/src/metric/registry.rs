@@ -119,7 +119,7 @@ fn from_warp_method(
     }
 }
 
-static REGEX_APPRAISAL_CODE: Lazy<Regex> = Lazy::new(|| Regex::new(r"\/[0-9a-zA-Z]{10}").unwrap());
+static REGEX_APPRAISAL_CODE: Lazy<Regex> = Lazy::new(|| Regex::new(r"\/appraisal\/[0-9a-zA-Z]{10}").unwrap());
 static REGEX_UUID: Lazy<Regex> = Lazy::new(|| Regex::new(r"[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}").unwrap());
 fn sanitize_path(
     path: &str,
@@ -134,7 +134,7 @@ fn sanitize_path(
 fn replace_appraisal_code(
     path: &str
 ) -> String {
-    REGEX_APPRAISAL_CODE.replace_all(path, "/<code>").to_string()
+    REGEX_APPRAISAL_CODE.replace_all(path, "/appraisal/<code>").to_string()
 }
 
 fn replace_uuid(
