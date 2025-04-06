@@ -5,7 +5,7 @@ use warp::http::Response;
 use warp::reject::Rejection;
 use warp::reply::Reply;
 
-pub async fn api(
+pub async fn export(
     registry: Arc<Registry>,
 ) -> Result<impl Reply, Rejection> {
     let mut buffer = String::new();

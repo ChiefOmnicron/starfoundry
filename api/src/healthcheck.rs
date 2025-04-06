@@ -12,7 +12,7 @@ pub use self::livez::*;
 pub use self::readyz::*;
 
 pub fn api(
-    pool:      PgPool,
+    pool: PgPool,
 ) -> BoxedFilter<(impl Reply,)> {
     let path = warp::path!("health" / ..)
         .boxed();

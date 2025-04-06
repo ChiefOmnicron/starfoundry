@@ -1,7 +1,9 @@
+use prometheus_client::registry::Registry;
 use sqlx::PgPool;
 use sqlx::postgres::PgPoolOptions;
 use starfoundry_bin_api::*;
 use starfoundry_bin_api::config::Config;
+use starfoundry_bin_api::metric::Metric;
 use starfoundry_libs_eve_api::CredentialCache;
 use std::convert::Infallible;
 use std::net::SocketAddr;
@@ -58,6 +60,12 @@ impl Server {
         self,
         server_address: &SocketAddr,
     ) {
+        let metrics = Metric::new();
+        let mut registry = Registry::with_prefix("starfoundry");
+        metrics.register(&mut registry);
+        let registry = Arc::new(registry);
+        let metrics = Arc::new(metrics);
+
         let api_doc = warp::path!("api" / "v1")
             .and(warp::get())
             .map(|| {
@@ -97,14 +105,15 @@ impl Server {
                 .or(api_doc)
                 .or(definition)
                 .or(version)
-                .recover(handle_rejection);
-                //.with(warp::wrap_fn(metric_wrapper));
+                .recover(handle_rejection)
+                .with(warp::wrap_fn(|f| metric_wrapper(f, metrics.clone())));
 
             warp::serve(routes)
                 .run(*server_address)
                 .await;
         } else {
             let routes = crate::healthcheck::api(self.pool.clone())
+                .or(crate::metric::api(registry.clone()))
                 .or(crate::feature_flags::api(base_path.clone()))
                 .or(appraisal)
                 .or(api_doc)
@@ -124,8 +133,8 @@ impl Server {
                 .or(structure_dynamic_group)
                 .or(structure_group)
                 .or(version)
-                .recover(handle_rejection);
-                //.with(warp::wrap_fn(metric_wrapper));
+                .recover(handle_rejection)
+                .with(warp::wrap_fn(|f| metric_wrapper(f, metrics.clone())));
 
             warp::serve(routes)
                 .run(*server_address)

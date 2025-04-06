@@ -23,6 +23,7 @@ pub mod healthcheck;
 pub mod industry;
 pub mod item;
 pub mod job_detection;
+pub mod metric;
 pub mod notification;
 pub mod project;
 pub mod project_group;
@@ -34,8 +35,9 @@ pub mod structure;
 pub mod version;
 
 pub use self::error::*;
-
 pub use self::auth::{with_identity, Identity};
+
+use crate::metric::{with_metric, Metric};
 
 pub fn with_pool(
     pool: PgPool,
@@ -51,6 +53,7 @@ pub fn with_credential_cache(
 
 pub fn metric_wrapper<F, T>(
     filter: F,
+    metric: Arc<Metric>,
 ) -> impl Filter<Extract = (Response,), Error = Infallible> + Clone + Send + Sync + 'static
 where
     F: Filter<Extract = (T,), Error = Infallible> + Clone + Send + Sync + 'static,
@@ -58,15 +61,28 @@ where
 {
     warp::any()
         .map(|| Instant::now())
-        //.and(warp::filters::header::headers_cloned())
         .and(warp::filters::path::full())
+        .and(warp::method())
+        .and(with_metric(metric.clone()))
         .and(filter)
-        //.map(|start: Instant, headers: HeaderMap, path: FullPath, res: T| {
-        .map(|start: Instant, path: FullPath, res: T| {
+        .map(|duration: Instant, path: FullPath, method: warp::http::Method, metric: Arc<Metric>, res: T| {
             let res = res.into_response();
-            tracing::info!("status: {:?}", &res.status());
-            tracing::info!("path: {:?}", path);
-            tracing::info!("duration: {:?}", start.elapsed().as_millis());
+
+            {
+                metric
+                    .inc_route_count(
+                        &method,
+                        &res.status(),
+                        path.as_str()
+                    );
+                metric
+                    .add_route_duration(
+                        &method,
+                        &res.status(),
+                        path.as_str(),
+                        duration.elapsed().as_secs_f64()
+                    );
+            }
 
             res
         })
