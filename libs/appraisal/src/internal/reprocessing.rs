@@ -87,7 +87,6 @@ pub async fn reprocessing(
                 )
                 .fetch_all(pool)
                 .await;
-            dbg!(item.type_id, &materials);
 
             let materials = if let Ok(x) = materials {
                 if x.is_empty() {
@@ -100,7 +99,6 @@ pub async fn reprocessing(
 
                 x
             } else {
-                dbg!("added to total because it was invalid");
                 // add it back to the list
                 total_reprocessed
                     .entry(item.type_id.into())
@@ -110,7 +108,6 @@ pub async fn reprocessing(
                 Vec::new()
             };
 
-            dbg!("material length, {}", materials.len());
             for material in materials {
                 let reprocessed = (
                     (
