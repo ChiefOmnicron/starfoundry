@@ -10,6 +10,8 @@ use warp::reply::Reply;
 
 pub use self::registry::*;
 
+pub type WithMetric = Arc<Metric>;
+
 pub fn api(
     registry: Arc<Registry>,
 ) -> BoxedFilter<(impl Reply,)> {

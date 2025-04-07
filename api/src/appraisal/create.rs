@@ -8,6 +8,7 @@ use warp::reply::Reply;
 use crate::ReplyError;
 use crate::api_docs::{BadRequest, InternalServerError, UnsupportedMediaType};
 use starfoundry_libs_appraisal::Persistance;
+use crate::metric::WithMetric;
 
 /// /appraisal
 /// 
@@ -36,8 +37,9 @@ use starfoundry_libs_appraisal::Persistance;
     ),
 )]
 pub async fn create(
-    pool: PgPool,
-    body: AppraisalCreateBody,
+    pool:   PgPool,
+    metric: WithMetric,
+    body:   AppraisalCreateBody,
 ) -> Result<impl Reply, Rejection> {
     let mut options = AppraisalOptions::default();
     options.set_store(body.store);
@@ -50,7 +52,10 @@ pub async fn create(
         body.appraisal,
         Some(options)
     ).await {
-        Ok(x)  => Ok(warp::reply::json(&x)),
+        Ok(x)  => {
+            metric.inc_appraisal_count();
+            Ok(warp::reply::json(&x))
+        },
         Err(e) => {
             tracing::error!("{}", e);
             Err(ReplyError::Internal.into())

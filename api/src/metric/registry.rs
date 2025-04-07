@@ -24,9 +24,11 @@ pub struct RouteLabels {
 
 #[derive(Clone, Debug)]
 pub struct Metric {
-    route_count:    Family<RouteLabels, Counter>,
-    route_status:   Family<RouteLabels, Counter>,
-    route_duration: Family<RouteLabels, Histogram>,
+    route_count:        Family<RouteLabels, Counter>,
+    route_status:       Family<RouteLabels, Counter>,
+    route_duration:     Family<RouteLabels, Histogram>,
+
+    appraisals_created: Counter,
 }
 
 impl Metric {
@@ -43,6 +45,8 @@ impl Metric {
                     0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0,
                 ].into_iter())
             }),
+
+            appraisals_created: Counter::default(),
         }
     }
 
@@ -64,6 +68,12 @@ impl Metric {
             "routes_duration",
             "Time it took for a route to answer",
             self.route_duration.clone(),
+        );
+
+        registry.register(
+            "appraisal_created",
+            "Number of appraisals created",
+            self.appraisals_created.clone(),
         );
     }
 
@@ -104,6 +114,12 @@ impl Metric {
                 route,
             }
         ).observe(duration);
+    }
+
+    pub fn inc_appraisal_count(
+        &self,
+    ) {
+        self.appraisals_created.inc();
     }
 }
 

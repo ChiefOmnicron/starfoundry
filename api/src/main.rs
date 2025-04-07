@@ -64,7 +64,7 @@ impl Server {
         let mut registry = Registry::with_prefix("starfoundry");
         metrics.register(&mut registry);
         let registry = Arc::new(registry);
-        let metrics = Arc::new(metrics);
+        let metric = Arc::new(metrics);
 
         let api_doc = warp::path::end()
             .and(warp::get())
@@ -76,7 +76,7 @@ impl Server {
         let base_path = warp::any().boxed();
         let base_path_v1 = warp::path!("v1" / ..).boxed();
 
-        let appraisal               = appraisal::api(self.pool.clone(), base_path.clone());
+        let appraisal               = appraisal::api(self.pool.clone(), metric.clone(), base_path.clone());
         let auth                    = auth::api(self.pool.clone(), base_path.clone(), self.credential_cache.clone());
         let characters              = character::api(self.pool.clone(), base_path.clone(), self.credential_cache.clone());
         let corporations            = corporation::api(self.pool.clone(), base_path.clone(), self.credential_cache.clone());
@@ -108,7 +108,7 @@ impl Server {
                 .or(v1)
                 .or(special_routes)
                 .recover(handle_rejection)
-                .with(warp::wrap_fn(|f| metric_wrapper(f, metrics.clone())));
+                .with(warp::wrap_fn(|f| metric_wrapper(f, metric.clone())));
 
             warp::serve(routes)
                 .run(*server_address)
@@ -138,7 +138,7 @@ impl Server {
                 .or(v1)
                 .or(special_routes)
                 .recover(handle_rejection)
-                .with(warp::wrap_fn(|f| metric_wrapper(f, metrics.clone())));
+                .with(warp::wrap_fn(|f| metric_wrapper(f, metric.clone())));
 
             warp::serve(routes)
                 .run(*server_address)

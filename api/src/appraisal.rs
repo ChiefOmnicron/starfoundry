@@ -15,10 +15,12 @@ use warp::{Filter, Reply};
 use warp::filters::BoxedFilter;
 
 use crate::with_pool;
+use crate::metric::{with_metric, WithMetric};
 
 pub fn api(
-    pool:             PgPool,
-    base_path:        BoxedFilter<()>,
+    pool:      PgPool,
+    metric:    WithMetric,
+    base_path: BoxedFilter<()>,
 ) -> BoxedFilter<(impl Reply,)> {
     let path = base_path
         .clone()
@@ -34,6 +36,7 @@ pub fn api(
     let create = path
         .clone()
         .and(warp::path::end())
+        .and(with_metric(metric.clone()))
         .and(warp::post())
         .and(warp::body::json())
         .and_then(create);
