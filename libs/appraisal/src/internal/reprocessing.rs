@@ -76,7 +76,6 @@ pub async fn reprocessing(
                 .and_modify(|value: &mut i64| *value += item.quantity)
                 .or_insert(item.quantity);
         } else {
-            // what if there is an item that cannot be reprocessed
             let materials = sqlx::query!("
                     SELECT
                         material_type_id,
@@ -88,10 +87,20 @@ pub async fn reprocessing(
                 )
                 .fetch_all(pool)
                 .await;
+            dbg!(item.type_id, &materials);
 
             let materials = if let Ok(x) = materials {
+                if x.is_empty() {
+                    // add it back to the list
+                    total_reprocessed
+                        .entry(item.type_id.into())
+                        .and_modify(|value: &mut i64| *value += item.quantity)
+                        .or_insert(item.quantity);
+                }
+
                 x
             } else {
+                dbg!("added to total because it was invalid");
                 // add it back to the list
                 total_reprocessed
                     .entry(item.type_id.into())
@@ -101,6 +110,7 @@ pub async fn reprocessing(
                 Vec::new()
             };
 
+            dbg!("material length, {}", materials.len());
             for material in materials {
                 let reprocessed = (
                     (
