@@ -9,8 +9,8 @@ use crate::{Identity, ReplyError};
 use crate::api_docs::{Forbidden, InternalServerError, NoContent, Unauthorized};
 use crate::job_detection::JobIdPath;
 
-/// /api/v1/job-detection/{jobId}/add
-///
+/// /job-detection/{jobId}/add
+/// 
 /// Adds the given entry to a project.
 /// 
 /// If the job is already assigned, the identity MUST to have write permissions
@@ -23,7 +23,7 @@ use crate::job_detection::JobIdPath;
 #[utoipa::path(
     put,
     operation_id = "job_detection_update_job_add",
-    path = "/api/v1/job-detection/{jobId}/add",
+    path = "/job-detection/{jobId}/add",
     tag = "project-job-detection",
     params(
         JobIdPath,

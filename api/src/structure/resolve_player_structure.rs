@@ -7,10 +7,12 @@ use warp::reply::Reply;
 use crate::{Identity, ReplyError};
 use crate::api_docs::{BadRequest, Forbidden, InternalServerError};
 
+/// /structures/{structureId}/resolve
+/// 
 #[utoipa::path(
     get,
     operation_id = "structures_resolve_player",
-    path = "/api/v1/structures/{structureId}/resolve",
+    path = "/structures/{structureId}/resolve",
     tag = "structures",
     params(
         (

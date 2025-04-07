@@ -5,7 +5,7 @@ use warp::{Reply, Rejection};
 use crate::{Identity, ReplyError};
 use crate::api_docs::{BadRequest, InternalServerError, Unauthorized, UnsupportedMediaType};
 
-/// /api/v1/projects/cost-estimate
+/// /projects/cost-estimate
 /// 
 /// creates an estimate of the cost to build the given products
 /// 
@@ -15,7 +15,7 @@ use crate::api_docs::{BadRequest, InternalServerError, Unauthorized, Unsupported
 #[utoipa::path(
     post,
     operation_id = "project_cost_estimate",
-    path = "/api/v1/projects/cost-estimate",
+    path = "/projects/cost-estimate",
     tag = "projects",
     request_body = CostEstimateConfiguration,
     responses(

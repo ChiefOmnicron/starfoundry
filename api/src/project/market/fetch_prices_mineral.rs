@@ -6,7 +6,7 @@ use crate::{ReplyError, Identity};
 use crate::api_docs::{BadRequest, Forbidden, InternalServerError, Unauthorized};
 use crate::project::ProjectUuidPath;
 
-/// /api/v1/projects/{projectUuid}/market/prices/minerals
+/// /projects/{projectUuid}/market/prices/minerals
 /// 
 /// Fetches the market prices for minerals
 /// 
@@ -17,7 +17,7 @@ use crate::project::ProjectUuidPath;
 #[utoipa::path(
     get,
     operation_id = "project_market_fetch_prices_minerals",
-    path = "/api/v1/projects/{projectUuid}/market/prices/minerals",
+    path = "/projects/{projectUuid}/market/prices/minerals",
     tag = "projects",
     params(
         ProjectUuidPath,

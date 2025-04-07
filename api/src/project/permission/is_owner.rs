@@ -7,7 +7,7 @@ use crate::{Identity, ReplyError};
 use crate::project::ProjectUuidPath;
 use crate::api_docs::{Forbidden, InternalServerError, NoContent, Unauthorized};
 
-/// /api/v1/projects/{projectUuid}/permissions/is-owner
+/// /projects/{projectUuid}/permissions/is-owner
 /// 
 /// Checks if the character is the owner of the project.
 /// Any positive HTTP-Statuscode 2xx should be considered as allowed
@@ -20,7 +20,7 @@ use crate::api_docs::{Forbidden, InternalServerError, NoContent, Unauthorized};
 #[utoipa::path(
     get,
     operation_id = "project_permission_is_owner",
-    path = "/api/v1/projects/{projectUuid}/permissions/is-owner",
+    path = "/projects/{projectUuid}/permissions/is-owner",
     tag = "projects",
     params(
         ProjectUuidPath,

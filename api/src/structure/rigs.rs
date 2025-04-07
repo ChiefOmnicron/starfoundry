@@ -6,10 +6,12 @@ use warp::{Reply, Rejection};
 use crate::ReplyError;
 use crate::api_docs::{BadRequest, InternalServerError};
 
+/// /structures/{structureTypeId}/rigs
+/// 
 #[utoipa::path(
     get,
     operation_id = "structures_rigs_list",
-    path = "/api/v1/structures/{structureTypeId}/rigs",
+    path = "/structures/{structureTypeId}/rigs",
     tag = "structures",
     params(
         (

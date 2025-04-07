@@ -9,14 +9,14 @@ use crate::ReplyError;
 use crate::api_docs::{BadRequest, InternalServerError, UnsupportedMediaType};
 use starfoundry_libs_appraisal::Persistance;
 
-/// /api/v1/appraisal
+/// /appraisal
 /// 
 /// Creates a new appraisal
 /// 
 #[utoipa::path(
     post,
     operation_id = "appraisal_create",
-    path = "/api/v1/appraisal",
+    path = "/appraisal",
     tag = "appraisal",
     request_body(
         content = AppraisalCreateBody,

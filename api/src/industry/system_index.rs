@@ -50,10 +50,12 @@ pub async fn system_index(
     })
 }
 
+/// /industry/system-index
+/// 
 #[utoipa::path(
     get,
     operation_id = "industry_system_index",
-    path = "/api/v1/industry/system-index",
+    path = "/industry/system-index",
     tag = "industry",
     params(SystemIndexFilter),
     responses(

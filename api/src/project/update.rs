@@ -7,7 +7,7 @@ use crate::{ReplyError, Identity};
 use crate::api_docs::{BadRequest, Forbidden, InternalServerError, NoContent, Unauthorized, UnsupportedMediaType};
 use crate::project::ProjectUuidPath;
 
-/// /api/v1/projects/{projectUuid}
+/// /projects/{projectUuid}
 /// 
 /// Updates a project witht he given information
 /// 
@@ -18,7 +18,7 @@ use crate::project::ProjectUuidPath;
 #[utoipa::path(
     put,
     operation_id = "project_update",
-    path = "/api/v1/projects/{projectUuid}",
+    path = "/projects/{projectUuid}",
     tag = "projects",
     params(
         ProjectUuidPath,

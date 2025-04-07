@@ -9,14 +9,14 @@ use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 use crate::auth::CharacterIdPath;
 use crate::project_group::ProjectGroupUuidPath;
 
-/// /api/v1/project-groups/{projectGroupUuid}/members
+/// /project-groups/{projectGroupUuid}/members
 /// 
 /// An external user accept the invitation to a project
 /// 
 #[utoipa::path(
     put,
     operation_id = "project_groups_accept_member",
-    path = "/api/v1/project-groups/{projectGroupUuid}/members/{characterIdPath}/accept",
+    path = "/project-groups/{projectGroupUuid}/members/{characterIdPath}/accept",
     tag = "project-groups",
     params(
         ProjectGroupUuidPath,

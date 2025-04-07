@@ -8,7 +8,7 @@ use crate::api_docs::{BadRequest, Forbidden, InternalServerError, NoContent, Una
 use crate::project::ProjectUuidPath;
 use crate::project::market::ProjectMarketUuidPath;
 
-/// /api/v1/projects/{projectUuid}/market/{projectMarketUuid}
+/// /projects/{projectUuid}/market/{projectMarketUuid}
 /// 
 /// Updates a market entry
 /// 
@@ -19,7 +19,7 @@ use crate::project::market::ProjectMarketUuidPath;
 #[utoipa::path(
     put,
     operation_id = "project_market_update",
-    path = "/api/v1/projects/{projectUuid}/market/{projectMarketUuid}",
+    path = "/projects/{projectUuid}/market/{projectMarketUuid}",
     tag = "projects",
     params(
         ProjectUuidPath,

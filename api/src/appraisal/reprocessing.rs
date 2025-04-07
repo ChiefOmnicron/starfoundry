@@ -6,14 +6,14 @@ use warp::reply::Reply;
 use crate::api_docs::{BadRequest, InternalServerError, NotFound};
 use crate::ReplyError;
 
-/// /api/v1/appraisal/:code/reprocessing
+/// /appraisal/:code/reprocessing
 /// 
 /// Compresses the materials from the given appraisal
 /// 
 #[utoipa::path(
     put,
     operation_id = "appraisal_reprocessing",
-    path = "/api/v1/appraisal/{code}/reprocessing",
+    path = "/appraisal/{code}/reprocessing",
     tag = "appraisal",
     params(
         ("code" = String, Path),

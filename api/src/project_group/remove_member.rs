@@ -9,14 +9,14 @@ use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 use crate::auth::CharacterIdPath;
 use super::ProjectGroupUuidPath;
 
-/// /api/v1/project-groups/{projectGroupUuid}/members/{characterIdPath}
+/// /project-groups/{projectGroupUuid}/members/{characterIdPath}
 /// 
 /// Removes a member from the project group
 /// 
 #[utoipa::path(
     delete,
     operation_id = "project_groups_remove_member",
-    path = "/api/v1/project-groups/{projectGroupUuid}/members/{characterIdPath}",
+    path = "/project-groups/{projectGroupUuid}/members/{characterIdPath}",
     tag = "project-groups",
     params(
         ProjectGroupUuidPath,

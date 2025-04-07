@@ -30,10 +30,12 @@ pub async fn list(
         })
 }
 
+/// /stocks/blueprints
+/// 
 #[utoipa::path(
     get,
     operation_id = "stocks_blueprint_list",
-    path = "/api/v1/stocks/blueprints",
+    path = "/stocks/blueprints",
     tag = "blueprint-stocks",
     responses(
         (

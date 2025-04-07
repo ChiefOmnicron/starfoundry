@@ -6,8 +6,8 @@ use warp::reply::Reply;
 use crate::{Identity, ReplyError};
 use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 
-/// /api/v1/job-detection
-///
+/// /job-detection
+/// 
 /// Fetches all non delivered job detection logs
 /// 
 /// ## Security
@@ -16,7 +16,7 @@ use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 #[utoipa::path(
     get,
     operation_id = "job_detection_fetch",
-    path = "/api/v1/job-detection",
+    path = "/job-detection",
     tag = "project-job-detection",
     responses(
         (

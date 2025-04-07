@@ -5,14 +5,14 @@ use warp::{Reply, Rejection};
 use crate::{ReplyError, Identity};
 use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 
-/// /api/v1/project-groups
+/// /project-groups
 /// 
 /// Lists all project groups the user has access to
 /// 
 #[utoipa::path(
     get,
     operation_id = "project_groups_fetch",
-    path = "/api/v1/project-groups",
+    path = "/project-groups",
     tag = "project-groups",
     responses(
         (

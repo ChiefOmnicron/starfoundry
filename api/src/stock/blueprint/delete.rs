@@ -31,10 +31,12 @@ pub async fn delete(
     }
 }
 
+/// /stocks/blueprints/{blueprintStockId}
+/// 
 #[utoipa::path(
     delete,
     operation_id = "stocks_blueprints_delete",
-    path = "/api/v1/stocks/blueprints/{blueprintStockId}",
+    path = "/stocks/blueprints/{blueprintStockId}",
     tag = "blueprint-stocks",
     params(
         (

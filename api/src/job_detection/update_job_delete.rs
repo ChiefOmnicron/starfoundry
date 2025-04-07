@@ -9,8 +9,8 @@ use crate::{Identity, ReplyError};
 use crate::api_docs::{Forbidden, InternalServerError, NoContent, Unauthorized};
 use crate::job_detection::JobIdPath;
 
-/// /api/v1/job-detection/{jobId}/delete
-///
+/// /job-detection/{jobId}/delete
+/// 
 /// Deletes a job from a project, and optionaly also ignores it in future
 /// job detections.
 /// 
@@ -24,7 +24,7 @@ use crate::job_detection::JobIdPath;
 #[utoipa::path(
     put,
     operation_id = "job_detection_update_job_delete",
-    path = "/api/v1/job-detection/{jobId}/delete",
+    path = "/job-detection/{jobId}/delete",
     tag = "project-job-detection",
     params(
         JobIdPath,

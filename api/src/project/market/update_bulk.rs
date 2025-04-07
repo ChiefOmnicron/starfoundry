@@ -7,9 +7,7 @@ use crate::{ReplyError, Identity};
 use crate::api_docs::{BadRequest, Forbidden, InternalServerError, NoContent, Unauthorized, UnsupportedMediaType};
 use crate::project::ProjectUuidPath;
 
-/// /api/v1/projects/{projectUuid}/market/bulk
-/// 
-/// Bulk updates market entries by their type_id
+/// /projects/{projectUuid}/market/bulk
 /// 
 /// ## Security
 /// - authenticated
@@ -18,7 +16,7 @@ use crate::project::ProjectUuidPath;
 #[utoipa::path(
     put,
     operation_id = "project_market_update",
-    path = "/api/v1/projects/{projectUuid}/market/bulk",
+    path = "/projects/{projectUuid}/market/bulk",
     tag = "projects",
     params(
         ProjectUuidPath,

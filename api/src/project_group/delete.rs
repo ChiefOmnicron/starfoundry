@@ -7,14 +7,14 @@ use crate::{ReplyError, Identity};
 use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 use super::ProjectGroupUuidPath;
 
-/// /api/v1/project-groups/{projectGroupUuid}/members
+/// /project-groups/{projectGroupUuid}/members
 /// 
 /// Fetches all members of a group
 /// 
 #[utoipa::path(
     delete,
     operation_id = "project_groups_delete",
-    path = "/api/v1/project-groups/{projectGroupUuid}",
+    path = "/project-groups/{projectGroupUuid}",
     tag = "project-groups",
     params(
         ProjectGroupUuidPath,

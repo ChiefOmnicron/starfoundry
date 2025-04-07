@@ -7,7 +7,7 @@ use crate::{Identity, ReplyError};
 use crate::project::ProjectUuidPath;
 use crate::api_docs::{BadRequest, Forbidden, InternalServerError, Unauthorized};
 
-/// /api/v1/projects/{projectUuid}/excess
+/// /v1/projects/{projectUuid}/excess
 /// 
 /// Fetches the stocks for the given project_uuid and returns them grouped,
 /// this will return them grouped based on their category_id and group_id.
@@ -44,7 +44,7 @@ use crate::api_docs::{BadRequest, Forbidden, InternalServerError, Unauthorized};
 #[utoipa::path(
     get,
     operation_id = "project_excess_fetch",
-    path = "/api/v1/projects/{projectUuid}/excess",
+    path = "/projects/{projectUuid}/excess",
     tag = "projects",
     params(
         ProjectUuidPath,

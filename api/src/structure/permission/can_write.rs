@@ -7,7 +7,7 @@ use crate::{Identity, ReplyError};
 use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 use crate::structure::StructureUuidPath;
 
-/// /api/v1/structures/{structureUuid}/permissions/can-write
+/// /structures/{structureUuid}/permissions/can-write
 /// 
 /// Checks if the character is allowed to write the structure.
 /// Any positive HTTP-Statuscode 2xx should be considered as allowed
@@ -16,7 +16,7 @@ use crate::structure::StructureUuidPath;
 #[utoipa::path(
     get,
     operation_id = "structrues_permission_can_write",
-    path = "/api/v1/structures/{structureUuid}/permissions/can-write",
+    path = "/structures/{structureUuid}/permissions/can-write",
     tag = "structures",
     params(
         StructureUuidPath,

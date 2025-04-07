@@ -13,13 +13,13 @@
         <span>The inverse of compression, calculate how much the ores, or items are worth reprocessed.</span>
 
         <h1>Is there an API</h1>
-        <span>Yes, you can find the documentation under <a href="https://industry.starfoundry.space/api/v1">https://industry.starfoundry.space/api/v1</a>. Please use it sensibly, I have no interest in limiting it, but I will if necessary.</span>
+        <span>Yes, you can find the documentation under <a href="https://api.appraisal.starfoundry.space/api/v1">https://industry.starfoundry.space/api/v1</a>. Please use it sensibly, I have no interest in limiting it, but I will if necessary.</span>
 
         <h1>Can I host my own version of it</h1>
         <span>Yes, but that part is still in development, it will be available soon tm.</span>
 
         <h1>Contact information</h1>
-        <span>If you have problems, or ideas, feel free to checkout the foillowing links</span>
+        <span>If you have problems, or ideas, feel free to checkout the following links</span>
         <ul>
             <li>
                 Discord <a href="https://discord.gg/qShbyn4r9N">https://discord.gg/qShbyn4r9N</a>

@@ -5,10 +5,12 @@ use warp::{Reply, Rejection};
 use crate::{ReplyError, Identity};
 use crate::api_docs::{BadRequest, Forbidden, InternalServerError, Unauthorized};
 
+/// /structures/{structureId}
+/// 
 #[utoipa::path(
     get,
     operation_id = "structures_fetch",
-    path = "/api/v1/structures/{structureId}",
+    path = "/structures/{structureId}",
     tag = "structures",
     params(
         (

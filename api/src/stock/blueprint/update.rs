@@ -41,10 +41,12 @@ pub async fn update(
     }
 }
 
+/// /stocks/blueprints/{blueprintStockId}
+/// 
 #[utoipa::path(
     put,
     operation_id = "stocks_blueprints_update",
-    path = "/api/v1/stocks/blueprints/{blueprintStockId}",
+    path = "/stocks/blueprints/{blueprintStockId}",
     tag = "blueprint-stocks",
     params(
         (

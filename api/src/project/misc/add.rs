@@ -7,7 +7,7 @@ use crate::{Identity, ReplyError};
 use crate::project::ProjectUuidPath;
 use crate::api_docs::{BadRequest, Forbidden, InternalServerError, Unauthorized};
 
-/// /api/v1/projects/{projectUuid}/misc
+/// /projects/{projectUuid}/misc
 /// 
 /// Adds a new misc entry
 /// 
@@ -18,7 +18,7 @@ use crate::api_docs::{BadRequest, Forbidden, InternalServerError, Unauthorized};
 #[utoipa::path(
     post,
     operation_id = "project_add_misc_entries",
-    path = "/api/v1/projects/{projectUuid}/misc",
+    path = "/projects/{projectUuid}/misc",
     tag = "projects",
     params(
         ProjectUuidPath,

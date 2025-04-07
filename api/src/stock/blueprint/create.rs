@@ -35,10 +35,12 @@ pub async fn create(
         .map_err(BlueprintStockError::CreateNewStock)
 }
 
+/// /stocks/blueprints
+/// 
 #[utoipa::path(
     post,
     operation_id = "stocks_blueprints_create",
-    path = "/api/v1/stocks/blueprints",
+    path = "/stocks/blueprints",
     tag = "blueprint-stocks",
     request_body = CreateBlueprintStock,
     responses(

@@ -6,7 +6,7 @@ use warp::http::StatusCode;
 use crate::{Identity, ReplyError};
 use crate::api_docs::{BadRequest, InternalServerError};
 
-/// /api/v1/projects/job-assignments
+/// /projects/job-assignments
 /// 
 /// Creates a new job assignment
 /// 
@@ -17,7 +17,7 @@ use crate::api_docs::{BadRequest, InternalServerError};
 #[utoipa::path(
     post,
     operation_id = "project_job_assignments_create",
-    path = "/api/v1/projects/job-assignments",
+    path = "/projects/job-assignments",
     tag = "project-assignments",
     request_body(
         content = CreateJobAssignment,

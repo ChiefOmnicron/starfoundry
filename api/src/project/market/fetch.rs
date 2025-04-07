@@ -6,7 +6,7 @@ use crate::{ReplyError, Identity};
 use crate::api_docs::{BadRequest, Forbidden, InternalServerError, Unauthorized};
 use crate::project::ProjectUuidPath;
 
-/// /api/v1/projects/{projectUuid}/market
+/// /projects/{projectUuid}/market
 /// 
 /// Fetches the market for the given project_uuid and returns them grouped
 /// together based on their category_id or group_id.
@@ -39,7 +39,7 @@ use crate::project::ProjectUuidPath;
 #[utoipa::path(
     get,
     operation_id = "project_market_fetch",
-    path = "/api/v1/projects/{projectUuid}/market",
+    path = "/projects/{projectUuid}/market",
     tag = "projects",
     params(
         ProjectUuidPath,

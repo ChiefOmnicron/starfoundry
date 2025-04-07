@@ -7,7 +7,7 @@ use crate::{Identity, ReplyError};
 use crate::project::ProjectUuidPath;
 use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 
-/// /api/v1/projects/{projectUuid}/jobs/active
+/// /projects/{projectUuid}/jobs/active
 /// 
 /// List of all jobs that are currently running of the project.
 /// 
@@ -18,7 +18,7 @@ use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 #[utoipa::path(
     get,
     operation_id = "project_active_jobs",
-    path = "/api/v1/projects/{projectUuid}/jobs/active",
+    path = "/projects/{projectUuid}/jobs/active",
     tag = "projects",
     params(
         ProjectUuidPath,

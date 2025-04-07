@@ -6,8 +6,8 @@ use warp::http::StatusCode;
 use crate::{Identity, ReplyError};
 use crate::api_docs::{BadRequest, Forbidden, InternalServerError, NoContent, Unauthorized, UnsupportedMediaType};
 
-/// /api/v1/projects/check
-///
+/// /projects/check
+/// 
 /// Checks if there are enough ressources to build the selected items, based on
 /// the given materials
 /// 
@@ -17,7 +17,7 @@ use crate::api_docs::{BadRequest, Forbidden, InternalServerError, NoContent, Una
 #[utoipa::path(
     post,
     operation_id = "project_check_resources",
-    path = "/api/v1/projects/check",
+    path = "/projects/check",
     tag = "projects",
     request_body = CheckResources,
     responses(

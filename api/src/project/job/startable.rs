@@ -7,7 +7,7 @@ use crate::{Identity, ReplyError};
 use crate::project::ProjectUuidPath;
 use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 
-/// /api/v1/projects/{projectUuid}/jobs/startable
+/// /projects/{projectUuid}/jobs/startable
 /// 
 /// Lists all jobs that can be started, either because they require base
 /// materials, or because their dependencies are done.
@@ -35,7 +35,7 @@ use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 #[utoipa::path(
     get,
     operation_id = "project_startable_jobs",
-    path = "/api/v1/projects/{projectUuid}/jobs/startable",
+    path = "/projects/{projectUuid}/jobs/startable",
     tag = "projects",
     params(
         ProjectUuidPath,

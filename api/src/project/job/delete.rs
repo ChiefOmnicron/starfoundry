@@ -9,10 +9,12 @@ use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 use crate::project::job::ProjectJobUuidPath;
 use crate::project::ProjectUuidPath;
 
+/// /projects/{projectUuid}/jobs/{projectJobUuid}
+/// 
 #[utoipa::path(
     delete,
     operation_id = "project_job_delete",
-    path = "/api/v1/projects/{projectUuid}/jobs/{projectJobUuid}",
+    path = "/projects/{projectUuid}/jobs/{projectJobUuid}",
     tag = "projects",
     params(
         ProjectUuidPath,

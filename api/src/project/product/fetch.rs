@@ -9,8 +9,8 @@ use crate::error::ReplyError;
 use crate::Identity;
 use crate::project::ProjectUuidPath;
 
-/// /api/v1/projects/{projectUuid}/products
-///
+/// /projects/{projectUuid}/products
+/// 
 /// Fetches the products that should be produced by this project
 /// 
 /// ## Security
@@ -20,7 +20,7 @@ use crate::project::ProjectUuidPath;
 #[utoipa::path(
     get,
     operation_id = "project_product_fetch",
-    path = "/api/v1/projects/{projectUuid}/products",
+    path = "/projects/{projectUuid}/products",
     tag = "projects",
     params(
         ProjectUuidPath,

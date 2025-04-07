@@ -8,7 +8,7 @@ use crate::error::ReplyError;
 use crate::Identity;
 use crate::project::ProjectUuidPath;
 
-/// /api/v1/projects/{projectUuid}/jobs
+/// /projects/{projectUuid}/jobs
 /// 
 /// Lists all industry jobs that are required to finish the project. The jobs
 /// are grouped by their category_id and group_id
@@ -35,7 +35,7 @@ use crate::project::ProjectUuidPath;
 #[utoipa::path(
     get,
     operation_id = "project_job_fetch",
-    path = "/api/v1/projects/{projectUuid}/jobs",
+    path = "/projects/{projectUuid}/jobs",
     tag = "projects",
     params(
         ProjectUuidPath,

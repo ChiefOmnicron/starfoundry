@@ -77,10 +77,12 @@ pub async fn add_threshold(
         .map_err(|e| BlueprintStockError::AddThreshold(e, blueprint_stock_id))
 }
 
+/// /stocks/blueprints/{blueprintStockId}/thresholds
+/// 
 #[utoipa::path(
     post,
     operation_id = "stocks_blueprints_thresholds_add",
-    path = "/api/v1/stocks/blueprints/{blueprintStockId}/thresholds",
+    path = "/stocks/blueprints/{blueprintStockId}/thresholds",
     tag = "blueprint-stocks",
     params(
         (

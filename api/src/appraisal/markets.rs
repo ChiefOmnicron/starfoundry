@@ -4,14 +4,14 @@ use utoipa::ToSchema;
 use warp::reject::Rejection;
 use warp::reply::Reply;
 
-/// /api/v1/appraisal/markets
+/// /appraisal/markets
 /// 
 /// List of all supported markets
 /// 
 #[utoipa::path(
     get,
     operation_id = "appraisal_create",
-    path = "/api/v1/appraisal/markets",
+    path = "/appraisal/markets",
     tag = "appraisal",
     responses(
         (

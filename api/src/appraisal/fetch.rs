@@ -6,14 +6,14 @@ use warp::reply::Reply;
 use crate::api_docs::{BadRequest, InternalServerError, NotFound};
 use crate::ReplyError;
 
-/// /api/v1/appraisal/:code
+/// /appraisal/:code
 /// 
 /// Fetches the appraisal with the given code
 /// 
 #[utoipa::path(
     get,
     operation_id = "appraisal_fetch",
-    path = "/api/v1/appraisal/{code}",
+    path = "/appraisal/{code}",
     tag = "appraisal",
     params(
         ("code" = String, Path),

@@ -37,10 +37,12 @@ pub async fn create(
         .map_err(NotificationError::Create)
 }
 
+/// /notifications
+/// 
 #[utoipa::path(
     post,
     operation_id = "notifications_create",
-    path = "/api/v1/notifications",
+    path = "/notifications",
     tag = "notification",
     request_body = CreateNotification,
     responses(

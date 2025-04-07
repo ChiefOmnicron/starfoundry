@@ -7,14 +7,14 @@ use crate::{ReplyError, Identity};
 use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 use crate::project_group::ProjectGroupUuidPath;
 
-/// /api/v1/project-groups/{projectGroupUuid}
+/// /project-groups/{projectGroupUuid}
 /// 
 /// Updates a project group
 /// 
 #[utoipa::path(
     put,
     operation_id = "project_groups_update",
-    path = "/api/v1/project-groups/{projectGroupUuid}",
+    path = "/project-groups/{projectGroupUuid}",
     tag = "project-groups",
     request_body = UpdateProjectGroup,
     params(

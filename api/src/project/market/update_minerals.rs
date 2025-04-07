@@ -7,7 +7,7 @@ use crate::{ReplyError, Identity};
 use crate::api_docs::{BadRequest, Forbidden, InternalServerError, NoContent, Unauthorized, UnsupportedMediaType};
 use crate::project::ProjectUuidPath;
 
-/// /api/v1/projects/{projectUuid}/market/minerals
+/// /projects/{projectUuid}/market/minerals
 /// 
 /// Replaces the raw minerals with the given compressed ores.
 /// 
@@ -18,7 +18,7 @@ use crate::project::ProjectUuidPath;
 #[utoipa::path(
     put,
     operation_id = "project_market_update_minerals",
-    path = "/api/v1/projects/{projectUuid}/market/minerals",
+    path = "/projects/{projectUuid}/market/minerals",
     tag = "projects",
     params(
         ProjectUuidPath,

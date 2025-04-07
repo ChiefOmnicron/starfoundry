@@ -5,10 +5,12 @@ use warp::{Reply, Rejection};
 use crate::api_docs::{InternalServerError, Unauthorized};
 use crate::{ReplyError, Identity};
 
+/// /structures
+/// 
 #[utoipa::path(
     get,
     operation_id = "structures_list",
-    path = "/api/v1/structures",
+    path = "/structures",
     tag = "structures",
     params(StructureListFilter),
     responses(

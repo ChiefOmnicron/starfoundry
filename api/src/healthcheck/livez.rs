@@ -3,7 +3,7 @@ use warp::{Reply, Rejection};
 
 use crate::api_docs::InternalServerError;
 
-/// /api/health/readyz
+/// /health/readyz
 ///
 /// Checks if the servic is ready to accept connections
 /// 

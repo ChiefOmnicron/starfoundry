@@ -3,9 +3,19 @@ use utoipa::openapi::security::{HttpAuthScheme, HttpBuilder, SecurityScheme};
 
 use crate::BadRequestPayload;
 
+#[cfg(not(feature = "appraisal"))]
 #[derive(OpenApi)]
 #[openapi(
-    info(description = "StarFoundry API"),
+    info(
+        title = "StarFoundry API",
+        description = include_str!("api_doc_industry.md"),
+        contact(
+            url = "https://github.com/ChiefOmnicron/starfoundry"
+        ),
+        license(
+            name = "Dual licensed under Apache-2.0 and MIT"
+        ),
+    ),
     modifiers(&Auth),
     paths(
         crate::appraisal::compression,
@@ -58,6 +68,36 @@ use crate::BadRequestPayload;
         crate::project::service::update,
         crate::project::stock::fetch,
         crate::project::stock::update_price,
+
+        crate::version::version,
+    ),
+)]
+pub struct ApiDoc;
+
+#[cfg(feature = "appraisal")]
+#[derive(OpenApi)]
+#[openapi(
+    info(
+        title = "StarFoundry Appraisal API",
+        description = include_str!("api_doc_appraisal.md"),
+        contact(
+            url = "https://github.com/ChiefOmnicron/starfoundry"
+        ),
+        license(
+            name = "Dual licensed under Apache-2.0 and MIT"
+        ),
+    ),
+    paths(
+        crate::appraisal::compression,
+        crate::appraisal::create,
+        crate::appraisal::fetch,
+        crate::appraisal::markets,
+        crate::appraisal::reprocessing,
+
+        crate::healthcheck::livez,
+        crate::healthcheck::readyz,
+
+        crate::version::version,
     ),
 )]
 pub struct ApiDoc;
@@ -108,9 +148,11 @@ pub struct InternalServerError;
 #[response(status = UNSUPPORTED_MEDIA_TYPE)]
 pub struct UnsupportedMediaType;
 
+#[cfg(not(feature = "appraisal"))]
 #[derive(Debug)]
 struct Auth;
 
+#[cfg(not(feature = "appraisal"))]
 impl Modify for Auth {
     fn modify(&self, openapi: &mut openapi::OpenApi) {
         if let Some(schema) = openapi.components.as_mut() {

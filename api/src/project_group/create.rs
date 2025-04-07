@@ -6,14 +6,14 @@ use warp::http::StatusCode;
 use crate::{ReplyError, Identity};
 use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 
-/// /api/v1/project-groups/{projectGroupUuid}/members/invite
+/// /project-groups/{projectGroupUuid}/members/invite
 /// 
 /// An external user accept the invitation to a project
 /// 
 #[utoipa::path(
     post,
     operation_id = "project_groups_create",
-    path = "/api/v1/project-groups",
+    path = "/project-groups",
     tag = "project-groups",
     request_body = CreateProjectGroup,
     responses(

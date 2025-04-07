@@ -43,10 +43,12 @@ pub async fn fetch(
     }
 }
 
+/// /notifications/{notificationId}
+/// 
 #[utoipa::path(
     get,
     operation_id = "notifications_fetch",
-    path = "/api/v1/notifications/{notificationId}",
+    path = "/notifications/{notificationId}",
     tag = "notification",
     params(
         (

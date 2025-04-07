@@ -49,10 +49,12 @@ pub async fn list(
         })
 }
 
+/// /notifications
+/// 
 #[utoipa::path(
     get,
     operation_id = "notification_list",
-    path = "/api/v1/notifications",
+    path = "/notifications",
     tag = "notification",
     params(
         (

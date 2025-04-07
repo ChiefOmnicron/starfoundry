@@ -8,7 +8,7 @@ use crate::api_docs::{BadRequest, InternalServerError, Unauthorized};
 use crate::error::ReplyError;
 use crate::Identity;
 
-/// /api/v1/projects
+/// /projects
 /// 
 /// Fetches a list of projects that match the given filter
 /// 
@@ -19,7 +19,7 @@ use crate::Identity;
 #[utoipa::path(
     get,
     operation_id = "project_list",
-    path = "/api/v1/projects",
+    path = "/projects",
     tag = "projects",
     params(ProjectFilter),
     responses(

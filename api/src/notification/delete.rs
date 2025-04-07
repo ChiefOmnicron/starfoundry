@@ -31,10 +31,12 @@ pub async fn delete(
     }
 }
 
+/// /notifications/{notificationId}
+/// 
 #[utoipa::path(
     delete,
     operation_id = "notifications_delete",
-    path = "/api/v1/notifications/{notificationId}",
+    path = "/notifications/{notificationId}",
     tag = "notification",
     params(
         (

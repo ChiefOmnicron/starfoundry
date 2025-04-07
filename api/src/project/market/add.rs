@@ -7,7 +7,7 @@ use crate::{Identity, ReplyError};
 use crate::project::ProjectUuidPath;
 use crate::api_docs::{BadRequest, Forbidden, InternalServerError, Unauthorized};
 
-/// /api/v1/projects/{projectUuid}/market
+/// /projects/{projectUuid}/market
 /// 
 /// Adds an additional market entry
 /// 
@@ -18,7 +18,7 @@ use crate::api_docs::{BadRequest, Forbidden, InternalServerError, Unauthorized};
 #[utoipa::path(
     post,
     operation_id = "project_add_market_entries",
-    path = "/api/v1/projects/{projectUuid}/market",
+    path = "/projects/{projectUuid}/market",
     tag = "projects",
     params(
         ProjectUuidPath,

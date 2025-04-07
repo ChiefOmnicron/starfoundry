@@ -5,10 +5,12 @@ use warp::{Reply, Rejection};
 use crate::{ReplyError, Identity};
 use crate::api_docs::{BadRequest, InternalServerError};
 
+/// /structures
+/// 
 #[utoipa::path(
     post,
     operation_id = "structures_create",
-    path = "/api/v1/structures",
+    path = "/structures",
     tag = "structures",
     request_body(
         content = CreateStructure,

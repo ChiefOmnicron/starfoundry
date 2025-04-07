@@ -52,10 +52,12 @@ pub async fn fetch_threshold(
         ))
 }
 
+/// /stocks/blueprints/{blueprintStockId}/thresholds
+/// 
 #[utoipa::path(
     get,
     operation_id = "stocks_blueprints_thresholds_fetch",
-    path = "/api/v1/stocks/blueprints/{blueprintStockId}/thresholds",
+    path = "/stocks/blueprints/{blueprintStockId}/thresholds",
     tag = "blueprint-stocks",
     params(
         (

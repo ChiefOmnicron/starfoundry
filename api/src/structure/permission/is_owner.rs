@@ -7,7 +7,7 @@ use crate::{Identity, ReplyError};
 use crate::structure::StructureUuidPath;
 use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 
-/// /api/v1/structures/{structureUuid}/permissions/is-owner
+/// /structures/{structureUuid}/permissions/is-owner
 /// 
 /// Checks if the character is the owner of the structure.
 /// Any positive HTTP-Statuscode 2xx should be considered as allowed
@@ -16,7 +16,7 @@ use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 #[utoipa::path(
     get,
     operation_id = "structure_permission_is_owner",
-    path = "/api/v1/structures/{structureUuid}/permissions/is-owner",
+    path = "/structures/{structureUuid}/permissions/is-owner",
     tag = "structures",
     params(
         StructureUuidPath,

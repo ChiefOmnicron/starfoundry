@@ -9,7 +9,7 @@ use crate::api_docs::{Forbidden, InternalServerError, NoContent, Unauthorized};
 use crate::project::misc::ProjectMiscUuidPath;
 use crate::project::ProjectUuidPath;
 
-/// /api/v1/projects/{projectUuid}/misc/{projectMiscUuid}
+/// /projects/{projectUuid}/misc/{projectMiscUuid}
 /// 
 /// Deletes a misc entry
 /// 
@@ -20,7 +20,7 @@ use crate::project::ProjectUuidPath;
 #[utoipa::path(
     delete,
     operation_id = "project_misc_delete",
-    path = "/api/v1/projects/{projectUuid}/misc/{projectMiscUuid}",
+    path = "/projects/{projectUuid}/misc/{projectMiscUuid}",
     tag = "projects",
     params(
         ProjectUuidPath,

@@ -122,7 +122,11 @@ class CopyText extends Vue {
             return;
         }
 
-        navigator.clipboard.writeText(<string>value);
+        if (Number.isFinite(Number(value))) {
+            navigator.clipboard.writeText(Number(value).toFixed(2));
+        } else {
+            navigator.clipboard.writeText(<string>value);
+        }
     }
 }
 

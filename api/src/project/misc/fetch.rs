@@ -9,7 +9,7 @@ use crate::error::ReplyError;
 use crate::Identity;
 use crate::project::ProjectUuidPath;
 
-/// /api/v1/projects/{projectUuid}/misc
+/// /projects/{projectUuid}/misc
 /// 
 /// Lists all misc entries
 /// 
@@ -20,7 +20,7 @@ use crate::project::ProjectUuidPath;
 #[utoipa::path(
     get,
     operation_id = "project_misc_fetch",
-    path = "/api/v1/projects/{projectUuid}/misc",
+    path = "/projects/{projectUuid}/misc",
     tag = "projects",
     params(
         ProjectUuidPath,

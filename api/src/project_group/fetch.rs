@@ -6,14 +6,14 @@ use crate::{ReplyError, Identity};
 use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 use crate::project_group::ProjectGroupUuidPath;
 
-/// /api/v1/project-groups/{projectGroupUuid}
+/// /project-groups/{projectGroupUuid}
 /// 
 /// Fetches additional information about a project group
 /// 
 #[utoipa::path(
     get,
     operation_id = "project_groups_fetch",
-    path = "/api/v1/project-groups/{projectGroupUuid}",
+    path = "/project-groups/{projectGroupUuid}",
     tag = "project-groups",
     params(
         ProjectGroupUuidPath,

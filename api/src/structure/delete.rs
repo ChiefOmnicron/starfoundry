@@ -7,10 +7,12 @@ use warp::reply::Reply;
 use crate::{Identity, ReplyError};
 use crate::api_docs::{BadRequest, Forbidden, InternalServerError, NoContent, Unauthorized};
 
+/// /structures/{structureId}
+/// 
 #[utoipa::path(
     delete,
     operation_id = "structures_delete",
-    path = "/api/v1/structures/{structureId}",
+    path = "/structures/{structureId}",
     tag = "structures",
     params(
         (

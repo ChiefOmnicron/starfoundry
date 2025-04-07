@@ -15,16 +15,20 @@ pub fn api(
         .clone()
         .and(warp::path::end())
         .and(warp::get())
-        .and_then(version_api)
+        .and_then(version)
         .boxed();
 
     version.boxed()
 }
 
+/// /version
+/// 
+/// Returns the git reference of the api server
+/// 
 #[utoipa::path(
     get,
     operation_id = "version",
-    path = "/api/v1/version",
+    path = "/version",
     tag = "version",
     responses(
         (
@@ -35,7 +39,7 @@ pub fn api(
         ),
     ),
 )]
-async fn version_api(
+async fn version(
 ) -> Result<impl Reply, Rejection> {
     let version = std::env!("GIT_HEAD_SHORT");
 

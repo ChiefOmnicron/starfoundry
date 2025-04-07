@@ -1,6 +1,6 @@
 use warp::{Reply, Rejection};
 
-/// /api/health/livez
+/// /health/livez
 ///
 /// Deeper check if the service is still available
 /// 

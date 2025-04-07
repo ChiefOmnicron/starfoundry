@@ -8,7 +8,7 @@ use crate::api_docs::{BadRequest, Forbidden, InternalServerError, NoContent, Una
 use crate::project::ProjectUuidPath;
 use crate::project::job::ProjectJobUuidPath;
 
-/// /api/v1/projects/{projectUuid}/jobs/{projectJobUuid}
+/// /projects/{projectUuid}/jobs/{projectJobUuid}
 /// 
 /// Updates the given job
 /// 
@@ -19,7 +19,7 @@ use crate::project::job::ProjectJobUuidPath;
 #[utoipa::path(
     put,
     operation_id = "project_job_update",
-    path = "/api/v1/projects/{projectUuid}/jobs/{projectJobUuid}",
+    path = "/projects/{projectUuid}/jobs/{projectJobUuid}",
     tag = "projects",
     params(
         ProjectUuidPath,

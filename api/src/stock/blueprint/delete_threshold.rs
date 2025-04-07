@@ -27,10 +27,12 @@ pub async fn delete_threshold(
     }
 }
 
+/// /stocks/blueprints/{blueprintStockId}/thresholds/{thresholdId}
+/// 
 #[utoipa::path(
     delete,
     operation_id = "stocks_blueprints_thresholds_delete",
-    path = "/api/v1/stocks/blueprints/{blueprintStockId}/thresholds/{thresholdId}",
+    path = "/stocks/blueprints/{blueprintStockId}/thresholds/{thresholdId}",
     tag = "blueprint-stocks",
     params(
         (

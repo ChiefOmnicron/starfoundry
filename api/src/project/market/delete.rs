@@ -9,7 +9,7 @@ use crate::api_docs::{Forbidden, InternalServerError, NoContent, Unauthorized};
 use crate::project::ProjectUuidPath;
 use crate::project::market::ProjectMarketUuidPath;
 
-/// /api/v1/projects/{projectUuid}/market/{projectMarketUuid}
+/// /projects/{projectUuid}/market/{projectMarketUuid}
 /// 
 /// Removes a market entry
 /// 
@@ -20,7 +20,7 @@ use crate::project::market::ProjectMarketUuidPath;
 #[utoipa::path(
     delete,
     operation_id = "project_market_delete",
-    path = "/api/v1/projects/{projectUuid}/market/{projectMarketUuid}",
+    path = "/projects/{projectUuid}/market/{projectMarketUuid}",
     tag = "projects",
     params(
         ProjectUuidPath,

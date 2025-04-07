@@ -6,14 +6,14 @@ use crate::{ReplyError, Identity};
 use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 use super::ProjectGroupUuidPath;
 
-/// /api/v1/project-groups/{projectGroupUuid}/default
+/// /project-groups/{projectGroupUuid}/default
 /// 
 /// Fetches the defaults configured by the project group
 /// 
 #[utoipa::path(
     get,
     operation_id = "project_groups_fetch_default",
-    path = "/api/v1/project-groups/{projectGroupUuid}/default",
+    path = "/project-groups/{projectGroupUuid}/default",
     tag = "project-groups",
     params(
         ProjectGroupUuidPath,

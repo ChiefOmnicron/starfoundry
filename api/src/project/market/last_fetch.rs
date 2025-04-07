@@ -7,14 +7,14 @@ use crate::ReplyError;
 use crate::api_docs::{Forbidden, InternalServerError};
 use crate::structure::StructureUuidPath;
 
-/// /api/v1/projects/market/{structureUuid}/last-fetch
+/// /projects/market/{structureUuid}/last-fetch
 /// 
 /// Returns the date, the market data was last fetched
 /// 
 #[utoipa::path(
     get,
     operation_id = "project_market_last_fetch",
-    path = "/api/v1/projects/market/{structureUuid}/last-fetch",
+    path = "/projects/market/{structureUuid}/last-fetch",
     tag = "projects",
     params(
         StructureUuidPath,

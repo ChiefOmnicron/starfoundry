@@ -17,10 +17,12 @@ pub async fn test_message(
         .await
 }
 
+/// /notifications/test-message
+/// 
 #[utoipa::path(
     post,
     operation_id = "notification_test_message",
-    path = "/api/v1/notifications/test-message",
+    path = "/notifications/test-message",
     tag = "notification",
     responses(
         (

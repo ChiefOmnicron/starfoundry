@@ -6,7 +6,7 @@ use crate::{ReplyError, Identity};
 use crate::api_docs::{BadRequest, Forbidden, InternalServerError, Unauthorized};
 use crate::project::ProjectUuidPath;
 
-/// /api/v1/projects/{projectUuid}/stocks
+/// /projects/{projectUuid}/stocks
 /// 
 /// Fetches the stocks for the given project_uuid and returns them grouped
 /// together based on their category_id or group_id.
@@ -43,7 +43,7 @@ use crate::project::ProjectUuidPath;
 #[utoipa::path(
     get,
     operation_id = "project_stock_fetch",
-    path = "/api/v1/projects/{projectUuid}/stocks",
+    path = "/projects/{projectUuid}/stocks",
     tag = "projects",
     params(
         ProjectUuidPath,

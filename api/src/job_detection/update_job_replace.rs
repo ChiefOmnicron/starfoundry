@@ -9,8 +9,8 @@ use crate::{Identity, ReplyError};
 use crate::api_docs::{Forbidden, InternalServerError, NoContent, Unauthorized};
 use crate::job_detection::JobIdPath;
 
-/// /api/v1/job-detection/{jobId}/replace
-///
+/// /job-detection/{jobId}/replace
+/// 
 /// Replaces the given jobs, with the given job id
 /// 
 /// If the job is already assigned, the identity MUST have write permissions to
@@ -23,7 +23,7 @@ use crate::job_detection::JobIdPath;
 #[utoipa::path(
     put,
     operation_id = "job_detection_update_job_replace",
-    path = "/api/v1/job-detection/{jobId}/replace",
+    path = "/job-detection/{jobId}/replace",
     tag = "project-job-detection",
     params(
         JobIdPath,

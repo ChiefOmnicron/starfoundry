@@ -5,7 +5,7 @@ use warp::{Reply, Rejection};
 use crate::{ReplyError, Identity};
 use crate::api_docs::{BadRequest, InternalServerError, Unauthorized, UnsupportedMediaType};
 
-/// /api/v1/projects
+/// /projects
 /// 
 /// Creates a new project and returns it's id
 /// 
@@ -15,7 +15,7 @@ use crate::api_docs::{BadRequest, InternalServerError, Unauthorized, Unsupported
 #[utoipa::path(
     post,
     operation_id = "projects_create",
-    path = "/api/v1/projects",
+    path = "/projects",
     tag = "projects",
     request_body(
         content = CreateProject,

@@ -7,8 +7,8 @@ use crate::{Identity, ReplyError};
 use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 use crate::project::ProjectUuidPath;
 
-/// /api/v1/projects/{projectUuid}
-///
+/// /projects/{projectUuid}
+/// 
 /// Fetches general information about a project by it's UUID.
 /// 
 /// If you don't have access to a project or the project cannot be found with the
@@ -21,7 +21,7 @@ use crate::project::ProjectUuidPath;
 #[utoipa::path(
     get,
     operation_id = "projects_fetch",
-    path = "/api/v1/projects/{projectUuid}",
+    path = "/projects/{projectUuid}",
     tag = "projects",
     params(
         ProjectUuidPath,

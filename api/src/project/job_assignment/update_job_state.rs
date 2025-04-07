@@ -8,8 +8,8 @@ use crate::project::job::ProjectJobUuidPath;
 use crate::project::job_assignment::ProjectJobAssignmentUuidPath;
 use crate::ReplyError;
 
-/// /api/v1/projects/job-assignments/{projectJobAssignmentUuid}/{projectJobUuid}/state
-///
+/// /projects/job-assignments/{projectJobAssignmentUuid}/{projectJobUuid}/state
+/// 
 /// Sets the job status to`started`.
 /// 
 /// ## Security
@@ -18,7 +18,7 @@ use crate::ReplyError;
 #[utoipa::path(
     put,
     operation_id = "project_job_assignments_update_job_state",
-    path = "/api/v1/projects/job-assignments/{projectJobAssignmentUuid}/{projectJobUuid}/state",
+    path = "/projects/job-assignments/{projectJobAssignmentUuid}/{projectJobUuid}/state",
     tag = "project-assignments",
     params(
         ProjectJobAssignmentUuidPath,

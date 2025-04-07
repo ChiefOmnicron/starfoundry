@@ -7,14 +7,14 @@ use crate::{ReplyError, Identity};
 use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 use crate::project_group::ProjectGroupUuidPath;
 
-/// /api/v1/project-groups/{projectGroupUuid}/members/invite
+/// /project-groups/{projectGroupUuid}/members/invite
 /// 
 /// An external user accept the invitation to a project
 /// 
 #[utoipa::path(
     put,
     operation_id = "project_groups_accept_invite",
-    path = "/api/v1/project-groups/{projectGroupUuid}/members/invite",
+    path = "/project-groups/{projectGroupUuid}/members/invite",
     tag = "project-groups",
     params(
         ProjectGroupUuidPath,

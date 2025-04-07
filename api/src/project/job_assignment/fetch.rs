@@ -7,8 +7,8 @@ use crate::api_docs::{BadRequest, InternalServerError};
 use crate::project::job_assignment::ProjectJobAssignmentUuidPath;
 use crate::ReplyError;
 
-/// /api/v1/projects/job-assignments/{projectJobAssignmentUuid}
-///
+/// /projects/job-assignments/{projectJobAssignmentUuid}
+/// 
 /// Fetches the given job assignment and returns the jobs grouped by their
 /// category_id and group_id.
 /// 
@@ -33,7 +33,7 @@ use crate::ReplyError;
 #[utoipa::path(
     get,
     operation_id = "project_job_assignments_fetch",
-    path = "/api/v1/projects/job-assignments/{projectJobAssignmentUuid}",
+    path = "/projects/job-assignments/{projectJobAssignmentUuid}",
     tag = "project-assignments",
     params(
         ProjectJobAssignmentUuidPath,

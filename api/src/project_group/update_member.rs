@@ -9,14 +9,14 @@ use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 use crate::auth::CharacterIdPath;
 use crate::project_group::ProjectGroupUuidPath;
 
-/// /api/v1/project-groups/{projectGroupUuid}/members/{characterId}
+/// /project-groups/{projectGroupUuid}/members/{characterId}
 /// 
 /// Updates the member permission of a group member
 /// 
 #[utoipa::path(
     put,
     operation_id = "project_groups_update_members",
-    path = "/api/v1/project-groups/{projectGroupUuid}/members/{characterId}",
+    path = "/project-groups/{projectGroupUuid}/members/{characterId}",
     tag = "project-groups",
     request_body = UpdateProjectGroupMember,
     params(

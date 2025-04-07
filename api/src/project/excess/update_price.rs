@@ -7,7 +7,7 @@ use crate::{ReplyError, Identity};
 use crate::api_docs::{BadRequest, Forbidden, InternalServerError, NoContent, Unauthorized, UnsupportedMediaType};
 use crate::project::ProjectUuidPath;
 
-/// /api/v1/projects/{projectUuid}/excess/prices
+/// /projects/{projectUuid}/excess/prices
 /// 
 /// Updates the prices of the excess items, either using the internal appraisal
 /// tool or by using janice.
@@ -21,7 +21,7 @@ use crate::project::ProjectUuidPath;
 #[utoipa::path(
     put,
     operation_id = "project_excess_update_price",
-    path = "/api/v1/projects/{projectUuid}/excess/prices",
+    path = "/projects/{projectUuid}/excess/prices",
     tag = "projects",
     params(
         ProjectUuidPath,

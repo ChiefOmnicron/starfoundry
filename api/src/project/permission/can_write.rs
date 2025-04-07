@@ -7,7 +7,7 @@ use crate::{Identity, ReplyError};
 use crate::project::ProjectUuidPath;
 use crate::api_docs::{Forbidden, InternalServerError, NoContent, Unauthorized};
 
-/// /api/v1/projects/{projectUuid}/permissions/can-write
+/// /projects/{projectUuid}/permissions/can-write
 /// 
 /// Checks if the character is allowed to write the project.
 /// Any positive HTTP-Statuscode 2xx should be considered as allowed
@@ -20,7 +20,7 @@ use crate::api_docs::{Forbidden, InternalServerError, NoContent, Unauthorized};
 #[utoipa::path(
     get,
     operation_id = "project_permission_can_write",
-    path = "/api/v1/projects/{projectUuid}/permissions/can-write",
+    path = "/projects/{projectUuid}/permissions/can-write",
     tag = "projects",
     params(
         ProjectUuidPath,

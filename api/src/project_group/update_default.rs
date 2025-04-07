@@ -7,14 +7,14 @@ use crate::{ReplyError, Identity};
 use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 use crate::project_group::ProjectGroupUuidPath;
 
-/// /api/v1/project-groups/{projectGroupUuid}/default
+/// /project-groups/{projectGroupUuid}/default
 /// 
 /// Updates the defaults for a project group
 /// 
 #[utoipa::path(
     put,
     operation_id = "project_groups_update_default",
-    path = "/api/v1/project-groups/{projectGroupUuid}/default",
+    path = "/project-groups/{projectGroupUuid}/default",
     tag = "project-groups",
     request_body = ProjectGroupDefault,
     params(

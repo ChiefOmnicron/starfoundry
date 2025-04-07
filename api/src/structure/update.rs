@@ -6,10 +6,12 @@ use crate::{ReplyError, Identity};
 use crate::api_docs::{BadRequest, Forbidden, InternalServerError, Unauthorized, UnsupportedMediaType};
 use super::StructureUuidPath;
 
+/// /structures/{structureUuid}
+/// 
 #[utoipa::path(
     put,
     operation_id = "structures_update",
-    path = "/api/v1/structures/{structureUuid}",
+    path = "/structures/{structureUuid}",
     tag = "structures",
     params(
         StructureUuidPath,

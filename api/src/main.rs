@@ -66,20 +66,15 @@ impl Server {
         let registry = Arc::new(registry);
         let metrics = Arc::new(metrics);
 
-        let api_doc = warp::path!("api" / "v1")
+        let api_doc = warp::path::end()
             .and(warp::get())
-            .map(|| {
-                if cfg!(debug_assertions) {
-                    warp::reply::html(include_str!("api-local.html"))
-                } else {
-                    warp::reply::html(include_str!("api.html"))
-                }
-            });
-        let definition = warp::path!("api" / "v1" / "definition")
+            .map(|| warp::reply::html(include_str!("api.html")));
+        let definition = warp::path!("definition")
             .and(warp::get())
             .map(|| warp::reply::json(&crate::api_docs::ApiDoc::openapi()));
 
-        let base_path = warp::path!("api" / "v1" / ..).boxed();
+        let base_path = warp::any().boxed();
+        let base_path_v1 = warp::path!("v1" / ..).boxed();
 
         let appraisal               = appraisal::api(self.pool.clone(), base_path.clone());
         let auth                    = auth::api(self.pool.clone(), base_path.clone(), self.credential_cache.clone());
@@ -98,13 +93,20 @@ impl Server {
         let structure_group         = structure_group::api(self.pool.clone(), base_path.clone(), self.credential_cache.clone());
         let version                 = version::api(base_path.clone());
 
+        let special_routes = crate::healthcheck::api(self.pool.clone())
+            .or(crate::metric::api(registry.clone()))
+            .or(version);
+
         if cfg!(feature = "appraisal") {
-            let routes = crate::healthcheck::api(self.pool.clone())
-                .or(crate::feature_flags::api(base_path.clone()))
+            let base = crate::healthcheck::api(self.pool.clone())
                 .or(appraisal)
                 .or(api_doc)
-                .or(definition)
-                .or(version)
+                .or(definition);
+
+            let v1 = base_path_v1.and(base.clone());
+            let routes = base
+                .or(v1)
+                .or(special_routes)
                 .recover(handle_rejection)
                 .with(warp::wrap_fn(|f| metric_wrapper(f, metrics.clone())));
 
@@ -112,9 +114,7 @@ impl Server {
                 .run(*server_address)
                 .await;
         } else {
-            let routes = crate::healthcheck::api(self.pool.clone())
-                .or(crate::metric::api(registry.clone()))
-                .or(crate::feature_flags::api(base_path.clone()))
+            let base = crate::feature_flags::api(base_path.clone())
                 .or(appraisal)
                 .or(api_doc)
                 .or(definition)
@@ -131,8 +131,12 @@ impl Server {
                 .or(stock)
                 .or(structure)
                 .or(structure_dynamic_group)
-                .or(structure_group)
-                .or(version)
+                .or(structure_group);
+
+            let v1 = base_path_v1.and(base.clone());
+            let routes = base
+                .or(v1)
+                .or(special_routes)
                 .recover(handle_rejection)
                 .with(warp::wrap_fn(|f| metric_wrapper(f, metrics.clone())));
 

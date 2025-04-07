@@ -47,10 +47,12 @@ pub async fn fetch(
     ))
 }
 
+/// /stocks/blueprints/{blueprintStockId}
+/// 
 #[utoipa::path(
     get,
     operation_id = "stocks_blueprints_fetch",
-    path = "/api/v1/stocks/blueprints/{blueprintStockId}",
+    path = "/stocks/blueprints/{blueprintStockId}",
     tag = "blueprint-stocks",
     params(
         (

@@ -41,10 +41,12 @@ pub async fn update(
     }
 }
 
+/// /notifications/{notificationId}
+/// 
 #[utoipa::path(
     put,
     operation_id = "notifications_update",
-    path = "/api/v1/notifications/{notificationId}",
+    path = "/notifications/{notificationId}",
     tag = "notification",
     params(
         (
