@@ -5,8 +5,12 @@
 
             <n-layout position="absolute">
                 <n-layout-header class="header" bordered>
-                    <div class="nav-header-text">
-                        {{ headerName }}
+                    <div
+                        class="nav-header-text"
+                    >
+                        <a href="/" style="color: white; text-decoration: none;">
+                            {{ headerName }}
+                        </a>
                     </div>
 
                     <div v-if="!is_logged_in() && !isAppraisal()">

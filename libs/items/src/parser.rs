@@ -457,6 +457,26 @@ Naglfar Fleet Issue\t1".into();
     }
 
     #[tokio::test]
+    async fn ignore_total() {
+        let all_items = load_items().await;
+        let content = "Total:			0".into();
+        let result = parse(&all_items, content);
+
+        assert_eq!(result.items.len(), 0);
+    }
+
+    #[tokio::test]
+    async fn ignore_empty_market() {
+        let all_items = load_items().await;
+        let content = "Capital Shield Emitter	130	-	-".into();
+        let result = parse(&all_items, content);
+
+        assert_eq!(result.items.len(), 1);
+        assert_eq!(result.items[0].item_name, "Capital Shield Emitter".to_string());
+        assert_eq!(result.items[0].quantity, 130);
+    }
+
+    #[tokio::test]
     async fn all_items() {
         let all_items = load_items().await;
 

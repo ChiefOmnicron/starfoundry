@@ -30,7 +30,7 @@ pub async fn reprocessing(
                 .into_iter()
                 .for_each(|(mineral, quantity)| {
                     // make sure that there is always at least 100
-                    let quantity = ((item.quantity as f64 * quantity as f64) / 100f64).floor();
+                    let quantity = (((item.quantity as f64) / 100f64).floor()) * quantity;
 
                     let reprocessed = (
                         (

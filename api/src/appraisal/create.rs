@@ -47,8 +47,6 @@ pub async fn create(
     options.set_price_modifier(body.price_modifier);
     options.set_comment(body.comment);
 
-    dbg!(&options);
-
     match starfoundry_libs_appraisal::internal::create_raw(
         &pool,
         body.appraisal,

@@ -18,12 +18,19 @@ pub async fn create_raw(
         .map_err(Error::LoadItemCache)?;
 
     let parsed = parse(&item_cache, &raw);
-    let items = parsed
+
+    let mut items = HashMap::new();
+    parsed
         .items
         .clone()
         .into_iter()
-        .map(|x| (x.type_id, x.quantity))
-        .collect::<HashMap<_, _>>();
+        .for_each(|x| {
+            items
+                .entry(x.type_id)
+                .and_modify(|y: &mut i64| *y += x.quantity)
+                .or_insert(x.quantity);
+        });
+
     let order = parsed
         .items
         .iter()
@@ -231,6 +238,7 @@ async fn create(
         }
     }
 
+    let mut appraisal_id = Uuid::default();
     let (code, timestamp) = if options.store.is_persistent() {
         let code = generate_code();
             let mut transaction = pool
@@ -257,6 +265,7 @@ async fn create(
             .fetch_one(&mut *transaction)
             .await
             .map_err(Error::DatabaseError)?;
+        appraisal_id = new_appraisal.id;
 
         let buy_ids = sqlx::query!("
                 INSERT INTO appraisal_market_prices(
@@ -375,7 +384,7 @@ async fn create(
 
     let appraisal = Appraisal {
         // id is skiped on serialization and deserialization
-        id:             Uuid::default(),
+        id:             appraisal_id,
         created_at:     timestamp,
         code:           code,
 
