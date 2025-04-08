@@ -106,9 +106,9 @@ impl Server {
             let v1 = base_path_v1.and(base.clone());
             let routes = base
                 .or(v1)
-                .or(special_routes);
-                //.recover(handle_rejection)
-                //.with(warp::wrap_fn(|f| metric_wrapper(f, metric.clone())));
+                .or(special_routes)
+                .recover(handle_rejection)
+                .with(warp::wrap_fn(|f| metric_wrapper(f, metric.clone())));
 
             warp::serve(routes)
                 .run(*server_address)

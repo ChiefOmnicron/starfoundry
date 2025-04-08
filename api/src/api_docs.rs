@@ -24,7 +24,7 @@ use crate::BadRequestPayload;
         crate::appraisal::markets,
         crate::appraisal::reprocessing,
 
-        crate::healthcheck::livez,
+        crate::healthcheck::healthz,
         crate::healthcheck::readyz,
 
         crate::job_detection::fetch,
