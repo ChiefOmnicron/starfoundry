@@ -8,7 +8,7 @@ use warp::reply::Reply;
 use crate::ReplyError;
 use crate::api_docs::{BadRequest, InternalServerError, UnsupportedMediaType};
 use starfoundry_libs_appraisal::Persistance;
-use crate::metric::WithMetric;
+use crate::metric::{RequestStatus, WithMetric};
 
 /// /appraisal
 /// 
@@ -53,11 +53,12 @@ pub async fn create(
         Some(options)
     ).await {
         Ok(x)  => {
-            metric.inc_appraisal_count();
+            metric.inc_appraisal_created_count(RequestStatus::Ok);
             Ok(warp::reply::json(&x))
         },
         Err(e) => {
             tracing::error!("{}", e);
+            metric.inc_appraisal_created_count(RequestStatus::Error);
             Err(ReplyError::Internal.into())
         },
     }

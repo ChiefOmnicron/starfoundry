@@ -4,6 +4,8 @@ use utoipa::ToSchema;
 use warp::reject::Rejection;
 use warp::reply::Reply;
 
+use crate::metric::{RequestStatus, WithMetric};
+
 /// /appraisal/markets
 /// 
 /// List of all supported markets
@@ -24,6 +26,7 @@ use warp::reply::Reply;
 )]
 pub async fn markets(
     _: PgPool,
+    metric: WithMetric,
 ) -> Result<impl Reply, Rejection> {
     let mut markets = Vec::new();
 
@@ -48,6 +51,7 @@ pub async fn markets(
         market_id: 1043661023026,
     });
 
+    metric.inc_appraisal_market_count(RequestStatus::Ok);
     Ok(warp::reply::json(&markets))
 }
 

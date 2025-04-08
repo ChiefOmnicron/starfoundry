@@ -15,11 +15,24 @@ pub enum Method {
     Undefined,
 }
 
+#[derive(Clone, Debug, Hash, PartialEq, Eq, EncodeLabelValue)]
+pub enum RequestStatus {
+    Ok,
+    NotFound,
+    NoSolution,
+    Error,
+}
+
 #[derive(Clone, Debug, Hash, PartialEq, Eq, EncodeLabelSet)]
 pub struct RouteLabels {
     pub method: Method,
     pub status: u16,
     pub route:  String,
+}
+
+#[derive(Clone, Debug, Hash, PartialEq, Eq, EncodeLabelSet)]
+pub struct RequestLabel {
+    pub status: RequestStatus,
 }
 
 #[derive(Clone, Debug)]
@@ -28,7 +41,11 @@ pub struct Metric {
     route_status:       Family<RouteLabels, Counter>,
     route_duration:     Family<RouteLabels, Histogram>,
 
-    appraisals_created: Counter,
+    appraisals_created:      Family<RequestLabel, Counter>,
+    appraisals_fetch:        Family<RequestLabel, Counter>,
+    appraisals_market:       Family<RequestLabel, Counter>,
+    appraisals_reprocessing: Family<RequestLabel, Counter>,
+    appraisals_compression:  Family<RequestLabel, Counter>,
 }
 
 impl Metric {
@@ -46,7 +63,21 @@ impl Metric {
                 ].into_iter())
             }),
 
-            appraisals_created: Counter::default(),
+            appraisals_created:      Family::new_with_constructor(||
+                Counter::default()
+            ),
+            appraisals_fetch:        Family::new_with_constructor(||
+                Counter::default()
+            ),
+            appraisals_market:       Family::new_with_constructor(||
+                Counter::default()
+            ),
+            appraisals_compression:  Family::new_with_constructor(||
+                Counter::default()
+            ),
+            appraisals_reprocessing: Family::new_with_constructor(||
+                Counter::default()
+            ),
         }
     }
 
@@ -74,6 +105,26 @@ impl Metric {
             "appraisal_created",
             "Number of appraisals created",
             self.appraisals_created.clone(),
+        );
+        registry.register(
+            "appraisal_fetch",
+            "Number of appraisals fetch",
+            self.appraisals_fetch.clone(),
+        );
+        registry.register(
+            "appraisal_market",
+            "Number of appraisals market",
+            self.appraisals_market.clone(),
+        );
+        registry.register(
+            "appraisal_compression",
+            "Number of created compression appraisals",
+            self.appraisals_created.clone(),
+        );
+        registry.register(
+            "appraisal_reprocessing",
+            "Number of created reprocessing appraisals",
+            self.appraisals_reprocessing.clone(),
         );
     }
 
@@ -116,10 +167,59 @@ impl Metric {
         ).observe(duration);
     }
 
-    pub fn inc_appraisal_count(
+    pub fn inc_appraisal_created_count(
         &self,
+        status: RequestStatus,
     ) {
-        self.appraisals_created.inc();
+        self.appraisals_created
+            .get_or_create(&RequestLabel {
+                status,
+            })
+            .inc();
+    }
+
+    pub fn inc_appraisal_fetch_count(
+        &self,
+        status: RequestStatus,
+    ) {
+        self.appraisals_fetch
+            .get_or_create(&RequestLabel {
+                status,
+            })
+            .inc();
+    }
+
+    pub fn inc_appraisal_market_count(
+        &self,
+        status: RequestStatus,
+    ) {
+        self.appraisals_market
+            .get_or_create(&RequestLabel {
+                status,
+            })
+            .inc();
+    }
+
+    pub fn inc_appraisal_compression_count(
+        &self,
+        status: RequestStatus,
+    ) {
+        self.appraisals_compression
+            .get_or_create(&RequestLabel {
+                status,
+            })
+            .inc();
+    }
+
+    pub fn inc_appraisal_reprocessing_count(
+        &self,
+        status: RequestStatus,
+    ) {
+        self.appraisals_reprocessing
+            .get_or_create(&RequestLabel {
+                status,
+            })
+            .inc();
     }
 }
 

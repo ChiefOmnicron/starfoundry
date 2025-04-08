@@ -29,26 +29,29 @@ pub fn api(
 
     let fetch = path
         .clone()
+        .and(with_metric(metric.clone()))
         .and(warp::path!(String))
         .and(warp::get())
         .and_then(fetch);
 
     let create = path
         .clone()
-        .and(warp::path::end())
         .and(with_metric(metric.clone()))
+        .and(warp::path::end())
         .and(warp::post())
         .and(warp::body::json())
         .and_then(create);
 
     let markets = path
         .clone()
+        .and(with_metric(metric.clone()))
         .and(warp::path!("markets"))
         .and(warp::get())
         .and_then(markets);
 
     let compression = path
         .clone()
+        .and(with_metric(metric.clone()))
         .and(warp::path!(String / "compression"))
         .and(warp::put())
         .and(warp::body::json())
@@ -56,6 +59,7 @@ pub fn api(
 
     let reprocessing = path
         .clone()
+        .and(with_metric(metric.clone()))
         .and(warp::path!(String / "reprocessing"))
         .and(warp::put())
         .and(warp::body::json())

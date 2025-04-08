@@ -4,6 +4,7 @@ use warp::reject::Rejection;
 use warp::reply::Reply;
 
 use crate::api_docs::{BadRequestWithPayload, InternalServerError, NotFound};
+use crate::metric::{RequestStatus, WithMetric};
 use crate::{BadRequestPayload, ReplyError};
 
 /// /appraisal/:code/compression
@@ -37,6 +38,7 @@ use crate::{BadRequestPayload, ReplyError};
 )]
 pub async fn compression(
     pool:    PgPool,
+    metric:  WithMetric,
     code:    String,
     options: CompressionOptions,
 ) -> Result<impl Reply, Rejection> {
@@ -45,9 +47,16 @@ pub async fn compression(
         code,
         options,
     ).await {
-        Ok(Some(x))  => Ok(warp::reply::json(&x)),
-        Ok(None)  => Err(ReplyError::NotFound.into()),
+        Ok(Some(x))  => {
+            metric.inc_appraisal_compression_count(RequestStatus::Ok);
+            Ok(warp::reply::json(&x))
+        },
+        Ok(None)  => {
+            metric.inc_appraisal_compression_count(RequestStatus::NotFound);
+            Err(ReplyError::NotFound.into())
+        },
         Err(starfoundry_libs_appraisal::Error::NoSolution) => {
+            metric.inc_appraisal_compression_count(RequestStatus::NoSolution);
             Err(ReplyError::BadRequestWithPayload(
                     BadRequestPayload {
                         error: "NO_SOLUTION".into(),
@@ -58,6 +67,7 @@ pub async fn compression(
         },
         Err(e) => {
             tracing::error!("{}", e);
+            metric.inc_appraisal_compression_count(RequestStatus::Error);
             Err(ReplyError::Internal.into())
         },
     }

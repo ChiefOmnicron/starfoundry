@@ -4,6 +4,7 @@ use warp::reject::Rejection;
 use warp::reply::Reply;
 
 use crate::api_docs::{BadRequest, InternalServerError, NotFound};
+use crate::metric::{RequestStatus, WithMetric};
 use crate::ReplyError;
 
 /// /appraisal/:code/reprocessing
@@ -37,6 +38,7 @@ use crate::ReplyError;
 )]
 pub async fn reprocessing(
     pool:    PgPool,
+    metric:  WithMetric,
     code:    String,
     options: ReprocessingOptions,
 ) -> Result<impl Reply, Rejection> {
@@ -45,10 +47,17 @@ pub async fn reprocessing(
         code,
         options,
     ).await {
-        Ok(Some(x))  => Ok(warp::reply::json(&x)),
-        Ok(None)  => Err(ReplyError::NotFound.into()),
+        Ok(Some(x))  => {
+            metric.inc_appraisal_reprocessing_count(RequestStatus::Ok);
+            Ok(warp::reply::json(&x))
+        },
+        Ok(None)  => {
+            metric.inc_appraisal_reprocessing_count(RequestStatus::NotFound);
+            Err(ReplyError::NotFound.into())
+        },
         Err(e) => {
             tracing::error!("{}", e);
+            metric.inc_appraisal_reprocessing_count(RequestStatus::Error);
             Err(ReplyError::Internal.into())
         },
     }
