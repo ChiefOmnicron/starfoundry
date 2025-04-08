@@ -2,6 +2,8 @@ use warp::Filter;
 use warp::filters::BoxedFilter;
 use warp::reject::Rejection;
 use warp::reply::Reply;
+use serde::Serialize;
+use utoipa::ToSchema;
 
 pub fn api(
     base_path: BoxedFilter<()>,
@@ -32,7 +34,7 @@ pub fn api(
     tag = "version",
     responses(
         (
-            body = String,
+            body = Version,
             content_type = "application/json",
             description = "Gets the current version of the program. Usually the git tag + git version",
             status = OK,
@@ -41,9 +43,19 @@ pub fn api(
 )]
 async fn version(
 ) -> Result<impl Reply, Rejection> {
-    let version = std::env!("GIT_HEAD_SHORT");
+    let git_tag = std::env!("GIT_HEAD_SHORT").to_string();
+    let version = std::env!("CARGO_PKG_VERSION").to_string();
 
     Ok(
-        warp::reply::json(&version),
+        warp::reply::json(&Version {
+            git_tag,
+            version,
+        }),
     )
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct Version {
+    pub git_tag: String,
+    pub version: String,
 }
