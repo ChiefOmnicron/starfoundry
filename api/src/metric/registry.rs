@@ -119,7 +119,7 @@ impl Metric {
         registry.register(
             "appraisal_compression",
             "Number of created compression appraisals",
-            self.appraisals_created.clone(),
+            self.appraisals_compression.clone(),
         );
         registry.register(
             "appraisal_reprocessing",
