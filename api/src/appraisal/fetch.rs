@@ -7,14 +7,14 @@ use crate::api_docs::{BadRequest, InternalServerError, NotFound};
 use crate::metric::{RequestStatus, WithMetric};
 use crate::ReplyError;
 
-/// /appraisal/:code
+/// /appraisals/:code
 /// 
 /// Fetches the appraisal with the given code
 /// 
 #[utoipa::path(
     get,
     operation_id = "appraisal_fetch",
-    path = "/appraisal/{code}",
+    path = "/appraisals/{code}",
     tag = "appraisal",
     params(
         ("code" = String, Path),

@@ -6,14 +6,14 @@ use warp::reply::Reply;
 
 use crate::metric::{RequestStatus, WithMetric};
 
-/// /appraisal/markets
+/// /appraisals/markets
 /// 
 /// List of all supported markets
 /// 
 #[utoipa::path(
     get,
     operation_id = "appraisal_create",
-    path = "/appraisal/markets",
+    path = "/appraisals/markets",
     tag = "appraisal",
     responses(
         (

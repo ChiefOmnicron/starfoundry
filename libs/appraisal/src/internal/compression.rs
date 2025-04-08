@@ -94,7 +94,7 @@ pub async fn compression(
 
     let mut appraisal_options = AppraisalOptions::default();
     appraisal_options.set_market_id(Some(appraisal.market_id));
-    appraisal_options.set_store(Some(crate::Persistance::NonPersistent));
+    appraisal_options.set_persist(Some(crate::Persistance::NonPersist));
 
     let appraisal_overage = if !compressed_minerals.is_empty() {
         let overage = overage(
@@ -140,19 +140,30 @@ pub struct CompressionResult {
 }
 
 #[derive(Debug, Deserialize, ToSchema)]
+#[schema(
+    example = json!({
+        "allow_minerals": false,
+        "allow_uncompressed_gas": false,
+        "allow_uncompressed_moon": false,
+        "allow_uncompressed_ore": false,
+        "blacklist": [],
+        "gas_decompression": "AthanorLvl5",
+        "ore_reprocessing": "NsTataraT2"
+      })
+)]
 pub struct CompressionOptions {
     #[serde(default = "default_ore_reprocessing")]
     pub ore_reprocessing:        OreReprocessingEfficiency,
     #[serde(default = "default_gas_decompression")]
     pub gas_decompression:       GasReprocessingEfficiency,
 
-    #[serde(default)]
+    #[serde(default = "default_options")]
     pub allow_minerals:          bool,
-    #[serde(default)]
+    #[serde(default = "default_options")]
     pub allow_uncompressed_gas:  bool,
-    #[serde(default)]
+    #[serde(default = "default_options")]
     pub allow_uncompressed_moon: bool,
-    #[serde(default)]
+    #[serde(default = "default_options")]
     pub allow_uncompressed_ore:  bool,
 
     #[serde(default)]
@@ -165,6 +176,10 @@ fn default_ore_reprocessing() -> OreReprocessingEfficiency {
 
 fn default_gas_decompression() -> GasReprocessingEfficiency {
     GasReprocessingEfficiency::TataraLvl5
+}
+
+fn default_options() -> bool {
+    false
 }
 
 async fn fetch_asteroid_prices_average(

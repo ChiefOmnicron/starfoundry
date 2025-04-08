@@ -7,14 +7,14 @@ use crate::api_docs::{BadRequestWithPayload, InternalServerError, NotFound};
 use crate::metric::{RequestStatus, WithMetric};
 use crate::{BadRequestPayload, ReplyError};
 
-/// /appraisal/:code/compression
+/// /appraisals/:code/compression
 /// 
 /// Compresses the materials from the given appraisal
 /// 
 #[utoipa::path(
     put,
     operation_id = "appraisal_compression",
-    path = "/appraisal/{code}/compression",
+    path = "/appraisals/{code}/compression",
     tag = "appraisal",
     params(
         ("code" = String, Path),

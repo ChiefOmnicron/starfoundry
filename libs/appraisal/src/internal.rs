@@ -46,7 +46,7 @@ where
             .collect::<HashMap<TypeId, i64>>();
 
         let mut options = AppraisalOptions::default();
-        options.set_store(Some(Persistance::NonPersistent));
+        options.set_persist(Some(Persistance::NonPersist));
 
         crate::internal::create_type_ids(
             &self.0,

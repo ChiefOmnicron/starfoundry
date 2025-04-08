@@ -25,7 +25,7 @@ async fn internal(
 ) -> Result<HashMap<TypeId, f32>> {
     let entries = InternalAppraisal::new(pool.clone())
         .map_err(Error::AppraisalError)?
-        .create(Persistance::NonPersistent, entries)
+        .create(Persistance::NonPersist, entries)
         .await
         .map_err(Error::AppraisalError)?
         .items
@@ -40,7 +40,7 @@ async fn janice(
 ) -> Result<HashMap<TypeId, f32>> {
     let entries = JaniceAppraisal::new()
         .map_err(Error::AppraisalError)?
-        .create(Persistance::NonPersistent, entries)
+        .create(Persistance::NonPersist, entries)
         .await
         .map_err(Error::AppraisalError)?
         .items

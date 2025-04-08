@@ -9,39 +9,89 @@ use super::MarketEntry;
 #[derive(Debug, Serialize, ToSchema)]
 #[schema(
     example = json!({
-        "code": "rxxBvTowX1",
-        "created_at": 1742851510075i64,
-        "comment": null,
-        "price_modifer": 100,
-        "items": [{
-            "name": "Tritanium",
-            "quantity": 10000,
-            "type_id": 34,
-            "low_data": false,
-            "meta": {
-                "name": "Tritanium",
-                "volume": 0.01,
-                "category_id": 4,
-                "group_id": 18,
+        "code": "cidx8nzQNW",
+        "created_at": 1744099132822i64,
+        "items": [
+            {
+                "quantity": 100,
                 "type_id": 34,
-                "meta_group_id": null,
-                "repackaged": null
+                "low_data": false,
+                "volume": 1.0,
+                "meta": {
+                    "name": "Tritanium",
+                    "volume": 0.01,
+                    "category_id": 4,
+                    "group_id": 18,
+                    "type_id": 34,
+                    "meta_group_id": null,
+                    "repackaged": null
+                },
+                "buy": {
+                    "max": 409.00001525878906,
+                    "min": 0.9999999776482582,
+                    "total_orders": 13046927471i64,
+                    "per_item": {
+                        "avg": 2.9603448458144377,
+                        "max": 4.090000152587891,
+                        "min": 0.009999999776482582
+                    }
+                },
+                "sell": {
+                    "max": 1000000.0,
+                    "min": 438.0000114440918,
+                    "total_orders": 8652196750i64,
+                    "per_item": {
+                        "avg": 257.6819049365937,
+                        "max": 10000.0,
+                        "min": 4.380000114440918
+                    }
+                }
             },
-            "buy": {
-                "avg": 2.94103448651731,
-                "max": 4.03000020980835,
-                "min": 0.009999999776482582,
-                "total_orders": 11564685569i64
-            },
-            "sell": {
-                "avg": 294.83836382952603,
-                "max": 10000.0,
-                "min": 4.349999904632568,
-                "total_orders": 11300804140i64
+            {
+                "quantity": 100,
+                "type_id": 35,
+                "low_data": false,
+                "volume": 1.0,
+                "meta": {
+                    "name": "Pyerite",
+                    "volume": 0.01,
+                    "category_id": 4,
+                    "group_id": 18,
+                    "type_id": 35,
+                    "meta_group_id": null,
+                    "repackaged": null
+                },
+                "buy": {
+                    "max": 2100.0,
+                    "min": 0.9999999776482582,
+                    "total_orders": 3170777127i64,
+                    "per_item": {
+                        "avg": 14.890000105204601,
+                        "max": 21.0,
+                        "min": 0.009999999776482582
+                    }
+                },
+                "sell": {
+                    "max": 100000000.0,
+                    "min": 2317.0000076293945,
+                    "total_orders": 1543005951,
+                    "per_item": {
+                        "avg": 24009.31952381134,
+                        "max": 1000000.0,
+                        "min": 23.170000076293945
+                    }
+                }
             }
-        }],
+        ],
         "invalid": [],
         "market_id": 60003760,
+        "comment": "",
+        "price_modifier": 100,
+        "total": {
+            "buy": 2509.000015258789,
+            "sell": 2755.0000190734863,
+            "volume": 2.0
+        }
     }),
 )]
 pub struct Appraisal {
@@ -63,51 +113,55 @@ pub struct Appraisal {
     pub comment:        Option<String>,
     /// the price modifier is applied on the return data
     pub price_modifier: i16,
+
+    pub total:          AppraisalTotal,
 }
 
 #[derive(Clone, Debug, Serialize, ToSchema)]
 #[schema(
-    example = json!(
-        {
-            "quantity": 1,
-            "type_id": 34,
-            "low_data": false,
-            "meta": {
-                "name": "Tritanium",
-                "volume": 0.01,
-                "category_id": 4,
-                "group_id": 18,
-                "type_id": 34,
-                "meta_group_id": null,
-                "repackaged": null
-            },
-            "buy": {
-                "max": 8.180000305175781,
-                "min": 0.019999999552965164,
-                "total_orders": 13046927471i64,
-                "per_item": {
-                    "avg": 2.9603448458144377,
-                    "max": 4.090000152587891,
-                    "min": 0.009999999776482582
-                }
-            },
-            "sell": {
-                "max": 20000.0,
-                "min": 8.760000228881836,
-                "total_orders": 8652196750i64,
-                "per_item": {
-                    "avg": 257.6819049365937,
-                    "max": 10000.0,
-                    "min": 4.380000114440918
-                }
+    example = json!({
+        "quantity": 100,
+        "type_id": 35,
+        "low_data": false,
+        "volume": 1.0,
+        "meta": {
+            "name": "Pyerite",
+            "volume": 0.01,
+            "category_id": 4,
+            "group_id": 18,
+            "type_id": 35,
+            "meta_group_id": null,
+            "repackaged": null
+        },
+        "buy": {
+            "max": 2100.0,
+            "min": 0.9999999776482582,
+            "total_orders": 3170777127i64,
+            "per_item": {
+                "avg": 14.890000105204601,
+                "max": 21.0,
+                "min": 0.009999999776482582
             }
-        })
+        },
+        "sell": {
+            "max": 100000000.0,
+            "min": 2317.0000076293945,
+            "total_orders": 1543005951,
+            "per_item": {
+                "avg": 24009.31952381134,
+                "max": 1000000.0,
+                "min": 23.170000076293945
+            }
+        }
+    })
 )]
 pub struct AppraisalItem {
     pub quantity: i64,
     pub type_id:  TypeId,
     /// if there are not enough items on the market to cover the requested amount
     pub low_data: bool,
+
+    pub volume: f32,
 
     /// general item information
     pub meta: Item,
@@ -116,4 +170,20 @@ pub struct AppraisalItem {
     pub buy:  MarketEntry,
     /// sell information
     pub sell: MarketEntry,
+}
+
+#[derive(Clone, Debug, Serialize, ToSchema)]
+#[schema(
+    example = json!({
+        "total": {
+            "buy": 2509.000015258789,
+            "sell": 2755.0000190734863,
+            "volume": 2.0
+        }
+    })
+)]
+pub struct AppraisalTotal {
+    pub buy:    f64,
+    pub sell:   f64,
+    pub volume: f32
 }

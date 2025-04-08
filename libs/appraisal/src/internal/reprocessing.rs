@@ -127,7 +127,7 @@ pub async fn reprocessing(
 
     let mut appraisal_options = AppraisalOptions::default();
     appraisal_options.set_market_id(Some(appraisal.market_id));
-    appraisal_options.set_store(Some(crate::Persistance::NonPersistent));
+    appraisal_options.set_persist(Some(crate::Persistance::NonPersist));
 
     let appraisal = create_type_ids(
         &pool,

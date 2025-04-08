@@ -10,14 +10,14 @@ use crate::api_docs::{BadRequest, InternalServerError, UnsupportedMediaType};
 use starfoundry_libs_appraisal::Persistance;
 use crate::metric::{RequestStatus, WithMetric};
 
-/// /appraisal
+/// /appraisals
 /// 
 /// Creates a new appraisal
 /// 
 #[utoipa::path(
     post,
     operation_id = "appraisal_create",
-    path = "/appraisal",
+    path = "/appraisals",
     tag = "appraisal",
     request_body(
         content = AppraisalCreateBody,
@@ -28,7 +28,7 @@ use crate::metric::{RequestStatus, WithMetric};
         (
             body = Appraisal,
             content_type = "application/json",
-            description = "ID of the new project",
+            description = "Newly created appraisal",
             status = CREATED,
         ),
         BadRequest,
@@ -42,10 +42,12 @@ pub async fn create(
     body:   AppraisalCreateBody,
 ) -> Result<impl Reply, Rejection> {
     let mut options = AppraisalOptions::default();
-    options.set_store(body.store);
+    options.set_persist(body.persist);
     options.set_market_id(body.market_id);
     options.set_price_modifier(body.price_modifier);
     options.set_comment(body.comment);
+
+    dbg!(&options);
 
     match starfoundry_libs_appraisal::internal::create_raw(
         &pool,
@@ -67,19 +69,20 @@ pub async fn create(
 #[derive(Debug, Deserialize, ToSchema)]
 #[schema(
     example = json!({
-        "appraisal": "raw appraisal string, items must be separated by new lines",
+        "appraisal": "Tritanium\t100\nPyerite\t100",
         "comment": "this is a cool comment",
         "market": 60003760,
         "price_modifier": 100,
-        "store": true
+        "persist": "Persist"
     })
 )]
 pub struct AppraisalCreateBody {
     /// raw entry of the items that should be appraised
     pub appraisal:      String,
-    /// whether or not the apprisal should be stored, true per default
-    #[serde(default, deserialize_with = "Persistance::deserialize")]
-    pub store:          Option<Persistance>,
+    /// whether or not the apprisal should be stored, persist per default
+    /// can either 'Persist' or 'NonPersist'
+    //#[serde(default, deserialize_with = "Persistance::deserialize")]
+    pub persist:        Option<Persistance>,
     /// market that should be used, jita is the default
     pub market_id:      Option<i64>,
     /// modifier for the price, default is 100%

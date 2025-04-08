@@ -4,7 +4,7 @@ use starfoundry_libs_items::Item;
 
 use crate::internal::MarketEntyPerItem;
 use crate::{Error, Result};
-use super::{Appraisal, AppraisalItem, MarketEntry};
+use super::{Appraisal, AppraisalItem, AppraisalTotal, MarketEntry};
 
 pub async fn fetch(
     pool: &PgPool,
@@ -61,40 +61,59 @@ pub async fn fetch(
         .await
         .map_err(Error::DatabaseError);
 
+    let mut total_buy = 0f64;
+    let mut total_sell = 0f64;
+    let mut total_volume = 0f32;
     let items = items?
         .into_iter()
-        .map(|x| AppraisalItem {
-            quantity: x.quantity,
-            type_id:  x.type_id.into(),
-            low_data: x.low_data,
-            meta: Item {
-                name:          x.name,
-                volume:        x.volume,
-                category_id:   x.category_id.into(),
-                group_id:      x.group_id.into(),
-                type_id:       x.type_id.into(),
-                meta_group_id: x.meta_group_id.map(|x| x.into()),
-                repackaged:    x.repackaged,
-            },
-            buy: MarketEntry {
-                per_item: MarketEntyPerItem {
-                    avg:      x.buy_avg,
-                    max:      x.buy_max,
-                    min:      x.buy_min,
+        .map(|x| {
+            let max_buy = x.buy_max * x.quantity as f64 * (appraisal.price_modifier as f64 / 100f64);
+            total_buy += max_buy;
+
+            let min_sell = x.sell_min * x.quantity as f64 * (appraisal.price_modifier as f64 / 100f64);
+            total_sell += min_sell;
+
+            let volume = if let Some(y) = x.repackaged {
+                x.quantity as f32 * y as f32
+            } else {
+                x.quantity as f32 * x.volume
+            };
+            total_volume += volume;
+
+            AppraisalItem {
+                quantity: x.quantity,
+                type_id:  x.type_id.into(),
+                low_data: x.low_data,
+                volume:   volume,
+                meta: Item {
+                    name:          x.name,
+                    volume:        x.volume,
+                    category_id:   x.category_id.into(),
+                    group_id:      x.group_id.into(),
+                    type_id:       x.type_id.into(),
+                    meta_group_id: x.meta_group_id.map(|x| x.into()),
+                    repackaged:    x.repackaged,
                 },
-                max:          x.buy_max * x.quantity as f64 * (appraisal.price_modifier as f64 / 100f64),
-                min:          x.buy_min * x.quantity as f64 * (appraisal.price_modifier as f64 / 100f64),
-                total_orders: x.buy_total_orders,
-            },
-            sell: MarketEntry {
-                per_item: MarketEntyPerItem {
-                    avg:      x.sell_avg,
-                    max:      x.sell_max,
-                    min:      x.sell_min,
+                buy: MarketEntry {
+                    per_item: MarketEntyPerItem {
+                        avg:      x.buy_avg,
+                        max:      x.buy_max,
+                        min:      x.buy_min,
+                    },
+                    max:          x.buy_max * x.quantity as f64 * (appraisal.price_modifier as f64 / 100f64),
+                    min:          x.buy_min * x.quantity as f64 * (appraisal.price_modifier as f64 / 100f64),
+                    total_orders: x.buy_total_orders,
                 },
-                max:          x.sell_max * x.quantity as f64 * (appraisal.price_modifier as f64 / 100f64),
-                min:          x.sell_min * x.quantity as f64 * (appraisal.price_modifier as f64 / 100f64),
-                total_orders: x.sell_total_orders,
+                sell: MarketEntry {
+                    per_item: MarketEntyPerItem {
+                        avg:      x.sell_avg,
+                        max:      x.sell_max,
+                        min:      x.sell_min,
+                    },
+                    max:          x.sell_max * x.quantity as f64 * (appraisal.price_modifier as f64 / 100f64),
+                    min:          x.sell_min * x.quantity as f64 * (appraisal.price_modifier as f64 / 100f64),
+                    total_orders: x.sell_total_orders,
+                }
             }
         })
         .collect::<Vec<_>>();
@@ -115,6 +134,12 @@ pub async fn fetch(
         .map(|x| x.raw)
         .collect::<Vec<_>>();
 
+    let total = AppraisalTotal {
+        buy:    total_buy,
+        sell:   total_sell,
+        volume: total_volume,
+    };
+
     let appraisal = Appraisal {
         id:             Uuid::default(),
         created_at:     appraisal.created_at.and_utc().timestamp_millis(),
@@ -126,7 +151,9 @@ pub async fn fetch(
         price_modifier: appraisal.price_modifier,
 
         items:          items,
-        invalid,
+        invalid:        invalid,
+
+        total:          total,
     };
 
     Ok(Some(appraisal))

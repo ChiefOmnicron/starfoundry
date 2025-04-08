@@ -6,7 +6,7 @@ use starfoundry_libs_types::TypeId;
 use std::collections::HashMap;
 
 use crate::{generate_code, Error, Persistance, Result};
-use super::{Appraisal, AppraisalItem, MarketEntry, MarketEntyPerItem};
+use super::{Appraisal, AppraisalItem, AppraisalTotal, MarketEntry, MarketEntyPerItem};
 
 pub async fn create_raw(
     pool:    &PgPool,
@@ -106,6 +106,8 @@ async fn create(
 
                     low_data: false,
 
+                    volume: 0f32,
+
                     buy:  MarketEntry::default(),
                     sell: MarketEntry::default(),
                 });
@@ -114,6 +116,9 @@ async fn create(
         };
     }
 
+    let mut total_buy = 0f64;
+    let mut total_sell = 0f64;
+    let mut total_volume = 0f32;
     for (type_id, entry) in appraisal_items.iter_mut() {
         let buy = sqlx::query!(r#"
                 SELECT
@@ -149,7 +154,18 @@ async fn create(
             .fetch_one(pool)
             .await;
 
+        let volume = if let Some(y) = entry.meta.repackaged {
+            entry.quantity as f32 * y as f32
+        } else {
+            entry.quantity as f32 * entry.meta.volume
+        };
+        entry.volume = volume;
+        total_volume += volume;
+
         if let Ok(x) = buy {
+            let max_buy = x.max * entry.quantity as f64 * (options.price_modifier as f64 / 100f64);
+            total_buy += max_buy;
+
             entry.buy = MarketEntry {
                 per_item: MarketEntyPerItem {
                     avg:      x.avg,
@@ -176,6 +192,9 @@ async fn create(
         };
 
         if let Ok(x) = sell {
+            let min_sell = x.min * entry.quantity as f64 * (options.price_modifier as f64 / 100f64);
+            total_sell += min_sell;
+
             entry.sell = MarketEntry {
                 per_item: MarketEntyPerItem {
                     avg:      x.avg,
@@ -348,6 +367,12 @@ async fn create(
         (None, Utc::now().naive_utc().and_utc().timestamp_millis())
     };
 
+    let total = AppraisalTotal {
+        buy:    total_buy,
+        sell:   total_sell,
+        volume: total_volume,
+    };
+
     let appraisal = Appraisal {
         // id is skiped on serialization and deserialization
         id:             Uuid::default(),
@@ -361,6 +386,8 @@ async fn create(
         price_modifier: options.price_modifier,
 
         market_id:      options.market_id,
+
+        total:          total,
     };
 
     Ok(appraisal)
@@ -378,7 +405,7 @@ impl AppraisalOptions {
     const DEFAULT_MARKET: i64         = 60003760;
     const DEFAULT_PRICE_MODIFIER: i16 = 100i16;
 
-    pub fn set_store(
+    pub fn set_persist(
         &mut self,
         store: Option<Persistance>,
     ) {
