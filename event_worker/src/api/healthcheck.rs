@@ -5,28 +5,21 @@ use warp::reply::Reply;
 
 use crate::api::with_pool;
 
-mod livez;
 mod readyz;
+mod healthz;
 
-pub use self::livez::*;
 pub use self::readyz::*;
+pub use self::healthz::*;
 
 pub fn api(
     pool: PgPool,
 ) -> BoxedFilter<(impl Reply,)> {
-    let path = warp::path!("health" / ..)
-        .boxed();
-
-    let livez = path
-        .clone()
-        .and(warp::path!("livez"))
+    let livez = warp::path!("healthz")
         .and(warp::get())
         .and_then(livez)
         .boxed();
 
-    let readyz = path
-        .clone()
-        .and(warp::path!("readyz"))
+    let readyz = warp::path!("readyz")
         .and(warp::get())
         .and(with_pool(pool.clone()))
         .and_then(readyz)
