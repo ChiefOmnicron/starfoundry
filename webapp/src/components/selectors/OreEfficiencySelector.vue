@@ -1,23 +1,22 @@
 <template>
-    <n-tree-select
+    <n-select
         @update:value="handleOreReprocessingUpdate"
         :options="oreReprocessingOptions()"
-        :override-default-node-click-behavior="selectOverride"
-        default-value="NsTataraT2"
+        v-model:value="selected"
         filterable
     />
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
+import { Component, Prop, Vue, Watch, toNative } from 'vue-facing-decorator';
 
 import type { OreReprocessing } from '@/appraisal/service';
 
-import { NTreeSelect, type SelectOption, type TreeOverrideNodeClickBehaviorReturn, type TreeSelectOption } from 'naive-ui';
+import { NSelect, type SelectOption, type TreeOverrideNodeClickBehaviorReturn, type TreeSelectOption } from 'naive-ui';
 
 @Component({
     components: {
-        NTreeSelect,
+        NSelect,
     },
     emits: [
         'update:efficiency'
@@ -30,86 +29,141 @@ class OreReprocessingSelector extends Vue {
     })
     public efficiency!: String;
 
+    @Prop({
+        type: String,
+        required: true,
+    })
+    public system!: 'HS' | 'LS' | 'NS';
+
+    @Prop({
+        type: String,
+        required: true,
+    })
+    public structure!: 'ATHANOR' | 'TATARA';
+
+    public selected = 'NsTataraT2';
+
+    public created() {
+        this.setReprocessing('NsTataraT2');
+    }
+
     public handleOreReprocessingUpdate(value: OreReprocessing) {
         this.$emit('update:efficiency', value);
     }
 
     public oreReprocessingOptions(): SelectOption[] {
-        return [{
-            label: 'Highsec',
-            key: 'hs',
-            children: [{
-                label: 'Athanor - No Rig (73.81%)',
-                key: 'HsAthanorNoRig'
+        if (this.system === 'HS' && this.structure === 'ATHANOR') {
+            return [{
+                label: 'No Rig (73.81%)',
+                value: 'HsAthanorNoRig'
             }, {
-                label: 'Athanor - T1 Rig (75.28%)',
-                key: 'HsAthanorT1'
+                label: 'T1 Rig (75.28%)',
+                value: 'HsAthanorT1'
             }, {
-                label: 'Athanor - T2 Rig (78.23%)',
-                key: 'HsAthanorT2'
+                label: 'T2 Rig (78.23%)',
+                value: 'HsAthanorT2'
+            }];
+        } else if (this.system === 'HS' && this.structure === 'TATARA') {
+            return [{
+                label: 'No Rig (76.34%)',
+                value: 'HsTataraNoRig'
             }, {
-                label: 'Tatara - No Rig (76.34%)',
-                key: 'HsTataraNoRig'
+                label: 'T1 Rig (77.86%)',
+                value: 'HsTataraT1'
             }, {
-                label: 'Tatara - T1 Rig (77.86%)',
-                key: 'HsTataraT1'
+                label: 'T2 Rig (80.92%)',
+                value: 'HsTataraT2'
+            }];
+        } else if (this.system === 'LS' && this.structure === 'ATHANOR') {
+            return [{
+                label: 'No Rig (73.81%)',
+                value: 'LsAthanorNoRig'
             }, {
-                label: 'Tatara - T2 Rig (80.92%)',
-                key: 'HsTataraT2'
-            }]
-        }, {
-            label: 'Lowsec',
-            key: 'ls',
-            children: [{
-                label: 'Athanor - No Rig (73.81%)',
-                key: 'LsAthanorNoRig'
+                label: 'T1 Rig (79.80%)',
+                value: 'LsAthanorT1'
             }, {
-                label: 'Athanor - T1 Rig (79.80%)',
-                key: 'LsAthanorT1'
+                label: 'T2 Rig (82.93%)',
+                value: 'LsAthanorT2'
+            }];
+        } else if (this.system === 'LS' && this.structure === 'TATARA') {
+            return [{
+                label: 'No Rig (76.34%)',
+                value: 'LsTataraNoRig'
             }, {
-                label: 'Athanor - T2 Rig (82.93%)',
-                key: 'LsAthanorT2'
+                label: 'T1 Rig (82.54%)',
+                value: 'LsTataraT1'
             }, {
-                label: 'Tatara - No Rig (76.34%)',
-                key: 'LsTataraNoRig'
+                label: 'T2 Rig (85.77%)',
+                value: 'LsTataraT2'
+            }];
+        } else if (this.system === 'NS' && this.structure === 'ATHANOR') {
+            return [{
+                label: 'No Rig (73.81%)',
+                value: 'NsAthanorNoRig'
             }, {
-                label: 'Tatara - T1 Rig (82.54%)',
-                key: 'LsTataraT1'
+                label: 'T1 Rig (84.32%)',
+                value: 'NsAthanorT1'
             }, {
-                label: 'Tatara - T2 Rig (85.77%)',
-                key: 'LsTataraT2'
-            }]
-        }, {
-            label: 'Nullsec',
-            key: 'ns',
-            children: [{
-                label: 'Athanor - No Rig (73.81%)',
-                key: 'NsAthanorNoRig'
+                label: 'T2 Rig (87.62%)',
+                value: 'NsAthanorT2'
+            }];
+        } else if (this.system === 'NS' && this.structure === 'TATARA') {
+            return [{
+                label: 'No Rig (76.34%)',
+                value: 'NsTataraNoRig'
             }, {
-                label: 'Athanor - T1 Rig (84.32%)',
-                key: 'NsAthanorT1'
+                label: 'T1 Rig (87.21%)',
+                value: 'NsTataraT1'
             }, {
-                label: 'Athanor - T2 Rig (87.62%)',
-                key: 'NsAthanorT2'
-            }, {
-                label: 'Tatara - No Rig (76.34%)',
-                key: 'NsTataraNoRig'
-            }, {
-                label: 'Tatara - T1 Rig (87.21%)',
-                key: 'NsTataraT1'
-            }, {
-                label: 'Tatara - T2 Rig (90.63%)',
-                key: 'NsTataraT2'
-            }]
-        }];
+                label: 'T2 Rig (90.63%)',
+                value: 'NsTataraT2'
+            }];
+        } else {
+            return [];
+        }
     }
 
-    public selectOverride(option: { option: TreeSelectOption }): TreeOverrideNodeClickBehaviorReturn {
-        if (option.option.children) {
-            return 'toggleExpand';
+    public setReprocessing(structure: string) {
+        this.selected = structure;
+        this.$emit('update:efficiency', structure);
+    }
+
+    @Watch('structure')
+    public structureWatch(newValue: string) {
+        if (newValue === 'ATHANOR' && this.system === 'HS') {
+            this.setReprocessing('HsAthanorT2');
+        } else if (newValue === 'ATHANOR' && this.system === 'LS') {
+            this.setReprocessing('LsAthanorT2');
+        } else if (newValue === 'ATHANOR' && this.system === 'NS') {
+            this.setReprocessing('NsAthanorT2');
         }
 
-        return 'default';
+        if (newValue === 'TATARA' && this.system === 'HS') {
+            this.setReprocessing('HsTataraT2');
+        } else if (newValue === 'TATARA' && this.system === 'LS') {
+            this.setReprocessing('LsTataraT2');
+        } else if (newValue === 'TATARA' && this.system === 'HS') {
+            this.setReprocessing('NsTataraT2');
+        }
+    }
+
+    @Watch('system')
+    public systemWatch(newValue: string) {
+        if (this.structure === 'ATHANOR' && newValue === 'HS') {
+            this.setReprocessing('HsAthanorT2');
+        } else if (this.structure === 'ATHANOR' && newValue === 'LS') {
+            this.setReprocessing('LsAthanorT2');
+        } else if (this.structure === 'ATHANOR' && newValue === 'NS') {
+            this.setReprocessing('NsAthanorT2');
+        }
+
+        if (this.structure === 'TATARA' && newValue === 'HS') {
+            this.setReprocessing('HsTataraT2');
+        } else if (this.structure === 'TATARA' && newValue === 'LS') {
+            this.setReprocessing('LsTataraT2');
+        } else if (this.structure === 'TATARA' && newValue === 'HS') {
+            this.setReprocessing('NsTataraT2');
+        }
     }
 }
 

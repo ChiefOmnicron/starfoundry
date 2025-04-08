@@ -264,7 +264,8 @@ import { createAppraisal, defaultCompressionOptions, defaultReprocessingOptions,
 
 import { ROUTE_APPRAISAL } from '@/appraisal/router';
 
-import { NAlert, NButton, NDataTable, NFlex, NGrid, NGridItem, NTabs, NTabPane, NText, NSpace, NSteps, NStep, NSlider, NInputNumber, NInput } from 'naive-ui';
+import { ArrowsAltH } from '@vicons/fa';
+import { NAlert, NButton, NDataTable, NFlex, NGrid, NGridItem, NTabs, NTabPane, NText, NSpace, NSteps, NStep, NSlider, NInputNumber, NInput, NIcon } from 'naive-ui';
 import AppraisalCompression from './components/AppraisalCompression.vue';
 import AppraisalHeader from '@/appraisal/components/AppraisalHeader.vue';
 import AppraisalInput from '@/appraisal/components/AppraisalInput.vue';
@@ -294,6 +295,8 @@ import NoEntries from '@/components/NoEntries.vue';
         NTabs,
         NText,
         NInput,
+
+        ArrowsAltH,
 
         AppraisalCompression,
         AppraisalHeader,
@@ -333,6 +336,7 @@ class AppraisalShow extends Vue {
     public reprocessingOptions: IReprocessingOptions = defaultReprocessingOptions();
 
     public market: number = 60003760;
+    public single: boolean = false;
 
     public async created() {
         if (!this.code) {
@@ -479,13 +483,25 @@ class AppraisalShow extends Vue {
                     for (let item of this.appraisal.items) {
                         let volume = 0;
                         if (item.meta.repackaged) {
-                            volume = item.meta.repackaged * item.quantity;
+                            volume = item.meta.repackaged;
                         } else {
-                            volume = item.meta.volume * item.quantity;
+                            volume = item.meta.volume;
                         }
 
-                        let buy = (Math.floor(item.buy.max * 100)) / 100;
-                        let sell = (Math.floor(item.sell.min * 100)) / 100;
+                        if (!this.single) {
+                            volume *= item.quantity;
+                        }
+
+                        let buy = item.buy.max;
+                        let sell = item.sell.min;
+
+                        if (this.single) {
+                            buy = item.buy.per_item.max;
+                            sell = item.sell.per_item.min;
+                        }
+
+                        buy = (Math.floor(buy * 100)) / 100;
+                        sell = (Math.floor(sell * 100)) / 100;
 
                         content.push(`${item.meta.name}\t${item.quantity}\t${volume}\t${buy}\t${sell}`);
                     }
@@ -496,13 +512,25 @@ class AppraisalShow extends Vue {
                     for (let item of this.appraisalCompression.compression_appraisal.items) {
                         let volume = 0;
                         if (item.meta.repackaged) {
-                            volume = item.meta.repackaged * item.quantity;
+                            volume = item.meta.repackaged;
                         } else {
-                            volume = item.meta.volume * item.quantity;
+                            volume = item.meta.volume;
                         }
 
-                        let buy = (Math.floor(item.buy.max * 100)) / 100;
-                        let sell = (Math.floor(item.sell.min * 100)) / 100;
+                        if (!this.single) {
+                            volume *= item.quantity;
+                        }
+
+                        let buy = item.buy.max;
+                        let sell = item.sell.min;
+
+                        if (this.single) {
+                            buy = item.buy.per_item.max;
+                            sell = item.sell.per_item.min;
+                        }
+
+                        buy = (Math.floor(buy * 100)) / 100;
+                        sell = (Math.floor(sell * 100)) / 100;
 
                         content.push(`${item.meta.name}\t${item.quantity}\t${volume}\t${buy}\t${sell}`);
                     }
@@ -513,13 +541,25 @@ class AppraisalShow extends Vue {
                     for (let item of this.appraisalCompression.overage_appraisal.items) {
                         let volume = 0;
                         if (item.meta.repackaged) {
-                            volume = item.meta.repackaged * item.quantity;
+                            volume = item.meta.repackaged;
                         } else {
-                            volume = item.meta.volume * item.quantity;
+                            volume = item.meta.volume;
                         }
 
-                        let buy = (Math.floor(item.buy.max * 100)) / 100;
-                        let sell = (Math.floor(item.sell.min * 100)) / 100;
+                        if (!this.single) {
+                            volume *= item.quantity;
+                        }
+
+                        let buy = item.buy.max;
+                        let sell = item.sell.min;
+
+                        if (this.single) {
+                            buy = item.buy.per_item.max;
+                            sell = item.sell.per_item.min;
+                        }
+
+                        buy = (Math.floor(buy * 100)) / 100;
+                        sell = (Math.floor(sell * 100)) / 100;
 
                         content.push(`${item.meta.name}\t${item.quantity}\t${volume}\t${buy}\t${sell}`);
                     }
@@ -530,13 +570,25 @@ class AppraisalShow extends Vue {
                     for (let item of this.appraisalReprocessing.items) {
                         let volume = 0;
                         if (item.meta.repackaged) {
-                            volume = item.meta.repackaged * item.quantity;
+                            volume = item.meta.repackaged;
                         } else {
-                            volume = item.meta.volume * item.quantity;
+                            volume = item.meta.volume;
                         }
 
-                        let buy = (Math.floor(item.buy.max * 100)) / 100;
-                        let sell = (Math.floor(item.sell.min * 100)) / 100;
+                        if (!this.single) {
+                            volume *= item.quantity;
+                        }
+
+                        let buy = item.buy.max;
+                        let sell = item.sell.min;
+
+                        if (this.single) {
+                            buy = item.buy.per_item.max;
+                            sell = item.sell.per_item.min;
+                        }
+
+                        buy = (Math.floor(buy * 100)) / 100;
+                        sell = (Math.floor(sell * 100)) / 100;
 
                         content.push(`${item.meta.name}\t${item.quantity}\t${volume}\t${buy}\t${sell}`);
                     }
@@ -571,6 +623,8 @@ class AppraisalShow extends Vue {
         }, {
             title: 'Name',
             row: 'name',
+            width: '25%',
+            defaultSortOrder: 'ascend',
             sorter: (row1: IAppraisalItem, row2: IAppraisalItem) => row1.meta.name.localeCompare(row2.meta.name),
             render: (row: IAppraisalItem) => {
                 return h(
@@ -584,65 +638,124 @@ class AppraisalShow extends Vue {
             align: 'right',
             title: 'Quantity',
             row: 'quantity',
+            width: '15%',
+            sorter: (row1: IAppraisalItem, row2: IAppraisalItem) => row1.quantity - row2.quantity,
             render: (row: IAppraisalItem) => {
                 return h(
                     CopyText,
                     {
                         value: row.quantity,
                         number: true,
-                        withComma: true,
                     },
                 )
             }
         }, {
-            align: 'right',
-            title: 'Volume (m3)',
-            row: 'volume',
-            render: (row: IAppraisalItem) => {
-                let volume = 0;
-                if (row.meta.repackaged) {
-                    volume = row.meta.repackaged * row.quantity;
-                } else {
-                    volume = row.meta.volume * row.quantity;
-                }
+            key: 'attrs',
+            title: () => {
+                return h(
+                    NButton,
+                    {
+                        style: 'width: 100%;',
+                        quaternary: true,
+                        onClick: () => this.single = !this.single,
+                    },
+                    () => [
+                        h(
+                            'span',
+                            {
+                                style: `font-weight: ${!this.single ? 'bold' : 'normal'}; margin-right: 10px`,
+                            },
+                            'Stack\t'
+                        ),
+                        h(
+                            NIcon,
+                            {},
+                            () => [
+                                h(ArrowsAltH),
+                            ]
+                        ),
+                        h(
+                            'span',
+                            {
+                                style: `font-weight: ${this.single ? 'bold' : 'normal'}; margin-left: 10px`,
+                            },
+                            '\tSingle'
+                        ),
+                    ]
+                )
+            },
+            children: [{
+                align: 'right',
+                title: 'Volume (m3)',
+                row: 'volume',
+                width: '15%',
+                sorter: (row1: IAppraisalItem, row2: IAppraisalItem) => row1.meta.volume - row2.meta.volume,
+                render: (row: IAppraisalItem) => {
+                    let volume = 0;
+                    if (row.meta.repackaged) {
+                        volume = row.meta.repackaged;
+                    } else {
+                        volume = row.meta.volume;
+                    }
 
-                return h(
-                    CopyText,
-                    {
-                        value: volume,
-                        number: true,
-                        withComma: true,
-                    },
-                )
-            }
-        }, {
-            align: 'right',
-            title: 'Buy (ISK)',
-            row: 'buy',
-            render: (row: IAppraisalItem) => {
-                return h(
-                    CopyText,
-                    {
-                        value: row.buy.max,
-                        number: true,
-                        withComma: true,
-                    },
-                )
-            }
-        }, {
-            align: 'right',
-            title: 'Sell (ISK)',
-            row: 'sell',
-            render: (row: IAppraisalItem) => {
-                return h(
-                    CopyText,
-                    {
-                        value: row.sell.min,
-                        number: true,
-                        withComma: true,
-                    },
-                )
-            }
+                    if (!this.single) {
+                        volume *= row.quantity;
+                    }
+
+                    return h(
+                        CopyText,
+                        {
+                            value: volume,
+                            number: true,
+                            withComma: true,
+                        },
+                    )
+                }
+            }, {
+                align: 'right',
+                title: 'Buy (ISK)',
+                row: 'buy',
+                width: '25%',
+                sorter: (row1: IAppraisalItem, row2: IAppraisalItem) => row1.buy.max - row2.buy.max,
+                render: (row: IAppraisalItem) => {
+                    let value = row.buy.max;
+
+                    if (this.single) {
+                        value = row.buy.per_item.max;
+                    }
+
+                    return h(
+                        CopyText,
+                        {
+                            value: value,
+                            number: true,
+                            withComma: true,
+                        },
+                    )
+                }
+            }, {
+                align: 'right',
+                title: 'Sell (ISK)',
+                row: 'sell',
+                width: '25%',
+                sorter: (row1: IAppraisalItem, row2: IAppraisalItem) => row1.sell.min - row2.sell.min,
+                render: (row: IAppraisalItem) => {
+                    let value = row.sell.min;
+
+                    if (this.single) {
+                        value = row.sell.per_item.min;
+                    }
+
+                    return h(
+                        CopyText,
+                        {
+                            value: value,
+                            number: true,
+                            withComma: true,
+                        },
+                    )
+                }
+            }]
         }];
     }
 }

@@ -107,7 +107,7 @@ export let formatDateUTC = (date_ms: number): string => {
     const hours = preZero(date.getUTCHours());
     const minutes = preZero(date.getUTCMinutes());
 
-    return `${day}.${month}.${year} ${hours}:${minutes}`;
+    return `${year}.${month}.${day} ${hours}:${minutes}`;
 }
 
 export let formatDate = (date_ms: number): string => {
@@ -122,5 +122,5 @@ export let formatDate = (date_ms: number): string => {
     const hours = preZero(date.getHours());
     const minutes = preZero(date.getMinutes());
 
-    return `${day}.${month}.${year} ${hours}:${minutes}`;
+    return `${year}.${month}.${day} ${hours}:${minutes}`;
 }

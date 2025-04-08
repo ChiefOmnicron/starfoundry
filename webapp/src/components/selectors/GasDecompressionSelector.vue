@@ -1,23 +1,22 @@
 <template>
-    <n-tree-select
+    <n-select
         @update:value="handleGasDecompressionUpdate"
         :options="gasDecompressionOptions()"
-        :override-default-node-click-behavior="selectOverride"
-        default-value="TataraLvl5"
+        v-model:value="selected"
         filterable
     />
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
+import { Component, Prop, Vue, Watch, toNative } from 'vue-facing-decorator';
 
 import type { GasDecompression } from '@/appraisal/service';
 
-import { NTreeSelect, type SelectOption, type TreeOverrideNodeClickBehaviorReturn, type TreeSelectOption } from 'naive-ui';
+import { NSelect, type SelectOption } from 'naive-ui';
 
 @Component({
     components: {
-        NTreeSelect,
+        NSelect,
     },
     emits: [
         'update:decompression'
@@ -30,64 +29,81 @@ class GasDecompressionSelector extends Vue {
     })
     public decompression!: String;
 
+    @Prop({
+        type: String,
+        required: true,
+    })
+    public structure!: 'ATHANOR' | 'TATARA';
+
+    public selected = 'TataraLvl5';
+
+    public created() {
+        this.setDecompression('TataraLvl5');
+    }
+
     public handleGasDecompressionUpdate(value: GasDecompression) {
         this.$emit('update:decompression', value);
     }
 
     public gasDecompressionOptions(): SelectOption[] {
-        return [{
-            label: 'Athanor',
-            key: 'athanor',
-            children: [{
-                label: 'Gas Decompression Lvl 0 (84%)',
-                key: 'AthanorLvl0'
+        console.log(this.structure)
+        if (this.structure === 'ATHANOR') {
+            return [{
+                label: 'Level 0 (84%)',
+                value: 'AthanorLvl0'
             }, {
-                label: 'Gas Decompression Lvl 1 (85%)',
-                key: 'AthanorLvl1'
+                label: 'Level 1 (85%)',
+                value: 'AthanorLvl1'
             }, {
-                label: 'Gas Decompression Lvl 2 (86%)',
-                key: 'AthanorLvl2'
+                label: 'Level 2 (86%)',
+                value: 'AthanorLvl2'
             }, {
-                label: 'Gas Decompression Lvl 3 (87%)',
-                key: 'AthanorLvl3'
+                label: 'Level 3 (87%)',
+                value: 'AthanorLvl3'
             }, {
-                label: 'Gas Decompression Lvl 4 (88%)',
-                key: 'AthanorLvl4'
+                label: 'Level 4 (88%)',
+                value: 'AthanorLvl4'
             }, {
-                label: 'Gas Decompression Lvl 5 (89%)',
-                key: 'AthanorLvl5'
-            }]
-        }, {
-            label: 'Tatara',
-            key: 'tatara',
-            children: [{
-                label: 'Gas Decompression Lvl 0 (90%)',
-                key: 'TataraLvl0'
+                label: 'Level 5 (89%)',
+                value: 'AthanorLvl5'
+            }];
+        } else if (this.structure === 'TATARA') {
+            return [{
+                label: 'Level 0 (90%)',
+                value: 'TataraLvl0'
             }, {
-                label: 'Gas Decompression Lvl 1 (91%)',
-                key: 'TataraLvl1'
+                label: 'Level 1 (91%)',
+                value: 'TataraLvl1'
             }, {
-                label: 'Gas Decompression Lvl 2 (92%)',
-                key: 'TataraLvl2'
+                label: 'Level 2 (92%)',
+                value: 'TataraLvl2'
             }, {
-                label: 'Gas Decompression Lvl 3 (93%)',
-                key: 'TataraLvl3'
+                label: 'Level 3 (93%)',
+                value: 'TataraLvl3'
             }, {
-                label: 'Gas Decompression Lvl 4 (94%)',
-                key: 'TataraLvl4'
+                label: 'Level 4 (94%)',
+                value: 'TataraLvl4'
             }, {
-                label: 'Gas Decompression Lvl 5 (95%)',
-                key: 'TataraLvl5'
-            }]
-        }];
+                label: 'Level 5 (95%)',
+                value: 'TataraLvl5'
+            }];
+        } else {
+            return [];
+        }
     }
 
-    public selectOverride(option: { option: TreeSelectOption }): TreeOverrideNodeClickBehaviorReturn {
-        if (option.option.children) {
-            return 'toggleExpand';
-        }
+    public setDecompression(structure: string) {
+        this.selected = structure;
+        this.$emit('update:decompression', structure);
+    }
 
-        return 'default';
+    @Watch('structure')
+    public structureWatch(newValue: string) {
+        if (newValue === 'ATHANOR') {
+            this.setDecompression('AthanorLvl5');
+        } else {
+            this.setDecompression('TataraLvl5');
+        }
     }
 }
 

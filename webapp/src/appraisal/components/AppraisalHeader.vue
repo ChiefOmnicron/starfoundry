@@ -6,7 +6,7 @@
                 <format-number :value="appraisal?.created_at" :utc="false" date /> (local)
             </td>
             <th style="width: 20%">Buy</th>
-            <td style="width: 30%; text-align: left;">
+            <td style="width: 30%; text-align: right;">
                 <copy-text
                     :value="totalBuy()"
                     number
@@ -22,7 +22,7 @@
                 />
             </td>
             <th>Split</th>
-            <td style="text-align: left">
+            <td style="text-align: right">
                 <copy-text
                     :value="totalSplit()"
                     number
@@ -32,7 +32,7 @@
         </tr>
         <tr>
             <th>Volume</th>
-            <td style="text-align: left">
+            <td style="text-align: right">
                 <copy-text
                     :value="totalVolume()"
                     number
@@ -40,7 +40,7 @@
                 /> m3
             </td>
             <th>Sell</th>
-            <td style="text-align: left">
+            <td style="text-align: right">
                 <copy-text
                     :value="totalSell()"
                     number

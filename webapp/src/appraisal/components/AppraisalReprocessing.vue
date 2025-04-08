@@ -3,17 +3,49 @@
         <tr>
             <th style="width: 20%">Ore Efficiency</th>
             <td style="text-align: left;">
-                <ore-efficiency-selector
-                    v-model:efficiency="reprocessing.ore_reprocessing"
-                />
+                <n-grid :cols="3" x-gap="10">
+                    <n-grid-item>
+                        <n-select
+                            v-model:value="selectedStructureOre"
+                            :options="structures()"
+                        />
+                    </n-grid-item>
+
+                    <n-grid-item>
+                        <n-select
+                            v-model:value="selectedSystem"
+                            :options="systems()"
+                        />
+                    </n-grid-item>
+
+                    <n-grid-item>
+                        <ore-efficiency-selector
+                            v-model:efficiency="reprocessing.ore_reprocessing"
+                            :structure="selectedStructureOre"
+                            :system="selectedSystem"
+                        />
+                    </n-grid-item>
+                </n-grid>
             </td>
         </tr>
         <tr>
             <th>Gas Decompression</th>
             <td style="text-align: left;">
-                <gas-decompression-selector
-                    v-model:decompression="reprocessing.gas_decompression"
-                />
+                <n-grid :cols="2" x-gap="10">
+                    <n-grid-item>
+                        <n-select
+                            v-model:value="selectedStructureGas"
+                            :options="structures()"
+                        />
+                    </n-grid-item>
+
+                    <n-grid-item>
+                        <gas-decompression-selector
+                            v-model:decompression="reprocessing.gas_decompression"
+                            :structure="selectedStructureGas"
+                        />
+                    </n-grid-item>
+                </n-grid>
             </td>
         </tr>
         <tr>
@@ -32,7 +64,7 @@ import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
 
 import type { IReprocessingOptions } from '@/appraisal/service';
 
-import { NSwitch, NTable, NTreeSelect } from 'naive-ui';
+import { NGrid, NGridItem, NSelect, NSwitch, NTable, type SelectOption } from 'naive-ui';
 import CopyText from '@/components/CopyText.vue';
 import FormatNumber from '@/components/FormatNumber.vue';
 import GasDecompressionSelector from '@/components/selectors/GasDecompressionSelector.vue';
@@ -42,9 +74,11 @@ import ScrapReprocessingSelector from '@/components/selectors/ScrapReprocessingS
 
 @Component({
     components: {
+        NGrid,
+        NGridItem,
+        NSelect,
         NSwitch,
         NTable,
-        NTreeSelect,
 
         CopyText,
         FormatNumber,
@@ -64,8 +98,35 @@ class AppraisalReprocessing extends Vue {
     })
     public reprocessing!: IReprocessingOptions;
 
+    public selectedStructureOre: string = 'TATARA';
+    public selectedStructureGas: string = 'TATARA';
+    public selectedSystem: string = 'NS';
+
     public handleUpdateValue() {
         this.$emit('update:reprocessing', this.reprocessing);
+    }
+
+    public structures(): SelectOption[] {
+        return [{
+            label: 'Athanor',
+            value: 'ATHANOR'
+        }, {
+            label: 'Tatara',
+            value: 'TATARA'
+        }];
+    }
+
+    public systems(): SelectOption[] {
+        return [{
+            label: 'Highsec',
+            value: 'HS'
+        }, {
+            label: 'Lowsec',
+            value: 'LS'
+        }, {
+            label: 'Nullsec',
+            value: 'NS'
+        }];
     }
 }
 

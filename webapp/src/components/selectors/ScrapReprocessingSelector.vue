@@ -1,8 +1,8 @@
 <template>
-    <n-tree-select
-        @update:value="handleScrapReprcessingUpdsate"
+    <n-select
         :options="scrapReprocessingOptions()"
-        default-value="Lvl5"
+        @update:value="handleScrapReprcessingUpdsate"
+        v-model:value="selected"
         filterable
     />
 </template>
@@ -12,11 +12,11 @@ import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
 
 import type { ScrapReprocessing } from '@/appraisal/service';
 
-import { NTreeSelect, type SelectOption } from 'naive-ui';
+import { NSelect, type SelectOption } from 'naive-ui';
 
 @Component({
     components: {
-        NTreeSelect,
+        NSelect,
     },
     emits: [
         'update:reprocessing'
@@ -29,29 +29,35 @@ class ScrapReprocessingSelector extends Vue {
     })
     public reprocessing!: String;
 
+    public selected = 'Lvl5';
+
+    public created() {
+        this.selected = 'Lvl5';
+    }
+
     public handleScrapReprcessingUpdsate(value: ScrapReprocessing) {
         this.$emit('update:reprocessing', value);
     }
 
     public scrapReprocessingOptions(): SelectOption[] {
         return [{
-            label: 'Scrap Reprocessing Lvl 0 (50%)',
-            key: 'Lvl0'
+            label: 'Level 0 (50%)',
+            value: 'Lvl0'
         }, {
-            label: 'Scrap Reprocessing Lvl 1 (51%)',
-            key: 'Lvl1'
+            label: 'Level 1 (51%)',
+            value: 'Lvl1'
         }, {
-            label: 'Scrap Reprocessing Lvl 2 (52%)',
-            key: 'Lvl2'
+            label: 'Level 2 (52%)',
+            value: 'Lvl2'
         }, {
-            label: 'Scrap Reprocessing Lvl 3 (53%)',
-            key: 'Lvl3'
+            label: 'Level 3 (53%)',
+            value: 'Lvl3'
         }, {
-            label: 'Scrap Reprocessing Lvl 4 (54%)',
-            key: 'Lvl4'
+            label: 'Level 4 (54%)',
+            value: 'Lvl4'
         }, {
-            label: 'Scrap Reprocessing Lvl 5 (55%)',
-            key: 'Lvl5'
+            label: 'Level 5 (55%)',
+            value: 'Lvl5'
         }];
     }
 }
