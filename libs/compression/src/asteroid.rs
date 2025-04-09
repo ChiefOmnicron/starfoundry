@@ -11,6 +11,10 @@ pub enum Asteroid {
     CompressedCrimsonArkonor,
     CompressedPrimeArkonor,
     CompressedFlawlessArkonor,
+    BatchCompressedArkonor,
+    BatchCompressedCrimsonArkonor,
+    BatchCompressedPrimeArkonor,
+    BatchCompressedFlawlessArkonor,
 
     Bezdnacine,
     AbyssalBezdnacine,
@@ -27,6 +31,10 @@ pub enum Asteroid {
     CompressedTriclinicBistot,
     CompressedMonoclinicBistot,
     CompressedCubicBistot,
+    BatchCompressedBistot,
+    BatchCompressedTriclinicBistot,
+    BatchCompressedMonoclinicBistot,
+    BatchCompressedCubicBistot,
 
     Crokite,
     SharpCrokite,
@@ -36,6 +44,10 @@ pub enum Asteroid {
     CompressedSharpCrokite,
     CompressedCrystallineCrokite,
     CompressedPellucidCrokite,
+    BatchCompressedCrokite,
+    BatchCompressedSharpCrokite,
+    BatchCompressedCrystallineCrokite,
+    BatchCompressedPellucidCrokite,
 
     DarkOchre,
     OnyxOchre,
@@ -45,6 +57,10 @@ pub enum Asteroid {
     CompressedOnyxOchre,
     CompressedObsidianOchre,
     CompressedJetOchre,
+    BatchCompressedDarkOchre,
+    BatchCompressedOnyxOchre,
+    BatchCompressedObsidianOchre,
+    BatchCompressedJetOchre,
 
     Ducinium,
     NobleDucinium,
@@ -72,6 +88,10 @@ pub enum Asteroid {
     CompressedIridescentGneiss,
     CompressedPrismaticGneiss,
     CompressedBrilliantGneiss,
+    BatchCompressedGneiss,
+    BatchCompressedIridescentGneiss,
+    BatchCompressedPrismaticGneiss,
+    BatchCompressedBrilliantGneiss,
 
     Griemeer,
     ClearGriemeer,
@@ -90,6 +110,10 @@ pub enum Asteroid {
     CompressedVitricHedbergite,
     CompressedGlazedHedbergite,
     CompressedLustrousHedbergite,
+    BatchCompressedHedbergite,
+    BatchCompressedVitricHedbergite,
+    BatchCompressedGlazedHedbergite,
+    BatchCompressedLustrousHedbergite,
 
     Hemorphite,
     VividHemorphite,
@@ -99,6 +123,10 @@ pub enum Asteroid {
     CompressedVividHemorphite,
     CompressedRadiantHemorphite,
     CompressedScintillatingHemorphite,
+    BatchCompressedHemorphite,
+    BatchCompressedVividHemorphite,
+    BatchCompressedRadiantHemorphite,
+    BatchCompressedScintillatingHemorphite,
 
     Hezorime,
     DullHezorime,
@@ -117,6 +145,10 @@ pub enum Asteroid {
     CompressedPureJaspet,
     CompressedPristineJaspet,
     CompressedImmaculateJaspet,
+    BatchCompressedJaspet,
+    BatchCompressedPureJaspet,
+    BatchCompressedPristineJaspet,
+    BatchCompressedImmaculateJaspet,
 
     Kernite,
     LuminousKernite,
@@ -126,6 +158,10 @@ pub enum Asteroid {
     CompressedLuminousKernite,
     CompressedFieryKernite,
     CompressedResplendantKernite,
+    BatchCompressedKernite,
+    BatchCompressedLuminousKernite,
+    BatchCompressedFieryKernite,
+    BatchCompressedResplendantKernite,
 
     Kylixium,
     KaolinKylixium,
@@ -142,6 +178,9 @@ pub enum Asteroid {
     CompressedMercoxit,
     CompressedMagmaMercoxit,
     CompressedVitreousMercoxit,
+    BatchCompressedMercoxit,
+    BatchCompressedMagmaMercoxit,
+    BatchCompressedVitreousMercoxit,
 
     Mordunium,
     PlumMordunium,
@@ -169,6 +208,10 @@ pub enum Asteroid {
     CompressedSilveryOmber,
     CompressedGoldenOmber,
     CompressedPlatinoidOmber,
+    BatchCompressedOmber,
+    BatchCompressedSilveryOmber,
+    BatchCompressedGoldenOmber,
+    BatchCompressedPlatinoidOmber,
 
     Plagioclase,
     AzurePlagioclase,
@@ -178,6 +221,10 @@ pub enum Asteroid {
     CompressedAzurePlagioclase,
     CompressedRichPlagioclase,
     CompressedSparklingPlagioclase,
+    BatchCompressedPlagioclase,
+    BatchCompressedAzurePlagioclase,
+    BatchCompressedRichPlagioclase,
+    BatchCompressedSparklingPlagioclase,
 
     Pyroxeres,
     SolidPyroxeres,
@@ -187,6 +234,10 @@ pub enum Asteroid {
     CompressedSolidPyroxeres,
     CompressedViscousPyroxeres,
     CompressedOpulentPyroxeres,
+    BatchCompressedPyroxeres,
+    BatchCompressedSolidPyroxeres,
+    BatchCompressedViscousPyroxeres,
+    BatchCompressedOpulentPyroxeres,
 
     Rakovene,
     AbyssalRakovene,
@@ -203,6 +254,10 @@ pub enum Asteroid {
     CompressedCondensedScordite,
     CompressedMassiveScordite,
     CompressedGlossyScordite,
+    BatchCompressedScordite,
+    BatchCompressedCondensedScordite,
+    BatchCompressedMassiveScordite,
+    BatchCompressedGlossyScordite,
 
     Spodumain,
     BrightSpodumain,
@@ -212,6 +267,10 @@ pub enum Asteroid {
     CompressedBrightSpodumain,
     CompressedGleamingSpodumain,
     CompressedDazzlingSpodumain,
+    BatchCompressedSpodumain,
+    BatchCompressedBrightSpodumain,
+    BatchCompressedGleamingSpodumain,
+    BatchCompressedDazzlingSpodumain,
 
     Talassonite,
     AbyssalTalassonite,
@@ -237,6 +296,10 @@ pub enum Asteroid {
     CompressedConcentratedVeldspar,
     CompressedDenseVeldspar,
     CompressedStableVeldspar,
+    BatchCompressedVeldspar,
+    BatchCompressedConcentratedVeldspar,
+    BatchCompressedDenseVeldspar,
+    BatchCompressedStableVeldspar,
 
     Ytirium,
     BootlegYtirium,
@@ -854,420 +917,483 @@ impl Asteroid {
 
     pub fn to_type_id(&self) -> i32 {
         match self {
-            Self::Arkonor                               => 22,
-            Self::CrimsonArkonor                        => 17425,
-            Self::PrimeArkonor                          => 17426,
-            Self::FlawlessArkonor                       => 46678,
-            Self::CompressedArkonor                     => 62568,
-            Self::CompressedCrimsonArkonor              => 62569,
-            Self::CompressedPrimeArkonor                => 62570,
-            Self::CompressedFlawlessArkonor             => 62571,
+            Self::Arkonor                                   => 22,
+            Self::CrimsonArkonor                            => 17425,
+            Self::PrimeArkonor                              => 17426,
+            Self::FlawlessArkonor                           => 46678,
+            Self::CompressedArkonor                         => 62568,
+            Self::CompressedCrimsonArkonor                  => 62569,
+            Self::CompressedPrimeArkonor                    => 62570,
+            Self::CompressedFlawlessArkonor                 => 62571,
+            Self::BatchCompressedArkonor                    => 28367,
+            Self::BatchCompressedCrimsonArkonor             => 28385,
+            Self::BatchCompressedPrimeArkonor               => 28387,
+            Self::BatchCompressedFlawlessArkonor            => 46691,
 
-            Self::Bezdnacine                            => 52316,
-            Self::AbyssalBezdnacine                     => 56627,
-            Self::HadalBezdnacine                       => 56628,
-            Self::CompressedBezdnacine                  => 62576,
-            Self::CompressedAbyssalBezdnacine           => 62577,
-            Self::CompressedHadalBezdnacine             => 62578,
+            Self::Bezdnacine                                => 52316,
+            Self::AbyssalBezdnacine                         => 56627,
+            Self::HadalBezdnacine                           => 56628,
+            Self::CompressedBezdnacine                      => 62576,
+            Self::CompressedAbyssalBezdnacine               => 62577,
+            Self::CompressedHadalBezdnacine                 => 62578,
 
-            Self::Bistot                                => 1223,
-            Self::TriclinicBistot                       => 17428,
-            Self::MonoclinicBistot                      => 17429,
-            Self::CubicBistot                           => 46676,
-            Self::CompressedBistot                      => 62564,
-            Self::CompressedTriclinicBistot             => 62565,
-            Self::CompressedMonoclinicBistot            => 62566,
-            Self::CompressedCubicBistot                 => 62567,
+            Self::Bistot                                    => 1223,
+            Self::TriclinicBistot                           => 17428,
+            Self::MonoclinicBistot                          => 17429,
+            Self::CubicBistot                               => 46676,
+            Self::CompressedBistot                          => 62564,
+            Self::CompressedTriclinicBistot                 => 62565,
+            Self::CompressedMonoclinicBistot                => 62566,
+            Self::CompressedCubicBistot                     => 62567,
+            Self::BatchCompressedBistot                     => 28388,
+            Self::BatchCompressedTriclinicBistot            => 28390,
+            Self::BatchCompressedMonoclinicBistot           => 28389,
+            Self::BatchCompressedCubicBistot                => 46692,
 
-            Self::Crokite                               => 1225,
-            Self::SharpCrokite                          => 17432,
-            Self::CrystallineCrokite                    => 17433,
-            Self::PellucidCrokite                       => 46677,
-            Self::CompressedCrokite                     => 62560,
-            Self::CompressedSharpCrokite                => 62561,
-            Self::CompressedCrystallineCrokite          => 62562,
-            Self::CompressedPellucidCrokite             => 62563,
+            Self::Crokite                                   => 1225,
+            Self::SharpCrokite                              => 17432,
+            Self::CrystallineCrokite                        => 17433,
+            Self::PellucidCrokite                           => 46677,
+            Self::CompressedCrokite                         => 62560,
+            Self::CompressedSharpCrokite                    => 62561,
+            Self::CompressedCrystallineCrokite              => 62562,
+            Self::CompressedPellucidCrokite                 => 62563,
+            Self::BatchCompressedCrokite                    => 28391,
+            Self::BatchCompressedSharpCrokite               => 28392,
+            Self::BatchCompressedCrystallineCrokite         => 28393,
+            Self::BatchCompressedPellucidCrokite            => 46693,
 
-            Self::DarkOchre                             => 1232,
-            Self::OnyxOchre                             => 17436,
-            Self::ObsidianOchre                         => 17437,
-            Self::JetOchre                              => 46675,
-            Self::CompressedDarkOchre                   => 62556,
-            Self::CompressedOnyxOchre                   => 62557,
-            Self::CompressedObsidianOchre               => 62558,
-            Self::CompressedJetOchre                    => 62559,
+            Self::DarkOchre                                 => 1232,
+            Self::OnyxOchre                                 => 17436,
+            Self::ObsidianOchre                             => 17437,
+            Self::JetOchre                                  => 46675,
+            Self::CompressedDarkOchre                       => 62556,
+            Self::CompressedOnyxOchre                       => 62557,
+            Self::CompressedObsidianOchre                   => 62558,
+            Self::CompressedJetOchre                        => 62559,
+            Self::BatchCompressedDarkOchre                  => 28394,
+            Self::BatchCompressedOnyxOchre                  => 28396,
+            Self::BatchCompressedObsidianOchre              => 28395,
+            Self::BatchCompressedJetOchre                   => 46694,
 
-            Self::Ducinium                              => 74533,
-            Self::NobleDucinium                         => 74534,
-            Self::RoyalDucinium                         => 74535,
-            Self::ImperialDucinium                      => 74536,
-            Self::CompressedDucinium                    => 75287,
-            Self::CompressedNobleDucinium               => 75288,
-            Self::CompressedRoyalDucinium               => 75289,
-            Self::CompressedImperialDucinium            => 75290,
+            Self::Ducinium                                  => 74533,
+            Self::NobleDucinium                             => 74534,
+            Self::RoyalDucinium                             => 74535,
+            Self::ImperialDucinium                          => 74536,
+            Self::CompressedDucinium                        => 75287,
+            Self::CompressedNobleDucinium                   => 75288,
+            Self::CompressedRoyalDucinium                   => 75289,
+            Self::CompressedImperialDucinium                => 75290,
 
-            Self::Eifyrium                              => 74529,
-            Self::DopedEifyrium                         => 74530,
-            Self::BoostedEifyrium                       => 74531,
-            Self::AugmentedEifyrium                     => 74532,
-            Self::CompressedEifyrium                    => 75283,
-            Self::CompressedDopedEifyrium               => 75284,
-            Self::CompressedBoostedEifyrium             => 75285,
-            Self::CompressedAugmentedEifyrium           => 75286,
+            Self::Eifyrium                                  => 74529,
+            Self::DopedEifyrium                             => 74530,
+            Self::BoostedEifyrium                           => 74531,
+            Self::AugmentedEifyrium                         => 74532,
+            Self::CompressedEifyrium                        => 75283,
+            Self::CompressedDopedEifyrium                   => 75284,
+            Self::CompressedBoostedEifyrium                 => 75285,
+            Self::CompressedAugmentedEifyrium               => 75286,
 
-            Self::Gneiss                                => 1229,
-            Self::IridescentGneiss                      => 17865,
-            Self::PrismaticGneiss                       => 17866,
-            Self::BrilliantGneiss                       => 46679,
-            Self::CompressedGneiss                      => 62552,
-            Self::CompressedIridescentGneiss            => 62553,
-            Self::CompressedPrismaticGneiss             => 62554,
-            Self::CompressedBrilliantGneiss             => 62555,
+            Self::Gneiss                                    => 1229,
+            Self::IridescentGneiss                          => 17865,
+            Self::PrismaticGneiss                           => 17866,
+            Self::BrilliantGneiss                           => 46679,
+            Self::CompressedGneiss                          => 62552,
+            Self::CompressedIridescentGneiss                => 62553,
+            Self::CompressedPrismaticGneiss                 => 62554,
+            Self::CompressedBrilliantGneiss                 => 62555,
+            Self::BatchCompressedGneiss                     => 28397,
+            Self::BatchCompressedIridescentGneiss           => 28398,
+            Self::BatchCompressedPrismaticGneiss            => 28399,
+            Self::BatchCompressedBrilliantGneiss            => 46695,
 
-            Self::Griemeer                              => 81975,
-            Self::ClearGriemeer                         => 81976,
-            Self::InkyGriemeer                          => 81977,
-            Self::OpaqueGriemeer                        => 81978,
-            Self::CompressedGriemeer                    => 82316,
-            Self::CompressedClearGriemeer               => 82317,
-            Self::CompressedInkyGriemeer                => 82318,
-            Self::CompressedOpaqueGriemeer              => 82319,
+            Self::Griemeer                                  => 81975,
+            Self::ClearGriemeer                             => 81976,
+            Self::InkyGriemeer                              => 81977,
+            Self::OpaqueGriemeer                            => 81978,
+            Self::CompressedGriemeer                        => 82316,
+            Self::CompressedClearGriemeer                   => 82317,
+            Self::CompressedInkyGriemeer                    => 82318,
+            Self::CompressedOpaqueGriemeer                  => 82319,
 
-            Self::Hedbergite                            => 21,
-            Self::VitricHedbergite                      => 17440,
-            Self::GlazedHedbergite                      => 17441,
-            Self::LustrousHedbergite                    => 46680,
-            Self::CompressedHedbergite                  => 62548,
-            Self::CompressedVitricHedbergite            => 62549,
-            Self::CompressedGlazedHedbergite            => 62550,
-            Self::CompressedLustrousHedbergite          => 62551,
+            Self::Hedbergite                                => 21,
+            Self::VitricHedbergite                          => 17440,
+            Self::GlazedHedbergite                          => 17441,
+            Self::LustrousHedbergite                        => 46680,
+            Self::CompressedHedbergite                      => 62548,
+            Self::CompressedVitricHedbergite                => 62549,
+            Self::CompressedGlazedHedbergite                => 62550,
+            Self::CompressedLustrousHedbergite              => 62551,
+            Self::BatchCompressedHedbergite                 => 28401,
+            Self::BatchCompressedVitricHedbergite           => 28402,
+            Self::BatchCompressedGlazedHedbergite           => 28400,
+            Self::BatchCompressedLustrousHedbergite         => 46696,
 
-            Self::Hemorphite                            => 1231,
-            Self::VividHemorphite                       => 17444,
-            Self::RadiantHemorphite                     => 17445,
-            Self::ScintillatingHemorphite               => 46681,
-            Self::CompressedHemorphite                  => 62544,
-            Self::CompressedVividHemorphite             => 62545,
-            Self::CompressedRadiantHemorphite           => 62546,
-            Self::CompressedScintillatingHemorphite     => 62547,
+            Self::Hemorphite                                => 1231,
+            Self::VividHemorphite                           => 17444,
+            Self::RadiantHemorphite                         => 17445,
+            Self::ScintillatingHemorphite                   => 46681,
+            Self::CompressedHemorphite                      => 62544,
+            Self::CompressedVividHemorphite                 => 62545,
+            Self::CompressedRadiantHemorphite               => 62546,
+            Self::CompressedScintillatingHemorphite         => 62547,
+            Self::BatchCompressedHemorphite                 => 28403,
+            Self::BatchCompressedVividHemorphite            => 28405,
+            Self::BatchCompressedRadiantHemorphite          => 28404,
+            Self::BatchCompressedScintillatingHemorphite    => 46697,
 
-            Self::Hezorime                              => 82163,
-            Self::DullHezorime                          => 82164,
-            Self::SerratedHezorime                      => 82165,
-            Self::SharpHezorime                         => 82166,
-            Self::CompressedHezorime                    => 82312,
-            Self::CompressedDullHezorime                => 82313,
-            Self::CompressedSerratedHezorime            => 82314,
-            Self::CompressedSharpHezorime               => 82315,
+            Self::Hezorime                                  => 82163,
+            Self::DullHezorime                              => 82164,
+            Self::SerratedHezorime                          => 82165,
+            Self::SharpHezorime                             => 82166,
+            Self::CompressedHezorime                        => 82312,
+            Self::CompressedDullHezorime                    => 82313,
+            Self::CompressedSerratedHezorime                => 82314,
+            Self::CompressedSharpHezorime                   => 82315,
 
-            Self::Jaspet                                => 1226,
-            Self::PureJaspet                            => 17448,
-            Self::PristineJaspet                        => 17449,
-            Self::ImmaculateJaspet                      => 46682,
-            Self::CompressedJaspet                      => 62540,
-            Self::CompressedPureJaspet                  => 62541,
-            Self::CompressedPristineJaspet              => 62542,
-            Self::CompressedImmaculateJaspet            => 62543,
+            Self::Jaspet                                    => 1226,
+            Self::PureJaspet                                => 17448,
+            Self::PristineJaspet                            => 17449,
+            Self::ImmaculateJaspet                          => 46682,
+            Self::CompressedJaspet                          => 62540,
+            Self::CompressedPureJaspet                      => 62541,
+            Self::CompressedPristineJaspet                  => 62542,
+            Self::CompressedImmaculateJaspet                => 62543,
+            Self::BatchCompressedJaspet                     => 28406,
+            Self::BatchCompressedPureJaspet                 => 28408,
+            Self::BatchCompressedPristineJaspet             => 28407,
+            Self::BatchCompressedImmaculateJaspet           => 46698,
 
-            Self::Kernite                               => 20,
-            Self::LuminousKernite                       => 17452,
-            Self::FieryKernite                          => 17453,
-            Self::ResplendantKernite                    => 46683,
-            Self::CompressedKernite                     => 62536,
-            Self::CompressedLuminousKernite             => 62537,
-            Self::CompressedFieryKernite                => 62538,
-            Self::CompressedResplendantKernite          => 62539,
+            Self::Kernite                                   => 20,
+            Self::LuminousKernite                           => 17452,
+            Self::FieryKernite                              => 17453,
+            Self::ResplendantKernite                        => 46683,
+            Self::CompressedKernite                         => 62536,
+            Self::CompressedLuminousKernite                 => 62537,
+            Self::CompressedFieryKernite                    => 62538,
+            Self::CompressedResplendantKernite              => 62539,
+            Self::BatchCompressedKernite                    => 28410,
+            Self::BatchCompressedLuminousKernite            => 28411,
+            Self::BatchCompressedFieryKernite               => 28409,
+            Self::BatchCompressedResplendantKernite         => 46699,
 
-            Self::Kylixium                              => 81900,
-            Self::KaolinKylixium                        => 81901,
-            Self::ArgilKylixium                         => 81902,
-            Self::AdobeKylixium                         => 81903,
-            Self::CompressedKylixium                    => 82300,
-            Self::CompressedKaolinKylixium              => 82301,
-            Self::CompressedArgilKylixium               => 82302,
-            Self::CompressedAdobeKylixium               => 82303,
+            Self::Kylixium                                  => 81900,
+            Self::KaolinKylixium                            => 81901,
+            Self::ArgilKylixium                             => 81902,
+            Self::AdobeKylixium                             => 81903,
+            Self::CompressedKylixium                        => 82300,
+            Self::CompressedKaolinKylixium                  => 82301,
+            Self::CompressedArgilKylixium                   => 82302,
+            Self::CompressedAdobeKylixium                   => 82303,
 
-            Self::Mercoxit                              => 11396,
-            Self::MagmaMercoxit                         => 17869,
-            Self::VitreousMercoxit                      => 17870,
-            Self::CompressedMercoxit                    => 62586,
-            Self::CompressedMagmaMercoxit               => 62587,
-            Self::CompressedVitreousMercoxit            => 62588,
+            Self::Mercoxit                                  => 11396,
+            Self::MagmaMercoxit                             => 17869,
+            Self::VitreousMercoxit                          => 17870,
+            Self::CompressedMercoxit                        => 62586,
+            Self::CompressedMagmaMercoxit                   => 62587,
+            Self::CompressedVitreousMercoxit                => 62588,
+            Self::BatchCompressedMercoxit                   => 28413,
+            Self::BatchCompressedMagmaMercoxit              => 28412,
+            Self::BatchCompressedVitreousMercoxit           => 28414,
 
-            Self::Mordunium                             => 74521,
-            Self::PlumMordunium                         => 74522,
-            Self::PrizeMordunium                        => 74523,
-            Self::PlunderMordunium                      => 74524,
-            Self::CompressedMordunium                   => 75275,
-            Self::CompressedPlumMordunium               => 75276,
-            Self::CompressedPrizeMordunium              => 75277,
-            Self::CompressedPlunderMordunium            => 75278,
+            Self::Mordunium                                 => 74521,
+            Self::PlumMordunium                             => 74522,
+            Self::PrizeMordunium                            => 74523,
+            Self::PlunderMordunium                          => 74524,
+            Self::CompressedMordunium                       => 75275,
+            Self::CompressedPlumMordunium                   => 75276,
+            Self::CompressedPrizeMordunium                  => 75277,
+            Self::CompressedPlunderMordunium                => 75278,
 
-            Self::Nocxite                               => 82016,
-            Self::FragrantNocxite                       => 82017,
-            Self::IntoxicatingNocxite                   => 82018,
-            Self::AmbrosialNocxite                      => 82019,
-            Self::CompressedNocxite                     => 82304,
-            Self::CompressedFragrantNocxite             => 82305,
-            Self::CompressedIntoxicatingNocxite         => 82306,
-            Self::CompressedAmbrosialNocxite            => 82307,
+            Self::Nocxite                                   => 82016,
+            Self::FragrantNocxite                           => 82017,
+            Self::IntoxicatingNocxite                       => 82018,
+            Self::AmbrosialNocxite                          => 82019,
+            Self::CompressedNocxite                         => 82304,
+            Self::CompressedFragrantNocxite                 => 82305,
+            Self::CompressedIntoxicatingNocxite             => 82306,
+            Self::CompressedAmbrosialNocxite                => 82307,
 
-            Self::Omber                                 => 1227,
-            Self::SilveryOmber                          => 17867,
-            Self::GoldenOmber                           => 17868,
-            Self::PlatinoidOmber                        => 46684,
-            Self::CompressedOmber                       => 62532,
-            Self::CompressedSilveryOmber                => 62533,
-            Self::CompressedGoldenOmber                 => 62534,
-            Self::CompressedPlatinoidOmber              => 62535,
+            Self::Omber                                     => 1227,
+            Self::SilveryOmber                              => 17867,
+            Self::GoldenOmber                               => 17868,
+            Self::PlatinoidOmber                            => 46684,
+            Self::CompressedOmber                           => 62532,
+            Self::CompressedSilveryOmber                    => 62533,
+            Self::CompressedGoldenOmber                     => 62534,
+            Self::CompressedPlatinoidOmber                  => 62535,
+            Self::BatchCompressedOmber                      => 28416,
+            Self::BatchCompressedSilveryOmber               => 28417,
+            Self::BatchCompressedGoldenOmber                => 28415,
+            Self::BatchCompressedPlatinoidOmber             => 46700,
 
-            Self::Plagioclase                           => 18,
-            Self::AzurePlagioclase                      => 17455,
-            Self::RichPlagioclase                       => 17456,
-            Self::SparklingPlagioclase                  => 46685,
-            Self::CompressedPlagioclase                 => 62528,
-            Self::CompressedAzurePlagioclase            => 62529,
-            Self::CompressedRichPlagioclase             => 62530,
-            Self::CompressedSparklingPlagioclase        => 62531,
+            Self::Plagioclase                               => 18,
+            Self::AzurePlagioclase                          => 17455,
+            Self::RichPlagioclase                           => 17456,
+            Self::SparklingPlagioclase                      => 46685,
+            Self::CompressedPlagioclase                     => 62528,
+            Self::CompressedAzurePlagioclase                => 62529,
+            Self::CompressedRichPlagioclase                 => 62530,
+            Self::CompressedSparklingPlagioclase            => 62531,
+            Self::BatchCompressedPlagioclase                => 28422,
+            Self::BatchCompressedAzurePlagioclase           => 28421,
+            Self::BatchCompressedRichPlagioclase            => 28423,
+            Self::BatchCompressedSparklingPlagioclase       => 46701,
 
-            Self::Pyroxeres                             => 1224,
-            Self::SolidPyroxeres                        => 17459,
-            Self::ViscousPyroxeres                      => 17460,
-            Self::OpulentPyroxeres                      => 46686,
-            Self::CompressedPyroxeres                   => 62524,
-            Self::CompressedSolidPyroxeres              => 62525,
-            Self::CompressedViscousPyroxeres            => 62526,
-            Self::CompressedOpulentPyroxeres            => 62527,
+            Self::Pyroxeres                                 => 1224,
+            Self::SolidPyroxeres                            => 17459,
+            Self::ViscousPyroxeres                          => 17460,
+            Self::OpulentPyroxeres                          => 46686,
+            Self::CompressedPyroxeres                       => 62524,
+            Self::CompressedSolidPyroxeres                  => 62525,
+            Self::CompressedViscousPyroxeres                => 62526,
+            Self::CompressedOpulentPyroxeres                => 62527,
+            Self::BatchCompressedPyroxeres                  => 28424,
+            Self::BatchCompressedSolidPyroxeres             => 28425,
+            Self::BatchCompressedViscousPyroxeres           => 28426,
+            Self::BatchCompressedOpulentPyroxeres           => 46702,
 
-            Self::Rakovene                              => 52315,
-            Self::AbyssalRakovene                       => 56629,
-            Self::HadalRakovene                         => 56630,
-            Self::CompressedRakovene                    => 62579,
-            Self::CompressedAbyssalRakovene             => 62580,
-            Self::CompressedHadalRakovene               => 62581,
+            Self::Rakovene                                  => 52315,
+            Self::AbyssalRakovene                           => 56629,
+            Self::HadalRakovene                             => 56630,
+            Self::CompressedRakovene                        => 62579,
+            Self::CompressedAbyssalRakovene                 => 62580,
+            Self::CompressedHadalRakovene                   => 62581,
 
-            Self::Scordite                              => 1228,
-            Self::CondensedScordite                     => 17463,
-            Self::MassiveScordite                       => 17464,
-            Self::GlossyScordite                        => 46687,
-            Self::CompressedScordite                    => 62520,
-            Self::CompressedCondensedScordite           => 62521,
-            Self::CompressedMassiveScordite             => 62522,
-            Self::CompressedGlossyScordite              => 62523,
+            Self::Scordite                                  => 1228,
+            Self::CondensedScordite                         => 17463,
+            Self::MassiveScordite                           => 17464,
+            Self::GlossyScordite                            => 46687,
+            Self::CompressedScordite                        => 62520,
+            Self::CompressedCondensedScordite               => 62521,
+            Self::CompressedMassiveScordite                 => 62522,
+            Self::CompressedGlossyScordite                  => 62523,
+            Self::BatchCompressedScordite                   => 28429,
+            Self::BatchCompressedCondensedScordite          => 28427,
+            Self::BatchCompressedMassiveScordite            => 28428,
+            Self::BatchCompressedGlossyScordite             => 46703,
 
-            Self::Spodumain                             => 19,
-            Self::BrightSpodumain                       => 17466,
-            Self::GleamingSpodumain                     => 17467,
-            Self::DazzlingSpodumain                     => 46688,
-            Self::CompressedSpodumain                   => 62572,
-            Self::CompressedBrightSpodumain             => 62573,
-            Self::CompressedGleamingSpodumain           => 62574,
-            Self::CompressedDazzlingSpodumain           => 62575,
+            Self::Spodumain                                 => 19,
+            Self::BrightSpodumain                           => 17466,
+            Self::GleamingSpodumain                         => 17467,
+            Self::DazzlingSpodumain                         => 46688,
+            Self::CompressedSpodumain                       => 62572,
+            Self::CompressedBrightSpodumain                 => 62573,
+            Self::CompressedGleamingSpodumain               => 62574,
+            Self::CompressedDazzlingSpodumain               => 62575,
+            Self::BatchCompressedSpodumain                  => 28420,
+            Self::BatchCompressedBrightSpodumain            => 28418,
+            Self::BatchCompressedGleamingSpodumain          => 28419,
+            Self::BatchCompressedDazzlingSpodumain          => 46704,
 
-            Self::Talassonite                           => 52306,
-            Self::AbyssalTalassonite                    => 56625,
-            Self::HadalTalassonite                      => 56626,
-            Self::CompressedTalassonite                 => 62582,
-            Self::CompressedAbyssalTalassonite          => 62583,
-            Self::CompressedHadalTalassonite            => 62584,
+            Self::Talassonite                               => 52306,
+            Self::AbyssalTalassonite                        => 56625,
+            Self::HadalTalassonite                          => 56626,
+            Self::CompressedTalassonite                     => 62582,
+            Self::CompressedAbyssalTalassonite              => 62583,
+            Self::CompressedHadalTalassonite                => 62584,
 
-            Self::Ueganite                              => 82205,
-            Self::FoggyUeganite                         => 82206,
-            Self::OvercastUeganite                      => 82207,
-            Self::StormyUeganite                        => 82208,
-            Self::CompressedUeganite                    => 82308,
-            Self::CompressedFoggyUeganite               => 82309,
-            Self::CompressedOvercastUeganite            => 82310,
-            Self::CompressedStormyUeganite              => 82311,
+            Self::Ueganite                                  => 82205,
+            Self::FoggyUeganite                             => 82206,
+            Self::OvercastUeganite                          => 82207,
+            Self::StormyUeganite                            => 82208,
+            Self::CompressedUeganite                        => 82308,
+            Self::CompressedFoggyUeganite                   => 82309,
+            Self::CompressedOvercastUeganite                => 82310,
+            Self::CompressedStormyUeganite                  => 82311,
 
-            Self::Veldspar                              => 1230,
-            Self::ConcentratedVeldspar                  => 17470,
-            Self::DenseVeldspar                         => 17471,
-            Self::StableVeldspar                        => 46689,
-            Self::CompressedVeldspar                    => 62516,
-            Self::CompressedConcentratedVeldspar        => 62517,
-            Self::CompressedDenseVeldspar               => 62518,
-            Self::CompressedStableVeldspar              => 62519,
+            Self::Veldspar                                  => 1230,
+            Self::ConcentratedVeldspar                      => 17470,
+            Self::DenseVeldspar                             => 17471,
+            Self::StableVeldspar                            => 46689,
+            Self::CompressedVeldspar                        => 62516,
+            Self::CompressedConcentratedVeldspar            => 62517,
+            Self::CompressedDenseVeldspar                   => 62518,
+            Self::CompressedStableVeldspar                  => 62519,
+            Self::BatchCompressedVeldspar                   => 28432,
+            Self::BatchCompressedConcentratedVeldspar       => 28430,
+            Self::BatchCompressedDenseVeldspar              => 28431,
+            Self::BatchCompressedStableVeldspar             => 46705,
 
-            Self::Ytirium                               => 74525,
-            Self::BootlegYtirium                        => 74526,
-            Self::FirewaterYtirium                      => 74527,
-            Self::MoonshineYtirium                      => 74528,
-            Self::CompressedYtirium                     => 75279,
-            Self::CompressedBootlegYtirium              => 75280,
-            Self::CompressedFirewaterYtirium            => 75281,
-            Self::CompressedMoonshineYtirium            => 75282,
+            Self::Ytirium                                   => 74525,
+            Self::BootlegYtirium                            => 74526,
+            Self::FirewaterYtirium                          => 74527,
+            Self::MoonshineYtirium                          => 74528,
+            Self::CompressedYtirium                         => 75279,
+            Self::CompressedBootlegYtirium                  => 75280,
+            Self::CompressedFirewaterYtirium                => 75281,
+            Self::CompressedMoonshineYtirium                => 75282,
 
             // MoonGoo
-            Self::Bitumens                              => 45492,
-            Self::BrimfulBitumens                       => 46284,
-            Self::GlisteningBitumens                    => 46285,
-            Self::CompressedBitumens                    => 62454,
-            Self::CompressedBrimfulBitumens             => 62455,
-            Self::CompressedGlisteningBitumens          => 62456,
+            Self::Bitumens                                  => 45492,
+            Self::BrimfulBitumens                           => 46284,
+            Self::GlisteningBitumens                        => 46285,
+            Self::CompressedBitumens                        => 62454,
+            Self::CompressedBrimfulBitumens                 => 62455,
+            Self::CompressedGlisteningBitumens              => 62456,
 
-            Self::Coesite                               => 45493,
-            Self::BrimfulCoesite                        => 46286,
-            Self::GlisteningCoesite                     => 46287,
-            Self::CompressedCoesite                     => 62457,
-            Self::CompressedBrimfulCoesite              => 62458,
-            Self::CompressedGlisteningCoesite           => 62459,
+            Self::Coesite                                   => 45493,
+            Self::BrimfulCoesite                            => 46286,
+            Self::GlisteningCoesite                         => 46287,
+            Self::CompressedCoesite                         => 62457,
+            Self::CompressedBrimfulCoesite                  => 62458,
+            Self::CompressedGlisteningCoesite               => 62459,
 
-            Self::Sylvite                               => 45491,
-            Self::BrimfulSylvite                        => 46282,
-            Self::GlisteningSylvite                     => 46283,
-            Self::CompressedSylvite                     => 62460,
-            Self::CompressedBrimfulSylvite              => 62461,
-            Self::CompressedGlisteningSylvite           => 62466,
+            Self::Sylvite                                   => 45491,
+            Self::BrimfulSylvite                            => 46282,
+            Self::GlisteningSylvite                         => 46283,
+            Self::CompressedSylvite                         => 62460,
+            Self::CompressedBrimfulSylvite                  => 62461,
+            Self::CompressedGlisteningSylvite               => 62466,
 
-            Self::Zeolites                              => 45490,
-            Self::BrimfulZeolites                       => 46280,
-            Self::GlisteningZeolites                    => 46281,
-            Self::CompressedZeolites                    => 62463,
-            Self::CompressedBrimfulZeolites             => 62464,
-            Self::CompressedGlisteningZeolites          => 62467,
+            Self::Zeolites                                  => 45490,
+            Self::BrimfulZeolites                           => 46280,
+            Self::GlisteningZeolites                        => 46281,
+            Self::CompressedZeolites                        => 62463,
+            Self::CompressedBrimfulZeolites                 => 62464,
+            Self::CompressedGlisteningZeolites              => 62467,
 
-            Self::Cobaltite                             => 45494,
-            Self::CopiousCobaltite                      => 46288,
-            Self::TwinklingCobaltite                    => 46289,
-            Self::CompressedCobaltite                   => 62474,
-            Self::CompressedCopiousCobaltite            => 62475,
-            Self::CompressedTwinklingCobaltite          => 62476,
+            Self::Cobaltite                                 => 45494,
+            Self::CopiousCobaltite                          => 46288,
+            Self::TwinklingCobaltite                        => 46289,
+            Self::CompressedCobaltite                       => 62474,
+            Self::CompressedCopiousCobaltite                => 62475,
+            Self::CompressedTwinklingCobaltite              => 62476,
 
-            Self::Euxenite                              => 45495,
-            Self::CopiousEuxenite                       => 46290,
-            Self::TwinklingEuxenite                     => 46291,
-            Self::CompressedEuxenite                    => 62471,
-            Self::CompressedCopiousEuxenite             => 62472,
-            Self::CompressedTwinklingEuxenite           => 62473,
+            Self::Euxenite                                  => 45495,
+            Self::CopiousEuxenite                           => 46290,
+            Self::TwinklingEuxenite                         => 46291,
+            Self::CompressedEuxenite                        => 62471,
+            Self::CompressedCopiousEuxenite                 => 62472,
+            Self::CompressedTwinklingEuxenite               => 62473,
 
-            Self::Scheelite                             => 45497,
-            Self::CopiousScheelite                      => 46294,
-            Self::TwinklingScheelite                    => 46295,
-            Self::CompressedScheelite                   => 62468,
-            Self::CompressedCopiousScheelite            => 62469,
-            Self::CompressedTwinklingScheelite          => 62470,
+            Self::Scheelite                                 => 45497,
+            Self::CopiousScheelite                          => 46294,
+            Self::TwinklingScheelite                        => 46295,
+            Self::CompressedScheelite                       => 62468,
+            Self::CompressedCopiousScheelite                => 62469,
+            Self::CompressedTwinklingScheelite              => 62470,
 
-            Self::Titanite                              => 45496,
-            Self::CopiousTitanite                       => 46292,
-            Self::TwinklingTitanite                     => 46293,
-            Self::CompressedTitanite                    => 62477,
-            Self::CompressedCopiousTitanite             => 62478,
-            Self::CompressedTwinklingTitanite           => 62479,
+            Self::Titanite                                  => 45496,
+            Self::CopiousTitanite                           => 46292,
+            Self::TwinklingTitanite                         => 46293,
+            Self::CompressedTitanite                        => 62477,
+            Self::CompressedCopiousTitanite                 => 62478,
+            Self::CompressedTwinklingTitanite               => 62479,
 
-            Self::Chromite                              => 45501,
-            Self::LavishChromite                        => 46302,
-            Self::ShimmeringChromite                    => 46303,
-            Self::CompressedChromite                    => 62480,
-            Self::CompressedLavishChromite              => 62481,
-            Self::CompressedShimmeringChromite          => 62482,
+            Self::Chromite                                  => 45501,
+            Self::LavishChromite                            => 46302,
+            Self::ShimmeringChromite                        => 46303,
+            Self::CompressedChromite                        => 62480,
+            Self::CompressedLavishChromite                  => 62481,
+            Self::CompressedShimmeringChromite              => 62482,
 
-            Self::Otavite                               => 45498,
-            Self::LavishOtavite                         => 46296,
-            Self::ShimmeringOtavite                     => 46297,
-            Self::CompressedOtavite                     => 62483,
-            Self::CompressedLavishOtavite               => 62484,
-            Self::CompressedShimmeringOtavite           => 62485,
+            Self::Otavite                                   => 45498,
+            Self::LavishOtavite                             => 46296,
+            Self::ShimmeringOtavite                         => 46297,
+            Self::CompressedOtavite                         => 62483,
+            Self::CompressedLavishOtavite                   => 62484,
+            Self::CompressedShimmeringOtavite               => 62485,
 
-            Self::Sperrylite                            => 45499,
-            Self::LavishSperrylite                      => 46298,
-            Self::ShimmeringSperrylite                  => 46299,
-            Self::CompressedSperrylite                  => 62486,
-            Self::CompressedLavishSperrylite            => 62487,
-            Self::CompressedShimmeringSperrylite        => 62488,
+            Self::Sperrylite                                => 45499,
+            Self::LavishSperrylite                          => 46298,
+            Self::ShimmeringSperrylite                      => 46299,
+            Self::CompressedSperrylite                      => 62486,
+            Self::CompressedLavishSperrylite                => 62487,
+            Self::CompressedShimmeringSperrylite            => 62488,
 
-            Self::Vanadinite                            => 45500,
-            Self::LavishVanadinite                      => 46300,
-            Self::ShimmeringVanadinite                  => 46301,
-            Self::CompressedVanadinite                  => 62489,
-            Self::CompressedLavishVanadinite            => 62490,
-            Self::CompressedShimmeringVanadinite        => 62491,
+            Self::Vanadinite                                => 45500,
+            Self::LavishVanadinite                          => 46300,
+            Self::ShimmeringVanadinite                      => 46301,
+            Self::CompressedVanadinite                      => 62489,
+            Self::CompressedLavishVanadinite                => 62490,
+            Self::CompressedShimmeringVanadinite            => 62491,
 
-            Self::Carnotite                             => 45502,
-            Self::RepleteCarnotite                      => 46304,
-            Self::GlowingCarnotite                      => 46305,
-            Self::CompressedCarnotite                   => 62492,
-            Self::CompressedRepleteCarnotite            => 62493,
-            Self::CompressedGlowingCarnotite            => 62494,
+            Self::Carnotite                                 => 45502,
+            Self::RepleteCarnotite                          => 46304,
+            Self::GlowingCarnotite                          => 46305,
+            Self::CompressedCarnotite                       => 62492,
+            Self::CompressedRepleteCarnotite                => 62493,
+            Self::CompressedGlowingCarnotite                => 62494,
 
-            Self::Cinnabar                              => 45506,
-            Self::RepleteCinnabar                       => 46310,
-            Self::GlowingCinnabar                       => 46311,
-            Self::CompressedCinnabar                    => 62495,
-            Self::CompressedRepleteCinnabar             => 62496,
-            Self::CompressedGlowingCinnabar             => 62497,
+            Self::Cinnabar                                  => 45506,
+            Self::RepleteCinnabar                           => 46310,
+            Self::GlowingCinnabar                           => 46311,
+            Self::CompressedCinnabar                        => 62495,
+            Self::CompressedRepleteCinnabar                 => 62496,
+            Self::CompressedGlowingCinnabar                 => 62497,
 
-            Self::Pollucite                             => 45504,
-            Self::RepletePollucite                      => 46308,
-            Self::GlowingPollucite                      => 46309,
-            Self::CompressedPollucite                   => 62498,
-            Self::CompressedRepletePollucite            => 62499,
-            Self::CompressedGlowingPollucite            => 62500,
+            Self::Pollucite                                 => 45504,
+            Self::RepletePollucite                          => 46308,
+            Self::GlowingPollucite                          => 46309,
+            Self::CompressedPollucite                       => 62498,
+            Self::CompressedRepletePollucite                => 62499,
+            Self::CompressedGlowingPollucite                => 62500,
 
-            Self::Zircon                                => 45503,
-            Self::RepleteZircon                         => 46306,
-            Self::GlowingZircon                         => 46307,
-            Self::CompressedZircon                      => 62501,
-            Self::CompressedRepleteZircon               => 62502,
-            Self::CompressedGlowingZircon               => 62503,
+            Self::Zircon                                    => 45503,
+            Self::RepleteZircon                             => 46306,
+            Self::GlowingZircon                             => 46307,
+            Self::CompressedZircon                          => 62501,
+            Self::CompressedRepleteZircon                   => 62502,
+            Self::CompressedGlowingZircon                   => 62503,
 
-            Self::Loparite                              => 45512,
-            Self::BountifulLoparite                     => 46316,
-            Self::ShiningLoparite                       => 46317,
-            Self::CompressedLoparite                    => 62504,
-            Self::CompressedBountifulLoparite           => 62505,
-            Self::CompressedShiningLoparite             => 62506,
+            Self::Loparite                                  => 45512,
+            Self::BountifulLoparite                         => 46316,
+            Self::ShiningLoparite                           => 46317,
+            Self::CompressedLoparite                        => 62504,
+            Self::CompressedBountifulLoparite               => 62505,
+            Self::CompressedShiningLoparite                 => 62506,
 
-            Self::Monazite                              => 45511,
-            Self::BountifulMonazite                     => 46314,
-            Self::ShiningMonazite                       => 46315,
-            Self::CompressedMonazite                    => 62507,
-            Self::CompressedBountifulMonazite           => 62508,
-            Self::CompressedShiningMonazite             => 62509,
+            Self::Monazite                                  => 45511,
+            Self::BountifulMonazite                         => 46314,
+            Self::ShiningMonazite                           => 46315,
+            Self::CompressedMonazite                        => 62507,
+            Self::CompressedBountifulMonazite               => 62508,
+            Self::CompressedShiningMonazite                 => 62509,
 
-            Self::Xenotime                              => 45510,
-            Self::BountifulXenotime                     => 46312,
-            Self::ShiningXenotime                       => 46313,
-            Self::CompressedXenotime                    => 62510,
-            Self::CompressedBountifulXenotime           => 62511,
-            Self::CompressedShiningXenotime             => 62512,
+            Self::Xenotime                                  => 45510,
+            Self::BountifulXenotime                         => 46312,
+            Self::ShiningXenotime                           => 46313,
+            Self::CompressedXenotime                        => 62510,
+            Self::CompressedBountifulXenotime               => 62511,
+            Self::CompressedShiningXenotime                 => 62512,
 
-            Self::Ytterbite                             => 45513,
-            Self::BountifulYtterbite                    => 46318,
-            Self::ShiningYtterbite                      => 46319,
-            Self::CompressedYtterbite                   => 62513,
-            Self::CompressedBountifulYtterbite          => 62514,
-            Self::CompressedShiningYtterbite            => 62515,
+            Self::Ytterbite                                 => 45513,
+            Self::BountifulYtterbite                        => 46318,
+            Self::ShiningYtterbite                          => 46319,
+            Self::CompressedYtterbite                       => 62513,
+            Self::CompressedBountifulYtterbite              => 62514,
+            Self::CompressedShiningYtterbite                => 62515,
 
-            Self::Tritanium                             => 34,
-            Self::Pyerite                               => 35,
-            Self::Mexallon                              => 36,
-            Self::Isogen                                => 37,
-            Self::Nocxium                               => 38,
-            Self::Zydrine                               => 39,
-            Self::Megacyte                              => 40,
-            Self::Morphite                              => 11399,
+            Self::Tritanium                                 => 34,
+            Self::Pyerite                                   => 35,
+            Self::Mexallon                                  => 36,
+            Self::Isogen                                    => 37,
+            Self::Nocxium                                   => 38,
+            Self::Zydrine                                   => 39,
+            Self::Megacyte                                  => 40,
+            Self::Morphite                                  => 11399,
 
-            Self::AtmosphericGases                      => 16634,
-            Self::EvaporiteDeposits                     => 16635,
-            Self::Hydrocarbons                          => 16633,
-            Self::Silicates                             => 16636,
-            Self::Cobalt                                => 16640,
-            Self::Scandium                              => 16639,
-            Self::Titanium                              => 16638,
-            Self::Tungsten                              => 16637,
-            Self::Chromium                              => 16641,
-            Self::Cadmium                               => 16643,
-            Self::Platinum                              => 16644,
-            Self::Vanadium                              => 16642,
-            Self::Caesium                               => 16647,
-            Self::Hafnium                               => 16648,
-            Self::Mercury                               => 16646,
-            Self::Technetium                            => 16649,
-            Self::Promethium                            => 16652,
-            Self::Neodymium                             => 16651,
-            Self::Dysprosium                            => 16650,
-            Self::Thulium                               => 16653,
+            Self::AtmosphericGases                          => 16634,
+            Self::EvaporiteDeposits                         => 16635,
+            Self::Hydrocarbons                              => 16633,
+            Self::Silicates                                 => 16636,
+            Self::Cobalt                                    => 16640,
+            Self::Scandium                                  => 16639,
+            Self::Titanium                                  => 16638,
+            Self::Tungsten                                  => 16637,
+            Self::Chromium                                  => 16641,
+            Self::Cadmium                                   => 16643,
+            Self::Platinum                                  => 16644,
+            Self::Vanadium                                  => 16642,
+            Self::Caesium                                   => 16647,
+            Self::Hafnium                                   => 16648,
+            Self::Mercury                                   => 16646,
+            Self::Technetium                                => 16649,
+            Self::Promethium                                => 16652,
+            Self::Neodymium                                 => 16651,
+            Self::Dysprosium                                => 16650,
+            Self::Thulium                                   => 16653,
         }
     }
 
@@ -1281,6 +1407,10 @@ impl Asteroid {
             62569 => Self::CompressedCrimsonArkonor,
             62570 => Self::CompressedPrimeArkonor,
             62571 => Self::CompressedFlawlessArkonor,
+            28367 => Self::BatchCompressedArkonor,
+            28385 => Self::BatchCompressedCrimsonArkonor,
+            28387 => Self::BatchCompressedPrimeArkonor,
+            46691 => Self::BatchCompressedFlawlessArkonor,
 
             52316 => Self::Bezdnacine,
             56627 => Self::AbyssalBezdnacine,
@@ -1297,6 +1427,10 @@ impl Asteroid {
             62565 => Self::CompressedTriclinicBistot,
             62566 => Self::CompressedMonoclinicBistot,
             62567 => Self::CompressedCubicBistot,
+            28388 => Self::BatchCompressedBistot,
+            28390 => Self::BatchCompressedTriclinicBistot,
+            28389 => Self::BatchCompressedMonoclinicBistot,
+            46692 => Self::BatchCompressedCubicBistot,
 
             1225  => Self::Crokite,
             17432 => Self::SharpCrokite,
@@ -1306,6 +1440,10 @@ impl Asteroid {
             62561 => Self::CompressedSharpCrokite,
             62562 => Self::CompressedCrystallineCrokite,
             62563 => Self::CompressedPellucidCrokite,
+            28391 => Self::BatchCompressedCrokite,
+            28392 => Self::BatchCompressedSharpCrokite,
+            28393 => Self::BatchCompressedCrystallineCrokite,
+            46693 => Self::BatchCompressedPellucidCrokite,
 
             1232  => Self::DarkOchre,
             17436 => Self::OnyxOchre,
@@ -1315,6 +1453,10 @@ impl Asteroid {
             62557 => Self::CompressedOnyxOchre,
             62558 => Self::CompressedObsidianOchre,
             62559 => Self::CompressedJetOchre,
+            28394 => Self::BatchCompressedDarkOchre,
+            28396 => Self::BatchCompressedOnyxOchre,
+            28395 => Self::BatchCompressedObsidianOchre,
+            46694 => Self::BatchCompressedJetOchre,
 
             74533 => Self::Ducinium,
             74534 => Self::NobleDucinium,
@@ -1342,6 +1484,11 @@ impl Asteroid {
             62553 => Self::CompressedIridescentGneiss,
             62554 => Self::CompressedPrismaticGneiss,
             62555 => Self::CompressedBrilliantGneiss,
+            28397 => Self::BatchCompressedGneiss,
+            28398 => Self::BatchCompressedIridescentGneiss,
+            28399 => Self::BatchCompressedPrismaticGneiss,
+            46695 => Self::BatchCompressedBrilliantGneiss,
+
 
             81975 => Self::Griemeer,
             81976 => Self::ClearGriemeer,
@@ -1360,6 +1507,10 @@ impl Asteroid {
             62549 => Self::CompressedVitricHedbergite,
             62550 => Self::CompressedGlazedHedbergite,
             62551 => Self::CompressedLustrousHedbergite,
+            28401 => Self::BatchCompressedHedbergite,
+            28402 => Self::BatchCompressedVitricHedbergite,
+            28400 => Self::BatchCompressedGlazedHedbergite,
+            46696 => Self::BatchCompressedLustrousHedbergite,
 
             1231  => Self::Hemorphite,
             17444 => Self::VividHemorphite,
@@ -1369,6 +1520,10 @@ impl Asteroid {
             62545 => Self::CompressedVividHemorphite,
             62546 => Self::CompressedRadiantHemorphite,
             62547 => Self::CompressedScintillatingHemorphite,
+            28403 => Self::BatchCompressedHemorphite,
+            28405 => Self::BatchCompressedVividHemorphite,
+            28404 => Self::BatchCompressedRadiantHemorphite,
+            46697 => Self::BatchCompressedScintillatingHemorphite,
 
             82163 => Self::Hezorime,
             82164 => Self::DullHezorime,
@@ -1387,6 +1542,11 @@ impl Asteroid {
             62541 => Self::CompressedPureJaspet,
             62542 => Self::CompressedPristineJaspet,
             62543 => Self::CompressedImmaculateJaspet,
+            28406 => Self::BatchCompressedJaspet,
+            28408 => Self::BatchCompressedPureJaspet,
+            28407 => Self::BatchCompressedPristineJaspet,
+            46698 => Self::BatchCompressedImmaculateJaspet,
+
 
             20    => Self::Kernite,
             17452 => Self::LuminousKernite,
@@ -1396,6 +1556,10 @@ impl Asteroid {
             62537 => Self::CompressedLuminousKernite,
             62538 => Self::CompressedFieryKernite,
             62539 => Self::CompressedResplendantKernite,
+            28410 => Self::BatchCompressedKernite,
+            28411 => Self::BatchCompressedLuminousKernite,
+            28409 => Self::BatchCompressedFieryKernite,
+            46699 => Self::BatchCompressedResplendantKernite,
 
             81900 => Self::Kylixium,
             81901 => Self::KaolinKylixium,
@@ -1412,6 +1576,9 @@ impl Asteroid {
             62586 => Self::CompressedMercoxit,
             62587 => Self::CompressedMagmaMercoxit,
             62588 => Self::CompressedVitreousMercoxit,
+            28413 => Self::BatchCompressedMercoxit,
+            28412 => Self::BatchCompressedMagmaMercoxit,
+            28414 => Self::BatchCompressedVitreousMercoxit,
 
             74521 => Self::Mordunium,
             74522 => Self::PlumMordunium,
@@ -1439,6 +1606,10 @@ impl Asteroid {
             62533 => Self::CompressedSilveryOmber,
             62534 => Self::CompressedGoldenOmber,
             62535 => Self::CompressedPlatinoidOmber,
+            28416 => Self::BatchCompressedOmber,
+            28417 => Self::BatchCompressedSilveryOmber,
+            28415 => Self::BatchCompressedGoldenOmber,
+            46700 => Self::BatchCompressedPlatinoidOmber,
 
             18    => Self::Plagioclase,
             17455 => Self::AzurePlagioclase,
@@ -1448,6 +1619,10 @@ impl Asteroid {
             62529 => Self::CompressedAzurePlagioclase,
             62530 => Self::CompressedRichPlagioclase,
             62531 => Self::CompressedSparklingPlagioclase,
+            28422 => Self::BatchCompressedPlagioclase,
+            28421 => Self::BatchCompressedAzurePlagioclase,
+            28423 => Self::BatchCompressedRichPlagioclase,
+            46701 => Self::BatchCompressedSparklingPlagioclase,
 
             1224  => Self::Pyroxeres,
             17459 => Self::SolidPyroxeres,
@@ -1457,6 +1632,10 @@ impl Asteroid {
             62525 => Self::CompressedSolidPyroxeres,
             62526 => Self::CompressedViscousPyroxeres,
             62527 => Self::CompressedOpulentPyroxeres,
+            28424 => Self::BatchCompressedPyroxeres,
+            28425 => Self::BatchCompressedSolidPyroxeres,
+            28426 => Self::BatchCompressedViscousPyroxeres,
+            46702 => Self::BatchCompressedOpulentPyroxeres,
 
             52315 => Self::Rakovene,
             56629 => Self::AbyssalRakovene,
@@ -1473,6 +1652,10 @@ impl Asteroid {
             62521 => Self::CompressedCondensedScordite,
             62522 => Self::CompressedMassiveScordite,
             62523 => Self::CompressedGlossyScordite,
+            28429 => Self::BatchCompressedScordite,
+            28427 => Self::BatchCompressedCondensedScordite,
+            28428 => Self::BatchCompressedMassiveScordite,
+            46703 => Self::BatchCompressedGlossyScordite,
 
             19    => Self::Spodumain,
             17466 => Self::BrightSpodumain,
@@ -1482,6 +1665,10 @@ impl Asteroid {
             62573 => Self::CompressedBrightSpodumain,
             62574 => Self::CompressedGleamingSpodumain,
             62575 => Self::CompressedDazzlingSpodumain,
+            28420 => Self::BatchCompressedSpodumain,
+            28418 => Self::BatchCompressedBrightSpodumain,
+            28419 => Self::BatchCompressedGleamingSpodumain,
+            46704 => Self::BatchCompressedDazzlingSpodumain,
 
             52306 => Self::Talassonite,
             56625 => Self::AbyssalTalassonite,
@@ -1507,6 +1694,10 @@ impl Asteroid {
             62517 => Self::CompressedConcentratedVeldspar,
             62518 => Self::CompressedDenseVeldspar,
             62519 => Self::CompressedStableVeldspar,
+            28432 => Self::BatchCompressedVeldspar,
+            28430 => Self::BatchCompressedConcentratedVeldspar,
+            28431 => Self::BatchCompressedDenseVeldspar,
+            46705 => Self::BatchCompressedStableVeldspar,
 
             74525 => Self::Ytirium,
             74526 => Self::BootlegYtirium,
@@ -1715,14 +1906,18 @@ impl Asteroid {
         };
 
         match self {
-            Self::Arkonor                               |
-            Self::CrimsonArkonor                        |
-            Self::PrimeArkonor                          |
-            Self::FlawlessArkonor                       |
-            Self::CompressedArkonor                     |
-            Self::CompressedCrimsonArkonor              |
-            Self::CompressedPrimeArkonor                |
-            Self::CompressedFlawlessArkonor             => {
+            Self::Arkonor                                   |
+            Self::CrimsonArkonor                            |
+            Self::PrimeArkonor                              |
+            Self::FlawlessArkonor                           |
+            Self::CompressedArkonor                         |
+            Self::CompressedCrimsonArkonor                  |
+            Self::CompressedPrimeArkonor                    |
+            Self::CompressedFlawlessArkonor                 |
+            Self::BatchCompressedArkonor                    |
+            Self::BatchCompressedCrimsonArkonor             |
+            Self::BatchCompressedPrimeArkonor               |
+            Self::BatchCompressedFlawlessArkonor            => {
                 mineral_init(
                     vec![
                         Mineral::Pyerite,
@@ -1737,12 +1932,12 @@ impl Asteroid {
                 )
             },
 
-            Self::Bezdnacine                            |
-            Self::AbyssalBezdnacine                     |
-            Self::HadalBezdnacine                       |
-            Self::CompressedBezdnacine                  |
-            Self::CompressedAbyssalBezdnacine           |
-            Self::CompressedHadalBezdnacine             => {
+            Self::Bezdnacine                                |
+            Self::AbyssalBezdnacine                         |
+            Self::HadalBezdnacine                           |
+            Self::CompressedBezdnacine                      |
+            Self::CompressedAbyssalBezdnacine               |
+            Self::CompressedHadalBezdnacine                 => {
                 mineral_init(
                     vec![
                         Mineral::Tritanium,
@@ -1757,14 +1952,18 @@ impl Asteroid {
                 )
             },
 
-            Self::Bistot                                |
-            Self::TriclinicBistot                       |
-            Self::MonoclinicBistot                      |
-            Self::CubicBistot                           |
-            Self::CompressedBistot                      |
-            Self::CompressedTriclinicBistot             |
-            Self::CompressedMonoclinicBistot            |
-            Self::CompressedCubicBistot                 => {
+            Self::Bistot                                    |
+            Self::TriclinicBistot                           |
+            Self::MonoclinicBistot                          |
+            Self::CubicBistot                               |
+            Self::CompressedBistot                          |
+            Self::CompressedTriclinicBistot                 |
+            Self::CompressedMonoclinicBistot                |
+            Self::CompressedCubicBistot                     |
+            Self::BatchCompressedBistot                     |
+            Self::BatchCompressedTriclinicBistot            |
+            Self::BatchCompressedMonoclinicBistot           |
+            Self::BatchCompressedCubicBistot                => {
                 mineral_init(
                     vec![
                         Mineral::Pyerite,
@@ -1779,14 +1978,18 @@ impl Asteroid {
                 )
             },
 
-            Self::Crokite                               |
-            Self::SharpCrokite                          |
-            Self::CrystallineCrokite                    |
-            Self::PellucidCrokite                       |
-            Self::CompressedCrokite                     |
-            Self::CompressedSharpCrokite                |
-            Self::CompressedCrystallineCrokite          |
-            Self::CompressedPellucidCrokite             => {
+            Self::Crokite                                   |
+            Self::SharpCrokite                              |
+            Self::CrystallineCrokite                        |
+            Self::PellucidCrokite                           |
+            Self::CompressedCrokite                         |
+            Self::CompressedSharpCrokite                    |
+            Self::CompressedCrystallineCrokite              |
+            Self::CompressedPellucidCrokite                 |
+            Self::BatchCompressedCrokite                    |
+            Self::BatchCompressedSharpCrokite               |
+            Self::BatchCompressedCrystallineCrokite         |
+            Self::BatchCompressedPellucidCrokite            => {
                 mineral_init(
                     vec![
                         Mineral::Pyerite,
@@ -1801,14 +2004,18 @@ impl Asteroid {
                 )
             },
 
-            Self::DarkOchre                             |
-            Self::OnyxOchre                             |
-            Self::ObsidianOchre                         |
-            Self::JetOchre                              |
-            Self::CompressedDarkOchre                   |
-            Self::CompressedOnyxOchre                   |
-            Self::CompressedObsidianOchre               |
-            Self::CompressedJetOchre                    => {
+            Self::DarkOchre                                 |
+            Self::OnyxOchre                                 |
+            Self::ObsidianOchre                             |
+            Self::JetOchre                                  |
+            Self::CompressedDarkOchre                       |
+            Self::CompressedOnyxOchre                       |
+            Self::CompressedObsidianOchre                   |
+            Self::CompressedJetOchre                        |
+            Self::BatchCompressedDarkOchre                  |
+            Self::BatchCompressedOnyxOchre                  |
+            Self::BatchCompressedObsidianOchre              |
+            Self::BatchCompressedJetOchre                   => {
                 mineral_init(
                     vec![
                         Mineral::Mexallon,
@@ -1823,14 +2030,14 @@ impl Asteroid {
                 )
             },
 
-            Self::Ducinium                              |
-            Self::NobleDucinium                         |
-            Self::RoyalDucinium                         |
-            Self::ImperialDucinium                      |
-            Self::CompressedDucinium                    |
-            Self::CompressedNobleDucinium               |
-            Self::CompressedRoyalDucinium               |
-            Self::CompressedImperialDucinium            => {
+            Self::Ducinium                                  |
+            Self::NobleDucinium                             |
+            Self::RoyalDucinium                             |
+            Self::ImperialDucinium                          |
+            Self::CompressedDucinium                        |
+            Self::CompressedNobleDucinium                   |
+            Self::CompressedRoyalDucinium                   |
+            Self::CompressedImperialDucinium                => {
                 mineral_init(
                     vec![
                         Mineral::Megacyte,
@@ -1841,14 +2048,14 @@ impl Asteroid {
                 )
             },
 
-            Self::Eifyrium                              |
-            Self::DopedEifyrium                         |
-            Self::BoostedEifyrium                       |
-            Self::AugmentedEifyrium                     |
-            Self::CompressedEifyrium                    |
-            Self::CompressedDopedEifyrium               |
-            Self::CompressedBoostedEifyrium             |
-            Self::CompressedAugmentedEifyrium           => {
+            Self::Eifyrium                                  |
+            Self::DopedEifyrium                             |
+            Self::BoostedEifyrium                           |
+            Self::AugmentedEifyrium                         |
+            Self::CompressedEifyrium                        |
+            Self::CompressedDopedEifyrium                   |
+            Self::CompressedBoostedEifyrium                 |
+            Self::CompressedAugmentedEifyrium               => {
                 mineral_init(
                     vec![
                         Mineral::Zydrine,
@@ -1859,14 +2066,18 @@ impl Asteroid {
                 )
             },
 
-            Self::Gneiss                                |
-            Self::IridescentGneiss                      |
-            Self::PrismaticGneiss                       |
-            Self::BrilliantGneiss                       |
-            Self::CompressedGneiss                      |
-            Self::CompressedIridescentGneiss            |
-            Self::CompressedPrismaticGneiss             |
-            Self::CompressedBrilliantGneiss             => {
+            Self::Gneiss                                    |
+            Self::IridescentGneiss                          |
+            Self::PrismaticGneiss                           |
+            Self::BrilliantGneiss                           |
+            Self::CompressedGneiss                          |
+            Self::CompressedIridescentGneiss                |
+            Self::CompressedPrismaticGneiss                 |
+            Self::CompressedBrilliantGneiss                 |
+            Self::BatchCompressedGneiss                     |
+            Self::BatchCompressedIridescentGneiss           |
+            Self::BatchCompressedPrismaticGneiss            |
+            Self::BatchCompressedBrilliantGneiss            => {
                 mineral_init(
                     vec![
                         Mineral::Pyerite,
@@ -1881,14 +2092,14 @@ impl Asteroid {
                 )
             },
 
-            Self::Griemeer                              |
-            Self::ClearGriemeer                         |
-            Self::InkyGriemeer                          |
-            Self::OpaqueGriemeer                        |
-            Self::CompressedGriemeer                    |
-            Self::CompressedClearGriemeer               |
-            Self::CompressedInkyGriemeer                |
-            Self::CompressedOpaqueGriemeer              => {
+            Self::Griemeer                                  |
+            Self::ClearGriemeer                             |
+            Self::InkyGriemeer                              |
+            Self::OpaqueGriemeer                            |
+            Self::CompressedGriemeer                        |
+            Self::CompressedClearGriemeer                   |
+            Self::CompressedInkyGriemeer                    |
+            Self::CompressedOpaqueGriemeer                  => {
                 mineral_init(
                     vec![
                         Mineral::Tritanium,
@@ -1901,14 +2112,18 @@ impl Asteroid {
                 )
             },
 
-            Self::Hedbergite                            |
-            Self::VitricHedbergite                      |
-            Self::GlazedHedbergite                      |
-            Self::LustrousHedbergite                    |
-            Self::CompressedHedbergite                  |
-            Self::CompressedVitricHedbergite            |
-            Self::CompressedGlazedHedbergite            |
-            Self::CompressedLustrousHedbergite          => {
+            Self::Hedbergite                                |
+            Self::VitricHedbergite                          |
+            Self::GlazedHedbergite                          |
+            Self::LustrousHedbergite                        |
+            Self::CompressedHedbergite                      |
+            Self::CompressedVitricHedbergite                |
+            Self::CompressedGlazedHedbergite                |
+            Self::CompressedLustrousHedbergite              |
+            Self::BatchCompressedHedbergite                 |
+            Self::BatchCompressedVitricHedbergite           |
+            Self::BatchCompressedGlazedHedbergite           |
+            Self::BatchCompressedLustrousHedbergite         => {
                 mineral_init(
                     vec![
                         Mineral::Pyerite,
@@ -1921,14 +2136,18 @@ impl Asteroid {
                 )
             },
 
-            Self::Hemorphite                            |
-            Self::VividHemorphite                       |
-            Self::RadiantHemorphite                     |
-            Self::ScintillatingHemorphite               |
-            Self::CompressedHemorphite                  |
-            Self::CompressedVividHemorphite             |
-            Self::CompressedRadiantHemorphite           |
-            Self::CompressedScintillatingHemorphite     => {
+            Self::Hemorphite                                |
+            Self::VividHemorphite                           |
+            Self::RadiantHemorphite                         |
+            Self::ScintillatingHemorphite                   |
+            Self::CompressedHemorphite                      |
+            Self::CompressedVividHemorphite                 |
+            Self::CompressedRadiantHemorphite               |
+            Self::CompressedScintillatingHemorphite         |
+            Self::BatchCompressedHemorphite                 |
+            Self::BatchCompressedVividHemorphite            |
+            Self::BatchCompressedRadiantHemorphite          |
+            Self::BatchCompressedScintillatingHemorphite    => {
                 mineral_init(
                     vec![
                         Mineral::Tritanium,
@@ -1943,14 +2162,14 @@ impl Asteroid {
                 )
             },
 
-            Self::Hezorime                              |
-            Self::DullHezorime                          |
-            Self::SerratedHezorime                      |
-            Self::SharpHezorime                         |
-            Self::CompressedHezorime                    |
-            Self::CompressedDullHezorime                |
-            Self::CompressedSerratedHezorime            |
-            Self::CompressedSharpHezorime               => {
+            Self::Hezorime                                  |
+            Self::DullHezorime                              |
+            Self::SerratedHezorime                          |
+            Self::SharpHezorime                             |
+            Self::CompressedHezorime                        |
+            Self::CompressedDullHezorime                    |
+            Self::CompressedSerratedHezorime                |
+            Self::CompressedSharpHezorime                   => {
                 mineral_init(
                     vec![
                         Mineral::Isogen,
@@ -1963,14 +2182,18 @@ impl Asteroid {
                 )
             },
 
-            Self::Jaspet                                |
-            Self::PureJaspet                            |
-            Self::PristineJaspet                        |
-            Self::ImmaculateJaspet                      |
-            Self::CompressedJaspet                      |
-            Self::CompressedPureJaspet                  |
-            Self::CompressedPristineJaspet              |
-            Self::CompressedImmaculateJaspet            => {
+            Self::Jaspet                                    |
+            Self::PureJaspet                                |
+            Self::PristineJaspet                            |
+            Self::ImmaculateJaspet                          |
+            Self::CompressedJaspet                          |
+            Self::CompressedPureJaspet                      |
+            Self::CompressedPristineJaspet                  |
+            Self::CompressedImmaculateJaspet                |
+            Self::BatchCompressedJaspet                     |
+            Self::BatchCompressedPureJaspet                 |
+            Self::BatchCompressedPristineJaspet             |
+            Self::BatchCompressedImmaculateJaspet           => {
                 mineral_init(
                     vec![
                         Mineral::Mexallon,
@@ -1983,14 +2206,18 @@ impl Asteroid {
                 )
             },
 
-            Self::Kernite                               |
-            Self::LuminousKernite                       |
-            Self::FieryKernite                          |
-            Self::ResplendantKernite                    |
-            Self::CompressedKernite                     |
-            Self::CompressedLuminousKernite             |
-            Self::CompressedFieryKernite                |
-            Self::CompressedResplendantKernite          => {
+            Self::Kernite                                   |
+            Self::LuminousKernite                           |
+            Self::FieryKernite                              |
+            Self::ResplendantKernite                        |
+            Self::CompressedKernite                         |
+            Self::CompressedLuminousKernite                 |
+            Self::CompressedFieryKernite                    |
+            Self::CompressedResplendantKernite              |
+            Self::BatchCompressedKernite                    |
+            Self::BatchCompressedLuminousKernite            |
+            Self::BatchCompressedFieryKernite               |
+            Self::BatchCompressedResplendantKernite         => {
                 mineral_init(
                     vec![
                         Mineral::Mexallon,
@@ -2003,14 +2230,14 @@ impl Asteroid {
                 )
             },
 
-            Self::Kylixium                              |
-            Self::KaolinKylixium                        |
-            Self::ArgilKylixium                         |
-            Self::AdobeKylixium                         |
-            Self::CompressedKylixium                    |
-            Self::CompressedKaolinKylixium              |
-            Self::CompressedArgilKylixium               |
-            Self::CompressedAdobeKylixium               => {
+            Self::Kylixium                                  |
+            Self::KaolinKylixium                            |
+            Self::ArgilKylixium                             |
+            Self::AdobeKylixium                             |
+            Self::CompressedKylixium                        |
+            Self::CompressedKaolinKylixium                  |
+            Self::CompressedArgilKylixium                   |
+            Self::CompressedAdobeKylixium                   => {
                 mineral_init(
                     vec![
                         Mineral::Tritanium,
@@ -2025,12 +2252,15 @@ impl Asteroid {
                 )
             },
 
-            Self::Mercoxit                              |
-            Self::MagmaMercoxit                         |
-            Self::VitreousMercoxit                      |
-            Self::CompressedMercoxit                    |
-            Self::CompressedMagmaMercoxit               |
-            Self::CompressedVitreousMercoxit            => {
+            Self::Mercoxit                                  |
+            Self::MagmaMercoxit                             |
+            Self::VitreousMercoxit                          |
+            Self::CompressedMercoxit                        |
+            Self::CompressedMagmaMercoxit                   |
+            Self::CompressedVitreousMercoxit                |
+            Self::BatchCompressedMercoxit                   |
+            Self::BatchCompressedMagmaMercoxit              |
+            Self::BatchCompressedVitreousMercoxit           => {
                 mineral_init(
                     vec![
                         Mineral::Morphite,
@@ -2041,14 +2271,14 @@ impl Asteroid {
                 )
             },
 
-            Self::Mordunium                             |
-            Self::PlumMordunium                         |
-            Self::PrizeMordunium                        |
-            Self::PlunderMordunium                      |
-            Self::CompressedMordunium                   |
-            Self::CompressedPlumMordunium               |
-            Self::CompressedPrizeMordunium              |
-            Self::CompressedPlunderMordunium            => {
+            Self::Mordunium                                 |
+            Self::PlumMordunium                             |
+            Self::PrizeMordunium                            |
+            Self::PlunderMordunium                          |
+            Self::CompressedMordunium                       |
+            Self::CompressedPlumMordunium                   |
+            Self::CompressedPrizeMordunium                  |
+            Self::CompressedPlunderMordunium                => {
                 mineral_init(
                     vec![
                         Mineral::Pyerite,
@@ -2059,14 +2289,14 @@ impl Asteroid {
                 )
             },
 
-            Self::Nocxite                               |
-            Self::FragrantNocxite                       |
-            Self::IntoxicatingNocxite                   |
-            Self::AmbrosialNocxite                      |
-            Self::CompressedNocxite                     |
-            Self::CompressedFragrantNocxite             |
-            Self::CompressedIntoxicatingNocxite         |
-            Self::CompressedAmbrosialNocxite            => {
+            Self::Nocxite                                   |
+            Self::FragrantNocxite                           |
+            Self::IntoxicatingNocxite                       |
+            Self::AmbrosialNocxite                          |
+            Self::CompressedNocxite                         |
+            Self::CompressedFragrantNocxite                 |
+            Self::CompressedIntoxicatingNocxite             |
+            Self::CompressedAmbrosialNocxite                => {
                 mineral_init(
                     vec![
                         Mineral::Tritanium,
@@ -2081,14 +2311,18 @@ impl Asteroid {
                 )
             },
 
-            Self::Omber                                 |
-            Self::SilveryOmber                          |
-            Self::GoldenOmber                           |
-            Self::PlatinoidOmber                        |
-            Self::CompressedOmber                       |
-            Self::CompressedSilveryOmber                |
-            Self::CompressedGoldenOmber                 |
-            Self::CompressedPlatinoidOmber              => {
+            Self::Omber                                     |
+            Self::SilveryOmber                              |
+            Self::GoldenOmber                               |
+            Self::PlatinoidOmber                            |
+            Self::CompressedOmber                           |
+            Self::CompressedSilveryOmber                    |
+            Self::CompressedGoldenOmber                     |
+            Self::CompressedPlatinoidOmber                  |
+            Self::BatchCompressedOmber                      |
+            Self::BatchCompressedSilveryOmber               |
+            Self::BatchCompressedGoldenOmber                |
+            Self::BatchCompressedPlatinoidOmber             => {
                 mineral_init(
                     vec![
                         Mineral::Pyerite,
@@ -2101,14 +2335,18 @@ impl Asteroid {
                 )
             },
 
-            Self::Plagioclase                           |
-            Self::AzurePlagioclase                      |
-            Self::RichPlagioclase                       |
-            Self::SparklingPlagioclase                  |
-            Self::CompressedPlagioclase                 |
-            Self::CompressedAzurePlagioclase            |
-            Self::CompressedRichPlagioclase             |
-            Self::CompressedSparklingPlagioclase        => {
+            Self::Plagioclase                               |
+            Self::AzurePlagioclase                          |
+            Self::RichPlagioclase                           |
+            Self::SparklingPlagioclase                      |
+            Self::CompressedPlagioclase                     |
+            Self::CompressedAzurePlagioclase                |
+            Self::CompressedRichPlagioclase                 |
+            Self::CompressedSparklingPlagioclase            |
+            Self::BatchCompressedPlagioclase                |
+            Self::BatchCompressedAzurePlagioclase           |
+            Self::BatchCompressedRichPlagioclase            |
+            Self::BatchCompressedSparklingPlagioclase       => {
                 mineral_init(
                     vec![
                         Mineral::Tritanium,
@@ -2121,14 +2359,18 @@ impl Asteroid {
                 )
             },
 
-            Self::Pyroxeres                             |
-            Self::SolidPyroxeres                        |
-            Self::ViscousPyroxeres                      |
-            Self::OpulentPyroxeres                      |
-            Self::CompressedPyroxeres                   |
-            Self::CompressedSolidPyroxeres              |
-            Self::CompressedViscousPyroxeres            |
-            Self::CompressedOpulentPyroxeres            => {
+            Self::Pyroxeres                                 |
+            Self::SolidPyroxeres                            |
+            Self::ViscousPyroxeres                          |
+            Self::OpulentPyroxeres                          |
+            Self::CompressedPyroxeres                       |
+            Self::CompressedSolidPyroxeres                  |
+            Self::CompressedViscousPyroxeres                |
+            Self::CompressedOpulentPyroxeres                |
+            Self::BatchCompressedPyroxeres                  |
+            Self::BatchCompressedSolidPyroxeres             |
+            Self::BatchCompressedViscousPyroxeres           |
+            Self::BatchCompressedOpulentPyroxeres           => {
                 mineral_init(
                     vec![
                         Mineral::Pyerite,
@@ -2141,12 +2383,12 @@ impl Asteroid {
                 )
             },
 
-            Self::Rakovene                              |
-            Self::AbyssalRakovene                       |
-            Self::HadalRakovene                         |
-            Self::CompressedRakovene                    |
-            Self::CompressedAbyssalRakovene             |
-            Self::CompressedHadalRakovene               => {
+            Self::Rakovene                                  |
+            Self::AbyssalRakovene                           |
+            Self::HadalRakovene                             |
+            Self::CompressedRakovene                        |
+            Self::CompressedAbyssalRakovene                 |
+            Self::CompressedHadalRakovene                   => {
                 mineral_init(
                     vec![
                         Mineral::Tritanium,
@@ -2161,14 +2403,18 @@ impl Asteroid {
                 )
             },
 
-            Self::Scordite                              |
-            Self::CondensedScordite                     |
-            Self::MassiveScordite                       |
-            Self::GlossyScordite                        |
-            Self::CompressedScordite                    |
-            Self::CompressedCondensedScordite           |
-            Self::CompressedMassiveScordite             |
-            Self::CompressedGlossyScordite              => {
+            Self::Scordite                                  |
+            Self::CondensedScordite                         |
+            Self::MassiveScordite                           |
+            Self::GlossyScordite                            |
+            Self::CompressedScordite                        |
+            Self::CompressedCondensedScordite               |
+            Self::CompressedMassiveScordite                 |
+            Self::CompressedGlossyScordite                  |
+            Self::BatchCompressedScordite                   |
+            Self::BatchCompressedCondensedScordite          |
+            Self::BatchCompressedMassiveScordite            |
+            Self::BatchCompressedGlossyScordite             => {
                 mineral_init(
                     vec![
                         Mineral::Tritanium,
@@ -2181,14 +2427,18 @@ impl Asteroid {
                 )
             },
 
-            Self::Spodumain                             |
-            Self::BrightSpodumain                       |
-            Self::GleamingSpodumain                     |
-            Self::DazzlingSpodumain                     |
-            Self::CompressedSpodumain                   |
-            Self::CompressedBrightSpodumain             |
-            Self::CompressedGleamingSpodumain           |
-            Self::CompressedDazzlingSpodumain           => {
+            Self::Spodumain                                 |
+            Self::BrightSpodumain                           |
+            Self::GleamingSpodumain                         |
+            Self::DazzlingSpodumain                         |
+            Self::CompressedSpodumain                       |
+            Self::CompressedBrightSpodumain                 |
+            Self::CompressedGleamingSpodumain               |
+            Self::CompressedDazzlingSpodumain               |
+            Self::BatchCompressedSpodumain                  |
+            Self::BatchCompressedBrightSpodumain            |
+            Self::BatchCompressedGleamingSpodumain          |
+            Self::BatchCompressedDazzlingSpodumain          => {
                 mineral_init(
                     vec![
                         Mineral::Tritanium,
@@ -2207,12 +2457,12 @@ impl Asteroid {
                 )
             },
 
-            Self::Talassonite                           |
-            Self::AbyssalTalassonite                    |
-            Self::HadalTalassonite                      |
-            Self::CompressedTalassonite                 |
-            Self::CompressedAbyssalTalassonite          |
-            Self::CompressedHadalTalassonite            => {
+            Self::Talassonite                               |
+            Self::AbyssalTalassonite                        |
+            Self::HadalTalassonite                          |
+            Self::CompressedTalassonite                     |
+            Self::CompressedAbyssalTalassonite              |
+            Self::CompressedHadalTalassonite                => {
                 mineral_init(
                     vec![
                         Mineral::Tritanium,
@@ -2227,14 +2477,14 @@ impl Asteroid {
                 )
             },
 
-            Self::Ueganite                              |
-            Self::FoggyUeganite                         |
-            Self::OvercastUeganite                      |
-            Self::StormyUeganite                        |
-            Self::CompressedUeganite                    |
-            Self::CompressedFoggyUeganite               |
-            Self::CompressedOvercastUeganite            |
-            Self::CompressedStormyUeganite              => {
+            Self::Ueganite                                  |
+            Self::FoggyUeganite                             |
+            Self::OvercastUeganite                          |
+            Self::StormyUeganite                            |
+            Self::CompressedUeganite                        |
+            Self::CompressedFoggyUeganite                   |
+            Self::CompressedOvercastUeganite                |
+            Self::CompressedStormyUeganite                  => {
                 mineral_init(
                     vec![
                         Mineral::Tritanium,
@@ -2247,14 +2497,18 @@ impl Asteroid {
                 )
             },
 
-            Self::Veldspar                              |
-            Self::ConcentratedVeldspar                  |
-            Self::DenseVeldspar                         |
-            Self::StableVeldspar                        |
-            Self::CompressedVeldspar                    |
-            Self::CompressedConcentratedVeldspar        |
-            Self::CompressedDenseVeldspar               |
-            Self::CompressedStableVeldspar              => {
+            Self::Veldspar                                  |
+            Self::ConcentratedVeldspar                      |
+            Self::DenseVeldspar                             |
+            Self::StableVeldspar                            |
+            Self::CompressedVeldspar                        |
+            Self::CompressedConcentratedVeldspar            |
+            Self::CompressedDenseVeldspar                   |
+            Self::CompressedStableVeldspar                  |
+            Self::BatchCompressedVeldspar                   |
+            Self::BatchCompressedConcentratedVeldspar       |
+            Self::BatchCompressedDenseVeldspar              |
+            Self::BatchCompressedStableVeldspar             => {
                 mineral_init(
                     vec![
                         Mineral::Tritanium,
@@ -2265,14 +2519,14 @@ impl Asteroid {
                 )
             },
 
-            Self::Ytirium                               |
-            Self::BootlegYtirium                        |
-            Self::FirewaterYtirium                      |
-            Self::MoonshineYtirium                      |
-            Self::CompressedYtirium                     |
-            Self::CompressedBootlegYtirium              |
-            Self::CompressedFirewaterYtirium            |
-            Self::CompressedMoonshineYtirium            => {
+            Self::Ytirium                                   |
+            Self::BootlegYtirium                            |
+            Self::FirewaterYtirium                          |
+            Self::MoonshineYtirium                          |
+            Self::CompressedYtirium                         |
+            Self::CompressedBootlegYtirium                  |
+            Self::CompressedFirewaterYtirium                |
+            Self::CompressedMoonshineYtirium                => {
                 mineral_init(
                     vec![
                         Mineral::Isogen,
@@ -2284,12 +2538,12 @@ impl Asteroid {
             },
 
             // MoonGoo
-            Self::Bitumens                              |
-            Self::BrimfulBitumens                       |
-            Self::GlisteningBitumens                    |
-            Self::CompressedBitumens                    |
-            Self::CompressedBrimfulBitumens             |
-            Self::CompressedGlisteningBitumens          => {
+            Self::Bitumens                                  |
+            Self::BrimfulBitumens                           |
+            Self::GlisteningBitumens                        |
+            Self::CompressedBitumens                        |
+            Self::CompressedBrimfulBitumens                 |
+            Self::CompressedGlisteningBitumens              => {
                 mineral_init(
                     vec![
                         Mineral::Pyerite,
@@ -2304,12 +2558,12 @@ impl Asteroid {
                 )
             },
 
-            Self::Coesite                               |
-            Self::BrimfulCoesite                        |
-            Self::GlisteningCoesite                     |
-            Self::CompressedCoesite                     |
-            Self::CompressedBrimfulCoesite              |
-            Self::CompressedGlisteningCoesite           => {
+            Self::Coesite                                   |
+            Self::BrimfulCoesite                            |
+            Self::GlisteningCoesite                         |
+            Self::CompressedCoesite                         |
+            Self::CompressedBrimfulCoesite                  |
+            Self::CompressedGlisteningCoesite               => {
                 mineral_init(
                     vec![
                         Mineral::Pyerite,
@@ -2324,12 +2578,12 @@ impl Asteroid {
                 )
             },
 
-            Self::Sylvite                               |
-            Self::BrimfulSylvite                        |
-            Self::GlisteningSylvite                     |
-            Self::CompressedSylvite                     |
-            Self::CompressedBrimfulSylvite              |
-            Self::CompressedGlisteningSylvite           => {
+            Self::Sylvite                                   |
+            Self::BrimfulSylvite                            |
+            Self::GlisteningSylvite                         |
+            Self::CompressedSylvite                         |
+            Self::CompressedBrimfulSylvite                  |
+            Self::CompressedGlisteningSylvite               => {
                 mineral_init(
                     vec![
                         Mineral::Pyerite,
@@ -2344,12 +2598,12 @@ impl Asteroid {
                 )
             },
 
-            Self::Zeolites                              |
-            Self::BrimfulZeolites                       |
-            Self::GlisteningZeolites                    |
-            Self::CompressedZeolites                    |
-            Self::CompressedBrimfulZeolites             |
-            Self::CompressedGlisteningZeolites          => {
+            Self::Zeolites                                  |
+            Self::BrimfulZeolites                           |
+            Self::GlisteningZeolites                        |
+            Self::CompressedZeolites                        |
+            Self::CompressedBrimfulZeolites                 |
+            Self::CompressedGlisteningZeolites              => {
                 mineral_init(
                     vec![
                         Mineral::Pyerite,
@@ -2364,12 +2618,12 @@ impl Asteroid {
                 )
             },
 
-            Self::Cobaltite                             |
-            Self::CopiousCobaltite                      |
-            Self::TwinklingCobaltite                    |
-            Self::CompressedCobaltite                   |
-            Self::CompressedCopiousCobaltite            |
-            Self::CompressedTwinklingCobaltite          => {
+            Self::Cobaltite                                 |
+            Self::CopiousCobaltite                          |
+            Self::TwinklingCobaltite                        |
+            Self::CompressedCobaltite                       |
+            Self::CompressedCopiousCobaltite                |
+            Self::CompressedTwinklingCobaltite              => {
                 mineral_init(
                     vec![
                         Mineral::Cobalt,
@@ -2380,12 +2634,12 @@ impl Asteroid {
                 )
             },
 
-            Self::Euxenite                              |
-            Self::CopiousEuxenite                       |
-            Self::TwinklingEuxenite                     |
-            Self::CompressedEuxenite                    |
-            Self::CompressedCopiousEuxenite             |
-            Self::CompressedTwinklingEuxenite           => {
+            Self::Euxenite                                  |
+            Self::CopiousEuxenite                           |
+            Self::TwinklingEuxenite                         |
+            Self::CompressedEuxenite                        |
+            Self::CompressedCopiousEuxenite                 |
+            Self::CompressedTwinklingEuxenite               => {
                 mineral_init(
                     vec![
                         Mineral::Scandium,
@@ -2396,12 +2650,12 @@ impl Asteroid {
                 )
             },
 
-            Self::Scheelite                             |
-            Self::CopiousScheelite                      |
-            Self::TwinklingScheelite                    |
-            Self::CompressedScheelite                   |
-            Self::CompressedCopiousScheelite            |
-            Self::CompressedTwinklingScheelite          => {
+            Self::Scheelite                                 |
+            Self::CopiousScheelite                          |
+            Self::TwinklingScheelite                        |
+            Self::CompressedScheelite                       |
+            Self::CompressedCopiousScheelite                |
+            Self::CompressedTwinklingScheelite              => {
                 mineral_init(
                     vec![
                         Mineral::Tungsten,
@@ -2412,12 +2666,12 @@ impl Asteroid {
                 )
             },
 
-            Self::Titanite                              |
-            Self::CopiousTitanite                       |
-            Self::TwinklingTitanite                     |
-            Self::CompressedTitanite                    |
-            Self::CompressedCopiousTitanite             |
-            Self::CompressedTwinklingTitanite           => {
+            Self::Titanite                                  |
+            Self::CopiousTitanite                           |
+            Self::TwinklingTitanite                         |
+            Self::CompressedTitanite                        |
+            Self::CompressedCopiousTitanite                 |
+            Self::CompressedTwinklingTitanite               => {
                 mineral_init(
                     vec![
                         Mineral::Titanium,
@@ -2428,12 +2682,12 @@ impl Asteroid {
                 )
             },
 
-            Self::Chromite                              |
-            Self::LavishChromite                        |
-            Self::ShimmeringChromite                    |
-            Self::CompressedChromite                    |
-            Self::CompressedLavishChromite              |
-            Self::CompressedShimmeringChromite          => {
+            Self::Chromite                                  |
+            Self::LavishChromite                            |
+            Self::ShimmeringChromite                        |
+            Self::CompressedChromite                        |
+            Self::CompressedLavishChromite                  |
+            Self::CompressedShimmeringChromite              => {
                 mineral_init(
                     vec![
                         Mineral::Hydrocarbons,
@@ -2446,12 +2700,12 @@ impl Asteroid {
                 )
             },
 
-            Self::Otavite                               |
-            Self::LavishOtavite                         |
-            Self::ShimmeringOtavite                     |
-            Self::CompressedOtavite                     |
-            Self::CompressedLavishOtavite               |
-            Self::CompressedShimmeringOtavite           => {
+            Self::Otavite                                   |
+            Self::LavishOtavite                             |
+            Self::ShimmeringOtavite                         |
+            Self::CompressedOtavite                         |
+            Self::CompressedLavishOtavite                   |
+            Self::CompressedShimmeringOtavite               => {
                 mineral_init(
                     vec![
                         Mineral::AtmosphericGases,
@@ -2464,12 +2718,12 @@ impl Asteroid {
                 )
             },
 
-            Self::Sperrylite                            |
-            Self::LavishSperrylite                      |
-            Self::ShimmeringSperrylite                  |
-            Self::CompressedSperrylite                  |
-            Self::CompressedLavishSperrylite            |
-            Self::CompressedShimmeringSperrylite        => {
+            Self::Sperrylite                                |
+            Self::LavishSperrylite                          |
+            Self::ShimmeringSperrylite                      |
+            Self::CompressedSperrylite                      |
+            Self::CompressedLavishSperrylite                |
+            Self::CompressedShimmeringSperrylite            => {
                 mineral_init(
                     vec![
                         Mineral::EvaporiteDeposits,
@@ -2482,12 +2736,12 @@ impl Asteroid {
                 )
             },
 
-            Self::Vanadinite                            |
-            Self::LavishVanadinite                      |
-            Self::ShimmeringVanadinite                  |
-            Self::CompressedVanadinite                  |
-            Self::CompressedLavishVanadinite            |
-            Self::CompressedShimmeringVanadinite        => {
+            Self::Vanadinite                                |
+            Self::LavishVanadinite                          |
+            Self::ShimmeringVanadinite                      |
+            Self::CompressedVanadinite                      |
+            Self::CompressedLavishVanadinite                |
+            Self::CompressedShimmeringVanadinite            => {
                 mineral_init(
                     vec![
                         Mineral::Silicates,
@@ -2500,12 +2754,12 @@ impl Asteroid {
                 )
             },
 
-            Self::Carnotite                             |
-            Self::RepleteCarnotite                      |
-            Self::GlowingCarnotite                      |
-            Self::CompressedCarnotite                   |
-            Self::CompressedRepleteCarnotite            |
-            Self::CompressedGlowingCarnotite            => {
+            Self::Carnotite                                 |
+            Self::RepleteCarnotite                          |
+            Self::GlowingCarnotite                          |
+            Self::CompressedCarnotite                       |
+            Self::CompressedRepleteCarnotite                |
+            Self::CompressedGlowingCarnotite                => {
                 mineral_init(
                     vec![
                         Mineral::AtmosphericGases,
@@ -2520,12 +2774,12 @@ impl Asteroid {
                 )
             },
 
-            Self::Cinnabar                              |
-            Self::RepleteCinnabar                       |
-            Self::GlowingCinnabar                       |
-            Self::CompressedCinnabar                    |
-            Self::CompressedRepleteCinnabar             |
-            Self::CompressedGlowingCinnabar             => {
+            Self::Cinnabar                                  |
+            Self::RepleteCinnabar                           |
+            Self::GlowingCinnabar                           |
+            Self::CompressedCinnabar                        |
+            Self::CompressedRepleteCinnabar                 |
+            Self::CompressedGlowingCinnabar                 => {
                 mineral_init(
                     vec![
                         Mineral::EvaporiteDeposits,
@@ -2540,12 +2794,12 @@ impl Asteroid {
                 )
             },
 
-            Self::Pollucite                             |
-            Self::RepletePollucite                      |
-            Self::GlowingPollucite                      |
-            Self::CompressedPollucite                   |
-            Self::CompressedRepletePollucite            |
-            Self::CompressedGlowingPollucite            => {
+            Self::Pollucite                                 |
+            Self::RepletePollucite                          |
+            Self::GlowingPollucite                          |
+            Self::CompressedPollucite                       |
+            Self::CompressedRepletePollucite                |
+            Self::CompressedGlowingPollucite                => {
                 mineral_init(
                     vec![
                         Mineral::Hydrocarbons,
@@ -2560,12 +2814,12 @@ impl Asteroid {
                 )
             },
 
-            Self::Zircon                                |
-            Self::RepleteZircon                         |
-            Self::GlowingZircon                         |
-            Self::CompressedZircon                      |
-            Self::CompressedRepleteZircon               |
-            Self::CompressedGlowingZircon               => {
+            Self::Zircon                                    |
+            Self::RepleteZircon                             |
+            Self::GlowingZircon                             |
+            Self::CompressedZircon                          |
+            Self::CompressedRepleteZircon                   |
+            Self::CompressedGlowingZircon                   => {
                 mineral_init(
                     vec![
                         Mineral::Silicates,
@@ -2580,12 +2834,12 @@ impl Asteroid {
                 )
             },
 
-            Self::Loparite                              |
-            Self::BountifulLoparite                     |
-            Self::ShiningLoparite                       |
-            Self::CompressedLoparite                    |
-            Self::CompressedBountifulLoparite           |
-            Self::CompressedShiningLoparite             => {
+            Self::Loparite                                  |
+            Self::BountifulLoparite                         |
+            Self::ShiningLoparite                           |
+            Self::CompressedLoparite                        |
+            Self::CompressedBountifulLoparite               |
+            Self::CompressedShiningLoparite                 => {
                 mineral_init(
                     vec![
                         Mineral::Hydrocarbons,
@@ -2602,12 +2856,12 @@ impl Asteroid {
                 )
             },
 
-            Self::Monazite                              |
-            Self::BountifulMonazite                     |
-            Self::ShiningMonazite                       |
-            Self::CompressedMonazite                    |
-            Self::CompressedBountifulMonazite           |
-            Self::CompressedShiningMonazite             => {
+            Self::Monazite                                  |
+            Self::BountifulMonazite                         |
+            Self::ShiningMonazite                           |
+            Self::CompressedMonazite                        |
+            Self::CompressedBountifulMonazite               |
+            Self::CompressedShiningMonazite                 => {
                 mineral_init(
                     vec![
                         Mineral::EvaporiteDeposits,
@@ -2624,12 +2878,12 @@ impl Asteroid {
                 )
             },
 
-            Self::Xenotime                              |
-            Self::BountifulXenotime                     |
-            Self::ShiningXenotime                       |
-            Self::CompressedXenotime                    |
-            Self::CompressedBountifulXenotime           |
-            Self::CompressedShiningXenotime             => {
+            Self::Xenotime                                  |
+            Self::BountifulXenotime                         |
+            Self::ShiningXenotime                           |
+            Self::CompressedXenotime                        |
+            Self::CompressedBountifulXenotime               |
+            Self::CompressedShiningXenotime                 => {
                 mineral_init(
                     vec![
                         Mineral::AtmosphericGases,
@@ -2646,12 +2900,12 @@ impl Asteroid {
                 )
             },
 
-            Self::Ytterbite                             |
-            Self::BountifulYtterbite                    |
-            Self::ShiningYtterbite                      |
-            Self::CompressedYtterbite                   |
-            Self::CompressedBountifulYtterbite          |
-            Self::CompressedShiningYtterbite            => {
+            Self::Ytterbite                                 |
+            Self::BountifulYtterbite                        |
+            Self::ShiningYtterbite                          |
+            Self::CompressedYtterbite                       |
+            Self::CompressedBountifulYtterbite              |
+            Self::CompressedShiningYtterbite                => {
                 mineral_init(
                     vec![
                         Mineral::Silicates,
@@ -2702,351 +2956,445 @@ impl Asteroid {
 
     pub fn ore_modifier(&self) -> f64 {
         match self {
-            Self::Arkonor                               |
-            Self::CompressedArkonor                     |
-            Self::Bezdnacine                            |
-            Self::CompressedBezdnacine                  |
-            Self::Bistot                                |
-            Self::CompressedBistot                      |
-            Self::Crokite                               |
-            Self::CompressedCrokite                     |
-            Self::DarkOchre                             |
-            Self::CompressedDarkOchre                   |
-            Self::Ducinium                              |
-            Self::CompressedDucinium                    |
-            Self::Eifyrium                              |
-            Self::CompressedEifyrium                    |
-            Self::Gneiss                                |
-            Self::CompressedGneiss                      |
-            Self::Griemeer                              |
-            Self::CompressedGriemeer                    |
-            Self::Hedbergite                            |
-            Self::CompressedHedbergite                  |
-            Self::Hemorphite                            |
-            Self::CompressedHemorphite                  |
-            Self::Hezorime                              |
-            Self::CompressedHezorime                    |
-            Self::Jaspet                                |
-            Self::CompressedJaspet                      |
-            Self::Kernite                               |
-            Self::CompressedKernite                     |
-            Self::Kylixium                              |
-            Self::CompressedKylixium                    |
-            Self::Mercoxit                              |
-            Self::CompressedMercoxit                    |
-            Self::Mordunium                             |
-            Self::CompressedMordunium                   |
-            Self::Nocxite                               |
-            Self::CompressedNocxite                     |
-            Self::Omber                                 |
-            Self::CompressedOmber                       |
-            Self::Plagioclase                           |
-            Self::CompressedPlagioclase                 |
-            Self::Pyroxeres                             |
-            Self::CompressedPyroxeres                   |
-            Self::Rakovene                              |
-            Self::CompressedRakovene                    |
-            Self::Scordite                              |
-            Self::CompressedScordite                    |
-            Self::Spodumain                             |
-            Self::CompressedSpodumain                   |
-            Self::Talassonite                           |
-            Self::CompressedTalassonite                 |
-            Self::Ueganite                              |
-            Self::CompressedUeganite                    |
-            Self::Veldspar                              |
-            Self::CompressedVeldspar                    |
-            Self::Ytirium                               |
-            Self::CompressedYtirium                     => 1.00,
+            Self::Arkonor                                   |
+            Self::CompressedArkonor                         |
+            Self::Bezdnacine                                |
+            Self::CompressedBezdnacine                      |
+            Self::Bistot                                    |
+            Self::CompressedBistot                          |
+            Self::Crokite                                   |
+            Self::CompressedCrokite                         |
+            Self::DarkOchre                                 |
+            Self::CompressedDarkOchre                       |
+            Self::Ducinium                                  |
+            Self::CompressedDucinium                        |
+            Self::Eifyrium                                  |
+            Self::CompressedEifyrium                        |
+            Self::Gneiss                                    |
+            Self::CompressedGneiss                          |
+            Self::Griemeer                                  |
+            Self::CompressedGriemeer                        |
+            Self::Hedbergite                                |
+            Self::CompressedHedbergite                      |
+            Self::Hemorphite                                |
+            Self::CompressedHemorphite                      |
+            Self::Hezorime                                  |
+            Self::CompressedHezorime                        |
+            Self::Jaspet                                    |
+            Self::CompressedJaspet                          |
+            Self::Kernite                                   |
+            Self::CompressedKernite                         |
+            Self::Kylixium                                  |
+            Self::CompressedKylixium                        |
+            Self::Mercoxit                                  |
+            Self::CompressedMercoxit                        |
+            Self::Mordunium                                 |
+            Self::CompressedMordunium                       |
+            Self::Nocxite                                   |
+            Self::CompressedNocxite                         |
+            Self::Omber                                     |
+            Self::CompressedOmber                           |
+            Self::Plagioclase                               |
+            Self::CompressedPlagioclase                     |
+            Self::Pyroxeres                                 |
+            Self::CompressedPyroxeres                       |
+            Self::Rakovene                                  |
+            Self::CompressedRakovene                        |
+            Self::Scordite                                  |
+            Self::CompressedScordite                        |
+            Self::Spodumain                                 |
+            Self::CompressedSpodumain                       |
+            Self::Talassonite                               |
+            Self::CompressedTalassonite                     |
+            Self::Ueganite                                  |
+            Self::CompressedUeganite                        |
+            Self::Veldspar                                  |
+            Self::CompressedVeldspar                        |
+            Self::Ytirium                                   |
+            Self::CompressedYtirium                         => 1.00,
 
-            Self::CrimsonArkonor                        |
-            Self::CompressedCrimsonArkonor              |
-            Self::AbyssalBezdnacine                     |
-            Self::CompressedAbyssalBezdnacine           |
-            Self::TriclinicBistot                       |
-            Self::CompressedTriclinicBistot             |
-            Self::SharpCrokite                          |
-            Self::CompressedSharpCrokite                |
-            Self::OnyxOchre                             |
-            Self::CompressedOnyxOchre                   |
-            Self::NobleDucinium                         |
-            Self::CompressedNobleDucinium               |
-            Self::DopedEifyrium                         |
-            Self::CompressedDopedEifyrium               |
-            Self::IridescentGneiss                      |
-            Self::CompressedIridescentGneiss            |
-            Self::ClearGriemeer                         |
-            Self::CompressedClearGriemeer               |
-            Self::VitricHedbergite                      |
-            Self::CompressedVitricHedbergite            |
-            Self::VividHemorphite                       |
-            Self::CompressedVividHemorphite             |
-            Self::DullHezorime                          |
-            Self::CompressedDullHezorime                |
-            Self::PureJaspet                            |
-            Self::CompressedPureJaspet                  |
-            Self::LuminousKernite                       |
-            Self::CompressedLuminousKernite             |
-            Self::KaolinKylixium                        |
-            Self::CompressedKaolinKylixium              |
-            Self::MagmaMercoxit                         |
-            Self::CompressedMagmaMercoxit               |
-            Self::PlumMordunium                         |
-            Self::CompressedPlumMordunium               |
-            Self::FragrantNocxite                       |
-            Self::CompressedFragrantNocxite             |
-            Self::SilveryOmber                          |
-            Self::CompressedSilveryOmber                |
-            Self::AzurePlagioclase                      |
-            Self::CompressedAzurePlagioclase            |
-            Self::SolidPyroxeres                        |
-            Self::CompressedSolidPyroxeres              |
-            Self::AbyssalRakovene                       |
-            Self::CompressedAbyssalRakovene             |
-            Self::CondensedScordite                     |
-            Self::CompressedCondensedScordite           |
-            Self::BrightSpodumain                       |
-            Self::CompressedBrightSpodumain             |
-            Self::AbyssalTalassonite                    |
-            Self::CompressedAbyssalTalassonite          |
-            Self::FoggyUeganite                         |
-            Self::CompressedFoggyUeganite               |
-            Self::ConcentratedVeldspar                  |
-            Self::CompressedConcentratedVeldspar        |
-            Self::BootlegYtirium                        |
-            Self::CompressedBootlegYtirium              => 1.05,
+            Self::CrimsonArkonor                            |
+            Self::CompressedCrimsonArkonor                  |
+            Self::AbyssalBezdnacine                         |
+            Self::CompressedAbyssalBezdnacine               |
+            Self::TriclinicBistot                           |
+            Self::CompressedTriclinicBistot                 |
+            Self::SharpCrokite                              |
+            Self::CompressedSharpCrokite                    |
+            Self::OnyxOchre                                 |
+            Self::CompressedOnyxOchre                       |
+            Self::NobleDucinium                             |
+            Self::CompressedNobleDucinium                   |
+            Self::DopedEifyrium                             |
+            Self::CompressedDopedEifyrium                   |
+            Self::IridescentGneiss                          |
+            Self::CompressedIridescentGneiss                |
+            Self::ClearGriemeer                             |
+            Self::CompressedClearGriemeer                   |
+            Self::VitricHedbergite                          |
+            Self::CompressedVitricHedbergite                |
+            Self::VividHemorphite                           |
+            Self::CompressedVividHemorphite                 |
+            Self::DullHezorime                              |
+            Self::CompressedDullHezorime                    |
+            Self::PureJaspet                                |
+            Self::CompressedPureJaspet                      |
+            Self::LuminousKernite                           |
+            Self::CompressedLuminousKernite                 |
+            Self::KaolinKylixium                            |
+            Self::CompressedKaolinKylixium                  |
+            Self::MagmaMercoxit                             |
+            Self::CompressedMagmaMercoxit                   |
+            Self::PlumMordunium                             |
+            Self::CompressedPlumMordunium                   |
+            Self::FragrantNocxite                           |
+            Self::CompressedFragrantNocxite                 |
+            Self::SilveryOmber                              |
+            Self::CompressedSilveryOmber                    |
+            Self::AzurePlagioclase                          |
+            Self::CompressedAzurePlagioclase                |
+            Self::SolidPyroxeres                            |
+            Self::CompressedSolidPyroxeres                  |
+            Self::AbyssalRakovene                           |
+            Self::CompressedAbyssalRakovene                 |
+            Self::CondensedScordite                         |
+            Self::CompressedCondensedScordite               |
+            Self::BrightSpodumain                           |
+            Self::CompressedBrightSpodumain                 |
+            Self::AbyssalTalassonite                        |
+            Self::CompressedAbyssalTalassonite              |
+            Self::FoggyUeganite                             |
+            Self::CompressedFoggyUeganite                   |
+            Self::ConcentratedVeldspar                      |
+            Self::CompressedConcentratedVeldspar            |
+            Self::BootlegYtirium                            |
+            Self::CompressedBootlegYtirium                  => 1.05,
 
-            Self::PrimeArkonor                          |
-            Self::CompressedPrimeArkonor                |
-            Self::HadalBezdnacine                       |
-            Self::CompressedHadalBezdnacine             |
-            Self::MonoclinicBistot                      |
-            Self::CompressedMonoclinicBistot            |
-            Self::CrystallineCrokite                    |
-            Self::CompressedCrystallineCrokite          |
-            Self::ObsidianOchre                         |
-            Self::CompressedObsidianOchre               |
-            Self::RoyalDucinium                         |
-            Self::CompressedRoyalDucinium               |
-            Self::BoostedEifyrium                       |
-            Self::CompressedBoostedEifyrium             |
-            Self::PrismaticGneiss                       |
-            Self::CompressedPrismaticGneiss             |
-            Self::InkyGriemeer                          |
-            Self::CompressedInkyGriemeer                |
-            Self::GlazedHedbergite                      |
-            Self::CompressedGlazedHedbergite            |
-            Self::RadiantHemorphite                     |
-            Self::CompressedRadiantHemorphite           |
-            Self::SerratedHezorime                      |
-            Self::CompressedSerratedHezorime            |
-            Self::PristineJaspet                        |
-            Self::CompressedPristineJaspet              |
-            Self::FieryKernite                          |
-            Self::CompressedFieryKernite                |
-            Self::ArgilKylixium                         |
-            Self::CompressedArgilKylixium               |
-            Self::VitreousMercoxit                      |
-            Self::CompressedVitreousMercoxit            |
-            Self::PrizeMordunium                        |
-            Self::CompressedPrizeMordunium              |
-            Self::IntoxicatingNocxite                   |
-            Self::CompressedIntoxicatingNocxite         |
-            Self::GoldenOmber                           |
-            Self::CompressedGoldenOmber                 |
-            Self::RichPlagioclase                       |
-            Self::CompressedRichPlagioclase             |
-            Self::ViscousPyroxeres                      |
-            Self::CompressedViscousPyroxeres            |
-            Self::HadalRakovene                         |
-            Self::CompressedHadalRakovene               |
-            Self::MassiveScordite                       |
-            Self::CompressedMassiveScordite             |
-            Self::GleamingSpodumain                     |
-            Self::CompressedGleamingSpodumain           |
-            Self::HadalTalassonite                      |
-            Self::CompressedHadalTalassonite            |
-            Self::OvercastUeganite                      |
-            Self::CompressedOvercastUeganite            |
-            Self::DenseVeldspar                         |
-            Self::CompressedDenseVeldspar               |
-            Self::FirewaterYtirium                      |
-            Self::CompressedFirewaterYtirium            => 1.10,
+            Self::PrimeArkonor                              |
+            Self::CompressedPrimeArkonor                    |
+            Self::HadalBezdnacine                           |
+            Self::CompressedHadalBezdnacine                 |
+            Self::MonoclinicBistot                          |
+            Self::CompressedMonoclinicBistot                |
+            Self::CrystallineCrokite                        |
+            Self::CompressedCrystallineCrokite              |
+            Self::ObsidianOchre                             |
+            Self::CompressedObsidianOchre                   |
+            Self::RoyalDucinium                             |
+            Self::CompressedRoyalDucinium                   |
+            Self::BoostedEifyrium                           |
+            Self::CompressedBoostedEifyrium                 |
+            Self::PrismaticGneiss                           |
+            Self::CompressedPrismaticGneiss                 |
+            Self::InkyGriemeer                              |
+            Self::CompressedInkyGriemeer                    |
+            Self::GlazedHedbergite                          |
+            Self::CompressedGlazedHedbergite                |
+            Self::RadiantHemorphite                         |
+            Self::CompressedRadiantHemorphite               |
+            Self::SerratedHezorime                          |
+            Self::CompressedSerratedHezorime                |
+            Self::PristineJaspet                            |
+            Self::CompressedPristineJaspet                  |
+            Self::FieryKernite                              |
+            Self::CompressedFieryKernite                    |
+            Self::ArgilKylixium                             |
+            Self::CompressedArgilKylixium                   |
+            Self::VitreousMercoxit                          |
+            Self::CompressedVitreousMercoxit                |
+            Self::PrizeMordunium                            |
+            Self::CompressedPrizeMordunium                  |
+            Self::IntoxicatingNocxite                       |
+            Self::CompressedIntoxicatingNocxite             |
+            Self::GoldenOmber                               |
+            Self::CompressedGoldenOmber                     |
+            Self::RichPlagioclase                           |
+            Self::CompressedRichPlagioclase                 |
+            Self::ViscousPyroxeres                          |
+            Self::CompressedViscousPyroxeres                |
+            Self::HadalRakovene                             |
+            Self::CompressedHadalRakovene                   |
+            Self::MassiveScordite                           |
+            Self::CompressedMassiveScordite                 |
+            Self::GleamingSpodumain                         |
+            Self::CompressedGleamingSpodumain               |
+            Self::HadalTalassonite                          |
+            Self::CompressedHadalTalassonite                |
+            Self::OvercastUeganite                          |
+            Self::CompressedOvercastUeganite                |
+            Self::DenseVeldspar                             |
+            Self::CompressedDenseVeldspar                   |
+            Self::FirewaterYtirium                          |
+            Self::CompressedFirewaterYtirium                => 1.10,
 
-            Self::FlawlessArkonor                       |
-            Self::CompressedFlawlessArkonor             |
-            Self::CubicBistot                           |
-            Self::CompressedCubicBistot                 |
-            Self::PellucidCrokite                       |
-            Self::CompressedPellucidCrokite             |
-            Self::JetOchre                              |
-            Self::CompressedJetOchre                    |
-            Self::ImperialDucinium                      |
-            Self::CompressedImperialDucinium            |
-            Self::AugmentedEifyrium                     |
-            Self::CompressedAugmentedEifyrium           |
-            Self::BrilliantGneiss                       |
-            Self::CompressedBrilliantGneiss             |
-            Self::OpaqueGriemeer                        |
-            Self::CompressedOpaqueGriemeer              |
-            Self::LustrousHedbergite                    |
-            Self::CompressedLustrousHedbergite          |
-            Self::ScintillatingHemorphite               |
-            Self::CompressedScintillatingHemorphite     |
-            Self::SharpHezorime                         |
-            Self::CompressedSharpHezorime               |
-            Self::ImmaculateJaspet                      |
-            Self::CompressedImmaculateJaspet            |
-            Self::ResplendantKernite                    |
-            Self::CompressedResplendantKernite          |
-            Self::AdobeKylixium                         |
-            Self::CompressedAdobeKylixium               |
-            Self::PlunderMordunium                      |
-            Self::CompressedPlunderMordunium            |
-            Self::AmbrosialNocxite                      |
-            Self::CompressedAmbrosialNocxite            |
-            Self::PlatinoidOmber                        |
-            Self::CompressedPlatinoidOmber              |
-            Self::SparklingPlagioclase                  |
-            Self::CompressedSparklingPlagioclase        |
-            Self::OpulentPyroxeres                      |
-            Self::CompressedOpulentPyroxeres            |
-            Self::GlossyScordite                        |
-            Self::CompressedGlossyScordite              |
-            Self::DazzlingSpodumain                     |
-            Self::CompressedDazzlingSpodumain           |
-            Self::StormyUeganite                        |
-            Self::CompressedStormyUeganite              |
-            Self::StableVeldspar                        |
-            Self::CompressedStableVeldspar              |
-            Self::MoonshineYtirium                      |
-            Self::CompressedMoonshineYtirium            => 1.15,
+            Self::FlawlessArkonor                           |
+            Self::CompressedFlawlessArkonor                 |
+            Self::CubicBistot                               |
+            Self::CompressedCubicBistot                     |
+            Self::PellucidCrokite                           |
+            Self::CompressedPellucidCrokite                 |
+            Self::JetOchre                                  |
+            Self::CompressedJetOchre                        |
+            Self::ImperialDucinium                          |
+            Self::CompressedImperialDucinium                |
+            Self::AugmentedEifyrium                         |
+            Self::CompressedAugmentedEifyrium               |
+            Self::BrilliantGneiss                           |
+            Self::CompressedBrilliantGneiss                 |
+            Self::OpaqueGriemeer                            |
+            Self::CompressedOpaqueGriemeer                  |
+            Self::LustrousHedbergite                        |
+            Self::CompressedLustrousHedbergite              |
+            Self::ScintillatingHemorphite                   |
+            Self::CompressedScintillatingHemorphite         |
+            Self::SharpHezorime                             |
+            Self::CompressedSharpHezorime                   |
+            Self::ImmaculateJaspet                          |
+            Self::CompressedImmaculateJaspet                |
+            Self::ResplendantKernite                        |
+            Self::CompressedResplendantKernite              |
+            Self::AdobeKylixium                             |
+            Self::CompressedAdobeKylixium                   |
+            Self::PlunderMordunium                          |
+            Self::CompressedPlunderMordunium                |
+            Self::AmbrosialNocxite                          |
+            Self::CompressedAmbrosialNocxite                |
+            Self::PlatinoidOmber                            |
+            Self::CompressedPlatinoidOmber                  |
+            Self::SparklingPlagioclase                      |
+            Self::CompressedSparklingPlagioclase            |
+            Self::OpulentPyroxeres                          |
+            Self::CompressedOpulentPyroxeres                |
+            Self::GlossyScordite                            |
+            Self::CompressedGlossyScordite                  |
+            Self::DazzlingSpodumain                         |
+            Self::CompressedDazzlingSpodumain               |
+            Self::StormyUeganite                            |
+            Self::CompressedStormyUeganite                  |
+            Self::StableVeldspar                            |
+            Self::CompressedStableVeldspar                  |
+            Self::MoonshineYtirium                          |
+            Self::CompressedMoonshineYtirium                => 1.15,
 
             // moon
-            Self::Bitumens                              |
-            Self::CompressedBitumens                    |
-            Self::Coesite                               |
-            Self::CompressedCoesite                     |
-            Self::Sylvite                               |
-            Self::CompressedSylvite                     |
-            Self::Zeolites                              |
-            Self::CompressedZeolites                    |
-            Self::Cobaltite                             |
-            Self::CompressedCobaltite                   |
-            Self::Euxenite                              |
-            Self::CompressedEuxenite                    |
-            Self::Scheelite                             |
-            Self::CompressedScheelite                   |
-            Self::Titanite                              |
-            Self::CompressedTitanite                    |
-            Self::Chromite                              |
-            Self::CompressedChromite                    |
-            Self::Otavite                               |
-            Self::CompressedOtavite                     |
-            Self::Sperrylite                            |
-            Self::CompressedSperrylite                  |
-            Self::Vanadinite                            |
-            Self::CompressedVanadinite                  |
-            Self::Carnotite                             |
-            Self::CompressedCarnotite                   |
-            Self::Cinnabar                              |
-            Self::CompressedCinnabar                    |
-            Self::Pollucite                             |
-            Self::CompressedPollucite                   |
-            Self::Zircon                                |
-            Self::CompressedZircon                      |
-            Self::Loparite                              |
-            Self::CompressedLoparite                    |
-            Self::Monazite                              |
-            Self::CompressedMonazite                    |
-            Self::Xenotime                              |
-            Self::CompressedXenotime                    |
-            Self::Ytterbite                             |
-            Self::CompressedYtterbite                   => 1.00,
+            Self::Bitumens                                  |
+            Self::CompressedBitumens                        |
+            Self::Coesite                                   |
+            Self::CompressedCoesite                         |
+            Self::Sylvite                                   |
+            Self::CompressedSylvite                         |
+            Self::Zeolites                                  |
+            Self::CompressedZeolites                        |
+            Self::Cobaltite                                 |
+            Self::CompressedCobaltite                       |
+            Self::Euxenite                                  |
+            Self::CompressedEuxenite                        |
+            Self::Scheelite                                 |
+            Self::CompressedScheelite                       |
+            Self::Titanite                                  |
+            Self::CompressedTitanite                        |
+            Self::Chromite                                  |
+            Self::CompressedChromite                        |
+            Self::Otavite                                   |
+            Self::CompressedOtavite                         |
+            Self::Sperrylite                                |
+            Self::CompressedSperrylite                      |
+            Self::Vanadinite                                |
+            Self::CompressedVanadinite                      |
+            Self::Carnotite                                 |
+            Self::CompressedCarnotite                       |
+            Self::Cinnabar                                  |
+            Self::CompressedCinnabar                        |
+            Self::Pollucite                                 |
+            Self::CompressedPollucite                       |
+            Self::Zircon                                    |
+            Self::CompressedZircon                          |
+            Self::Loparite                                  |
+            Self::CompressedLoparite                        |
+            Self::Monazite                                  |
+            Self::CompressedMonazite                        |
+            Self::Xenotime                                  |
+            Self::CompressedXenotime                        |
+            Self::Ytterbite                                 |
+            Self::CompressedYtterbite                       => 1.00,
 
-            Self::BrimfulBitumens                       |
-            Self::CompressedBrimfulBitumens             |
-            Self::BrimfulCoesite                        |
-            Self::CompressedBrimfulCoesite              |
-            Self::BrimfulSylvite                        |
-            Self::CompressedBrimfulSylvite              |
-            Self::BrimfulZeolites                       |
-            Self::CompressedBrimfulZeolites             |
-            Self::CopiousCobaltite                      |
-            Self::CompressedCopiousCobaltite            |
-            Self::CopiousEuxenite                       |
-            Self::CompressedCopiousEuxenite             |
-            Self::CopiousScheelite                      |
-            Self::CompressedCopiousScheelite            |
-            Self::CopiousTitanite                       |
-            Self::CompressedCopiousTitanite             |
-            Self::LavishChromite                        |
-            Self::CompressedLavishChromite              |
-            Self::LavishOtavite                         |
-            Self::CompressedLavishOtavite               |
-            Self::LavishSperrylite                      |
-            Self::CompressedLavishSperrylite            |
-            Self::LavishVanadinite                      |
-            Self::CompressedLavishVanadinite            |
-            Self::RepleteCarnotite                      |
-            Self::CompressedRepleteCarnotite            |
-            Self::RepleteCinnabar                       |
-            Self::CompressedRepleteCinnabar             |
-            Self::RepletePollucite                      |
-            Self::CompressedRepletePollucite            |
-            Self::RepleteZircon                         |
-            Self::CompressedRepleteZircon               |
-            Self::BountifulLoparite                     |
-            Self::CompressedBountifulLoparite           |
-            Self::BountifulMonazite                     |
-            Self::CompressedBountifulMonazite           |
-            Self::BountifulXenotime                     |
-            Self::CompressedBountifulXenotime           |
-            Self::BountifulYtterbite                    |
-            Self::CompressedBountifulYtterbite          => 1.15,
+            Self::BrimfulBitumens                           |
+            Self::CompressedBrimfulBitumens                 |
+            Self::BrimfulCoesite                            |
+            Self::CompressedBrimfulCoesite                  |
+            Self::BrimfulSylvite                            |
+            Self::CompressedBrimfulSylvite                  |
+            Self::BrimfulZeolites                           |
+            Self::CompressedBrimfulZeolites                 |
+            Self::CopiousCobaltite                          |
+            Self::CompressedCopiousCobaltite                |
+            Self::CopiousEuxenite                           |
+            Self::CompressedCopiousEuxenite                 |
+            Self::CopiousScheelite                          |
+            Self::CompressedCopiousScheelite                |
+            Self::CopiousTitanite                           |
+            Self::CompressedCopiousTitanite                 |
+            Self::LavishChromite                            |
+            Self::CompressedLavishChromite                  |
+            Self::LavishOtavite                             |
+            Self::CompressedLavishOtavite                   |
+            Self::LavishSperrylite                          |
+            Self::CompressedLavishSperrylite                |
+            Self::LavishVanadinite                          |
+            Self::CompressedLavishVanadinite                |
+            Self::RepleteCarnotite                          |
+            Self::CompressedRepleteCarnotite                |
+            Self::RepleteCinnabar                           |
+            Self::CompressedRepleteCinnabar                 |
+            Self::RepletePollucite                          |
+            Self::CompressedRepletePollucite                |
+            Self::RepleteZircon                             |
+            Self::CompressedRepleteZircon                   |
+            Self::BountifulLoparite                         |
+            Self::CompressedBountifulLoparite               |
+            Self::BountifulMonazite                         |
+            Self::CompressedBountifulMonazite               |
+            Self::BountifulXenotime                         |
+            Self::CompressedBountifulXenotime               |
+            Self::BountifulYtterbite                        |
+            Self::CompressedBountifulYtterbite              => 1.15,
 
-            Self::GlisteningBitumens                    |
-            Self::CompressedGlisteningBitumens          |
-            Self::GlisteningCoesite                     |
-            Self::CompressedGlisteningCoesite           |
-            Self::GlisteningSylvite                     |
-            Self::CompressedGlisteningSylvite           |
-            Self::GlisteningZeolites                    |
-            Self::CompressedGlisteningZeolites          |
-            Self::TwinklingCobaltite                    |
-            Self::CompressedTwinklingCobaltite          |
-            Self::TwinklingEuxenite                     |
-            Self::CompressedTwinklingEuxenite           |
-            Self::TwinklingScheelite                    |
-            Self::CompressedTwinklingScheelite          |
-            Self::TwinklingTitanite                     |
-            Self::CompressedTwinklingTitanite           |
-            Self::ShimmeringChromite                    |
-            Self::CompressedShimmeringChromite          |
-            Self::ShimmeringOtavite                     |
-            Self::CompressedShimmeringOtavite           |
-            Self::ShimmeringSperrylite                  |
-            Self::CompressedShimmeringSperrylite        |
-            Self::ShimmeringVanadinite                  |
-            Self::CompressedShimmeringVanadinite        |
-            Self::GlowingCarnotite                      |
-            Self::CompressedGlowingCarnotite            |
-            Self::GlowingCinnabar                       |
-            Self::CompressedGlowingCinnabar             |
-            Self::GlowingPollucite                      |
-            Self::CompressedGlowingPollucite            |
-            Self::GlowingZircon                         |
-            Self::CompressedGlowingZircon               |
-            Self::ShiningLoparite                       |
-            Self::CompressedShiningLoparite             |
-            Self::ShiningMonazite                       |
-            Self::CompressedShiningMonazite             |
-            Self::ShiningXenotime                       |
-            Self::CompressedShiningXenotime             |
-            Self::ShiningYtterbite                      |
-            Self::CompressedShiningYtterbite            => 2.00,
+            Self::GlisteningBitumens                        |
+            Self::CompressedGlisteningBitumens              |
+            Self::GlisteningCoesite                         |
+            Self::CompressedGlisteningCoesite               |
+            Self::GlisteningSylvite                         |
+            Self::CompressedGlisteningSylvite               |
+            Self::GlisteningZeolites                        |
+            Self::CompressedGlisteningZeolites              |
+            Self::TwinklingCobaltite                        |
+            Self::CompressedTwinklingCobaltite              |
+            Self::TwinklingEuxenite                         |
+            Self::CompressedTwinklingEuxenite               |
+            Self::TwinklingScheelite                        |
+            Self::CompressedTwinklingScheelite              |
+            Self::TwinklingTitanite                         |
+            Self::CompressedTwinklingTitanite               |
+            Self::ShimmeringChromite                        |
+            Self::CompressedShimmeringChromite              |
+            Self::ShimmeringOtavite                         |
+            Self::CompressedShimmeringOtavite               |
+            Self::ShimmeringSperrylite                      |
+            Self::CompressedShimmeringSperrylite            |
+            Self::ShimmeringVanadinite                      |
+            Self::CompressedShimmeringVanadinite            |
+            Self::GlowingCarnotite                          |
+            Self::CompressedGlowingCarnotite                |
+            Self::GlowingCinnabar                           |
+            Self::CompressedGlowingCinnabar                 |
+            Self::GlowingPollucite                          |
+            Self::CompressedGlowingPollucite                |
+            Self::GlowingZircon                             |
+            Self::CompressedGlowingZircon                   |
+            Self::ShiningLoparite                           |
+            Self::CompressedShiningLoparite                 |
+            Self::ShiningMonazite                           |
+            Self::CompressedShiningMonazite                 |
+            Self::ShiningXenotime                           |
+            Self::CompressedShiningXenotime                 |
+            Self::ShiningYtterbite                          |
+            Self::CompressedShiningYtterbite                => 2.00,
 
-            _                                           => 1.00,
+            Self::Tritanium                                 |
+            Self::Pyerite                                   |
+            Self::Mexallon                                  |
+            Self::Isogen                                    |
+            Self::Nocxium                                   |
+            Self::Zydrine                                   |
+            Self::Megacyte                                  |
+            Self::Morphite                                  |
+            Self::AtmosphericGases                          |
+            Self::EvaporiteDeposits                         |
+            Self::Hydrocarbons                              |
+            Self::Silicates                                 |
+            Self::Cobalt                                    |
+            Self::Scandium                                  |
+            Self::Titanium                                  |
+            Self::Tungsten                                  |
+            Self::Chromium                                  |
+            Self::Cadmium                                   |
+            Self::Platinum                                  |
+            Self::Vanadium                                  |
+            Self::Caesium                                   |
+            Self::Hafnium                                   |
+            Self::Mercury                                   |
+            Self::Technetium                                |
+            Self::Promethium                                |
+            Self::Neodymium                                 |
+            Self::Dysprosium                                |
+            Self::Thulium                                   => 1.00,
+
+            Self::BatchCompressedArkonor                    |
+            Self::BatchCompressedBistot                     |
+            Self::BatchCompressedCrokite                    |
+            Self::BatchCompressedDarkOchre                  |
+            Self::BatchCompressedGneiss                     |
+            Self::BatchCompressedHedbergite                 |
+            Self::BatchCompressedHemorphite                 |
+            Self::BatchCompressedJaspet                     |
+            Self::BatchCompressedKernite                    |
+            Self::BatchCompressedMercoxit                   |
+            Self::BatchCompressedOmber                      |
+            Self::BatchCompressedPlagioclase                |
+            Self::BatchCompressedPyroxeres                  |
+            Self::BatchCompressedScordite                   |
+            Self::BatchCompressedSpodumain                  |
+            Self::BatchCompressedVeldspar                   => 100.00,
+
+            Self::BatchCompressedCrimsonArkonor             |
+            Self::BatchCompressedTriclinicBistot            |
+            Self::BatchCompressedSharpCrokite               |
+            Self::BatchCompressedOnyxOchre                  |
+            Self::BatchCompressedIridescentGneiss           |
+            Self::BatchCompressedVitricHedbergite           |
+            Self::BatchCompressedVividHemorphite            |
+            Self::BatchCompressedPureJaspet                 |
+            Self::BatchCompressedLuminousKernite            |
+            Self::BatchCompressedMagmaMercoxit              |
+            Self::BatchCompressedSilveryOmber               |
+            Self::BatchCompressedAzurePlagioclase           |
+            Self::BatchCompressedSolidPyroxeres             |
+            Self::BatchCompressedCondensedScordite          |
+            Self::BatchCompressedBrightSpodumain            |
+            Self::BatchCompressedConcentratedVeldspar       => 105.00,
+
+            Self::BatchCompressedPrimeArkonor               |
+            Self::BatchCompressedMonoclinicBistot           |
+            Self::BatchCompressedCrystallineCrokite         |
+            Self::BatchCompressedObsidianOchre              |
+            Self::BatchCompressedPrismaticGneiss            |
+            Self::BatchCompressedGlazedHedbergite           |
+            Self::BatchCompressedRadiantHemorphite          |
+            Self::BatchCompressedPristineJaspet             |
+            Self::BatchCompressedFieryKernite               |
+            Self::BatchCompressedVitreousMercoxit           |
+            Self::BatchCompressedGoldenOmber                |
+            Self::BatchCompressedRichPlagioclase            |
+            Self::BatchCompressedViscousPyroxeres           |
+            Self::BatchCompressedMassiveScordite            |
+            Self::BatchCompressedGleamingSpodumain          |
+            Self::BatchCompressedDenseVeldspar              => 110.00,
+
+            Self::BatchCompressedFlawlessArkonor            |
+            Self::BatchCompressedCubicBistot                |
+            Self::BatchCompressedPellucidCrokite            |
+            Self::BatchCompressedJetOchre                   |
+            Self::BatchCompressedBrilliantGneiss            |
+            Self::BatchCompressedLustrousHedbergite         |
+            Self::BatchCompressedScintillatingHemorphite    |
+            Self::BatchCompressedImmaculateJaspet           |
+            Self::BatchCompressedResplendantKernite         |
+            Self::BatchCompressedPlatinoidOmber             |
+            Self::BatchCompressedSparklingPlagioclase       |
+            Self::BatchCompressedOpulentPyroxeres           |
+            Self::BatchCompressedGlossyScordite             |
+            Self::BatchCompressedDazzlingSpodumain          |
+            Self::BatchCompressedStableVeldspar             => 115.00,
         }
     }
 

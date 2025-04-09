@@ -350,6 +350,7 @@ class AppraisalShow extends Vue {
 
                 this.rawAppraisal = '';
                 x.items.forEach(i => this.rawAppraisal += `${i.meta.name}\t${i.quantity}\n`);
+                this.market = x.market_id;
                 this.loadingAppraisal = false;
             })
             .catch(e => {

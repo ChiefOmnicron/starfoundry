@@ -1,14 +1,14 @@
 <template>
     <n-tree-select
-        @update:value="handleMarketSelect"
         :options="markets()"
-        :default-value="60003760"
+        @update:value="handleMarketSelect"
+        v-model:value="selectedMarket"
         filterable
     />
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
+import { Component, Prop, Vue, Watch, toNative } from 'vue-facing-decorator';
 
 import { NTreeSelect, type SelectOption } from 'naive-ui';
 
@@ -26,6 +26,8 @@ class AppraisalMarketSelector extends Vue {
         required: true,
     })
     public market!: number;
+
+    public selectedMarket: number = 60003760;
 
     public handleMarketSelect(value: number) {
         this.$emit('update:market', value);
@@ -48,6 +50,12 @@ class AppraisalMarketSelector extends Vue {
             label: 'K7D-II',
             key: 1043661023026,
         }];
+    }
+
+    @Watch('market')
+    public marketWatcher(newValue: number) {
+        this.selectedMarket = newValue;
+        this.$emit('update:market', newValue);
     }
 }
 

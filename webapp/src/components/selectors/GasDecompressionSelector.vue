@@ -46,7 +46,6 @@ class GasDecompressionSelector extends Vue {
     }
 
     public gasDecompressionOptions(): SelectOption[] {
-        console.log(this.structure)
         if (this.structure === 'ATHANOR') {
             return [{
                 label: 'Level 0 (84%)',
