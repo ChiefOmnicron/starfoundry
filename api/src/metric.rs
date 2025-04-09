@@ -14,10 +14,12 @@ pub type WithMetric = Arc<Metric>;
 
 pub fn api(
     registry: Arc<Registry>,
+    metric:   Arc<Metric>,
 ) -> BoxedFilter<(impl Reply,)> {
     let metric = warp::path!("metrics")
         .and(warp::get())
         .and(with_registry(registry))
+        .and(with_metric(metric.clone()))
         .and_then(export::export)
         .boxed();
 

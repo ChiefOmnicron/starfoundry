@@ -94,7 +94,7 @@ impl Server {
         let version                 = version::api(base_path.clone());
 
         let special_routes = crate::healthcheck::api(self.pool.clone())
-            .or(crate::metric::api(registry.clone()))
+            .or(crate::metric::api(registry.clone(), metric.clone()))
             .or(version);
 
         if cfg!(feature = "appraisal") {

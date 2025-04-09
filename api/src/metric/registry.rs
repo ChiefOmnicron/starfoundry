@@ -2,6 +2,7 @@ use once_cell::sync::Lazy;
 use prometheus_client::encoding::{EncodeLabelSet, EncodeLabelValue};
 use prometheus_client::metrics::counter::Counter;
 use prometheus_client::metrics::family::Family;
+use prometheus_client::metrics::gauge::Gauge;
 use prometheus_client::metrics::histogram::Histogram;
 use prometheus_client::registry::Registry;
 use regex::Regex;
@@ -41,11 +42,11 @@ pub struct Metric {
     route_status:       Family<RouteLabels, Counter>,
     route_duration:     Family<RouteLabels, Histogram>,
 
-    appraisals_created:      Family<RequestLabel, Counter>,
-    appraisals_fetch:        Family<RequestLabel, Counter>,
-    appraisals_market:       Family<RequestLabel, Counter>,
-    appraisals_reprocessing: Family<RequestLabel, Counter>,
-    appraisals_compression:  Family<RequestLabel, Counter>,
+    appraisals_created:      Family<RequestLabel, Gauge>,
+    appraisals_fetch:        Family<RequestLabel, Gauge>,
+    appraisals_market:       Family<RequestLabel, Gauge>,
+    appraisals_reprocessing: Family<RequestLabel, Gauge>,
+    appraisals_compression:  Family<RequestLabel, Gauge>,
 }
 
 impl Metric {
@@ -64,19 +65,19 @@ impl Metric {
             }),
 
             appraisals_created:      Family::new_with_constructor(||
-                Counter::default()
+                Gauge::default()
             ),
             appraisals_fetch:        Family::new_with_constructor(||
-                Counter::default()
+                Gauge::default()
             ),
             appraisals_market:       Family::new_with_constructor(||
-                Counter::default()
+                Gauge::default()
             ),
             appraisals_compression:  Family::new_with_constructor(||
-                Counter::default()
+                Gauge::default()
             ),
             appraisals_reprocessing: Family::new_with_constructor(||
-                Counter::default()
+                Gauge::default()
             ),
         }
     }
@@ -220,6 +221,16 @@ impl Metric {
                 status,
             })
             .inc();
+    }
+
+    pub fn reset_appraisal_metrics(
+        &self,
+    ) {
+        self.appraisals_created.clear();
+        self.appraisals_fetch.clear();
+        self.appraisals_market.clear();
+        self.appraisals_reprocessing.clear();
+        self.appraisals_compression.clear();
     }
 }
 
