@@ -494,6 +494,40 @@ pub enum Asteroid {
     Neodymium,
     Dysprosium,
     Thulium,
+
+    // Ice
+    // oxygen
+    BlueIce,
+    ThickBlueIce,
+    CompressedBlueIce,
+    CompressedThickBlueIce,
+
+    // helium
+    ClearIcicle,
+    EnrichedClearIcicle,
+    CompressedClearIcicle,
+    CompressedEnrichedClearIcicle,
+
+    // hydrogen
+    GlacialMass,
+    SmoothGlacialMass,
+    CompressedGlacialMass,
+    CompressedSmoothGlacialMass,
+
+    // nitrogen
+    WhiteGlaze,
+    PristineWhiteGlaze,
+    CompressedWhiteGlaze,
+    CompressedPristineWhiteGlaze,
+
+    DarkGlitter,
+    Gelidus,
+    GlareCrust,
+    Krystallos,
+    CompressedDarkGlitter,
+    CompressedGelidus,
+    CompressedGlareCrust,
+    CompressedKrystallos,
 }
 
 impl Asteroid {
@@ -1394,6 +1428,36 @@ impl Asteroid {
             Self::Neodymium                                 => 16651,
             Self::Dysprosium                                => 16650,
             Self::Thulium                                   => 16653,
+
+            // Ice
+            Self::BlueIce                                   => 16264,
+            Self::ThickBlueIce                              => 17975,
+            Self::CompressedBlueIce                         => 28433,
+            Self::CompressedThickBlueIce                    => 28443,
+
+            Self::ClearIcicle                               => 16262,
+            Self::EnrichedClearIcicle                       => 17978,
+            Self::CompressedClearIcicle                     => 28434,
+            Self::CompressedEnrichedClearIcicle             => 28436,
+
+            Self::GlacialMass                               => 16263,
+            Self::SmoothGlacialMass                         => 17977,
+            Self::CompressedGlacialMass                     => 28438,
+            Self::CompressedSmoothGlacialMass               => 28442,
+
+            Self::WhiteGlaze                                => 16265,
+            Self::PristineWhiteGlaze                        => 17976,
+            Self::CompressedWhiteGlaze                      => 28444,
+            Self::CompressedPristineWhiteGlaze              => 28441,
+
+            Self::DarkGlitter                               => 16267,
+            Self::Gelidus                                   => 16268,
+            Self::GlareCrust                                => 16266,
+            Self::Krystallos                                => 16269,
+            Self::CompressedDarkGlitter                     => 28435,
+            Self::CompressedGelidus                         => 28437,
+            Self::CompressedGlareCrust                      => 28439,
+            Self::CompressedKrystallos                      => 28440,
         }
     }
 
@@ -1882,6 +1946,36 @@ impl Asteroid {
             16651 => Self::Neodymium,
             16650 => Self::Dysprosium,
             16653 => Self::Thulium,
+
+            // ice
+            16264 => Self::BlueIce,
+            17975 => Self::ThickBlueIce,
+            28433 => Self::CompressedBlueIce,
+            28443 => Self::CompressedThickBlueIce,
+
+            16262 => Self::ClearIcicle,
+            17978 => Self::EnrichedClearIcicle,
+            28434 => Self::CompressedClearIcicle,
+            28436 => Self::CompressedEnrichedClearIcicle,
+
+            16263 => Self::GlacialMass,
+            17977 => Self::SmoothGlacialMass,
+            28438 => Self::CompressedGlacialMass,
+            28442 => Self::CompressedSmoothGlacialMass,
+
+            16265 => Self::WhiteGlaze,
+            17976 => Self::PristineWhiteGlaze,
+            28444 => Self::CompressedWhiteGlaze,
+            28441 => Self::CompressedPristineWhiteGlaze,
+
+            16267 => Self::DarkGlitter,
+            16268 => Self::Gelidus,
+            16266 => Self::GlareCrust,
+            16269 => Self::Krystallos,
+            28435 => Self::CompressedDarkGlitter,
+            28437 => Self::CompressedGelidus,
+            28439 => Self::CompressedGlareCrust,
+            28440 => Self::CompressedKrystallos,
 
             _ => unimplemented!()
         }
@@ -2951,6 +3045,215 @@ impl Asteroid {
             Self::Neodymium                             => mineral_init(vec![Mineral::Neodymium], vec![1f64]),
             Self::Dysprosium                            => mineral_init(vec![Mineral::Dysprosium], vec![1f64]),
             Self::Thulium                               => mineral_init(vec![Mineral::Thulium], vec![1f64]),
+
+            // Ice
+            Self::BlueIce                                   |
+            Self::CompressedBlueIce                         => {
+                mineral_init(
+                    vec![
+                        Mineral::HeavyWater,
+                        Mineral::LiquidOzone,
+                        Mineral::StrontiumClathrates,
+                        Mineral::OxygenIsotopes,
+                    ],
+                    vec![
+                        69f64  * self.ore_modifier(),
+                        35f64  * self.ore_modifier(),
+                        1f64   * self.ore_modifier(),
+                        414f64 * self.ore_modifier(),
+                    ],
+                )
+            },
+
+            Self::ThickBlueIce                              |
+            Self::CompressedThickBlueIce                    => {
+                mineral_init(
+                    vec![
+                        Mineral::HeavyWater,
+                        Mineral::LiquidOzone,
+                        Mineral::StrontiumClathrates,
+                        Mineral::OxygenIsotopes,
+                    ],
+                    vec![
+                        104f64 * self.ore_modifier(),
+                        55f64  * self.ore_modifier(),
+                        1f64   * self.ore_modifier(),
+                        483f64 * self.ore_modifier(),
+                    ],
+                )
+            },
+
+            Self::ClearIcicle                               |
+            Self::CompressedClearIcicle                     => {
+                mineral_init(
+                    vec![
+                        Mineral::HeavyWater,
+                        Mineral::LiquidOzone,
+                        Mineral::StrontiumClathrates,
+                        Mineral::HeliumIsotopes,
+                    ],
+                    vec![
+                        69f64  * self.ore_modifier(),
+                        35f64  * self.ore_modifier(),
+                        1f64   * self.ore_modifier(),
+                        414f64 * self.ore_modifier(),
+                    ],
+                )
+            },
+
+            Self::EnrichedClearIcicle                       |
+            Self::CompressedEnrichedClearIcicle             => {
+                mineral_init(
+                    vec![
+                        Mineral::HeavyWater,
+                        Mineral::LiquidOzone,
+                        Mineral::StrontiumClathrates,
+                        Mineral::HeliumIsotopes,
+                    ],
+                    vec![
+                        104f64 * self.ore_modifier(),
+                        55f64  * self.ore_modifier(),
+                        1f64   * self.ore_modifier(),
+                        483f64 * self.ore_modifier(),
+                    ],
+                )
+            },
+
+            Self::GlacialMass                               |
+            Self::CompressedGlacialMass                     => {
+                mineral_init(
+                    vec![
+                        Mineral::HeavyWater,
+                        Mineral::LiquidOzone,
+                        Mineral::StrontiumClathrates,
+                        Mineral::HydrogenIsotopes,
+                    ],
+                    vec![
+                        69f64  * self.ore_modifier(),
+                        35f64  * self.ore_modifier(),
+                        1f64   * self.ore_modifier(),
+                        414f64 * self.ore_modifier(),
+                    ],
+                )
+            },
+
+            Self::SmoothGlacialMass                         |
+            Self::CompressedSmoothGlacialMass               => {
+                mineral_init(
+                    vec![
+                        Mineral::HeavyWater,
+                        Mineral::LiquidOzone,
+                        Mineral::StrontiumClathrates,
+                        Mineral::HydrogenIsotopes,
+                    ],
+                    vec![
+                        104f64 * self.ore_modifier(),
+                        55f64  * self.ore_modifier(),
+                        1f64   * self.ore_modifier(),
+                        483f64 * self.ore_modifier(),
+                    ],
+                )
+            },
+
+            Self::WhiteGlaze                                |
+            Self::CompressedWhiteGlaze                      => {
+                mineral_init(
+                    vec![
+                        Mineral::HeavyWater,
+                        Mineral::LiquidOzone,
+                        Mineral::StrontiumClathrates,
+                        Mineral::NitrogenIsotopes,
+                    ],
+                    vec![
+                        104f64 * self.ore_modifier(),
+                        55f64  * self.ore_modifier(),
+                        1f64   * self.ore_modifier(),
+                        483f64 * self.ore_modifier(),
+                    ],
+                )
+            },
+
+            Self::PristineWhiteGlaze                        |
+            Self::CompressedPristineWhiteGlaze              => {
+                mineral_init(
+                    vec![
+                        Mineral::HeavyWater,
+                        Mineral::LiquidOzone,
+                        Mineral::StrontiumClathrates,
+                        Mineral::NitrogenIsotopes,
+                    ],
+                    vec![
+                        69f64  * self.ore_modifier(),
+                        35f64  * self.ore_modifier(),
+                        1f64   * self.ore_modifier(),
+                        414f64 * self.ore_modifier(),
+                    ],
+                )
+            },
+
+            Self::DarkGlitter                               |
+            Self::CompressedDarkGlitter                     => {
+                mineral_init(
+                    vec![
+                        Mineral::HeavyWater,
+                        Mineral::LiquidOzone,
+                        Mineral::StrontiumClathrates,
+                    ],
+                    vec![
+                        691f64  * self.ore_modifier(),
+                        1381f64 * self.ore_modifier(),
+                        69f64   * self.ore_modifier(),
+                    ],
+                )
+            },
+
+            Self::Gelidus                                   |
+            Self::CompressedGelidus                         => {
+                mineral_init(
+                    vec![
+                        Mineral::HeavyWater,
+                        Mineral::LiquidOzone,
+                        Mineral::StrontiumClathrates,
+                    ],
+                    vec![
+                        345f64 * self.ore_modifier(),
+                        691f64 * self.ore_modifier(),
+                        104f64 * self.ore_modifier(),
+                    ],
+                )
+            },
+
+            Self::GlareCrust                                |
+            Self::CompressedGlareCrust                      => {
+                mineral_init(
+                    vec![
+                        Mineral::HeavyWater,
+                        Mineral::LiquidOzone,
+                        Mineral::StrontiumClathrates,
+                    ],
+                    vec![
+                        1381f64 * self.ore_modifier(),
+                        691f64  * self.ore_modifier(),
+                        345f64  * self.ore_modifier(),
+                    ],
+                )
+            },
+
+            Self::Krystallos                                |
+            Self::CompressedKrystallos                      => {
+                mineral_init(
+                    vec![
+                        Mineral::HeavyWater,
+                        Mineral::LiquidOzone,
+                        Mineral::StrontiumClathrates,
+                    ],
+                    vec![
+                        173f64 * self.ore_modifier(),
+                        691f64 * self.ore_modifier(),
+                        173f64 * self.ore_modifier(),
+                    ],
+                )
+            },
         }
     }
 
@@ -3395,6 +3698,31 @@ impl Asteroid {
             Self::BatchCompressedGlossyScordite             |
             Self::BatchCompressedDazzlingSpodumain          |
             Self::BatchCompressedStableVeldspar             => 115.00,
+
+            Self::BlueIce                                   |
+            Self::CompressedBlueIce                         |
+            Self::ThickBlueIce                              |
+            Self::CompressedThickBlueIce                    |
+            Self::ClearIcicle                               |
+            Self::CompressedClearIcicle                     |
+            Self::EnrichedClearIcicle                       |
+            Self::CompressedEnrichedClearIcicle             |
+            Self::GlacialMass                               |
+            Self::CompressedGlacialMass                     |
+            Self::SmoothGlacialMass                         |
+            Self::CompressedSmoothGlacialMass               |
+            Self::WhiteGlaze                                |
+            Self::CompressedWhiteGlaze                      |
+            Self::PristineWhiteGlaze                        |
+            Self::CompressedPristineWhiteGlaze              |
+            Self::DarkGlitter                               |
+            Self::CompressedDarkGlitter                     |
+            Self::Gelidus                                   |
+            Self::CompressedGelidus                         |
+            Self::GlareCrust                                |
+            Self::CompressedGlareCrust                      |
+            Self::Krystallos                                |
+            Self::CompressedKrystallos                      => 100.00,
         }
     }
 

@@ -14,21 +14,37 @@ pub fn parse(
     content: &str,
 ) -> ParseResult {
     static FIT_HEADER: Lazy<Regex> = Lazy::new(|| Regex::new(r"\[([a-zA-Z ]*)(,.*)?\]").unwrap());
+    static SURVEY_SCANNER: Lazy<Regex> = Lazy::new(|| Regex::new(r"([a-zA-Z ]*)\t([0-9 ]*)\t([0-9 ]*m3)\t([0-9 ]*km)").unwrap());
 
     let mut items   = Vec::new();
     let mut invalid = Vec::new();
 
+    let mut is_fit = false;
+
     for line in content.lines() {
+        let mut entry = None;
+
+        let line = if SURVEY_SCANNER.is_match(&line) {
+            let item_name = if let Some(x) = SURVEY_SCANNER.captures(&line) {
+                x.get(1).map_or("", |m| m.as_str())
+            } else {
+                continue;
+            };
+
+            let quantity = if let Some(x) = SURVEY_SCANNER.captures(&line) {
+                x.get(2).map_or("", |m| m.as_str())
+            } else {
+                continue;
+            };
+
+            &format!("{}\t{}", item_name, quantity.replace(" ", ""))
+        } else {
+            line
+        };
+
         let line = sanitize_name(line.to_lowercase())
             .trim()
             .replace("\t", " ");
-        let mut splitted_line = line.split_whitespace().collect::<Vec<_>>();
-        let mut leftovers = Vec::new();
-        let mut entry = None;
-
-        if line.is_empty() {
-            continue;
-        }
 
         // TODO: refactor
         if line.to_lowercase().contains("[empty high slot]") ||
@@ -38,6 +54,7 @@ pub fn parse(
         }
 
         if FIT_HEADER.is_match(&line) {
+            is_fit = true;
             let ship = if let Some(x) = FIT_HEADER.captures(&line) {
                 x.get(1).map_or("", |m| m.as_str())
             } else {
@@ -56,6 +73,20 @@ pub fn parse(
                     }
                 );
             }
+        }
+
+        let line = if is_fit && line.contains(", ") {
+            let (without_comma, _) = line.split_once(", ").unwrap_or_default();
+            without_comma.to_string()
+        } else {
+            line
+        };
+
+        let mut splitted_line = line.split_whitespace().collect::<Vec<_>>();
+        let mut leftovers = Vec::new();
+
+        if line.is_empty() {
+            continue;
         }
 
         while !splitted_line.is_empty() {
@@ -474,6 +505,48 @@ Naglfar Fleet Issue\t1".into();
         assert_eq!(result.items.len(), 1);
         assert_eq!(result.items[0].item_name, "Capital Shield Emitter".to_string());
         assert_eq!(result.items[0].quantity, 130);
+    }
+
+    #[tokio::test]
+    async fn fit_with_loaded_module() {
+        let all_items = load_items().await;
+        let content = "[Karura, Killmail 126026825]
+Triple Neutron Blaster Cannon II, Void XL
+Triple Neutron Blaster Cannon II, Void XL
+Triple Neutron Blaster Cannon II, Void XL".into();
+        let result = parse(&all_items, content);
+
+        assert_eq!(result.items.len(), 4);
+        assert_eq!(result.items[0].item_name, "Karura".to_string());
+        assert_eq!(result.items[0].quantity, 1);
+        assert_eq!(result.items[1].item_name, "Triple Neutron Blaster Cannon II".to_string());
+        assert_eq!(result.items[1].quantity, 1);
+        assert_eq!(result.items[2].item_name, "Triple Neutron Blaster Cannon II".to_string());
+        assert_eq!(result.items[2].quantity, 1);
+        assert_eq!(result.items[3].item_name, "Triple Neutron Blaster Cannon II".to_string());
+        assert_eq!(result.items[3].quantity, 1);
+    }
+
+    #[tokio::test]
+    async fn survey_scanner_1() {
+        let all_items = load_items().await;
+        let content = "Zircon	14 430	144 300 m3	15 km".into();
+        let result = parse(&all_items, content);
+
+        assert_eq!(result.items.len(), 1);
+        assert_eq!(result.items[0].item_name, "Zircon".to_string());
+        assert_eq!(result.items[0].quantity, 14430);
+    }
+
+    #[tokio::test]
+    async fn survey_scanner_2() {
+        let all_items = load_items().await;
+        let content = "Glistening Bitumens	14 430	144 300 m3	15 km".into();
+        let result = parse(&all_items, content);
+
+        assert_eq!(result.items.len(), 1);
+        assert_eq!(result.items[0].item_name, "Glistening Bitumens".to_string());
+        assert_eq!(result.items[0].quantity, 14430);
     }
 
     #[tokio::test]
