@@ -623,7 +623,7 @@ class AppraisalShow extends Vue {
             }
         }, {
             title: 'Name',
-            row: 'name',
+            key: 'name',
             width: '25%',
             defaultSortOrder: 'ascend',
             sorter: (row1: IAppraisalItem, row2: IAppraisalItem) => row1.meta.name.localeCompare(row2.meta.name),
@@ -638,7 +638,7 @@ class AppraisalShow extends Vue {
         }, {
             align: 'right',
             title: 'Quantity',
-            row: 'quantity',
+            key: 'quantity',
             width: '15%',
             sorter: (row1: IAppraisalItem, row2: IAppraisalItem) => row1.quantity - row2.quantity,
             render: (row: IAppraisalItem) => {
@@ -688,9 +688,22 @@ class AppraisalShow extends Vue {
             children: [{
                 align: 'right',
                 title: 'Volume (m3)',
-                row: 'volume',
+                key: 'volume',
                 width: '15%',
-                sorter: (row1: IAppraisalItem, row2: IAppraisalItem) => row1.meta.volume - row2.meta.volume,
+                sorter: (row1: IAppraisalItem, row2: IAppraisalItem) => {
+                    let quantityRow1 = this.single ? 1 : row1.quantity;
+                    let quantityRow2 = this.single ? 1 : row2.quantity;
+
+                    if (row1.meta.repackaged && row2.meta.repackaged) {
+                        return (row1.meta.repackaged * quantityRow1) - (row2.meta.repackaged * quantityRow2);
+                    } else if (row1.meta.repackaged) {
+                        return (row1.meta.repackaged * quantityRow1) - (row2.meta.volume * quantityRow2);
+                    } else if (row2.meta.repackaged) {
+                        return (row1.meta.volume * quantityRow1) - (row2.meta.repackaged * quantityRow2);
+                    } else {
+                        return (row1.meta.volume * quantityRow1) - (row2.meta.volume * quantityRow2);
+                    }
+                },
                 render: (row: IAppraisalItem) => {
                     let volume = 0;
                     if (row.meta.repackaged) {
@@ -715,7 +728,7 @@ class AppraisalShow extends Vue {
             }, {
                 align: 'right',
                 title: 'Buy (ISK)',
-                row: 'buy',
+                key: 'buy',
                 width: '25%',
                 sorter: (row1: IAppraisalItem, row2: IAppraisalItem) => row1.buy.max - row2.buy.max,
                 render: (row: IAppraisalItem) => {
@@ -737,7 +750,7 @@ class AppraisalShow extends Vue {
             }, {
                 align: 'right',
                 title: 'Sell (ISK)',
-                row: 'sell',
+                key: 'sell',
                 width: '25%',
                 sorter: (row1: IAppraisalItem, row2: IAppraisalItem) => row1.sell.min - row2.sell.min,
                 render: (row: IAppraisalItem) => {

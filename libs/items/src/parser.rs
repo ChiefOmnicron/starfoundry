@@ -14,7 +14,7 @@ pub fn parse(
     content: &str,
 ) -> ParseResult {
     static FIT_HEADER: Lazy<Regex> = Lazy::new(|| Regex::new(r"\[([a-zA-Z ]*)(,.*)?\]").unwrap());
-    static SURVEY_SCANNER: Lazy<Regex> = Lazy::new(|| Regex::new(r"([a-zA-Z ]*)\t([0-9 ]*)\t([0-9 ]*m3)\t([0-9 ]*km)").unwrap());
+    //static SURVEY_SCANNER: Lazy<Regex> = Lazy::new(|| Regex::new(r"([a-zA-Z\s]*)\t([0-9 ]*)\t([0-9 ]*m3)\t([0-9 ]*km)").unwrap());
 
     let mut items   = Vec::new();
     let mut invalid = Vec::new();
@@ -23,28 +23,31 @@ pub fn parse(
 
     for line in content.lines() {
         let mut entry = None;
+        dbg!(&line);
 
-        let line = if SURVEY_SCANNER.is_match(&line) {
-            let item_name = if let Some(x) = SURVEY_SCANNER.captures(&line) {
-                x.get(1).map_or("", |m| m.as_str())
-            } else {
-                continue;
-            };
-
-            let quantity = if let Some(x) = SURVEY_SCANNER.captures(&line) {
-                x.get(2).map_or("", |m| m.as_str())
-            } else {
-                continue;
-            };
-
-            &format!("{}\t{}", item_name, quantity.replace(" ", ""))
-        } else {
-            line
-        };
+        //let line = if SURVEY_SCANNER.is_match(&line) {
+        //    let item_name = if let Some(x) = SURVEY_SCANNER.captures(&line) {
+        //        x.get(1).map_or("", |m| m.as_str())
+        //    } else {
+        //        continue;
+        //    };
+//
+        //    let quantity = if let Some(x) = SURVEY_SCANNER.captures(&line) {
+        //        x.get(2).map_or("", |m| m.as_str())
+        //    } else {
+        //        continue;
+        //    };
+//
+        //    &format!("{}\t{}", item_name, quantity.replace(" ", ""))
+        //} else {
+        //    line
+        //};
 
         let line = sanitize_name(line.to_lowercase())
             .trim()
-            .replace("\t", " ");
+            .replace("\t", " ")
+            .replace("&nbsp;", "");
+        dbg!(&line);
 
         // TODO: refactor
         if line.to_lowercase().contains("[empty high slot]") ||
@@ -530,7 +533,7 @@ Triple Neutron Blaster Cannon II, Void XL".into();
     #[tokio::test]
     async fn survey_scanner_1() {
         let all_items = load_items().await;
-        let content = "Zircon	14 430	144 300 m3	15 km".into();
+        let content = "Zircon	14&nbsp;430	144&nbsp;300 m3	15 km".into();
         let result = parse(&all_items, content);
 
         assert_eq!(result.items.len(), 1);
@@ -541,7 +544,7 @@ Triple Neutron Blaster Cannon II, Void XL".into();
     #[tokio::test]
     async fn survey_scanner_2() {
         let all_items = load_items().await;
-        let content = "Glistening Bitumens	14 430	144 300 m3	15 km".into();
+        let content = "Glistening Bitumens	14&nbsp;430	144&nbsp;300 m3	15 km".into();
         let result = parse(&all_items, content);
 
         assert_eq!(result.items.len(), 1);
