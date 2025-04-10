@@ -14,7 +14,6 @@ pub fn parse(
     content: &str,
 ) -> ParseResult {
     static FIT_HEADER: Lazy<Regex> = Lazy::new(|| Regex::new(r"\[([a-zA-Z ]*)(,.*)?\]").unwrap());
-    //static SURVEY_SCANNER: Lazy<Regex> = Lazy::new(|| Regex::new(r"([a-zA-Z\s]*)\t([0-9 ]*)\t([0-9 ]*m3)\t([0-9 ]*km)").unwrap());
 
     let mut items   = Vec::new();
     let mut invalid = Vec::new();
@@ -25,28 +24,10 @@ pub fn parse(
         let mut entry = None;
         dbg!(&line);
 
-        //let line = if SURVEY_SCANNER.is_match(&line) {
-        //    let item_name = if let Some(x) = SURVEY_SCANNER.captures(&line) {
-        //        x.get(1).map_or("", |m| m.as_str())
-        //    } else {
-        //        continue;
-        //    };
-//
-        //    let quantity = if let Some(x) = SURVEY_SCANNER.captures(&line) {
-        //        x.get(2).map_or("", |m| m.as_str())
-        //    } else {
-        //        continue;
-        //    };
-//
-        //    &format!("{}\t{}", item_name, quantity.replace(" ", ""))
-        //} else {
-        //    line
-        //};
-
         let line = sanitize_name(line.to_lowercase())
             .trim()
             .replace("\t", " ")
-            .replace("&nbsp;", "");
+            .replace("\u{a0}", "");
         dbg!(&line);
 
         // TODO: refactor
@@ -533,23 +514,23 @@ Triple Neutron Blaster Cannon II, Void XL".into();
     #[tokio::test]
     async fn survey_scanner_1() {
         let all_items = load_items().await;
-        let content = "Zircon	14&nbsp;430	144&nbsp;300 m3	15 km".into();
+        let content = "Monazite\t8\u{a0}476\t84\u{a0}760 m3\t92 km".into();
         let result = parse(&all_items, content);
 
         assert_eq!(result.items.len(), 1);
-        assert_eq!(result.items[0].item_name, "Zircon".to_string());
-        assert_eq!(result.items[0].quantity, 14430);
+        assert_eq!(result.items[0].item_name, "Monazite".to_string());
+        assert_eq!(result.items[0].quantity, 8476);
     }
 
     #[tokio::test]
     async fn survey_scanner_2() {
         let all_items = load_items().await;
-        let content = "Glistening Bitumens	14&nbsp;430	144&nbsp;300 m3	15 km".into();
+        let content = "Shining Monazite\t8\u{a0}476\t84\u{a0}760 m3\t92 km".into();
         let result = parse(&all_items, content);
 
         assert_eq!(result.items.len(), 1);
-        assert_eq!(result.items[0].item_name, "Glistening Bitumens".to_string());
-        assert_eq!(result.items[0].quantity, 14430);
+        assert_eq!(result.items[0].item_name, "Shining Monazite".to_string());
+        assert_eq!(result.items[0].quantity, 8476);
     }
 
     #[tokio::test]
