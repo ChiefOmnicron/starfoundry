@@ -22,13 +22,12 @@ pub fn parse(
 
     for line in content.lines() {
         let mut entry = None;
-        dbg!(&line);
+        tracing::info!("Item parser {}", &line);
 
         let line = sanitize_name(line.to_lowercase())
             .trim()
             .replace("\t", " ")
             .replace("\u{a0}", "");
-        dbg!(&line);
 
         // TODO: refactor
         if line.to_lowercase().contains("[empty high slot]") ||
