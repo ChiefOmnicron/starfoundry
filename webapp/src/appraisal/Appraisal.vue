@@ -15,10 +15,10 @@
                         @update:value="switchViewMode"
                     >
                         <template #checked>
-                            Show clean
+                            Clean input
                         </template>
                         <template #unchecked>
-                            Show original
+                            Original input
                         </template>
                     </n-switch>
 
