@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS appraisals(
 
     comment        VARCHAR(1024),
 
+    raw            VARCHAR,
+
     created_at     TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT (NOW() AT TIME ZONE ('utc')),
 
     PRIMARY KEY(id)

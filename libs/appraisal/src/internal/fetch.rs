@@ -16,6 +16,7 @@ pub async fn fetch(
                 created_at,
                 structure_id,
                 comment,
+                raw,
                 price_modifier
             FROM appraisals
             WHERE code = $1
@@ -152,6 +153,8 @@ pub async fn fetch(
 
         items:          items,
         invalid:        invalid,
+
+        raw:            appraisal.raw,
 
         total:          total,
     };

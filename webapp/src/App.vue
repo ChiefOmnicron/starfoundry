@@ -172,7 +172,7 @@ import { ROUTE_STRUCTURES } from '@/structure/router';
 
 import EveIcon from '@/components/EveIcon.vue';
 import LoadingBar from './components/LoadingBar.vue';
-import { ROUTE_APPRAISAL, ROUTE_APPRAISAL_EMPTY } from './appraisal/router';
+import { ROUTE_APPRAISAL, ROUTE_APPRAISAL_COMPRESSION, ROUTE_APPRAISAL_EMPTY, ROUTE_APPRAISAL_REPROCESSING } from './appraisal/router';
 import { ROUTE_ABOUT } from './router';
 
 @Component({
@@ -393,7 +393,9 @@ class App extends Vue {
         return this.$route.name === project_routes.ROUTE_PROJECT_ASSIGNMENTS ||
             this.$route.name === project_routes.ROUTE_PROJECT_STATISTICS ||
             this.$route.name === ROUTE_APPRAISAL ||
-            this.$route.name === ROUTE_APPRAISAL_EMPTY;
+            this.$route.name === ROUTE_APPRAISAL_EMPTY ||
+            this.$route.name === ROUTE_APPRAISAL_COMPRESSION ||
+            this.$route.name === ROUTE_APPRAISAL_REPROCESSING;
     }
 
     public async whoami_req() {

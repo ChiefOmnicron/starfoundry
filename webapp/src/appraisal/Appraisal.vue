@@ -3,18 +3,35 @@
         <n-grid-item :span="4">
             <appraisal-input v-model:value="rawAppraisal" />
 
-            <n-flex justify="end" style="margin-top: 10px">
+            <div style="margin-top: 10px">
                 <appraisal-market-selector
                     v-model:market="market"
                 />
 
-                <n-button
-                    @click="createAppraisal"
-                    type="primary"
-                >
-                    Create Appraisal
-                </n-button>
-            </n-flex>
+                <n-flex justify="space-between" style="margin-top: 10px">
+                    <n-switch
+                        v-model:value="viewMode"
+                        v-if="appraisal"
+                        @update:value="switchViewMode"
+                    >
+                        <template #checked>
+                            Show clean
+                        </template>
+                        <template #unchecked>
+                            Show original
+                        </template>
+                    </n-switch>
+
+                    <div v-if="!appraisal"></div>
+
+                    <n-button
+                        @click="createAppraisal"
+                        type="primary"
+                    >
+                        Create Appraisal
+                    </n-button>
+                </n-flex>
+            </div>
         </n-grid-item>
         <n-grid-item :span="8">
             <div v-if="!code">
@@ -77,7 +94,7 @@
                     The price has an additional modifier of {{ appraisal.price_modifier }}%
                 </n-alert>
 
-                <n-tabs type="line" @update:value="tabSwitch">
+                <n-tabs type="line" @update:value="tabSwitch" :value="selectedTab">
                     <n-tab-pane name="appraisal" tab="Appraisal">
                         <loader :busy="loadingAppraisal" />
 
@@ -257,15 +274,15 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
+import { Component, Prop, Vue, Watch, toNative } from 'vue-facing-decorator';
 import { h } from 'vue';
 
 import { createAppraisal, defaultCompressionOptions, defaultReprocessingOptions, fetchAppraisal, fetchAppraisalCompression, fetchAppraisalReprocessing, type IAppraisal, type IAppraisalItem, type ICompressionOptions, type ICompressionResult, type IReprocessingOptions } from '@/appraisal/service';
 
-import { ROUTE_APPRAISAL } from '@/appraisal/router';
+import { ROUTE_APPRAISAL, ROUTE_APPRAISAL_COMPRESSION, ROUTE_APPRAISAL_REPROCESSING } from '@/appraisal/router';
 
 import { ArrowsAltH } from '@vicons/fa';
-import { NAlert, NButton, NDataTable, NFlex, NGrid, NGridItem, NTabs, NTabPane, NText, NSpace, NSteps, NStep, NSlider, NInputNumber, NInput, NIcon } from 'naive-ui';
+import { NAlert, NButton, NDataTable, NFlex, NGrid, NGridItem, NTabs, NTabPane, NText, NSpace, NSteps, NStep, NSlider, NInputNumber, NInput, NIcon, NSwitch } from 'naive-ui';
 import AppraisalCompression from './components/AppraisalCompression.vue';
 import AppraisalHeader from '@/appraisal/components/AppraisalHeader.vue';
 import AppraisalInput from '@/appraisal/components/AppraisalInput.vue';
@@ -291,6 +308,7 @@ import NoEntries from '@/components/NoEntries.vue';
         NSpace,
         NStep,
         NSteps,
+        NSwitch,
         NTabPane,
         NTabs,
         NText,
@@ -338,7 +356,12 @@ class AppraisalShow extends Vue {
     public market: number = 60003760;
     public single: boolean = false;
 
+    public selectedTab: string = 'appraisal';
+
+    public viewMode: boolean = false;
+
     public async created() {
+        console.log('asdasd')
         if (!this.code) {
             return;
         }
@@ -348,10 +371,28 @@ class AppraisalShow extends Vue {
             .then(x => {
                 this.appraisal = x;
 
-                this.rawAppraisal = '';
-                x.items.forEach(i => this.rawAppraisal += `${i.meta.name}\t${i.quantity}\n`);
+                //this.rawAppraisal = '';
+
+                if (x.raw && !this.viewMode) {
+                    this.rawAppraisal = x.raw;
+                } else {
+                    x.items.forEach(i => this.rawAppraisal += `${i.meta.name}\t${i.quantity}\n`);
+                }
+
                 this.market = x.market_id;
                 this.loadingAppraisal = false;
+
+                //if (this.$route.name === ROUTE_APPRAISAL_COMPRESSION) {
+                //    this.tabSwitch('compression')
+                //} else if (this.$route.name === ROUTE_APPRAISAL_REPROCESSING) {
+                //    this.tabSwitch('reprocessing');
+                //}
+
+                if (this.$route.path.endsWith('compression')) {
+                    this.tabSwitch('compression')
+                } else if (this.$route.path.endsWith('reprocessing')) {
+                    this.tabSwitch('reprocessing');
+                }
             })
             .catch(e => {
                 if (e.status === 404) {
@@ -409,6 +450,21 @@ class AppraisalShow extends Vue {
     }
 
     public tabSwitch(tab: string) {
+        if (this.selectedTab !== tab) {
+            let route = `${window.location.origin}/appraisal/${this.code}`;
+
+            if (tab === 'compression') {
+                console.log('a');
+                route = `${window.location.origin}/appraisal/${this.code}/compression`;
+            } else if (tab === 'reprocessing') {
+                console.log('b');
+                route = `${window.location.origin}/appraisal/${this.code}/reprocessing`;
+            }
+
+            this.selectedTab = tab;
+            window.history.replaceState({ ...history.state }, '', route);
+        }
+
         if (tab === 'compression') {
             this.currentTab = 'compression';
 
@@ -771,6 +827,19 @@ class AppraisalShow extends Vue {
                 }
             }]
         }];
+    }
+
+    public switchViewMode() {
+        if (!this.appraisal) {
+            return;
+        }
+
+        this.rawAppraisal = '';
+        if (this.appraisal.raw && !this.viewMode) {
+            this.rawAppraisal = this.appraisal.raw;
+        } else {
+            this.appraisal.items.forEach(i => this.rawAppraisal += `${i.meta.name}\t${i.quantity}\n`);
+        }
     }
 }
 

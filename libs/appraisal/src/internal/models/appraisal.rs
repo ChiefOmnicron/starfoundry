@@ -109,6 +109,9 @@ pub struct Appraisal {
     /// market that was used to create the appraisal
     pub market_id:      i64,
 
+    /// initial appraisal input
+    pub raw:            Option<String>,
+
     /// comment for the appraisal
     pub comment:        Option<String>,
     /// the price modifier is applied on the return data

@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n                INSERT INTO appraisals(\n                    code,\n                    structure_id,\n\n                    price_modifier,\n                    comment\n                )\n                VALUES ($1, $2, $3, $4)\n                RETURNING id, created_at\n            ",
+  "query": "\n                INSERT INTO appraisals(\n                    code,\n                    structure_id,\n\n                    price_modifier,\n                    comment,\n\n                    raw\n                )\n                VALUES ($1, $2, $3, $4, $5)\n                RETURNING id, created_at\n            ",
   "describe": {
     "columns": [
       {
@@ -19,6 +19,7 @@
         "Varchar",
         "Int8",
         "Int2",
+        "Varchar",
         "Varchar"
       ]
     },
@@ -27,5 +28,5 @@
       false
     ]
   },
-  "hash": "f1558009eb291bc34dcba9db1a27d6ce00588dd86d2ffc953f18c38c2b2b8b66"
+  "hash": "1ae5e486cef021bd91af54bc624c174e594d81c8db05f78d072509f8ed1ac41b"
 }

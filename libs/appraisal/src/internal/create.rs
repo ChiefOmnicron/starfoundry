@@ -40,6 +40,7 @@ pub async fn create_raw(
     let mut appraisal = create(
             &pool,
             items,
+            Some(raw),
             order,
             options
         )
@@ -80,6 +81,7 @@ pub async fn create_type_ids(
     let appraisal = create(
             &pool,
             items,
+            None,
             order,
             options
         )
@@ -91,6 +93,7 @@ pub async fn create_type_ids(
 async fn create(
     pool:    &PgPool,
     items:   HashMap<TypeId, i64>,
+    raw:     Option<String>,
     order:   Vec<TypeId>,
     options: Option<AppraisalOptions>,
 ) -> Result<Appraisal> {
@@ -252,15 +255,18 @@ async fn create(
                     structure_id,
 
                     price_modifier,
-                    comment
+                    comment,
+
+                    raw
                 )
-                VALUES ($1, $2, $3, $4)
+                VALUES ($1, $2, $3, $4, $5)
                 RETURNING id, created_at
             ",
                 code,
                 options.market_id,
                 options.price_modifier,
                 options.comment,
+                raw,
             )
             .fetch_one(&mut *transaction)
             .await
@@ -393,6 +399,8 @@ async fn create(
 
         comment:        options.comment,
         price_modifier: options.price_modifier,
+
+        raw:            raw,
 
         market_id:      options.market_id,
 

@@ -72,6 +72,8 @@ export interface IAppraisal {
 
     comment?:       string;
     price_modifier: number;
+
+    raw?:           string;
 }
 
 export interface IAppraisalItem {
