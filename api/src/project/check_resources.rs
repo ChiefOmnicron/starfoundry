@@ -3,8 +3,8 @@ use starfoundry_libs_projects::{CheckResources, ProjectService, Stock};
 use warp::{Reply, Rejection};
 use warp::http::StatusCode;
 
-use crate::{Identity, ReplyError};
-use crate::api_docs::{BadRequest, Forbidden, InternalServerError, NoContent, Unauthorized, UnsupportedMediaType};
+use crate::ReplyError;
+use crate::api_docs::{BadRequest, InternalServerError, NoContent, UnsupportedMediaType};
 
 /// /projects/check
 /// 
@@ -29,8 +29,6 @@ use crate::api_docs::{BadRequest, Forbidden, InternalServerError, NoContent, Una
         ),
         NoContent,
         BadRequest,
-        Unauthorized,
-        Forbidden,
         UnsupportedMediaType,
         InternalServerError,
     ),
@@ -40,12 +38,10 @@ use crate::api_docs::{BadRequest, Forbidden, InternalServerError, NoContent, Una
 )]
 pub async fn check_resources(
     pool:            PgPool,
-    identity:        Identity,
     check_resources: CheckResources,
 ) -> Result<impl Reply, Rejection> {
     match ProjectService::check_resources(
         &pool,
-        identity.character_id(),
         check_resources,
     ).await {
         Ok(x) => {

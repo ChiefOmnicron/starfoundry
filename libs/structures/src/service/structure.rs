@@ -152,6 +152,17 @@ impl StructureService {
             .await
     }
 
+    pub async fn danger_no_permission_fetch(
+        &self,
+        pool:         &PgPool,
+    ) -> Result<Option<Structure>> {
+        crate::root::danger_no_permission_fetch(
+                pool,
+                self.0,
+            )
+            .await
+    }
+
     pub async fn create(
         pool:         &PgPool,
         character_id: CharacterId,

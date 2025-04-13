@@ -600,12 +600,10 @@ impl ProjectService {
 
     pub async fn check_resources(
         pool:           &PgPool,
-        character_id:   CharacterId,
         resources_jobs: CheckResources,
     ) -> Result<Vec<StockMinimal>> {
         crate::root::check_resources(
                 pool,
-                character_id,
                 resources_jobs,
             ).await
     }

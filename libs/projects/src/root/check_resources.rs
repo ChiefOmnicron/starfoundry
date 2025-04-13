@@ -1,6 +1,6 @@
 use sqlx::PgPool;
 use starfoundry_libs_structures::{StructureService, StructureUuid};
-use starfoundry_libs_types::{CharacterId, TypeId};
+use starfoundry_libs_types::TypeId;
 use std::collections::HashMap;
 
 use crate::{CheckResources, Error, ProjectStructureGroup, Result, StockMinimal, StructureMapping};
@@ -8,7 +8,6 @@ use crate::engine::{CalculationEngine, Dependency, ProjectConfigBuilder};
 
 pub async fn check_resources(
     pool:           &PgPool,
-    character_id:   CharacterId,
     resources_jobs: CheckResources,
 ) -> Result<Vec<StockMinimal>> {
     let mut required_resources   = HashMap::new();
@@ -42,7 +41,7 @@ pub async fn check_resources(
 
         let structure_service = StructureService::new(structure_uuid);
         let structure = structure_service
-            .fetch(pool, character_id)
+            .danger_no_permission_fetch(pool)
             .await?
             .ok_or_else(|| Error::StructureNotFound(structure_uuid))?;
 

@@ -81,7 +81,7 @@ impl Server {
         let characters              = character::api(self.pool.clone(), base_path.clone(), self.credential_cache.clone());
         let corporations            = corporation::api(self.pool.clone(), base_path.clone(), self.credential_cache.clone());
         let indy                    = industry::api(self.pool.clone(), base_path.clone(), self.credential_cache.clone());
-        let item                    = item::api(self.pool.clone(), base_path.clone(), self.credential_cache.clone());
+        let item                    = item::api(self.pool.clone(), base_path.clone());
         let job_detection           = job_detection::api(self.pool.clone(), base_path.clone(), self.credential_cache.clone());
         let notifications           = notification::api(self.pool.clone(), base_path.clone(), self.credential_cache.clone());
         let projects                = project::api(self.pool.clone(), base_path.clone(), self.credential_cache.clone());

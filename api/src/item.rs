@@ -1,12 +1,10 @@
 use serde::Serialize;
 use sqlx::PgPool;
-use starfoundry_libs_eve_api::CredentialCache;
 use starfoundry_libs_types::{TypeId, CategoryId, GroupId};
-use std::sync::{Arc, Mutex};
 use warp::{Filter, Reply, Rejection};
 use warp::filters::BoxedFilter;
 
-use crate::{with_identity, with_pool, Identity};
+use crate::with_pool;
 
 pub mod error;
 pub use self::error::*;
@@ -32,12 +30,10 @@ pub mod service {
 pub fn api(
     pool:             PgPool,
     base_path:        BoxedFilter<()>,
-    credential_cache: Arc<Mutex<CredentialCache>>,
 ) -> BoxedFilter<(impl Reply,)> {
     let base_path = base_path
         .clone()
         .and(warp::path!("items" / ..))
-        .and(with_identity(pool.clone(), credential_cache.clone()))
         .and(with_pool(pool.clone()))
         .boxed();
 
@@ -120,7 +116,6 @@ pub fn api(
 }
 
 async fn all(
-    _:    Identity,
     pool: PgPool,
 ) -> Result<impl Reply, Rejection> {
     self::service::all(&pool)
@@ -130,7 +125,6 @@ async fn all(
 }
 
 async fn buildable(
-    _:    Identity,
     pool: PgPool,
 ) -> Result<impl Reply, Rejection> {
     self::service::buildable(&pool)
@@ -140,7 +134,6 @@ async fn buildable(
 }
 
 async fn blueprints(
-    _:    Identity,
     pool: PgPool,
 ) -> Result<impl Reply, Rejection> {
     self::service::blueprints(&pool)
@@ -150,7 +143,6 @@ async fn blueprints(
 }
 
 async fn blueprint_originals(
-    _:       Identity,
     pool:    PgPool,
 ) -> Result<impl Reply, Rejection> {
     self::service::blueprint_originals(&pool)
@@ -160,7 +152,6 @@ async fn blueprint_originals(
 }
 
 async fn parse(
-    _:       Identity,
     pool:    PgPool,
     content: String,
 ) -> Result<impl Reply, Rejection> {
@@ -171,7 +162,6 @@ async fn parse(
 }
 
 async fn resolve_id(
-    _:       Identity,
     pool:    PgPool,
     type_id: TypeId,
 ) -> Result<impl Reply, Rejection> {
@@ -182,7 +172,6 @@ async fn resolve_id(
 }
 
 async fn resolve_id_bulk(
-    _:        Identity,
     pool:     PgPool,
     type_ids: Vec<TypeId>,
 ) -> Result<impl Reply, Rejection> {
@@ -196,7 +185,6 @@ async fn resolve_id_bulk(
 }
 
 async fn resolve_bulk_names(
-    _:     Identity,
     pool:  PgPool,
     names: Vec<String>,
 ) -> Result<impl Reply, Rejection> {

@@ -55,7 +55,6 @@ pub fn api(
 
     let check_resources = path
         .clone()
-        .and(with_identity(pool.clone(), credential_cache.clone()))
         .and(warp::path!("check"))
         .and(warp::post())
         .and(warp::body::json())
