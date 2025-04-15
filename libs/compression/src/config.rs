@@ -121,9 +121,9 @@ impl Config {
         &self,
         asteroid: &Asteroid,
     ) -> bool {
-        if self.allow_uncompressed_ore == false && asteroid.is_raw() {
+        if self.allow_minerals == false && asteroid.is_raw() {
             false
-        } else if self.allow_minerals == false && asteroid.is_ore() {
+        } else if self.allow_uncompressed_ore == false && asteroid.is_ore() {
             false
         } else if self.allow_uncompressed_moon == false && asteroid.is_uncompressed_moon() {
             false
