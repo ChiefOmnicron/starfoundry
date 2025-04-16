@@ -1,0 +1,81 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                id,\n                name,\n                structures.system_id,\n                system_name,\n                structure_id,\n                structures.security  AS \"security!: Security\",\n                type_id,\n                rigs,\n                services\n            FROM structures\n            JOIN systems ON systems.system_id = structures.system_id\n            WHERE id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "system_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "system_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "structure_id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 5,
+        "name": "security!: Security",
+        "type_info": {
+          "Custom": {
+            "name": "system_security",
+            "kind": {
+              "Enum": [
+                "NULLSEC",
+                "LOWSEC",
+                "HIGHSEC"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "type_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "rigs",
+        "type_info": "Int4Array"
+      },
+      {
+        "ordinal": 8,
+        "name": "services",
+        "type_info": "Int4Array"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "aaa7c675d6868e406dc0386fc1d2863551557b5a4bcec5be929c98db47a7bd5d"
+}
