@@ -50,6 +50,14 @@ jobs:
           template: '@/contrib/sarif.tpl'
           output: 'trivy-results-web.sarif'
           severity: 'CRITICAL,HIGH'
+      - name: Trivy Meta Web
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{vars.DOCKER_REPO}}/starfoundry/meta-webserver:${{ env.COMMIT_SHORT_SHA }}'
+          format: 'sarif'
+          template: '@/contrib/sarif.tpl'
+          output: 'trivy-results-meta-webserver.sarif'
+          severity: 'CRITICAL,HIGH'
       - name: Trivy Repo
         uses: aquasecurity/trivy-action@master
         with:
@@ -73,6 +81,11 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           category: web
+          sarif_file: 'trivy-results-web.sarif'
+      - name: Upload Trivy api scan results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          category: meta-webserver
           sarif_file: 'trivy-results-web.sarif'
       - name: Upload Trivy api scan results
         uses: github/codeql-action/upload-sarif@v3
