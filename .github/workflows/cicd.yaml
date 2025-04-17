@@ -69,17 +69,6 @@ jobs:
           make docker-push
           echo ${{ github.sha }}
 
-  trivy-repo:
-    name: trivy repository
-    runs-on: [self-hosted, linux]
-    needs: [release]
-    steps:
-      - name: Checkout code 
-        uses: actions/checkout@master
-      - name: Run Trivy vulnerability scanner
-        continue-on-error: true
-        run: trivy fs . --parallel 0 --severity 'CRITICAL,HIGH'
-
   ship-it:
     name: Update references
     runs-on: [self-hosted, linux]
