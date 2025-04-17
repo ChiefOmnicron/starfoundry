@@ -69,47 +69,6 @@ jobs:
           make docker-push
           echo ${{ github.sha }}
 
-  trivy-docker-api:
-    name: trivy docker api image
-    runs-on: [self-hosted, linux]
-    needs: [release]
-    steps:
-      - name: Run Trivy vulnerability scanner
-        continue-on-error: true
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: '${{vars.DOCKER_REPO}}/starfoundry/api:latest'
-          format: 'table'
-          exit-code: '1'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
-
-  trivy-docker-collector:
-    name: trivy docker collector image
-    runs-on: [self-hosted, linux]
-    needs: [release]
-    steps:
-      - name: Run Trivy vulnerability scanner
-        continue-on-error: true
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: '${{vars.DOCKER_REPO}}/starfoundry/collector:latest'
-          format: 'table'
-          exit-code: '1'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
-
-  trivy-docker-web:
-    name: trivy docker web image
-    runs-on: [self-hosted, linux]
-    needs: [release]
-    steps:
-      - name: Run Trivy vulnerability scanner
-        continue-on-error: true
-        run: trivy image '${{vars.DOCKER_REPO}}/starfoundry/web:latest' --parallel 0 --severity 'CRITICAL,HIGH'
-
   trivy-repo:
     name: trivy repository
     runs-on: [self-hosted, linux]
