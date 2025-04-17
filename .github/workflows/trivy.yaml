@@ -62,16 +62,20 @@ jobs:
       - name: Upload Trivy api scan results
         uses: github/codeql-action/upload-sarif@v3
         with:
+          category: api
           sarif_file: 'trivy-results-api.sarif'
       - name: Upload Trivy api scan results
         uses: github/codeql-action/upload-sarif@v3
         with:
+          category: event-worker
           sarif_file: 'trivy-results-event-worker.sarif'
       - name: Upload Trivy api scan results
         uses: github/codeql-action/upload-sarif@v3
         with:
+          category: web
           sarif_file: 'trivy-results-web.sarif'
       - name: Upload Trivy api scan results
         uses: github/codeql-action/upload-sarif@v3
         with:
+          category: repository
           sarif_file: 'trivy-results-repository.sarif'
