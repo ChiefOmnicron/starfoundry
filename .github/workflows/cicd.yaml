@@ -1,3 +1,5 @@
+name: cicd
+
 on:
   push:
     branches:
