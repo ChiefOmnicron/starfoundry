@@ -1,6 +1,7 @@
 use sqlx::{PgPool, PgConnection};
 use starfoundry_libs_types::{CharacterId, TypeId};
 use std::collections::HashMap;
+use std::str::FromStr;
 use uuid::Uuid;
 
 use crate::{group_structures, AddExcess, AddJobEntry, AddMarket, AddProduct, AdditionalProduct, BlueprintBonus, BlueprintTyp, CreateProject, Error, ProjectUuid, Result, StockMinimal};
@@ -156,6 +157,32 @@ pub async fn create(
         })
         .collect::<Vec<_>>();
 
+    let mut max_runs = HashMap::new();
+    if project_data.project_group_id == Uuid::from_str("ec3a9410-ee92-4435-925d-b81a7a987891").unwrap_or_default().into() {
+        max_runs.insert(21009.into(), 40);
+        max_runs.insert(21011.into(), 40);
+        max_runs.insert(21013.into(), 40);
+        max_runs.insert(21017.into(), 40);
+        max_runs.insert(21019.into(), 40);
+        max_runs.insert(21037.into(), 40);
+        max_runs.insert(24545.into(), 40);
+        max_runs.insert(24547.into(), 40);
+        max_runs.insert(24556.into(), 40);
+        max_runs.insert(24558.into(), 40);
+        max_runs.insert(24560.into(), 40);
+        max_runs.insert(24545.into(), 40);
+        max_runs.insert(21021.into(), 40);
+        max_runs.insert(21023.into(), 40);
+        max_runs.insert(21025.into(), 40);
+        max_runs.insert(21035.into(), 40);
+        max_runs.insert(57487.into(), 40);
+        max_runs.insert(57479.into(), 40);
+        max_runs.insert(57474.into(), 40);
+        max_runs.insert(57486.into(), 200);
+        max_runs.insert(57478.into(), 200);
+        max_runs.insert(57470.into(), 200);
+    }
+
     for structure_group in structure_groups {
         let config = ProjectConfigBuilder::default()
             .add_blacklists(project_data.blacklist.clone())
@@ -164,6 +191,7 @@ pub async fn create(
             .add_structure_mappings(structure_group.mapping)
             .set_material_cost(material_cost.clone())
             .set_system_index(system_index.clone())
+            .set_max_runs(max_runs.clone())
             .build();
 
         let mut dependency_tree = CalculationEngine::new(config);

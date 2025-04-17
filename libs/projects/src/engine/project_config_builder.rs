@@ -79,6 +79,14 @@ impl ProjectConfigBuilder {
         self
     }
 
+    pub fn set_max_runs(
+        mut self,
+        max_runs: HashMap<TypeId, u32>,
+    ) -> Self {
+        self.max_runs = max_runs;
+        self
+    }
+
     pub fn set_system_index(
         mut self,
         system_index: HashMap<SystemId, (f32, f32)>,
