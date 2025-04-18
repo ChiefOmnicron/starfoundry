@@ -2266,10 +2266,12 @@ impl Asteroid {
             Self::CompressedSharpHezorime                   => {
                 mineral_init(
                     vec![
+                        Mineral::Tritanium,
                         Mineral::Isogen,
                         Mineral::Zydrine,
                     ],
                     vec![
+                        2000f64 * self.ore_modifier(),
                         120f64 * self.ore_modifier(),
                         60f64 * self.ore_modifier(),
                     ],
