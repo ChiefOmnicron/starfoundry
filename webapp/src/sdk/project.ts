@@ -75,7 +75,7 @@ export class ProjectService {
     public static async update_job_assignment(
         assignment_id: Uuid,
         job_id:        Uuid,
-    ): Promise<IJobAssignment> {
+    ): Promise<JobAssignmentEntry> {
         return axios
             .put(`${PROJECT_PATH_JOB_ASSIGNMENTS}/${assignment_id}/${job_id}/state`)
             .then(x => x.data);
@@ -539,10 +539,15 @@ export interface IItem {
 
 export interface IJobAssignmentGroup {
     header:  string;
-    entries: IJobAssignment[];
+    entries: JobAssignmentGroupEntry[];
 }
 
-export interface IJobAssignment {
+export interface JobAssignmentGroupEntry {
+    header:  string;
+    entries: JobAssignmentEntry[];
+}
+
+export interface JobAssignmentEntry {
     job_id:         Uuid;
     type_id:        TypeId;
     structure_name: string;

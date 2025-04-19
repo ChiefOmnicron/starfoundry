@@ -1,7 +1,7 @@
 use sqlx::PgPool;
 use std::collections::HashMap;
 
-use crate::{sort_by_product_group, Error, JobAssignment, JobAssignmentEntry, JobAssignmentGroup, ProjectJobAssignmentUuid, Result};
+use crate::{sort_by_job, sort_by_product_group, Error, JobAssignment, JobAssignmentEntry, JobAssignmentGroupEntry, JobAssignmentGroup, ProjectJobAssignmentUuid, Result};
 
 pub async fn fetch(
     pool:          &PgPool,
@@ -42,9 +42,9 @@ pub async fn fetch(
                 item_name:      x.item_name,
                 runs:           x.runs,
                 started:        x.started,
-                category_id:    x.category_id,
-                group_id:       x.group_id,
-                meta_group_id:  x.meta_group_id,
+                category_id:    x.category_id.into(),
+                group_id:       x.group_id.into(),
+                meta_group_id:  x.meta_group_id.map(Into::into)
             }
         })
         .collect::<Vec<_>>();
@@ -60,4 +60,5 @@ pub async fn fetch(
     Ok(JobAssignment::new(mapped))
 }
 
-sort_by_product_group!(sort_job_assignments_by_product_group, JobAssignmentEntry, JobAssignmentGroup);
+sort_by_job!(sort_job_assignments_jobs, JobAssignmentEntry, JobAssignmentGroupEntry);
+sort_by_product_group!(sort_job_assignments_by_product_group, JobAssignmentGroupEntry, JobAssignmentGroup);

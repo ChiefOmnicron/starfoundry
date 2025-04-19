@@ -11,6 +11,18 @@
             <span>Number of startable jobs: {{ jobs_to_start }}</span>
 
             <div>
+                <n-switch
+                    style="margin-right: 7px"
+                    v-model:value="showStarted"
+                >
+                    <template #checked>
+                        Show started jobs
+                    </template>
+                    <template #unchecked>
+                        Hide started jobs
+                    </template>
+                </n-switch>
+
                 <n-button
                     @click="show_check_ressources_modal = true"
                     style="margin-bottom: 7px"
@@ -23,13 +35,13 @@
         <div>
             <template v-for="assignment in assignments" :key="assignment.header">
                 <card
-                    v-if="!busy && assignment.entries.length > 0"
+                    v-if="!busy && assignment && assignment.entries && assignment.entries.length > 0"
                     content-style="padding: 0"
                     style="margin-bottom: 10px"
                     :title="assignment.header"
                 >
                     <card no-title>
-                        <project-job-assignment-list :jobs="assignment.entries" />
+                        <project-job-assignment-list :jobs="sort(assignment.entries)" />
                     </card>
                 </card>
             </template>
@@ -46,8 +58,8 @@
 
 <script lang="ts">
 import { Component, Vue, toNative } from 'vue-facing-decorator';
-import { NAnchor, NAnchorLink, NButton, NSpace } from 'naive-ui';
-import { type IJobAssignmentGroup, ProjectService } from '@/sdk/project';
+import { NAnchor, NAnchorLink, NButton, NSpace, NSwitch } from 'naive-ui';
+import { type JobAssignmentEntry, type IJobAssignmentGroup, ProjectService, type JobAssignmentGroupEntry } from '@/sdk/project';
 import { type Uuid } from '@/sdk/utils';
 
 import Card from '@/components/Card.vue';
@@ -62,6 +74,7 @@ import ProjectJobAssignmentList from '@/project/job/JobAssignmentList.vue';
         NAnchorLink,
         NButton,
         NSpace,
+        NSwitch,
 
         Card,
         CheckResourcesModal,
@@ -79,6 +92,8 @@ class ProjectsView extends Vue {
 
     public timer!: number;
 
+    public showStarted: boolean = true;
+
     public show_check_ressources_modal: boolean = false;
 
     public async created() {
@@ -95,6 +110,31 @@ class ProjectsView extends Vue {
         clearInterval(this.timer)
     }
 
+    public sort(groups: JobAssignmentGroupEntry[]): JobAssignmentEntry[] {
+        let results: JobAssignmentEntry[][] = [];
+
+        for (let group of groups) {
+            let result = group.entries
+                .filter(x => {
+                    if (this.showStarted) {
+                        return true;
+                    }
+
+                    return !x.started;
+                })
+                .sort((a, b) => {
+                    let name = a.item_name.localeCompare(b.item_name);
+                    let runs = a.runs - b.runs;
+                    let job_id = a.job_id.localeCompare(b.job_id);
+
+                    return name || runs || job_id;
+                });
+            results.push(result);
+        }
+
+        return results.flat();
+    }
+
     private async load() {
         this.job_ids = [];
 
@@ -103,17 +143,11 @@ class ProjectsView extends Vue {
             .then(entries => {
                 this.jobs_to_start = 0;
 
-                for (let entry of entries) {
-                    this.jobs_to_start += entry.entries
-                        .filter(x => !x.started)
-                        .map(x => {
-                            this.job_ids.push(x.job_id);
-
-                            return x;
-                        })
-                        .length
-                }
-
+                this.jobs_to_start = entries
+                    .flatMap(x => x.entries)
+                    .flatMap(x => x.entries)
+                    .filter(x => !x.started)
+                    .length;
                 return entries;
             })
             .catch(e => {

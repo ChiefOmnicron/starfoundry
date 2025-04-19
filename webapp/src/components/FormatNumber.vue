@@ -2,6 +2,7 @@
     <span
         :style="{
             fontVariantNumeric: 'tabular-nums',
+            color: textColor(),
         }"
         :type="type"
     >

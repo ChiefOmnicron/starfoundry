@@ -1,5 +1,5 @@
 use serde::Serialize;
-use starfoundry_libs_types::TypeId;
+use starfoundry_libs_types::{CategoryId, GroupId, TypeId};
 use std::collections::HashMap;
 use utoipa::ToSchema;
 
@@ -17,7 +17,14 @@ impl JobAssignment {
     pub fn into_group(
         self,
     ) -> Vec<JobAssignmentGroup> {
-        crate::job_assignment::sort_job_assignments_by_product_group(self.0)
+        let mut grouped_jobs = HashMap::new();
+
+        for (group, entries) in self.0 {
+            let job_groups = crate::job_assignment::sort_job_assignments_jobs(entries);
+            grouped_jobs.insert(group, job_groups);
+        }
+
+        crate::job_assignment::sort_job_assignments_by_product_group(grouped_jobs)
     }
 
     pub fn into_inner(
@@ -39,7 +46,7 @@ impl JobAssignment {
         "runs": 1,
         "started": false,
         "structure_name": "1DQ1-A - Example Structure",
-        "type_id": 57488
+        "type_id": 57488,
     })
 )]
 pub struct JobAssignmentEntry {
@@ -50,9 +57,9 @@ pub struct JobAssignmentEntry {
     pub item_name:      String,
     pub runs:           i32,
     pub started:        bool,
-    pub category_id:    i32,
-    pub group_id:       i32,
-    pub meta_group_id:  Option<i32>,
+    pub category_id:    CategoryId,
+    pub group_id:       GroupId,
+    pub meta_group_id:  Option<GroupId>,
 }
 
 #[derive(Clone, Debug, Default, Serialize, ToSchema)]
@@ -74,6 +81,12 @@ pub struct JobAssignmentEntry {
     }])
 )]
 pub struct JobAssignmentGroup {
+    pub header:  String,
+    pub entries: Vec<JobAssignmentGroupEntry>
+}
+
+#[derive(Clone, Debug, Serialize, ToSchema)]
+pub struct JobAssignmentGroupEntry {
     pub header:  String,
     pub entries: Vec<JobAssignmentEntry>
 }

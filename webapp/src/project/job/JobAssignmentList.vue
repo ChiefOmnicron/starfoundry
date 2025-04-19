@@ -55,7 +55,7 @@
 <script lang="ts">
 import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
 import { NButton, NCheckbox, NTable, NTag } from 'naive-ui';
-import { type IJobAssignment, ProjectService } from '@/sdk/project';
+import { type JobAssignmentEntry, ProjectService } from '@/sdk/project';
 
 import CopyText from '@/components/CopyText.vue';
 import EveIcon from '@/components/EveIcon.vue';
@@ -81,9 +81,9 @@ class ProjectJobAssignmentList extends Vue {
         type: Array,
         required: true,
     })
-    public jobs!: IJobAssignment[];
+    public jobs!: JobAssignmentEntry[];
 
-    public async started(job: IJobAssignment) {
+    public async started(job: JobAssignmentEntry) {
         await ProjectService
             .update_job_assignment(
                 <any>this.$route.params.assignment_id,
