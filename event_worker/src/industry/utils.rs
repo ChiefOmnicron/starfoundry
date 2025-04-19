@@ -162,7 +162,8 @@ pub async fn resolve_container_names(
 
             // # is an accepted special character, why? because I say so
             Ok(x)  => x.into_iter().map(|x| x.name.replace("#", "")).collect::<Vec<_>>(),
-            Err(_) => {
+            Err(e) => {
+                tracing::error!("resolve asset name, {}", e);
                 new_ignore_hangars.push(item_id);
                 // ignore errors
                 continue;
