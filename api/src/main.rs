@@ -19,9 +19,17 @@ use warp::reply::Reply;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenvy::dotenv().ok();
 
-    tracing_subscriber::fmt()
-        .with_env_filter(EnvFilter::from_default_env())
-        .init();
+    if cfg!(debug_assertions) {
+        tracing_subscriber::fmt()
+            .with_env_filter(EnvFilter::from_default_env())
+            .init();
+    } else {
+        tracing_subscriber::fmt()
+            .json()
+            .with_env_filter(EnvFilter::from_default_env())
+            .init();
+    }
+
     let config = Config::load();
 
     let pool = PgPoolOptions::new()

@@ -19,7 +19,7 @@ pub fn job_detection(
     used_ids:        &mut Vec<Uuid>,
     used_job_ids:    &mut Vec<JobId>,
 ) -> (HashMap<Uuid, Vec<UpdateJobRequest>>, Vec<IndustryJobEntry>) {
-    dbg!(&container_names);
+    tracing::info!("container names {:?}", &container_names);
     let now = chrono::Utc::now().naive_utc();
 
     // List of entries that need to be updated
@@ -75,16 +75,14 @@ pub fn job_detection(
         }
 
         // 4. Try to find the project based on its output location
-        dbg!(entry.output_location_id);
         if let Some(container) = container_names.get(&*entry.output_location_id) {
-            dbg!(container);
             if let Some(job) = startable_jobs
                 .iter()
                 .find(|x|
                     x.type_id == entry.product_type_id &&
                     x.runs == entry.runs &&
                     x.job_id.is_none() &&
-                    dbg!(x.project_name.clone()) == *container &&
+                    x.project_name == *container &&
                     !used_ids.contains(&x.id) &&
                     !used_job_ids.contains(&entry.job_id)
                 ) {
@@ -92,7 +90,7 @@ pub fn job_detection(
                         id:           job.id,
                         character_id: Some(entry.installer_id),
                         project_id:   Some(job.project_id),
-                        type_id:      dbg!(entry.product_type_id),
+                        type_id:      entry.product_type_id,
                         cost:         entry.cost,
                         status:       ProjectJobStatus::Building,
                         job_id:       Some(*entry.job_id),
@@ -105,9 +103,11 @@ pub fn job_detection(
                 used_ids.push(job.id);
                 used_job_ids.push(entry.job_id);
             } else {
+                tracing::info!("found container, but no matching job {}", container);
                 unmatched_jobs.push(entry);
             }
         } else {
+            tracing::info!("didn't found a container {}", entry.output_location_id);
             unmatched_jobs.push(entry);
         }
     }

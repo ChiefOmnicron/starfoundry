@@ -92,6 +92,7 @@ pub async fn task(
     ).await {
         Ok(x)  => x,
         Err(e) => {
+            tracing::error!("Error resolving container names {}", e);
             task.add_error(e.to_string());
             HashMap::new()
         }
