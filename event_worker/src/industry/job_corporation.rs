@@ -73,10 +73,17 @@ pub async fn task(
 
     let mut location_ids = industry_jobs
         .iter()
-        .map(|x| x.output_location_id)
+        .map(|x| x.location_id)
         .collect::<Vec<_>>();
     location_ids.sort();
     location_ids.dedup();
+
+    let mut output_location_ids = industry_jobs
+        .iter()
+        .map(|x| x.output_location_id)
+        .collect::<Vec<_>>();
+    output_location_ids.sort();
+    output_location_ids.dedup();
 
     let character_ids = resolve_main_character_from_corporation(
             pool,
@@ -89,6 +96,7 @@ pub async fn task(
         &pool,
         &client,
         &location_ids,
+        &output_location_ids,
     ).await {
         Ok(x)  => x,
         Err(e) => {

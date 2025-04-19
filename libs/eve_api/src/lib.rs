@@ -128,6 +128,8 @@ pub struct IndustryJobEntry {
     pub installer_id: CharacterId,
     /// Status of the manufacturing entry
     pub status: String,
+    /// ID of the location for the industry facility
+    pub location_id: LocationId,
     /// Location ID of the location to which the output of the job will be delivered. Normally a station ID, but can also be a corporation facility
     pub output_location_id: LocationId,
     /// [CorporationId] of the corporation that owns this job

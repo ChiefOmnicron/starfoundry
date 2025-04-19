@@ -565,6 +565,7 @@ mod industry_tests {
             installer_id:          0.into(),
             status:                "".into(),
             corporation_id:        Some(corporation_id),
+            location_id:           location_id,
             output_location_id:    location_id,
         }
     }
