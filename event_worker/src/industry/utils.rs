@@ -129,28 +129,16 @@ pub async fn fetch_done_job_ids(
 }
 
 pub async fn resolve_container_names(
-    pool:                &PgPool,
+    _pool:               &PgPool,
     client:              &EveApiClient,
     location_ids:        &Vec<LocationId>,
     output_location_ids: &Vec<LocationId>,
 ) -> Result<HashMap<i64, String>> {
-    let mut new_ignore_hangars = location_ids.clone();
-    let ignore_hangars = sqlx::query!("
-            SELECT location_id
-            FROM job_detection_ignore_hangars
-        ")
-        .fetch_all(pool)
-        .await
-        .map_err(Error::FetchIndustryIgnoreHangars)?
-        .into_iter()
-        .map(|x| LocationId(x.location_id))
-        .collect::<Vec<_>>();
-
     let mut containers = HashMap::new();
 
     let mut item_ids = output_location_ids
         .iter()
-        .filter(|x| !ignore_hangars.contains(&x))
+        .filter(|x| !location_ids.contains(&x))
         .map(|x| ItemId(**x))
         .collect::<Vec<_>>();
     item_ids.sort();
@@ -164,34 +152,12 @@ pub async fn resolve_container_names(
             // # is an accepted special character, why? because I say so
             Ok(x)  => x.into_iter().map(|x| x.name.replace("#", "")).collect::<Vec<_>>(),
             Err(_) => {
-                new_ignore_hangars.push(LocationId(*item_id));
                 // ignore errors
                 continue;
             }
         };
         let name = name.first().unwrap();
         containers.insert(*item_id, name.clone());
-    }
-
-    if new_ignore_hangars.len() > 0 {
-        match sqlx::query!("
-                INSERT INTO job_detection_ignore_hangars (location_id)
-                SELECT * FROM UNNEST(
-                    $1::BIGINT[]
-                )
-                ON CONFLICT (location_id) DO NOTHING
-            ",
-                &new_ignore_hangars
-                    .into_iter()
-                    .map(|x| *x)
-                    .collect::<Vec<_>>(),
-            )
-            .execute(pool)
-            .await {
-
-            Ok(_) => (),
-            Err(e) => tracing::error!("{e}"),
-        };
     }
 
     Ok(containers)

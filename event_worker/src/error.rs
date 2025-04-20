@@ -67,8 +67,8 @@ pub enum Error {
     FetchMainCharacterByCharacter(sqlx::Error, CharacterId),
     #[error("error getting bpc_stocks ids, '{0}'")]
     FetchBpcStockIds(sqlx::Error),
-    #[error("error while fetching job detection ignored hangars, error: '{0}'")]
-    FetchIndustryIgnoreHangars(sqlx::Error),
+    //#[error("error while fetching job detection ignored hangars, error: '{0}'")]
+    //FetchIndustryIgnoreHangars(sqlx::Error),
     #[error("error while inserting industy index, '{0}'")]
     InsertIndustryIndex(sqlx::Error),
     #[error("error while inserting industy jobs, '{0}'")]
