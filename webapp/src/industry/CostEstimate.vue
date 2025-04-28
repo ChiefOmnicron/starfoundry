@@ -2,13 +2,46 @@
     <div>
         <page-header title="Cost Estimate" />
 
-        <div v-show="!invalid_setup">
+        <n-form
+            v-show="!invalid_setup"
+            :model="costEstimate"
+            :rules="rules"
+            ref="formRef"
+        >
+            <card title="General">
+                <n-form-item
+                    label="Project Group"
+                    path="project_group_id"
+                    style="margin-left: 10px; margin-right: 10px; margin-top: 10px"
+                >
+                    <project-group-selector
+                        v-model:value="costEstimate.project_group_id"
+                        project-permission="WRITE"
+                    />
+                </n-form-item>
+
+                <n-form-item
+                    label="Structure Group"
+                    path="structure_group_id"
+                    style="margin-left: 10px; margin-right: 10px; margin-top: 10px"
+                >
+                    <structure-group-selector
+                        v-model:value="costEstimate.structure_group_id"
+                        @no-structures="noStructuresAvailable"
+                    />
+                </n-form-item>
+            </card>
+
+            {{ costEstimate }}
+
+            <card-margin />
+
             <card no-title>
                 <n-form style="margin-left: 10px; margin-right: 10px; margin-top: 10px">
                     <n-form-item label="Structure Group">
                         <structure-group-selector
                             v-model:value="structure_group"
-                            @no-structures="no_structures"
+                            @no-structures="noStructuresAvailable"
                         />
                     </n-form-item>
 
@@ -73,7 +106,7 @@
                     />
                 </div>
             </card>
-        </div>
+        </n-form>
 
         <n-result
             v-if="invalid_setup"
@@ -87,13 +120,14 @@
 
 <script lang="ts">
 import { h } from 'vue';
-import { Component, Vue, toNative } from 'vue-facing-decorator';
+import { Component, Ref, Vue, toNative } from 'vue-facing-decorator';
 import { events } from '@/main';
 import { ROUTE_CHANGE } from '@/event_bus';
-import { NButton, NForm, NFormItem, NInput, NResult, NSpace } from 'naive-ui';
+import { NButton, NForm, NFormItem, NInput, NResult, NSpace, type FormItemRule } from 'naive-ui';
 
 import { Service, type IProduct, type ICostEstimateResponse, type IExcessCostEntry } from '@/project/service';
 import { type IParsedRow, ItemService } from '@/services/item';
+import type { Uuid } from '@/utils';
 
 import Card from '@/components/Card.vue';
 import CardMargin from '@/components/CardMargin.vue';
@@ -102,6 +136,7 @@ import EveIcon from '@/components/EveIcon.vue';
 import FormatNumber from '@/components/FormatNumber.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import ProductSelector from '@/project/selectors/ProductSelector.vue';
+import ProjectGroupSelector from '@/components/selectors/ProjectGroupSelector.vue';
 import StructureGroupSelector from '@/components/selectors/StructureGroupSelector.vue';
 
 @Component({
@@ -119,6 +154,7 @@ import StructureGroupSelector from '@/components/selectors/StructureGroupSelecto
     FormatNumber,
     PageHeader,
     ProductSelector,
+    ProjectGroupSelector,
     StructureGroupSelector,
   }
 })
@@ -131,6 +167,11 @@ class SystemIndex extends Vue {
 
     public cost_estimate: null | ICostEstimateResponse = null;
     public busy = false;
+
+    @Ref('formRef')
+    public formRef!: any;
+
+    public costEstimate: ICostEstimate = <any>{};
 
     public async created() {
         events.$emit(
@@ -154,7 +195,7 @@ class SystemIndex extends Vue {
         this.busy = false;
     }
 
-    public no_structures(status: boolean) {
+    public noStructuresAvailable(status: boolean) {
         this.invalid_setup = !status;
     }
 
@@ -200,6 +241,16 @@ class SystemIndex extends Vue {
             copy: true,
         }];
     }
+
+    public rules(): FormItemRule[] {
+        return [];
+    }
 }
 export default toNative(SystemIndex);
+
+// tmp
+interface ICostEstimate {
+    project_group_id: Uuid,
+    structure_group_id: Uuid,
+}
 </script>
