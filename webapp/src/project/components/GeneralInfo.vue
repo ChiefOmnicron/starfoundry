@@ -2,33 +2,30 @@
     <n-form
         ref="form_ref"
         style="margin-top: 15px; margin-left: 10px; margin-right: 10px"
-        :model="data"
+        :model="info"
         :rules="rules"
     >
         <n-form-item path="name" label="Name">
             <n-input
                 :disabled="readonly"
                 placeholder="Name"
-                v-model:value="data.name"
+                v-model:value="info.name"
             />
         </n-form-item>
 
         <n-form-item path="project_group_id" label="Project Group">
             <project-group-selector
                 :readonly="readonly"
-                v-model:value="data.project_group_id"
+                v-model:value="info.project_group_id"
                 project-permission="WRITE"
+                @update:value="selectProjectGroupId"
             />
-        </n-form-item>
-
-        <n-form-item path="structure_group_id" label="Structure Group" v-if="!showStatus">
-            <structure-group-selector v-model:value="data.structure_group_id" />
         </n-form-item>
 
         <n-form-item path="orderer" label="Orderer">
             <n-input
                 :disabled="readonly"
-                v-model:value="data.orderer"
+                v-model:value="info.orderer"
                 placeholder="Orderer"
             />
         </n-form-item>
@@ -36,7 +33,7 @@
         <n-form-item path="sell_price" label="Sell price">
             <format-number-input
                 :readonly="readonly"
-                v-model:value="data.finance.sell_price"
+                v-model:value="info.sell_price"
                 placeholder="Sell price"
                 style="width: 100%"
             />
@@ -46,7 +43,7 @@
             <n-input
                 :disabled="readonly"
                 type="textarea"
-                v-model:value="data.notes"
+                v-model:value="info.notes"
                 placeholder="Notes"
             />
         </n-form-item>
@@ -55,7 +52,7 @@
             <n-select
                 :disabled="readonly"
                 :options="options"
-                v-model:value="data.status"
+                v-model:value="info.status"
             />
         </n-form-item>
     </n-form>
@@ -84,6 +81,10 @@ import StructureGroupSelector from '@/components/selectors/StructureGroupSelecto
         ProjectGroupSelector,
         StructureGroupSelector,
     },
+    emits: [
+        'update:info',
+        'update:projectGroup',
+    ]
 })
 class ProjectGeneralInfo extends Vue {
     @Prop({
@@ -106,12 +107,6 @@ class ProjectGeneralInfo extends Vue {
     })
     public readonly!: boolean;
 
-    public data: any = <any>{};
-
-    public created() {
-        this.data = this.info;
-    }
-
     public options: SelectOption[] = [{
         label: 'Preparing',
         value: 'PREPARING',
@@ -125,6 +120,10 @@ class ProjectGeneralInfo extends Vue {
         label: 'Done',
         value: 'DONE',
     }];
+
+    public selectProjectGroupId(value: string) {
+        this.$emit('update:projectGroup', value);
+    }
 
     public rules: FormRules = {
         name: [{
@@ -148,16 +147,6 @@ class ProjectGeneralInfo extends Vue {
             trigger: ['input', 'blur']
         }],
         project_group_id: [{
-            required: true,
-            validator (_: FormItemRule, value: string) {
-                if (!value || value === '') {
-                    return new Error('This field is required')
-                }
-                return true
-            },
-            trigger: ['input', 'blur']
-        }],
-        structure_group_id: [{
             required: true,
             validator (_: FormItemRule, value: string) {
                 if (!value || value === '') {

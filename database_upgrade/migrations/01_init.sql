@@ -171,10 +171,3 @@ CREATE TABLE IF NOT EXISTS wallet_corporation(
 
     PRIMARY KEY(id)
 );
-
-CREATE TABLE IF NOT EXISTS job_detection_ignore_hangars(
-    location_id BIGINT NOT NULL,
-
-    PRIMARY KEY(location_id)
-);
-CREATE UNIQUE INDEX job_detection_ignore_hangars_location ON job_detection_ignore_hangars(location_id);
