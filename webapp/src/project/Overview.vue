@@ -8,6 +8,10 @@
             <info-table :data="generalInfo(project)" :field-width="200" />
         </card>
 
+        <card-v2 title="General InformationA" v-if="!busy">
+            <info-table :data="generalInfo(project)" :field-width="200" />
+        </card-v2>
+
         <card-margin />
 
         <card title="Finance" v-if="!busy">
@@ -38,6 +42,7 @@ import {
 import { type Uuid } from '@/sdk/utils';
 
 import Card from '@/components/Card.vue';
+import CardV2 from '@/components/CardV2.vue';
 import CardMargin from '@/components/CardMargin.vue';
 import EveIcon from '@/components/EveIcon.vue';
 import InfoTable from '@/components/InfoTable.vue';
@@ -47,6 +52,7 @@ import PageHeader from '@/components/PageHeader.vue';
 @Component({
     components: {
         Card,
+        CardV2,
         CardMargin,
         InfoTable,
         Loader,
