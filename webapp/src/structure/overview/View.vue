@@ -33,15 +33,18 @@
         <div
             style="margin-bottom: 10px"
             data-cy="structuresFilter"
-            v-if="pageLoadingState.isInitialDataLoaded && (structures.length > 0 || pageLoadingState.hasFilter)"
+            v-if="
+                pageLoadingState.isInitialDataLoaded &&
+                (structures.length > 0 || pageLoadingState.hasFilter)
+            "
         >
             <filter-text
                 :filters="filters"
                 :load-initial="false"
                 :options="filterOptions"
                 :search-function="searchFunction"
-                @busy="(s: any) => pageLoadingState.loading = s"
-                @touched="(s: any) => pageLoadingState.hasFilter = s"
+                @busy="(s: any) => (pageLoadingState.loading = s)"
+                @touched="(s: any) => (pageLoadingState.hasFilter = s)"
                 v-model:entries="structures"
             />
 
@@ -54,7 +57,10 @@
 
         <action-group
             data-cy="structuresActionGroup"
-            v-if="pageLoadingState.isInitialDataLoaded && (structures.length > 0 || pageLoadingState.hasFilter)"
+            v-if="
+                pageLoadingState.isInitialDataLoaded &&
+                (structures.length > 0 || pageLoadingState.hasFilter)
+            "
         >
             <n-button
                 @click="$router.push({ name: routeStructureCreate })"
@@ -74,7 +80,9 @@
             data-cy="structuresEmptyNoSearchResult"
             size="large"
             style="margin: 5%"
-            v-if="pageLoadingState.showNoSearchResult  && structures.length === 0"
+            v-if="
+                pageLoadingState.showNoSearchResult && structures.length === 0
+            "
         />
 
         <card
@@ -106,7 +114,9 @@ import ActionGroup from '@/components/ActionGroup.vue';
 import Alert from '@/components/Alert.vue';
 import Card from '@/components/Card.vue';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
-import DataTable, { type IDataTableDefinition } from '@/components/DataTable.vue';
+import DataTable, {
+    type IDataTableDefinition,
+} from '@/components/DataTable.vue';
 import FilterElement from '@/components/FilterElement.vue';
 import FilterText, { type IFilterOption } from '@/components/Filter.vue';
 import Item from '@/components/Item.vue';
@@ -134,7 +144,7 @@ import System from '@/components/System.vue';
         NoEntries,
         PageHeader,
         System,
-    }
+    },
 })
 class StructureOverview extends Vue {
     public pageLoadingState: PageLoadingState = new PageLoadingState();
@@ -148,14 +158,13 @@ class StructureOverview extends Vue {
     public searchFunction = StructureService.list;
 
     public async created() {
-        StructureService
-            .list({})
-            .then(x => {
+        StructureService.list({})
+            .then((x) => {
                 this.structures = x;
                 this.pageLoadingState.isInitialDataLoaded = true;
                 this.filterDefinition();
             })
-            .catch(_ => {
+            .catch((_) => {
                 this.structures = [];
                 this.pageLoadingState.isInitialDataLoaded = true;
                 this.pageLoadingState.loadingError = true;
@@ -163,53 +172,56 @@ class StructureOverview extends Vue {
     }
 
     public tableDefinition(): IDataTableDefinition[] {
-        return [{
-            header: 'Name',
-            key: 'name',
-            width: 400,
-            visible: true,
-            routing: {
-                route: ROUTE_STRUCTURE,
-                key: 'structureId',
-                value: 'id',
+        return [
+            {
+                header: 'Name',
+                key: 'name',
+                width: 400,
+                visible: true,
+                routing: {
+                    route: ROUTE_STRUCTURE,
+                    key: 'structureId',
+                    value: 'id',
+                },
             },
-        }, {
-            header: 'Location',
-            key: 'location',
-            width: 300,
-            visible: true,
-            render(row: Structure): VNode {
-                return h(
-                    System,
-                    {
+            {
+                header: 'Location',
+                key: 'location',
+                width: 300,
+                visible: true,
+                render(row: Structure): VNode {
+                    return h(System, {
                         systemId: row.systemId,
                         dotlan: true,
-                    }
-                )
+                    });
+                },
             },
-        }, {
-            header: 'Type',
-            key: 'structureTypeId',
-            item: true,
-            width: 200,
-            visible: true,
-        }, {
-            header: 'Services',
-            key: 'services',
-            width: 400,
-            visible: true,
-            array: true,
-            item: true,
-            transform: this.formatService,
-        }, {
-            header: 'Rigs',
-            key: 'rigs',
-            width: 700,
-            visible: true,
-            array: true,
-            item: true,
-            transform: this.formatService,
-        }];
+            {
+                header: 'Type',
+                key: 'structureTypeId',
+                item: true,
+                width: 200,
+                visible: true,
+            },
+            {
+                header: 'Services',
+                key: 'services',
+                width: 400,
+                visible: true,
+                array: true,
+                item: true,
+                transform: this.formatService,
+            },
+            {
+                header: 'Rigs',
+                key: 'rigs',
+                width: 700,
+                visible: true,
+                array: true,
+                item: true,
+                transform: this.formatService,
+            },
+        ];
     }
 
     private filterDefinition() {
@@ -256,16 +268,18 @@ class StructureOverview extends Vue {
                 ): string => {
                     if (filter.options) {
                         const value: {
-                            name: string,
-                            system_id: number,
-                        } = filter.options.find(x => x.system_id === system_id);
+                            name: string;
+                            system_id: number;
+                        } = filter.options.find(
+                            (x) => x.system_id === system_id,
+                        );
                         if (value) {
                             return value.name;
                         } else {
-                            return 'Unkown system'
+                            return 'Unkown system';
                         }
                     } else {
-                        return 'Unkown system'
+                        return 'Unkown system';
                     }
                 },
             },
@@ -307,30 +321,28 @@ class StructureOverview extends Vue {
     }*/
 
     private systemOptions(): {
-        name: string,
-        system_id: TypeId,
+        name: string;
+        system_id: TypeId;
     }[] {
-        let systems = (this.structures || [])
-            .map(x => {
-                return {
-                    name: x.systemName,
-                    system_id: x.systemId
-                }
-            });
+        let systems = (this.structures || []).map((x) => {
+            return {
+                name: x.systemName,
+                system_id: x.systemId,
+            };
+        });
         return [...new Set(systems)];
     }
 
     private structure_options(): {
-        name: string,
-        type_id: TypeId,
+        name: string;
+        type_id: TypeId;
     }[] {
-        let systems = (this.structures || [])
-            .map(x => {
-                return {
-                    name: x.structureName,
-                    type_id: x.structureTypeId,
-                }
-            });
+        let systems = (this.structures || []).map((x) => {
+            return {
+                name: x.structureName,
+                type_id: x.structureTypeId,
+            };
+        });
         return [...new Set(systems)];
     }
 }
@@ -345,27 +357,33 @@ class PageLoadingState {
 
     get showNoEntries(): boolean {
         // the initial data has to be loaded
-        return this._isInitialDataLoaded &&
+        return (
+            this._isInitialDataLoaded &&
             // don't show it if there was an error
             !this._loadingError &&
             // if a filter is set, don't show
-            !this._hasFilter;
+            !this._hasFilter
+        );
     }
 
     get showNoSearchResult(): boolean {
         // the initial data has to be loaded
-        return this._isInitialDataLoaded &&
+        return (
+            this._isInitialDataLoaded &&
             // don't show it if there was an error
             !this._loadingError &&
             // only show it when a filter is set
-            this._hasFilter;
+            this._hasFilter
+        );
     }
 
     get showDataTable(): boolean {
         // the initial data has to be loaded
-        return this._isInitialDataLoaded &&
+        return (
+            this._isInitialDataLoaded &&
             // don't show it if the application is currently loading
-            !this._loading;
+            !this._loading
+        );
     }
 
     get showSpinner(): boolean {

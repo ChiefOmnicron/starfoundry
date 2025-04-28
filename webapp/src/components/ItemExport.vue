@@ -2,13 +2,8 @@
     <div>
         <n-input type="textarea" v-model:value="list" :rows="10" disabled />
 
-        <action-group style="margin-top: 5px; margin-right: 5px;">
-            <n-button
-                @click="close()"
-                quaternary
-            >
-                Close
-            </n-button>
+        <action-group style="margin-top: 5px; margin-right: 5px">
+            <n-button @click="close()" quaternary> Close </n-button>
             <n-tooltip placement="top" trigger="click">
                 <template #trigger>
                     <n-button @click="copyList">Copy</n-button>
@@ -39,18 +34,18 @@ import ActionGroup from './ActionGroup.vue';
 class ItemExport extends Vue {
     /// String array of the fields to show
     @Prop({
-        required: true
+        required: true,
     })
     public formatIngame!: Array<any>;
 
     /// String array of the fields to show
     @Prop({
-        required: true
+        required: true,
     })
     public formatList!: Array<any>;
 
     @Prop({
-        required: true
+        required: true,
     })
     public data!: Array<any>;
 
@@ -58,7 +53,9 @@ class ItemExport extends Vue {
 
     public created() {
         this.generateList(this.data);
-        this.$watch('items', () => this.generateList(this.data), { deep: true });
+        this.$watch('items', () => this.generateList(this.data), {
+            deep: true,
+        });
     }
 
     public copyList() {
@@ -67,14 +64,17 @@ class ItemExport extends Vue {
 
     public copyIngame() {
         let copy = this.data
-            .map((x: any) => `<url=showinfo:${x[<any>this.formatIngame[0]]}>${x[<any>this.formatIngame[1]]}</url>`)
+            .map(
+                (x: any) =>
+                    `<url=showinfo:${x[<any>this.formatIngame[0]]}>${x[<any>this.formatIngame[1]]}</url>`,
+            )
             .join('\n');
         navigator.clipboard.writeText(copy);
     }
 
     private generateList(data: any[]) {
         this.list = data
-            .map(entry =>
+            .map((entry) =>
                 (<string[]>this.formatList)
                     .map((field: string) => {
                         if (field.indexOf('.') > 0) {
@@ -98,7 +98,7 @@ class ItemExport extends Vue {
 
                         return `${entry[field]}`;
                     })
-                    .join('\t')
+                    .join('\t'),
             )
             .join('\n');
     }

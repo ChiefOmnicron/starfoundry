@@ -13,7 +13,8 @@
                 <notification-wrapper
                     :notification-id="notification"
                     v-slot="{ entry }"
-                    v-for="notification in notifications" :key="notification"
+                    v-for="notification in notifications"
+                    :key="notification"
                 >
                     <tr>
                         <td>
@@ -90,9 +91,7 @@ import NotificationWrapper from '@/components/NotificationWrapper.vue';
         NotificationSelector,
         NotificationWrapper,
     },
-    emits: [
-        'update:notifications',
-    ]
+    emits: ['update:notifications'],
 })
 class Notification extends Vue {
     @Prop({
@@ -113,7 +112,10 @@ class Notification extends Vue {
     }
 
     public async deleteNotification(id: Uuid) {
-        this.$emit('update:notifications', this.notifications.filter(x => x !== id));
+        this.$emit(
+            'update:notifications',
+            this.notifications.filter((x) => x !== id),
+        );
     }
 
     public openNotification(notification_id: Uuid) {
@@ -121,7 +123,7 @@ class Notification extends Vue {
             name: ROUTE_NOTIFICATION,
             params: {
                 notificationId: notification_id,
-            }
+            },
         });
         window.open(route.href);
     }

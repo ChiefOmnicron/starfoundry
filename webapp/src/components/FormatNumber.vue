@@ -17,8 +17,8 @@ import { NText } from 'naive-ui';
 
 @Component({
     components: {
-        NText
-    }
+        NText,
+    },
 })
 class FormatNumber extends Vue {
     @Prop({
@@ -49,14 +49,14 @@ class FormatNumber extends Vue {
     @Prop({
         type: Boolean,
         required: false,
-        default: false
+        default: false,
     })
     public withComma!: boolean;
 
     @Prop({
         type: String,
         required: false,
-        default: 'default'
+        default: 'default',
     })
     public type!: string;
 

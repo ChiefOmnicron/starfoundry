@@ -12,15 +12,18 @@ import { Component, Prop, Vue, Watch, toNative } from 'vue-facing-decorator';
 
 import type { OreReprocessing } from '@/appraisal/service';
 
-import { NSelect, type SelectOption, type TreeOverrideNodeClickBehaviorReturn, type TreeSelectOption } from 'naive-ui';
+import {
+    NSelect,
+    type SelectOption,
+    type TreeOverrideNodeClickBehaviorReturn,
+    type TreeSelectOption,
+} from 'naive-ui';
 
 @Component({
     components: {
         NSelect,
     },
-    emits: [
-        'update:efficiency'
-    ],
+    emits: ['update:efficiency'],
 })
 class OreReprocessingSelector extends Vue {
     @Prop({
@@ -53,71 +56,95 @@ class OreReprocessingSelector extends Vue {
 
     public oreReprocessingOptions(): SelectOption[] {
         if (this.system === 'HS' && this.structure === 'ATHANOR') {
-            return [{
-                label: 'No Rig (73.81%)',
-                value: 'HsAthanorNoRig'
-            }, {
-                label: 'T1 Rig (75.28%)',
-                value: 'HsAthanorT1'
-            }, {
-                label: 'T2 Rig (78.23%)',
-                value: 'HsAthanorT2'
-            }];
+            return [
+                {
+                    label: 'No Rig (73.81%)',
+                    value: 'HsAthanorNoRig',
+                },
+                {
+                    label: 'T1 Rig (75.28%)',
+                    value: 'HsAthanorT1',
+                },
+                {
+                    label: 'T2 Rig (78.23%)',
+                    value: 'HsAthanorT2',
+                },
+            ];
         } else if (this.system === 'HS' && this.structure === 'TATARA') {
-            return [{
-                label: 'No Rig (76.34%)',
-                value: 'HsTataraNoRig'
-            }, {
-                label: 'T1 Rig (77.86%)',
-                value: 'HsTataraT1'
-            }, {
-                label: 'T2 Rig (80.92%)',
-                value: 'HsTataraT2'
-            }];
+            return [
+                {
+                    label: 'No Rig (76.34%)',
+                    value: 'HsTataraNoRig',
+                },
+                {
+                    label: 'T1 Rig (77.86%)',
+                    value: 'HsTataraT1',
+                },
+                {
+                    label: 'T2 Rig (80.92%)',
+                    value: 'HsTataraT2',
+                },
+            ];
         } else if (this.system === 'LS' && this.structure === 'ATHANOR') {
-            return [{
-                label: 'No Rig (73.81%)',
-                value: 'LsAthanorNoRig'
-            }, {
-                label: 'T1 Rig (79.80%)',
-                value: 'LsAthanorT1'
-            }, {
-                label: 'T2 Rig (82.93%)',
-                value: 'LsAthanorT2'
-            }];
+            return [
+                {
+                    label: 'No Rig (73.81%)',
+                    value: 'LsAthanorNoRig',
+                },
+                {
+                    label: 'T1 Rig (79.80%)',
+                    value: 'LsAthanorT1',
+                },
+                {
+                    label: 'T2 Rig (82.93%)',
+                    value: 'LsAthanorT2',
+                },
+            ];
         } else if (this.system === 'LS' && this.structure === 'TATARA') {
-            return [{
-                label: 'No Rig (76.34%)',
-                value: 'LsTataraNoRig'
-            }, {
-                label: 'T1 Rig (82.54%)',
-                value: 'LsTataraT1'
-            }, {
-                label: 'T2 Rig (85.77%)',
-                value: 'LsTataraT2'
-            }];
+            return [
+                {
+                    label: 'No Rig (76.34%)',
+                    value: 'LsTataraNoRig',
+                },
+                {
+                    label: 'T1 Rig (82.54%)',
+                    value: 'LsTataraT1',
+                },
+                {
+                    label: 'T2 Rig (85.77%)',
+                    value: 'LsTataraT2',
+                },
+            ];
         } else if (this.system === 'NS' && this.structure === 'ATHANOR') {
-            return [{
-                label: 'No Rig (73.81%)',
-                value: 'NsAthanorNoRig'
-            }, {
-                label: 'T1 Rig (84.32%)',
-                value: 'NsAthanorT1'
-            }, {
-                label: 'T2 Rig (87.62%)',
-                value: 'NsAthanorT2'
-            }];
+            return [
+                {
+                    label: 'No Rig (73.81%)',
+                    value: 'NsAthanorNoRig',
+                },
+                {
+                    label: 'T1 Rig (84.32%)',
+                    value: 'NsAthanorT1',
+                },
+                {
+                    label: 'T2 Rig (87.62%)',
+                    value: 'NsAthanorT2',
+                },
+            ];
         } else if (this.system === 'NS' && this.structure === 'TATARA') {
-            return [{
-                label: 'No Rig (76.34%)',
-                value: 'NsTataraNoRig'
-            }, {
-                label: 'T1 Rig (87.21%)',
-                value: 'NsTataraT1'
-            }, {
-                label: 'T2 Rig (90.63%)',
-                value: 'NsTataraT2'
-            }];
+            return [
+                {
+                    label: 'No Rig (76.34%)',
+                    value: 'NsTataraNoRig',
+                },
+                {
+                    label: 'T1 Rig (87.21%)',
+                    value: 'NsTataraT1',
+                },
+                {
+                    label: 'T2 Rig (90.63%)',
+                    value: 'NsTataraT2',
+                },
+            ];
         } else {
             return [];
         }

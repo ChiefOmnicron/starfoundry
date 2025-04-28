@@ -1,12 +1,10 @@
 <template>
-    <n-tooltip
-        trigger="click"
-    >
+    <n-tooltip trigger="click">
         <template #trigger>
             <item
                 :disabled="disabled"
                 :type-id="value"
-                style="cursor: pointer;"
+                style="cursor: pointer"
                 v-if="item"
                 v-slot="{ item }"
             >
@@ -21,14 +19,11 @@
                 :value="value || 0"
                 :with-comma="withComma"
                 @click="copyToClipboard(value || 0)"
-                style="cursor: pointer;"
+                style="cursor: pointer"
                 v-else-if="number"
             />
 
-            <n-icon
-                v-else-if="icon"
-                @click="copyToClipboard(value)"
-            >
+            <n-icon v-else-if="icon" @click="copyToClipboard(value)">
                 <Copy />
             </n-icon>
 
@@ -36,7 +31,7 @@
                 @click="copyToClipboard(value)"
                 :style="{
                     cursor: 'pointer',
-                    color: disabled ? 'rgba(255, 255, 255, 0.2)' : ''
+                    color: disabled ? 'rgba(255, 255, 255, 0.2)' : '',
                 }"
                 v-else
             >
@@ -65,11 +60,11 @@ import Item from '@/components/Item.vue';
 
         FormatNumber,
         Item,
-    }
+    },
 })
 class CopyText extends Vue {
     @Prop({
-        required: true
+        required: true,
     })
     public value!: string | number;
 
@@ -106,7 +101,7 @@ class CopyText extends Vue {
     @Prop({
         type: Boolean,
         required: false,
-        default: false
+        default: false,
     })
     public withComma!: boolean;
 

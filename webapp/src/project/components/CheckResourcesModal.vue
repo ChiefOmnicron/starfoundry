@@ -1,13 +1,7 @@
 <template>
     <n-modal v-model:show="show" :on-update:show="close">
-        <card
-            title="Check Resources"
-            style="width: 900px"
-        >
-            <check-resources
-                :project-job-ids="projectJobIds"
-                @close="close"
-            />
+        <card title="Check Resources" style="width: 900px">
+            <check-resources :project-job-ids="projectJobIds" @close="close" />
         </card>
     </n-modal>
 </template>
@@ -28,12 +22,12 @@ import CheckResources from '@/project/CheckResources.vue';
         Card,
         CheckResources,
     },
-    emits: ['close']
+    emits: ['close'],
 })
 class CheckResourcesModal extends Vue {
     @Prop({
         required: true,
-        type: Array<Uuid>
+        type: Array<Uuid>,
     })
     public projectJobIds!: Uuid[];
 

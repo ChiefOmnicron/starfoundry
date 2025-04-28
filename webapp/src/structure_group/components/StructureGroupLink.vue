@@ -1,11 +1,12 @@
 <template>
     <n-button text type="info" v-if="group">
-        <router-link :to="{
+        <router-link
+            :to="{
                 name: route_group,
-                params: { structureGroupId: groupId }
-            }
-            " style="color: inherit; text-decoration: none">
-
+                params: { structureGroupId: groupId },
+            }"
+            style="color: inherit; text-decoration: none"
+        >
             {{ group.name }}
         </router-link>
     </n-button>
@@ -22,7 +23,7 @@ import { StructureGroup, StructureGroupService } from '@/sdk/structure_group';
 @Component({
     components: {
         NButton,
-    }
+    },
 })
 class StructureList extends Vue {
     @Prop({
@@ -31,16 +32,15 @@ class StructureList extends Vue {
     })
     public groupId!: Uuid;
 
-    public group: StructureGroup = <any> null;
+    public group: StructureGroup = <any>null;
     public route_group: string = ROUTE_STRUCTURE_GROUP;
 
     public async created() {
-        await StructureGroupService
-            .fetch(this.groupId)
-            .then(x => this.group = x)
-            .catch(e => {
+        await StructureGroupService.fetch(this.groupId)
+            .then((x) => (this.group = x))
+            .catch((e) => {
                 console.error(e);
-            })
+            });
     }
 }
 

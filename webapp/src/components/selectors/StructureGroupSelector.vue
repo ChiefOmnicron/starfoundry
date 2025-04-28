@@ -16,7 +16,10 @@ import { Component, Vue, toNative, Prop } from 'vue-facing-decorator';
 import { NText, NSelect, type SelectOption } from 'naive-ui';
 import { StructureGroup, StructureGroupService } from '@/sdk/structure_group';
 import type { StructureId } from '@/sdk/utils';
-import { StructureDynamicGroup, StructureDynamicGroupService } from '@/sdk/structure_dynamic_group';
+import {
+    StructureDynamicGroup,
+    StructureDynamicGroupService,
+} from '@/sdk/structure_dynamic_group';
 
 // Usage:
 //
@@ -37,10 +40,7 @@ import { StructureDynamicGroup, StructureDynamicGroupService } from '@/sdk/struc
         NText,
         NSelect,
     },
-    emits: [
-        'no-structures',
-        'update:value',
-    ],
+    emits: ['no-structures', 'update:value'],
 })
 class StructureGroupSelector extends Vue {
     @Prop({
@@ -63,8 +63,7 @@ class StructureGroupSelector extends Vue {
 
     public async created() {
         this.loading = true;
-        await StructureGroupService
-            .all()
+        await StructureGroupService.all()
             .then((x: StructureGroup[]) => {
                 this.loading = false;
 
@@ -79,7 +78,7 @@ class StructureGroupSelector extends Vue {
                     });
                 });
             })
-            .catch(e => {
+            .catch((e) => {
                 this.loading = false;
                 console.error(e);
             });
@@ -97,15 +96,17 @@ class StructureGroupSelector extends Vue {
                     });
                 });
             })
-            .then((_: any) => this.loading = false)
-            .catch(e => {
+            .then((_: any) => (this.loading = false))
+            .catch((e) => {
                 this.loading = false;
                 console.error(e);
             });
     }
 
     public available_options(): SelectOption[] {
-        return this.options.filter(x => this.exclude.indexOf(<StructureId>x.value) === -1);
+        return this.options.filter(
+            (x) => this.exclude.indexOf(<StructureId>x.value) === -1,
+        );
     }
 
     public selectStructureGroup(value: string) {

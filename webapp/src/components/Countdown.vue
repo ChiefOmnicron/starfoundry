@@ -1,17 +1,8 @@
 <template>
     <div>
-        <format-number
-            :time="true"
-            :value="remaining"
-            v-if="remaining > 0"
-        />
+        <format-number :time="true" :value="remaining" v-if="remaining > 0" />
 
-        <n-tag
-            type="success"
-            v-else="remaining === 0"
-        >
-            Done
-        </n-tag>
+        <n-tag type="success" v-else="remaining === 0"> Done </n-tag>
     </div>
 </template>
 
@@ -27,7 +18,7 @@ import FormatNumber from '@/components/FormatNumber.vue';
         NTag,
 
         FormatNumber,
-    }
+    },
 })
 class Countdown extends Vue {
     @Prop({

@@ -50,7 +50,7 @@ web-test-chrome:
 		-w /webapp \
 		--rm \
 		--entrypoint cypress \
-		cypress/included:13.12.0 \
+		cypress/included:14.3.2 \
 		run --component --browser chrome
 	sudo chown -R $(id -u):$(id -g) ./webapp/node_modules ./webapp/cypress
 
@@ -61,7 +61,7 @@ web-test-firefox:
 		-w /webapp \
 		--rm \
 		--entrypoint cypress \
-		cypress/included:13.12.0 \
+		cypress/included:14.3.2 \
 		run --component --browser firefox
 	sudo chown -R $(id -u):$(id -g) ./webapp/node_modules ./webapp/cypress
 
@@ -72,7 +72,7 @@ web-test-edge:
 		-w /webapp \
 		--rm \
 		--entrypoint cypress \
-		cypress/included:13.12.0 \
+		cypress/included:14.3.2 \
 		run --component --browser edge
 	sudo chown -R $(id -u):$(id -g) ./webapp/node_modules ./webapp/cypress
 
@@ -83,7 +83,7 @@ web-test-dev:
 		-w /webapp \
 		--rm \
 		--entrypoint cypress \
-		cypress/included:13.12.0 \
+		cypress/included:14.3.2 \
 		run --component --browser chrome --spec src/notification/overview/integration/**.cy.ts
 	sudo chown -R $(id -u):$(id -g) ./webapp/node_modules ./webapp/cypress
 

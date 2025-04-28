@@ -28,7 +28,12 @@ import { Component, Vue, toNative, Prop, Watch } from 'vue-facing-decorator';
 
 import type { TypeId } from '@/sdk/utils';
 
-import { NButton, NInputGroup, NSelect, type SelectGroupOption } from 'naive-ui';
+import {
+    NButton,
+    NInputGroup,
+    NSelect,
+    type SelectGroupOption,
+} from 'naive-ui';
 
 @Component({
     components: {
@@ -36,9 +41,7 @@ import { NButton, NInputGroup, NSelect, type SelectGroupOption } from 'naive-ui'
         NInputGroup,
         NSelect,
     },
-    emits: [
-        'update:value'
-    ]
+    emits: ['update:value'],
 })
 class StructureList extends Vue {
     @Prop({
@@ -48,7 +51,7 @@ class StructureList extends Vue {
     public structureType!: any;
 
     @Prop({
-        type: Number
+        type: Number,
     })
     public selectedValue!: TypeId;
 
@@ -88,262 +91,354 @@ class StructureList extends Vue {
         switch (this.structureType) {
             // Raitaru
             case 35825:
-                return [{
-                    type: 'group',
-                    label: 'Citadel Service Modules',
-                    key: 'citadel_service_modules',
-                    children: [{
-                        label: 'Cloning Center I',
-                        value: 35894,
-                    }]
-                }, {
-                    type: 'group',
-                    label: 'Engfineering Service Modules',
-                    key: 'engineering_service_modules',
-                    children: [{
-                        label: 'Research Lab I',
-                        value: 35891,
-                    }, {
-                        label: 'Hyasyoda Research Lab',
-                        value: 45550,
-                    }, {
-                        label: 'Invention Lab I',
-                        value: 35886,
-                    }, {
-                        label: 'Manufacturing Plant I',
-                        value: 35878,
-                    }]
-                }, {
-                    type: 'group',
-                    label: 'Resource Processing Service Modules',
-                    key: 'resource_reprocessing_service_modules',
-                    children: [{
-                        label: 'Reprocessing Facility I',
-                        value: 35899,
-                    }]
-                }];
-            // Azbel
-            case 35826:
-                return [{
-                    type: 'group',
-                    label: 'Citadel Service Modules',
-                    key: 'citadel_service_modules',
-                    children: [{
-                        label: 'Cloning Center I',
-                        value: 35894,
-                    }, {
-                        label: 'Market Hub I',
-                        value: 35892,
-                    }]
-                }, {
-                    type: 'group',
-                    label: 'Engfineering Service Modules',
-                    key: 'engineering_service_modules',
-                    children: [{
-                        label: 'Research Lab I',
-                        value: 35891,
-                    }, {
-                        label: 'Hyasyoda Research Lab',
-                        value: 45550,
-                    }, {
-                        label: 'Invention Lab I',
-                        value: 35886,
-                    }, {
-                        label: 'Manufacturing Plant I',
-                        value: 35878,
-                    }, {
-                        label: 'Capital Shipyard I',
-                        value: 35881,
-                    }]
-                }, {
-                    type: 'group',
-                    label: 'Resource Processing Service Modules',
-                    key: 'resource_reprocessing_service_modules',
-                    children: [{
-                        label: 'Reprocessing Facility I',
-                        value: 35899,
-                    }]
-                }];
-            // Sotiyo
-            case 35827:
-                return [{
-                    type: 'group',
-                    label: 'Citadel Service Modules',
-                    key: 'citadel_service_modules',
-                    children: [{
-                        label: 'Cloning Center I',
-                        value: 35894,
-                    }, {
-                        label: 'Market Hub I',
-                        value: 35892,
-                    }]
-                }, {
-                    type: 'group',
-                    label: 'Engfineering Service Modules',
-                    key: 'engineering_service_modules',
-                    children: [{
-                        label: 'Research Lab I',
-                        value: 35891,
-                    }, {
-                        label: 'Hyasyoda Research Lab',
-                        value: 45550,
-                    }, {
-                        label: 'Invention Lab I',
-                        value: 35886,
-                    }, {
-                        label: 'Manufacturing Plant I',
-                        value: 35878,
-                    }, {
-                        label: 'Capital Shipyard I',
-                        value: 35881,
-                    }, {
-                        label: 'Supercapital Shipyard I',
-                        value: 35877,
-                    }]
-                }, {
-                    type: 'group',
-                    label: 'Resource Processing Service Modules',
-                    key: 'resource_reprocessing_service_modules',
-                    children: [{
-                        label: 'Reprocessing Facility I',
-                        value: 35899,
-                    }]
-                }];
-            // Athanor
-            case 35835:
-                return [{
-                    type: 'group',
-                    label: 'Citadel Service Modules',
-                    key: 'citadel_service_modules',
-                    children: [{
-                        label: 'Cloning Center I',
-                        value: 35894,
-                    }]
-                }, {
-                    type: 'group',
-                    label: 'Engfineering Service Modules',
-                    key: 'engineering_service_modules',
-                    children: [{
-                        label: 'Research Lab I',
-                        value: 35891,
-                    }, {
-                        label: 'Hyasyoda Research Lab',
-                        value: 45550,
-                    }, {
-                        label: 'Invention Lab I',
-                        value: 35886,
-                    }, {
-                        label: 'Manufacturing Plant I',
-                        value: 35878,
-                    }]
-                }, {
-                    type: 'group',
-                    label: 'Resource Processing Service Modules',
-                    key: 'resource_reprocessing_service_modules',
-                    children: [{
-                        label: 'Moon Drill I',
-                        value: 45009,
-                    }, {
-                        label: 'Reprocessing Facility I',
-                        value: 35899,
-                    }, {
-                        label: 'Biochemical Reactor I',
-                        value: 45539,
-                    }, {
-                        label: 'Composite Reactor I',
-                        value: 45537,
-                    }, {
-                        label: 'Hybrid Reactor I',
-                        value: 45538,
-                    }]
-                }];
-            // Tatara
-            case 35836:
-                return [{
-                    type: 'group',
-                    label: 'Citadel Service Modules',
-                    key: 'citadel_service_modules',
-                    children: [{
-                        label: 'Cloning Center I',
-                        value: 35894,
-                    }, {
-                        label: 'Market Hub I',
-                        value: 35892,
-                    }]
-                }, {
-                    type: 'group',
-                    label: 'Engfineering Service Modules',
-                    key: 'engineering_service_modules',
-                    children: [{
-                        label: 'Research Lab I',
-                        value: 35891,
-                    }, {
-                        label: 'Hyasyoda Research Lab',
-                        value: 45550,
-                    }, {
-                        label: 'Invention Lab I',
-                        value: 35886,
-                    }, {
-                        label: 'Manufacturing Plant I',
-                        value: 35878,
-                    }]
-                }, {
-                    type: 'group',
-                    label: 'Resource Processing Service Modules',
-                    key: 'resource_reprocessing_service_modules',
-                    children: [{
-                        label: 'Moon Drill I',
-                        value: 45009,
-                    }, {
-                        label: 'Reprocessing Facility I',
-                        value: 35899,
-                    }, {
-                        label: 'Biochemical Reactor I',
-                        value: 45539,
-                    }, {
-                        label: 'Composite Reactor I',
-                        value: 45537,
-                    }, {
-                        label: 'Hybrid Reactor I',
-                        value: 45538,
-                    }]
-                }];
-            // Astrahus
-            case 35832:
-                return [{
-                    type: 'group',
-                    label: 'Citadel Service Modules',
-                    key: 'citadel_service_modules',
-                    children: [{
-                        label: 'Cloning Center I',
-                        value: 35894,
-                    }]
-                }, {
-                    type: 'group',
-                    label: 'Engfineering Service Modules',
-                    key: 'engineering_service_modules',
-                    children: [{
-                        label: 'Research Lab I',
-                        value: 35891,
-                    }, {
-                        label: 'Hyasyoda Research Lab',
-                        value: 45550,
-                    }, {
-                        label: 'Invention Lab I',
-                        value: 35886,
-                    }, {
-                        label: 'Manufacturing Plant I',
-                        value: 35878,
-                    }, {
+                return [
+                    {
+                        type: 'group',
+                        label: 'Citadel Service Modules',
+                        key: 'citadel_service_modules',
+                        children: [
+                            {
+                                label: 'Cloning Center I',
+                                value: 35894,
+                            },
+                        ],
+                    },
+                    {
+                        type: 'group',
+                        label: 'Engfineering Service Modules',
+                        key: 'engineering_service_modules',
+                        children: [
+                            {
+                                label: 'Research Lab I',
+                                value: 35891,
+                            },
+                            {
+                                label: 'Hyasyoda Research Lab',
+                                value: 45550,
+                            },
+                            {
+                                label: 'Invention Lab I',
+                                value: 35886,
+                            },
+                            {
+                                label: 'Manufacturing Plant I',
+                                value: 35878,
+                            },
+                        ],
+                    },
+                    {
                         type: 'group',
                         label: 'Resource Processing Service Modules',
                         key: 'resource_reprocessing_service_modules',
-                        children: [{
-                            label: 'Reprocessing Facility I',
-                            value: 35899,
-                        }]
-                    }]
-                }];
+                        children: [
+                            {
+                                label: 'Reprocessing Facility I',
+                                value: 35899,
+                            },
+                        ],
+                    },
+                ];
+            // Azbel
+            case 35826:
+                return [
+                    {
+                        type: 'group',
+                        label: 'Citadel Service Modules',
+                        key: 'citadel_service_modules',
+                        children: [
+                            {
+                                label: 'Cloning Center I',
+                                value: 35894,
+                            },
+                            {
+                                label: 'Market Hub I',
+                                value: 35892,
+                            },
+                        ],
+                    },
+                    {
+                        type: 'group',
+                        label: 'Engfineering Service Modules',
+                        key: 'engineering_service_modules',
+                        children: [
+                            {
+                                label: 'Research Lab I',
+                                value: 35891,
+                            },
+                            {
+                                label: 'Hyasyoda Research Lab',
+                                value: 45550,
+                            },
+                            {
+                                label: 'Invention Lab I',
+                                value: 35886,
+                            },
+                            {
+                                label: 'Manufacturing Plant I',
+                                value: 35878,
+                            },
+                            {
+                                label: 'Capital Shipyard I',
+                                value: 35881,
+                            },
+                        ],
+                    },
+                    {
+                        type: 'group',
+                        label: 'Resource Processing Service Modules',
+                        key: 'resource_reprocessing_service_modules',
+                        children: [
+                            {
+                                label: 'Reprocessing Facility I',
+                                value: 35899,
+                            },
+                        ],
+                    },
+                ];
+            // Sotiyo
+            case 35827:
+                return [
+                    {
+                        type: 'group',
+                        label: 'Citadel Service Modules',
+                        key: 'citadel_service_modules',
+                        children: [
+                            {
+                                label: 'Cloning Center I',
+                                value: 35894,
+                            },
+                            {
+                                label: 'Market Hub I',
+                                value: 35892,
+                            },
+                        ],
+                    },
+                    {
+                        type: 'group',
+                        label: 'Engfineering Service Modules',
+                        key: 'engineering_service_modules',
+                        children: [
+                            {
+                                label: 'Research Lab I',
+                                value: 35891,
+                            },
+                            {
+                                label: 'Hyasyoda Research Lab',
+                                value: 45550,
+                            },
+                            {
+                                label: 'Invention Lab I',
+                                value: 35886,
+                            },
+                            {
+                                label: 'Manufacturing Plant I',
+                                value: 35878,
+                            },
+                            {
+                                label: 'Capital Shipyard I',
+                                value: 35881,
+                            },
+                            {
+                                label: 'Supercapital Shipyard I',
+                                value: 35877,
+                            },
+                        ],
+                    },
+                    {
+                        type: 'group',
+                        label: 'Resource Processing Service Modules',
+                        key: 'resource_reprocessing_service_modules',
+                        children: [
+                            {
+                                label: 'Reprocessing Facility I',
+                                value: 35899,
+                            },
+                        ],
+                    },
+                ];
+            // Athanor
+            case 35835:
+                return [
+                    {
+                        type: 'group',
+                        label: 'Citadel Service Modules',
+                        key: 'citadel_service_modules',
+                        children: [
+                            {
+                                label: 'Cloning Center I',
+                                value: 35894,
+                            },
+                        ],
+                    },
+                    {
+                        type: 'group',
+                        label: 'Engfineering Service Modules',
+                        key: 'engineering_service_modules',
+                        children: [
+                            {
+                                label: 'Research Lab I',
+                                value: 35891,
+                            },
+                            {
+                                label: 'Hyasyoda Research Lab',
+                                value: 45550,
+                            },
+                            {
+                                label: 'Invention Lab I',
+                                value: 35886,
+                            },
+                            {
+                                label: 'Manufacturing Plant I',
+                                value: 35878,
+                            },
+                        ],
+                    },
+                    {
+                        type: 'group',
+                        label: 'Resource Processing Service Modules',
+                        key: 'resource_reprocessing_service_modules',
+                        children: [
+                            {
+                                label: 'Moon Drill I',
+                                value: 45009,
+                            },
+                            {
+                                label: 'Reprocessing Facility I',
+                                value: 35899,
+                            },
+                            {
+                                label: 'Biochemical Reactor I',
+                                value: 45539,
+                            },
+                            {
+                                label: 'Composite Reactor I',
+                                value: 45537,
+                            },
+                            {
+                                label: 'Hybrid Reactor I',
+                                value: 45538,
+                            },
+                        ],
+                    },
+                ];
+            // Tatara
+            case 35836:
+                return [
+                    {
+                        type: 'group',
+                        label: 'Citadel Service Modules',
+                        key: 'citadel_service_modules',
+                        children: [
+                            {
+                                label: 'Cloning Center I',
+                                value: 35894,
+                            },
+                            {
+                                label: 'Market Hub I',
+                                value: 35892,
+                            },
+                        ],
+                    },
+                    {
+                        type: 'group',
+                        label: 'Engfineering Service Modules',
+                        key: 'engineering_service_modules',
+                        children: [
+                            {
+                                label: 'Research Lab I',
+                                value: 35891,
+                            },
+                            {
+                                label: 'Hyasyoda Research Lab',
+                                value: 45550,
+                            },
+                            {
+                                label: 'Invention Lab I',
+                                value: 35886,
+                            },
+                            {
+                                label: 'Manufacturing Plant I',
+                                value: 35878,
+                            },
+                        ],
+                    },
+                    {
+                        type: 'group',
+                        label: 'Resource Processing Service Modules',
+                        key: 'resource_reprocessing_service_modules',
+                        children: [
+                            {
+                                label: 'Moon Drill I',
+                                value: 45009,
+                            },
+                            {
+                                label: 'Reprocessing Facility I',
+                                value: 35899,
+                            },
+                            {
+                                label: 'Biochemical Reactor I',
+                                value: 45539,
+                            },
+                            {
+                                label: 'Composite Reactor I',
+                                value: 45537,
+                            },
+                            {
+                                label: 'Hybrid Reactor I',
+                                value: 45538,
+                            },
+                        ],
+                    },
+                ];
+            // Astrahus
+            case 35832:
+                return [
+                    {
+                        type: 'group',
+                        label: 'Citadel Service Modules',
+                        key: 'citadel_service_modules',
+                        children: [
+                            {
+                                label: 'Cloning Center I',
+                                value: 35894,
+                            },
+                        ],
+                    },
+                    {
+                        type: 'group',
+                        label: 'Engfineering Service Modules',
+                        key: 'engineering_service_modules',
+                        children: [
+                            {
+                                label: 'Research Lab I',
+                                value: 35891,
+                            },
+                            {
+                                label: 'Hyasyoda Research Lab',
+                                value: 45550,
+                            },
+                            {
+                                label: 'Invention Lab I',
+                                value: 35886,
+                            },
+                            {
+                                label: 'Manufacturing Plant I',
+                                value: 35878,
+                            },
+                            {
+                                type: 'group',
+                                label: 'Resource Processing Service Modules',
+                                key: 'resource_reprocessing_service_modules',
+                                children: [
+                                    {
+                                        label: 'Reprocessing Facility I',
+                                        value: 35899,
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ];
             // Fortizar
             case 35833:
             // 'Prometheus' Fortizar
@@ -356,90 +451,120 @@ class StructureList extends Vue {
             case 47514:
             // 'Draccous' Fortizar
             case 47513:
-                return [{
-                    type: 'group',
-                    label: 'Citadel Service Modules',
-                    key: 'citadel_service_modules',
-                    children: [{
-                        label: 'Cloning Center I',
-                        value: 35894,
-                    }, {
-                        label: 'Market Hub I',
-                        value: 35892,
-                    }]
-                }, {
-                    type: 'group',
-                    label: 'Engfineering Service Modules',
-                    key: 'engineering_service_modules',
-                    children: [{
-                        label: 'Research Lab I',
-                        value: 35891,
-                    }, {
-                        label: 'Hyasyoda Research Lab',
-                        value: 45550,
-                    }, {
-                        label: 'Invention Lab I',
-                        value: 35886,
-                    }, {
-                        label: 'Manufacturing Plant I',
-                        value: 35878,
-                    }, {
-                        label: 'Capital Shipyard I',
-                        value: 35881,
-                    }, {
+                return [
+                    {
                         type: 'group',
-                        label: 'Resource Processing Service Modules',
-                        key: 'resource_reprocessing_service_modules',
-                        children: [{
-                            label: 'Reprocessing Facility I',
-                            value: 35899,
-                        }]
-                    }]
-                }];
+                        label: 'Citadel Service Modules',
+                        key: 'citadel_service_modules',
+                        children: [
+                            {
+                                label: 'Cloning Center I',
+                                value: 35894,
+                            },
+                            {
+                                label: 'Market Hub I',
+                                value: 35892,
+                            },
+                        ],
+                    },
+                    {
+                        type: 'group',
+                        label: 'Engfineering Service Modules',
+                        key: 'engineering_service_modules',
+                        children: [
+                            {
+                                label: 'Research Lab I',
+                                value: 35891,
+                            },
+                            {
+                                label: 'Hyasyoda Research Lab',
+                                value: 45550,
+                            },
+                            {
+                                label: 'Invention Lab I',
+                                value: 35886,
+                            },
+                            {
+                                label: 'Manufacturing Plant I',
+                                value: 35878,
+                            },
+                            {
+                                label: 'Capital Shipyard I',
+                                value: 35881,
+                            },
+                            {
+                                type: 'group',
+                                label: 'Resource Processing Service Modules',
+                                key: 'resource_reprocessing_service_modules',
+                                children: [
+                                    {
+                                        label: 'Reprocessing Facility I',
+                                        value: 35899,
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ];
             // Keepstar
             case 35834:
             // Upwell Palatine Keepstar
             case 40340:
-                return [{
-                    type: 'group',
-                    label: 'Citadel Service Modules',
-                    key: 'citadel_service_modules',
-                    children: [{
-                        label: 'Cloning Center I',
-                        value: 35894,
-                    }, {
-                        label: 'Market Hub I',
-                        value: 35892,
-                    }]
-                }, {
-                    type: 'group',
-                    label: 'Engfineering Service Modules',
-                    key: 'engineering_service_modules',
-                    children: [{
-                        label: 'Research Lab I',
-                        value: 35891,
-                    }, {
-                        label: 'Hyasyoda Research Lab',
-                        value: 45550,
-                    }, {
-                        label: 'Invention Lab I',
-                        value: 35886,
-                    }, {
-                        label: 'Manufacturing Plant I',
-                        value: 35878,
-                    }, {
-                        label: 'Capital Shipyard I',
-                        value: 35881,
-                    }, {
+                return [
+                    {
                         type: 'group',
-                        label: 'Resource Processing Service Modules',
-                        key: 'resource_reprocessing_service_modules',
-                        children: [{
-                            label: 'Reprocessing Facility I',
-                            value: 35899,
-                        }]
-                    }]
-                }];
+                        label: 'Citadel Service Modules',
+                        key: 'citadel_service_modules',
+                        children: [
+                            {
+                                label: 'Cloning Center I',
+                                value: 35894,
+                            },
+                            {
+                                label: 'Market Hub I',
+                                value: 35892,
+                            },
+                        ],
+                    },
+                    {
+                        type: 'group',
+                        label: 'Engfineering Service Modules',
+                        key: 'engineering_service_modules',
+                        children: [
+                            {
+                                label: 'Research Lab I',
+                                value: 35891,
+                            },
+                            {
+                                label: 'Hyasyoda Research Lab',
+                                value: 45550,
+                            },
+                            {
+                                label: 'Invention Lab I',
+                                value: 35886,
+                            },
+                            {
+                                label: 'Manufacturing Plant I',
+                                value: 35878,
+                            },
+                            {
+                                label: 'Capital Shipyard I',
+                                value: 35881,
+                            },
+                            {
+                                type: 'group',
+                                label: 'Resource Processing Service Modules',
+                                key: 'resource_reprocessing_service_modules',
+                                children: [
+                                    {
+                                        label: 'Reprocessing Facility I',
+                                        value: 35899,
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ];
             default:
                 return [];
         }

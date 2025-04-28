@@ -23,14 +23,11 @@ import { NText, NSelect, type SelectOption } from 'naive-ui';
         NText,
         NSelect,
     },
-    emits: [
-        'error',
-        'update:value',
-    ]
+    emits: ['error', 'update:value'],
 })
 class NotificationSelector extends Vue {
     @Prop({
-        required: true
+        required: true,
     })
     public notifications!: string;
 
@@ -47,8 +44,7 @@ class NotificationSelector extends Vue {
 
     public async created() {
         this.busy = true;
-        await NotificationService
-            .list({})
+        await NotificationService.list({})
             .then((x: Notification[]) => {
                 this.busy = false;
 
@@ -59,14 +55,16 @@ class NotificationSelector extends Vue {
                     });
                 });
             })
-            .catch(e => {
+            .catch((e) => {
                 this.busy = false;
-                this.$emit('error', true)
+                this.$emit('error', true);
             });
     }
 
     public possibleOptions(): SelectOption[] {
-        return this.options.filter(x => !this.selected.includes(<any>x.value))
+        return this.options.filter(
+            (x) => !this.selected.includes(<any>x.value),
+        );
     }
 
     public updateValue(value: string | string[] | null) {

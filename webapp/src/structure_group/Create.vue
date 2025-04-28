@@ -33,7 +33,10 @@
 import { Component, Vue, toNative } from 'vue-facing-decorator';
 import { NButton, NForm, NFormItem, NInput, NSpace } from 'naive-ui';
 import { events } from '@/main';
-import { type IStructureCreateGroup, StructureGroupService } from '@/sdk/structure_group';
+import {
+    type IStructureCreateGroup,
+    StructureGroupService,
+} from '@/sdk/structure_group';
 
 import { ROUTE_CHANGE } from '@/event_bus';
 import { ROUTE_STRUCTURE_GROUPS } from './router';
@@ -57,7 +60,7 @@ import StructureList from '@/structure/components/StructureList.vue';
         GeneralInfo,
         PageHeader,
         StructureList,
-    }
+    },
 })
 class StructureGroupCreate extends Vue {
     public group: IStructureCreateGroup = <any>{
@@ -66,19 +69,15 @@ class StructureGroupCreate extends Vue {
     };
 
     public async created() {
-        events.$emit(
-            ROUTE_CHANGE,
-            this.$route.name
-        );
+        events.$emit(ROUTE_CHANGE, this.$route.name);
     }
 
     public async save() {
-        await StructureGroupService
-            .create(this.group)
-            .then(_ => {
-                this.$router.push({ name: ROUTE_STRUCTURE_GROUPS })
+        await StructureGroupService.create(this.group)
+            .then((_) => {
+                this.$router.push({ name: ROUTE_STRUCTURE_GROUPS });
             })
-            .catch(e => {
+            .catch((e) => {
                 console.error(e);
             });
     }

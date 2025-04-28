@@ -9,12 +9,8 @@
                     :format="format"
                     style="width: 100%"
                 />
-                <n-button type="info" ghost @click="save">
-                    Save
-                </n-button>
-                <n-button ghost @click="cancel">
-                    Cancel
-                </n-button>
+                <n-button type="info" ghost @click="save"> Save </n-button>
+                <n-button ghost @click="cancel"> Cancel </n-button>
             </n-input-group>
         </div>
         <div v-else style="display: flex; justify-content: space-between">
@@ -28,7 +24,7 @@
         </div>
     </div>
 </template>
-  
+
 <script lang="ts">
 import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
 
@@ -51,7 +47,7 @@ import FormatNumberInput from '@/components/inputs/FormatNumber.vue';
 
         FormatNumber,
         FormatNumberInput,
-    }
+    },
 })
 class EditableNumberComponent extends Vue {
     @Prop
@@ -59,7 +55,7 @@ class EditableNumberComponent extends Vue {
 
     // Holds the selected system id
     public stored_value: number | null = null;
-    public is_editing: boolean         = false;
+    public is_editing: boolean = false;
 
     private old_value: number | null = null;
 
@@ -70,13 +66,13 @@ class EditableNumberComponent extends Vue {
 
     public save() {
         this.is_editing = false;
-        this.old_value  = this.stored_value;
-        this.$emit('update:stored_value', this.stored_value)
+        this.old_value = this.stored_value;
+        this.$emit('update:stored_value', this.stored_value);
     }
 
     public cancel() {
         this.stored_value = this.old_value;
-        this.is_editing   = false;
+        this.is_editing = false;
     }
 
     public format(input: number | null): string {
@@ -93,8 +89,8 @@ class EditableNumberComponent extends Vue {
 
         const nums = input.replace(/\./g, '').trim();
         if (/^\d+(\.(\d+)?)?$/.test(nums)) {
-            return Number(nums)
-        };
+            return Number(nums);
+        }
         return nums === '' ? null : Number.NaN;
     }
 }

@@ -33,15 +33,18 @@
         <div
             style="margin-bottom: 10px"
             data-cy="stockBlueprintFilter"
-            v-if="pageLoadingState.isInitialDataLoaded && (stocks.length > 0 || pageLoadingState.hasFilter)"
+            v-if="
+                pageLoadingState.isInitialDataLoaded &&
+                (stocks.length > 0 || pageLoadingState.hasFilter)
+            "
         >
             <filter-text
                 :filters="filters"
                 :load-initial="false"
                 :options="filterOptions"
                 :search-function="searchFunction"
-                @busy="(s: any) => pageLoadingState.loading = s"
-                @touched="(s: any) => pageLoadingState.hasFilter = s"
+                @busy="(s: any) => (pageLoadingState.loading = s)"
+                @touched="(s: any) => (pageLoadingState.hasFilter = s)"
                 v-model:entries="stocks"
             />
 
@@ -54,7 +57,10 @@
 
         <action-group
             data-cy="stockBlueprintActionGroup"
-            v-if="pageLoadingState.isInitialDataLoaded && (stocks.length > 0 || pageLoadingState.hasFilter)"
+            v-if="
+                pageLoadingState.isInitialDataLoaded &&
+                (stocks.length > 0 || pageLoadingState.hasFilter)
+            "
         >
             <n-button
                 @click="$router.push({ name: routeStockBlueprintCreate })"
@@ -74,7 +80,7 @@
             data-cy="stockBlueprintEmptyNoSearchResult"
             size="large"
             style="margin: 5%"
-            v-if="pageLoadingState.showNoSearchResult  && stocks.length === 0"
+            v-if="pageLoadingState.showNoSearchResult && stocks.length === 0"
         />
 
         <card
@@ -95,7 +101,10 @@
 <script lang="ts">
 import { Component, Vue, toNative } from 'vue-facing-decorator';
 
-import { ROUTE_STOCK_BLUEPRINT, ROUTE_STOCK_BLUEPRINT_CREATE } from '@/stock/router';
+import {
+    ROUTE_STOCK_BLUEPRINT,
+    ROUTE_STOCK_BLUEPRINT_CREATE,
+} from '@/stock/router';
 
 import { StockBlueprint, StockBlueprintService } from '@/sdk/stockBlueprint';
 
@@ -104,7 +113,9 @@ import ActionGroup from '@/components/ActionGroup.vue';
 import Alert from '@/components/Alert.vue';
 import Card from '@/components/Card.vue';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
-import DataTable, { type IDataTableDefinition } from '@/components/DataTable.vue';
+import DataTable, {
+    type IDataTableDefinition,
+} from '@/components/DataTable.vue';
 import FilterElement from '@/components/FilterElement.vue';
 import FilterText, { type IFilterOption } from '@/components/Filter.vue';
 import Loader from '@/components/Loader.vue';
@@ -128,7 +139,7 @@ import PageHeader from '@/components/PageHeader.vue';
         Loader,
         NoEntries,
         PageHeader,
-    }
+    },
 })
 class StockBlueprintList extends Vue {
     public pageLoadingState: PageLoadingState = new PageLoadingState();
@@ -142,15 +153,14 @@ class StockBlueprintList extends Vue {
     public searchFunction = StockBlueprintService.list;
 
     public async created() {
-        StockBlueprintService
-            .list({})
-            .then(x => {
-                console.log(x)
+        StockBlueprintService.list({})
+            .then((x) => {
+                console.log(x);
                 this.stocks = x;
                 this.pageLoadingState.isInitialDataLoaded = true;
                 this.filterDefinition();
             })
-            .catch(_ => {
+            .catch((_) => {
                 this.stocks = [];
                 this.pageLoadingState.isInitialDataLoaded = true;
                 this.pageLoadingState.loadingError = true;
@@ -158,17 +168,19 @@ class StockBlueprintList extends Vue {
     }
 
     public tableDefinition(): IDataTableDefinition[] {
-        return [{
-            header: 'Name',
-            key: 'name',
-            width: 400,
-            visible: true,
-            routing: {
-                route: ROUTE_STOCK_BLUEPRINT,
-                key: 'stockBlueprintId',
-                value: 'id',
+        return [
+            {
+                header: 'Name',
+                key: 'name',
+                width: 400,
+                visible: true,
+                routing: {
+                    route: ROUTE_STOCK_BLUEPRINT,
+                    key: 'stockBlueprintId',
+                    value: 'id',
+                },
             },
-        }];
+        ];
     }
 
     private filterDefinition() {
@@ -190,27 +202,33 @@ class PageLoadingState {
 
     get showNoEntries(): boolean {
         // the initial data has to be loaded
-        return this._isInitialDataLoaded &&
+        return (
+            this._isInitialDataLoaded &&
             // don't show it if there was an error
             !this._loadingError &&
             // if a filter is set, don't show
-            !this._hasFilter;
+            !this._hasFilter
+        );
     }
 
     get showNoSearchResult(): boolean {
         // the initial data has to be loaded
-        return this._isInitialDataLoaded &&
+        return (
+            this._isInitialDataLoaded &&
             // don't show it if there was an error
             !this._loadingError &&
             // only show it when a filter is set
-            this._hasFilter;
+            this._hasFilter
+        );
     }
 
     get showDataTable(): boolean {
         // the initial data has to be loaded
-        return this._isInitialDataLoaded &&
+        return (
+            this._isInitialDataLoaded &&
             // don't show it if the application is currently loading
-            !this._loading;
+            !this._loading
+        );
     }
 
     get showSpinner(): boolean {

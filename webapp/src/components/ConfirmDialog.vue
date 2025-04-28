@@ -2,13 +2,13 @@
     <n-modal
         v-model:show="show"
         :on-update:show="close"
-        :on-after-leave="() => confirmDeleteText = ''"
+        :on-after-leave="() => (confirmDeleteText = '')"
         title="Delete Entry?"
-        style="width: 600px;"
+        style="width: 600px"
     >
         <card content-style="padding: 0" no-title>
             <div style="margin: 10px">
-                <n-alert type="warning" style="margin-bottom: 10px;">
+                <n-alert type="warning" style="margin-bottom: 10px">
                     <slot></slot>
                 </n-alert>
 
@@ -22,9 +22,7 @@
 
             <template #footer>
                 <action-group justify="end" style="margin: 10px">
-                    <n-button @click="close" quaternary>
-                        Cancel
-                    </n-button>
+                    <n-button @click="close" quaternary> Cancel </n-button>
 
                     <n-button
                         :disabled="confirmDeleteText.toLowerCase() !== 'delete'"
@@ -56,7 +54,7 @@ import Card from '@/components/Card.vue';
 
         ActionGroup,
         Card,
-    }
+    },
 })
 class ConfirmDialog extends Vue {
     @Prop({

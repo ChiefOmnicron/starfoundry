@@ -25,7 +25,7 @@ import { NAvatar, NText, NSelect, type SelectOption } from 'naive-ui';
         NAvatar,
         NText,
         NSelect,
-    }
+    },
 })
 class StructureSelector extends Vue {
     @Prop({
@@ -38,7 +38,7 @@ class StructureSelector extends Vue {
     @Prop({
         type: Number,
         default: undefined,
-        required: false
+        required: false,
     })
     public service!: TypeId;
 
@@ -59,10 +59,9 @@ class StructureSelector extends Vue {
 
     public async created() {
         this.loading = true;
-        await StructureService
-            .list({
-                service_id: this.service ? this.service : undefined,
-            })
+        await StructureService.list({
+            service_id: this.service ? this.service : undefined,
+        })
             .then((x: Structure[]) => {
                 x.map((x: Structure) => {
                     this.options.push({
@@ -72,17 +71,18 @@ class StructureSelector extends Vue {
                     this.structures[x.id] = x;
                 });
             })
-            .then((_: any) => this.value = <any>this.options[0].value)
-            .then((_: any) => this.loading = false)
-            .catch(e => {
+            .then((_: any) => (this.value = <any>this.options[0].value))
+            .then((_: any) => (this.loading = false))
+            .catch((e) => {
                 this.loading = false;
                 console.error(e);
             });
     }
 
     public availableOptions(): SelectOption[] {
-        return this.options
-            .filter(x => this.selectedStructures.indexOf(<number> x.value) === -1);
+        return this.options.filter(
+            (x) => this.selectedStructures.indexOf(<number>x.value) === -1,
+        );
     }
 
     public renderSelected({ option }: any): string {
@@ -97,8 +97,8 @@ class StructureSelector extends Vue {
             {
                 style: {
                     display: 'flex',
-                    alignItems: 'center'
-                }
+                    alignItems: 'center',
+                },
             },
             [
                 h(
@@ -106,8 +106,8 @@ class StructureSelector extends Vue {
                     {
                         style: {
                             marginLeft: '12px',
-                            padding: '4px 0'
-                        }
+                            padding: '4px 0',
+                        },
                     },
                     [
                         h('div', null, [option.label as string]),
@@ -115,13 +115,13 @@ class StructureSelector extends Vue {
                             NText,
                             { depth: 3, tag: 'div' },
                             {
-                                default: () => `${structure.structureName}`
-                            }
+                                default: () => `${structure.structureName}`,
+                            },
                         ),
-                    ]
-                )
-            ]
-        )
+                    ],
+                ),
+            ],
+        );
     }
 }
 

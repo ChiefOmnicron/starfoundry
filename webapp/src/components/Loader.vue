@@ -19,12 +19,12 @@ import { NEmpty, NSpin } from 'naive-ui';
     components: {
         NEmpty,
         NSpin,
-    }
+    },
 })
 class Loader extends Vue {
     @Prop({
         type: Boolean,
-        required: true
+        required: true,
     })
     public busy!: boolean;
 

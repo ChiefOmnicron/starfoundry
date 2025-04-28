@@ -15,10 +15,7 @@
                     <eve-icon :id="job.type_id" type="icon" item />
                 </td>
                 <td>
-                    <copy-text
-                        :value="job.item_name"
-                        :disabled="job.started"
-                    />
+                    <copy-text :value="job.item_name" :disabled="job.started" />
                 </td>
                 <td>
                     <copy-text
@@ -27,24 +24,26 @@
                         number
                     />
                 </td>
-                <td :style="{
-                    color: job.started ? 'rgba(255, 255, 255, 0.2)' : ''
-                }">
+                <td
+                    :style="{
+                        color: job.started ? 'rgba(255, 255, 255, 0.2)' : '',
+                    }"
+                >
                     {{ job.structure_name }}
                 </td>
                 <td>
                     <div style="display: flex; justify-content: flex-end">
                         <n-button
-                            @click="started(job); job.started = true;"
+                            @click="
+                                started(job);
+                                job.started = true;
+                            "
                             v-if="!job.started"
                         >
                             Started
                         </n-button>
 
-                        <n-tag
-                            v-if="job.started"
-                            type="success"
-                        >Started</n-tag>
+                        <n-tag v-if="job.started" type="success">Started</n-tag>
                     </div>
                 </td>
             </tr>
@@ -74,7 +73,7 @@ import StructureWrapper from '@/structure/components/Wrapper.vue';
         FormatNumber,
         StructureWrapper,
     },
-    emits: ['update:selected_ids']
+    emits: ['update:selected_ids'],
 })
 class ProjectJobAssignmentList extends Vue {
     @Prop({
@@ -84,14 +83,12 @@ class ProjectJobAssignmentList extends Vue {
     public jobs!: JobAssignmentEntry[];
 
     public async started(job: JobAssignmentEntry) {
-        await ProjectService
-            .update_job_assignment(
-                <any>this.$route.params.assignment_id,
-                job.job_id,
-            )
-            .then(_ => {
-            })
-            .catch(e => {
+        await ProjectService.update_job_assignment(
+            <any>this.$route.params.assignment_id,
+            job.job_id,
+        )
+            .then((_) => {})
+            .catch((e) => {
                 console.error(e);
                 return [];
             });

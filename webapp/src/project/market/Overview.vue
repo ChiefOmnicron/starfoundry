@@ -1,19 +1,11 @@
 <template>
     <div>
-        <common-messages
-            :message="messages"
-            @close="commonMessagesClose"
-        />
+        <common-messages :message="messages" @close="commonMessagesClose" />
 
-        <loader
-            :busy="busy"
-        />
+        <loader :busy="busy" />
 
         <action-group>
-            <n-button
-                type="info"
-                @click="showAddMarketEntryModal = true"
-            >
+            <n-button type="info" @click="showAddMarketEntryModal = true">
                 Add Entry
             </n-button>
         </action-group>
@@ -57,9 +49,14 @@ import { NButton } from 'naive-ui';
 import ActionGroup from '@/components/ActionGroup.vue';
 import AddMarketEntryModal from '@/project/modal/AddMarketEntry.vue';
 import Card from '@/components/Card.vue';
-import CommonMessages, { DEFAULT_COMMON_MESSAGES, type ICommonMessages } from '@/components/CommonMessages.vue';
+import CommonMessages, {
+    DEFAULT_COMMON_MESSAGES,
+    type ICommonMessages,
+} from '@/components/CommonMessages.vue';
 import CopyText from '@/components/CopyText.vue';
-import DataTable, { type IDataTableDefinition } from '@/components/DataTable.vue';
+import DataTable, {
+    type IDataTableDefinition,
+} from '@/components/DataTable.vue';
 import EditMarketEntryModal from '@/project/modal/EditMarketEntry.vue';
 import EveIcon from '@/components/EveIcon.vue';
 import FormatNumber from '@/components/FormatNumber.vue';
@@ -81,7 +78,7 @@ import NoEntries from '@/components/NoEntries.vue';
         FormatNumber,
         Loader,
         NoEntries,
-    }
+    },
 })
 class ProjectMarketOverview extends Vue {
     @Prop({
@@ -107,56 +104,56 @@ class ProjectMarketOverview extends Vue {
     }
 
     public tableEntries(): IMarket[] {
-        return this.marketEntries
-            .filter(x => x.quantity > 0)
+        return this.marketEntries.filter((x) => x.quantity > 0);
     }
 
     public tableDefinition(): IDataTableDefinition[] {
-        return [{
-            header: '',
-            key: 'icon',
-            width: 40,
-            render(row) {
-                return h(
-                    EveIcon,
-                    {
+        return [
+            {
+                header: '',
+                key: 'icon',
+                width: 40,
+                render(row) {
+                    return h(EveIcon, {
                         id: row.type_id,
                         type: 'icon',
-                    }
-                )
+                    });
+                },
             },
-        }, {
-            header: 'Name',
-            key: 'type_id',
-            width: 500,
-            item: true,
-            copy: true,
-        }, {
-            header: 'Quantity',
-            key: 'quantity',
-            width: 200,
-            number: true,
-            copy: true,
-        }, {
-            header: 'Cost',
-            key: 'cost',
-            width: 200,
-            number: true,
-            copy: true,
-        }, {
-            header: 'Source',
-            key: 'source',
-            width: 200,
-            copy: true,
-        }, {
-            header: '',
-            key: 'edit_delete',
-            visible: true,
-            width: 125,
-            render: (row: any, _: number) => {
-                return h(
-                    "div",
-                    [
+            {
+                header: 'Name',
+                key: 'type_id',
+                width: 500,
+                item: true,
+                copy: true,
+            },
+            {
+                header: 'Quantity',
+                key: 'quantity',
+                width: 200,
+                number: true,
+                copy: true,
+            },
+            {
+                header: 'Cost',
+                key: 'cost',
+                width: 200,
+                number: true,
+                copy: true,
+            },
+            {
+                header: 'Source',
+                key: 'source',
+                width: 200,
+                copy: true,
+            },
+            {
+                header: '',
+                key: 'edit_delete',
+                visible: true,
+                width: 125,
+                render: (row: any, _: number) => {
+                    return h('div', [
                         h(
                             NButton,
                             {
@@ -165,23 +162,23 @@ class ProjectMarketOverview extends Vue {
                                 onClick: () => {
                                     this.updateEntry = row;
                                     this.showEditMarketEntryModal = true;
-                                }
+                                },
                             },
-                            () => 'Edit'
+                            () => 'Edit',
                         ),
                         h(
                             NButton,
                             {
                                 type: 'error',
                                 quaternary: true,
-                                onClick: () => this.deleteMarketEntry(row)
+                                onClick: () => this.deleteMarketEntry(row),
                             },
-                            () => 'Remove'
+                            () => 'Remove',
                         ),
-                    ]
-                )
-            }
-        }];
+                    ]);
+                },
+            },
+        ];
     }
 
     public modalCloseEvent() {
@@ -192,14 +189,14 @@ class ProjectMarketOverview extends Vue {
     public async newMarketEntryEvent(entry: IMarket) {
         await this.project
             .addMarket(entry)
-            .then(_ => {
+            .then((_) => {
                 this.modalCloseEvent();
                 return this.load();
             })
-            .then(_ => {
+            .then((_) => {
                 this.messages.createSuccess = true;
             })
-            .catch(_ => {
+            .catch((_) => {
                 this.messages.createError = true;
             });
     }
@@ -209,11 +206,11 @@ class ProjectMarketOverview extends Vue {
 
         await this.project
             .updateMarket(entry.id, entry)
-            .then(_ => this.load())
-            .then(_ => {
+            .then((_) => this.load())
+            .then((_) => {
                 this.messages.updateSuccess = true;
             })
-            .catch(_ => {
+            .catch((_) => {
                 this.messages.updateError = true;
             });
     }
@@ -221,12 +218,12 @@ class ProjectMarketOverview extends Vue {
     public async deleteMarketEntry(entry: IMarket) {
         await this.project
             .deleteMarket(entry.id)
-            .then(_ => {
+            .then((_) => {
                 this.load();
             })
-            .catch(e => {
+            .catch((e) => {
                 this.messages.deleteError = true;
-            })
+            });
     }
 
     public commonMessagesClose() {
@@ -235,24 +232,23 @@ class ProjectMarketOverview extends Vue {
 
     private async load() {
         this.initialLoad = true;
-        await ProjectService
-            .fetch(this.projectUuid)
-            .then(x => {
+        await ProjectService.fetch(this.projectUuid)
+            .then((x) => {
                 this.initialLoad = false;
                 this.project = x;
 
-                return this.project.fetchMarket()
+                return this.project.fetchMarket();
             })
-            .then(x => {
+            .then((x) => {
                 this.marketEntries = [];
                 for (let group of x) {
                     this.marketEntries.push(...group.entries);
                 }
             })
-            .catch(e => {
+            .catch((e) => {
                 if (e.response.status === 404) {
                     this.messages.notFound = true;
-                } else if(e.response.status === 403) {
+                } else if (e.response.status === 403) {
                     this.messages.forbidden = true;
                 } else {
                     this.messages.loadingError = true;

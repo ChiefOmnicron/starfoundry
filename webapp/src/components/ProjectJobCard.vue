@@ -29,7 +29,7 @@ import type { IJob } from '@/sdk/project';
         NGridItem,
 
         EveIcon,
-    }
+    },
 })
 class ProjectJobCard extends Vue {
     @Prop({
@@ -39,15 +39,15 @@ class ProjectJobCard extends Vue {
     public job!: IJob;
 
     public status(status: string): string {
-        switch(status) {
+        switch (status) {
             case 'BUILDING':
-                return 'Building'
+                return 'Building';
             case 'WAITING_FOR_MATERIALS':
-                return 'Waiting for Materials'
+                return 'Waiting for Materials';
             case 'DONE':
-                return 'Done'
+                return 'Done';
             default:
-                return 'Unknown'
+                return 'Unknown';
         }
     }
 }

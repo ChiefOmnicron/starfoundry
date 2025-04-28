@@ -7,20 +7,25 @@ export default [
     {
         path: '/appraisal',
         name: ROUTE_APPRAISAL_EMPTY,
-        component: () => import(
-            /* webpackChunkName: "appraisal" */
-            '@/appraisal/Appraisal.vue'
-        ),
+        component: () =>
+            import(
+                /* webpackChunkName: "appraisal" */
+                '@/appraisal/Appraisal.vue'
+            ),
     },
     {
         path: '/appraisal/:code',
         name: ROUTE_APPRAISAL,
         props: true,
-        alias: ['/appraisal/:code/compression', '/appraisal/:code/reprocessing'],
-        component: () => import(
-            /* webpackChunkName: "appraisal_code" */
-            '@/appraisal/Appraisal.vue'
-        ),
+        alias: [
+            '/appraisal/:code/compression',
+            '/appraisal/:code/reprocessing',
+        ],
+        component: () =>
+            import(
+                /* webpackChunkName: "appraisal_code" */
+                '@/appraisal/Appraisal.vue'
+            ),
     },
     //{
     //    path: '/appraisal/:code/compression',
@@ -40,4 +45,4 @@ export default [
     //        '@/appraisal/Appraisal.vue'
     //    ),
     //},
-]
+];

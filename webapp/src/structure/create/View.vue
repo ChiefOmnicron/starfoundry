@@ -1,9 +1,6 @@
 <template>
     <div>
-        <page-header
-            data-cy="structureCreateTitle"
-            title="Create Structure"
-        />
+        <page-header data-cy="structureCreateTitle" title="Create Structure" />
 
         <alert
             :visible="errors.resolveStructure"
@@ -27,24 +24,18 @@
             title="General Information"
         >
             <div style="margin: 10px">
-                <form-item
-                    label="EVE Structure ID"
-                    info
-                    required
-                >
+                <form-item label="EVE Structure ID" info required>
                     <template #help>
                         <resolve-structure-id-info />
                     </template>
 
                     <resolve-structure
-                        @error="(x: boolean) => errors.resolveStructure = x"
+                        @error="(x: boolean) => (errors.resolveStructure = x)"
                         @resolved="setStructureInfo"
                     />
                 </form-item>
 
-                <form-item
-                    label="Name of the structure"
-                >
+                <form-item label="Name of the structure">
                     <n-input
                         placeholder="Structure Name"
                         @keydown.enter.prevent
@@ -53,15 +44,13 @@
                     />
                 </form-item>
 
-                <form-item
-                    label="Structure Type"
-                >
-                    <structure-type-selector v-model:value="structure.structure_type_id" />
+                <form-item label="Structure Type">
+                    <structure-type-selector
+                        v-model:value="structure.structure_type_id"
+                    />
                 </form-item>
 
-                <form-item
-                    label="System"
-                >
+                <form-item label="System">
                     <system-selector
                         :default="structure.system_id"
                         disabled
@@ -70,13 +59,13 @@
                     />
                 </form-item>
 
-                <form-item
-                    label="Group"
-                >
+                <form-item label="Group">
                     <project-group-selector
                         :groups="[]"
-                        @error="(x: boolean) => errors.loadProjectGroup = x"
-                        @update:value="(x: any) => structure.project_group_ids = x"
+                        @error="(x: boolean) => (errors.loadProjectGroup = x)"
+                        @update:value="
+                            (x: any) => (structure.project_group_ids = x)
+                        "
                         multiple
                         skip-default
                         structure-permission="WRITE"
@@ -92,7 +81,7 @@
             :rigs="structure.rigs"
             :structure-type="structure.structure_type_id"
             v-if="structure.structure_type_id"
-            @update:value="(x: any[]) => structure.rigs = x"
+            @update:value="(x: any[]) => (structure.rigs = x)"
             data-cy="structureCreateInstalledRigs"
         />
 
@@ -102,22 +91,15 @@
             :readonly="false"
             :services="structure.services"
             :structure-type="structure.structure_type_id"
-            @update:value="(x: number[]) => structure.services = x"
+            @update:value="(x: number[]) => (structure.services = x)"
             v-if="structure.structure_type_id"
             data-cy="structureCreateInstalledServices"
         />
 
         <card-margin />
 
-        <action-group
-            data-cy="structureCreateActions"
-        >
-            <n-button
-                @click="$router.back()"
-                quaternary
-            >
-                Cancel
-            </n-button>
+        <action-group data-cy="structureCreateActions">
+            <n-button @click="$router.back()" quaternary> Cancel </n-button>
 
             <n-button
                 :disabled="!structure.name"
@@ -137,7 +119,11 @@ import { Component, Vue, toNative } from 'vue-facing-decorator';
 import { ROUTE_STRUCTURE } from '@/structure/router';
 
 import type { ISystem } from '@/services/system';
-import { StructureService, type IStructure, type IStructureResolve } from '@/sdk/structure';
+import {
+    StructureService,
+    type IStructure,
+    type IStructureResolve,
+} from '@/sdk/structure';
 
 import { NButton, NInput, NInputGroup, NInputNumber, NSpace } from 'naive-ui';
 import ActionGroup from '@/components/ActionGroup.vue';
@@ -179,12 +165,12 @@ import SystemSelector from '@/components/selectors/SystemSelector.vue';
         StructureServiceSelector,
         StructureTypeSelector,
         SystemSelector,
-    }
+    },
 })
 class StructureCreate extends Vue {
     public structure: IStructure = <any>{
-        rigs:              [],
-        services:          [],
+        rigs: [],
+        services: [],
         project_group_ids: [],
     };
     // information about the system the structure is in, will be filled out
@@ -199,8 +185,8 @@ class StructureCreate extends Vue {
 
     // form validation
     public structureIdStatus: string = '';
-    public selected_rig: { name: string, type_id: number }    = <any>{};
-    public selected_rigs: { name: string, type_id: number }[] = [];
+    public selected_rig: { name: string; type_id: number } = <any>{};
+    public selected_rigs: { name: string; type_id: number }[] = [];
 
     public createStructure() {
         if (!this.structure.structure_id) {
@@ -216,17 +202,16 @@ class StructureCreate extends Vue {
             this.structure.security = 'NULLSEC';
         }
 
-        StructureService
-            .create(this.structure)
-            .then(x => {
+        StructureService.create(this.structure)
+            .then((x) => {
                 this.$router.push({
                     name: ROUTE_STRUCTURE,
                     params: {
                         structureId: x.id,
-                    }
-                })
+                    },
+                });
             })
-            .catch(_ => this.errors.unexpected = true);
+            .catch((_) => (this.errors.unexpected = true));
     }
 
     public selectStructureService(index: number, value: number) {
@@ -243,11 +228,11 @@ class StructureCreate extends Vue {
     }
 
     public setStructureInfo(resolve: IStructureResolve) {
-        this.structure.structure_id      = resolve.structure_id;
-        this.structure.system_id         = resolve.system_id;
-        this.structure.name              = resolve.name;
+        this.structure.structure_id = resolve.structure_id;
+        this.structure.system_id = resolve.system_id;
+        this.structure.name = resolve.name;
         this.structure.structure_type_id = resolve.type_id;
-        this.structure.security          = resolve.security;
+        this.structure.security = resolve.security;
     }
 }
 

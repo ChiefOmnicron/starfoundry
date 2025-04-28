@@ -1,7 +1,5 @@
 <template>
-    <n-text
-        v-if="!dotlan"
-    >
+    <n-text v-if="!dotlan">
         {{ name || systemId }}
     </n-text>
 
@@ -26,8 +24,8 @@ import { type ISystem, SystemService } from '@/services/system';
 @Component({
     components: {
         NButton,
-        NText
-    }
+        NText,
+    },
 })
 class System extends Vue {
     @Prop({
@@ -39,27 +37,25 @@ class System extends Vue {
 
     @Prop({
         type: Number,
-        required: true
+        required: true,
     })
-    public systemId!: number
+    public systemId!: number;
 
     public name: string = '';
     public link: string = '';
 
     public async created() {
-        SystemService
-            .search_by_id(this.systemId)
-            .then((x: ISystem[]) => {
-                if (x.length === 0) {
-                    this.name = `${this.systemId}`;
-                    return;
-                }
+        SystemService.search_by_id(this.systemId).then((x: ISystem[]) => {
+            if (x.length === 0) {
+                this.name = `${this.systemId}`;
+                return;
+            }
 
-                this.name = `${x[0].system_name} (${x[0].region_name})`;
+            this.name = `${x[0].system_name} (${x[0].region_name})`;
 
-                let region_name = x[0].region_name.replace(' ', '_');
-                this.link = `https://evemaps.dotlan.net/map/${region_name}/${x[0].system_name}`;
-            });
+            let region_name = x[0].region_name.replace(' ', '_');
+            this.link = `https://evemaps.dotlan.net/map/${region_name}/${x[0].system_name}`;
+        });
     }
 }
 

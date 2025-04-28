@@ -78,9 +78,7 @@ import StructureWrapper from '@/components/StructureWrapper.vue';
         StructureSelector,
         StructureWrapper,
     },
-    emits: [
-        'update:structures',
-    ]
+    emits: ['update:structures'],
 })
 class ProjectGroupDefaultPlayerMarket extends Vue {
     @Prop({
@@ -104,7 +102,7 @@ class ProjectGroupDefaultPlayerMarket extends Vue {
     }
 
     public deleteStructure(id: string) {
-        let updatedStructures = this.structures.filter(x => x !== id);
+        let updatedStructures = this.structures.filter((x) => x !== id);
         this.newStructure = null;
         this.$emit('update:structures', updatedStructures);
     }

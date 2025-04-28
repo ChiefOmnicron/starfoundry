@@ -27,15 +27,28 @@
                     <td>
                         <format-number :value="job.runs" />
                     </td>
-                    <td style="max-width: 250px;">
-                        <n-select v-model:value="job.status" :options="status_options" />
+                    <td style="max-width: 250px">
+                        <n-select
+                            v-model:value="job.status"
+                            :options="status_options"
+                        />
                     </td>
                     <td>
                         <n-input-number v-model:value="job.cost" />
                     </td>
                     <td>
-                        <n-button type="info" :quaternary="true" @click="updateJob(job)">Update</n-button>
-                        <n-button type="error" :quaternary="true" @click="deleteJob(job)">Delete</n-button>
+                        <n-button
+                            type="info"
+                            :quaternary="true"
+                            @click="updateJob(job)"
+                            >Update</n-button
+                        >
+                        <n-button
+                            type="error"
+                            :quaternary="true"
+                            @click="deleteJob(job)"
+                            >Delete</n-button
+                        >
                     </td>
                 </tr>
             </tbody>
@@ -45,10 +58,22 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
-import { NButton, NInputNumber, NSelect, NTable, NTag, type SelectOption } from 'naive-ui';
+import {
+    NButton,
+    NInputNumber,
+    NSelect,
+    NTable,
+    NTag,
+    type SelectOption,
+} from 'naive-ui';
 
 import type { ProjectUuid } from '@/sdk/utils';
-import { Project, ProjectService, type IJob, type IJobGroup } from '@/sdk/project';
+import {
+    Project,
+    ProjectService,
+    type IJob,
+    type IJobGroup,
+} from '@/sdk/project';
 
 import Card from '@/components/Card.vue';
 import CopyText from '@/components/CopyText.vue';
@@ -69,7 +94,7 @@ import ItemSelector from '@/components/selectors/ItemSelector.vue';
         EveIcon,
         FormatNumber,
         ItemSelector,
-    }
+    },
 })
 class ProjectJobOverview extends Vue {
     @Prop({
@@ -90,16 +115,20 @@ class ProjectJobOverview extends Vue {
     public buildable_entries = [];
     public job_groups: IJobGroup[] = [];
 
-    public status_options = [{
-        label: 'Waiting for Materials',
-        value: 'WAITING_FOR_MATERIALS'
-    }, {
-        label: 'Building',
-        value: 'BUILDING'
-    }, {
-        label: 'Done',
-        value: 'DONE'
-    }];
+    public status_options = [
+        {
+            label: 'Waiting for Materials',
+            value: 'WAITING_FOR_MATERIALS',
+        },
+        {
+            label: 'Building',
+            value: 'BUILDING',
+        },
+        {
+            label: 'Done',
+            value: 'DONE',
+        },
+    ];
 
     private project!: Project;
 
@@ -108,12 +137,10 @@ class ProjectJobOverview extends Vue {
 
         this.project = await ProjectService.fetch(this.projectId);
 
-        this.job_groups = await this.project
-            .fetchJobsGrouped({})
-            .catch(e => {
-                console.error(e);
-                return [];
-            });
+        this.job_groups = await this.project.fetchJobsGrouped({}).catch((e) => {
+            console.error(e);
+            return [];
+        });
 
         this.busy = false;
     }
@@ -129,33 +156,33 @@ class ProjectJobOverview extends Vue {
     }
 
     public header(header: string): string {
-        switch(header) {
+        switch (header) {
             case 'INTERMEDIATE_REACTIONS':
-                return 'Intermediate Reactions'
+                return 'Intermediate Reactions';
             case 'COMPOSITE_REACTIONS':
-                return 'Composite Reactions'
+                return 'Composite Reactions';
             case 'BIOCHEM_REACTIONS':
-                return 'Biochem Reactions'
+                return 'Biochem Reactions';
             case 'HYBRID_REACTIONS':
-                return 'Hybrid Reactions'
+                return 'Hybrid Reactions';
             case 'CONSTRUCTION_COMPONENTS':
-                return 'Construction Components'
+                return 'Construction Components';
             case 'ADVANCED_CAPITAL_CONSTRUCTION_COMPONENTS':
-                return 'Advanced Capital Construction Components'
+                return 'Advanced Capital Construction Components';
             case 'CAPITAL_CONSTRUCTION_COMPONENTS':
-                return 'Capital Construction Components'
+                return 'Capital Construction Components';
             case 'TOOLS':
-                return 'Tools'
+                return 'Tools';
             case 'T1_STUFF':
-                return 'T1 Stuff'
+                return 'T1 Stuff';
             case 'T2_STUFF':
-                return 'T2 Stuff'
+                return 'T2 Stuff';
             case 'CHARGES':
-                return 'Charges'
+                return 'Charges';
             case 'SHIPS':
-                return 'Ships'
+                return 'Ships';
             default:
-                return 'Unknown'
+                return 'Unknown';
         }
     }
 }

@@ -35,9 +35,7 @@ import { NButton, NInputGroup, NSelect, type SelectOption } from 'naive-ui';
         NInputGroup,
         NSelect,
     },
-    emits: [
-        'update:value'
-    ]
+    emits: ['update:value'],
 })
 class StructureList extends Vue {
     @Prop({
@@ -47,7 +45,7 @@ class StructureList extends Vue {
     public structureType!: TypeId;
 
     @Prop({
-        type: Number
+        type: Number,
     })
     public selectedValue!: TypeId;
 
@@ -88,13 +86,14 @@ class StructureList extends Vue {
             return;
         }
 
-        this.options = (await StructureService.possibleRigs(this.structureType))
-            .map(x => {
-                return {
-                    label: x.name,
-                    value: x.type_id
-                }
-            });
+        this.options = (
+            await StructureService.possibleRigs(this.structureType)
+        ).map((x) => {
+            return {
+                label: x.name,
+                value: x.type_id,
+            };
+        });
     }
 }
 

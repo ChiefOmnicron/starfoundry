@@ -1,10 +1,5 @@
 <template>
-  <n-image
-    class="owner"
-    :src="getAllianceLogo()"
-    width="32"
-    height="32"
-  />
+    <n-image class="owner" :src="getAllianceLogo()" width="32" height="32" />
 </template>
 
 <script lang="ts">
@@ -14,13 +9,13 @@ import { NImage } from 'naive-ui';
 const BASE_URL_CHAR = 'https://images.evetech.net/alliances';
 
 @Component({
-  components: {
-    NImage
-  }
+    components: {
+        NImage,
+    },
 })
 class AllianceImage extends Vue {
     @Prop({
-        required: true
+        required: true,
     })
     public id!: number;
 

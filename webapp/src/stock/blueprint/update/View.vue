@@ -6,15 +6,9 @@
             v-if="!busy && !messages.notFound && stock && stock.name"
         />
 
-        <common-messages
-            :message="messages"
-            @click="commonMessagesClose"
-        />
+        <common-messages :message="messages" @click="commonMessagesClose" />
 
-        <loader
-            :busy=busy
-            data-cy="stockBlueprintUpdateLoading"
-        />
+        <loader :busy="busy" data-cy="stockBlueprintUpdateLoading" />
 
         <card
             data-cy="stockBlueprintUpdateGeneralInformation"
@@ -39,21 +33,13 @@
 
         <card-margin />
 
-        <card
-            title="Notification"
-            v-if="!busy"
-        >
-            <notification
-                v-model:notifications="stock.notifications"
-            />
+        <card title="Notification" v-if="!busy">
+            <notification v-model:notifications="stock.notifications" />
         </card>
 
         <card-margin />
 
-        <card
-            title="Thresholds"
-            v-if="!busy"
-        >
+        <card title="Thresholds" v-if="!busy">
             <template #action>
                 <n-button
                     type="info"
@@ -75,12 +61,7 @@
             data-cy="structureUpdateActions"
             v-if="!busy && !messages.notFound && stock"
         >
-            <n-button
-                @click="$router.back()"
-                quaternary
-            >
-                Back
-            </n-button>
+            <n-button @click="$router.back()" quaternary> Back </n-button>
 
             <n-button
                 :disabled="saving"
@@ -123,7 +104,11 @@ import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
 import { h } from 'vue';
 
 import type { StockBlueprintId, Uuid } from '@/sdk/utils';
-import { StockBlueprint, StockBlueprintService, type IStockBlueprintThreshold } from '@/sdk/stockBlueprint';
+import {
+    StockBlueprint,
+    StockBlueprintService,
+    type IStockBlueprintThreshold,
+} from '@/sdk/stockBlueprint';
 
 import { ROUTE_STOCK_BLUEPRINTS } from '@/stock/router';
 
@@ -132,8 +117,13 @@ import ActionGroup from '@/components/ActionGroup.vue';
 import AddThresholdModal from '@/stock/blueprint/modal/AddThreshold.vue';
 import Card from '@/components/Card.vue';
 import CardMargin from '@/components/CardMargin.vue';
-import CommonMessages, { DEFAULT_COMMON_MESSAGES, type ICommonMessages } from '@/components/CommonMessages.vue';
-import DataTable, { type IDataTableDefinition } from '@/components/DataTable.vue';
+import CommonMessages, {
+    DEFAULT_COMMON_MESSAGES,
+    type ICommonMessages,
+} from '@/components/CommonMessages.vue';
+import DataTable, {
+    type IDataTableDefinition,
+} from '@/components/DataTable.vue';
 import DeleteObject from '@/components/DeleteObject.vue';
 import EditThresholdModal from '@/stock/blueprint/modal/EditThreshold.vue';
 import EveIcon from '@/components/EveIcon.vue';
@@ -157,7 +147,7 @@ import PageHeader from '@/components/PageHeader.vue';
         Loader,
         Notification,
         PageHeader,
-    }
+    },
 })
 class StockBlueprintUpdate extends Vue {
     @Prop({
@@ -179,17 +169,16 @@ class StockBlueprintUpdate extends Vue {
 
     public async created() {
         this.busy = true;
-        await StockBlueprintService
-            .fetch(this.stockBlueprintId)
-            .then(x => {
+        await StockBlueprintService.fetch(this.stockBlueprintId)
+            .then((x) => {
                 this.stock = x;
                 return this.stock.loadThresholds();
             })
-            .then(x => {
+            .then((x) => {
                 this.thresholds = x;
                 this.busy = false;
             })
-            .catch(e => {
+            .catch((e) => {
                 if (e.response.status === 404) {
                     this.messages.notFound = true;
                 }
@@ -201,18 +190,16 @@ class StockBlueprintUpdate extends Vue {
     public async save() {
         this.saving = true;
         this.stock.thresholds = this.thresholds;
-        await this.stock
-            .saveThresholds()
-            .catch(e => {
-                this.messages.updateError = true;
-            });
+        await this.stock.saveThresholds().catch((e) => {
+            this.messages.updateError = true;
+        });
         await this.stock
             .save()
-            .then(_ => {
+            .then((_) => {
                 this.messages.updateSuccess = true;
                 this.saving = false;
             })
-            .catch(e => {
+            .catch((e) => {
                 this.messages.updateError = true;
                 this.saving = false;
             });
@@ -221,12 +208,12 @@ class StockBlueprintUpdate extends Vue {
     public async deleteObject() {
         await this.stock
             .remove()
-            .then(_ => {
+            .then((_) => {
                 this.$router.push({
                     name: ROUTE_STOCK_BLUEPRINTS,
                 });
             })
-            .catch(_ => this.messages.deleteError = true);
+            .catch((_) => (this.messages.deleteError = true));
     }
 
     public back() {
@@ -241,7 +228,7 @@ class StockBlueprintUpdate extends Vue {
     }
 
     public async addThresholdEntryEvent(threshold: IStockBlueprintThreshold) {
-        if (this.thresholds.find(x => x.type_id === threshold.type_id)) {
+        if (this.thresholds.find((x) => x.type_id === threshold.type_id)) {
             this.showAddThresholdEntryModal = false;
             return;
         }
@@ -253,16 +240,15 @@ class StockBlueprintUpdate extends Vue {
     public async editThresholdEntryEvent(threshold: IStockBlueprintThreshold) {
         this.showEditThresholdEntryModal = false;
 
-        this.thresholds = this.thresholds
-            .map(x => {
-                if (x.type_id === threshold.type_id) {
-                    return {
-                        ...threshold
-                    }
-                } else {
-                    return x;
-                }
-            });
+        this.thresholds = this.thresholds.map((x) => {
+            if (x.type_id === threshold.type_id) {
+                return {
+                    ...threshold,
+                };
+            } else {
+                return x;
+            }
+        });
     }
 
     private editThreshold(entry: IStockBlueprintThreshold) {
@@ -275,87 +261,90 @@ class StockBlueprintUpdate extends Vue {
     }
 
     public thresholdTableDefinition(): IDataTableDefinition[] {
-        return [{
-            header: '',
-            key: 'icon',
-            width: 20,
-            render(row) {
-                return h(
-                    EveIcon,
-                    {
+        return [
+            {
+                header: '',
+                key: 'icon',
+                width: 20,
+                render(row) {
+                    return h(EveIcon, {
                         id: row.type_id,
                         type: 'bp',
-                    }
-                )
+                    });
+                },
             },
-        }, {
-            header: 'Item',
-            key: 'type_id',
-            item: true,
-            width: 300,
-            visible: true,
-            copy: true,
-        }, {
-            header: 'Want',
-            key: 'want',
-            number: true,
-            width: 100,
-            visible: true,
-        }, {
-            header: 'Critical',
-            key: 'critical',
-            number: true,
-            width: 100,
-            visible: true,
-        }, {
-            header: 'Min Runs',
-            key: 'min_runs',
-            number: true,
-            width: 100,
-            visible: true,
-        }, {
-            header: 'Min ME',
-            key: 'min_me',
-            number: true,
-            width: 100,
-            visible: true,
-        }, {
-            header: 'Min TE',
-            key: 'min_te',
-            number: true,
-            width: 100,
-            visible: true,
-        }, {
-            header: '',
-            key: 'id',
-            visible: true,
-            width: 100,
-            render: (row: any, index: number) => {
-                return h(
-                    "div",
-                    [
+            {
+                header: 'Item',
+                key: 'type_id',
+                item: true,
+                width: 300,
+                visible: true,
+                copy: true,
+            },
+            {
+                header: 'Want',
+                key: 'want',
+                number: true,
+                width: 100,
+                visible: true,
+            },
+            {
+                header: 'Critical',
+                key: 'critical',
+                number: true,
+                width: 100,
+                visible: true,
+            },
+            {
+                header: 'Min Runs',
+                key: 'min_runs',
+                number: true,
+                width: 100,
+                visible: true,
+            },
+            {
+                header: 'Min ME',
+                key: 'min_me',
+                number: true,
+                width: 100,
+                visible: true,
+            },
+            {
+                header: 'Min TE',
+                key: 'min_te',
+                number: true,
+                width: 100,
+                visible: true,
+            },
+            {
+                header: '',
+                key: 'id',
+                visible: true,
+                width: 100,
+                render: (row: any, index: number) => {
+                    return h('div', [
                         h(
                             NButton,
                             {
                                 type: 'info',
                                 quaternary: true,
-                                onClick: () => this.editThreshold(row)
+                                onClick: () => this.editThreshold(row),
                             },
-                            () => 'Edit'
+                            () => 'Edit',
                         ),
                         h(
                             NButton,
                             {
                                 type: 'error',
                                 quaternary: true,
-                                onClick: () => this.removeThreshold(index)
+                                onClick: () => this.removeThreshold(index),
                             },
-                            () => 'Remove'
+                            () => 'Remove',
                         ),
-                    ]
-                )
-            }
-        }];
+                    ]);
+                },
+            },
+        ];
     }
 
     public commonMessagesClose() {

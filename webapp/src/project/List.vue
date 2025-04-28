@@ -10,7 +10,7 @@
                 :search-function="searchFunction"
                 v-model:entries="projects"
                 style="width: 100%"
-                @busy="(s: any) => busy = s"
+                @busy="(s: any) => (busy = s)"
             />
 
             <filter-element
@@ -24,7 +24,10 @@
 
         <card content-style="padding: 0" v-if="!busy">
             <template #action>
-                <n-button @click="$router.push({ name: 'project_create' })" type="info">
+                <n-button
+                    @click="$router.push({ name: 'project_create' })"
+                    type="info"
+                >
                     New project
                 </n-button>
             </template>
@@ -57,7 +60,9 @@ import { ROUTE_PROJECT_OVERVIEW } from './router';
 
 import Card from '@/components/Card.vue';
 import CharacterInfo from '@/characters/components/CharacterInfo.vue';
-import DataTable, { type IDataTableDefinition } from '@/components/DataTable.vue';
+import DataTable, {
+    type IDataTableDefinition,
+} from '@/components/DataTable.vue';
 import EveIcon from '@/components/EveIcon.vue';
 import Loader from '@/components/Loader.vue';
 import NoEntries from '@/components/NoEntries.vue';
@@ -86,7 +91,7 @@ import ProjectStatusTag from '@/project/components/StatusTag.vue';
         PageHeader,
         ProjectProgress,
         ProjectStatusTag,
-    }
+    },
 })
 class ProjectsView extends Vue {
     public busy: boolean = false;
@@ -102,10 +107,7 @@ class ProjectsView extends Vue {
     public searchFunction = ProjectService.list;
 
     public async created() {
-        events.$emit(
-            ROUTE_CHANGE,
-            this.$route.name
-        );
+        events.$emit(ROUTE_CHANGE, this.$route.name);
     }
 
     public mounted() {
@@ -113,8 +115,9 @@ class ProjectsView extends Vue {
     }
 
     public project_name(): string {
-        let info = this.projects
-            .find(x => x.id === this.selected_project) || <any>{ name: '' };
+        let info =
+            this.projects.find((x) => x.id === this.selected_project) ||
+            <any>{ name: '' };
         return info.name;
     }
 
@@ -131,7 +134,7 @@ class ProjectsView extends Vue {
                     const convert_status = (status: string): string => {
                         switch (status) {
                             case 'Preparing':
-                                return 'PREPARING'
+                                return 'PREPARING';
                             case 'In Progress':
                                 return 'IN_PROGRESS';
                             case 'Done':
@@ -141,67 +144,68 @@ class ProjectsView extends Vue {
                         }
                     };
 
-                    return val.map(x => convert_status(x)).join(',');
-                }
+                    return val.map((x) => convert_status(x)).join(',');
+                },
             },
         };
     }
 
     public table_definition(): IDataTableDefinition[] {
-        return [{
-            header: 'Name',
-            key: 'name',
-            width: 200,
-            visible: true,
-            routing: {
-                route: ROUTE_PROJECT_OVERVIEW,
-                key: 'projectId',
-                value: 'id',
+        return [
+            {
+                header: 'Name',
+                key: 'name',
+                width: 200,
+                visible: true,
+                routing: {
+                    route: ROUTE_PROJECT_OVERVIEW,
+                    key: 'projectId',
+                    value: 'id',
+                },
             },
-        }, {
-            header: 'Orderer',
-            key: 'orderer',
-            width: 200,
-            visible: true,
-        }, {
-            header: 'Sell Price',
-            key: 'price',
-            width: 150,
-            visible: true,
-            number: true,
-        }, {
-            header: 'Cost',
-            key: 'cost',
-            width: 150,
-            visible: true,
-            number: true,
-        }, {
-            header: 'Status',
-            key: 'status',
-            width: 75,
-            visible: true,
-            render(row: IProject): VNode {
-                return h(
-                    ProjectStatusTag,
-                    {
+            {
+                header: 'Orderer',
+                key: 'orderer',
+                width: 200,
+                visible: true,
+            },
+            {
+                header: 'Sell Price',
+                key: 'price',
+                width: 150,
+                visible: true,
+                number: true,
+            },
+            {
+                header: 'Cost',
+                key: 'cost',
+                width: 150,
+                visible: true,
+                number: true,
+            },
+            {
+                header: 'Status',
+                key: 'status',
+                width: 75,
+                visible: true,
+                render(row: IProject): VNode {
+                    return h(ProjectStatusTag, {
                         status: row.status,
-                    }
-                )
+                    });
+                },
             },
-        }, {
-            header: 'Progress',
-            key: 'progress',
-            width: 500,
-            visible: true,
-            render(row: IProject): VNode {
-                return h(
-                    ProjectProgress,
-                    {
+            {
+                header: 'Progress',
+                key: 'progress',
+                width: 500,
+                visible: true,
+                render(row: IProject): VNode {
+                    return h(ProjectProgress, {
                         projectId: row.id,
-                    }
-                )
+                    });
+                },
             },
-        }];
+        ];
     }
 }
 

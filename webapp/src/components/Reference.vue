@@ -1,7 +1,12 @@
 <template>
     <span
-        style="margin: 0px; margin-right: 10px; display: inline; cursor: pointer;"
-        :style="{ color: colored ? '#70c0e8' : undefined}"
+        style="
+            margin: 0px;
+            margin-right: 10px;
+            display: inline;
+            cursor: pointer;
+        "
+        :style="{ color: colored ? '#70c0e8' : undefined }"
         @click="open"
     >
         <slot />
@@ -28,7 +33,7 @@ import Project from '@/components/Project.vue';
         ExternalLinkAlt,
 
         Project,
-    }
+    },
 })
 class Reference extends Vue {
     @Prop({
@@ -62,7 +67,7 @@ class Reference extends Vue {
     public open() {
         let route = this.$router.resolve({
             name: this.route,
-            params: <any>this.params
+            params: <any>this.params,
         });
         window.open(route.href);
     }

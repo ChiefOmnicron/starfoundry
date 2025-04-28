@@ -10,15 +10,12 @@ import { Uuid } from '@/sdk/utils';
 
 @Component({
     components: {},
-    emits: [
-        'loading',
-        'loading:error',
-    ]
+    emits: ['loading', 'loading:error'],
 })
 class NotificationWrapper extends Vue {
     @Prop({
-        type:     String,
-        required: true
+        type: String,
+        required: true,
     })
     public notificationId!: Uuid;
 
@@ -27,9 +24,8 @@ class NotificationWrapper extends Vue {
     public async created() {
         this.$emit('loading', true);
 
-        await NotificationService
-            .fetch(this.notificationId)
-            .then(x => {
+        await NotificationService.fetch(this.notificationId)
+            .then((x) => {
                 this.entry = x;
                 this.$emit('loading', false);
             })

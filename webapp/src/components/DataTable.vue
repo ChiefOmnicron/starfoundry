@@ -1,9 +1,6 @@
 <template>
-    <div style="overflow-x:auto;">
-        <n-table
-            :striped="striped"
-            :bordered="false"
-        >
+    <div style="overflow-x: auto">
+        <n-table :striped="striped" :bordered="false">
             <thead v-if="!noHeader">
                 <tr>
                     <template v-for="definition in definitions">
@@ -18,28 +15,31 @@
             </thead>
             <tbody>
                 <tr v-for="(entry, index) in entries" :key="entry">
-                    <template
-                        v-for="definition in definitions"
-                    >
-                        <template
-                            v-if="columnIsVisible(definition)"
-                        >
+                    <template v-for="definition in definitions">
+                        <template v-if="columnIsVisible(definition)">
                             <td
                                 v-if="definition.routing"
                                 :width="columnWidth(definition)"
                             >
-                                <n-button
-                                    type="info"
-                                    text
-                                >
-                                    <router-link :to="{
+                                <n-button type="info" text>
+                                    <router-link
+                                        :to="{
                                             name: definition.routing.route,
-                                            params: routingParams(definition.routing, entry)
+                                            params: routingParams(
+                                                definition.routing,
+                                                entry,
+                                            ),
                                         }"
-                                        style="color: inherit;
-                                        text-decoration: none"
+                                        style="
+                                            color: inherit;
+                                            text-decoration: none;
+                                        "
                                     >
-                                        {{ (definition.transform || transform)(entry[definition.key]) }}
+                                        {{
+                                            (definition.transform || transform)(
+                                                entry[definition.key],
+                                            )
+                                        }}
                                     </router-link>
                                 </n-button>
                             </td>
@@ -88,14 +88,21 @@
                                 </div>
                                 <div v-else-if="definition.array">
                                     <template
-                                        v-for="arrayEntry in entry[definition.key]"
+                                        v-for="arrayEntry in entry[
+                                            definition.key
+                                        ]"
                                     >
                                         <div>
                                             <item
                                                 :type-id="arrayEntry"
                                                 v-slot="{ item }"
                                             >
-                                                {{ (definition.transform || transform)(item.name) }}
+                                                {{
+                                                    (
+                                                        definition.transform ||
+                                                        transform
+                                                    )(item.name)
+                                                }}
                                             </item>
                                         </div>
                                     </template>
@@ -106,8 +113,14 @@
                                 v-else-if="definition.array"
                                 :width="columnWidth(definition)"
                             >
-                                <template v-for="arrayEntry in entry[definition.key]">
-                                    {{ (definition.transform || transform)(arrayEntry) }}<br>
+                                <template
+                                    v-for="arrayEntry in entry[definition.key]"
+                                >
+                                    {{
+                                        (definition.transform || transform)(
+                                            arrayEntry,
+                                        )
+                                    }}<br />
                                 </template>
                             </td>
 
@@ -115,14 +128,17 @@
                                 v-else-if="definition.render"
                                 :width="columnWidth(definition)"
                             >
-                                <component :is="definition.render(entry, index)"/>
+                                <component
+                                    :is="definition.render(entry, index)"
+                                />
                             </td>
 
-                            <td
-                                v-else
-                                :width="columnWidth(definition)"
-                            >
-                                {{ (definition.transform || transform)(entry[definition.key]) }}
+                            <td v-else :width="columnWidth(definition)">
+                                {{
+                                    (definition.transform || transform)(
+                                        entry[definition.key],
+                                    )
+                                }}
                             </td>
                         </template>
                     </template>
@@ -155,18 +171,18 @@ import Project from '@/components/Project.vue';
         FormatNumber,
         Item,
         Project,
-    }
+    },
 })
 class DataTable extends Vue {
     @Prop({
-        type:     Array<IDataTableDefinition>,
+        type: Array<IDataTableDefinition>,
         required: true,
     })
     public definitions!: IDataTableDefinition[];
 
     @Prop({
-        type:     Array<any>,
-        required: true
+        type: Array<any>,
+        required: true,
     })
     public entries!: any[];
 
@@ -184,10 +200,7 @@ class DataTable extends Vue {
     })
     public noHeader!: boolean;
 
-    public routingParams(
-        routing: IDefinitionRouting,
-        entry:   any[],
-    ) {
+    public routingParams(routing: IDefinitionRouting, entry: any[]) {
         let params: { [key: string]: any } = {};
         params[routing.key] = entry[<any>routing.value];
         return params;

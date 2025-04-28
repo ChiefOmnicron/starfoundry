@@ -12,18 +12,17 @@ import { StructureGroup, StructureGroupService } from '@/sdk/structure_group';
 class StructureWrapper extends Vue {
     @Prop
     public structureGroupId: StructureId = <any>null;
-    public busy: boolean            = true;
+    public busy: boolean = true;
 
     public structure_group: StructureGroup = <any>null;
 
     public async created() {
-        await StructureGroupService
-            .fetch(this.structureGroupId)
-            .then(x => {
+        await StructureGroupService.fetch(this.structureGroupId)
+            .then((x) => {
                 this.structure_group = x;
                 this.busy = false;
             })
-            .catch(e => {
+            .catch((e) => {
                 this.busy = false;
                 console.error(e);
             });

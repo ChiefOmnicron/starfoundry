@@ -1,7 +1,5 @@
 <template>
-    <card
-        title="Installed Rigs"
-    >
+    <card title="Installed Rigs">
         <n-table>
             <tr v-for="index in [0, 1, 2]" :key="index">
                 <th style="width: 150px">
@@ -38,9 +36,7 @@ import StructureRigSelector from '@/structure/components/StructureRigSelector.vu
         FormItem,
         StructureRigSelector,
     },
-    emits: [
-        'update:value'
-    ]
+    emits: ['update:value'],
 })
 class InstalledRigs extends Vue {
     @Prop({

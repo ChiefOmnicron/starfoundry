@@ -18,9 +18,7 @@ import { NInput } from 'naive-ui';
     components: {
         NInput,
     },
-    emits: [
-        'update:value',
-    ]
+    emits: ['update:value'],
 })
 class ParseMarketItem extends Vue {
     public value: IParsedMarketItem[] = [];
@@ -57,26 +55,26 @@ class ParseMarketItem extends Vue {
                 name: split[0],
                 quantity: toNumber(split[1].replaceAll(',', '')),
                 price: toNumber(split[2].replaceAll(',', '')),
-            }
+            };
         } else if (split.length === 4) {
             return {
                 name: split[0],
                 quantity: toNumber(split[1].replaceAll(',', '')),
                 price: toNumber(split[3].replaceAll(',', '')),
-            }
+            };
         } else {
             return {
                 name: 'Invalid',
                 quantity: 0,
                 price: 0,
-            }
+            };
         }
     }
 
     public parseSpaces(line: string): IParsedMarketItemInternal {
         let split = line.split(' ');
 
-        split.pop
+        split.pop;
 
         let price = toNumber((split.pop() || '').replaceAll(',', ''));
         let quantity = toNumber((split.pop() || '').replaceAll(',', ''));
@@ -86,7 +84,7 @@ class ParseMarketItem extends Vue {
             name,
             quantity,
             price,
-        }
+        };
     }
 }
 

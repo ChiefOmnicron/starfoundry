@@ -6,7 +6,7 @@
             @keydown.enter.prevent
             @update:value="structureIdChange"
             data-cy="StructureResolveInput"
-            style="width: 100%;"
+            style="width: 100%"
             v-model:value="structureString"
         />
         <n-button
@@ -34,10 +34,7 @@ import { NButton, NInput, NInputGroup } from 'naive-ui';
         NInput,
         NInputGroup,
     },
-    emits: [
-        'error',
-        'resolved',
-    ]
+    emits: ['error', 'resolved'],
 })
 class ResolveStructure extends Vue {
     public busy: boolean = false;
@@ -48,9 +45,9 @@ class ResolveStructure extends Vue {
 
     public structureIdChange(value: string) {
         if (!value || value === '') {
-            this.structureIdStatus = 'error'
+            this.structureIdStatus = 'error';
         } else {
-            this.structureIdStatus = ''
+            this.structureIdStatus = '';
         }
     }
 
@@ -66,15 +63,14 @@ class ResolveStructure extends Vue {
         }
 
         this.busy = true;
-        await StructureService
-            .resolve(structureId)
-            .then(x => {
+        await StructureService.resolve(structureId)
+            .then((x) => {
                 this.busy = false;
                 this.$emit('resolved', x);
             })
-            .catch(_ => {
+            .catch((_) => {
                 this.busy = false;
-                this.$emit('error', true)
+                this.$emit('error', true);
             });
     }
 }

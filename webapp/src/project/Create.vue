@@ -187,7 +187,7 @@ import Blacklist from '@/project_group/components/DefaultBlacklist.vue';
 import Card from '@/components/Card.vue';
 import CardMargin from '@/components/CardMargin.vue';
 import FormatNumberInput from '@/components/inputs/FormatNumber.vue';
-import GeneralInfo from '@/project/components/GeneralInfoV2.vue';
+import GeneralInfo from '@/project/components/GeneralInfo.vue';
 import Market from '@/project_group/components/DefaultMarket.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import ProductSelector from '@/project/selectors/ProductSelector.vue';

@@ -1,32 +1,21 @@
 <template>
     <div>
-        <common-messages
-            :message="messages"
-            @close="commonMessagesClose"
-        />
+        <common-messages :message="messages" @close="commonMessagesClose" />
 
         <card title="Market">
-            <market
-                v-model:structures="markets"
-            />
+            <market v-model:structures="markets" />
         </card>
 
         <card-margin />
 
         <card title="Blacklist">
-            <blacklist
-                v-model:blacklist="blacklist"
-            />
+            <blacklist v-model:blacklist="blacklist" />
         </card>
 
         <card-margin />
 
-        <action-group
-            justify="end"
-        >
-            <n-button @click="save" type="info">
-                Save
-            </n-button>
+        <action-group justify="end">
+            <n-button @click="save" type="info"> Save </n-button>
         </action-group>
     </div>
 </template>
@@ -42,7 +31,10 @@ import ActionGroup from '@/components/ActionGroup.vue';
 import Blacklist from '@/project_group/components/DefaultBlacklist.vue';
 import Card from '@/components/Card.vue';
 import CardMargin from '@/components/CardMargin.vue';
-import CommonMessages, { DEFAULT_COMMON_MESSAGES, type ICommonMessages } from '@/components/CommonMessages.vue';
+import CommonMessages, {
+    DEFAULT_COMMON_MESSAGES,
+    type ICommonMessages,
+} from '@/components/CommonMessages.vue';
 import Market from '@/project_group/components/DefaultMarket.vue';
 
 @Component({
@@ -55,7 +47,7 @@ import Market from '@/project_group/components/DefaultMarket.vue';
         CardMargin,
         CommonMessages,
         Market,
-    }
+    },
 })
 class ProjectGroupOverviewDefault extends Vue {
     @Prop({
@@ -71,18 +63,17 @@ class ProjectGroupOverviewDefault extends Vue {
     public newMarketStructure: string = '';
 
     public async created() {
-        ProjectGroupService
-            .fetch(this.groupId)
-            .then(x => x.fetchDefault())
-            .then(x => {
+        ProjectGroupService.fetch(this.groupId)
+            .then((x) => x.fetchDefault())
+            .then((x) => {
                 if (x) {
-                    this.markets.push(...x.markets || []);
-                    this.blacklist.push(...x.blacklist || []);
+                    this.markets.push(...(x.markets || []));
+                    this.blacklist.push(...(x.blacklist || []));
                 } else {
                     this.markets.push('00000000-0000-0000-0000-000000000001');
                 }
             })
-            .catch(e => {
+            .catch((e) => {
                 if (e.response.status === 404) {
                     this.markets.push('00000000-0000-0000-0000-000000000001');
                 } else {
@@ -92,16 +83,17 @@ class ProjectGroupOverviewDefault extends Vue {
     }
 
     public async save() {
-        ProjectGroupService
-            .fetch(this.groupId)
-            .then(x => x.updateDefault({
-                blacklist: this.blacklist,
-                markets: this.markets,
-            }))
-            .then(_ => {
+        ProjectGroupService.fetch(this.groupId)
+            .then((x) =>
+                x.updateDefault({
+                    blacklist: this.blacklist,
+                    markets: this.markets,
+                }),
+            )
+            .then((_) => {
                 this.messages.updateSuccess = true;
             })
-            .catch(_ => {
+            .catch((_) => {
                 this.messages.updateError = true;
             });
     }

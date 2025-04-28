@@ -1,26 +1,18 @@
 <template>
-    <n-card
-        content-style="padding: 0"
-        data-cy="card"
-        :style="[
-            borderStyle(),
-        ]"
-    >
-        <div
-            style="border-bottom: 1px solid #48484E;"
-            v-if="!noTitle"
-        >
+    <n-card content-style="padding: 0" data-cy="card" :style="[borderStyle()]">
+        <div style="border-bottom: 1px solid #48484e" v-if="!noTitle">
             <n-space
                 justify="space-between"
-                style="margin-left: 10px; margin-right: 10px; margin-top: 5px; margin-bottom: 5px;"
+                style="
+                    margin-left: 10px;
+                    margin-right: 10px;
+                    margin-top: 5px;
+                    margin-bottom: 5px;
+                "
             >
                 <div>
                     <slot name="title">
-                        <h2
-                            data-cy="header"
-                            style="margin: 0px"
-                            v-if="title"
-                        >
+                        <h2 data-cy="header" style="margin: 0px" v-if="title">
                             {{ title || '' }}
                         </h2>
                         <h3
@@ -53,22 +45,22 @@
 // - title: Replaces the default title with the given one
 // - action: Action group in the header
 // - footer: Adds it to the bottom of the Card
-// 
+//
 // Options:
 // - title: Title of the Card - Translated
 // - subtitle: Like the title, but smaller - Translated
 // - danger: Adds a red border
 // - noTitle: Doesn't show any title
 // - description: Adds a description, before the content - Translated
-// 
+//
 // Example:
 // <card title="Cool title">
 //         <template #action>
 //             <button-group />
 //         </template>
-// 
+//
 //         <div>Default content</div>
-// 
+//
 //         <template #footer>
 //         <n-button />
 //         </template>
@@ -80,8 +72,8 @@ import { NCard, NSpace } from 'naive-ui';
 @Component({
     components: {
         NCard,
-        NSpace
-    }
+        NSpace,
+    },
 })
 class Card extends Vue {
     @Prop({
@@ -110,7 +102,7 @@ class Card extends Vue {
     public danger!: boolean;
 
     public borderStyle(): {
-        border?: string
+        border?: string;
     } {
         if (this.danger) {
             return { border: '1px solid #e88080' };

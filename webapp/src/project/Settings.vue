@@ -5,10 +5,7 @@
             v-if="!initialLoad && !messages.hasError(messages) && project"
         />
 
-        <common-messages
-            :message="messages"
-            @close="commonMessagesClose"
-        />
+        <common-messages :message="messages" @close="commonMessagesClose" />
 
         <card
             title="General"
@@ -25,21 +22,13 @@
         <card-margin />
 
         <action-group
-            v-if="!initialLoad && !messages.hasError(messages) && project.canWrite"
+            v-if="
+                !initialLoad && !messages.hasError(messages) && project.canWrite
+            "
         >
-            <n-button
-                @click="$router.back()"
-                quaternary
-            >
-                Cancel
-            </n-button>
+            <n-button @click="$router.back()" quaternary> Cancel </n-button>
 
-            <n-button
-                @click="save"
-                type="info"
-            >
-                Save
-            </n-button>
+            <n-button @click="save" type="info"> Save </n-button>
         </action-group>
 
         <card-margin />
@@ -49,7 +38,9 @@
             data-cy="structureUpdateDeleteObject"
             object-description="Deleting the project is not reversable."
             object-title="Delete Project"
-            v-if="!initialLoad && !messages.hasError(messages) && project.isOwner"
+            v-if="
+                !initialLoad && !messages.hasError(messages) && project.isOwner
+            "
         />
     </div>
 </template>
@@ -65,7 +56,10 @@ import { type ProjectUuid } from '@/sdk/utils';
 import ActionGroup from '@/components/ActionGroup.vue';
 import Card from '@/components/Card.vue';
 import CardMargin from '@/components/CardMargin.vue';
-import CommonMessages, { DEFAULT_COMMON_MESSAGES, type ICommonMessages } from '@/components/CommonMessages.vue';
+import CommonMessages, {
+    DEFAULT_COMMON_MESSAGES,
+    type ICommonMessages,
+} from '@/components/CommonMessages.vue';
 import DeleteObject from '@/components/DeleteObject.vue';
 import GeneralInfo from '@/project/components/GeneralInfo.vue';
 import PageHeader from '@/components/PageHeader.vue';
@@ -83,7 +77,7 @@ import PageHeader from '@/components/PageHeader.vue';
         DeleteObject,
         GeneralInfo,
         PageHeader,
-    }
+    },
 })
 class ProjectSettings extends Vue {
     @Prop({
@@ -101,20 +95,19 @@ class ProjectSettings extends Vue {
     public async created() {
         this.initialLoad = true;
 
-        await ProjectService
-            .fetch(this.projectId)
-            .then(x => {
+        await ProjectService.fetch(this.projectId)
+            .then((x) => {
                 this.project = x;
                 return this.project.fetchPermissionIsOwner();
             })
-            .then(_ => this.project.fetchPermissionCanWrite())
-            .then(_ => {
+            .then((_) => this.project.fetchPermissionCanWrite())
+            .then((_) => {
                 this.initialLoad = false;
             })
-            .catch(e => {
+            .catch((e) => {
                 if (e.response.status === 404) {
                     this.messages.notFound = true;
-                } else if(e.response.status === 403) {
+                } else if (e.response.status === 403) {
                     this.messages.forbidden = true;
                 } else {
                     this.messages.loadingError = true;
@@ -130,12 +123,12 @@ class ProjectSettings extends Vue {
         this.busy = true;
         await this.project
             .saveSettings()
-            .then(_ => {
+            .then((_) => {
                 this.busy = false;
                 this.messages.updateSuccess = true;
             })
-            .catch(e => {
-                if(e.response.status === 403) {
+            .catch((e) => {
+                if (e.response.status === 403) {
                     this.messages.forbidden = true;
                 } else {
                     this.messages.loadingError = true;
@@ -150,13 +143,13 @@ class ProjectSettings extends Vue {
 
         await this.project
             .remove()
-            .then(_ => {
+            .then((_) => {
                 this.$router.push({
                     name: ROUTE_PROJECTS,
                 });
             })
-            .catch(e => {
-                if(e.response.status === 403) {
+            .catch((e) => {
+                if (e.response.status === 403) {
                     this.messages.forbidden = true;
                 } else {
                     this.messages.loadingError = true;

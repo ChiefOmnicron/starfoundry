@@ -2,9 +2,10 @@
     <div>
         <div>
             <p style="margin-left: 10px">
-                Insert all materials that you plan on using for the selected jobs.
-                It will check if you have enough resources, and if not how much is missing.
-                <br><br>
+                Insert all materials that you plan on using for the selected
+                jobs. It will check if you have enough resources, and if not how
+                much is missing.
+                <br /><br />
                 The format looks like:
                 <code>ItemName Quantity</code>
             </p>
@@ -51,19 +52,9 @@
         </div>
 
         <action-group>
-            <n-button
-                @click="close()"
-                quaternary
-            >
-                Close
-            </n-button>
+            <n-button @click="close()" quaternary> Close </n-button>
 
-            <n-button
-                @click="check_resources"
-                type="info"
-            >
-                Check
-            </n-button>
+            <n-button @click="check_resources" type="info"> Check </n-button>
         </action-group>
     </div>
 </template>
@@ -91,37 +82,32 @@ import EveIcon from '@/components/EveIcon.vue';
         CopyText,
         EveIcon,
     },
-    emits: ['close']
+    emits: ['close'],
 })
 class CheckResources extends Vue {
     @Prop({
         required: true,
-        type:     Array<Uuid>
+        type: Array<Uuid>,
     })
     public projectJobIds!: Uuid[];
 
     public check_performed: boolean = false;
 
     public available_resources: string = '';
-    public missing_materials: { type_id: TypeId, quantity: number }[] = [];
+    public missing_materials: { type_id: TypeId; quantity: number }[] = [];
 
     public async check_resources() {
         this.check_performed = false;
 
         const resources = await ItemService.parse(this.available_resources);
 
-        this.missing_materials = await ProjectService
-            .check_resources(
-                {
-                    job_ids: this.projectJobIds,
-                    resources: <any>resources
-                }
-            )
-            .then(x => {
-                this.check_performed = true;
-                return x
-                    .filter(y => y.quantity > 0);
-            });
+        this.missing_materials = await ProjectService.check_resources({
+            job_ids: this.projectJobIds,
+            resources: <any>resources,
+        }).then((x) => {
+            this.check_performed = true;
+            return x.filter((y) => y.quantity > 0);
+        });
     }
 
     public close() {

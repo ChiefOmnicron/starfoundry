@@ -12,14 +12,12 @@ import type { ProjectUuid } from '@/sdk/utils';
 
 @Component({
     components: {},
-    emits: [
-        'loading',
-    ]
+    emits: ['loading'],
 })
 class ProjectWrapper extends Vue {
     // Type-Id of the item to resolve
     @Prop({
-        type:     String,
+        type: String,
         required: true,
     })
     public projectUuid!: ProjectUuid;
@@ -29,14 +27,13 @@ class ProjectWrapper extends Vue {
     public async created() {
         this.$emit('loading', true);
 
-        await ProjectService
-            .fetch(this.projectUuid)
-            .then(x => {
+        await ProjectService.fetch(this.projectUuid)
+            .then((x) => {
                 this.project = x;
 
                 this.$emit('loading', false);
             })
-            .catch(e => {
+            .catch((e) => {
                 this.$emit('loading', false);
             });
     }

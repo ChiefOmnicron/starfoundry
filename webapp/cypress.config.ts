@@ -1,8 +1,8 @@
 export default {
     component: {
         devServer: {
-            framework: "vue",
-            bundler: "vite",
+            framework: 'vue',
+            bundler: 'vite',
         },
     },
 };

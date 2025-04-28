@@ -18,9 +18,7 @@ import { NSelect, type SelectOption } from 'naive-ui';
     components: {
         NSelect,
     },
-    emits: [
-        'update:decompression'
-    ],
+    emits: ['update:decompression'],
 })
 class GasDecompressionSelector extends Vue {
     @Prop({
@@ -47,45 +45,59 @@ class GasDecompressionSelector extends Vue {
 
     public gasDecompressionOptions(): SelectOption[] {
         if (this.structure === 'ATHANOR') {
-            return [{
-                label: 'Level 0 (84%)',
-                value: 'AthanorLvl0'
-            }, {
-                label: 'Level 1 (85%)',
-                value: 'AthanorLvl1'
-            }, {
-                label: 'Level 2 (86%)',
-                value: 'AthanorLvl2'
-            }, {
-                label: 'Level 3 (87%)',
-                value: 'AthanorLvl3'
-            }, {
-                label: 'Level 4 (88%)',
-                value: 'AthanorLvl4'
-            }, {
-                label: 'Level 5 (89%)',
-                value: 'AthanorLvl5'
-            }];
+            return [
+                {
+                    label: 'Level 0 (84%)',
+                    value: 'AthanorLvl0',
+                },
+                {
+                    label: 'Level 1 (85%)',
+                    value: 'AthanorLvl1',
+                },
+                {
+                    label: 'Level 2 (86%)',
+                    value: 'AthanorLvl2',
+                },
+                {
+                    label: 'Level 3 (87%)',
+                    value: 'AthanorLvl3',
+                },
+                {
+                    label: 'Level 4 (88%)',
+                    value: 'AthanorLvl4',
+                },
+                {
+                    label: 'Level 5 (89%)',
+                    value: 'AthanorLvl5',
+                },
+            ];
         } else if (this.structure === 'TATARA') {
-            return [{
-                label: 'Level 0 (90%)',
-                value: 'TataraLvl0'
-            }, {
-                label: 'Level 1 (91%)',
-                value: 'TataraLvl1'
-            }, {
-                label: 'Level 2 (92%)',
-                value: 'TataraLvl2'
-            }, {
-                label: 'Level 3 (93%)',
-                value: 'TataraLvl3'
-            }, {
-                label: 'Level 4 (94%)',
-                value: 'TataraLvl4'
-            }, {
-                label: 'Level 5 (95%)',
-                value: 'TataraLvl5'
-            }];
+            return [
+                {
+                    label: 'Level 0 (90%)',
+                    value: 'TataraLvl0',
+                },
+                {
+                    label: 'Level 1 (91%)',
+                    value: 'TataraLvl1',
+                },
+                {
+                    label: 'Level 2 (92%)',
+                    value: 'TataraLvl2',
+                },
+                {
+                    label: 'Level 3 (93%)',
+                    value: 'TataraLvl3',
+                },
+                {
+                    label: 'Level 4 (94%)',
+                    value: 'TataraLvl4',
+                },
+                {
+                    label: 'Level 5 (95%)',
+                    value: 'TataraLvl5',
+                },
+            ];
         } else {
             return [];
         }

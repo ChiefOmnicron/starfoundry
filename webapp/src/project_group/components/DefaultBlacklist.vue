@@ -37,7 +37,9 @@ import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
 import type { TypeId } from '@/sdk/utils';
 
 import { NButton, NTable } from 'naive-ui';
-import DataTable, { type IDataTableDefinition } from '@/components/DataTable.vue';
+import DataTable, {
+    type IDataTableDefinition,
+} from '@/components/DataTable.vue';
 import EveIcon from '@/components/EveIcon.vue';
 import Item from '@/components/Item.vue';
 import ItemSelector from '@/components/selectors/ItemSelector.vue';
@@ -52,9 +54,7 @@ import ItemSelector from '@/components/selectors/ItemSelector.vue';
         Item,
         ItemSelector,
     },
-    emits: [
-        'update:blacklist',
-    ]
+    emits: ['update:blacklist'],
 })
 class ProjectGroupDefaultBlacklist extends Vue {
     @Prop({
@@ -82,49 +82,51 @@ class ProjectGroupDefaultBlacklist extends Vue {
     }
 
     public tableEntries() {
-        return this.blacklist.map(x => {
+        return this.blacklist.map((x) => {
             return {
-                type_id: x
-            }
+                type_id: x,
+            };
         });
     }
 
     public tableDefinition(): IDataTableDefinition[] {
-        return [{
-            header: '',
-            key: 'type_id',
-            icon: 'icon',
-            widthPercent: 3,
-            visible: true,
-        }, {
-            header: '',
-            key: 'type_id',
-            widthPercent: 90,
-            visible: true,
-            item: true,
-            copy: true,
-        }, {
-            header: '',
-            key: 'id',
-            visible: true,
-            widthPercent: 7,
-            render: (row: any, index: number) => {
-                return h(
-                    "div",
-                    [
+        return [
+            {
+                header: '',
+                key: 'type_id',
+                icon: 'icon',
+                widthPercent: 3,
+                visible: true,
+            },
+            {
+                header: '',
+                key: 'type_id',
+                widthPercent: 90,
+                visible: true,
+                item: true,
+                copy: true,
+            },
+            {
+                header: '',
+                key: 'id',
+                visible: true,
+                widthPercent: 7,
+                render: (row: any, index: number) => {
+                    return h('div', [
                         h(
                             NButton,
                             {
                                 type: 'error',
                                 quaternary: true,
-                                onClick: () => this.deleteBlacklist(row.type_id, index)
+                                onClick: () =>
+                                    this.deleteBlacklist(row.type_id, index),
                             },
-                            () => 'Remove'
+                            () => 'Remove',
                         ),
-                    ]
-                )
-            }
-        }];
+                    ]);
+                },
+            },
+        ];
     }
 }
 

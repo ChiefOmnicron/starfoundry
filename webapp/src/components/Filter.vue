@@ -41,27 +41,23 @@ import { type VNode } from 'vue';
 
         Search,
     },
-    emits: [
-        'busy',
-        'touched',
-        'update:entries',
-    ],
+    emits: ['busy', 'touched', 'update:entries'],
 })
 class Filter extends Vue {
     @Prop({
-        type:     Object,
-        required: true
+        type: Object,
+        required: true,
     })
     public filters!: any;
 
     @Prop({
-        type:     Object,
-        required: true
+        type: Object,
+        required: true,
     })
     public options!: any;
 
     @Prop({
-        required: true
+        required: true,
     })
     public entries!: Array<any>;
 
@@ -81,7 +77,7 @@ class Filter extends Vue {
     public search: string = '';
     public selectedKey: string = '';
 
-    public filterOptions: { key: string, label: string }[] = [];
+    public filterOptions: { key: string; label: string }[] = [];
     public filterOptionsOrig: any = [];
     public showOptions: boolean = false;
 
@@ -94,13 +90,17 @@ class Filter extends Vue {
             let val = this.options[key];
             this.filterOptions.push({
                 label: val.label,
-                key: key
+                key: key,
             });
         }
 
-        this.$watch(() => this.filters, () => {
-            this.filterEntries();
-        }, { deep: true });
+        this.$watch(
+            () => this.filters,
+            () => {
+                this.filterEntries();
+            },
+            { deep: true },
+        );
 
         this.filterOptionsOrig = this.filterOptions;
     }
@@ -128,19 +128,23 @@ class Filter extends Vue {
                 this.filterOptions = [];
 
                 if (entry.name) {
-                    entry.options.sort(
-                        (a: any, b: any) => (a[entry.name] < b[entry.name] ? -1 : 1)
+                    entry.options.sort((a: any, b: any) =>
+                        a[entry.name] < b[entry.name] ? -1 : 1,
                     );
                 }
 
                 for (let option of entry.options) {
                     let key = option[entry.key] ? option[entry.key] : option;
-                    let exists = this.filterOptions.find((x: any) => x.key === key);
+                    let exists = this.filterOptions.find(
+                        (x: any) => x.key === key,
+                    );
                     if (exists) {
                         continue;
                     }
 
-                    let label = option[entry.name] ? option[entry.name] : option;
+                    let label = option[entry.name]
+                        ? option[entry.name]
+                        : option;
                     this.filterOptions.push({
                         label,
                         key,
@@ -149,7 +153,10 @@ class Filter extends Vue {
             }
         } else {
             if (this.options[this.selectedKey].multiple) {
-                if (this.filters[this.selectedKey] && this.filters[this.selectedKey].length > 0) {
+                if (
+                    this.filters[this.selectedKey] &&
+                    this.filters[this.selectedKey].length > 0
+                ) {
                     this.filters[this.selectedKey].push(key);
                 } else {
                     this.filters[this.selectedKey] = [key];
@@ -171,10 +178,14 @@ class Filter extends Vue {
         } else if (!this.selectedKey && event.keyCode === 13) {
             this.filters['name'] = this.search;
             this.reset();
-        } else if (event.keyCode === 13 && !this.options[this.selectedKey].options) {
-            this.filters[this.selectedKey] = this
-                .search
-                .replace(`${this.options[this.selectedKey].label}: `, '');
+        } else if (
+            event.keyCode === 13 &&
+            !this.options[this.selectedKey].options
+        ) {
+            this.filters[this.selectedKey] = this.search.replace(
+                `${this.options[this.selectedKey].label}: `,
+                '',
+            );
             this.reset();
         }
     }
@@ -206,7 +217,10 @@ class Filter extends Vue {
         let filters: { [key: string]: string } = {};
         for (const key in this.filters) {
             if (this.options[key].preRequest) {
-                filters[key] = this.options[key].preRequest(this.options[key], this.filters[key]);
+                filters[key] = this.options[key].preRequest(
+                    this.options[key],
+                    this.filters[key],
+                );
             } else if (this.options[key].multiple) {
                 filters[key] = this.filters[key].join(',');
             } else {
@@ -229,21 +243,21 @@ class Filter extends Vue {
 
 export interface IFilterOption {
     // label that is shown in the dropdown and the filter element
-    label:        string;
+    label: string;
 
     // allows multiple entries of this type
-    multiple?:    boolean;
+    multiple?: boolean;
 
     // valid entries for the filter
     // if kept undefined it will assume a string input
     // otherwise it will show a dropdown with the given options
-    options?:      any[],
+    options?: any[];
     // if options is an array of objects, the field name that should be used
     // as a name needs to be set
-    name?:        string;
+    name?: string;
     // if options is an array of objects, the field that should be used as
     // filter needs to be set
-    key?:         string;
+    key?: string;
 
     // allows to transform the data before it is sent to the server
     //
@@ -254,17 +268,16 @@ export interface IFilterOption {
     //
     // filter: configuration for the filter
     // value: selected value
-    template?:    (filter: IFilterOption, value: any) => VNode;
+    template?: (filter: IFilterOption, value: any) => VNode;
     // transforms the entry inplace, allows for overwriting the text shown,
     // without generating a new elememnt
     //
     // filter: configuration for the filter
     // value: selected value
-    transform?:   (filter: IFilterOption, value: any) => string;
+    transform?: (filter: IFilterOption, value: any) => string;
 
-    item?:        boolean;
+    item?: boolean;
 }
 
 export default toNative(Filter);
 </script>
-

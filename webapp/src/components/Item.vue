@@ -11,15 +11,13 @@ import { ItemService, type IItem } from '@/sdk/item';
 
 @Component({
     components: {},
-    emits: [
-        'loading',
-    ]
+    emits: ['loading'],
 })
 class Item extends Vue {
     // Type-Id of the item to resolve
     @Prop({
-        type:     Number,
-        required: true
+        type: Number,
+        required: true,
     })
     public typeId!: number;
 
@@ -28,13 +26,12 @@ class Item extends Vue {
     public async created() {
         this.$emit('loading', true);
 
-        await ItemService
-            .get(this.typeId)
-            .then(x => {
+        await ItemService.get(this.typeId)
+            .then((x) => {
                 this.item = x;
                 this.$emit('loading', false);
             })
-            .catch(e => {
+            .catch((e) => {
                 console.error(e);
             });
     }

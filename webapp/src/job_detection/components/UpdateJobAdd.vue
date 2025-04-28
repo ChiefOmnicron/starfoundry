@@ -2,9 +2,7 @@
     <div>
         <n-table>
             <tr>
-                <th style="width: 100px">
-                    Project
-                </th>
+                <th style="width: 100px">Project</th>
 
                 <td style="padding: 0">
                     <project-selector
@@ -14,20 +12,14 @@
                 </td>
             </tr>
             <tr>
-                <th>
-                    Structure
-                </th>
+                <th>Structure</th>
 
                 <td style="padding: 0">
-                    <structure-selector
-                        v-model:value="structureId"
-                    />
+                    <structure-selector v-model:value="structureId" />
                 </td>
             </tr>
             <tr v-if="projectId">
-                <th>
-                    Old Project
-                </th>
+                <th>Old Project</th>
 
                 <td style="padding: 10px">
                     <n-switch v-model:value="deleteFromSource">
@@ -41,9 +33,7 @@
                 </td>
             </tr>
             <tr v-if="jobs.length > 0">
-                <th>
-                    Existing Jobs
-                </th>
+                <th>Existing Jobs</th>
 
                 <td style="padding: 10px">
                     <template v-for="job in jobs" :key="job.id">
@@ -93,9 +83,7 @@ import StructureSelector from '@/components/selectors/StructureSelector.vue';
         ProjectJobCard,
         StructureSelector,
     },
-    emits: [
-        'update:projectId',
-    ],
+    emits: ['update:projectId'],
 })
 class UpdateJobAdd extends Vue {
     @Prop({
@@ -133,7 +121,7 @@ class UpdateJobAdd extends Vue {
             .fetchJobs({
                 type_id: this.typeId,
             })
-            .then(x => {
+            .then((x) => {
                 this.jobs = x;
             });
     }

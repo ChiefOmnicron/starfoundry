@@ -1,34 +1,37 @@
-import { Structure, StructureService } from "./structure";
-import type { Uuid } from "@/sdk/utils";
-import axios from "axios";
+import { Structure, StructureService } from './structure';
+import type { Uuid } from '@/sdk/utils';
+import axios from 'axios';
 
 const STRUCTURE_PATH: string = '/api/v1/structures/groups/dynamic';
 
 export type StructureDynamicGroupId = Uuid;
 
 export class StructureDynamicGroupService {
-    public static cache: { [structure_group_id: StructureDynamicGroupId]: StructureDynamicGroup } = {};
+    public static cache: {
+        [structure_group_id: StructureDynamicGroupId]: StructureDynamicGroup;
+    } = {};
 
     public static async all(): Promise<StructureDynamicGroup[]> {
         return await axios
             .get<StructureDynamicGroupId[]>(STRUCTURE_PATH)
-            .then(x => {
+            .then((x) => {
                 if (x.status === 204) {
                     return [{ status: 'None' }];
                 }
 
                 return Promise.allSettled(
-                    x.data
-                        .map(y => {
-                            this.cache[y] = new StructureDynamicGroup(y);
-                            return this.cache[y].load()
-                        }))
+                    x.data.map((y) => {
+                        this.cache[y] = new StructureDynamicGroup(y);
+                        return this.cache[y].load();
+                    }),
+                );
             })
-            .then(x => x
-                .filter(x => x.status === 'fulfilled')
-                // TS does not understand that it has a value, as it is
-                // definitly a successful promise
-                .map((x: any) => x.value)
+            .then((x) =>
+                x
+                    .filter((x) => x.status === 'fulfilled')
+                    // TS does not understand that it has a value, as it is
+                    // definitly a successful promise
+                    .map((x: any) => x.value),
             );
     }
 
@@ -39,7 +42,9 @@ export class StructureDynamicGroupService {
             return this.cache[structure_group_id].load();
         }
 
-        this.cache[structure_group_id] = new StructureDynamicGroup(structure_group_id);
+        this.cache[structure_group_id] = new StructureDynamicGroup(
+            structure_group_id,
+        );
         return this.cache[structure_group_id].load();
     }
 
@@ -48,7 +53,7 @@ export class StructureDynamicGroupService {
     ): Promise<StructureDynamicGroup> {
         return axios
             .post(`${STRUCTURE_PATH}`, structure_group)
-            .then(x => this.by_id(x.data));
+            .then((x) => this.by_id(x.data));
     }
 
     public static async remove(
@@ -60,31 +65,31 @@ export class StructureDynamicGroupService {
     }
 
     public static async resolve_manufacturing(
-        filter: string[]
+        filter: string[],
     ): Promise<Structure[]> {
         return axios
-            .post<Uuid[]>(`${STRUCTURE_PATH}/dynamic/resolve/manufacturing`, filter)
-            .then(x => {
+            .post<
+                Uuid[]
+            >(`${STRUCTURE_PATH}/dynamic/resolve/manufacturing`, filter)
+            .then((x) => {
                 return Promise.all(
-                    x.data
-                        .map(y => {
-                            return StructureService.fetch(y)
-                        })
+                    x.data.map((y) => {
+                        return StructureService.fetch(y);
+                    }),
                 );
             });
     }
 
     public static async resolve_reaction(
-        filter: string[]
+        filter: string[],
     ): Promise<Structure[]> {
         return axios
             .post<Uuid[]>(`${STRUCTURE_PATH}/dynamic/resolve/reaction`, filter)
-            .then(x => {
+            .then((x) => {
                 return Promise.all(
-                    x.data
-                        .map(y => {
-                            return StructureService.fetch(y)
-                        })
+                    x.data.map((y) => {
+                        return StructureService.fetch(y);
+                    }),
                 );
             });
     }
@@ -93,14 +98,12 @@ export class StructureDynamicGroupService {
 export class StructureDynamicGroup {
     private loader: Promise<any> | null;
 
-    private _info: IStructureDynamicGroup = <any> null;
+    private _info: IStructureDynamicGroup = <any>null;
 
-    public constructor(
-        private _id: StructureDynamicGroupId,
-    ) {
+    public constructor(private _id: StructureDynamicGroupId) {
         this.loader = axios
             .get(`${STRUCTURE_PATH}/${this._id}`)
-            .then(x => this._info = x.data);
+            .then((x) => (this._info = x.data));
     }
 
     public async load(): Promise<StructureDynamicGroup> {
@@ -126,8 +129,8 @@ export class StructureDynamicGroup {
 }
 
 export interface IStructureDynamicGroup {
-    id?:       Uuid;
-    name:      string;
+    id?: Uuid;
+    name: string;
 
     group_ids: string[];
 }

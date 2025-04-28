@@ -26,13 +26,15 @@
                             {{ group.name }}
                         </td>
                         <td>
-                            <template v-for="manufacturing in group.manufacturing">
-                                {{ filter_name(manufacturing) }}<br>
+                            <template
+                                v-for="manufacturing in group.manufacturing"
+                            >
+                                {{ filter_name(manufacturing) }}<br />
                             </template>
                         </td>
                         <td>
                             <template v-for="reaction in group.reaction">
-                                {{ filter_name(reaction) }}<br>
+                                {{ filter_name(reaction) }}<br />
                             </template>
                         </td>
                     </tr>
@@ -55,7 +57,10 @@ import { NButton, NTable } from 'naive-ui';
 
 import { events } from '@/main';
 
-import { StructureDynamicGroup, StructureDynamicGroupService } from '@/sdk/structure_dynamic_group';
+import {
+    StructureDynamicGroup,
+    StructureDynamicGroupService,
+} from '@/sdk/structure_dynamic_group';
 
 import { ROUTE_CHANGE } from '@/event_bus';
 import { ROUTE_STRUCUTRE_GROUP_NEW } from './router';
@@ -80,7 +85,7 @@ import System from '@/components/System.vue';
         PageHeader,
         StructureGroupWrapper,
         System,
-    }
+    },
 })
 class StructureDynamicGroupsOverview extends Vue {
     public busy: boolean = false;
@@ -90,23 +95,19 @@ class StructureDynamicGroupsOverview extends Vue {
     public new_structure_group = ROUTE_STRUCUTRE_GROUP_NEW;
 
     public async created() {
-        events.$emit(
-            ROUTE_CHANGE,
-            this.$route.name
-        );
+        events.$emit(ROUTE_CHANGE, this.$route.name);
 
         this.busy = true;
-        await StructureDynamicGroupService
-            .all()
-            .then(x => {
-                this.structure_groups = x
+        await StructureDynamicGroupService.all()
+            .then((x) => {
+                this.structure_groups = x;
             })
             .catch((e: any) => console.error(e));
         this.busy = false;
     }
 
     public filter_name(filter: string): string {
-        switch(filter) {
+        switch (filter) {
             case 'structure_raitaru':
                 return 'Raitaru';
             case 'structure_azbel':

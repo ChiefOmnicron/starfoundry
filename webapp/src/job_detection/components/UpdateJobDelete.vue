@@ -2,9 +2,7 @@
     <div>
         <n-table>
             <tr>
-                <th  style="width: 100px">
-                    Old Project
-                </th>
+                <th style="width: 100px">Old Project</th>
 
                 <td style="padding: 10px">
                     <n-switch v-model:value="deleteFromSource">
@@ -18,18 +16,14 @@
                 </td>
             </tr>
             <tr>
-                <th>
-                    Ignore
-                </th>
+                <th>Ignore</th>
 
                 <td style="padding: 10px">
                     <n-switch v-model:value="ignore">
                         <template #checked>
                             Ignore for future job detections
                         </template>
-                        <template #unchecked>
-                            Allow job detection
-                        </template>
+                        <template #unchecked> Allow job detection </template>
                     </n-switch>
                 </td>
             </tr>
@@ -38,12 +32,7 @@
         <card-margin />
 
         <action-group>
-            <n-button
-                @click="add"
-                type="info"
-            >
-                Delete
-            </n-button>
+            <n-button @click="add" type="info"> Delete </n-button>
         </action-group>
     </div>
 </template>
@@ -67,9 +56,7 @@ import CardMargin from '@/components/CardMargin.vue';
         ActionGroup,
         CardMargin,
     },
-    emits: [
-        'update:projectId',
-    ],
+    emits: ['update:projectId'],
 })
 class UpdateJobDelete extends Vue {
     @Prop({

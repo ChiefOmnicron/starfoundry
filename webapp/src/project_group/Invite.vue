@@ -6,10 +6,7 @@
         title="Project invite"
     >
         <template #footer>
-            <n-button
-                type="success"
-                @click="accept_invite"
-            >
+            <n-button type="success" @click="accept_invite">
                 Accept invite
             </n-button>
         </template>
@@ -41,23 +38,20 @@ class ProjectGroupInvite extends Vue {
     public group: ProjectGroup = <ProjectGroup>{};
 
     public async created() {
-        ProjectGroupService
-            .fetchInvite(this.groupId)
-            .then(x => this.group = x)
-            .catch(_ => {
-            });
+        ProjectGroupService.fetchInvite(this.groupId)
+            .then((x) => (this.group = x))
+            .catch((_) => {});
     }
 
     public accept_invite() {
-        ProjectGroupService
-            .acceptInvite(<string>this.$route.params.group_id)
-            .then(_ => {
+        ProjectGroupService.acceptInvite(<string>this.$route.params.group_id)
+            .then((_) => {
                 this.$router.push({
                     name: ROUTE_PROJECT_GROUPS,
-                })
+                });
             })
-            .catch(e => {
-                console.error(e)
+            .catch((e) => {
+                console.error(e);
             });
     }
 }

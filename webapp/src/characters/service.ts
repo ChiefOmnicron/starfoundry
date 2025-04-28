@@ -8,7 +8,9 @@ const CORPORATIONS_BASE_PATH: string = '/api/v1/corporations';
 export class Service {
     private static character_req: { [key: number]: Promise<ICharacter> } = {};
     private static characters: { [key: number]: ICharacter } = {};
-    private static corporation_req: { [key: number]: Promise<ICorporationInfo> } = {};
+    private static corporation_req: {
+        [key: number]: Promise<ICorporationInfo>;
+    } = {};
     private static corporations: { [key: number]: ICorporationInfo } = {};
 
     public static add_character() {
@@ -20,9 +22,7 @@ export class Service {
     }
 
     public static async whoami(): Promise<ICharacter> {
-        return await axios
-            .get(`${AUTH_BASE_PATH}/whoami`)
-            .then(x => x.data);
+        return await axios.get(`${AUTH_BASE_PATH}/whoami`).then((x) => x.data);
     }
 
     public static async alts(): Promise<ICharacter[]> {
@@ -33,22 +33,29 @@ export class Service {
     }
 
     public static async alt_corporations(): Promise<ICharacter[]> {
-        let characters = (await axios.get(`${CHARACTER_BASE_PATH}/corporations`)).data;
+        let characters = (
+            await axios.get(`${CHARACTER_BASE_PATH}/corporations`)
+        ).data;
         characters.map((x: ICharacter) => this.cache_user(x));
 
         return characters;
     }
 
     public static async remove(characterId: number): Promise<void> {
-        return (await axios.delete(`${CHARACTER_BASE_PATH}/${characterId}`)).data;
+        return (await axios.delete(`${CHARACTER_BASE_PATH}/${characterId}`))
+            .data;
     }
 
     public static async refresh(characterId: number): Promise<void> {
         return await axios.get(`${CHARACTER_BASE_PATH}/${characterId}/refresh`);
     }
 
-    public static async industry_slots(characterId: number): Promise<IIndustrySlots> {
-        return await axios.get(`${CHARACTER_BASE_PATH}/${characterId}/industry/slots`);
+    public static async industry_slots(
+        characterId: number,
+    ): Promise<IIndustrySlots> {
+        return await axios.get(
+            `${CHARACTER_BASE_PATH}/${characterId}/industry/slots`,
+        );
     }
 
     public static async info(characterId: number): Promise<ICharacter> {
@@ -64,8 +71,8 @@ export class Service {
         } else {
             this.character_req[characterId] = axios
                 .get(`${CHARACTER_BASE_PATH}/${characterId}`)
-                .then(x => x.data)
-                .then(x => {
+                .then((x) => x.data)
+                .then((x) => {
                     this.characters[characterId] = x;
                     delete this.character_req[characterId];
                     return x;
@@ -74,7 +81,9 @@ export class Service {
         }
     }
 
-    public static async corporation_info(characterId: number): Promise<ICorporationInfo> {
+    public static async corporation_info(
+        characterId: number,
+    ): Promise<ICorporationInfo> {
         // Ignore what typescript says
         if (<any>this.corporation_req[characterId]) {
             return this.corporation_req[characterId];
@@ -85,8 +94,8 @@ export class Service {
         } else {
             this.corporation_req[characterId] = axios
                 .get(`${CORPORATIONS_BASE_PATH}/${characterId}/info`)
-                .then(x => x.data)
-                .then(x => {
+                .then((x) => x.data)
+                .then((x) => {
                     this.corporations[characterId] = x;
                     delete this.corporation_req[characterId];
                     return x;

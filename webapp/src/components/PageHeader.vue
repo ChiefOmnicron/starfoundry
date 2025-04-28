@@ -20,13 +20,13 @@ import { NPageHeader } from 'naive-ui';
 @Component({
     components: {
         NPageHeader,
-    }
+    },
 })
 class Title extends Vue {
     // translation key that should be used as title
     @Prop({
         type: String,
-        required: true
+        required: true,
     })
     public title!: string;
 }

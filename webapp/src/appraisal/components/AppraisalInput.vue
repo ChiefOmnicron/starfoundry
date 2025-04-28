@@ -22,9 +22,7 @@ import { NButton, NInput } from 'naive-ui';
         NButton,
         NInput,
     },
-    emits: [
-        'update:value'
-    ]
+    emits: ['update:value'],
 })
 class AppraisalInput extends Vue {
     @Prop({

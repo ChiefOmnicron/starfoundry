@@ -2,7 +2,7 @@
     <n-table style="margin-bottom: 10px">
         <tr>
             <th style="width: 20%">Ore Efficiency</th>
-            <td style="text-align: left;">
+            <td style="text-align: left">
                 <n-grid :cols="3" x-gap="10">
                     <n-grid-item>
                         <n-select
@@ -30,7 +30,7 @@
         </tr>
         <tr>
             <th>Gas Decompression</th>
-            <td style="text-align: left;">
+            <td style="text-align: left">
                 <n-grid :cols="2" x-gap="10">
                     <n-grid-item>
                         <n-select
@@ -41,7 +41,9 @@
 
                     <n-grid-item>
                         <gas-decompression-selector
-                            v-model:decompression="reprocessing.gas_decompression"
+                            v-model:decompression="
+                                reprocessing.gas_decompression
+                            "
                             :structure="selectedStructureGas"
                         />
                     </n-grid-item>
@@ -50,7 +52,7 @@
         </tr>
         <tr>
             <th>Scrap Reprocessing</th>
-            <td style="text-align: left;">
+            <td style="text-align: left">
                 <scrap-reprocessing-selector
                     v-model:reprocessing="reprocessing.scrap_reprocessing"
                 />
@@ -64,7 +66,14 @@ import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
 
 import type { IReprocessingOptions } from '@/appraisal/service';
 
-import { NGrid, NGridItem, NSelect, NSwitch, NTable, type SelectOption } from 'naive-ui';
+import {
+    NGrid,
+    NGridItem,
+    NSelect,
+    NSwitch,
+    NTable,
+    type SelectOption,
+} from 'naive-ui';
 import CopyText from '@/components/CopyText.vue';
 import FormatNumber from '@/components/FormatNumber.vue';
 import GasDecompressionSelector from '@/components/selectors/GasDecompressionSelector.vue';
@@ -87,9 +96,7 @@ import ScrapReprocessingSelector from '@/components/selectors/ScrapReprocessingS
         OreEfficiencySelector,
         ScrapReprocessingSelector,
     },
-    emits: [
-        'update:reprocessing'
-    ],
+    emits: ['update:reprocessing'],
 })
 class AppraisalReprocessing extends Vue {
     @Prop({
@@ -107,26 +114,33 @@ class AppraisalReprocessing extends Vue {
     }
 
     public structures(): SelectOption[] {
-        return [{
-            label: 'Athanor',
-            value: 'ATHANOR'
-        }, {
-            label: 'Tatara',
-            value: 'TATARA'
-        }];
+        return [
+            {
+                label: 'Athanor',
+                value: 'ATHANOR',
+            },
+            {
+                label: 'Tatara',
+                value: 'TATARA',
+            },
+        ];
     }
 
     public systems(): SelectOption[] {
-        return [{
-            label: 'Highsec',
-            value: 'HS'
-        }, {
-            label: 'Lowsec',
-            value: 'LS'
-        }, {
-            label: 'Nullsec',
-            value: 'NS'
-        }];
+        return [
+            {
+                label: 'Highsec',
+                value: 'HS',
+            },
+            {
+                label: 'Lowsec',
+                value: 'LS',
+            },
+            {
+                label: 'Nullsec',
+                value: 'NS',
+            },
+        ];
     }
 }
 

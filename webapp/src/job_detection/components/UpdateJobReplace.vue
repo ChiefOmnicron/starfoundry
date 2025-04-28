@@ -2,9 +2,7 @@
     <div>
         <n-table>
             <tr>
-                <th  style="width: 100px">
-                    Project
-                </th>
+                <th style="width: 100px">Project</th>
 
                 <td style="padding: 0">
                     <project-selector
@@ -14,20 +12,14 @@
                 </td>
             </tr>
             <tr>
-                <th>
-                    Structure
-                </th>
+                <th>Structure</th>
 
                 <td style="padding: 0">
-                    <structure-selector
-                        v-model:value="structureId"
-                    />
+                    <structure-selector v-model:value="structureId" />
                 </td>
             </tr>
             <tr v-if="projectId">
-                <th>
-                    Old Project
-                </th>
+                <th>Old Project</th>
 
                 <td style="padding: 10px">
                     <n-switch v-model:value="deleteFromSource">
@@ -41,17 +33,13 @@
                 </td>
             </tr>
             <tr v-if="jobs.length > 0">
-                <th>
-                    Existing Jobs
-                </th>
+                <th>Existing Jobs</th>
 
                 <td style="padding: 10px">
                     <template v-for="job in jobs" :key="job.id">
                         <n-grid :cols="24">
                             <n-grid-item>
-                                <n-checkbox
-                                    v-model:checked="job.selected"
-                                />
+                                <n-checkbox v-model:checked="job.selected" />
                             </n-grid-item>
                             <n-grid-item>
                                 <eve-icon :id="job.type_id" />
@@ -75,7 +63,11 @@
 
         <action-group>
             <n-button
-                :disabled="!projectId || !structureId || jobs.filter(x => x.selected).length === 0"
+                :disabled="
+                    !projectId ||
+                    !structureId ||
+                    jobs.filter((x) => x.selected).length === 0
+                "
                 @click="add"
                 type="info"
             >
@@ -91,7 +83,14 @@ import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
 import type { ProjectUuid, StructureId, TypeId } from '@/sdk/utils';
 import { JobDetectionService } from '@/job_detection/service';
 
-import { NButton, NCheckbox, NGrid, NGridItem, NSwitch, NTable } from 'naive-ui';
+import {
+    NButton,
+    NCheckbox,
+    NGrid,
+    NGridItem,
+    NSwitch,
+    NTable,
+} from 'naive-ui';
 import { ProjectService, type IJob } from '@/sdk/project';
 import ActionGroup from '@/components/ActionGroup.vue';
 import CardMargin from '@/components/CardMargin.vue';
@@ -116,9 +115,7 @@ import EveIcon from '@/components/EveIcon.vue';
         ProjectJobCard,
         StructureSelector,
     },
-    emits: [
-        'update:projectId',
-    ],
+    emits: ['update:projectId'],
 })
 class UpdateJobReplace extends Vue {
     @Prop({
@@ -156,11 +153,14 @@ class UpdateJobReplace extends Vue {
             .fetchJobs({
                 type_id: this.typeId,
             })
-            .then(x => {
-                this.jobs = x.map(x => <IJobExpand>{
-                    selected: false,
-                    ...x
-                });
+            .then((x) => {
+                this.jobs = x.map(
+                    (x) =>
+                        <IJobExpand>{
+                            selected: false,
+                            ...x,
+                        },
+                );
             });
     }
 
@@ -179,7 +179,7 @@ class UpdateJobReplace extends Vue {
 
         await JobDetectionService.updateJobReplace(this.jobId, {
             delete_from_source: this.deleteFromSource,
-            job_uuids: this.jobs.filter(x => x.selected).map(x => x.id),
+            job_uuids: this.jobs.filter((x) => x.selected).map((x) => x.id),
             structure_id: this.structureId,
             target_project_uuid: this.projectId,
         });
@@ -188,15 +188,15 @@ class UpdateJobReplace extends Vue {
     }
 
     public status(status: string): string {
-        switch(status) {
+        switch (status) {
             case 'BUILDING':
-                return 'Building'
+                return 'Building';
             case 'WAITING_FOR_MATERIALS':
-                return 'Waiting for Materials'
+                return 'Waiting for Materials';
             case 'DONE':
-                return 'Done'
+                return 'Done';
             default:
-                return 'Unknown'
+                return 'Unknown';
         }
     }
 }

@@ -1,8 +1,6 @@
 <template>
     <div>
-        <loader
-            :busy="busy"
-        />
+        <loader :busy="busy" />
 
         <no-entries
             description="No minerals"
@@ -19,10 +17,7 @@
 
         <card-margin /-->
 
-        <card
-            title="Compressed Ore"
-            v-if="!busy && minerals.length !== 0"
-        >
+        <card title="Compressed Ore" v-if="!busy && minerals.length !== 0">
             <template #action>
                 <!--n-tooltip trigger="click">
                     <template #trigger>
@@ -33,12 +28,7 @@
                         </n-button>
                     </template>
                 </n-tooltip-->
-                <n-button
-                    @click="save"
-                    type="info"
-                >
-                    Save
-                </n-button>
+                <n-button @click="save" type="info"> Save </n-button>
             </template>
 
             <div style="margin: 10px">
@@ -101,15 +91,32 @@ import { Component, Vue, toNative } from 'vue-facing-decorator';
 import { h } from 'vue';
 
 import { ItemService } from '@/sdk/item';
-import { ProjectService, type ICompressedOres, type REPROCESSING_EFFICIENCY, Project } from '@/sdk/project';
+import {
+    ProjectService,
+    type ICompressedOres,
+    type REPROCESSING_EFFICIENCY,
+    Project,
+} from '@/sdk/project';
 
 import type { Uuid } from '@/sdk/utils';
 
-import { NAlert, NButton, NEmpty, NGrid, NGridItem, NInput, NSelect, NTooltip, type SelectGroupOption } from 'naive-ui';
+import {
+    NAlert,
+    NButton,
+    NEmpty,
+    NGrid,
+    NGridItem,
+    NInput,
+    NSelect,
+    NTooltip,
+    type SelectGroupOption,
+} from 'naive-ui';
 
 import Card from '@/components/Card.vue';
 import CardMargin from '@/components/CardMargin.vue';
-import DataTable, { type IDataTableDefinition } from '@/components/DataTable.vue';
+import DataTable, {
+    type IDataTableDefinition,
+} from '@/components/DataTable.vue';
 import EveIcon from '@/components/EveIcon.vue';
 import Loader from '@/components/Loader.vue';
 import NoEntries from '@/components/NoEntries.vue';
@@ -130,7 +137,7 @@ import NoEntries from '@/components/NoEntries.vue';
         DataTable,
         Loader,
         NoEntries,
-    }
+    },
 })
 class ProjectMarketCompressedMinerals extends Vue {
     public busy: boolean = false;
@@ -146,17 +153,16 @@ class ProjectMarketCompressedMinerals extends Vue {
 
     public async created() {
         this.busy = true;
-        ProjectService
-            .fetch(<Uuid>this.$route.params.projectId)
-            .then(x => {
+        ProjectService.fetch(<Uuid>this.$route.params.projectId)
+            .then((x) => {
                 this.project = x;
                 this.busy = false;
             })
-            .catch(e => {
+            .catch((e) => {
                 console.error(e);
             })
             //.then(_ => this.loadCompressedOre());
-            .then(_ => {
+            .then((_) => {
                 this.minerals = this.project.minerals;
             });
     }
@@ -189,16 +195,14 @@ class ProjectMarketCompressedMinerals extends Vue {
     }*/
 
     public async save() {
-        await ItemService
-            .parse(this.compressedOresInput)
+        await ItemService.parse(this.compressedOresInput)
             // TODO: fix type
             .then((x: any) => {
-                console.log(x)
-                this.project.updateCompressedOre(x)
+                console.log(x);
+                this.project.updateCompressedOre(x);
             })
-            .then(_ => {
-            })
-            .catch(e => {
+            .then((_) => {})
+            .catch((e) => {
                 console.error(e);
             });
     }
@@ -208,33 +212,34 @@ class ProjectMarketCompressedMinerals extends Vue {
     }
 
     public compressedOreTableDefinition(): IDataTableDefinition[] {
-        return [{
-            header: '',
-            key: 'icon',
-            visible: true,
-            width: 40,
-            render(row) {
-                return h(
-                    EveIcon,
-                    {
+        return [
+            {
+                header: '',
+                key: 'icon',
+                visible: true,
+                width: 40,
+                render(row) {
+                    return h(EveIcon, {
                         id: row.type_id,
                         type: 'icon',
-                    }
-                )
+                    });
+                },
             },
-        }, {
-            header: 'project.marketCompressedMineralView.compressedOreTable.name',
-            key: 'type_id',
-            width: 300,
-            item: true,
-            visible: true,
-        }, {
-            header: 'project.marketCompressedMineralView.compressedOreTable.quantity',
-            key: 'amount',
-            width: 100,
-            number: true,
-            visible: true,
-        }];
+            {
+                header: 'project.marketCompressedMineralView.compressedOreTable.name',
+                key: 'type_id',
+                width: 300,
+                item: true,
+                visible: true,
+            },
+            {
+                header: 'project.marketCompressedMineralView.compressedOreTable.quantity',
+                key: 'amount',
+                width: 100,
+                number: true,
+                visible: true,
+            },
+        ];
     }
 
     public compressedOreTableEntries() {
@@ -242,135 +247,162 @@ class ProjectMarketCompressedMinerals extends Vue {
     }
 
     public mineralsTableDefinition(): IDataTableDefinition[] {
-        return [{
-            header: '',
-            key: 'icon',
-            visible: true,
-            width: 40,
-            render(row) {
-                return h(
-                    EveIcon,
-                    {
+        return [
+            {
+                header: '',
+                key: 'icon',
+                visible: true,
+                width: 40,
+                render(row) {
+                    return h(EveIcon, {
                         id: row.type_id,
                         type: 'icon',
-                    }
-                )
+                    });
+                },
             },
-        }, {
-            header: 'project.marketCompressedMineralView.mineralsTable.name',
-            key: 'type_id',
-            width: 150,
-            item: true,
-            visible: true,
-        }, {
-            header: 'project.marketCompressedMineralView.mineralsTable.quantity',
-            key: 'mineralQuantity',
-            width: 100,
-            number: true,
-            visible: true,
-        }, {
-            header: 'project.marketCompressedMineralView.mineralsTable.overageQuantity',
-            key: 'overageQuantity',
-            width: 100,
-            number: true,
-            visible: true,
-        }, {
-            header: 'project.marketCompressedMineralView.mineralsTable.overagePrice',
-            key: 'overagePrice',
-            width: 100,
-            number: true,
-            visible: true,
-        }];
+            {
+                header: 'project.marketCompressedMineralView.mineralsTable.name',
+                key: 'type_id',
+                width: 150,
+                item: true,
+                visible: true,
+            },
+            {
+                header: 'project.marketCompressedMineralView.mineralsTable.quantity',
+                key: 'mineralQuantity',
+                width: 100,
+                number: true,
+                visible: true,
+            },
+            {
+                header: 'project.marketCompressedMineralView.mineralsTable.overageQuantity',
+                key: 'overageQuantity',
+                width: 100,
+                number: true,
+                visible: true,
+            },
+            {
+                header: 'project.marketCompressedMineralView.mineralsTable.overagePrice',
+                key: 'overagePrice',
+                width: 100,
+                number: true,
+                visible: true,
+            },
+        ];
     }
 
     public mineralsTableEntries() {
-        return this.compressedOres
-            .reprocessed
-            .map(x => {
-                let overage = this.compressedOres
-                    .overage
-                    .find(y => y.type_id === x.type_id) || <any>{};
-                console.log()
+        return this.compressedOres.reprocessed.map((x) => {
+            let overage =
+                this.compressedOres.overage.find(
+                    (y) => y.type_id === x.type_id,
+                ) || <any>{};
+            console.log();
 
-                return {
-                    type_id: x.type_id,
-                    mineralQuantity: x.amount,
-                    overageQuantity: overage.amount,
-                    overagePrice: overage.price,
-                }
-            });
+            return {
+                type_id: x.type_id,
+                mineralQuantity: x.amount,
+                overageQuantity: overage.amount,
+                overagePrice: overage.price,
+            };
+        });
     }
 
-    public reprocessingStructureOptions: SelectGroupOption[] = [{
-        type: 'group',
-        key: 'hs',
-        label: 'Highsec',
-        children: [{
-            label: 'HS Athanor - No Rig',
-            value: 'HsAthanorNoRig',
-        }, {
-            label: 'HS Athanor - T1',
-            value: 'HsAthanorT1',
-        }, {
-            label: 'HS Athanor - T2',
-            value: 'HsAthanorT2',
-        }, {
-            label: 'HS Tatara - No Rig',
-            value: 'HsTataraNoRig',
-        }, {
-            label: 'HS Tatara - T1',
-            value: 'HsTataraT1',
-        }, {
-            label: 'HS Tatara - T2',
-            value: 'HsTataraT2',
-        }]
-    }, {
-        type: 'group',
-        key: 'ls',
-        label: 'Lowsec',
-        children: [{
-            label: 'LS Athanor - No Rig',
-            value: 'LsAthanorNoRig',
-        }, {
-            label: 'LS Athanor - T1',
-            value: 'LsAthanorT1',
-        }, {
-            label: 'LS Athanor - T2',
-            value: 'LsAthanorT2',
-        }, {
-            label: 'LS Tatara - No Rig',
-            value: 'LsTataraNoRig',
-        }, {
-            label: 'LS Tatara - T1',
-            value: 'LsTataraT1',
-        }, {
-            label: 'LS Tatara - T2',
-            value: 'LsTataraT2',
-        }]
-    }, {
-        type: 'group',
-        key: 'ns',
-        label: 'Nullsec',
-        children: [{
-            label: 'NS Athanor - No Rig',
-            value: 'NsAthanorNoRig',
-        }, {
-            label: 'NS Athanor - T1',
-            value: 'NsAthanorT1',
-        }, {
-            label: 'NS Athanor - T2',
-            value: 'NsAthanorT2',
-        }, {
-            label: 'NS Tatara - No Rig',
-            value: 'NsTataraNoRig',
-        }, {
-            label: 'NS Tatara - T1',
-            value: 'NsTataraT1',
-        }, {
-            label: 'NS Tatara - T2',
-            value: 'NsTataraT2',
-        }]
-    }];
+    public reprocessingStructureOptions: SelectGroupOption[] = [
+        {
+            type: 'group',
+            key: 'hs',
+            label: 'Highsec',
+            children: [
+                {
+                    label: 'HS Athanor - No Rig',
+                    value: 'HsAthanorNoRig',
+                },
+                {
+                    label: 'HS Athanor - T1',
+                    value: 'HsAthanorT1',
+                },
+                {
+                    label: 'HS Athanor - T2',
+                    value: 'HsAthanorT2',
+                },
+                {
+                    label: 'HS Tatara - No Rig',
+                    value: 'HsTataraNoRig',
+                },
+                {
+                    label: 'HS Tatara - T1',
+                    value: 'HsTataraT1',
+                },
+                {
+                    label: 'HS Tatara - T2',
+                    value: 'HsTataraT2',
+                },
+            ],
+        },
+        {
+            type: 'group',
+            key: 'ls',
+            label: 'Lowsec',
+            children: [
+                {
+                    label: 'LS Athanor - No Rig',
+                    value: 'LsAthanorNoRig',
+                },
+                {
+                    label: 'LS Athanor - T1',
+                    value: 'LsAthanorT1',
+                },
+                {
+                    label: 'LS Athanor - T2',
+                    value: 'LsAthanorT2',
+                },
+                {
+                    label: 'LS Tatara - No Rig',
+                    value: 'LsTataraNoRig',
+                },
+                {
+                    label: 'LS Tatara - T1',
+                    value: 'LsTataraT1',
+                },
+                {
+                    label: 'LS Tatara - T2',
+                    value: 'LsTataraT2',
+                },
+            ],
+        },
+        {
+            type: 'group',
+            key: 'ns',
+            label: 'Nullsec',
+            children: [
+                {
+                    label: 'NS Athanor - No Rig',
+                    value: 'NsAthanorNoRig',
+                },
+                {
+                    label: 'NS Athanor - T1',
+                    value: 'NsAthanorT1',
+                },
+                {
+                    label: 'NS Athanor - T2',
+                    value: 'NsAthanorT2',
+                },
+                {
+                    label: 'NS Tatara - No Rig',
+                    value: 'NsTataraNoRig',
+                },
+                {
+                    label: 'NS Tatara - T1',
+                    value: 'NsTataraT1',
+                },
+                {
+                    label: 'NS Tatara - T2',
+                    value: 'NsTataraT2',
+                },
+            ],
+        },
+    ];
 }
 
 export default toNative(ProjectMarketCompressedMinerals);

@@ -1,9 +1,6 @@
 <template>
     <n-space>
-        <template
-            :key="key"
-            v-for="(values, key) in filters"
-        >
+        <template :key="key" v-for="(values, key) in filters">
             <n-tag
                 v-for="entry in options[key].multiple ? values : [values]"
                 @close="handleClose(key.toString())"
@@ -18,7 +15,12 @@
                         v-if="options[key].item"
                         v-slot="{ item }"
                     >
-                        {{ (options[key].transform || transform)(options[key], item.name) }}
+                        {{
+                            (options[key].transform || transform)(
+                                options[key],
+                                item.name,
+                            )
+                        }}
                     </item>
 
                     <div v-else-if="options[key].template">
@@ -26,7 +28,12 @@
                     </div>
 
                     <span v-else-if="options[key].transform">
-                        {{ (options[key].transform || transform)(options[key], entry) }}
+                        {{
+                            (options[key].transform || transform)(
+                                options[key],
+                                entry,
+                            )
+                        }}
                     </span>
 
                     <span v-else>{{ entry }}</span>
@@ -50,18 +57,18 @@ import Item from '@/components/Item.vue';
         NTag,
 
         Item,
-    }
+    },
 })
 class FilterElement extends Vue {
     @Prop({
         type: Object,
-        required: true
+        required: true,
     })
     public filters!: any;
 
     @Prop({
         type: Object,
-        required: true
+        required: true,
     })
     public options!: any;
 
@@ -70,7 +77,7 @@ class FilterElement extends Vue {
     }
 
     public joinValues(values: any): string {
-        return values.join(", ");
+        return values.join(', ');
     }
 
     public transform(_: IFilterOption, value: string): string {

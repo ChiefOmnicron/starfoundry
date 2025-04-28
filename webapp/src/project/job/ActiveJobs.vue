@@ -1,8 +1,11 @@
 <template>
     <div v-if="!(jobs.length === 0 && hideIfEmpty)">
-        <loader description="Loading industry jobs" :busy=busy />
+        <loader description="Loading industry jobs" :busy="busy" />
 
-        <no-entries description="No active jobs" v-if="!busy && jobs.length === 0" />
+        <no-entries
+            description="No active jobs"
+            v-if="!busy && jobs.length === 0"
+        />
 
         <card
             content-style="padding: 0"
@@ -35,7 +38,9 @@ import type { Uuid } from '@/sdk/utils';
 import { NButton, NSpace, NTable, NTag, NText } from 'naive-ui';
 import Card from '@/components/Card.vue';
 import Countdown from '@/components/Countdown.vue';
-import DataTable, { type IDataTableDefinition } from '@/components/DataTable.vue';
+import DataTable, {
+    type IDataTableDefinition,
+} from '@/components/DataTable.vue';
 import EveIcon from '@/components/EveIcon.vue';
 import FormatNumber from '@/components/FormatNumber.vue';
 import Loader from '@/components/Loader.vue';
@@ -60,7 +65,7 @@ import ProjectReference from '@/components/ProjectReference.vue';
         Nakamura,
         NoEntries,
         ProjectReference,
-    }
+    },
 })
 class ActiveProjectJobs extends Vue {
     @Prop({
@@ -93,16 +98,15 @@ class ActiveProjectJobs extends Vue {
 
     public async created() {
         this.busy = true;
-        ProjectService
-            .fetch(this.projectId)
-            .then(x => {
+        ProjectService.fetch(this.projectId)
+            .then((x) => {
                 this.project = x;
                 this.busy = false;
             })
-            .catch(e => {
+            .catch((e) => {
                 console.error(e);
             })
-            .then(_ => this.loadJobs());
+            .then((_) => this.loadJobs());
 
         this.timerRefresh();
 
@@ -148,89 +152,88 @@ class ActiveProjectJobs extends Vue {
                 return 'Copying';
             default:
                 return activity;
-        };
+        }
     }
 
     public tableDefinition(): IDataTableDefinition[] {
-        return [{
-            header: '',
-            key: 'icon',
-            visible: true,
-            width: 40,
-            render(row) {
-                return h(
-                    EveIcon,
-                    {
+        return [
+            {
+                header: '',
+                key: 'icon',
+                visible: true,
+                width: 40,
+                render(row) {
+                    return h(EveIcon, {
                         id: row.type_id,
                         type: 'icon',
-                    }
-                )
+                    });
+                },
             },
-        }, {
-            header: 'Activity',
-            key: 'activity',
-            width: 200,
-            visible: true,
-            transform: (value: string): string => this.renameActivity(value),
-        }, {
-            header: 'Name',
-            key: 'type_id',
-            width: 400,
-            visible: true,
-            item: true,
-            copy: true,
-        }, {
-            header: 'Runs',
-            key: 'runs',
-            width: 50,
-            visible: true,
-            copy: true,
-        }, {
-            header: 'Structure Name',
-            key: 'structure_name',
-            width: 350,
-            visible: true,
-        }, {
-            header: 'Remaining',
-            key: 'remaining',
-            width: 200,
-            visible: true,
-            render(row: IActiveJob) {
-                return h(
-                    Countdown,
-                    {
+            {
+                header: 'Activity',
+                key: 'activity',
+                width: 200,
+                visible: true,
+                transform: (value: string): string =>
+                    this.renameActivity(value),
+            },
+            {
+                header: 'Name',
+                key: 'type_id',
+                width: 400,
+                visible: true,
+                item: true,
+                copy: true,
+            },
+            {
+                header: 'Runs',
+                key: 'runs',
+                width: 50,
+                visible: true,
+                copy: true,
+            },
+            {
+                header: 'Structure Name',
+                key: 'structure_name',
+                width: 350,
+                visible: true,
+            },
+            {
+                header: 'Remaining',
+                key: 'remaining',
+                width: 200,
+                visible: true,
+                render(row: IActiveJob) {
+                    return h(Countdown, {
                         endDate: row.end_date,
-                    }
-                )
-            }
-        }, {
-            header: 'End Date',
-            key: 'end_date',
-            width: 200,
-            visible: true,
-            render(row: IActiveJob) {
-                return h(
-                    Nakamura,
-                    {
+                    });
+                },
+            },
+            {
+                header: 'End Date',
+                key: 'end_date',
+                width: 200,
+                visible: true,
+                render(row: IActiveJob) {
+                    return h(Nakamura, {
                         endDate: row.end_date,
-                    }
-                )
-            }
-        }, {
-            header: 'Cost',
-            key: 'cost',
-            width: 200,
-            visible: true,
-            number: true,
-        }];
+                    });
+                },
+            },
+            {
+                header: 'Cost',
+                key: 'cost',
+                width: 200,
+                visible: true,
+                number: true,
+            },
+        ];
     }
 
     private async loadJobs() {
-        this.project
-            .activeJobs()
-            .then(x => {
-                this.jobs = x;
-            });
+        this.project.activeJobs().then((x) => {
+            this.jobs = x;
+        });
     }
 }
 

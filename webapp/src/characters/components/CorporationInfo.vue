@@ -1,12 +1,9 @@
 <template>
-  <span>
-    <n-spin v-if="busy" />
+    <span>
+        <n-spin v-if="busy" />
 
-    <slot
-        v-if="!busy"
-        :info="corporation"
-    ></slot>
-  </span>
+        <slot v-if="!busy" :info="corporation"></slot>
+    </span>
 </template>
 
 <script lang="ts">
@@ -15,9 +12,9 @@ import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
 import { Service, type ICorporationInfo } from '@/characters/service';
 
 @Component({
-  components: {
-    NSpin,
-  }
+    components: {
+        NSpin,
+    },
 })
 class CorporationInfo extends Vue {
     @Prop({
@@ -25,7 +22,7 @@ class CorporationInfo extends Vue {
     })
     public corporationId!: number;
 
-    public busy: boolean                 = false;
+    public busy: boolean = false;
     public corporation: ICorporationInfo = <any>{};
 
     public async created() {

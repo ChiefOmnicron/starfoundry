@@ -1,11 +1,13 @@
 <template>
-    <project
-        :project-uuid="projectId"
-        v-slot="{ project }"
-    >
+    <project :project-uuid="projectId" v-slot="{ project }">
         <h2
             v-if="header"
-            style="margin: 0px; margin-right: 10px; display: inline; cursor: pointer;"
+            style="
+                margin: 0px;
+                margin-right: 10px;
+                display: inline;
+                cursor: pointer;
+            "
             @click="openProject"
         >
             {{ project.name }}
@@ -51,7 +53,7 @@ import Project from '@/components/Project.vue';
         ExternalLinkAlt,
 
         Project,
-    }
+    },
 })
 class ProjectReference extends Vue {
     @Prop({
@@ -72,7 +74,7 @@ class ProjectReference extends Vue {
             name: ROUTE_PROJECT_OVERVIEW,
             params: {
                 projectId: this.projectId,
-            }
+            },
         });
         window.open(route.href);
     }

@@ -19,8 +19,8 @@ import { Component, Vue, toNative } from 'vue-facing-decorator';
 
 @Component({
     components: {
-        NSpace
-    }
+        NSpace,
+    },
 })
 class ActionGroup extends Vue {}
 

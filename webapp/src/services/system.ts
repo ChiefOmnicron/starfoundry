@@ -1,7 +1,9 @@
-import axios from "axios";
+import axios from 'axios';
 
 export class SystemService {
-    public static async search_by_id(id: number | undefined): Promise<ISystem[]> {
+    public static async search_by_id(
+        id: number | undefined,
+    ): Promise<ISystem[]> {
         if (!id) {
             return (await axios.get(`/api/v1/search/systems`)).data;
         }
@@ -15,10 +17,10 @@ export class SystemService {
 }
 
 export interface ISystem {
-  region_name: string;
-  region_id:   number;
+    region_name: string;
+    region_id: number;
 
-  system_name: string;
-  system_id:   string;
-  security:    number;
+    system_name: string;
+    system_id: string;
+    security: number;
 }

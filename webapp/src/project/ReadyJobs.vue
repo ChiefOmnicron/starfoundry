@@ -2,10 +2,7 @@
     <div>
         <page-header title="Industry Jobs Over All Projects" />
 
-        <loader
-            description="Loading"
-            :busy="busy"
-        />
+        <loader description="Loading" :busy="busy" />
 
         <n-tabs type="line" v-if="!busy">
             <n-tab-pane name="ready" tab="Ready to start">
@@ -13,7 +10,10 @@
                     v-if="!busy && projects.length > 0"
                     justify="space-between"
                 >
-                    <span>Number of startable jobs: {{ count_startable_jobs(projects) }}</span>
+                    <span
+                        >Number of startable jobs:
+                        {{ count_startable_jobs(projects) }}</span
+                    >
 
                     <div>
                         <n-button
@@ -34,7 +34,10 @@
                 </n-space>
 
                 <div>
-                    <template v-for="(project, index) in projects" :key="project.id">
+                    <template
+                        v-for="(project, index) in projects"
+                        :key="project.id"
+                    >
                         <card
                             v-if="!busy && (project.jobs || []).length > 0"
                             content-style="padding: 0"
@@ -42,18 +45,22 @@
                             :title="project.name"
                         >
                             <template #title>
-                                <project-reference :project-id="project.id" header />
+                                <project-reference
+                                    :project-id="project.id"
+                                    header
+                                />
                             </template>
 
                             <template #action>
-                                <n-button @click="show_export_modal(project.jobs)">
+                                <n-button
+                                    @click="show_export_modal(project.jobs)"
+                                >
                                     Export
                                 </n-button>
                                 <n-button @click="project.jobs = []">
                                     Hide all
                                 </n-button>
                             </template>
-
 
                             <card no-title>
                                 <project-job-list
@@ -70,10 +77,7 @@
                 name="active_jobs"
                 v-if="!busy && projects.length > 0"
             >
-                <n-space
-                    v-if="!busy && projects.length > 0"
-                    justify="end"
-                >
+                <n-space v-if="!busy && projects.length > 0" justify="end">
                     <div>
                         <n-button
                             @click="refreshActiveJobs()"
@@ -117,7 +121,14 @@
 
 <script lang="ts">
 import { Component, Vue, toNative } from 'vue-facing-decorator';
-import { NAnchor, NAnchorLink, NButton, NSpace, NTabs, NTabPane } from 'naive-ui';
+import {
+    NAnchor,
+    NAnchorLink,
+    NButton,
+    NSpace,
+    NTabs,
+    NTabPane,
+} from 'naive-ui';
 import { Service, type IProject, type IJob } from '@/project/service';
 import { events } from '@/main';
 import { REFRESH, ROUTE_CHANGE } from '@/event_bus';
@@ -154,13 +165,13 @@ import ProjectReference from '@/components/ProjectReference.vue';
         ProjectActiveJobs,
         ProjectJobList,
         ProjectReference,
-    }
+    },
 })
 class ProjectsView extends Vue {
     public busy: boolean = false;
 
     public projects: IProjectWithJobs[] = [];
-    public count: number                = 0;
+    public count: number = 0;
 
     public show_export: boolean = false;
     public selected_project: IJob[] = [];
@@ -172,33 +183,27 @@ class ProjectsView extends Vue {
         this.busy = true;
         await this.load();
 
-        events.$emit(
-            ROUTE_CHANGE,
-            this.$route.name
-        );
+        events.$emit(ROUTE_CHANGE, this.$route.name);
         this.busy = false;
     }
 
     private async load() {
-        this.projects = <any>await ProjectService
-            .list({
-                status: 'IN_PROGRESS',
-            })
-            .catch(e => {
-                console.error(e);
-                return [];
-            });
+        this.projects = <any>await ProjectService.list({
+            status: 'IN_PROGRESS',
+        }).catch((e) => {
+            console.error(e);
+            return [];
+        });
 
         for (let project of this.projects) {
-            project.jobs = await Service
-                .fetch_jobs_by_status(project.id);
+            project.jobs = await Service.fetch_jobs_by_status(project.id);
         }
     }
 
     public count_startable_jobs(projects: IProjectWithJobs[]): number {
         return projects
-            .map(x => (x.jobs || []).length)
-            .reduce((prev: number, curr: number) => prev += curr, 0);
+            .map((x) => (x.jobs || []).length)
+            .reduce((prev: number, curr: number) => (prev += curr), 0);
     }
 
     public show_export_modal(data: IJob[]) {
@@ -213,13 +218,13 @@ class ProjectsView extends Vue {
 
     public async create_job_assignment() {
         const assignment_id = await ProjectService.create_job_assignment(
-            this.selected_jobs.flat()
+            this.selected_jobs.flat(),
         );
         this.$router.push({
             name: ROUTE_PROJECT_ASSIGNMENTS,
             params: {
-                assignment_id
-            }
+                assignment_id,
+            },
         });
     }
 

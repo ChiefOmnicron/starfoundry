@@ -32,12 +32,12 @@
                     </td>
                     <td>
                         <template v-for="service in structure.services">
-                            {{ service.name }}<br>
+                            {{ service.name }}<br />
                         </template>
                     </td>
                     <td>
                         <template v-for="rig in structure.rigs">
-                            {{ rig.name }}<br>
+                            {{ rig.name }}<br />
                         </template>
                     </td>
                     <td v-if="withSelector">
@@ -62,12 +62,7 @@
                     />
                 </td>
                 <td colspan="5">
-                    <n-button
-                        style="width: 100px"
-                        @click="add"
-                    >
-                        Add
-                    </n-button>
+                    <n-button style="width: 100px" @click="add"> Add </n-button>
                 </td>
             </tr>
         </tfoot>
@@ -95,7 +90,7 @@ import System from '@/components/System.vue';
         StructureSelector,
         StructureWrapper,
         System,
-    }
+    },
 })
 class StructureList extends Vue {
     @Prop({
@@ -120,7 +115,7 @@ class StructureList extends Vue {
     }
 
     public remove(structure_id: Uuid) {
-        let index = this.structureIds.findIndex(x => x === structure_id);
+        let index = this.structureIds.findIndex((x) => x === structure_id);
         this.structureIds.splice(index, 1);
     }
 }

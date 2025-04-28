@@ -1,8 +1,6 @@
 <template>
     <div>
-        <page-header
-            title="Create Notification"
-        />
+        <page-header title="Create Notification" />
 
         <alert
             :visible="errors.unexpected"
@@ -11,13 +9,9 @@
             title="Error creating notification"
         />
 
-        <card
-            title="General Information"
-        >
+        <card title="General Information">
             <div style="margin: 10px">
-                <form-item
-                    label="Name"
-                >
+                <form-item label="Name">
                     <n-input
                         placeholder="Insert notification name"
                         @keydown.enter.prevent
@@ -29,20 +23,12 @@
 
         <card-margin />
 
-        <webhook
-            v-model:data="webhook"
-        />
+        <webhook v-model:data="webhook" />
 
         <card-margin />
 
-        <action-group
-        >
-            <n-button
-                @click="$router.back()"
-                quaternary
-            >
-                Cancel
-            </n-button>
+        <action-group>
+            <n-button @click="$router.back()" quaternary> Cancel </n-button>
 
             <n-button
                 :disabled="!notification.name"
@@ -56,7 +42,11 @@
 </template>
 
 <script lang="ts">
-import { type INotification, NotificationService, type WebhookTarget } from '@/sdk/notification';
+import {
+    type INotification,
+    NotificationService,
+    type WebhookTarget,
+} from '@/sdk/notification';
 import { Component, Vue, toNative } from 'vue-facing-decorator';
 
 import { ROUTE_NOTIFICATION } from '../router';
@@ -84,7 +74,7 @@ import Webhook from '@/notification/components/Webhook.vue';
         FormItem,
         PageHeader,
         Webhook,
-    }
+    },
 })
 class NotificationCreate extends Vue {
     public notification: INotification = <any>{};
@@ -94,25 +84,24 @@ class NotificationCreate extends Vue {
     };
 
     public webhook: {
-        target: WebhookTarget,
-        url: string
+        target: WebhookTarget;
+        url: string;
     } = <any>{};
 
     public async create() {
-        NotificationService
-            .create({
-                ...this.notification,
-                ...this.webhook,
-            })
-            .then(x => {
+        NotificationService.create({
+            ...this.notification,
+            ...this.webhook,
+        })
+            .then((x) => {
                 this.$router.push({
                     name: ROUTE_NOTIFICATION,
                     params: {
                         notificationId: x.id,
-                    }
-                })
+                    },
+                });
             })
-            .catch(_ => this.errors.unexpected = true);
+            .catch((_) => (this.errors.unexpected = true));
     }
 }
 

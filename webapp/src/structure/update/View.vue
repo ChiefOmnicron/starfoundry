@@ -30,10 +30,7 @@
             title="Delete Error"
         />
 
-        <loader
-            :busy=busy
-            data-cy="structureUpdateLoading"
-        />
+        <loader :busy="busy" data-cy="structureUpdateLoading" />
 
         <card
             data-cy="structureUpdateGeneralInformation"
@@ -56,7 +53,10 @@
                 <tr>
                     <th style="width: 150px">Structure Type</th>
                     <td>
-                        <item :type-id="structure.structureTypeId" v-slot="{ item }">
+                        <item
+                            :type-id="structure.structureTypeId"
+                            v-slot="{ item }"
+                        >
                             {{ item.name }}
                         </item>
                     </td>
@@ -64,7 +64,11 @@
                 <tr>
                     <th>Location</th>
                     <td>
-                        <system v-if="structure.systemId" :dotlan="true" :system-id="structure.systemId" />
+                        <system
+                            v-if="structure.systemId"
+                            :dotlan="true"
+                            :system-id="structure.systemId"
+                        />
                     </td>
                 </tr>
             </n-table>
@@ -76,9 +80,14 @@
             :readonly="isReadonly"
             :rigs="structure.rigs"
             :structure-type="structure.structureTypeId"
-            @update:value="(x: number[]) => structure.rigs = x"
+            @update:value="(x: number[]) => (structure.rigs = x)"
             data-cy="structureUpdateInstalledRigs"
-            v-if="!busy && !errors.notFound && structure && structure.structureTypeId"
+            v-if="
+                !busy &&
+                !errors.notFound &&
+                structure &&
+                structure.structureTypeId
+            "
         />
 
         <card-margin />
@@ -87,9 +96,14 @@
             :readonly="isReadonly"
             :services="structure.services"
             :structure-type="structure.structureTypeId"
-            @update:value="(x: number[]) => structure.services = x"
+            @update:value="(x: number[]) => (structure.services = x)"
             data-cy="structureUpdateInstalledServices"
-            v-if="!busy && !errors.notFound && structure && structure.structureTypeId"
+            v-if="
+                !busy &&
+                !errors.notFound &&
+                structure &&
+                structure.structureTypeId
+            "
         />
 
         <card-margin />
@@ -98,18 +112,9 @@
             data-cy="structureUpdateActions"
             v-if="!busy && !errors.notFound && structure"
         >
-            <n-button
-                @click="$router.back()"
-                quaternary
-            >
-                Back
-            </n-button>
+            <n-button @click="$router.back()" quaternary> Back </n-button>
 
-            <n-button
-                @click="save"
-                data-cy="structureUpdateSave"
-                type="info"
-            >
+            <n-button @click="save" data-cy="structureUpdateSave" type="info">
                 Save
             </n-button>
         </action-group>
@@ -172,7 +177,7 @@ import System from '@/components/System.vue';
         ProjectGroupSelector,
         StructureInfo,
         System,
-    }
+    },
 })
 class StructureUpdate extends Vue {
     @Prop({
@@ -192,16 +197,15 @@ class StructureUpdate extends Vue {
 
     public async created() {
         this.busy = true;
-        await StructureService
-            .fetch(this.structureId)
-            .then(x => {
+        await StructureService.fetch(this.structureId)
+            .then((x) => {
                 this.structure = x;
-                return this.structure.fetchPermissionIsOwner()
+                return this.structure.fetchPermissionIsOwner();
             })
-            .then(_ => {
+            .then((_) => {
                 this.busy = false;
             })
-            .catch(e => {
+            .catch((e) => {
                 if (e.response.status === 404) {
                     this.errors.notFound = true;
                 }
@@ -213,33 +217,32 @@ class StructureUpdate extends Vue {
     public async save() {
         await this.structure
             .update()
-            .catch(_ => this.errors.updating = true);
+            .catch((_) => (this.errors.updating = true));
     }
 
     public async deleteObject() {
         await this.structure
             .remove()
-            .then(_ => {
+            .then((_) => {
                 this.$router.push({
                     name: ROUTE_STRUCTURES,
                 });
             })
-            .catch(_ => this.errors.deleting = true);
+            .catch((_) => (this.errors.deleting = true));
     }
 
     public async resolveStructureName() {
         //this.loadingBar.start();
 
-        await StructureService
-            .resolve(this.structure.ingameId)
-            .then(x => {
+        await StructureService.resolve(this.structure.ingameId)
+            .then((x) => {
                 this.structure.name = x.name;
                 return this.structure.update();
             })
-            .then(_ => {
+            .then((_) => {
                 //this.loadingBar.finish();
             })
-            .catch(_ => {
+            .catch((_) => {
                 //this.loadingBar.error();
             });
     }

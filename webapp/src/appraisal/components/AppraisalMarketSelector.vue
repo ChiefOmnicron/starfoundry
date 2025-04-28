@@ -16,9 +16,7 @@ import { NTreeSelect, type SelectOption } from 'naive-ui';
     components: {
         NTreeSelect,
     },
-    emits: [
-        'update:market'
-    ],
+    emits: ['update:market'],
 })
 class AppraisalMarketSelector extends Vue {
     @Prop({
@@ -34,22 +32,28 @@ class AppraisalMarketSelector extends Vue {
     }
 
     public markets(): SelectOption[] {
-        return [{
-            label: 'Jita 4-4',
-            key: 60003760,
-        }, {
-            label: 'Amarr',
-            key: 60008494,
-        }, {
-            label: 'E3OI-U',
-            key: 1040278453044,
-        }, {
-            label: 'UALX-3',
-            key: 1046664001931,
-        }, {
-            label: 'K7D-II',
-            key: 1043661023026,
-        }];
+        return [
+            {
+                label: 'Jita 4-4',
+                key: 60003760,
+            },
+            {
+                label: 'Amarr',
+                key: 60008494,
+            },
+            {
+                label: 'E3OI-U',
+                key: 1040278453044,
+            },
+            {
+                label: 'UALX-3',
+                key: 1046664001931,
+            },
+            {
+                label: 'K7D-II',
+                key: 1043661023026,
+            },
+        ];
     }
 
     @Watch('market')

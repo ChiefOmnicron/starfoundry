@@ -1,11 +1,29 @@
 <template>
     <div>
-        <n-tag data-cy="preparing" v-if="status === 'PREPARING'">Preparing</n-tag>
-        <n-tag data-cy="cancelled" type="error" v-else-if="status === 'CANCELLED'">Cancelled</n-tag>
-        <n-tag data-cy="paused" type="warning" v-else-if="status === 'PAUSED'">Paused</n-tag>
-        <n-tag data-cy="done" type="success" v-else-if="status === 'DONE'">Done</n-tag>
-        <n-tag data-cy="in_progress" type="info" v-else-if="status === 'IN_PROGRESS'">In Progress</n-tag>
-        <n-tag data-cy="default" type="error" v-else>Invalid Status {{ status }}</n-tag>
+        <n-tag data-cy="preparing" v-if="status === 'PREPARING'"
+            >Preparing</n-tag
+        >
+        <n-tag
+            data-cy="cancelled"
+            type="error"
+            v-else-if="status === 'CANCELLED'"
+            >Cancelled</n-tag
+        >
+        <n-tag data-cy="paused" type="warning" v-else-if="status === 'PAUSED'"
+            >Paused</n-tag
+        >
+        <n-tag data-cy="done" type="success" v-else-if="status === 'DONE'"
+            >Done</n-tag
+        >
+        <n-tag
+            data-cy="in_progress"
+            type="info"
+            v-else-if="status === 'IN_PROGRESS'"
+            >In Progress</n-tag
+        >
+        <n-tag data-cy="default" type="error" v-else
+            >Invalid Status {{ status }}</n-tag
+        >
     </div>
 </template>
 
@@ -15,12 +33,12 @@ import { NTag } from 'naive-ui';
 
 @Component({
     components: {
-        NTag
+        NTag,
     },
 })
 class StatusTag extends Vue {
     @Prop({
-        type:     String,
+        type: String,
         required: true,
     })
     public status!: string;

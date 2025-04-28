@@ -7,7 +7,10 @@
         <n-tabs type="line" v-if="!busy">
             <n-tab-pane name="ready" tab="Ready to start" v-if="ready_jobs">
                 <action-group v-if="ready_jobs.length > 0">
-                    <n-button @click="create_job_assignment" :disabled="selected_jobs.length === 0">
+                    <n-button
+                        @click="create_job_assignment"
+                        :disabled="selected_jobs.length === 0"
+                    >
                         Create Build order
                     </n-button>
                     <n-button
@@ -17,12 +20,8 @@
                     >
                         Check Resources
                     </n-button>
-                    <n-button @click="refresh">
-                        Refresh
-                    </n-button>
-                    <n-button @click="show_export = true">
-                        Export
-                    </n-button>
+                    <n-button @click="refresh"> Refresh </n-button>
+                    <n-button @click="show_export = true"> Export </n-button>
                 </action-group>
 
                 <card no-title v-if="ready_jobs && ready_jobs.length > 0">
@@ -44,7 +43,11 @@
             >
                 <project-active-jobs :project-id="projectId" />
             </n-tab-pane>
-            <n-tab-pane name="all_jobs" tab="All jobs" v-if="project_wrapper_ref">
+            <n-tab-pane
+                name="all_jobs"
+                tab="All jobs"
+                v-if="project_wrapper_ref"
+            >
                 <project-job-overview :project-id="projectId" />
             </n-tab-pane>
         </n-tabs>
@@ -68,7 +71,16 @@
 
 <script lang="ts">
 import { Component, Prop, Ref, Vue, toNative } from 'vue-facing-decorator';
-import { NButton, NInputNumber, NSelect, NTabs, NTabPane, NTable, NTag, type SelectOption } from 'naive-ui';
+import {
+    NButton,
+    NInputNumber,
+    NSelect,
+    NTabs,
+    NTabPane,
+    NTable,
+    NTag,
+    type SelectOption,
+} from 'naive-ui';
 import { Service, type IJob, type IJobGroup } from '@/project/service';
 import { ProjectService } from '@/sdk/project';
 import { ROUTE_PROJECT_ASSIGNMENTS } from '@/project/router';
@@ -114,7 +126,7 @@ import ProjectJobOverview from '@/project/job/Overview.vue';
         ProjectJobList,
         ProjectJobOverview,
         Wrapper,
-    }
+    },
 })
 class JobsView extends Vue {
     @Prop({
@@ -143,21 +155,24 @@ class JobsView extends Vue {
     public show_export = false;
     public show_check_ressources_modal: boolean = false;
 
-    public status_options = [{
-        label: 'Waiting for Materials',
-        value: 'WAITING_FOR_MATERIALS'
-    }, {
-        label: 'Building',
-        value: 'BUILDING'
-    }, {
-        label: 'Done',
-        value: 'DONE'
-    }];
+    public status_options = [
+        {
+            label: 'Waiting for Materials',
+            value: 'WAITING_FOR_MATERIALS',
+        },
+        {
+            label: 'Building',
+            value: 'BUILDING',
+        },
+        {
+            label: 'Done',
+            value: 'DONE',
+        },
+    ];
 
     public async created() {
         this.busy = true;
-        this.ready_jobs = await Service
-            .fetch_jobs_by_status(this.projectId);
+        this.ready_jobs = await Service.fetch_jobs_by_status(this.projectId);
         this.busy = false;
     }
 
@@ -170,20 +185,19 @@ class JobsView extends Vue {
 
     public async refresh() {
         this.busy = true;
-        this.ready_jobs = await Service
-            .fetch_jobs_by_status(this.projectId);
+        this.ready_jobs = await Service.fetch_jobs_by_status(this.projectId);
         this.busy = false;
     }
 
     public async create_job_assignment() {
         const assignment_id = await ProjectService.create_job_assignment(
-            this.selected_jobs
+            this.selected_jobs,
         );
         this.$router.push({
             name: ROUTE_PROJECT_ASSIGNMENTS,
             params: {
-                assignment_id
-            }
+                assignment_id,
+            },
         });
     }
 }

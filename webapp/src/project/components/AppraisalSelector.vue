@@ -5,14 +5,10 @@
         trigger="hover"
         v-if="appraisalOptions.length > 1"
     >
-        <n-button
-            type="info"
-            :disabled="busy"
-        >
+        <n-button type="info" :disabled="busy">
             Update price with ...
         </n-button>
     </n-dropdown>
-
 
     <n-button
         @click="selectAppraisal('INTERNAL')"
@@ -34,18 +30,16 @@ import { FeatureFlagService } from '@/sdk/featureFlags';
         NButton,
         NDropdown,
     },
-    emits: [
-        'select'
-    ]
+    emits: ['select'],
 })
 class AppraisalSelector extends Vue {
     public appraisalOptions: SelectOption[] = [];
 
     @Prop({
         type: Boolean,
-        required: true
+        required: true,
     })
-    public busy!: boolean
+    public busy!: boolean;
 
     public async created() {
         this.appraisalOptions.push({

@@ -1,29 +1,17 @@
 <template>
     <div>
-        <page-header
-            :title="group.name"
-            v-if="group && group.name"
-        />
+        <page-header :title="group.name" v-if="group && group.name" />
 
-        <common-messages
-            :message="messages"
-            @close="commonMessagesClose"
-        />
+        <common-messages :message="messages" @close="commonMessagesClose" />
 
         <n-tabs type="line">
-            <n-tab-pane
-                name="General"
-            >
+            <n-tab-pane name="General">
                 <group-general :group-id="groupId" />
             </n-tab-pane>
-            <n-tab-pane
-                name="Members"
-            >
+            <n-tab-pane name="Members">
                 <group-member :group-id="groupId" />
             </n-tab-pane>
-            <n-tab-pane
-                name="Defaults"
-            >
+            <n-tab-pane name="Defaults">
                 <group-default :group-id="groupId" />
             </n-tab-pane>
         </n-tabs>
@@ -37,7 +25,10 @@ import { ProjectGroupService, ProjectGroup } from '@/project_group/service';
 import type { Uuid } from '@/sdk/utils';
 
 import { NTabs, NTabPane } from 'naive-ui';
-import CommonMessages, { DEFAULT_COMMON_MESSAGES, type ICommonMessages } from '@/components/CommonMessages.vue';
+import CommonMessages, {
+    DEFAULT_COMMON_MESSAGES,
+    type ICommonMessages,
+} from '@/components/CommonMessages.vue';
 import GroupDefault from '@/project_group/overview/Default.vue';
 import GroupGeneral from '@/project_group/overview/General.vue';
 import GroupMember from '@/project_group/overview/Member.vue';
@@ -53,7 +44,7 @@ import PageHeader from '@/components/PageHeader.vue';
         GroupGeneral,
         GroupMember,
         PageHeader,
-    }
+    },
 })
 class ProjectGroupView extends Vue {
     @Prop({
@@ -66,12 +57,11 @@ class ProjectGroupView extends Vue {
     public messages: ICommonMessages = DEFAULT_COMMON_MESSAGES();
 
     public async created() {
-        ProjectGroupService
-            .fetch(this.groupId)
-            .then(x => {
+        ProjectGroupService.fetch(this.groupId)
+            .then((x) => {
                 this.group = x;
             })
-            .catch(e => {
+            .catch((e) => {
                 if (e.response.status === 404) {
                     this.messages.notFound = true;
                 } else {

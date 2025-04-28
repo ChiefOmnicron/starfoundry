@@ -2,11 +2,15 @@
     <div>
         <page-header title="Characters" />
 
-        <loader description="Loading characters" :busy=busy />
+        <loader description="Loading characters" :busy="busy" />
 
         <card content-style="padding: 0" v-if="!busy">
             <template #action>
-                <n-button @click="refresh" :disabled="!selected" :loading="refresh_active">
+                <n-button
+                    @click="refresh"
+                    :disabled="!selected"
+                    :loading="refresh_active"
+                >
                     Refresh info
                 </n-button>
                 <n-button @click="remove" :disabled="!selected">
@@ -36,37 +40,73 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <template v-for="character in characters" :key="character.character_id">
+                    <template
+                        v-for="character in characters"
+                        :key="character.character_id"
+                    >
                         <tr>
                             <td>
-                                <n-checkbox :checked="selected" :checked-value="character.character_id"
-                                    @update:checked="handle_select" unchecked-value="undefined" name="selected">
+                                <n-checkbox
+                                    :checked="selected"
+                                    :checked-value="character.character_id"
+                                    @update:checked="handle_select"
+                                    unchecked-value="undefined"
+                                    name="selected"
+                                >
                                 </n-checkbox>
                             </td>
                             <td>
-                                <eve-icon :id="character.character_id" character  v-if="character.credential_type === 'CHARACTER'" />
+                                <eve-icon
+                                    :id="character.character_id"
+                                    character
+                                    v-if="
+                                        character.credential_type ===
+                                        'CHARACTER'
+                                    "
+                                />
                             </td>
                             <td>
-                                <n-button text type="info" v-if="character.credential_type === 'CHARACTER'">
-                                    <router-link :to="{
+                                <n-button
+                                    text
+                                    type="info"
+                                    v-if="
+                                        character.credential_type ===
+                                        'CHARACTER'
+                                    "
+                                >
+                                    <router-link
+                                        :to="{
                                             name: route_character,
-                                            params: { characterId: character.character_id }
-                                        }
-                                        " style="color: inherit; text-decoration: none">
+                                            params: {
+                                                characterId:
+                                                    character.character_id,
+                                            },
+                                        }"
+                                        style="
+                                            color: inherit;
+                                            text-decoration: none;
+                                        "
+                                    >
                                         {{ character.character_name }}
                                     </router-link>
                                 </n-button>
                             </td>
                             <td>
-                                <p v-if="character.credential_type === 'CORPORATION'">
+                                <p
+                                    v-if="
+                                        character.credential_type ===
+                                        'CORPORATION'
+                                    "
+                                >
                                     Corporation
                                 </p>
-                                <p v-else>
-                                    Character
-                                </p>
+                                <p v-else>Character</p>
                             </td>
                             <td>
-                                <eve-icon :id="character.corporation_id" corporation />
+                                <eve-icon
+                                    :id="character.corporation_id"
+                                    corporation
+                                />
                             </td>
                             <td>
                                 {{ character.corporation_name }}
@@ -84,10 +124,18 @@
                 </tbody>
             </n-table>
 
-            <confirm-dialog v-if="selected" v-model:show="show_confirm" :confirm="confirm_remove">
-                Are you sure you want to delete {{ characters.find(x => x.character_id === parseInt(selected)).character
-                }}?<br>
-                You can add the character back to a later time.<br>
+            <confirm-dialog
+                v-if="selected"
+                v-model:show="show_confirm"
+                :confirm="confirm_remove"
+            >
+                Are you sure you want to delete
+                {{
+                    characters.find(
+                        (x) => x.character_id === parseInt(selected),
+                    ).character
+                }}?<br />
+                You can add the character back to a later time.<br />
                 Please type in 'delete' to confirm.
             </confirm-dialog>
         </card>
@@ -96,7 +144,16 @@
 
 <script lang="ts">
 import { Component, Vue, toNative } from 'vue-facing-decorator';
-import { NButton, NCheckbox, NIcon, NList, NListItem, NTable, NSpace, useMessage } from 'naive-ui';
+import {
+    NButton,
+    NCheckbox,
+    NIcon,
+    NList,
+    NListItem,
+    NTable,
+    NSpace,
+    useMessage,
+} from 'naive-ui';
 
 import { type CharacterId } from '@/utils';
 import { Service, type ICharacter } from '@/characters/service';
@@ -127,7 +184,7 @@ import PageHeader from '@/components/PageHeader.vue';
         ConfirmDialog,
         Loader,
         PageHeader,
-    }
+    },
 })
 class CharacterSettings extends Vue {
     public busy: boolean = false;
@@ -142,10 +199,7 @@ class CharacterSettings extends Vue {
     public message = useMessage();
 
     public async created() {
-        events.$emit(
-            ROUTE_CHANGE,
-            this.$route.name
-        );
+        events.$emit(ROUTE_CHANGE, this.$route.name);
 
         this.busy = true;
         await this.load();
@@ -161,7 +215,9 @@ class CharacterSettings extends Vue {
     }
 
     public async refresh() {
-        if (!this.selected) { return; }
+        if (!this.selected) {
+            return;
+        }
 
         this.refresh_active = true;
 
@@ -172,7 +228,9 @@ class CharacterSettings extends Vue {
     }
 
     public remove() {
-        if (!this.selected) { return; }
+        if (!this.selected) {
+            return;
+        }
 
         if (this.selected === (<any>window).whoami.character_id) {
             this.message.warning('You cannot delete the main character.');
@@ -183,7 +241,9 @@ class CharacterSettings extends Vue {
     }
 
     public async confirm_remove() {
-        if (!this.selected) { return; }
+        if (!this.selected) {
+            return;
+        }
 
         Service.remove(this.selected);
         this.selected = 0;
@@ -202,9 +262,7 @@ class CharacterSettings extends Vue {
         this.selected = <number>characterId;
     }
 
-    public refresh_permissions(
-        characterId: CharacterId,
-    ) {
+    public refresh_permissions(characterId: CharacterId) {
         window.location.href = `/api/v1/auth/refresh/${characterId}`;
     }
 

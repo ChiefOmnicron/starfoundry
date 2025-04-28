@@ -2,50 +2,37 @@
     <n-table style="margin-bottom: 10px">
         <tr>
             <th style="width: 20%">Created at</th>
-            <td style="width: 30%; text-align: left;">
-                <format-number :value="appraisal?.created_at" :utc="false" date /> (local)
+            <td style="width: 30%; text-align: left">
+                <format-number
+                    :value="appraisal?.created_at"
+                    :utc="false"
+                    date
+                />
+                (local)
             </td>
             <th style="width: 20%">Buy</th>
-            <td style="width: 30%; text-align: right;">
-                <copy-text
-                    :value="totalBuy()"
-                    number
-                    with-comma
-                /> ISK
+            <td style="width: 30%; text-align: right">
+                <copy-text :value="totalBuy()" number with-comma /> ISK
             </td>
         </tr>
         <tr>
             <th>Market</th>
             <td style="text-align: left">
-                <appraisal-market
-                    :market-id="appraisal.market_id"
-                />
+                <appraisal-market :market-id="appraisal.market_id" />
             </td>
             <th>Split</th>
             <td style="text-align: right">
-                <copy-text
-                    :value="totalSplit()"
-                    number
-                    with-comma
-                /> ISK
+                <copy-text :value="totalSplit()" number with-comma /> ISK
             </td>
         </tr>
         <tr>
             <th>Volume</th>
             <td style="text-align: right">
-                <copy-text
-                    :value="totalVolume()"
-                    number
-                    with-comma
-                /> m3
+                <copy-text :value="totalVolume()" number with-comma /> m3
             </td>
             <th>Sell</th>
             <td style="text-align: right">
-                <copy-text
-                    :value="totalSell()"
-                    number
-                    with-comma
-                /> ISK
+                <copy-text :value="totalSell()" number with-comma /> ISK
             </td>
         </tr>
     </n-table>
@@ -68,11 +55,11 @@ import CopyText from '@/components/CopyText.vue';
         AppraisalMarket,
         CopyText,
         FormatNumber,
-    }
+    },
 })
 class AppraisalHeader extends Vue {
     @Prop({
-        required: true
+        required: true,
     })
     public appraisal!: IAppraisal;
 

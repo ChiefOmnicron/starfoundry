@@ -28,7 +28,10 @@ export enum ItemGroup {
     PI4 = 1041,
 }
 
-export let formatNumber = (numberToFormat: number, with_comma: boolean = false): string => {
+export let formatNumber = (
+    numberToFormat: number,
+    with_comma: boolean = false,
+): string => {
     if (Number.isNaN(numberToFormat)) {
         return '';
     }
@@ -43,7 +46,7 @@ export let formatNumber = (numberToFormat: number, with_comma: boolean = false):
 
         if (val === '-' || val === '+') {
             result.push(val);
-            continue
+            continue;
         }
 
         if (count === 3) {
@@ -63,9 +66,9 @@ export let formatNumber = (numberToFormat: number, with_comma: boolean = false):
 
 export let formatTime = (numberToFormat: number): string => {
     const WEEK = 60 * 60 * 24 * 7; // seconds * minutes * hours * days
-    const DAY = 60 * 60 * 24;      // seconds * minutes * hours
-    const HOUR = 60 * 60;          // seconds * minutes
-    const MINUTE = 60;             // seconds
+    const DAY = 60 * 60 * 24; // seconds * minutes * hours
+    const HOUR = 60 * 60; // seconds * minutes
+    const MINUTE = 60; // seconds
 
     const weeks = Math.floor(numberToFormat / WEEK);
     numberToFormat -= weeks * WEEK;
@@ -81,7 +84,7 @@ export let formatTime = (numberToFormat: number): string => {
 
     const seconds = numberToFormat;
 
-    const preZero = (val: number): string => val >= 10 ? `${val}` : `0${val}`;
+    const preZero = (val: number): string => (val >= 10 ? `${val}` : `0${val}`);
 
     if (weeks > 0) {
         return `${weeks}w ${preZero(days)}d ${preZero(hours)}h ${preZero(minutes)}m ${preZero(seconds)}s`;
@@ -97,7 +100,7 @@ export let formatTime = (numberToFormat: number): string => {
 };
 
 export let formatDateUTC = (date_ms: number): string => {
-    const preZero = (val: number): string => val >= 10 ? `${val}` : `0${val}`;
+    const preZero = (val: number): string => (val >= 10 ? `${val}` : `0${val}`);
 
     const date = new Date(date_ms);
 
@@ -108,10 +111,10 @@ export let formatDateUTC = (date_ms: number): string => {
     const minutes = preZero(date.getUTCMinutes());
 
     return `${year}.${month}.${day} ${hours}:${minutes}`;
-}
+};
 
 export let formatDate = (date_ms: number): string => {
-    const preZero = (val: number): string => val >= 10 ? `${val}` : `0${val}`;
+    const preZero = (val: number): string => (val >= 10 ? `${val}` : `0${val}`);
 
     const offset = new Date().getTimezoneOffset();
     const date = new Date(new Date(date_ms).getTime() + offset);
@@ -123,4 +126,4 @@ export let formatDate = (date_ms: number): string => {
     const minutes = preZero(date.getMinutes());
 
     return `${year}.${month}.${day} ${hours}:${minutes}`;
-}
+};

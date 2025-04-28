@@ -34,9 +34,9 @@ import { type ISystem, SystemService } from '@/services/system';
 //
 @Component({
     components: {
-        NSelect
+        NSelect,
     },
-    emits: ['update:info']
+    emits: ['update:info'],
 })
 class SystemSelector extends Vue {
     @Prop({
@@ -45,24 +45,25 @@ class SystemSelector extends Vue {
     public default!: number;
 
     public options: SelectOption[] = [];
-    public loading: boolean        = false;
+    public loading: boolean = false;
 
     // Holds the selected system id
     public value: ISystem | null = null;
     public systems: ISystem[] = [];
 
     public async created() {
-        await SystemService
-            .search_by_id(this.default)
+        await SystemService.search_by_id(this.default)
             .then((x: ISystem[]) => {
                 this.systems = x;
-                x.map((x: ISystem) => this.options.push({
-                    label: `${x.system_name} (${x.region_name})`,
-                    value:  x.system_id
-                }));
+                x.map((x: ISystem) =>
+                    this.options.push({
+                        label: `${x.system_name} (${x.region_name})`,
+                        value: x.system_id,
+                    }),
+                );
             })
             //.then((_: any) => this.value = <any>this.options[0].value)
-            .then((_: any) => this.loading = false);
+            .then((_: any) => (this.loading = false));
     }
 
     @Watch('default')
@@ -70,33 +71,35 @@ class SystemSelector extends Vue {
         this.options = [];
         this.loading = true;
 
-        SystemService
-            .search_by_id(this.default)
+        SystemService.search_by_id(this.default)
             .then((x: ISystem[]) => {
                 this.systems = x;
-                x.map((x: ISystem) => this.options.push({
-                    label: `${x.system_name} (${x.region_name})`,
-                    value:  x.system_id
-                }));
+                x.map((x: ISystem) =>
+                    this.options.push({
+                        label: `${x.system_name} (${x.region_name})`,
+                        value: x.system_id,
+                    }),
+                );
             })
             //.then((_: any) => this.value = <any>this.options[0].value)
-            .then((_: any) => this.loading = false);
+            .then((_: any) => (this.loading = false));
     }
 
     public async handle_search(query: string) {
         this.options = [];
         this.loading = true;
 
-        SystemService
-        .search_by_name(query)
-        .then((x: ISystem[]) => {
+        SystemService.search_by_name(query)
+            .then((x: ISystem[]) => {
                 this.systems = x;
-            x.map((x: ISystem) => this.options.push({
-            label: `${x.system_name} (${x.region_name})`,
-            value:  x.system_id
-            }));
-        })
-        .then((_: any) => this.loading = false);
+                x.map((x: ISystem) =>
+                    this.options.push({
+                        label: `${x.system_name} (${x.region_name})`,
+                        value: x.system_id,
+                    }),
+                );
+            })
+            .then((_: any) => (this.loading = false));
     }
 
     public render_selected({ option }: any) {
@@ -110,21 +113,22 @@ class SystemSelector extends Vue {
         }
 
         return h(
-                'div',
-                {
-                    style: {
-                        display: 'flex',
-                        alignItems: 'center'
-                    }
+            'div',
+            {
+                style: {
+                    display: 'flex',
+                    alignItems: 'center',
                 },
-                [
-                    label
-                ]
-            )
+            },
+            [label],
+        );
     }
 
     public handleSelect(value: string) {
-        this.$emit('update:info', this.systems.find(x => x.system_id === value) || null);
+        this.$emit(
+            'update:info',
+            this.systems.find((x) => x.system_id === value) || null,
+        );
     }
 }
 

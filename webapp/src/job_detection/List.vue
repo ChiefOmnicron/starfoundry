@@ -4,10 +4,7 @@
 
         <loader description="Loading Projects" :busy="busy" />
 
-        <action-group
-                v-if="!busy && jobDetectionLogs.length > 0"
-                justify="end"
-            >
+        <action-group v-if="!busy && jobDetectionLogs.length > 0" justify="end">
             <div>
                 <n-button
                     @click="refresh()"
@@ -33,25 +30,36 @@
             />
         </card>
 
-        <n-modal
-            v-model:show="showUpdateJob"
-        >
-            <card
-                title="Update Job"
-                style="width: 1000px"
-            >
+        <n-modal v-model:show="showUpdateJob">
+            <card title="Update Job" style="width: 1000px">
                 <template #description>
-                    <div style="margin-left: 10px; margin-top: 10px;">
+                    <div style="margin-left: 10px; margin-top: 10px">
                         To update a job you have different options.
 
-                        <p> - 'Replace' - Replaces one or more job entries in the target project. If it's already assigned to a project, the old project will remove the link to the job so that it can be filled again.</p>
-                        <p> - 'Add' - Adds it as a new entry to the project. If it's already assigned to a project, the old project will remove the link to the job so that it can be filled again.</p>
-                        <p> - 'Delete' - Will delete the job from the project. The job in that project can then be filled again.</p>
-                        <p> - 'Ignore' - Adds the job to an ignore list and will not attempt to reassign it.</p>
+                        <p>
+                            - 'Replace' - Replaces one or more job entries in
+                            the target project. If it's already assigned to a
+                            project, the old project will remove the link to the
+                            job so that it can be filled again.
+                        </p>
+                        <p>
+                            - 'Add' - Adds it as a new entry to the project. If
+                            it's already assigned to a project, the old project
+                            will remove the link to the job so that it can be
+                            filled again.
+                        </p>
+                        <p>
+                            - 'Delete' - Will delete the job from the project.
+                            The job in that project can then be filled again.
+                        </p>
+                        <p>
+                            - 'Ignore' - Adds the job to an ignore list and will
+                            not attempt to reassign it.
+                        </p>
                     </div>
                 </template>
 
-                <div style="margin: 5px;">
+                <div style="margin: 5px">
                     <n-tabs type="line" animated>
                         <n-tab-pane name="replace" tab="Replace">
                             <update-job-replace
@@ -94,7 +102,9 @@ import { NButton, NModal, NTabs, NTabPane } from 'naive-ui';
 import ActionGroup from '@/components/ActionGroup.vue';
 import Card from '@/components/Card.vue';
 import Countdown from '@/components/Countdown.vue';
-import DataTable, { type IDataTableDefinition } from '@/components/DataTable.vue';
+import DataTable, {
+    type IDataTableDefinition,
+} from '@/components/DataTable.vue';
 import EveIcon from '@/components/EveIcon.vue';
 import Loader from '@/components/Loader.vue';
 import Nakamura from '@/components/Nakamura.vue';
@@ -124,7 +134,7 @@ import UpdateJobReplace from './components/UpdateJobReplace.vue';
         UpdateJobAdd,
         UpdateJobDelete,
         UpdateJobReplace,
-    }
+    },
 })
 class ProjectsView extends Vue {
     public busy = false;
@@ -144,8 +154,8 @@ class ProjectsView extends Vue {
 
         axios
             .get(`/api/v1/job-detection`)
-            .then(x => x.data)
-            .then(x => {
+            .then((x) => x.data)
+            .then((x) => {
                 this.jobDetectionLogs = x;
 
                 this.busy = false;
@@ -169,8 +179,8 @@ class ProjectsView extends Vue {
     public async refresh() {
         axios
             .get(`/api/v1/job-detection`)
-            .then(x => x.data)
-            .then(x => {
+            .then((x) => x.data)
+            .then((x) => {
                 this.jobDetectionLogs = x;
 
                 this.busy = false;
@@ -184,109 +194,101 @@ class ProjectsView extends Vue {
     }
 
     public tableDefinition(): IDataTableDefinition[] {
-        return [{
-            header: '',
-            key: 'icon',
-            width: 40,
-            render(row) {
-                return h(
-                    EveIcon,
-                    {
+        return [
+            {
+                header: '',
+                key: 'icon',
+                width: 40,
+                render(row) {
+                    return h(EveIcon, {
                         id: row.type_id,
                         type: 'icon',
-                    }
-                )
+                    });
+                },
             },
-        }, {
-            header: 'Name',
-            key: 'type_id',
-            width: 500,
-            item: true,
-            copy: true,
-        }, {
-            header: 'Runs',
-            key: 'runs',
-            width: 200,
-            number: true,
-            copy: true,
-        }, {
-            header: 'Time Remaining',
-            key: 'remaining',
-            width: 200,
-            visible: true,
-            render(row: IJobDetectionLog) {
-                return h(
-                    Countdown,
-                    {
+            {
+                header: 'Name',
+                key: 'type_id',
+                width: 500,
+                item: true,
+                copy: true,
+            },
+            {
+                header: 'Runs',
+                key: 'runs',
+                width: 200,
+                number: true,
+                copy: true,
+            },
+            {
+                header: 'Time Remaining',
+                key: 'remaining',
+                width: 200,
+                visible: true,
+                render(row: IJobDetectionLog) {
+                    return h(Countdown, {
                         endDate: row.end_date,
-                    }
-                )
-            }
-        }, {
-            header: 'End Date',
-            key: 'end_date',
-            width: 200,
-            visible: true,
-            render(row: IJobDetectionLog) {
-                return h(
-                    Nakamura,
-                    {
+                    });
+                },
+            },
+            {
+                header: 'End Date',
+                key: 'end_date',
+                width: 200,
+                visible: true,
+                render(row: IJobDetectionLog) {
+                    return h(Nakamura, {
                         endDate: row.end_date,
-                    }
-                )
-            }
-        }, {
-            header: 'Assigned Project',
-            key: 'project_uuid',
-            width: 200,
-            render: (row: IJobDetectionLog, _: number) => {
-                if (row.project_uuid) {
-                    return h(
-                        ProjectReference,
-                        {
+                    });
+                },
+            },
+            {
+                header: 'Assigned Project',
+                key: 'project_uuid',
+                width: 200,
+                render: (row: IJobDetectionLog, _: number) => {
+                    if (row.project_uuid) {
+                        return h(ProjectReference, {
                             projectId: row.project_uuid,
-                        },
-                    );
-                }
+                        });
+                    }
 
-                return h(
-                    'label',
-                    {},
-                    () => 'Not assigned'
-                );
-            }
-        }, {
-            header: '',
-            key: 'edit',
-            visible: true,
-            width: 50,
-            render: (row: IJobDetectionLog, _: number) => {
-                return h(
-                    NButton,
-                    {
-                        type: 'info',
-                        quaternary: true,
-                        onClick: () => {
-                            this.selectedProjectId = row.project_uuid,
-                            this.selectedTypeId = row.type_id;
-                            this.selectedJobId = row.job_id;
-                            this.showUpdateJob = true;
-                        }
-                    },
-                    () => 'Edit'
-                );
-            }
-        }];
+                    return h('label', {}, () => 'Not assigned');
+                },
+            },
+            {
+                header: '',
+                key: 'edit',
+                visible: true,
+                width: 50,
+                render: (row: IJobDetectionLog, _: number) => {
+                    return h(
+                        NButton,
+                        {
+                            type: 'info',
+                            quaternary: true,
+                            onClick: () => {
+                                (this.selectedProjectId = row.project_uuid),
+                                    (this.selectedTypeId = row.type_id);
+                                this.selectedJobId = row.job_id;
+                                this.showUpdateJob = true;
+                            },
+                        },
+                        () => 'Edit',
+                    );
+                },
+            },
+        ];
     }
 }
 
 export default toNative(ProjectsView);
 
 interface IJobDetectionLog {
-    type_id:       TypeId;
-    runs:          number;
-    end_date:      string;
-    job_id:        JobUuid;
+    type_id: TypeId;
+    runs: number;
+    end_date: string;
+    job_id: JobUuid;
     project_uuid?: ProjectUuid;
 }
 </script>

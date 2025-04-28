@@ -21,12 +21,8 @@
                         v-model:value="member.projects"
                         :rail-style="railStyle"
                     >
-                        <template #checked>
-                            Write
-                        </template>
-                        <template #unchecked>
-                            Read
-                        </template>
+                        <template #checked> Write </template>
+                        <template #unchecked> Read </template>
                     </n-switch>
                 </td>
                 <td v-if="member.accepted && !member.is_owner">
@@ -36,12 +32,8 @@
                         v-model:value="member.project_group"
                         :rail-style="railStyle"
                     >
-                        <template #checked>
-                            Write
-                        </template>
-                        <template #unchecked>
-                            Read
-                        </template>
+                        <template #checked> Write </template>
+                        <template #unchecked> Read </template>
                     </n-switch>
                 </td>
                 <td v-if="member.accepted && !member.is_owner">
@@ -51,27 +43,16 @@
                         v-model:value="member.structures"
                         :rail-style="railStyle"
                     >
-                        <template #checked>
-                            Write
-                        </template>
-                        <template #unchecked>
-                            Read
-                        </template>
+                        <template #checked> Write </template>
+                        <template #unchecked> Read </template>
                     </n-switch>
                 </td>
                 <td v-if="member.accepted && !member.is_owner">
-                    <n-button-group
-                        v-if="!member.is_owner"
-                        align="right"
-                    >
-                        <n-button
-                            @click="savePermission(member)"
-                        >
+                    <n-button-group v-if="!member.is_owner" align="right">
+                        <n-button @click="savePermission(member)">
                             Save
                         </n-button>
-                        <n-button
-                            @click="removeMember(member.character_id)"
-                        >
+                        <n-button @click="removeMember(member.character_id)">
                             Remove
                         </n-button>
                     </n-button-group>
@@ -82,10 +63,7 @@
                 <td v-if="!member.accepted" colspan="3">
                     Member not yet accepted
                 </td>
-                <td
-                    v-if="!member.accepted"
-                    align="right"
-                >
+                <td v-if="!member.accepted" align="right">
                     <n-button
                         @click="acceptMember(member.character_id)"
                         type="primary"
@@ -116,34 +94,25 @@ import { NButton, NButtonGroup, NCheckbox, NTable, NSwitch } from 'naive-ui';
         NSwitch,
         NTable,
     },
-    emits: [
-        'member-accepted',
-        'save-permission',
-    ]
+    emits: ['member-accepted', 'save-permission'],
 })
 class ProjectGroupMembers extends Vue {
     @Prop({
         default: [],
         required: true,
-        type: Array<IProjectGroupMember>
+        type: Array<IProjectGroupMember>,
     })
     public members!: IProjectGroupMember[];
 
-    public async acceptMember(
-        characterId: CharacterId,
-    ) {
+    public async acceptMember(characterId: CharacterId) {
         this.$emit('member-accepted', characterId);
     }
 
-    public async removeMember(
-        characterId: CharacterId,
-    ) {
+    public async removeMember(characterId: CharacterId) {
         this.$emit('member-removed', characterId);
     }
 
-    public async savePermission(
-        member: IProjectGroupMember,
-    ) {
+    public async savePermission(member: IProjectGroupMember) {
         this.$emit('save-permission', member);
     }
 
@@ -151,25 +120,25 @@ class ProjectGroupMembers extends Vue {
         focused,
         checked,
     }: {
-        focused: boolean,
-        checked: boolean,
+        focused: boolean;
+        checked: boolean;
     }) {
-        const style: CSSProperties = {}
+        const style: CSSProperties = {};
 
         if (checked) {
-            style.background = '#2A947D'
+            style.background = '#2A947D';
 
             if (focused) {
-                style.boxShadow = '0 0 0 2px #d0305040'
+                style.boxShadow = '0 0 0 2px #d0305040';
             }
         } else {
-            style.background = '#2080f0'
+            style.background = '#2080f0';
 
             if (focused) {
-                style.boxShadow = '0 0 0 2px #2080f040'
+                style.boxShadow = '0 0 0 2px #2080f040';
             }
         }
-        return style
+        return style;
     }
 }
 

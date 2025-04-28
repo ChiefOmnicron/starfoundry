@@ -1,4 +1,4 @@
-import StructureUpdate from '@/structure/update/View.vue'
+import StructureUpdate from '@/structure/update/View.vue';
 
 // Doesn't insert 'delete' into the modal properly
 

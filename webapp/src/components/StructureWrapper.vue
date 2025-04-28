@@ -10,15 +10,12 @@ import type { Uuid } from '@/sdk/utils';
 
 @Component({
     components: {},
-    emits: [
-        'loading',
-        'loading:error',
-    ]
+    emits: ['loading', 'loading:error'],
 })
 class StructureWrapper extends Vue {
     @Prop({
-        type:     String,
-        required: true
+        type: String,
+        required: true,
     })
     public structureId!: Uuid;
 
@@ -27,9 +24,8 @@ class StructureWrapper extends Vue {
     public async created() {
         this.$emit('loading', true);
 
-        await StructureService
-            .fetch(this.structureId)
-            .then(x => {
+        await StructureService.fetch(this.structureId)
+            .then((x) => {
                 this.entry = x;
                 this.$emit('loading', false);
             })

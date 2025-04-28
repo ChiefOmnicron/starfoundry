@@ -12,7 +12,14 @@
 
 <script lang="ts">
 import { Component, Vue, toNative, Prop, Watch } from 'vue-facing-decorator';
-import { NList, NListItem, NScrollbar, NThing, NTreeSelect, SelectGroupOption } from 'naive-ui';
+import {
+    NList,
+    NListItem,
+    NScrollbar,
+    NThing,
+    NTreeSelect,
+    SelectGroupOption,
+} from 'naive-ui';
 import { IStructureCreateGroup } from '@/sdk/structure_group';
 
 import { Structure } from '@/sdk/structure';
@@ -25,7 +32,7 @@ import { Structure } from '@/sdk/structure';
         NThing,
         NTreeSelect,
     },
-    emits: ['update:tags']
+    emits: ['update:tags'],
 })
 class StructureGroupTagFilter extends Vue {
     @Prop({
@@ -34,11 +41,11 @@ class StructureGroupTagFilter extends Vue {
     public filter!: SelectGroupOption[];
 
     @Prop({
-        default: []
+        default: [],
     })
     public defaultSelected!: string[];
 
-    public tags: string[]                   = this.defaultSelected;
+    public tags: string[] = this.defaultSelected;
     public resolved_structures: Structure[] = [];
 
     public group: IStructureCreateGroup = <any>{

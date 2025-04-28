@@ -2,25 +2,15 @@
     <div>
         <page-header title="Jobs ready to be started" />
 
-        <loader
-            description="Loading"
-            :busy="busy"
-        />
+        <loader description="Loading" :busy="busy" />
 
         <n-space v-if="!busy" justify="space-between">
             <span>Number of startable jobs: {{ jobs_to_start }}</span>
 
             <div>
-                <n-switch
-                    style="margin-right: 7px"
-                    v-model:value="showStarted"
-                >
-                    <template #checked>
-                        Show started jobs
-                    </template>
-                    <template #unchecked>
-                        Hide started jobs
-                    </template>
+                <n-switch style="margin-right: 7px" v-model:value="showStarted">
+                    <template #checked> Show started jobs </template>
+                    <template #unchecked> Hide started jobs </template>
                 </n-switch>
 
                 <n-button
@@ -33,15 +23,25 @@
         </n-space>
 
         <div>
-            <template v-for="assignment in assignments" :key="assignment.header">
+            <template
+                v-for="assignment in assignments"
+                :key="assignment.header"
+            >
                 <card
-                    v-if="!busy && assignment && assignment.entries && assignment.entries.length > 0"
+                    v-if="
+                        !busy &&
+                        assignment &&
+                        assignment.entries &&
+                        assignment.entries.length > 0
+                    "
                     content-style="padding: 0"
                     style="margin-bottom: 10px"
                     :title="assignment.header"
                 >
                     <card no-title>
-                        <project-job-assignment-list :jobs="sort(assignment.entries)" />
+                        <project-job-assignment-list
+                            :jobs="sort(assignment.entries)"
+                        />
                     </card>
                 </card>
             </template>
@@ -59,7 +59,12 @@
 <script lang="ts">
 import { Component, Vue, toNative } from 'vue-facing-decorator';
 import { NAnchor, NAnchorLink, NButton, NSpace, NSwitch } from 'naive-ui';
-import { type JobAssignmentEntry, type IJobAssignmentGroup, ProjectService, type JobAssignmentGroupEntry } from '@/sdk/project';
+import {
+    type JobAssignmentEntry,
+    type IJobAssignmentGroup,
+    ProjectService,
+    type JobAssignmentGroupEntry,
+} from '@/sdk/project';
 import { type Uuid } from '@/sdk/utils';
 
 import Card from '@/components/Card.vue';
@@ -81,7 +86,7 @@ import ProjectJobAssignmentList from '@/project/job/JobAssignmentList.vue';
         Loader,
         PageHeader,
         ProjectJobAssignmentList,
-    }
+    },
 })
 class ProjectsView extends Vue {
     public busy: boolean = false;
@@ -107,7 +112,7 @@ class ProjectsView extends Vue {
     }
 
     public beforeUnmount() {
-        clearInterval(this.timer)
+        clearInterval(this.timer);
     }
 
     public sort(groups: JobAssignmentGroupEntry[]): JobAssignmentEntry[] {
@@ -115,7 +120,7 @@ class ProjectsView extends Vue {
 
         for (let group of groups) {
             let result = group.entries
-                .filter(x => {
+                .filter((x) => {
                     if (this.showStarted) {
                         return true;
                     }
@@ -138,19 +143,19 @@ class ProjectsView extends Vue {
     private async load() {
         this.job_ids = [];
 
-        this.assignments = <any>await ProjectService
-            .fetch_job_assignment(<any>this.$route.params.assignment_id)
-            .then(entries => {
+        this.assignments = <any>await ProjectService.fetch_job_assignment(
+            <any>this.$route.params.assignment_id,
+        )
+            .then((entries) => {
                 this.jobs_to_start = 0;
 
                 this.jobs_to_start = entries
-                    .flatMap(x => x.entries)
-                    .flatMap(x => x.entries)
-                    .filter(x => !x.started)
-                    .length;
+                    .flatMap((x) => x.entries)
+                    .flatMap((x) => x.entries)
+                    .filter((x) => !x.started).length;
                 return entries;
             })
-            .catch(e => {
+            .catch((e) => {
                 console.error(e);
                 return [];
             });

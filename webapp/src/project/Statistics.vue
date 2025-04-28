@@ -2,7 +2,7 @@
     <div>
         <page-header title="RCIMade In Numbers" />
 
-        <loader description="Loading statistics just for you" :busy=busy />
+        <loader description="Loading statistics just for you" :busy="busy" />
 
         <div v-if="!busy">
             <card title="General Statistics" id="GeneralStatistics">
@@ -19,7 +19,11 @@
                     </n-col>
                     <n-col :span="5" style="margin-top: 5px">
                         <n-statistic label="Top Month Caps">
-                            <format-number :value="statistics.top_month_count.count" /> in {{ format_date(statistics.top_month_count.month) }}
+                            <format-number
+                                :value="statistics.top_month_count.count"
+                            />
+                            in
+                            {{ format_date(statistics.top_month_count.month) }}
                         </n-statistic>
                     </n-col>
                 </n-row>
@@ -32,12 +36,19 @@
                     </n-col>
                     <n-col :span="5" style="margin-top: 5px">
                         <n-statistic label="Manufacturing jobs started">
-                            <format-number :value="statistics.jobs_manufacturing" />
+                            <format-number
+                                :value="statistics.jobs_manufacturing"
+                            />
                         </n-statistic>
                     </n-col>
                     <n-col :span="5" style="margin-top: 5px">
                         <n-statistic label="Total started jobs">
-                            <format-number :value="statistics.jobs_reaction + statistics.jobs_manufacturing" />
+                            <format-number
+                                :value="
+                                    statistics.jobs_reaction +
+                                    statistics.jobs_manufacturing
+                                "
+                            />
                         </n-statistic>
                     </n-col>
                 </n-row>
@@ -50,7 +61,9 @@
                     </n-col>
                     <n-col :span="5" style="margin-top: 5px">
                         <n-statistic label="Reprocessing cost">
-                            <format-number :value="statistics.reprocessing_cost" />
+                            <format-number
+                                :value="statistics.reprocessing_cost"
+                            />
                         </n-statistic>
                     </n-col>
                     <n-col :span="5" style="margin-top: 5px">
@@ -60,7 +73,7 @@
                     </n-col>
                 </n-row>
 
-                <n-row style="margin-left: 10px; margin-top:25px">
+                <n-row style="margin-left: 10px; margin-top: 25px">
                     <n-col :span="5" style="margin-top: 5px">
                         <n-statistic label="Material cost">
                             <format-number :value="statistics.cost_materials" />
@@ -73,12 +86,20 @@
                     </n-col>
                     <n-col :span="5" style="margin-top: 5px">
                         <n-statistic label="Total cost">
-                            <format-number :value="statistics.blueprint_cost + statistics.hauling_cost + statistics.reprocessing_cost + statistics.cost_materials + statistics.cost_jobs" />
+                            <format-number
+                                :value="
+                                    statistics.blueprint_cost +
+                                    statistics.hauling_cost +
+                                    statistics.reprocessing_cost +
+                                    statistics.cost_materials +
+                                    statistics.cost_jobs
+                                "
+                            />
                         </n-statistic>
                     </n-col>
                 </n-row>
 
-                <n-row style="margin-left: 10px; margin-top:25px">
+                <n-row style="margin-left: 10px; margin-top: 25px">
                     <n-col :span="12" style="margin-top: 5px">
                         <n-statistic label="Build hulls">
                             <v-chart class="chart" :option="caps_by_type" />
@@ -101,9 +122,17 @@
                                 :key="entry.type_id"
                                 v-for="(entry, index) in group.entries"
                             >
-                                <template v-if="statistics.cost_by_dread[entry.type_id] && statistics.cost_by_dread[entry.type_id].length > 0">
+                                <template
+                                    v-if="
+                                        statistics.cost_by_dread[
+                                            entry.type_id
+                                        ] &&
+                                        statistics.cost_by_dread[entry.type_id]
+                                            .length > 0
+                                    "
+                                >
                                     <h1>
-                                        <div style="display: flex;">
+                                        <div style="display: flex">
                                             <eve-icon
                                                 :id="entry.type_id"
                                                 :width="48"
@@ -117,7 +146,13 @@
                                     <n-col :span="24">
                                         <v-chart
                                             class="chart_line"
-                                            :option="stacked_line_chart(statistics.cost_by_dread[entry.type_id])"
+                                            :option="
+                                                stacked_line_chart(
+                                                    statistics.cost_by_dread[
+                                                        entry.type_id
+                                                    ],
+                                                )
+                                            "
                                         />
                                     </n-col>
                                 </template>
@@ -128,16 +163,16 @@
 
                 <n-row>
                     <h1>
-                        <div style="display: flex;">
-                            <div>
-                                All
-                            </div>
+                        <div style="display: flex">
+                            <div>All</div>
                         </div>
                     </h1>
                     <n-col :span="24">
                         <v-chart
                             class="chart_line_all"
-                            :option="stacked_line_chart(statistics.cost_by_dread[0])"
+                            :option="
+                                stacked_line_chart(statistics.cost_by_dread[0])
+                            "
                         />
                     </n-col>
                 </n-row>
@@ -153,16 +188,16 @@
                 >
                     <n-collapse>
                         <n-collapse-item :title="group.header">
-                            <n-col
-                                :span="24"
-                            >
+                            <n-col :span="24">
                                 <h1>{{ group.header }}</h1>
 
                                 <p v-if="group.header === 'Minerals'">
-                                    At some point we switched over to using compressed ore.
-                                    So the graphs, "Total Spend" and "Average Cost" are not 100% correct.
-                                    <br>
-                                    The numbers for "Total used" are correct, they take reprocessed ores into account.
+                                    At some point we switched over to using
+                                    compressed ore. So the graphs, "Total Spend"
+                                    and "Average Cost" are not 100% correct.
+                                    <br />
+                                    The numbers for "Total used" are correct,
+                                    they take reprocessed ores into account.
                                 </p>
                             </n-col>
 
@@ -174,7 +209,7 @@
 
                                 <n-col :span="5">
                                     <h3>
-                                        <div style="display: flex;">
+                                        <div style="display: flex">
                                             <eve-icon
                                                 :id="material.type_id"
                                                 :width="24"
@@ -187,22 +222,38 @@
                                     </h3>
 
                                     <n-statistic label="Total used">
-                                        <format-number :value="material.quantity" />
+                                        <format-number
+                                            :value="material.quantity"
+                                        />
                                     </n-statistic>
 
                                     <n-statistic label="Total spend (ISK)">
                                         <format-number :value="material.cost" />
                                     </n-statistic>
 
-                                    <n-statistic label="Average cost per unit (ISK)">
-                                        <format-number :value="material.cost / material.quantity" />
+                                    <n-statistic
+                                        label="Average cost per unit (ISK)"
+                                    >
+                                        <format-number
+                                            :value="
+                                                material.cost /
+                                                material.quantity
+                                            "
+                                        />
                                     </n-statistic>
                                 </n-col>
 
                                 <n-col :span="19">
                                     <v-chart
                                         class="chart_line"
-                                        :option="default_material_chart(statistics.raw_materials_by_month[material.type_id])"
+                                        :option="
+                                            default_material_chart(
+                                                statistics
+                                                    .raw_materials_by_month[
+                                                    material.type_id
+                                                ],
+                                            )
+                                        "
                                     />
                                 </n-col>
                             </template>
@@ -221,10 +272,10 @@
                 >
                     <n-collapse>
                         <n-collapse-item :title="group.header">
-                            <n-col
-                                :span="24"
-                            >
-                                <h1 style="margin-bottom: 0px;">{{ group.header }}</h1>
+                            <n-col :span="24">
+                                <h1 style="margin-bottom: 0px">
+                                    {{ group.header }}
+                                </h1>
                             </n-col>
 
                             <template
@@ -235,7 +286,7 @@
 
                                 <n-col :span="5">
                                     <h3>
-                                        <div style="display: flex;">
+                                        <div style="display: flex">
                                             <eve-icon
                                                 :id="material.type_id"
                                                 :width="24"
@@ -248,22 +299,38 @@
                                     </h3>
 
                                     <n-statistic label="Total produced">
-                                        <format-number :value="material.quantity" />
+                                        <format-number
+                                            :value="material.quantity"
+                                        />
                                     </n-statistic>
 
                                     <n-statistic label="Total runs">
                                         <format-number :value="material.runs" />
                                     </n-statistic>
 
-                                    <n-statistic label="Average job cost per unit (ISK)">
-                                        <format-number :value="average_component_cost(material.type_id)" />
+                                    <n-statistic
+                                        label="Average job cost per unit (ISK)"
+                                    >
+                                        <format-number
+                                            :value="
+                                                average_component_cost(
+                                                    material.type_id,
+                                                )
+                                            "
+                                        />
                                     </n-statistic>
                                 </n-col>
 
                                 <n-col :span="19">
                                     <v-chart
                                         class="chart_line"
-                                        :option="default_material_chart(statistics.components_by_month[material.type_id])"
+                                        :option="
+                                            default_material_chart(
+                                                statistics.components_by_month[
+                                                    material.type_id
+                                                ],
+                                            )
+                                        "
                                     />
                                 </n-col>
                             </template>
@@ -279,23 +346,31 @@
 import axios from 'axios';
 
 import { Component, Vue, toNative } from 'vue-facing-decorator';
-import { NCol, NCollapse, NCollapseItem, NDivider, NImage, NRow, NStatistic } from 'naive-ui';
+import {
+    NCol,
+    NCollapse,
+    NCollapseItem,
+    NDivider,
+    NImage,
+    NRow,
+    NStatistic,
+} from 'naive-ui';
 
 import { events } from '@/main';
 import { ROUTE_CHANGE } from '@/event_bus';
 
-import { use } from "echarts/core";
-import { CanvasRenderer } from "echarts/renderers";
-import { LineChart, BarChart, PieChart } from "echarts/charts";
+import { use } from 'echarts/core';
+import { CanvasRenderer } from 'echarts/renderers';
+import { LineChart, BarChart, PieChart } from 'echarts/charts';
 import {
-  AxisPointerComponent,
-  GridComponent,
-  LegendComponent,
-  MarkLineComponent,
-  TitleComponent,
-  TooltipComponent,
-} from "echarts/components";
-import VChart from "vue-echarts";
+    AxisPointerComponent,
+    GridComponent,
+    LegendComponent,
+    MarkLineComponent,
+    TitleComponent,
+    TooltipComponent,
+} from 'echarts/components';
+import VChart from 'vue-echarts';
 
 import Card from '@/components/Card.vue';
 import CardMargin from '@/components/CardMargin.vue';
@@ -321,7 +396,7 @@ import PageHeader from '@/components/PageHeader.vue';
         FormatNumber,
         Loader,
         PageHeader,
-    }
+    },
 })
 class ProjectsView extends Vue {
     public busy = false;
@@ -332,145 +407,197 @@ class ProjectsView extends Vue {
 
     public number_formatter = Intl.NumberFormat('en', { notation: 'compact' });
 
-    public cost_by_dread_order = [{
-        header: 'Faction Dreads',
-        entries: [{
-            name:    'Zirnitra',
-            type_id: 52907,
-        }, {
-            name:    'Revelation Navy Issue',
-            type_id: 73790,
-        }, {
-            name:    'Naglfar Fleet Issue',
-            type_id: 73787,
-        }, {
-            name:    'Phoenix Navy Issue',
-            type_id: 73793,
-        }, {
-            name:    'Moros Navy Issue',
-            type_id: 73792,
-        }],
-    }, {
-        header: 'Dreads',
-        entries: [{
-            name:    'Revelation',
-            type_id: 19720,
-        }, {
-            name:    'Naglfar',
-            type_id: 19722,
-        }, {
-            name:    'Phoenix',
-            type_id: 19726,
-        },  {
-            name:    'Moros',
-            type_id: 19724,
-        }]
-    }, {
-        header: 'T2 Dreads',
-        entries: [{
-            name:    'Bane',
-            type_id: 77283,
-        }, {
-            name:    'Valravn',
-            type_id: 77288,
-        }, {
-            name:    'Karura',
-            type_id: 77284,
-        }, {
-            name:    'Hubris',
-            type_id: 77281,
-        }]
-    }, {
-        header: 'FAX',
-        entries: [{
-            name:    'Apostle',
-            type_id: 37604,
-        }, {
-            name:    'Lif',
-            type_id: 37606,
-        }, {
-            name:    'Minokawa',
-            type_id: 37605,
-        }, {
-            name:    'Ninazu',
-            type_id: 37607,
-        }]
-    }, {
-        header: 'Carrier',
-        entries: [{
-            name:    'Archon',
-            type_id: 23757,
-        }, {
-            name:    'Nidhoggur',
-            type_id: 24483,
-        }, {
-            name:    'Chimera',
-            type_id: 23915,
-        }, {
-            name:    'Thanatos',
-            type_id: 23911,
-        }]
-    }, {
-        header: 'Supers',
-        entries: [{
-            name:    'Aeon',
-            type_id: 23919,
-        }, {
-            name:    'Hel',
-            type_id: 22852,
-        }, {
-            name:    'Wyvern',
-            type_id: 23917,
-        }, {
-            name:    'Nyx',
-            type_id: 23913,
-        }, ]
-    }, {
-        header: 'Titans',
-        entries: [{
-            name:    'Avatar',
-            type_id: 11567,
-        }, {
-            name:    'Ragnarok',
-            type_id: 23773,
-        }, {
-            name:    'Leviathan',
-            type_id: 3764,
-        }, {
-            name:    'Erebus',
-            type_id: 671,
-        }]
-    }, {
-        header: 'Jump Freighter',
-        entries: [{
-            name:    'Ark',
-            type_id: 28850,
-        }, {
-            name:    'Nomad',
-            type_id: 28846,
-        }, {
-            name:    'Rhea',
-            type_id: 28844,
-        }, {
-            name:    'Obelisk',
-            type_id: 20187,
-        }]
-    }, {
-        header: 'Other',
-        entries: [{
-            name:    'Rorqual',
-            type_id: 28352,
-        }]
-    }];
+    public cost_by_dread_order = [
+        {
+            header: 'Faction Dreads',
+            entries: [
+                {
+                    name: 'Zirnitra',
+                    type_id: 52907,
+                },
+                {
+                    name: 'Revelation Navy Issue',
+                    type_id: 73790,
+                },
+                {
+                    name: 'Naglfar Fleet Issue',
+                    type_id: 73787,
+                },
+                {
+                    name: 'Phoenix Navy Issue',
+                    type_id: 73793,
+                },
+                {
+                    name: 'Moros Navy Issue',
+                    type_id: 73792,
+                },
+            ],
+        },
+        {
+            header: 'Dreads',
+            entries: [
+                {
+                    name: 'Revelation',
+                    type_id: 19720,
+                },
+                {
+                    name: 'Naglfar',
+                    type_id: 19722,
+                },
+                {
+                    name: 'Phoenix',
+                    type_id: 19726,
+                },
+                {
+                    name: 'Moros',
+                    type_id: 19724,
+                },
+            ],
+        },
+        {
+            header: 'T2 Dreads',
+            entries: [
+                {
+                    name: 'Bane',
+                    type_id: 77283,
+                },
+                {
+                    name: 'Valravn',
+                    type_id: 77288,
+                },
+                {
+                    name: 'Karura',
+                    type_id: 77284,
+                },
+                {
+                    name: 'Hubris',
+                    type_id: 77281,
+                },
+            ],
+        },
+        {
+            header: 'FAX',
+            entries: [
+                {
+                    name: 'Apostle',
+                    type_id: 37604,
+                },
+                {
+                    name: 'Lif',
+                    type_id: 37606,
+                },
+                {
+                    name: 'Minokawa',
+                    type_id: 37605,
+                },
+                {
+                    name: 'Ninazu',
+                    type_id: 37607,
+                },
+            ],
+        },
+        {
+            header: 'Carrier',
+            entries: [
+                {
+                    name: 'Archon',
+                    type_id: 23757,
+                },
+                {
+                    name: 'Nidhoggur',
+                    type_id: 24483,
+                },
+                {
+                    name: 'Chimera',
+                    type_id: 23915,
+                },
+                {
+                    name: 'Thanatos',
+                    type_id: 23911,
+                },
+            ],
+        },
+        {
+            header: 'Supers',
+            entries: [
+                {
+                    name: 'Aeon',
+                    type_id: 23919,
+                },
+                {
+                    name: 'Hel',
+                    type_id: 22852,
+                },
+                {
+                    name: 'Wyvern',
+                    type_id: 23917,
+                },
+                {
+                    name: 'Nyx',
+                    type_id: 23913,
+                },
+            ],
+        },
+        {
+            header: 'Titans',
+            entries: [
+                {
+                    name: 'Avatar',
+                    type_id: 11567,
+                },
+                {
+                    name: 'Ragnarok',
+                    type_id: 23773,
+                },
+                {
+                    name: 'Leviathan',
+                    type_id: 3764,
+                },
+                {
+                    name: 'Erebus',
+                    type_id: 671,
+                },
+            ],
+        },
+        {
+            header: 'Jump Freighter',
+            entries: [
+                {
+                    name: 'Ark',
+                    type_id: 28850,
+                },
+                {
+                    name: 'Nomad',
+                    type_id: 28846,
+                },
+                {
+                    name: 'Rhea',
+                    type_id: 28844,
+                },
+                {
+                    name: 'Obelisk',
+                    type_id: 20187,
+                },
+            ],
+        },
+        {
+            header: 'Other',
+            entries: [
+                {
+                    name: 'Rorqual',
+                    type_id: 28352,
+                },
+            ],
+        },
+    ];
 
     public async created() {
-        events.$emit(
-            ROUTE_CHANGE,
-            this.$route.name
-        );
+        events.$emit(ROUTE_CHANGE, this.$route.name);
 
         this.busy = true;
-        this.statistics = (await axios.get<IStatistics>('/api/v1/projects/statistics')).data;
+        this.statistics = (
+            await axios.get<IStatistics>('/api/v1/projects/statistics')
+        ).data;
         this.busy = false;
 
         use([
@@ -486,35 +613,33 @@ class ProjectsView extends Vue {
             TooltipComponent,
         ]);
 
-        this.caps_by_type = this.default_pie_chart(this.statistics.caps_buid_by_type);
+        this.caps_by_type = this.default_pie_chart(
+            this.statistics.caps_buid_by_type,
+        );
     }
 
     public format_date(date: string): string {
         return new Date(date).toLocaleString('en-EN', {
-            month: 'long'
+            month: 'long',
         });
     }
 
-    public average_material_cost(
-        type_id: number,
-    ): number {
-        let reduced = this.statistics
-            .raw_materials_by_month[type_id]
-            .reduce((prev: any, curr: any) => {
+    public average_material_cost(type_id: number): number {
+        let reduced = this.statistics.raw_materials_by_month[type_id].reduce(
+            (prev: any, curr: any) => {
                 prev.cost += curr.cost;
                 prev.quantity += curr.quantity;
                 return prev;
-            }, { cost: 0, quantity: 0 });
+            },
+            { cost: 0, quantity: 0 },
+        );
 
         return reduced.cost / reduced.quantity;
     }
 
-    public average_component_cost(
-        type_id: number,
-    ): number {
-        let reduced = this.statistics
-            .components_by_month[type_id]
-            .reduce((prev: any, curr: any) => {
+    public average_component_cost(type_id: number): number {
+        let reduced = this.statistics.components_by_month[type_id].reduce(
+            (prev: any, curr: any) => {
                 if (!curr.runs) {
                     return prev;
                 }
@@ -522,47 +647,51 @@ class ProjectsView extends Vue {
                 prev.cost += curr.cost;
                 prev.runs += curr.runs;
                 return prev;
-            }, { cost: 0, runs: 0 });
+            },
+            { cost: 0, runs: 0 },
+        );
 
         return reduced.cost / reduced.runs;
     }
 
-    public default_material_chart(data: IMarketByMonth[] | IComponentsByMonth[]) {
+    public default_material_chart(
+        data: IMarketByMonth[] | IComponentsByMonth[],
+    ) {
         if (data.length !== 12) {
-            if (!data.find(x => x.month === 1)) {
+            if (!data.find((x) => x.month === 1)) {
                 data.push(<any>{ month: 1, cost: 0, quantity: 0 });
             }
-            if (!data.find(x => x.month === 2)) {
+            if (!data.find((x) => x.month === 2)) {
                 data.push(<any>{ month: 2, cost: 0, quantity: 0 });
             }
-            if (!data.find(x => x.month === 3)) {
+            if (!data.find((x) => x.month === 3)) {
                 data.push(<any>{ month: 3, cost: 0, quantity: 0 });
             }
-            if (!data.find(x => x.month === 4)) {
+            if (!data.find((x) => x.month === 4)) {
                 data.push(<any>{ month: 4, cost: 0, quantity: 0 });
             }
-            if (!data.find(x => x.month === 5)) {
+            if (!data.find((x) => x.month === 5)) {
                 data.push(<any>{ month: 5, cost: 0, quantity: 0 });
             }
-            if (!data.find(x => x.month === 6)) {
+            if (!data.find((x) => x.month === 6)) {
                 data.push(<any>{ month: 6, cost: 0, quantity: 0 });
             }
-            if (!data.find(x => x.month === 7)) {
+            if (!data.find((x) => x.month === 7)) {
                 data.push(<any>{ month: 7, cost: 0, quantity: 0 });
             }
-            if (!data.find(x => x.month === 8)) {
+            if (!data.find((x) => x.month === 8)) {
                 data.push(<any>{ month: 8, cost: 0, quantity: 0 });
             }
-            if (!data.find(x => x.month === 9)) {
+            if (!data.find((x) => x.month === 9)) {
                 data.push(<any>{ month: 9, cost: 0, quantity: 0 });
             }
-            if (!data.find(x => x.month === 10)) {
+            if (!data.find((x) => x.month === 10)) {
                 data.push(<any>{ month: 10, cost: 0, quantity: 0 });
             }
-            if (!data.find(x => x.month === 11)) {
+            if (!data.find((x) => x.month === 11)) {
                 data.push(<any>{ month: 11, cost: 0, quantity: 0 });
             }
-            if (!data.find(x => x.month === 12)) {
+            if (!data.find((x) => x.month === 12)) {
                 data.push(<any>{ month: 12, cost: 0, quantity: 0 });
             }
         }
@@ -570,64 +699,80 @@ class ProjectsView extends Vue {
         data.sort(
             (
                 a: IMarketByMonth | IComponentsByMonth,
-                b: IMarketByMonth | IComponentsByMonth
-            ) => a.month - b.month
+                b: IMarketByMonth | IComponentsByMonth,
+            ) => a.month - b.month,
         );
 
         return {
             darkMode: true,
             tooltip: {
-                trigger: 'axis'
+                trigger: 'axis',
             },
             legend: {
                 textStyle: {
-                    color: 'white'
-                }
+                    color: 'white',
+                },
             },
             xAxis: {
                 type: 'category',
-                data: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                data: [
+                    'January',
+                    'February',
+                    'March',
+                    'April',
+                    'May',
+                    'June',
+                    'July',
+                    'August',
+                    'September',
+                    'October',
+                    'November',
+                    'December',
+                ],
             },
-            yAxis: [{
-                id:   0,
-                type: 'value',
-                axisLabel: {
-                    formatter: (val: number) => this.number_formatter.format(val),
+            yAxis: [
+                {
+                    id: 0,
+                    type: 'value',
+                    axisLabel: {
+                        formatter: (val: number) =>
+                            this.number_formatter.format(val),
+                    },
                 },
-            }, {
-                id:   1,
-                type: 'value',
-                axisLabel: {
-                    formatter: (val: number) => this.number_formatter.format(val),
+                {
+                    id: 1,
+                    type: 'value',
+                    axisLabel: {
+                        formatter: (val: number) =>
+                            this.number_formatter.format(val),
+                    },
                 },
-            }],
+            ],
             series: [
                 {
                     name: 'Average cost per unit / month',
                     type: 'line',
-                    data: data
-                        .map(x => {
-                            if (x.cost === 0) {
-                                return '-';
-                            }
+                    data: data.map((x) => {
+                        if (x.cost === 0) {
+                            return '-';
+                        }
 
-                            return Math.floor((x.cost / x.quantity) * 100) / 100;
-                        }),
+                        return Math.floor((x.cost / x.quantity) * 100) / 100;
+                    }),
                 },
                 {
                     yAxisIndex: 1,
                     name: 'Used by month',
                     type: 'bar',
-                    data: data
-                        .map(x => {
-                            if (x.cost === 0) {
-                                return '-';
-                            }
+                    data: data.map((x) => {
+                        if (x.cost === 0) {
+                            return '-';
+                        }
 
-                            return x.quantity;
-                        }),
-                }
-            ]
+                        return x.quantity;
+                    }),
+                },
+            ],
         };
     }
 
@@ -643,32 +788,36 @@ class ProjectsView extends Vue {
                 axisPointer: {
                     label: {
                         formatter: (params: any): string => {
-                            let item = data
-                                .find(x => x.project_name === params.value) || {
-                                    item_name: 'Unknown'
-                                };
+                            let item = data.find(
+                                (x) => x.project_name === params.value,
+                            ) || {
+                                item_name: 'Unknown',
+                            };
 
-                            return `${params.value} (${item.item_name})`
-                        }
-                    }
-                }
+                            return `${params.value} (${item.item_name})`;
+                        },
+                    },
+                },
             },
             legend: {
                 textStyle: {
-                    color: 'white'
-                }
+                    color: 'white',
+                },
             },
             xAxis: {
                 type: 'category',
-                data: data.map(x => x.project_name),
+                data: data.map((x) => x.project_name),
             },
-            yAxis: [{
-                id:   0,
-                type: 'value',
-                axisLabel: {
-                    formatter: (val: number) => this.number_formatter.format(val),
+            yAxis: [
+                {
+                    id: 0,
+                    type: 'value',
+                    axisLabel: {
+                        formatter: (val: number) =>
+                            this.number_formatter.format(val),
+                    },
                 },
-            }],
+            ],
             series: [
                 {
                     yAxisIndex: 0,
@@ -676,14 +825,13 @@ class ProjectsView extends Vue {
                     type: 'line',
                     stack: 'Total',
                     areaStyle: {},
-                    data: data
-                        .map(x => {
-                            if (x.market === 0) {
-                                return '-';
-                            }
+                    data: data.map((x) => {
+                        if (x.market === 0) {
+                            return '-';
+                        }
 
-                            return x.market;
-                        }),
+                        return x.market;
+                    }),
                 },
                 {
                     yAxisIndex: 0,
@@ -691,14 +839,13 @@ class ProjectsView extends Vue {
                     type: 'line',
                     stack: 'Total',
                     areaStyle: {},
-                    data: data
-                        .map(x => {
-                            if (x.hauling === 0) {
-                                return '-';
-                            }
+                    data: data.map((x) => {
+                        if (x.hauling === 0) {
+                            return '-';
+                        }
 
-                            return x.hauling;
-                        }),
+                        return x.hauling;
+                    }),
                 },
                 {
                     yAxisIndex: 0,
@@ -706,14 +853,13 @@ class ProjectsView extends Vue {
                     type: 'line',
                     stack: 'Total',
                     areaStyle: {},
-                    data: data
-                        .map(x => {
-                            if (x.reprocessing === 0) {
-                                return '-';
-                            }
+                    data: data.map((x) => {
+                        if (x.reprocessing === 0) {
+                            return '-';
+                        }
 
-                            return x.reprocessing;
-                        }),
+                        return x.reprocessing;
+                    }),
                 },
                 {
                     yAxisIndex: 0,
@@ -721,14 +867,13 @@ class ProjectsView extends Vue {
                     type: 'line',
                     stack: 'Total',
                     areaStyle: {},
-                    data: data
-                        .map(x => {
-                            if (x.bpc === 0) {
-                                return '-';
-                            }
+                    data: data.map((x) => {
+                        if (x.bpc === 0) {
+                            return '-';
+                        }
 
-                            return x.bpc;
-                        }),
+                        return x.bpc;
+                    }),
                 },
                 {
                     yAxisIndex: 0,
@@ -736,14 +881,13 @@ class ProjectsView extends Vue {
                     type: 'line',
                     stack: 'Total',
                     areaStyle: {},
-                    data: data
-                        .map(x => {
-                            if (x.reactions === 0) {
-                                return '-';
-                            }
+                    data: data.map((x) => {
+                        if (x.reactions === 0) {
+                            return '-';
+                        }
 
-                            return x.reactions;
-                        }),
+                        return x.reactions;
+                    }),
                 },
                 {
                     yAxisIndex: 0,
@@ -751,16 +895,15 @@ class ProjectsView extends Vue {
                     type: 'line',
                     stack: 'Total',
                     areaStyle: {},
-                    data: data
-                        .map(x => {
-                            if (x.manufacturing === 0) {
-                                return '-';
-                            }
+                    data: data.map((x) => {
+                        if (x.manufacturing === 0) {
+                            return '-';
+                        }
 
-                            return x.manufacturing;
-                        }),
+                        return x.manufacturing;
+                    }),
                 },
-            ]
+            ],
         };
     }
 
@@ -770,7 +913,7 @@ class ProjectsView extends Vue {
             tooltip: {},
             legend: {
                 textStyle: {
-                    color: 'white'
+                    color: 'white',
                 },
                 left: 'center',
             },
@@ -778,84 +921,84 @@ class ProjectsView extends Vue {
                 {
                     type: 'pie',
                     data,
-                }
-            ]
+                },
+            ],
         };
     }
 }
 
 interface IStatistics {
-    build_caps:             number;
-    build_fittings:         number;
+    build_caps: number;
+    build_fittings: number;
 
-    top_month_count:        { month: string, count: number };
+    top_month_count: { month: string; count: number };
 
-    jobs_reaction:          number,
-    jobs_manufacturing:     number,
+    jobs_reaction: number;
+    jobs_manufacturing: number;
 
-    cost_jobs:              number;
-    cost_materials:         number;
+    cost_jobs: number;
+    cost_materials: number;
 
-    caps_buid_by_type:      { name: string, value: number }[];
+    caps_buid_by_type: { name: string; value: number }[];
 
-    consumed_raw_materials: { header: string, entries: IConsumedMaterials[] }[];
-    produced_components:    { header: string, entries: IProducedComponents[] }[];
+    consumed_raw_materials: { header: string; entries: IConsumedMaterials[] }[];
+    produced_components: { header: string; entries: IProducedComponents[] }[];
 
     raw_materials_by_month: { [key: number]: IMarketByMonth[] };
-    components_by_month:    { [key: number]: IComponentsByMonth[] };
+    components_by_month: { [key: number]: IComponentsByMonth[] };
 
-    cost_by_dread:          { [key: number]: ICostByDread[] };
+    cost_by_dread: { [key: number]: ICostByDread[] };
 
-    blueprint_cost:         number;
-    hauling_cost:           number;
-    reprocessing_cost:      number;
+    blueprint_cost: number;
+    hauling_cost: number;
+    reprocessing_cost: number;
 }
 
 interface IConsumedMaterials {
-    item_name:   string;
-    quantity:    number;
-    type_id:     number;
-    group_id:    number;
+    item_name: string;
+    quantity: number;
+    type_id: number;
+    group_id: number;
     category_id: number;
-    cost:        number;
+    cost: number;
 }
 
 interface IMarketByMonth {
-    month:     number;
+    month: number;
     item_name: string;
-    quantity:  number;
-    type_id:   number;
-    cost:      number;
+    quantity: number;
+    type_id: number;
+    cost: number;
 }
 
 interface IProducedComponents {
-    item_name:   string;
-    quantity:    number;
-    type_id:     number;
-    group_id:    number;
+    item_name: string;
+    quantity: number;
+    type_id: number;
+    group_id: number;
     category_id: number;
-    cost:        number;
-    runs:        number;
+    cost: number;
+    runs: number;
 }
 
 interface IComponentsByMonth {
-    month:     number;
+    month: number;
     item_name: string;
-    runs:      number;
-    quantity:  number;
-    type_id:   number;
-    cost:      number;
+    runs: number;
+    quantity: number;
+    type_id: number;
+    cost: number;
 }
 
 interface ICostByDread {
-    project_name:  string;
-    item_name:     string;
-    reactions:     number;
+    project_name: string;
+    item_name: string;
+    reactions: number;
     manufacturing: number;
-    market:        number;
-    hauling:       number,
-    reprocessing:  number,
-    bpc:           number,
+    market: number;
+    hauling: number;
+    reprocessing: number;
+    bpc: number;
 }
 
 export default toNative(ProjectsView);

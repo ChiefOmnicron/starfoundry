@@ -17,12 +17,12 @@ import { NInputNumber } from 'naive-ui';
 @Component({
     components: {
         NInputNumber,
-    }
+    },
 })
 class FormatNumberInput extends Vue {
     @Prop({
         type: Boolean,
-        default: false
+        default: false,
     })
     public withComma!: boolean;
 
@@ -34,7 +34,7 @@ class FormatNumberInput extends Vue {
 
     @Prop({
         type: String,
-        default: 'Please Input'
+        default: 'Please Input',
     })
     public placeholder!: string;
 
@@ -62,12 +62,11 @@ class FormatNumberInput extends Vue {
 
         const nums = input.replace(/\./g, '').trim();
         if (/^\d+(\.(\d+)?)?$/.test(nums)) {
-            return Number(nums)
-        };
+            return Number(nums);
+        }
         return nums === '' ? null : Number.NaN;
     }
 }
 
 export default toNative(FormatNumberInput);
 </script>
-  

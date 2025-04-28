@@ -33,10 +33,7 @@ import type { ProjectUuid } from '@/sdk/utils';
         NText,
         NSelect,
     },
-    emits: [
-        'error',
-        'update:projectId',
-    ],
+    emits: ['error', 'update:projectId'],
 })
 class ProjectSelector extends Vue {
     @Prop({
@@ -51,10 +48,9 @@ class ProjectSelector extends Vue {
 
     public async created() {
         this.busy = true;
-        await ProjectService
-            .list({
-                status: 'IN_PROGRESS'
-            })
+        await ProjectService.list({
+            status: 'IN_PROGRESS',
+        })
             .then((x: Project[]) => {
                 this.busy = false;
 
@@ -65,14 +61,14 @@ class ProjectSelector extends Vue {
                     });
                 });
             })
-            .catch(e => {
+            .catch((e) => {
                 this.busy = false;
-                this.$emit('error', e)
+                this.$emit('error', e);
             });
     }
 
     public updateValue(value: ProjectUuid | null) {
-        console.log(value)
+        console.log(value);
         this.value = value;
         this.$emit('update:projectId', value);
     }

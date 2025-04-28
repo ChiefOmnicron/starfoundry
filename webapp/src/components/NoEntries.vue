@@ -1,9 +1,5 @@
 <template>
-    <n-empty
-        :description="description"
-        size="large"
-        style="margin-top: 5%"
-    >
+    <n-empty :description="description" size="large" style="margin-top: 5%">
         <template #extra>
             <slot></slot>
         </template>
@@ -17,7 +13,7 @@ import { NEmpty } from 'naive-ui';
 @Component({
     components: {
         NEmpty,
-    }
+    },
 })
 class NoEntries extends Vue {
     @Prop({

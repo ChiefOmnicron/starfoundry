@@ -2,31 +2,30 @@
     <div>
         <page-header
             :title="project.name + ' ' + 'Excess'"
-            v-if="!initialLoad && !messages.loadingError && !messages.forbidden && project"
+            v-if="
+                !initialLoad &&
+                !messages.loadingError &&
+                !messages.forbidden &&
+                project
+            "
         />
 
-        <common-messages
-            :message="messages"
-            @close="commonMessagesClose"
-        />
+        <common-messages :message="messages" @close="commonMessagesClose" />
 
         <no-entries
             description="No entries found"
             data-cy="structuresNoEntries"
-            v-if="excessEntries.length === 0 && !initialLoad && !messages.forbidden"
+            v-if="
+                excessEntries.length === 0 &&
+                !initialLoad &&
+                !messages.forbidden
+            "
         />
 
-        <loader
-            :busy="initialLoad"
-        />
+        <loader :busy="initialLoad" />
 
-        <action-group
-            v-if="excessEntries.length > 0"
-        >
-            <n-button
-                :disabled="busy"
-                @click="showExport = true"
-            >
+        <action-group v-if="excessEntries.length > 0">
+            <n-button :disabled="busy" @click="showExport = true">
                 Export
             </n-button>
 
@@ -37,10 +36,7 @@
             />
         </action-group>
 
-        <card
-            no-title
-            v-if="!initialLoad && excessEntries.length > 0"
-        >
+        <card no-title v-if="!initialLoad && excessEntries.length > 0">
             <data-table
                 :definitions="tableDefinition()"
                 :entries="excessEntries"
@@ -66,13 +62,25 @@ import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
 import { type Uuid } from '@/sdk/utils';
 import { type IExcess, Project, ProjectService } from '@/sdk/project';
 
-import { NButton, NDropdown, NInput, NInputNumber, NSelect, NTable } from 'naive-ui';
+import {
+    NButton,
+    NDropdown,
+    NInput,
+    NInputNumber,
+    NSelect,
+    NTable,
+} from 'naive-ui';
 import ActionGroup from '@/components/ActionGroup.vue';
 import AppraisalSelector from '@/project/components/AppraisalSelector.vue';
 import Card from '@/components/Card.vue';
-import CommonMessages, { DEFAULT_COMMON_MESSAGES, type ICommonMessages } from '@/components/CommonMessages.vue';
+import CommonMessages, {
+    DEFAULT_COMMON_MESSAGES,
+    type ICommonMessages,
+} from '@/components/CommonMessages.vue';
 import CopyText from '@/components/CopyText.vue';
-import DataTable, { type IDataTableDefinition } from '@/components/DataTable.vue';
+import DataTable, {
+    type IDataTableDefinition,
+} from '@/components/DataTable.vue';
 import EveIcon from '@/components/EveIcon.vue';
 import Export from '@/components/ItemExportModal.vue';
 import FormatNumber from '@/components/FormatNumber.vue';
@@ -101,7 +109,7 @@ import PageHeader from '@/components/PageHeader.vue';
         Loader,
         NoEntries,
         PageHeader,
-    }
+    },
 })
 class ProjectExcessList extends Vue {
     @Prop({
@@ -122,24 +130,23 @@ class ProjectExcessList extends Vue {
     public async created() {
         this.initialLoad = true;
 
-        await ProjectService
-            .fetch(this.projectId)
-            .then(x => {
+        await ProjectService.fetch(this.projectId)
+            .then((x) => {
                 this.project = x;
             })
-            .then(_ => this.project.fetchPermissionCanWrite())
-            .then(_ => this.project.fetchExcess())
-            .then(groups => {
+            .then((_) => this.project.fetchPermissionCanWrite())
+            .then((_) => this.project.fetchExcess())
+            .then((groups) => {
                 for (let group of groups) {
                     this.excessEntries.push(...group.entries);
                 }
 
                 this.initialLoad = false;
             })
-            .catch(e => {
+            .catch((e) => {
                 if (e.response.status === 404) {
                     this.messages.notFound = true;
-                } else if(e.response.status === 403) {
+                } else if (e.response.status === 403) {
                     this.messages.forbidden = true;
                 } else {
                     this.messages.loadingError = true;
@@ -156,7 +163,7 @@ class ProjectExcessList extends Vue {
 
         this.project
             .updateExcessPrices(option)
-            .then(groups => {
+            .then((groups) => {
                 this.busy = false;
 
                 this.excessEntries = [];
@@ -164,10 +171,10 @@ class ProjectExcessList extends Vue {
                     this.excessEntries.push(...group.entries);
                 }
             })
-            .catch(e => {
+            .catch((e) => {
                 if (e.response.status === 404) {
                     this.messages.notFound = true;
-                } else if(e.response.status === 403) {
+                } else if (e.response.status === 403) {
                     this.messages.forbidden = true;
                 } else {
                     this.messages.updateError = true;
@@ -178,31 +185,36 @@ class ProjectExcessList extends Vue {
     }
 
     public tableDefinition(): IDataTableDefinition[] {
-        return [{
-            header: '',
-            key: 'type_id',
-            icon: 'icon',
-            width: 25,
-        }, {
-            header: 'Name',
-            key: 'type_id',
-            width: 400,
-            item: true,
-            copy: true,
-        }, {
-            header: 'Quantity',
-            key: 'quantity',
-            width: 200,
-            number: true,
-            copy: true,
-        }, {
-            header: 'Cost',
-            key: 'cost',
-            width: 200,
-            copy: true,
-            number: true,
-            nullable: true,
-        }]
+        return [
+            {
+                header: '',
+                key: 'type_id',
+                icon: 'icon',
+                width: 25,
+            },
+            {
+                header: 'Name',
+                key: 'type_id',
+                width: 400,
+                item: true,
+                copy: true,
+            },
+            {
+                header: 'Quantity',
+                key: 'quantity',
+                width: 200,
+                number: true,
+                copy: true,
+            },
+            {
+                header: 'Cost',
+                key: 'cost',
+                width: 200,
+                copy: true,
+                number: true,
+                nullable: true,
+            },
+        ];
     }
 
     public commonMessagesClose() {

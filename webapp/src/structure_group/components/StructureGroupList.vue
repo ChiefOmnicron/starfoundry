@@ -9,9 +9,7 @@
         <tbody>
             <tr v-for="group_id in groupIds" :key="group_id">
                 <td>
-                    <structure-group-link
-                        :group-id="group_id"
-                    />
+                    <structure-group-link :group-id="group_id" />
                 </td>
                 <td v-if="withSelector">
                     <n-button
@@ -35,12 +33,7 @@
                     />
                 </td>
                 <td>
-                    <n-button
-                        style="width: 100px"
-                        @click="add"
-                    >
-                        Add
-                    </n-button>
+                    <n-button style="width: 100px" @click="add"> Add </n-button>
                 </td>
             </tr>
         </tfoot>
@@ -64,7 +57,7 @@ import StructureGroupSelector from '@/components/selectors/StructureGroupSelecto
 
         StructureGroupLink,
         StructureGroupSelector,
-    }
+    },
 })
 class StructureGroupList extends Vue {
     @Prop({
@@ -89,7 +82,7 @@ class StructureGroupList extends Vue {
     }
 
     public remove(group_id: Uuid) {
-        let index = this.groupIds.findIndex(x => x === group_id);
+        let index = this.groupIds.findIndex((x) => x === group_id);
         this.groupIds.splice(index, 1);
     }
 }

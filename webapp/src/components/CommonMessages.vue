@@ -20,9 +20,7 @@ import { NAlert } from 'naive-ui';
     components: {
         NAlert,
     },
-    emits: [
-        'close'
-    ]
+    emits: ['close'],
 })
 class CommonMessages extends Vue {
     @Prop({
@@ -39,37 +37,45 @@ class CommonMessages extends Vue {
         deep: true,
     })
     public watchMessage() {
-        if(this.message.createSuccess) {
-            this.messageTitle = 'Create Success',
-            this.messageDescription = 'The entity was successfully created';
+        if (this.message.createSuccess) {
+            (this.messageTitle = 'Create Success'),
+                (this.messageDescription =
+                    'The entity was successfully created');
             this.messageType = 'success';
         } else if (this.message.updateSuccess) {
-            this.messageTitle = 'Update Success',
-            this.messageDescription = 'The entity was successfully updated';
+            (this.messageTitle = 'Update Success'),
+                (this.messageDescription =
+                    'The entity was successfully updated');
             this.messageType = 'success';
         } else if (this.message.createError) {
-            this.messageTitle = 'Create Error',
-            this.messageDescription = 'Error while creating the entity. Try again later';
+            (this.messageTitle = 'Create Error'),
+                (this.messageDescription =
+                    'Error while creating the entity. Try again later');
             this.messageType = 'error';
         } else if (this.message.deleteError) {
-            this.messageTitle = 'Delete Error',
-            this.messageDescription = 'Error while deleting the entity. Try again later';
+            (this.messageTitle = 'Delete Error'),
+                (this.messageDescription =
+                    'Error while deleting the entity. Try again later');
             this.messageType = 'error';
         } else if (this.message.loadingError) {
-            this.messageTitle = 'Loading Error',
-            this.messageDescription = 'Error while loading data. Try again later';
+            (this.messageTitle = 'Loading Error'),
+                (this.messageDescription =
+                    'Error while loading data. Try again later');
             this.messageType = 'error';
         } else if (this.message.updateError) {
-            this.messageTitle = 'Update Error',
-            this.messageDescription = 'Error while updating. Try again later';
+            (this.messageTitle = 'Update Error'),
+                (this.messageDescription =
+                    'Error while updating. Try again later');
             this.messageType = 'error';
         } else if (this.message.notFound) {
-            this.messageTitle = 'Not found',
-            this.messageDescription = 'Entity not found, make sure the link is correct';
+            (this.messageTitle = 'Not found'),
+                (this.messageDescription =
+                    'Entity not found, make sure the link is correct');
             this.messageType = 'warning';
         } else if (this.message.forbidden) {
-            this.messageTitle = 'Forbidden',
-            this.messageDescription = 'You do not have the necessary permissions';
+            (this.messageTitle = 'Forbidden'),
+                (this.messageDescription =
+                    'You do not have the necessary permissions');
             this.messageType = 'error';
         }
     }
@@ -112,13 +118,15 @@ export const DEFAULT_COMMON_MESSAGES = (): ICommonMessages => {
         forbidden: false,
 
         hasError: (self: ICommonMessages) => {
-            return self.createError ||
+            return (
+                self.createError ||
                 self.deleteError ||
                 self.loadingError ||
                 self.updateError ||
                 self.notFound ||
-                self.forbidden;
-        }
-    }
-}
+                self.forbidden
+            );
+        },
+    };
+};
 </script>

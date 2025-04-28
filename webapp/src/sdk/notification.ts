@@ -1,10 +1,11 @@
-import axios from "axios";
-import type { NotificationId, Uuid } from "@/sdk/utils";
+import axios from 'axios';
+import type { NotificationId, Uuid } from '@/sdk/utils';
 
 const NOTIFICATIONS_PATH: string = '/api/v1/notifications';
 
 export class NotificationService {
-    public static cache: { [notificationId: NotificationId]: Notification } = {};
+    public static cache: { [notificationId: NotificationId]: Notification } =
+        {};
 
     public static async list(
         filter: INotificationFilter,
@@ -13,29 +14,29 @@ export class NotificationService {
             .get<NotificationId[]>(NOTIFICATIONS_PATH, {
                 params: filter,
             })
-            .then(x => {
+            .then((x) => {
                 let response: NotificationId[] = [];
                 if (x.data) {
                     response = x.data;
                 }
 
                 return Promise.allSettled(
-                    response
-                        .map(y => {
-                            if (!this.cache) {
-                                this.cache = {};
-                            }
+                    response.map((y) => {
+                        if (!this.cache) {
+                            this.cache = {};
+                        }
 
-                            this.cache[y] = new Notification(y);
-                            return this.cache[y].load();
-                        })
-                    )
+                        this.cache[y] = new Notification(y);
+                        return this.cache[y].load();
+                    }),
+                );
             })
-            .then(x => x
-                .filter(x => x.status === 'fulfilled')
-                // TS does not understand that it has a value as it is
-                // definitly a successful promise
-                .map((x: any) => x.value)
+            .then((x) =>
+                x
+                    .filter((x) => x.status === 'fulfilled')
+                    // TS does not understand that it has a value as it is
+                    // definitly a successful promise
+                    .map((x: any) => x.value),
             );
     }
 
@@ -55,24 +56,24 @@ export class NotificationService {
     ): Promise<Notification> {
         return axios
             .post(`${NOTIFICATIONS_PATH}`, notification)
-            .then(x => this.fetch(x.data));
+            .then((x) => this.fetch(x.data));
     }
 
     public static async testMessage(
         target: string,
-        url:    string,
+        url: string,
     ): Promise<string> {
         return await axios
             .post(`${NOTIFICATIONS_PATH}/test-message`, {
                 target,
-                url
+                url,
             })
-            .then(x => {
-                console.log(x)
+            .then((x) => {
+                console.log(x);
                 return x.data;
             })
-            .catch(x => {
-                console.log(x.response.data)
+            .catch((x) => {
+                console.log(x.response.data);
                 throw new Error(x.response.data);
             });
     }
@@ -83,12 +84,10 @@ export class Notification {
 
     private _info: INotification = <any>null;
 
-    public constructor(
-        private _notificationId: NotificationId,
-    ) {
+    public constructor(private _notificationId: NotificationId) {
         this.loader = axios
             .get(`${NOTIFICATIONS_PATH}/${this._notificationId}`)
-            .then(x => this._info = x.data);
+            .then((x) => (this._info = x.data));
     }
 
     public async load(): Promise<Notification> {
@@ -101,8 +100,10 @@ export class Notification {
     }
 
     public async save(): Promise<void> {
-        return await axios
-            .put(`${NOTIFICATIONS_PATH}/${this._notificationId}`, this._info);
+        return await axios.put(
+            `${NOTIFICATIONS_PATH}/${this._notificationId}`,
+            this._info,
+        );
     }
 
     public async remove(): Promise<void> {
@@ -116,7 +117,7 @@ export class Notification {
     }
 
     get name(): string {
-        return this._info.name
+        return this._info.name;
     }
 
     set name(name: string) {
@@ -141,19 +142,19 @@ export class Notification {
 }
 
 export interface INotificationFilter {
-    name?:   string;
+    name?: string;
     target?: string;
 }
 
 export interface INotification {
-    id?:    Uuid;
-    name:   string;
-    url:    string;
+    id?: Uuid;
+    name: string;
+    url: string;
     target: WebhookTarget;
 }
 
 export interface INotificationTestMessage {
-    status:  string;
+    status: string;
     message: string;
 }
 

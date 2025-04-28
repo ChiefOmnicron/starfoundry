@@ -20,9 +20,7 @@ import { NAlert } from 'naive-ui';
     components: {
         NAlert,
     },
-    emits: [
-        'close'
-    ]
+    emits: ['close'],
 })
 class AlertSave extends Vue {
     @Prop({
@@ -33,7 +31,7 @@ class AlertSave extends Vue {
     public visible!: boolean;
 
     public close() {
-        this.$emit('close', true)
+        this.$emit('close', true);
     }
 }
 

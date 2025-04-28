@@ -1,10 +1,6 @@
 <template>
     <n-modal v-model:show="show" :on-update:show="close">
-        <card
-            title="Export"
-            style="width: 900px"
-            :bordered="false"
-        >
+        <card title="Export" style="width: 900px" :bordered="false">
             <item-export
                 :format-list="dataFields"
                 :format-ingame="dataFieldsIngame"
@@ -32,7 +28,7 @@ import ItemExport from '@/components/ItemExport.vue';
         Card,
         ItemExport,
     },
-    emits: ['close']
+    emits: ['close'],
 })
 class ItemExportModal extends Vue {
     @Prop({
@@ -44,14 +40,14 @@ class ItemExportModal extends Vue {
     @Prop({
         type: Array,
         required: false,
-        default: ['name', 'quantity']
+        default: ['name', 'quantity'],
     })
     public dataFields: string[] = <any>null;
 
     @Prop({
         type: Array,
         required: false,
-        default: () => ['type_id', 'name']
+        default: () => ['type_id', 'name'],
     })
     public dataFieldsIngame: string[] = <any>null;
 

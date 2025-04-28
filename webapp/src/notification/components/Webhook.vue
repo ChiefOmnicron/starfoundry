@@ -1,7 +1,5 @@
 <template>
-    <card
-        title="Webhook"
-    >
+    <card title="Webhook">
         <template #action>
             <n-button
                 :disabled="testMessage.isSending"
@@ -14,9 +12,7 @@
         </template>
 
         <div style="margin: 10px">
-            <form-item
-                label="Integration"
-            >
+            <form-item label="Integration">
                 <n-select
                     placeholder="Insert integration name"
                     v-model:value="data.target"
@@ -24,9 +20,7 @@
                 />
             </form-item>
 
-            <form-item
-                label="URL"
-            >
+            <form-item label="URL">
                 <n-input
                     placeholder="Insert webhook url"
                     @keydown.enter.prevent
@@ -42,7 +36,7 @@
                 type="success"
                 v-if="testMessage.success"
             >
-                Sending Test Message Successful. Response:<br>
+                Sending Test Message Successful. Response:<br />
                 {{ testMessage.success }}
             </n-alert>
 
@@ -54,7 +48,7 @@
                 type="error"
                 v-if="testMessage.error"
             >
-                Error while sending test message. Response:<br>
+                Error while sending test message. Response:<br />
                 {{ testMessage.error }}
             </n-alert>
         </div>
@@ -86,9 +80,9 @@ class NotificationCreate extends Vue {
         required: true,
     })
     public data: {
-        target: WebhookTarget,
-        url: string
-    } = <any>{}
+        target: WebhookTarget;
+        url: string;
+    } = <any>{};
 
     public testMessage: ITestMessage = {
         isSending: false,
@@ -96,28 +90,27 @@ class NotificationCreate extends Vue {
         error: undefined,
     };
 
-    public targetOptions: SelectOption[] = [{
-        label: 'Discord',
-        value: 'DISCORD',
-    }, {
-        label: 'JSON',
-        value: 'JSON',
-    }];
+    public targetOptions: SelectOption[] = [
+        {
+            label: 'Discord',
+            value: 'DISCORD',
+        },
+        {
+            label: 'JSON',
+            value: 'JSON',
+        },
+    ];
 
     public sendTestMessage() {
         this.testMessage.isSending = true;
 
-        NotificationService
-            .testMessage(
-                this.data.target,
-                this.data.url,
-            )
-            .then(x => {
+        NotificationService.testMessage(this.data.target, this.data.url)
+            .then((x) => {
                 this.testMessage.success = x || 'Empty Response';
                 this.testMessage.error = undefined;
                 this.testMessage.isSending = false;
             })
-            .catch(x => {
+            .catch((x) => {
                 this.testMessage.error = x;
                 this.testMessage.success = undefined;
                 this.testMessage.isSending = false;

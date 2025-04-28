@@ -32,10 +32,7 @@ import { ProjectGroup, ProjectGroupService } from '@/project_group/service';
         NText,
         NSelect,
     },
-    emits: [
-        'error',
-        'update:value',
-    ]
+    emits: ['error', 'update:value'],
 })
 class ProjectGroupSelector extends Vue {
     @Prop({
@@ -83,18 +80,19 @@ class ProjectGroupSelector extends Vue {
 
     public async created() {
         if (!this.skipDefault) {
-            this.options = [{
-                label: 'Default',
-                value: '00000000-0000-0000-0000-000000000000',
-            }];
+            this.options = [
+                {
+                    label: 'Default',
+                    value: '00000000-0000-0000-0000-000000000000',
+                },
+            ];
         }
 
         this.busy = true;
-        await ProjectGroupService
-            .list({
-                projects:   this.projectPermission   || 'READ,WRITE',
-                structures: this.structurePermission || 'READ,WRITE',
-            })
+        await ProjectGroupService.list({
+            projects: this.projectPermission || 'READ,WRITE',
+            structures: this.structurePermission || 'READ,WRITE',
+        })
             .then((x: ProjectGroup[]) => {
                 this.busy = false;
 
@@ -105,9 +103,9 @@ class ProjectGroupSelector extends Vue {
                     });
                 });
             })
-            .catch(e => {
+            .catch((e) => {
                 this.busy = false;
-                this.$emit('error', true)
+                this.$emit('error', true);
             });
     }
 

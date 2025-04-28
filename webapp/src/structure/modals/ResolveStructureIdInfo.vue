@@ -14,10 +14,7 @@
             <n-image src="/static/add_structure/copy.png" />
 
             <h3>Insert into editor</h3>
-            <n-image
-                src="/static/add_structure/insert.png"
-                width="985px"
-            />
+            <n-image src="/static/add_structure/insert.png" width="985px" />
         </div>
     </card>
 </template>
@@ -35,8 +32,7 @@ import Card from '@/components/Card.vue';
         Card,
     },
 })
-class ResolveStructureIdInfo extends Vue {
-}
+class ResolveStructureIdInfo extends Vue {}
 
 export default toNative(ResolveStructureIdInfo);
 </script>

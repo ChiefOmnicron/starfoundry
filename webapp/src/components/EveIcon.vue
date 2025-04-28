@@ -1,8 +1,5 @@
 <template>
-    <n-image
-        :src="getImage()"
-        :width="width"
-    />
+    <n-image :src="getImage()" :width="width" />
 </template>
 
 <script lang="ts">
@@ -12,9 +9,9 @@ import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
 const BASE_URL = 'https://images.evetech.net';
 
 @Component({
-  components: {
-    NImage
-  }
+    components: {
+        NImage,
+    },
 })
 class EveIcon extends Vue {
     // either a type_id, character_id, corporation_id or alliance_id
@@ -28,14 +25,14 @@ class EveIcon extends Vue {
     @Prop({
         type: String,
         default: 'icon',
-        required: false
+        required: false,
     })
     public type!: string;
 
     // optional width
     @Prop({
         type: Number,
-        default:  32,
+        default: 32,
         required: false,
     })
     public width!: number;

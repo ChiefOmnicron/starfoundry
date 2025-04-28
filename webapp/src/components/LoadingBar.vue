@@ -3,14 +3,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, toNative } from 'vue-facing-decorator'
+import { Component, Vue, toNative } from 'vue-facing-decorator';
 
 import axios from 'axios';
 
 import { useLoadingBar } from 'naive-ui';
 
 @Component({
-    components: {}
+    components: {},
 })
 //export default class App extends Vue {
 class LoadingBar extends Vue {
@@ -19,32 +19,36 @@ class LoadingBar extends Vue {
     private counter = 0;
 
     public created() {
-        axios.interceptors.request.use((config) => {
-            this.loadingBar.start();
-            this.counter += 1;
+        axios.interceptors.request.use(
+            (config) => {
+                this.loadingBar.start();
+                this.counter += 1;
 
-            return config;
-        }, (error) => {
-            this.loadingBar.error();
-            return Promise.reject(error);
-        });
+                return config;
+            },
+            (error) => {
+                this.loadingBar.error();
+                return Promise.reject(error);
+            },
+        );
 
-        axios.interceptors.response.use((response) => {
-            this.counter -= 1;
+        axios.interceptors.response.use(
+            (response) => {
+                this.counter -= 1;
 
+                if (this.counter <= 0) {
+                    this.loadingBar.finish();
+                    this.counter = 0;
+                }
 
-            if (this.counter <= 0) {
-                this.loadingBar.finish();
+                return response;
+            },
+            (error) => {
+                this.loadingBar.error();
                 this.counter = 0;
-            }
-
-            return response;
-        }, (error) => {
-
-            this.loadingBar.error();
-            this.counter = 0;
-            return Promise.reject(error);
-        });
+                return Promise.reject(error);
+            },
+        );
     }
 }
 

@@ -1,15 +1,6 @@
 <template>
-    <n-button
-        :href="link()"
-        tag="a"
-        target="_blank"
-        text
-    >
-        <format-number
-            :value="milliseconds()"
-            type="primary"
-            date
-        />
+    <n-button :href="link()" tag="a" target="_blank" text>
+        <format-number :value="milliseconds()" type="primary" date />
     </n-button>
 </template>
 
@@ -17,14 +8,14 @@
 import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
 
 import { NButton } from 'naive-ui';
-import  FormatNumber from '@/components/FormatNumber.vue';
+import FormatNumber from '@/components/FormatNumber.vue';
 
 @Component({
     components: {
         NButton,
 
         FormatNumber,
-    }
+    },
 })
 class Nakamura extends Vue {
     @Prop({

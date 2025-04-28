@@ -1,14 +1,8 @@
 <template>
     <div>
-        <common-messages
-            :message="messages"
-            @close="commonMessagesClose"
-        />
+        <common-messages :message="messages" @close="commonMessagesClose" />
 
-        <card
-            no-title
-            v-if="!busy && !messages.hasError(messages) && group"
-        >
+        <card no-title v-if="!busy && !messages.hasError(messages) && group">
             <n-form
                 ref="form_ref"
                 style="margin-top: 15px; margin-left: 10px; margin-right: 10px"
@@ -18,7 +12,7 @@
                 <n-form-item path="name" label="Name">
                     <n-input
                         v-model:value="group.name"
-                        @input="(e: any) => group.name = e"
+                        @input="(e: any) => (group.name = e)"
                         placeholder="Name"
                     />
                 </n-form-item>
@@ -26,7 +20,7 @@
                 <n-form-item path="description" label="Description">
                     <n-input
                         v-model:value="group.description"
-                        @input="(e: any) => group.description = e"
+                        @input="(e: any) => (group.description = e)"
                         placeholder="Description"
                         type="textarea"
                     />
@@ -66,11 +60,21 @@ import { ROUTE_PROJECT_GROUPS } from '@/project_group/router';
 import { type Uuid } from '@/sdk/utils';
 import { ProjectGroup, ProjectGroupService } from '@/project_group/service';
 
-import { type FormRules, NButton, NForm, NFormItem, NInput, NSpace } from 'naive-ui';
+import {
+    type FormRules,
+    NButton,
+    NForm,
+    NFormItem,
+    NInput,
+    NSpace,
+} from 'naive-ui';
 import ActionGroup from '@/components/ActionGroup.vue';
 import Card from '@/components/Card.vue';
 import CardMargin from '@/components/CardMargin.vue';
-import CommonMessages, { DEFAULT_COMMON_MESSAGES, type ICommonMessages } from '@/components/CommonMessages.vue';
+import CommonMessages, {
+    DEFAULT_COMMON_MESSAGES,
+    type ICommonMessages,
+} from '@/components/CommonMessages.vue';
 import DeleteObject from '@/components/DeleteObject.vue';
 
 @Component({
@@ -87,9 +91,7 @@ import DeleteObject from '@/components/DeleteObject.vue';
         CommonMessages,
         DeleteObject,
     },
-    emits: [
-        'refresh',
-    ]
+    emits: ['refresh'],
 })
 class ProjectGroupOverviewGeneral extends Vue {
     @Prop({
@@ -110,13 +112,12 @@ class ProjectGroupOverviewGeneral extends Vue {
     public async load() {
         this.busy = true;
 
-        ProjectGroupService
-            .fetch(this.groupId)
-            .then(x => {
+        ProjectGroupService.fetch(this.groupId)
+            .then((x) => {
                 this.busy = false;
                 this.group = x;
             })
-            .catch(e => {
+            .catch((e) => {
                 this.busy = false;
                 if (e.response.status === 404) {
                     this.messages.notFound = true;
@@ -131,15 +132,15 @@ class ProjectGroupOverviewGeneral extends Vue {
 
         await this.group
             .update()
-            .then(_ => {
+            .then((_) => {
                 this.busy = false;
                 this.$emit('refresh', null);
             })
-            .catch(e => {
+            .catch((e) => {
                 this.busy = false;
                 if (e.response.status === 404) {
                     this.messages.notFound = true;
-                } else if(e.response.status === 403) {
+                } else if (e.response.status === 403) {
                     this.messages.forbidden = true;
                 } else {
                     this.messages.loadingError = true;
@@ -152,17 +153,17 @@ class ProjectGroupOverviewGeneral extends Vue {
 
         this.group
             .remove()
-            .then(_ => {
+            .then((_) => {
                 this.busy = false;
                 this.$router.push({
                     name: ROUTE_PROJECT_GROUPS,
                 });
             })
-            .catch(e => {
+            .catch((e) => {
                 this.busy = false;
                 if (e.response.status === 404) {
                     this.messages.notFound = true;
-                } else if(e.response.status === 403) {
+                } else if (e.response.status === 403) {
                     this.messages.forbidden = true;
                 } else {
                     this.messages.loadingError = true;
@@ -171,11 +172,13 @@ class ProjectGroupOverviewGeneral extends Vue {
     }
 
     public rules: FormRules = {
-        name: [{
-            required: true,
-            message: 'The field is required'
-        }],
-    }
+        name: [
+            {
+                required: true,
+                message: 'The field is required',
+            },
+        ],
+    };
 
     public commonMessagesClose() {
         this.messages = DEFAULT_COMMON_MESSAGES();

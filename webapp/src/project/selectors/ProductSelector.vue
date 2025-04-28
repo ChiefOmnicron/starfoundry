@@ -7,7 +7,8 @@
         <div class="width: 100%; overflow: hidden">
             <n-form-item path="products" label="Products to build">
                 <n-input
-                    type="textarea" rows="10"
+                    type="textarea"
+                    rows="10"
                     placeholder="Insert your products you want to build, format: ItemName Runs MaterialEfficiency"
                     v-model:value="products"
                     @input="$emit('update:products', products)"
@@ -32,20 +33,42 @@
         </div>
 
         <div class="width: 100%; overflow: hidden">
-            <n-form-item path="count" label="Quantity" style="width: 44%; float: left">
-                <n-input-number :min="1" v-model:value="new_product.count" style="width: 100%" />
+            <n-form-item
+                path="count"
+                label="Quantity"
+                style="width: 44%; float: left"
+            >
+                <n-input-number
+                    :min="1"
+                    v-model:value="new_product.count"
+                    style="width: 100%"
+                />
             </n-form-item>
 
             <div style="width: 1%; height: 1px; float: left" />
 
-            <n-form-item path="material_efficiency" label="Material Efficiency" style="width: 44%; float: left">
-                <n-input-number :min="0" :max="10" v-model:value="new_product.material_efficiency" style="width: 100%" />
+            <n-form-item
+                path="material_efficiency"
+                label="Material Efficiency"
+                style="width: 44%; float: left"
+            >
+                <n-input-number
+                    :min="0"
+                    :max="10"
+                    v-model:value="new_product.material_efficiency"
+                    style="width: 100%"
+                />
             </n-form-item>
 
             <div style="width: 1%; height: 1px; float: left" />
 
             <n-form-item label="" style="width: 10%; float: left">
-                <n-button @click="add_product" :disabled="!new_product.name" style="width: 100%;" ghost>
+                <n-button
+                    @click="add_product"
+                    :disabled="!new_product.name"
+                    style="width: 100%"
+                    ghost
+                >
                     Add
                 </n-button>
             </n-form-item>
@@ -55,7 +78,18 @@
 
 <script lang="ts">
 import { Component, Vue, toNative } from 'vue-facing-decorator';
-import { FormRules, NButton, NCard, NForm, NFormItem, NInput, NInputNumber, NSelect, NTable, SelectOption } from 'naive-ui';
+import {
+    FormRules,
+    NButton,
+    NCard,
+    NForm,
+    NFormItem,
+    NInput,
+    NInputNumber,
+    NSelect,
+    NTable,
+    SelectOption,
+} from 'naive-ui';
 import { ItemService } from '@/services/item';
 
 @Component({
@@ -67,11 +101,9 @@ import { ItemService } from '@/services/item';
         NInput,
         NInputNumber,
         NSelect,
-        NTable
+        NTable,
     },
-    emits: [
-        'update:products',
-    ]
+    emits: ['update:products'],
 })
 class ProductSelector extends Vue {
     public buildable_items: SelectOption[] = [];
@@ -80,19 +112,25 @@ class ProductSelector extends Vue {
     public new_product: IProduct = this.default_product();
 
     public async created() {
-        this.buildable_items = (await ItemService.buildable_items()).map(x => {
-            return {
-                label: x.name,
-                value: x.name,
-            }
-        });
+        this.buildable_items = (await ItemService.buildable_items()).map(
+            (x) => {
+                return {
+                    label: x.name,
+                    value: x.name,
+                };
+            },
+        );
     }
 
-    // Adds the current set values 
+    // Adds the current set values
     public add_product() {
         let entry = `${this.new_product.name} ${this.new_product.count} ${this.new_product.material_efficiency}\n`;
 
-        if (this.products && !this.products.endsWith('\n') && !(this.products === '')) {
+        if (
+            this.products &&
+            !this.products.endsWith('\n') &&
+            !(this.products === '')
+        ) {
             this.products += `\n`;
         }
 
@@ -110,16 +148,18 @@ class ProductSelector extends Vue {
     }
 
     public rules: FormRules = {
-        products: [{
-            required: true,
-            message: 'The field is required'
-        }]
-    }
+        products: [
+            {
+                required: true,
+                message: 'The field is required',
+            },
+        ],
+    };
 }
 
 export interface IProduct {
-    name:                string;
-    count:               number;
+    name: string;
+    count: number;
     material_efficiency: number;
 }
 

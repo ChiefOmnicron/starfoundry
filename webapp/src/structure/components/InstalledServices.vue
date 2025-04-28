@@ -1,21 +1,23 @@
 <template>
-    <card
-        title="Installed Services"
-    >
+    <card title="Installed Services">
         <n-table>
             <tr
-                v-for="index in [...Array.from(Array(countServiceModules()).keys())]"
+                v-for="index in [
+                    ...Array.from(Array(countServiceModules()).keys()),
+                ]"
                 :key="index"
             >
                 <th style="width: 150px">
-                     {{ 'Slot ' + index + 1 }}
+                    {{ 'Slot ' + index + 1 }}
                 </th>
                 <td>
                     <structure-service-selector
                         :readonly="readonly"
                         :structure-type="structureType"
                         :selected-value="value[index]"
-                        @update:value="(v: any) => selectStructureService(index, v)"
+                        @update:value="
+                            (v: any) => selectStructureService(index, v)
+                        "
                     />
                 </td>
             </tr>
@@ -41,9 +43,7 @@ import StructureServiceSelector from '@/structure/components/StructureServiceSel
         FormItem,
         StructureServiceSelector,
     },
-    emits: [
-        'update:value'
-    ]
+    emits: ['update:value'],
 })
 class InstalledServices extends Vue {
     @Prop({

@@ -42,7 +42,7 @@ import System from '@/components/System.vue';
         EveIcon,
         Reference,
         System,
-    }
+    },
 })
 class StructureCard extends Vue {
     @Prop({
@@ -56,11 +56,9 @@ class StructureCard extends Vue {
     public structure!: Structure;
 
     public async created() {
-        await StructureService
-            .fetch(this.structureId)
-            .then(x => {
-                this.structure = x;
-            })
+        await StructureService.fetch(this.structureId).then((x) => {
+            this.structure = x;
+        });
     }
 
     public openStructure(structureId: Uuid) {
@@ -68,7 +66,7 @@ class StructureCard extends Vue {
             name: ROUTE_STRUCTURE,
             params: {
                 structureId,
-            }
+            },
         });
         window.open(route.href);
     }

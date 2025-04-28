@@ -10,10 +10,7 @@
                 :rules="rules"
                 style="margin-left: 5px; margin-right: 5px; margin-top: 10px"
             >
-                <n-form-item
-                    label="Item"
-                    path="type_id"
-                >
+                <n-form-item label="Item" path="type_id">
                     <item-selector
                         blueprints
                         v-model:value="newEntry.type_id"
@@ -77,12 +74,7 @@
             </n-form>
 
             <action-group style="margin-right: 5px">
-                <n-button
-                    @click="close()"
-                    quaternary
-                >
-                    Close
-                </n-button>
+                <n-button @click="close()" quaternary> Close </n-button>
 
                 <n-button
                     @click="addEntry"
@@ -98,7 +90,14 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
-import { type FormRules, NButton, NForm, NFormItem, NInput, NModal } from 'naive-ui';
+import {
+    type FormRules,
+    NButton,
+    NForm,
+    NFormItem,
+    NInput,
+    NModal,
+} from 'naive-ui';
 
 import { type IStockBlueprintThreshold } from '@/sdk/stockBlueprint';
 
@@ -120,10 +119,7 @@ import ItemSelector from '@/components/selectors/ItemSelector.vue';
         FormatNumberInput,
         ItemSelector,
     },
-    emits: [
-        'close',
-        'close:value',
-    ]
+    emits: ['close', 'close:value'],
 })
 class AddThresholdModal extends Vue {
     @Prop({
@@ -149,41 +145,51 @@ class AddThresholdModal extends Vue {
     }
 
     public rules: FormRules = {
-        type_id: [{
-            required: true,
-            message: 'The field is required',
-        }],
-        want: [{
-            type: 'number',
-            required: true,
-            message: 'The field is required',
-        }],
-        critical: [{
-            type: 'number',
-            required: true,
-            message: 'The field is required',
-        }],
-        minRun: [{
-            type: 'number',
-            required: true,
-            message: 'The field is required',
-        }],
-        minMe: [{
-            type: 'number',
-            required: true,
-            message: 'The field is required',
-        }],
-        minTe: [{
-            type: 'number',
-            required: true,
-            message: 'The field is required',
-        }],
-    }
+        type_id: [
+            {
+                required: true,
+                message: 'The field is required',
+            },
+        ],
+        want: [
+            {
+                type: 'number',
+                required: true,
+                message: 'The field is required',
+            },
+        ],
+        critical: [
+            {
+                type: 'number',
+                required: true,
+                message: 'The field is required',
+            },
+        ],
+        minRun: [
+            {
+                type: 'number',
+                required: true,
+                message: 'The field is required',
+            },
+        ],
+        minMe: [
+            {
+                type: 'number',
+                required: true,
+                message: 'The field is required',
+            },
+        ],
+        minTe: [
+            {
+                type: 'number',
+                required: true,
+                message: 'The field is required',
+            },
+        ],
+    };
 
     public validForm(): boolean {
-        if (this.newEntry.type_id &&
-            this.newEntry.critical) {
-
+        if (this.newEntry.type_id && this.newEntry.critical) {
             return true;
         } else {
             return false;

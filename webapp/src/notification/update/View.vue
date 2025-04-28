@@ -1,13 +1,8 @@
 <template>
     <div>
-        <page-header
-            title="notification.update.title"
-        />
+        <page-header title="notification.update.title" />
 
-        <alert-save
-            :visible="saved"
-            @close="saved = false"
-        />
+        <alert-save :visible="saved" @close="saved = false" />
 
         <alert
             :visible="errors.notFound"
@@ -30,18 +25,14 @@
             title="Error deleting"
         />
 
-        <loader
-            :busy=busy
-        />
+        <loader :busy="busy" />
 
         <card
             title="General Information"
             v-if="!busy && !errors.notFound && notification"
         >
             <div style="margin: 10px">
-                <form-item
-                    label="Name"
-                >
+                <form-item label="Name">
                     <n-input
                         placeholder="Insert notification name"
                         @keydown.enter.prevent
@@ -60,22 +51,10 @@
 
         <card-margin />
 
-        <action-group
-            v-if="!busy && !errors.notFound && notification"
-        >
-            <n-button
-                @click="$router.back()"
-                quaternary
-            >
-                Back
-            </n-button>
+        <action-group v-if="!busy && !errors.notFound && notification">
+            <n-button @click="$router.back()" quaternary> Back </n-button>
 
-            <n-button
-                @click="save"
-                type="info"
-            >
-                Save
-            </n-button>
+            <n-button @click="save" type="info"> Save </n-button>
         </action-group>
 
         <card-margin />
@@ -95,7 +74,12 @@ import { Component, Vue, Prop, toNative } from 'vue-facing-decorator';
 import { ROUTE_NOTIFICATIONS } from '../router';
 
 import { type Uuid } from '@/sdk/utils';
-import { type INotification, Notification, NotificationService, type WebhookTarget } from '@/sdk/notification';
+import {
+    type INotification,
+    Notification,
+    NotificationService,
+    type WebhookTarget,
+} from '@/sdk/notification';
 
 import { NButton, NInput, NSelect, type SelectOption } from 'naive-ui';
 import ActionGroup from '@/components/ActionGroup.vue';
@@ -125,7 +109,7 @@ import Webhook from '@/notification/components/Webhook.vue';
         Loader,
         PageHeader,
         Webhook,
-    }
+    },
 })
 class NotificationUpdate extends Vue {
     @Prop({
@@ -135,7 +119,7 @@ class NotificationUpdate extends Vue {
     public notificationId!: Uuid;
 
     public notification: INotification = <any>{};
-    public webhook: { target: WebhookTarget, url: string } = <any>{};
+    public webhook: { target: WebhookTarget; url: string } = <any>{};
     public notification_obj!: Notification;
 
     public busy: boolean = false;
@@ -144,21 +128,23 @@ class NotificationUpdate extends Vue {
         notFound: false,
         updating: false,
         deleting: false,
-    }
+    };
 
-    public targetOptions: SelectOption[] = [{
-        label: 'Discord',
-        value: 'DISCORD',
-    }, {
-        label: 'JSON',
-        value: 'JSON',
-    }];
+    public targetOptions: SelectOption[] = [
+        {
+            label: 'Discord',
+            value: 'DISCORD',
+        },
+        {
+            label: 'JSON',
+            value: 'JSON',
+        },
+    ];
 
     public async created() {
         this.busy = true;
-        await NotificationService
-            .fetch(this.notificationId)
-            .then(x => {
+        await NotificationService.fetch(this.notificationId)
+            .then((x) => {
                 this.notification = {
                     url: x.url,
                     name: x.name,
@@ -173,7 +159,7 @@ class NotificationUpdate extends Vue {
 
                 this.busy = false;
             })
-            .catch(e => {
+            .catch((e) => {
                 if (e.response.status === 404) {
                     this.errors.notFound = true;
                 }
@@ -184,12 +170,13 @@ class NotificationUpdate extends Vue {
 
     public async save() {
         this.notification_obj.name = this.notification.name;
-        this.notification_obj.target = this.webhook.target || this.notification.target;
+        this.notification_obj.target =
+            this.webhook.target || this.notification.target;
         this.notification_obj.url = this.webhook.url || this.notification.url;
 
         await this.notification_obj
             .save()
-            .then(_ => {
+            .then((_) => {
                 this.errors = {
                     notFound: false,
                     updating: false,
@@ -197,7 +184,7 @@ class NotificationUpdate extends Vue {
                 };
                 this.saved = true;
             })
-            .catch(_ => {
+            .catch((_) => {
                 this.errors = {
                     notFound: false,
                     updating: true,
@@ -210,12 +197,12 @@ class NotificationUpdate extends Vue {
     public async deleteObject() {
         await this.notification_obj
             .remove()
-            .then(_ => {
+            .then((_) => {
                 this.$router.push({
                     name: ROUTE_NOTIFICATIONS,
                 });
             })
-            .catch(_ => {
+            .catch((_) => {
                 this.errors = {
                     notFound: false,
                     updating: false,

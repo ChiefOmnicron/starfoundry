@@ -4,7 +4,7 @@
 
         <slot v-if="!busy" :busy="busy" :info="structure"></slot>
     </span>
-</template> 
+</template>
 
 <script lang="ts">
 import { NSpin } from 'naive-ui';
@@ -14,24 +14,24 @@ import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
 @Component({
     components: {
         NSpin,
-    }
+    },
 })
 class StructureInfo extends Vue {
     /// UUID of the structure
     @Prop({
         type: String,
-        required: true
+        required: true,
     })
-    public id!: string
+    public id!: string;
 
     public busy: boolean = false;
     public structure: Structure = <any>{};
 
     public async created() {
         this.busy = true;
-        this.structure = await StructureService
-            .fetch(<any>this.id)
-            .finally(() => this.busy = false);
+        this.structure = await StructureService.fetch(<any>this.id).finally(
+            () => (this.busy = false),
+        );
     }
 }
 

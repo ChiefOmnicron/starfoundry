@@ -10,10 +10,7 @@
             title="Loading Error"
         />
 
-        <loader
-            :busy="!pageLoadingState.showSpinner"
-            data-cy="loaderInitial"
-        />
+        <loader :busy="!pageLoadingState.showSpinner" data-cy="loaderInitial" />
 
         <no-entries
             description="No notification configured yet"
@@ -33,15 +30,18 @@
         <div
             style="margin-bottom: 10px"
             data-cy="filter"
-            v-if="pageLoadingState.isInitialDataLoaded && (notifications.length > 0 || pageLoadingState.hasFilter)"
+            v-if="
+                pageLoadingState.isInitialDataLoaded &&
+                (notifications.length > 0 || pageLoadingState.hasFilter)
+            "
         >
             <filter-text
                 :filters="filters"
                 :load-initial="false"
                 :options="filterOptions"
                 :search-function="searchFunction"
-                @busy="(s: any) => pageLoadingState.loading = s"
-                @touched="(s: any) => pageLoadingState.hasFilter = s"
+                @busy="(s: any) => (pageLoadingState.loading = s)"
+                @touched="(s: any) => (pageLoadingState.hasFilter = s)"
                 v-model:entries="notifications"
             />
 
@@ -54,7 +54,10 @@
 
         <action-group
             data-cy="actionGroup"
-            v-if="pageLoadingState.isInitialDataLoaded && (notifications.length > 0 || pageLoadingState.hasFilter)"
+            v-if="
+                pageLoadingState.isInitialDataLoaded &&
+                (notifications.length > 0 || pageLoadingState.hasFilter)
+            "
         >
             <n-button
                 @click="$router.push({ name: routeNotificationCreate })"
@@ -64,17 +67,17 @@
             </n-button>
         </action-group>
 
-        <loader
-            data-cy="loaderApi"
-            :busy="pageLoadingState.loading"
-        />
+        <loader data-cy="loaderApi" :busy="pageLoadingState.loading" />
 
         <n-empty
             description="Your search did not result yield any results"
             data-cy="noSearchResult"
             size="large"
             style="margin: 5%"
-            v-if="pageLoadingState.showNoSearchResult  && notifications.length === 0"
+            v-if="
+                pageLoadingState.showNoSearchResult &&
+                notifications.length === 0
+            "
         />
 
         <card
@@ -95,7 +98,10 @@
 <script lang="ts">
 import { Component, Vue, toNative } from 'vue-facing-decorator';
 
-import { ROUTE_NOTIFICATION, ROUTE_NOTIFICATION_CREATE } from '@/notification/router';
+import {
+    ROUTE_NOTIFICATION,
+    ROUTE_NOTIFICATION_CREATE,
+} from '@/notification/router';
 
 import { Notification, NotificationService } from '@/sdk/notification';
 
@@ -104,7 +110,9 @@ import ActionGroup from '@/components/ActionGroup.vue';
 import Alert from '@/components/Alert.vue';
 import Card from '@/components/Card.vue';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
-import DataTable, { type IDataTableDefinition } from '@/components/DataTable.vue';
+import DataTable, {
+    type IDataTableDefinition,
+} from '@/components/DataTable.vue';
 import FilterElement from '@/components/FilterElement.vue';
 import FilterText, { type IFilterOption } from '@/components/Filter.vue';
 import Loader from '@/components/Loader.vue';
@@ -128,7 +136,7 @@ import PageHeader from '@/components/PageHeader.vue';
         Loader,
         NoEntries,
         PageHeader,
-    }
+    },
 })
 class NotificationOverview extends Vue {
     public pageLoadingState: PageLoadingState = new PageLoadingState();
@@ -142,14 +150,13 @@ class NotificationOverview extends Vue {
     public searchFunction = NotificationService.list;
 
     public async created() {
-        NotificationService
-            .list({})
-            .then(x => {
+        NotificationService.list({})
+            .then((x) => {
                 this.notifications = x;
                 this.pageLoadingState.isInitialDataLoaded = true;
                 this.filterDefinition();
             })
-            .catch(_ => {
+            .catch((_) => {
                 this.notifications = [];
                 this.pageLoadingState.isInitialDataLoaded = true;
                 this.pageLoadingState.loadingError = true;
@@ -157,25 +164,29 @@ class NotificationOverview extends Vue {
     }
 
     public tableDefinition(): IDataTableDefinition[] {
-        return [{
-            header: 'Name',
-            key: 'name',
-            width: 400,
-            visible: true,
-            routing: {
-                route: ROUTE_NOTIFICATION,
-                key: 'notificationId',
-                value: 'id',
+        return [
+            {
+                header: 'Name',
+                key: 'name',
+                width: 400,
+                visible: true,
+                routing: {
+                    route: ROUTE_NOTIFICATION,
+                    key: 'notificationId',
+                    value: 'id',
+                },
             },
-        }, {
-            header: 'Target',
-            key: 'target',
-            visible: true,
-        }, {
-            header: 'URL',
-            key: 'url',
-            visible: true,
-        }];
+            {
+                header: 'Target',
+                key: 'target',
+                visible: true,
+            },
+            {
+                header: 'URL',
+                key: 'url',
+                visible: true,
+            },
+        ];
     }
 
     private filterDefinition() {
@@ -185,10 +196,7 @@ class NotificationOverview extends Vue {
             },
             target: {
                 label: 'Target',
-                options: [
-                    'DISCORD',
-                    'JSON'
-                ]
+                options: ['DISCORD', 'JSON'],
             },
         };
     }
@@ -204,27 +212,33 @@ class PageLoadingState {
 
     get showNoEntries(): boolean {
         // the initial data has to be loaded
-        return this._isInitialDataLoaded &&
+        return (
+            this._isInitialDataLoaded &&
             // don't show it if there was an error
             !this._loadingError &&
             // if a filter is set, don't show
-            !this._hasFilter;
+            !this._hasFilter
+        );
     }
 
     get showNoSearchResult(): boolean {
         // the initial data has to be loaded
-        return this._isInitialDataLoaded &&
+        return (
+            this._isInitialDataLoaded &&
             // don't show it if there was an error
             !this._loadingError &&
             // only show it when a filter is set
-            this._hasFilter;
+            this._hasFilter
+        );
     }
 
     get showDataTable(): boolean {
         // the initial data has to be loaded
-        return this._isInitialDataLoaded &&
+        return (
+            this._isInitialDataLoaded &&
             // don't show it if the application is currently loading
-            !this._loading;
+            !this._loading
+        );
     }
 
     get showSpinner(): boolean {

@@ -4,7 +4,13 @@
 
         <div v-show="!invalid_setup">
             <card no-title>
-                <n-form style="margin-left: 10px; margin-right: 10px; margin-top: 10px">
+                <n-form
+                    style="
+                        margin-left: 10px;
+                        margin-right: 10px;
+                        margin-top: 10px;
+                    "
+                >
                     <n-form-item label="Structure Group">
                         <structure-group-selector
                             v-model:value="structure_group"
@@ -22,26 +28,91 @@
                     </n-form-item>
                 </n-form>
 
-                <product-selector
-                    v-model:products="products_input"
-                />
+                <product-selector v-model:products="products_input" />
             </card>
 
             <card-margin />
 
             <card v-if="cost_estimate" no-title>
                 <div style="margin: 10px">
-                    Market: <format-number :value="cost_estimate.market_cost_total" /><br>
-                    Manufacturing: <format-number :value="cost_estimate.manufacturing_cost_total" /><br>
-                    Excess:  <format-number :value="cost_estimate.excess_cost_total" /><br>
-                    Total: <format-number :value="cost_estimate.market_cost_total + cost_estimate.manufacturing_cost_total" /><br>
-                    Total (-excess): <format-number :value="cost_estimate.market_cost_total + cost_estimate.manufacturing_cost_total - cost_estimate.excess_cost_total" /><br>
-                    Profit (5%): <format-number :value="(cost_estimate.market_cost_total + cost_estimate.manufacturing_cost_total) * 1.05" /><br>
-                    Profit (7.5%): <format-number :value="(cost_estimate.market_cost_total + cost_estimate.manufacturing_cost_total) * 1.075" /><br>
-                    Profit (10%): <format-number :value="(cost_estimate.market_cost_total + cost_estimate.manufacturing_cost_total) * 1.1" /><br>
-                    Profit (-excess + 5%): <format-number :value="(cost_estimate.market_cost_total + cost_estimate.manufacturing_cost_total - cost_estimate.excess_cost_total) * 1.05" /><br>
-                    Profit (-excess + 7.5%): <format-number :value="(cost_estimate.market_cost_total + cost_estimate.manufacturing_cost_total - cost_estimate.excess_cost_total) * 1.075" /><br>
-                    Profit (-excess + 10%): <format-number :value="(cost_estimate.market_cost_total + cost_estimate.manufacturing_cost_total - cost_estimate.excess_cost_total) * 1.1" /><br>
+                    Market:
+                    <format-number
+                        :value="cost_estimate.market_cost_total"
+                    /><br />
+                    Manufacturing:
+                    <format-number
+                        :value="cost_estimate.manufacturing_cost_total"
+                    /><br />
+                    Excess:
+                    <format-number
+                        :value="cost_estimate.excess_cost_total"
+                    /><br />
+                    Total:
+                    <format-number
+                        :value="
+                            cost_estimate.market_cost_total +
+                            cost_estimate.manufacturing_cost_total
+                        "
+                    /><br />
+                    Total (-excess):
+                    <format-number
+                        :value="
+                            cost_estimate.market_cost_total +
+                            cost_estimate.manufacturing_cost_total -
+                            cost_estimate.excess_cost_total
+                        "
+                    /><br />
+                    Profit (5%):
+                    <format-number
+                        :value="
+                            (cost_estimate.market_cost_total +
+                                cost_estimate.manufacturing_cost_total) *
+                            1.05
+                        "
+                    /><br />
+                    Profit (7.5%):
+                    <format-number
+                        :value="
+                            (cost_estimate.market_cost_total +
+                                cost_estimate.manufacturing_cost_total) *
+                            1.075
+                        "
+                    /><br />
+                    Profit (10%):
+                    <format-number
+                        :value="
+                            (cost_estimate.market_cost_total +
+                                cost_estimate.manufacturing_cost_total) *
+                            1.1
+                        "
+                    /><br />
+                    Profit (-excess + 5%):
+                    <format-number
+                        :value="
+                            (cost_estimate.market_cost_total +
+                                cost_estimate.manufacturing_cost_total -
+                                cost_estimate.excess_cost_total) *
+                            1.05
+                        "
+                    /><br />
+                    Profit (-excess + 7.5%):
+                    <format-number
+                        :value="
+                            (cost_estimate.market_cost_total +
+                                cost_estimate.manufacturing_cost_total -
+                                cost_estimate.excess_cost_total) *
+                            1.075
+                        "
+                    /><br />
+                    Profit (-excess + 10%):
+                    <format-number
+                        :value="
+                            (cost_estimate.market_cost_total +
+                                cost_estimate.manufacturing_cost_total -
+                                cost_estimate.excess_cost_total) *
+                            1.1
+                        "
+                    /><br />
                 </div>
             </card>
 
@@ -64,7 +135,11 @@
 
             <card
                 title="Excess"
-                v-show="!invalid_setup && cost_estimate && cost_estimate.excess_entries.length > 0"
+                v-show="
+                    !invalid_setup &&
+                    cost_estimate &&
+                    cost_estimate.excess_entries.length > 0
+                "
             >
                 <div>
                     <data-table
@@ -92,12 +167,19 @@ import { events } from '@/main';
 import { ROUTE_CHANGE } from '@/event_bus';
 import { NButton, NForm, NFormItem, NInput, NResult, NSpace } from 'naive-ui';
 
-import { Service, type IProduct, type ICostEstimateResponse, type IExcessCostEntry } from '@/project/service';
+import {
+    Service,
+    type IProduct,
+    type ICostEstimateResponse,
+    type IExcessCostEntry,
+} from '@/project/service';
 import { type IParsedRow, ItemService } from '@/services/item';
 
 import Card from '@/components/Card.vue';
 import CardMargin from '@/components/CardMargin.vue';
-import DataTable, { type IDataTableDefinition } from '@/components/DataTable.vue';
+import DataTable, {
+    type IDataTableDefinition,
+} from '@/components/DataTable.vue';
 import EveIcon from '@/components/EveIcon.vue';
 import FormatNumber from '@/components/FormatNumber.vue';
 import PageHeader from '@/components/PageHeader.vue';
@@ -105,22 +187,22 @@ import ProductSelector from '@/project/selectors/ProductSelector.vue';
 import StructureGroupSelector from '@/components/selectors/StructureGroupSelector.vue';
 
 @Component({
-  components: {
-    NButton,
-    NForm,
-    NFormItem,
-    NInput,
-    NResult,
-    NSpace,
+    components: {
+        NButton,
+        NForm,
+        NFormItem,
+        NInput,
+        NResult,
+        NSpace,
 
-    Card,
-    CardMargin,
-    DataTable,
-    FormatNumber,
-    PageHeader,
-    ProductSelector,
-    StructureGroupSelector,
-  }
+        Card,
+        CardMargin,
+        DataTable,
+        FormatNumber,
+        PageHeader,
+        ProductSelector,
+        StructureGroupSelector,
+    },
 })
 class SystemIndex extends Vue {
     public products_input: string = '';
@@ -133,17 +215,17 @@ class SystemIndex extends Vue {
     public busy = false;
 
     public async created() {
-        events.$emit(
-            ROUTE_CHANGE,
-            this.$route.name
-        );
+        events.$emit(ROUTE_CHANGE, this.$route.name);
     }
 
     public async create_estimate() {
         this.busy = true;
 
-        let stocks = await ItemService.parse<IParsedRow>(this.stock, true)
-        let products = await ItemService.parse<IProduct>(this.products_input, true)
+        let stocks = await ItemService.parse<IParsedRow>(this.stock, true);
+        let products = await ItemService.parse<IProduct>(
+            this.products_input,
+            true,
+        );
 
         this.cost_estimate = await Service.cost_estimate({
             structure_group: this.structure_group,
@@ -167,38 +249,40 @@ class SystemIndex extends Vue {
     }
 
     public tableDefinition(): IDataTableDefinition[] {
-        return [{
-            header: '',
-            key: 'icon',
-            width: 40,
-            render(row) {
-                return h(
-                    EveIcon,
-                    {
+        return [
+            {
+                header: '',
+                key: 'icon',
+                width: 40,
+                render(row) {
+                    return h(EveIcon, {
                         id: row.type_id,
                         type: 'icon',
-                    }
-                )
+                    });
+                },
             },
-        }, {
-            header: 'Name',
-            key: 'type_id',
-            width: 500,
-            item: true,
-            copy: true,
-        }, {
-            header: 'Quantity',
-            key: 'quantity',
-            width: 200,
-            number: true,
-            copy: true,
-        }, {
-            header: 'Cost',
-            key: 'cost',
-            width: 200,
-            number: true,
-            copy: true,
-        }];
+            {
+                header: 'Name',
+                key: 'type_id',
+                width: 500,
+                item: true,
+                copy: true,
+            },
+            {
+                header: 'Quantity',
+                key: 'quantity',
+                width: 200,
+                number: true,
+                copy: true,
+            },
+            {
+                header: 'Cost',
+                key: 'cost',
+                width: 200,
+                number: true,
+                copy: true,
+            },
+        ];
     }
 }
 export default toNative(SystemIndex);

@@ -20,9 +20,7 @@ import { NAlert } from 'naive-ui';
     components: {
         NAlert,
     },
-    emits: [
-        'close'
-    ]
+    emits: ['close'],
 })
 class Alert extends Vue {
     @Prop({
@@ -45,7 +43,7 @@ class Alert extends Vue {
     public title!: string;
 
     public close() {
-        this.$emit('close', true)
+        this.$emit('close', true);
     }
 }
 

@@ -27,7 +27,11 @@
         </div>
 
         <div class="width: 100%; overflow: hidden">
-            <n-form-item path="count" label="Quantity" style="width: 89%; float: left">
+            <n-form-item
+                path="count"
+                label="Quantity"
+                style="width: 89%; float: left"
+            >
                 <n-input-number
                     v-model:value="new_product.count"
                     style="width: 100%"
@@ -40,7 +44,7 @@
                 <n-button
                     @click="add_product"
                     :disabled="!new_product.name"
-                    style="width: 100%;"
+                    style="width: 100%"
                     ghost
                 >
                     Add
@@ -52,7 +56,17 @@
 
 <script lang="ts">
 import { Component, Vue, toNative } from 'vue-facing-decorator';
-import { NButton, NCard, NForm, NFormItem, NInput, NInputNumber, NSelect, NTable, type SelectOption } from 'naive-ui';
+import {
+    NButton,
+    NCard,
+    NForm,
+    NFormItem,
+    NInput,
+    NInputNumber,
+    NSelect,
+    NTable,
+    type SelectOption,
+} from 'naive-ui';
 import { ItemService } from '@/services/item';
 
 @Component({
@@ -64,24 +78,22 @@ import { ItemService } from '@/services/item';
         NInput,
         NInputNumber,
         NSelect,
-        NTable
+        NTable,
     },
-    emits: [
-        'update:products',
-    ]
+    emits: ['update:products'],
 })
 class AdditionalProductSelector extends Vue {
     public items: SelectOption[] = [];
 
-    public products: string      = '';
+    public products: string = '';
     public new_product: IProduct = this.default_product();
 
     public async created() {
-        this.items = (await ItemService.all()).map(x => {
-        return {
-            label: x.name,
-            value: x.name,
-        }
+        this.items = (await ItemService.all()).map((x) => {
+            return {
+                label: x.name,
+                value: x.name,
+            };
         });
     }
 
@@ -89,7 +101,11 @@ class AdditionalProductSelector extends Vue {
     public add_product() {
         let entry = `${this.new_product.name} ${this.new_product.count}\n`;
 
-        if (this.products && !this.products.endsWith('\n') && !(this.products === '')) {
+        if (
+            this.products &&
+            !this.products.endsWith('\n') &&
+            !(this.products === '')
+        ) {
             this.products += `\n`;
         }
 
@@ -100,7 +116,7 @@ class AdditionalProductSelector extends Vue {
 
     public default_product(): IProduct {
         return {
-            name:  <any>null,
+            name: <any>null,
             count: 1,
         };
     }
@@ -109,7 +125,7 @@ class AdditionalProductSelector extends Vue {
 export default toNative(AdditionalProductSelector);
 
 export interface IProduct {
-    name:  string;
+    name: string;
     count: number;
 }
 </script>

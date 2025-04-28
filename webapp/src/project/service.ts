@@ -5,34 +5,37 @@ import axios from 'axios';
 const PROJECT_PATH: string = '/api/v1/projects';
 
 export class Service {
-    public static async fetch_jobs(
-        projectId: ProjectId,
-    ): Promise<IJobGroup[]> {
+    public static async fetch_jobs(projectId: ProjectId): Promise<IJobGroup[]> {
         return (await axios.get(`${PROJECT_PATH}/${projectId}/jobs`)).data;
     }
 
-    public static async fetch_misc(
-        projectId: ProjectId,
-    ): Promise<IMisc[]> {
+    public static async fetch_misc(projectId: ProjectId): Promise<IMisc[]> {
         return (await axios.get(`${PROJECT_PATH}/${projectId}/misc`)).data;
     }
 
     public static async fetch_market_recommendation_gas(
         projectId: ProjectId,
     ): Promise<IMarketPriceEntry[]> {
-        return (await axios.get(`${PROJECT_PATH}/${projectId}/market/prices/gas`)).data;
+        return (
+            await axios.get(`${PROJECT_PATH}/${projectId}/market/prices/gas`)
+        ).data;
     }
 
     public static async fetch_market_recommendation_general(
         projectId: ProjectId,
     ): Promise<IMarketPriceEntry[]> {
-        return (await axios.get(`${PROJECT_PATH}/${projectId}/market/prices`)).data;
+        return (await axios.get(`${PROJECT_PATH}/${projectId}/market/prices`))
+            .data;
     }
 
     public static async fetch_market_recommendation_minerals(
         projectId: ProjectId,
     ): Promise<IMarketPriceEntry[]> {
-        return (await axios.get(`${PROJECT_PATH}/${projectId}/market/prices/minerals`)).data;
+        return (
+            await axios.get(
+                `${PROJECT_PATH}/${projectId}/market/prices/minerals`,
+            )
+        ).data;
     }
 
     public static async add_misc(
@@ -46,42 +49,60 @@ export class Service {
         projectId: ProjectId,
         misc_uuid: string,
     ): Promise<void> {
-        return await axios.delete(`${PROJECT_PATH}/${projectId}/misc/${misc_uuid}`);
+        return await axios.delete(
+            `${PROJECT_PATH}/${projectId}/misc/${misc_uuid}`,
+        );
     }
 
     public static async update_market_gas(
         projectId: ProjectId,
-        market: IUpdateMarketEntry[]
+        market: IUpdateMarketEntry[],
     ): Promise<void> {
-        return await axios.put(`${PROJECT_PATH}/${projectId}/market/gas`, market);
+        return await axios.put(
+            `${PROJECT_PATH}/${projectId}/market/gas`,
+            market,
+        );
     }
 
     public static async update_market_general(
         projectId: ProjectId,
-        market: IUpdateMarketEntry[]
+        market: IUpdateMarketEntry[],
     ): Promise<void> {
-        return await axios.put(`${PROJECT_PATH}/${projectId}/market/bulk`, market);
+        return await axios.put(
+            `${PROJECT_PATH}/${projectId}/market/bulk`,
+            market,
+        );
     }
 
     public static async update_market_minerals(
         projectId: ProjectId,
-        market: IUpdateMarketEntry[]
+        market: IUpdateMarketEntry[],
     ): Promise<void> {
-        return await axios.put(`${PROJECT_PATH}/${projectId}/market/minerals`, market);
+        return await axios.put(
+            `${PROJECT_PATH}/${projectId}/market/minerals`,
+            market,
+        );
     }
 
     public static async fetch_jobs_by_status(
         projectId: ProjectId,
     ): Promise<IJob[]> {
-        return (await axios.get<IJobGroup[]>(`${PROJECT_PATH}/${projectId}/jobs/startable`))
-            .data
-            .flatMap(x => x.entries);
+        return (
+            await axios.get<IJobGroup[]>(
+                `${PROJECT_PATH}/${projectId}/jobs/startable`,
+            )
+        ).data.flatMap((x) => x.entries);
     }
 
     public static async cost_estimate(
         data: ICostEstimateRequest,
     ): Promise<ICostEstimateResponse> {
-        return (await axios.post<ICostEstimateResponse>(`${PROJECT_PATH}/cost-estimate`, data)).data;
+        return (
+            await axios.post<ICostEstimateResponse>(
+                `${PROJECT_PATH}/cost-estimate`,
+                data,
+            )
+        ).data;
     }
 }
 
@@ -89,14 +110,14 @@ export type ProjectId = Uuid;
 export type JobId = Uuid;
 
 export interface IProjectInfo {
-    orderer?:    string;
-    notes?:      string;
+    orderer?: string;
+    notes?: string;
 
     sell_price?: number;
-    excess:      number;
-    jobs:        number;
-    market:      number;
-    misc:        number;
+    excess: number;
+    jobs: number;
+    market: number;
+    misc: number;
 }
 
 export enum ProjectStatus {
@@ -104,14 +125,20 @@ export enum ProjectStatus {
     IN_PROGRESS,
     PAUSED,
     ABORTED,
-    DONE
+    DONE,
 }
 
 export interface IProject {
     id: Uuid;
     name: string;
     owner: number;
-    status: ProjectStatus | 'IN_PROGRESS' | 'PREPARING' | 'ABORTED' | 'PAUSED' | 'DONE';
+    status:
+        | ProjectStatus
+        | 'IN_PROGRESS'
+        | 'PREPARING'
+        | 'ABORTED'
+        | 'PAUSED'
+        | 'DONE';
     products: IProduct[];
 }
 
@@ -126,8 +153,8 @@ export interface ICreateProject {
     sell_price?: number;
 
     structures: {
-        manufacturing: string,
-        reaction: string,
+        manufacturing: string;
+        reaction: string;
     };
 
     google_sheet?: string;
@@ -156,7 +183,7 @@ export interface IJob {
     runs: number;
     status: string;
     cost?: number;
-    item_name: String,
+    item_name: String;
     structure_uuid: Uuid;
 }
 
@@ -196,7 +223,7 @@ export interface IMarketPriceEntry {
     remaining: number;
     volume: number;
     price: number;
-    structure_id: Uuid,
+    structure_id: Uuid;
 
     price_total?: number;
 }
@@ -209,28 +236,28 @@ export interface IExcess {
 }
 
 export interface IItem {
-    name:          String,
-    volume:        number,
-    base_price?:   number,
+    name: String;
+    volume: number;
+    base_price?: number;
 
-    category_id:   number,
-    group_id:      number,
-    type_id:       number,
-    meta_group_id: number,
+    category_id: number;
+    group_id: number;
+    type_id: number;
+    meta_group_id: number;
 }
 
 export interface ICostEstimateRequest {
-    products:        IProduct[];
+    products: IProduct[];
     structure_group: Uuid;
-    stocks:          IParsedRow[];
+    stocks: IParsedRow[];
 }
 
 export interface ICostEstimateResponse {
-    manufacturing_cost_total: number,
-    excess_cost_total: number,
-    market_cost_total: number,
-    total_cost: number,
-    market: { type_id: number, quantity: number, price: number }[],
+    manufacturing_cost_total: number;
+    excess_cost_total: number;
+    market_cost_total: number;
+    total_cost: number;
+    market: { type_id: number; quantity: number; price: number }[];
 
     excess_entries: IExcessCostEntry[];
 }
@@ -242,8 +269,8 @@ export interface IExcessCostEntry {
 }
 
 export interface IUpdateJob {
-    cost?: number,
-    id: string,
-    job_id: string,
-    status: string,
+    cost?: number;
+    id: string;
+    job_id: string;
+    status: string;
 }

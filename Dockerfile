@@ -1,7 +1,7 @@
 ################################################################################
 # ALL
 ################################################################################
-FROM        clux/muslrust:nightly as builder-all
+FROM        clux/muslrust:nightly AS builder-all
 
 ENV         SQLX_OFFLINE=true
 
@@ -30,7 +30,7 @@ RUN         cargo build --release --target x86_64-unknown-linux-gnu && \
 ################################################################################
 # APPRAISAL only
 ################################################################################
-FROM        clux/muslrust:nightly as builder-appraisal
+FROM        clux/muslrust:nightly AS builder-appraisal
 
 ENV         SQLX_OFFLINE=true
 
@@ -60,7 +60,7 @@ RUN         cd api; cargo build --release --target x86_64-unknown-linux-gnu --fe
 ################################################################################
 # webapp
 ################################################################################
-FROM        node as builder-webapp
+FROM        node AS builder-webapp
 
 ARG         VITE_SENTRY
 ARG         SENTRY_AUTH_TOKEN
@@ -81,7 +81,7 @@ RUN         npm run build
 ################################################################################
 # webapp-appraisal
 ################################################################################
-FROM        node as builder-webapp-appraisal
+FROM        node AS builder-webapp-appraisal
 
 ARG         VITE_APPRAISAL=true
 ARG         VITE_SENTRY
@@ -103,7 +103,7 @@ RUN         npm run build
 ################################################################################
 # Running api container
 ################################################################################
-FROM        ubuntu:24.04 as api
+FROM        ubuntu:24.04 AS api
 
 COPY        --from=builder-all /usr/src/starfoundry/target/x86_64-unknown-linux-gnu/release/starfoundry_bin-api /usr/local/bin/api
 
@@ -119,7 +119,7 @@ CMD         ["/usr/local/bin/api"]
 ################################################################################
 # Running api-appraisal container
 ################################################################################
-FROM        ubuntu:24.04 as api-appraisal
+FROM        ubuntu:24.04 AS api-appraisal
 
 COPY        --from=builder-appraisal /usr/src/starfoundry/target/x86_64-unknown-linux-gnu/release/starfoundry_bin-api /usr/local/bin/api
 
@@ -135,7 +135,7 @@ CMD         ["/usr/local/bin/api"]
 ################################################################################
 # Running collector container
 ################################################################################
-FROM        ubuntu:24.04 as collector
+FROM        ubuntu:24.04 AS collector
 
 RUN         apt-get update && \
             apt-get install -y ca-certificates
@@ -149,7 +149,7 @@ CMD         ["/usr/local/bin/collector"]
 ################################################################################
 # Running event-worker container
 ################################################################################
-FROM        ubuntu:24.04 as event-worker
+FROM        ubuntu:24.04 AS event-worker
 
 RUN         apt-get update && \
             apt-get install -y ca-certificates unzip
@@ -164,7 +164,7 @@ CMD         ["/usr/local/bin/event_worker"]
 ################################################################################
 # Running event-worker appraisal container
 ################################################################################
-FROM        ubuntu:24.04 as event-worker-appraisal
+FROM        ubuntu:24.04 AS event-worker-appraisal
 
 RUN         apt-get update && \
             apt-get install -y ca-certificates unzip
@@ -179,7 +179,7 @@ CMD         ["/usr/local/bin/event_worker"]
 ################################################################################
 # Running meta-webserver container
 ################################################################################
-FROM        ubuntu:24.04 as meta-webserver
+FROM        ubuntu:24.04 AS meta-webserver
 
 RUN         apt-get update && \
             apt-get install -y ca-certificates
@@ -193,7 +193,7 @@ CMD         ["/usr/local/bin/meta-webserver"]
 ################################################################################
 # Running webapp container
 ################################################################################
-FROM        nginx:stable-alpine as webapp
+FROM        nginx:stable-alpine AS webapp
 
 COPY        --from=builder-webapp /app/dist /usr/share/nginx/html
 COPY        webapp/nginx.conf /etc/nginx/conf.d/default.conf
@@ -204,7 +204,7 @@ CMD         ["nginx", "-g", "daemon off;"]
 ################################################################################
 # Running webapp appraisal container
 ################################################################################
-FROM        nginx:stable-alpine as webapp-appraisal
+FROM        nginx:stable-alpine AS webapp-appraisal
 
 COPY        --from=builder-webapp-appraisal /app/dist /usr/share/nginx/html
 COPY        webapp/nginx.conf /etc/nginx/conf.d/default.conf

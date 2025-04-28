@@ -20,11 +20,7 @@
         <n-space justify="end">
             <n-button @click="$router.back()" quaternary>Cancel</n-button>
 
-            <n-button
-                @click="save"
-                :disabled="!data.name"
-                type="info"
-            >
+            <n-button @click="save" :disabled="!data.name" type="info">
                 Create Structure Group
             </n-button>
         </n-space>
@@ -33,9 +29,24 @@
 
 <script lang="ts">
 import { Component, Vue, toNative } from 'vue-facing-decorator';
-import { NButton, NForm, NFormItem, NInput, NList, NListItem, NScrollbar, NSpace, NTag, NThing, NTreeSelect } from 'naive-ui';
+import {
+    NButton,
+    NForm,
+    NFormItem,
+    NInput,
+    NList,
+    NListItem,
+    NScrollbar,
+    NSpace,
+    NTag,
+    NThing,
+    NTreeSelect,
+} from 'naive-ui';
 import { events } from '@/main';
-import { type IStructureDynamicGroup, StructureDynamicGroupService } from '@/sdk/structure_dynamic_group';
+import {
+    type IStructureDynamicGroup,
+    StructureDynamicGroupService,
+} from '@/sdk/structure_dynamic_group';
 
 import { ROUTE_CHANGE } from '@/event_bus';
 import { ROUTE_STRUCTURE_DYNAMIC_GROUPS } from './router';
@@ -65,7 +76,7 @@ import StructureGroupList from '@/structure_group/components/StructureGroupList.
         GeneralInfo,
         PageHeader,
         StructureGroupList,
-    }
+    },
 })
 class StructureGroupCreate extends Vue {
     public new_group: any = null;
@@ -76,19 +87,15 @@ class StructureGroupCreate extends Vue {
     };
 
     public async created() {
-        events.$emit(
-            ROUTE_CHANGE,
-            this.$route.name
-        );
+        events.$emit(ROUTE_CHANGE, this.$route.name);
     }
 
     public async save() {
-        await StructureDynamicGroupService
-            .create(this.data)
-            .then(_ => {
-                this.$router.push({ name: ROUTE_STRUCTURE_DYNAMIC_GROUPS })
+        await StructureDynamicGroupService.create(this.data)
+            .then((_) => {
+                this.$router.push({ name: ROUTE_STRUCTURE_DYNAMIC_GROUPS });
             })
-            .catch(e => {
+            .catch((e) => {
                 console.error(e);
             });
     }

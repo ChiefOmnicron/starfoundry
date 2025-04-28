@@ -19,9 +19,9 @@ import { Component, Vue, toNative, Watch } from 'vue-facing-decorator';
 import { events } from '@/main';
 import { ROUTE_CHANGE } from '@/event_bus';
 
-import { use } from "echarts/core";
-import { CanvasRenderer } from "echarts/renderers";
-import { LineChart } from "echarts/charts";
+import { use } from 'echarts/core';
+import { CanvasRenderer } from 'echarts/renderers';
+import { LineChart } from 'echarts/charts';
 import {
     AxisPointerComponent,
     GridComponent,
@@ -29,10 +29,10 @@ import {
     MarkLineComponent,
     TitleComponent,
     TooltipComponent,
-} from "echarts/components";
+} from 'echarts/components';
 import { Service, type IIndustryIndex } from '@/industry/service';
 
-import VChart from "vue-echarts";
+import VChart from 'vue-echarts';
 import Card from '@/components/Card.vue';
 import CardMargin from '@/components/CardMargin.vue';
 import Loader from '@/components/Loader.vue';
@@ -48,7 +48,7 @@ import SystemSelector from '@/components/selectors/SystemSelector.vue';
         Loader,
         PageHeader,
         SystemSelector,
-    }
+    },
 })
 class SystemIndex extends Vue {
     public chart_options = {};
@@ -57,10 +57,7 @@ class SystemIndex extends Vue {
     public busy: boolean = false;
 
     public async created() {
-        events.$emit(
-            ROUTE_CHANGE,
-            this.$route.name
-        );
+        events.$emit(ROUTE_CHANGE, this.$route.name);
 
         use([
             AxisPointerComponent,
@@ -77,26 +74,30 @@ class SystemIndex extends Vue {
     @Watch('system_id')
     public async load_graph() {
         let azbel_marker = {
-            data: [{
-                xAxis: 1680470259000,
-                label: {
-                    formatter: 'Azbel Public',
-                    textStyle: {
-                        color: '#ccc'
-                    }
+            data: [
+                {
+                    xAxis: 1680470259000,
+                    label: {
+                        formatter: 'Azbel Public',
+                        textStyle: {
+                            color: '#ccc',
+                        },
+                    },
                 },
-            }]
+            ],
         };
         let tatara_marker = {
-            data: [{
-                xAxis: 1681229973000,
-                label: {
-                    formatter: 'Tatara Public',
-                    textStyle: {
-                        color: '#ccc'
-                    }
+            data: [
+                {
+                    xAxis: 1681229973000,
+                    label: {
+                        formatter: 'Tatara Public',
+                        textStyle: {
+                            color: '#ccc',
+                        },
+                    },
                 },
-            }]
+            ],
         };
 
         this.busy = true;
@@ -106,32 +107,50 @@ class SystemIndex extends Vue {
         this.chart_options = this.default_chart_config(entries);
         this.add_series(
             this.chart_options,
-            entries.map((x: IIndustryIndex) => [x.timestamp, (x.reaction * 100).toFixed(2)]),
+            entries.map((x: IIndustryIndex) => [
+                x.timestamp,
+                (x.reaction * 100).toFixed(2),
+            ]),
             'Reaction',
         );
         this.add_series(
             this.chart_options,
-            entries.map((x: IIndustryIndex) => [x.timestamp, (x.manufacturing * 100).toFixed(2)]),
+            entries.map((x: IIndustryIndex) => [
+                x.timestamp,
+                (x.manufacturing * 100).toFixed(2),
+            ]),
             'Manufacturing',
         );
         this.add_series(
             this.chart_options,
-            entries.map((x: IIndustryIndex) => [x.timestamp, (x.invention * 100).toFixed(2)]),
+            entries.map((x: IIndustryIndex) => [
+                x.timestamp,
+                (x.invention * 100).toFixed(2),
+            ]),
             'Invention',
         );
         this.add_series(
             this.chart_options,
-            entries.map((x: IIndustryIndex) => [x.timestamp, (x.copying * 100).toFixed(2)]),
+            entries.map((x: IIndustryIndex) => [
+                x.timestamp,
+                (x.copying * 100).toFixed(2),
+            ]),
             'Copying',
         );
         this.add_series(
             this.chart_options,
-            entries.map((x: IIndustryIndex) => [x.timestamp, (x.research_material * 100).toFixed(2)]),
+            entries.map((x: IIndustryIndex) => [
+                x.timestamp,
+                (x.research_material * 100).toFixed(2),
+            ]),
             'Research Material',
         );
         this.add_series(
             this.chart_options,
-            entries.map((x: IIndustryIndex) => [x.timestamp, (x.research_time * 100).toFixed(2)]),
+            entries.map((x: IIndustryIndex) => [
+                x.timestamp,
+                (x.research_time * 100).toFixed(2),
+            ]),
             'Research Time',
         );
 
@@ -191,7 +210,7 @@ class SystemIndex extends Vue {
     private default_chart_config(entries: IIndustryIndex[]) {
         return {
             tooltip: {
-                trigger: 'axis'
+                trigger: 'axis',
             },
             legend: {
                 show: true,
@@ -201,7 +220,7 @@ class SystemIndex extends Vue {
                 top: 'middle',
                 inactiveColor: '#333',
                 textStyle: {
-                    color: '#ccc'
+                    color: '#ccc',
                 },
             },
             xAxis: {
@@ -213,7 +232,7 @@ class SystemIndex extends Vue {
                 min: 0,
                 axisTick: {
                     show: false,
-                    color: '#f00'
+                    color: '#f00',
                 },
             },
             series: [],

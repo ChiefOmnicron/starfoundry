@@ -45,9 +45,7 @@
                 </td>
                 <td>
                     <div style="display: flex; justify-content: flex-end">
-                        <n-button @click="started(i)">
-                            Hide
-                        </n-button>
+                        <n-button @click="started(i)"> Hide </n-button>
                     </div>
                 </td>
             </tr>
@@ -75,7 +73,7 @@ import StructureWrapper from '@/structure/components/Wrapper.vue';
         EveIcon,
         StructureWrapper,
     },
-    emits: ['update:selected_ids']
+    emits: ['update:selected_ids'],
 })
 class ProjectJobOverview extends Vue {
     @Prop({
@@ -84,7 +82,7 @@ class ProjectJobOverview extends Vue {
     })
     public jobs!: IJob[];
 
-    public selected: boolean[]  = [];
+    public selected: boolean[] = [];
     public selected_ids: Uuid[] = [];
 
     public all_selected: boolean = false;
@@ -103,7 +101,7 @@ class ProjectJobOverview extends Vue {
                     return <any>null;
                 }
             })
-            .filter(x => x != null);
+            .filter((x) => x != null);
         this.$emit('update:selected_ids', this.selected_ids);
 
         if (this.selected_ids.length === 0) {
@@ -120,11 +118,11 @@ class ProjectJobOverview extends Vue {
     public handle_select_all() {
         if (this.all_selected) {
             this.all_selected = true;
-            this.selected = this.jobs.map(_ => true);
+            this.selected = this.jobs.map((_) => true);
         } else {
             this.all_selected = false;
             this.partially_all_selected = false;
-            this.selected = this.jobs.map(_ => false);
+            this.selected = this.jobs.map((_) => false);
         }
 
         this.handle_select();

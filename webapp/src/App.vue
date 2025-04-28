@@ -1,23 +1,22 @@
 <template>
-    <n-config-provider :theme="dark" :theme-overrides="themeOverrides" class="font_overwrite">
+    <n-config-provider
+        :theme="dark"
+        :theme-overrides="themeOverrides"
+        class="font_overwrite"
+    >
         <n-loading-bar-provider>
             <n-global-style />
 
             <n-layout position="absolute">
                 <n-layout-header class="header" bordered>
-                    <div
-                        class="nav-header-text"
-                    >
-                        <a href="/" style="color: white; text-decoration: none;">
+                    <div class="nav-header-text">
+                        <a href="/" style="color: white; text-decoration: none">
                             {{ headerName }}
                         </a>
                     </div>
 
                     <div v-if="!is_logged_in() && !isAppraisal()">
-                        <n-button
-                            text
-                            @click="redirect_login"
-                        >
+                        <n-button text @click="redirect_login">
                             Login with Eve
                         </n-button>
 
@@ -33,7 +32,9 @@
                         v-if="is_logged_in() && !isAppraisal()"
                         class="nav-header-character"
                     >
-                        <span class="nav-header-character-text">{{ whoami.character_name }}</span>
+                        <span class="nav-header-character-text">{{
+                            whoami.character_name
+                        }}</span>
 
                         <eve-icon :id="whoami.character_id" character />
 
@@ -56,8 +57,12 @@
                     </div>
                 </n-layout-header>
 
-                <n-layout position="absolute" style="top: 64px;" has-sider>
-                    <n-layout-sider bordered v-if="is_logged_in()" :native-scrollbar="false">
+                <n-layout position="absolute" style="top: 64px" has-sider>
+                    <n-layout-sider
+                        bordered
+                        v-if="is_logged_in()"
+                        :native-scrollbar="false"
+                    >
                         <n-menu
                             :value="current_route"
                             :options="options"
@@ -66,17 +71,24 @@
                         />
                     </n-layout-sider>
 
-                    <n-layout content-style="padding-left: 24px; padding-right: 24px;" :native-scrollbar="false">
+                    <n-layout
+                        content-style="padding-left: 24px; padding-right: 24px;"
+                        :native-scrollbar="false"
+                    >
                         <n-message-provider>
                             <loading-bar>
                                 <n-result
-                                    v-if="!is_logged_in() && !no_login_required()"
+                                    v-if="
+                                        !is_logged_in() && !no_login_required()
+                                    "
                                     title="You are not logged in"
                                     description="This tool requires you to login into your eve account"
                                     style="margin-top: 100px"
                                 >
                                     <template #footer>
-                                        <n-button @click="redirect_login">Login with eve</n-button>
+                                        <n-button @click="redirect_login"
+                                            >Login with eve</n-button
+                                        >
                                     </template>
                                 </n-result>
 
@@ -89,11 +101,19 @@
                         </n-message-provider>
 
                         <n-layout-footer
-                            style="background-color: rgb(16, 16, 20); border-top: 1px solid rgba(255, 255, 255, 0.09);"
+                            style="
+                                background-color: rgb(16, 16, 20);
+                                border-top: 1px solid rgba(255, 255, 255, 0.09);
+                            "
                             position="absolute"
                         >
                             <div
-                                style="margin-top: 5px; margin-left: 10px; color: rgba(255, 255, 255, 0.2); font-size: 10px"
+                                style="
+                                    margin-top: 5px;
+                                    margin-left: 10px;
+                                    color: rgba(255, 255, 255, 0.2);
+                                    font-size: 10px;
+                                "
                             >
                                 All
                                 <n-button
@@ -101,9 +121,12 @@
                                     text
                                     type="info"
                                 >
-                                    <router-link :to="{ name: 'legal' }"
-                                        style="color: inherit;
-                                        text-decoration: none"
+                                    <router-link
+                                        :to="{ name: 'legal' }"
+                                        style="
+                                            color: inherit;
+                                            text-decoration: none;
+                                        "
                                     >
                                         Eve related materials
                                     </router-link>
@@ -117,7 +140,7 @@
                                     target="_blank"
                                     text
                                     type="info"
-                                    >
+                                >
                                     CCP Games.
                                 </n-button>
                                 See
@@ -127,9 +150,12 @@
                                     text
                                     type="info"
                                 >
-                                    <router-link :to="{ name: 'legal' }"
-                                        style="color: inherit;
-                                        text-decoration: none"
+                                    <router-link
+                                        :to="{ name: 'legal' }"
+                                        style="
+                                            color: inherit;
+                                            text-decoration: none;
+                                        "
                                     >
                                         legal notice.
                                     </router-link>
@@ -145,11 +171,21 @@
 
 <script lang="ts">
 import {
-    darkTheme, type GlobalThemeOverrides, NButton, NConfigProvider, NGlobalStyle,
-    NLayout, NLayoutFooter, NLayoutHeader, NLayoutSider, NMenu, NMessageProvider, NResult,
-    NLoadingBarProvider
+    darkTheme,
+    type GlobalThemeOverrides,
+    NButton,
+    NConfigProvider,
+    NGlobalStyle,
+    NLayout,
+    NLayoutFooter,
+    NLayoutHeader,
+    NLayoutSider,
+    NMenu,
+    NMessageProvider,
+    NResult,
+    NLoadingBarProvider,
 } from 'naive-ui';
-import { Component, Vue, toNative } from 'vue-facing-decorator'
+import { Component, Vue, toNative } from 'vue-facing-decorator';
 import { h } from 'vue';
 import { RouterLink } from 'vue-router';
 import { events } from '@/main';
@@ -157,7 +193,6 @@ import { ROUTE_CHANGE, PROJECT_ROUTE } from '@/event_bus';
 
 import { type Uuid } from './sdk/utils';
 import { Service, type ICharacter } from '@/characters/service';
-
 
 import * as industry_routes from '@/industry/router';
 import * as project_routes from '@/project/router';
@@ -172,7 +207,12 @@ import { ROUTE_STRUCTURES } from '@/structure/router';
 
 import EveIcon from '@/components/EveIcon.vue';
 import LoadingBar from './components/LoadingBar.vue';
-import { ROUTE_APPRAISAL, ROUTE_APPRAISAL_COMPRESSION, ROUTE_APPRAISAL_EMPTY, ROUTE_APPRAISAL_REPROCESSING } from './appraisal/router';
+import {
+    ROUTE_APPRAISAL,
+    ROUTE_APPRAISAL_COMPRESSION,
+    ROUTE_APPRAISAL_EMPTY,
+    ROUTE_APPRAISAL_REPROCESSING,
+} from './appraisal/router';
 import { ROUTE_ABOUT } from './router';
 
 @Component({
@@ -193,14 +233,14 @@ import { ROUTE_ABOUT } from './router';
 
         EveIcon,
         LoadingBar,
-    }
+    },
 })
 class App extends Vue {
     public dark = darkTheme;
 
     public themeOverrides: GlobalThemeOverrides = {
         Alert: {
-            borderRadius: '0'
+            borderRadius: '0',
         },
         Button: {
             borderRadiusMedium: '0',
@@ -228,11 +268,11 @@ class App extends Vue {
             peers: {
                 InternalSelection: {
                     borderRadius: '0',
-                }
-            }
+                },
+            },
         },
         DataTable: {
-            borderRadius: '0'
+            borderRadius: '0',
         },
     };
 
@@ -246,7 +286,7 @@ class App extends Vue {
     public async created() {
         if (window.location.host.indexOf('industry.dev') > -1) {
             this.themeOverrides.Layout = {
-                headerColor: 'red'
+                headerColor: 'red',
             };
             this.headerName = 'StarFoundry DEV';
         } else if (window.location.host.indexOf('appraisal') > -1) {
@@ -254,84 +294,104 @@ class App extends Vue {
         }
 
         // #v-ifdef VITE_APPRAISAL==false
-        const default_options = [{
-            label: () => h(
-                RouterLink,
-                {
-                    to: {
-                        name: project_routes.ROUTE_PROJECTS
-                    }
-                },
-                { default: () => 'Projects' }
-            ),
-            key: project_routes.ROUTE_PROJECTS,
-        }, {
-            label: () => h(
-                RouterLink,
-                {
-                    to: {
-                        name: project_routes.ROUTE_PROJECT_READY_JOBS
-                    }
-                },
-                { default: () => 'Industry Jobs' }
-            ),
-            key: project_routes.ROUTE_PROJECT_READY_JOBS,
-        }, {
-            label: () => h(
-                RouterLink,
-                {
-                    to: {
-                        name: ROUTE_PROJECT_GROUPS
-                    }
-                },
-                { default: () => 'Project Groups' }
-            ),
-            key: ROUTE_PROJECT_GROUPS,
-        }, {
-            label: () => h(
-                RouterLink,
-                {
-                    to: {
-                        name: ROUTE_APPRAISAL_EMPTY,
-                    }
-                },
-                { default: () => 'Appraisal' }
-            ),
-            key: ROUTE_APPRAISAL_EMPTY,
-        }, {
-            label: 'Industry',
-            key: 'industry',
-            type: 'group',
-            children: [
-                this.app_link(industry_routes.ROUTE_COST_ESTIMATE, 'Cost Estimate'),
-                this.app_link(industry_routes.ROUTE_INDUSTRY_INDEX, 'Industry Index'),
-                this.app_link(ROUTE_JOB_DETECTION_LIST, 'Job Detection'),
-            ]
-        }, {
-            label: 'Stocks',
-            key: 'Stock',
-            type: 'group',
-            children: [
-                this.app_link(ROUTE_STOCK_BLUEPRINTS, 'Blueprints'),
-            ]
-        }, {
-            label: 'Structure',
-            key: 'structure',
-            type: 'group',
-            children: [
-                this.app_link(ROUTE_STRUCTURES, 'Structures'),
-                this.app_link(ROUTE_STRUCTURE_GROUPS, 'Groups'),
-                this.app_link(ROUTE_STRUCTURE_DYNAMIC_GROUPS, 'Dynamic Groups'),
-            ]
-        }, {
-            label: 'Settings',
-            key: 'settings',
-            type: 'group',
-            children: [
-                this.app_link(ROUTE_CHARACTERS, 'Characters'),
-                this.app_link(ROUTE_NOTIFICATIONS, 'Notifications'),
-            ]
-        }];
+        const default_options = [
+            {
+                label: () =>
+                    h(
+                        RouterLink,
+                        {
+                            to: {
+                                name: project_routes.ROUTE_PROJECTS,
+                            },
+                        },
+                        { default: () => 'Projects' },
+                    ),
+                key: project_routes.ROUTE_PROJECTS,
+            },
+            {
+                label: () =>
+                    h(
+                        RouterLink,
+                        {
+                            to: {
+                                name: project_routes.ROUTE_PROJECT_READY_JOBS,
+                            },
+                        },
+                        { default: () => 'Industry Jobs' },
+                    ),
+                key: project_routes.ROUTE_PROJECT_READY_JOBS,
+            },
+            {
+                label: () =>
+                    h(
+                        RouterLink,
+                        {
+                            to: {
+                                name: ROUTE_PROJECT_GROUPS,
+                            },
+                        },
+                        { default: () => 'Project Groups' },
+                    ),
+                key: ROUTE_PROJECT_GROUPS,
+            },
+            {
+                label: () =>
+                    h(
+                        RouterLink,
+                        {
+                            to: {
+                                name: ROUTE_APPRAISAL_EMPTY,
+                            },
+                        },
+                        { default: () => 'Appraisal' },
+                    ),
+                key: ROUTE_APPRAISAL_EMPTY,
+            },
+            {
+                label: 'Industry',
+                key: 'industry',
+                type: 'group',
+                children: [
+                    this.app_link(
+                        industry_routes.ROUTE_COST_ESTIMATE,
+                        'Cost Estimate',
+                    ),
+                    this.app_link(
+                        industry_routes.ROUTE_INDUSTRY_INDEX,
+                        'Industry Index',
+                    ),
+                    this.app_link(ROUTE_JOB_DETECTION_LIST, 'Job Detection'),
+                ],
+            },
+            {
+                label: 'Stocks',
+                key: 'Stock',
+                type: 'group',
+                children: [this.app_link(ROUTE_STOCK_BLUEPRINTS, 'Blueprints')],
+            },
+            {
+                label: 'Structure',
+                key: 'structure',
+                type: 'group',
+                children: [
+                    this.app_link(ROUTE_STRUCTURES, 'Structures'),
+                    this.app_link(ROUTE_STRUCTURE_GROUPS, 'Groups'),
+                    this.app_link(
+                        ROUTE_STRUCTURE_DYNAMIC_GROUPS,
+                        'Dynamic Groups',
+                    ),
+                ],
+            },
+            {
+                label: 'Settings',
+                key: 'settings',
+                type: 'group',
+                children: [
+                    this.app_link(ROUTE_CHARACTERS, 'Characters'),
+                    this.app_link(ROUTE_NOTIFICATIONS, 'Notifications'),
+                ],
+            },
+        ];
 
         events.$on(ROUTE_CHANGE, (e: string) => {
             this.current_route = e;
@@ -348,13 +408,41 @@ class App extends Vue {
             if (e) {
                 let projectId = <Uuid>this.$route.params.projectId;
                 this.options[0].children = [
-                    this.project_link(project_routes.ROUTE_PROJECT_OVERVIEW, 'Overview', { projectId }),
-                    this.project_link(project_routes.ROUTE_PROJECT_JOB, 'Jobs', { projectId }),
-                    this.project_link(project_routes.ROUTE_PROJECT_MARKET, 'Market', { projectId }),
-                    this.project_link(project_routes.ROUTE_PROJECT_MISC, 'Miscellaneous', { projectId }),
-                    this.project_link(project_routes.ROUTE_PROJECT_EXCESS, 'Excess', { projectId }),
-                    this.project_link(project_routes.ROUTE_PROJECT_STOCK, 'Stocks', { projectId }),
-                    this.project_link(project_routes.ROUTE_PROJECT_SETTINGS, 'Settings', { projectId }),
+                    this.project_link(
+                        project_routes.ROUTE_PROJECT_OVERVIEW,
+                        'Overview',
+                        { projectId },
+                    ),
+                    this.project_link(
+                        project_routes.ROUTE_PROJECT_JOB,
+                        'Jobs',
+                        { projectId },
+                    ),
+                    this.project_link(
+                        project_routes.ROUTE_PROJECT_MARKET,
+                        'Market',
+                        { projectId },
+                    ),
+                    this.project_link(
+                        project_routes.ROUTE_PROJECT_MISC,
+                        'Miscellaneous',
+                        { projectId },
+                    ),
+                    this.project_link(
+                        project_routes.ROUTE_PROJECT_EXCESS,
+                        'Excess',
+                        { projectId },
+                    ),
+                    this.project_link(
+                        project_routes.ROUTE_PROJECT_STOCK,
+                        'Stocks',
+                        { projectId },
+                    ),
+                    this.project_link(
+                        project_routes.ROUTE_PROJECT_SETTINGS,
+                        'Settings',
+                        { projectId },
+                    ),
                 ];
                 this.current_route = e;
             } else {
@@ -364,11 +452,11 @@ class App extends Vue {
         });
 
         await this.whoami_req()
-            .then(_ => {
+            .then((_) => {
                 this.options = default_options;
             })
-            .catch(e => {
-                this.options = []
+            .catch((e) => {
+                this.options = [];
             });
         // #v-endif
     }
@@ -390,12 +478,14 @@ class App extends Vue {
             return true;
         }
 
-        return this.$route.name === project_routes.ROUTE_PROJECT_ASSIGNMENTS ||
+        return (
+            this.$route.name === project_routes.ROUTE_PROJECT_ASSIGNMENTS ||
             this.$route.name === project_routes.ROUTE_PROJECT_STATISTICS ||
             this.$route.name === ROUTE_APPRAISAL ||
             this.$route.name === ROUTE_APPRAISAL_EMPTY ||
             this.$route.name === ROUTE_APPRAISAL_COMPRESSION ||
-            this.$route.name === ROUTE_APPRAISAL_REPROCESSING;
+            this.$route.name === ROUTE_APPRAISAL_REPROCESSING
+        );
     }
 
     public async whoami_req() {
@@ -403,12 +493,10 @@ class App extends Vue {
             return;
         }
 
-        await Service
-            .whoami()
-            .then(x => {
-                this.whoami = x;
-                (<any>window).whoami = x;
-            });
+        await Service.whoami().then((x) => {
+            this.whoami = x;
+            (<any>window).whoami = x;
+        });
     }
 
     private app_link(to: string, name: string) {
@@ -419,9 +507,9 @@ class App extends Vue {
                     {
                         to: {
                             name: to,
-                        }
+                        },
                     },
-                    { default: () => name }
+                    { default: () => name },
                 ),
             key: to,
         };
@@ -435,10 +523,10 @@ class App extends Vue {
                     {
                         to: {
                             name: to,
-                            params
-                        }
+                            params,
+                        },
                     },
-                    { default: () => name }
+                    { default: () => name },
                 ),
             key: to,
         };
@@ -460,7 +548,9 @@ export default toNative(App);
 
 <style scoped>
 .font_overwrite {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-family:
+        ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        'Liberation Mono', 'Courier New', monospace;
 }
 
 .header {

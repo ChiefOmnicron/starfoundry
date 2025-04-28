@@ -1,34 +1,38 @@
-import axios from "axios";
-import type { StructureGroupId, StructureId, Uuid } from "@/sdk/utils";
-import { Structure, StructureService } from "./structure";
+import axios from 'axios';
+import type { StructureGroupId, StructureId, Uuid } from '@/sdk/utils';
+import { Structure, StructureService } from './structure';
 
 const STRUCTURE_PATH: string = '/api/v1/structures/groups';
 
 export class StructureGroupService {
-    public static cache: { [structure_group_id: StructureGroupId]: StructureGroup } = {};
+    public static cache: {
+        [structure_group_id: StructureGroupId]: StructureGroup;
+    } = {};
 
     public static async all(): Promise<StructureGroup[]> {
         return await axios
             .get<StructureGroupId[]>(STRUCTURE_PATH)
-            .then(x => {
+            .then((x) => {
                 if (x.status === 204) {
                     return [];
                 }
 
                 return x.data;
             })
-            .then(x => Promise.allSettled(
-                x
-                    .map(y => {
+            .then((x) =>
+                Promise.allSettled(
+                    x.map((y) => {
                         this.cache[y] = new StructureGroup(y);
                         return this.cache[y].load();
-                    }))
+                    }),
+                ),
             )
-            .then(x => x
-                .filter(x => x.status === 'fulfilled')
-                // TS does not understand that it has a value as it is
-                // definitly a successful promise
-                .map((x: any) => x.value)
+            .then((x) =>
+                x
+                    .filter((x) => x.status === 'fulfilled')
+                    // TS does not understand that it has a value as it is
+                    // definitly a successful promise
+                    .map((x: any) => x.value),
             );
     }
 
@@ -48,7 +52,7 @@ export class StructureGroupService {
     ): Promise<StructureGroup> {
         return axios
             .post(`${STRUCTURE_PATH}`, structure_group)
-            .then(x => this.fetch(x.data));
+            .then((x) => this.fetch(x.data));
     }
 
     public static async remove(
@@ -63,17 +67,15 @@ export class StructureGroupService {
 export class StructureGroup {
     private loader: Promise<any> | null;
 
-    private _info: IStructureGroup   = <any> null;
+    private _info: IStructureGroup = <any>null;
     private _structures: Structure[] = [];
 
-    public constructor(
-        private _structure_group_id: StructureGroupId,
-    ) {
+    public constructor(private _structure_group_id: StructureGroupId) {
         this.loader = axios
             .get(`${STRUCTURE_PATH}/${this._structure_group_id}`)
-            .then(x => this._info = x.data)
-            .then(_ => StructureService.bulkLoad(this._info.structure_ids))
-            .then(x => this._structures = x);
+            .then((x) => (this._info = x.data))
+            .then((_) => StructureService.bulkLoad(this._info.structure_ids))
+            .then((x) => (this._structures = x));
     }
 
     public async load(): Promise<StructureGroup> {
@@ -98,29 +100,27 @@ export class StructureGroup {
     }
 
     get structure_types(): string[] {
-        return [...new Set(this._structures.map(x => x.structureName))];
+        return [...new Set(this._structures.map((x) => x.structureName))];
     }
 
     get structure_services(): number[] {
-        return [...new Set(
-            this._structures.flatMap(x => x.services)
-        )];
+        return [...new Set(this._structures.flatMap((x) => x.services))];
     }
 
     get structure_systems(): number[] {
-        return [...new Set(this._structures.map(x => x.systemId))];
+        return [...new Set(this._structures.map((x) => x.systemId))];
     }
 }
 
 export interface IStructureGroup {
-    id:            Uuid;
-    name:          string;
+    id: Uuid;
+    name: string;
 
     structure_ids: StructureId[];
 }
 
 export interface IStructureCreateGroup {
-    name:          string;
+    name: string;
 
     structure_ids: StructureId[];
 }

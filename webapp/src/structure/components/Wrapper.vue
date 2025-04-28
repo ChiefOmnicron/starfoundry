@@ -15,18 +15,17 @@ class StructureWrapper extends Vue {
     })
     public structureId!: StructureId;
 
-    public busy: boolean            = true;
+    public busy: boolean = true;
 
     public structure: Structure = <any>null;
 
     public async created() {
-        await StructureService
-            .fetch(this.structureId)
-            .then(x => {
+        await StructureService.fetch(this.structureId)
+            .then((x) => {
                 this.structure = x;
                 this.busy = false;
             })
-            .catch(e => {
+            .catch((e) => {
                 this.busy = false;
                 console.error(e);
             });

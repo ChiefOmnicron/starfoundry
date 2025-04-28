@@ -1,21 +1,10 @@
 <template>
     <n-modal v-model:show="show" :on-update:show="close">
-        <card
-            :bordered="false"
-            title="Add Bulk Entries"
-            style="width: 900px"
-        >
-            <parse-market-items
-                @update:value="(x: any) => entries = x"
-            />
+        <card :bordered="false" title="Add Bulk Entries" style="width: 900px">
+            <parse-market-items @update:value="(x: any) => (entries = x)" />
 
             <action-group style="margin-right: 5px">
-                <n-button
-                    @click="close()"
-                    quaternary
-                >
-                    Close
-                </n-button>
+                <n-button @click="close()" quaternary> Close </n-button>
 
                 <n-button
                     @click="addEntries"
@@ -53,10 +42,7 @@ import ParseMarketItems from '@/components/inputs/ParseMarketItems.vue';
         ItemSelector,
         ParseMarketItems,
     },
-    emits: [
-        'close',
-        'close:value',
-    ]
+    emits: ['close', 'close:value'],
 })
 class BulkAddMarketEntryModal extends Vue {
     @Prop({

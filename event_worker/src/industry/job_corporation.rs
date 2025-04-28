@@ -37,7 +37,6 @@ pub async fn task(
     //    task.add_log(e.to_string());
     //}
 
-
     // create an eve api client
     let client = if let Some(client) = crate::utils::eve_api_client(
             credentials.clone(),

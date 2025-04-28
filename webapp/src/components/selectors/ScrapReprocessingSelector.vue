@@ -18,9 +18,7 @@ import { NSelect, type SelectOption } from 'naive-ui';
     components: {
         NSelect,
     },
-    emits: [
-        'update:reprocessing'
-    ],
+    emits: ['update:reprocessing'],
 })
 class ScrapReprocessingSelector extends Vue {
     @Prop({
@@ -40,25 +38,32 @@ class ScrapReprocessingSelector extends Vue {
     }
 
     public scrapReprocessingOptions(): SelectOption[] {
-        return [{
-            label: 'Level 0 (50%)',
-            value: 'Lvl0'
-        }, {
-            label: 'Level 1 (51%)',
-            value: 'Lvl1'
-        }, {
-            label: 'Level 2 (52%)',
-            value: 'Lvl2'
-        }, {
-            label: 'Level 3 (53%)',
-            value: 'Lvl3'
-        }, {
-            label: 'Level 4 (54%)',
-            value: 'Lvl4'
-        }, {
-            label: 'Level 5 (55%)',
-            value: 'Lvl5'
-        }];
+        return [
+            {
+                label: 'Level 0 (50%)',
+                value: 'Lvl0',
+            },
+            {
+                label: 'Level 1 (51%)',
+                value: 'Lvl1',
+            },
+            {
+                label: 'Level 2 (52%)',
+                value: 'Lvl2',
+            },
+            {
+                label: 'Level 3 (53%)',
+                value: 'Lvl3',
+            },
+            {
+                label: 'Level 4 (54%)',
+                value: 'Lvl4',
+            },
+            {
+                label: 'Level 5 (55%)',
+                value: 'Lvl5',
+            },
+        ];
     }
 }
 

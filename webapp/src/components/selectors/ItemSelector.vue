@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts">
-import { NSelect,  type SelectOption } from 'naive-ui';
+import { NSelect, type SelectOption } from 'naive-ui';
 import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
 import { h } from 'vue';
 
@@ -32,8 +32,8 @@ import type { TypeId } from '@/sdk/utils';
 //
 @Component({
     components: {
-        NSelect
-    }
+        NSelect,
+    },
 })
 class ItemSelector extends Vue {
     @Prop({
@@ -68,48 +68,49 @@ class ItemSelector extends Vue {
         this.loading = true;
 
         if (this.buildable) {
-            ItemService
-                .buildable_items()
+            ItemService.buildable_items()
                 .then((x: IItem[]) => {
-                    x
-                        .map((x: IItem) => this.options.push({
+                    x.map((x: IItem) =>
+                        this.options.push({
                             label: `${x.name}`,
-                            value: x.type_id
-                        }));
+                            value: x.type_id,
+                        }),
+                    );
                 })
-                .then((_: any) => this.value = <any>this.options[0].value)
-                .then((_: any) => this.loading = false);
+                .then((_: any) => (this.value = <any>this.options[0].value))
+                .then((_: any) => (this.loading = false));
         } else if (this.blueprints) {
-            ItemService
-                .blueprints()
+            ItemService.blueprints()
                 .then((x: IItem[]) => {
-                    x
-                        .map((x: IItem) => this.options.push({
+                    x.map((x: IItem) =>
+                        this.options.push({
                             label: `${x.name}`,
-                            value: x.type_id
-                        }));
+                            value: x.type_id,
+                        }),
+                    );
                 })
-                .then((_: any) => this.value = <any>this.options[0].value)
-                .then((_: any) => this.loading = false);
+                .then((_: any) => (this.value = <any>this.options[0].value))
+                .then((_: any) => (this.loading = false));
         } else {
-            ItemService
-                .all()
+            ItemService.all()
                 .then((x: IItem[]) => {
-                    x
-                        .map((x: IItem) => this.options.push({
+                    x.map((x: IItem) =>
+                        this.options.push({
                             label: `${x.name}`,
-                            value: x.type_id
-                        }));
+                            value: x.type_id,
+                        }),
+                    );
                 })
-                .then((_: any) => this.value = <any>this.options[0].value)
-                .then((_: any) => this.loading = false);
+                .then((_: any) => (this.value = <any>this.options[0].value))
+                .then((_: any) => (this.loading = false));
         }
         //});
     }
 
     public selectableOptions() {
-        return this.options
-            .filter(x => this.selected.indexOf(<number>x.value || 0) === -1)
+        return this.options.filter(
+            (x) => this.selected.indexOf(<number>x.value || 0) === -1,
+        );
     }
 
     public renderSelected({ option }: any) {
@@ -122,13 +123,11 @@ class ItemSelector extends Vue {
             {
                 style: {
                     display: 'flex',
-                    alignItems: 'center'
-                }
+                    alignItems: 'center',
+                },
             },
-            [
-                option.label
-            ]
-        )
+            [option.label],
+        );
     }
 }
 

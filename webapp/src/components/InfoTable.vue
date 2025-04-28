@@ -3,7 +3,7 @@
         <tr v-for="row in data" :key="row.field">
             <th
                 :style="{
-                    width: fieldWidth + 'px'
+                    width: fieldWidth + 'px',
                 }"
             >
                 {{ row.field }}
@@ -19,12 +19,15 @@
             <td v-else-if="(row.value || row.value === '') && !row.is_number">
                 <copy-text :value="row.value" />
             </td>
-            <td v-else-if="(<number>row.value >= 0 || <number>row.value <= 0) && row.is_number">
+            <td
+                v-else-if="
+                    (<number>row.value >= 0 || <number>row.value <= 0) &&
+                    row.is_number
+                "
+            >
                 <copy-text :value="row.value" number />
             </td>
-            <td v-else>
-                Not set
-            </td>
+            <td v-else>Not set</td>
         </tr>
     </n-table>
 </template>
@@ -34,7 +37,9 @@ import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
 import { NTable } from 'naive-ui';
 
 import CopyText from '@/components/CopyText.vue';
-import DataTable, { type IDataTableDefinition } from '@/components/DataTable.vue';
+import DataTable, {
+    type IDataTableDefinition,
+} from '@/components/DataTable.vue';
 
 @Component({
     components: {
@@ -42,7 +47,7 @@ import DataTable, { type IDataTableDefinition } from '@/components/DataTable.vue
 
         CopyText,
         DataTable,
-    }
+    },
 })
 class InfoTable extends Vue {
     @Prop({
@@ -61,9 +66,9 @@ class InfoTable extends Vue {
 export default toNative(InfoTable);
 
 export interface IInfoTable {
-    field:     string;
-    value:     any;
+    field: string;
+    value: any;
     is_number: boolean;
-    table?:    IDataTableDefinition[],
+    table?: IDataTableDefinition[];
 }
 </script>

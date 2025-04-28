@@ -4,9 +4,7 @@
             <appraisal-input v-model:value="rawAppraisal" />
 
             <div style="margin-top: 10px">
-                <appraisal-market-selector
-                    v-model:market="market"
-                />
+                <appraisal-market-selector v-model:market="market" />
 
                 <n-flex justify="space-between" style="margin-top: 10px">
                     <n-switch
@@ -14,20 +12,13 @@
                         v-if="appraisal"
                         @update:value="switchViewMode"
                     >
-                        <template #checked>
-                            Clean input
-                        </template>
-                        <template #unchecked>
-                            Original input
-                        </template>
+                        <template #checked> Clean input </template>
+                        <template #unchecked> Original input </template>
                     </n-switch>
 
                     <div v-if="!appraisal"></div>
 
-                    <n-button
-                        @click="createAppraisal"
-                        type="primary"
-                    >
+                    <n-button @click="createAppraisal" type="primary">
                         Create Appraisal
                     </n-button>
                 </n-flex>
@@ -64,10 +55,7 @@
             </div>
 
             <div v-if="code && notFound">
-                <n-alert
-                    title="Invalid Appraisal"
-                    type="error"
-                >
+                <n-alert title="Invalid Appraisal" type="error">
                     The appraisal couldn't be found, try another one
                 </n-alert>
             </div>
@@ -78,11 +66,14 @@
                     type="error"
                     v-if="appraisal && appraisal.invalid.length > 0"
                 >
-                    The following items couldn't be parsed:<br>
-                    <br>
-                    <template v-for="(item, index) in appraisal.invalid" :key="index">
+                    The following items couldn't be parsed:<br />
+                    <br />
+                    <template
+                        v-for="(item, index) in appraisal.invalid"
+                        :key="index"
+                    >
                         <n-text>{{ item }}</n-text>
-                        <br>
+                        <br />
                     </template>
                 </n-alert>
 
@@ -91,10 +82,15 @@
                     type="warning"
                     v-if="appraisal && appraisal.price_modifier !== 100"
                 >
-                    The price has an additional modifier of {{ appraisal.price_modifier }}%
+                    The price has an additional modifier of
+                    {{ appraisal.price_modifier }}%
                 </n-alert>
 
-                <n-tabs type="line" @update:value="tabSwitch" :value="selectedTab">
+                <n-tabs
+                    type="line"
+                    @update:value="tabSwitch"
+                    :value="selectedTab"
+                >
                     <n-tab-pane name="appraisal" tab="Appraisal">
                         <loader :busy="loadingAppraisal" />
 
@@ -104,7 +100,9 @@
                                 v-if="appraisal && appraisal.items.length > 0"
                             />
 
-                            <card-margin v-if="appraisal && appraisal.invalid.length > 0" />
+                            <card-margin
+                                v-if="appraisal && appraisal.invalid.length > 0"
+                            />
 
                             <n-data-table
                                 :columns="columns()"
@@ -116,7 +114,11 @@
 
                             <no-entries
                                 description="No entriees"
-                                v-if="(appraisal && appraisal.items.length === 0) || !appraisal"
+                                v-if="
+                                    (appraisal &&
+                                        appraisal.items.length === 0) ||
+                                    !appraisal
+                                "
                             />
                         </div>
                     </n-tab-pane>
@@ -126,7 +128,10 @@
                         <div v-if="!loadingAppraisalReprocessing">
                             <appraisal-header
                                 :appraisal="appraisalReprocessing"
-                                v-if="appraisalReprocessing && appraisalReprocessing.items.length > 0"
+                                v-if="
+                                    appraisalReprocessing &&
+                                    appraisalReprocessing.items.length > 0
+                                "
                             />
 
                             <appraisal-reprocessing
@@ -150,13 +155,21 @@
                                 :columns="columns()"
                                 :data="appraisalReprocessing.items"
                                 :row-class-name="rowClassName"
-                                v-if="appraisalReprocessing && appraisalReprocessing.items.length > 0"
+                                v-if="
+                                    appraisalReprocessing &&
+                                    appraisalReprocessing.items.length > 0
+                                "
                                 striped
                             />
 
                             <no-entries
                                 description="No entriees"
-                                v-if="(appraisalReprocessing && appraisalReprocessing.items.length === 0) || !appraisalReprocessing"
+                                v-if="
+                                    (appraisalReprocessing &&
+                                        appraisalReprocessing.items.length ===
+                                            0) ||
+                                    !appraisalReprocessing
+                                "
                             />
                         </div>
                     </n-tab-pane>
@@ -169,14 +182,25 @@
                                 type="warning"
                                 v-if="appraisal && noSolution"
                             >
-                                No compression solution found for your input paramteres. Either reduce the amount you need, or allow for example uncompressed ores that you can compress yourself, or allow for raw minerals.
+                                No compression solution found for your input
+                                paramteres. Either reduce the amount you need,
+                                or allow for example uncompressed ores that you
+                                can compress yourself, or allow for raw
+                                minerals.
                             </n-alert>
 
                             <n-tabs type="line" @update:value="tabSwitch">
                                 <n-tab-pane name="compressed" tab="Compressed">
                                     <appraisal-header
-                                        :appraisal="appraisalCompression.compression_appraisal"
-                                        v-if="appraisalCompression && appraisalCompression.compression_appraisal.items.length > 0"
+                                        :appraisal="
+                                            appraisalCompression.compression_appraisal
+                                        "
+                                        v-if="
+                                            appraisalCompression &&
+                                            appraisalCompression
+                                                .compression_appraisal.items
+                                                .length > 0
+                                        "
                                     />
 
                                     <appraisal-compression
@@ -198,16 +222,35 @@
 
                                     <n-data-table
                                         :columns="columns()"
-                                        :data="appraisalCompression.compression_appraisal.items"
+                                        :data="
+                                            appraisalCompression
+                                                .compression_appraisal.items
+                                        "
                                         :row-class-name="rowClassName"
-                                        v-if="appraisalCompression && appraisalCompression.compression_appraisal.items.length > 0"
+                                        v-if="
+                                            appraisalCompression &&
+                                            appraisalCompression
+                                                .compression_appraisal.items
+                                                .length > 0
+                                        "
                                         striped
                                     />
                                 </n-tab-pane>
-                                <n-tab-pane name="compressedOverage" tab="Overage">
+                                <n-tab-pane
+                                    name="compressedOverage"
+                                    tab="Overage"
+                                >
                                     <appraisal-header
-                                        :appraisal="appraisalCompression.overage_appraisal"
-                                        v-if="appraisalCompression && appraisalCompression.overage_appraisal && appraisalCompression.overage_appraisal.items.length > 0"
+                                        :appraisal="
+                                            appraisalCompression.overage_appraisal
+                                        "
+                                        v-if="
+                                            appraisalCompression &&
+                                            appraisalCompression.overage_appraisal &&
+                                            appraisalCompression
+                                                .overage_appraisal.items
+                                                .length > 0
+                                        "
                                     />
 
                                     <appraisal-compression
@@ -229,9 +272,18 @@
 
                                     <n-data-table
                                         :columns="columns()"
-                                        :data="appraisalCompression.overage_appraisal.items"
+                                        :data="
+                                            appraisalCompression
+                                                .overage_appraisal.items
+                                        "
                                         :row-class-name="rowClassName"
-                                        v-if="appraisalCompression && appraisalCompression.overage_appraisal && appraisalCompression.overage_appraisal.items.length > 0"
+                                        v-if="
+                                            appraisalCompression &&
+                                            appraisalCompression.overage_appraisal &&
+                                            appraisalCompression
+                                                .overage_appraisal.items
+                                                .length > 0
+                                        "
                                         striped
                                     />
                                 </n-tab-pane>
@@ -239,7 +291,13 @@
 
                             <no-entries
                                 description="No entriees"
-                                v-if="(appraisalCompression && appraisalCompression.compression_appraisal.items.length === 0) || !appraisalCompression"
+                                v-if="
+                                    (appraisalCompression &&
+                                        appraisalCompression
+                                            .compression_appraisal.items
+                                            .length === 0) ||
+                                    !appraisalCompression
+                                "
                             />
                         </div>
                     </n-tab-pane>
@@ -252,10 +310,17 @@
                                 :min="0"
                                 :max="200"
                             />
-                            <n-input-number v-model:value="appraisal.price_modifier" />
+                            <n-input-number
+                                v-model:value="appraisal.price_modifier"
+                            />
 
                             <h3>Comment</h3>
-                            <n-input type="textarea" maxlength="1024" show-count v-model:value="appraisal.comment" />
+                            <n-input
+                                type="textarea"
+                                maxlength="1024"
+                                show-count
+                                v-model:value="appraisal.comment"
+                            />
 
                             <n-space justify="end">
                                 <n-button
@@ -277,12 +342,46 @@
 import { Component, Prop, Vue, Watch, toNative } from 'vue-facing-decorator';
 import { h } from 'vue';
 
-import { createAppraisal, defaultCompressionOptions, defaultReprocessingOptions, fetchAppraisal, fetchAppraisalCompression, fetchAppraisalReprocessing, type IAppraisal, type IAppraisalItem, type ICompressionOptions, type ICompressionResult, type IReprocessingOptions } from '@/appraisal/service';
+import {
+    createAppraisal,
+    defaultCompressionOptions,
+    defaultReprocessingOptions,
+    fetchAppraisal,
+    fetchAppraisalCompression,
+    fetchAppraisalReprocessing,
+    type IAppraisal,
+    type IAppraisalItem,
+    type ICompressionOptions,
+    type ICompressionResult,
+    type IReprocessingOptions,
+} from '@/appraisal/service';
 
-import { ROUTE_APPRAISAL, ROUTE_APPRAISAL_COMPRESSION, ROUTE_APPRAISAL_REPROCESSING } from '@/appraisal/router';
+import {
+    ROUTE_APPRAISAL,
+    ROUTE_APPRAISAL_COMPRESSION,
+    ROUTE_APPRAISAL_REPROCESSING,
+} from '@/appraisal/router';
 
 import { ArrowsAltH } from '@vicons/fa';
-import { NAlert, NButton, NDataTable, NFlex, NGrid, NGridItem, NTabs, NTabPane, NText, NSpace, NSteps, NStep, NSlider, NInputNumber, NInput, NIcon, NSwitch } from 'naive-ui';
+import {
+    NAlert,
+    NButton,
+    NDataTable,
+    NFlex,
+    NGrid,
+    NGridItem,
+    NTabs,
+    NTabPane,
+    NText,
+    NSpace,
+    NSteps,
+    NStep,
+    NSlider,
+    NInputNumber,
+    NInput,
+    NIcon,
+    NSwitch,
+} from 'naive-ui';
 import AppraisalCompression from './components/AppraisalCompression.vue';
 import AppraisalHeader from '@/appraisal/components/AppraisalHeader.vue';
 import AppraisalInput from '@/appraisal/components/AppraisalInput.vue';
@@ -326,7 +425,7 @@ import NoEntries from '@/components/NoEntries.vue';
         FormatNumber,
         Loader,
         NoEntries,
-    }
+    },
 })
 class AppraisalShow extends Vue {
     @Prop({
@@ -340,7 +439,11 @@ class AppraisalShow extends Vue {
     public loadingAppraisalCompression: boolean = false;
     public loadingAppraisalReprocessing: boolean = false;
 
-    public currentTab: 'appraisal' | 'compression' | 'compressionOverage' | 'reprocessing' = 'appraisal';
+    public currentTab:
+        | 'appraisal'
+        | 'compression'
+        | 'compressionOverage'
+        | 'reprocessing' = 'appraisal';
 
     public notFound: boolean = false;
     public noSolution: boolean = false;
@@ -350,8 +453,10 @@ class AppraisalShow extends Vue {
     public appraisalCompression: ICompressionResult | null = null;
     public appraisalReprocessing: IAppraisal | null = null;
 
-    public compressionOptions: ICompressionOptions = defaultCompressionOptions();
-    public reprocessingOptions: IReprocessingOptions = defaultReprocessingOptions();
+    public compressionOptions: ICompressionOptions =
+        defaultCompressionOptions();
+    public reprocessingOptions: IReprocessingOptions =
+        defaultReprocessingOptions();
 
     public market: number = 60003760;
     public single: boolean = false;
@@ -361,14 +466,14 @@ class AppraisalShow extends Vue {
     public viewMode: boolean = false;
 
     public async created() {
-        console.log('asdasd')
+        console.log('asdasd');
         if (!this.code) {
             return;
         }
 
         this.loadingAppraisal = true;
         fetchAppraisal(this.code)
-            .then(x => {
+            .then((x) => {
                 this.appraisal = x;
 
                 //this.rawAppraisal = '';
@@ -376,7 +481,10 @@ class AppraisalShow extends Vue {
                 if (x.raw && !this.viewMode) {
                     this.rawAppraisal = x.raw;
                 } else {
-                    x.items.forEach(i => this.rawAppraisal += `${i.meta.name}\t${i.quantity}\n`);
+                    x.items.forEach(
+                        (i) =>
+                            (this.rawAppraisal += `${i.meta.name}\t${i.quantity}\n`),
+                    );
                 }
 
                 this.market = x.market_id;
@@ -389,12 +497,12 @@ class AppraisalShow extends Vue {
                 //}
 
                 if (this.$route.path.endsWith('compression')) {
-                    this.tabSwitch('compression')
+                    this.tabSwitch('compression');
                 } else if (this.$route.path.endsWith('reprocessing')) {
                     this.tabSwitch('reprocessing');
                 }
             })
-            .catch(e => {
+            .catch((e) => {
                 if (e.status === 404) {
                     this.notFound = true;
                 }
@@ -406,13 +514,8 @@ class AppraisalShow extends Vue {
     }
 
     public async createAppraisal() {
-        createAppraisal(
-            this.rawAppraisal,
-            this.market,
-            '',
-            100,
-        )
-            .then(x => {
+        createAppraisal(this.rawAppraisal, this.market, '', 100)
+            .then((x) => {
                 this.$router.push({
                     name: ROUTE_APPRAISAL,
                     params: {
@@ -420,8 +523,8 @@ class AppraisalShow extends Vue {
                     },
                 });
             })
-            .catch(e => {
-                console.error(e)
+            .catch((e) => {
+                console.error(e);
             });
     }
 
@@ -436,7 +539,7 @@ class AppraisalShow extends Vue {
             this.appraisal.comment,
             this.appraisal.price_modifier,
         )
-            .then(x => {
+            .then((x) => {
                 this.$router.push({
                     name: ROUTE_APPRAISAL,
                     params: {
@@ -444,8 +547,8 @@ class AppraisalShow extends Vue {
                     },
                 });
             })
-            .catch(e => {
-                console.error(e)
+            .catch((e) => {
+                console.error(e);
             });
     }
 
@@ -485,17 +588,17 @@ class AppraisalShow extends Vue {
     public fetchCompression() {
         this.loading = true;
 
-        fetchAppraisalCompression(
-            this.code,
-            this.compressionOptions,
-        )
-            .then(x => {
+        fetchAppraisalCompression(this.code, this.compressionOptions)
+            .then((x) => {
                 this.appraisalCompression = x;
                 this.loading = false;
                 this.loadingAppraisalCompression = false;
             })
-            .catch(e => {
-                if (e.status === 400 && e.response.data.error === 'NO_SOLUTION') {
+            .catch((e) => {
+                if (
+                    e.status === 400 &&
+                    e.response.data.error === 'NO_SOLUTION'
+                ) {
                     this.noSolution = true;
                 }
 
@@ -507,16 +610,13 @@ class AppraisalShow extends Vue {
     public fetchReprocessing() {
         this.loading = true;
 
-        fetchAppraisalReprocessing(
-            this.code,
-            this.reprocessingOptions,
-        )
-            .then(x => {
+        fetchAppraisalReprocessing(this.code, this.reprocessingOptions)
+            .then((x) => {
                 this.appraisalReprocessing = x;
                 this.loading = false;
                 this.loadingAppraisalReprocessing = false;
             })
-            .catch(e => {
+            .catch((e) => {
                 // TODO:
                 console.error(e);
                 this.loading = false;
@@ -557,16 +657,19 @@ class AppraisalShow extends Vue {
                             sell = item.sell.per_item.min;
                         }
 
-                        buy = (Math.floor(buy * 100)) / 100;
-                        sell = (Math.floor(sell * 100)) / 100;
+                        buy = Math.floor(buy * 100) / 100;
+                        sell = Math.floor(sell * 100) / 100;
 
-                        content.push(`${item.meta.name}\t${item.quantity}\t${volume}\t${buy}\t${sell}`);
+                        content.push(
+                            `${item.meta.name}\t${item.quantity}\t${volume}\t${buy}\t${sell}`,
+                        );
                     }
                 }
                 return content.join('\n');
             case 'compression':
                 if (this.appraisalCompression) {
-                    for (let item of this.appraisalCompression.compression_appraisal.items) {
+                    for (let item of this.appraisalCompression
+                        .compression_appraisal.items) {
                         let volume = 0;
                         if (item.meta.repackaged) {
                             volume = item.meta.repackaged;
@@ -586,16 +689,22 @@ class AppraisalShow extends Vue {
                             sell = item.sell.per_item.min;
                         }
 
-                        buy = (Math.floor(buy * 100)) / 100;
-                        sell = (Math.floor(sell * 100)) / 100;
+                        buy = Math.floor(buy * 100) / 100;
+                        sell = Math.floor(sell * 100) / 100;
 
-                        content.push(`${item.meta.name}\t${item.quantity}\t${volume}\t${buy}\t${sell}`);
+                        content.push(
+                            `${item.meta.name}\t${item.quantity}\t${volume}\t${buy}\t${sell}`,
+                        );
                     }
                 }
                 return content.join('\n');
             case 'compressionOverage':
-                if (this.appraisalCompression && this.appraisalCompression.overage_appraisal) {
-                    for (let item of this.appraisalCompression.overage_appraisal.items) {
+                if (
+                    this.appraisalCompression &&
+                    this.appraisalCompression.overage_appraisal
+                ) {
+                    for (let item of this.appraisalCompression.overage_appraisal
+                        .items) {
                         let volume = 0;
                         if (item.meta.repackaged) {
                             volume = item.meta.repackaged;
@@ -615,10 +724,12 @@ class AppraisalShow extends Vue {
                             sell = item.sell.per_item.min;
                         }
 
-                        buy = (Math.floor(buy * 100)) / 100;
-                        sell = (Math.floor(sell * 100)) / 100;
+                        buy = Math.floor(buy * 100) / 100;
+                        sell = Math.floor(sell * 100) / 100;
 
-                        content.push(`${item.meta.name}\t${item.quantity}\t${volume}\t${buy}\t${sell}`);
+                        content.push(
+                            `${item.meta.name}\t${item.quantity}\t${volume}\t${buy}\t${sell}`,
+                        );
                     }
                 }
                 return content.join('\n');
@@ -644,189 +755,192 @@ class AppraisalShow extends Vue {
                             sell = item.sell.per_item.min;
                         }
 
-                        buy = (Math.floor(buy * 100)) / 100;
-                        sell = (Math.floor(sell * 100)) / 100;
+                        buy = Math.floor(buy * 100) / 100;
+                        sell = Math.floor(sell * 100) / 100;
 
-                        content.push(`${item.meta.name}\t${item.quantity}\t${volume}\t${buy}\t${sell}`);
+                        content.push(
+                            `${item.meta.name}\t${item.quantity}\t${volume}\t${buy}\t${sell}`,
+                        );
                     }
                 }
                 return content.join('\n');
             default:
-                return ''
+                return '';
         }
     }
 
     public columns() {
-        return [{
-            key: 'icon',
-            width: 32,
-            render: (row: IAppraisalItem) => {
-                return h(
-                    EveIcon,
-                    {
+        return [
+            {
+                key: 'icon',
+                width: 32,
+                render: (row: IAppraisalItem) => {
+                    return h(EveIcon, {
                         id: row.type_id,
-                    },
-                )
-            },
-            title: () => {
-                return h(
-                    CopyText,
-                    {
+                    });
+                },
+                title: () => {
+                    return h(CopyText, {
                         icon: true,
                         value: this.clipboardData(),
-                    },
-                )
-            }
-        }, {
-            title: 'Name',
-            key: 'name',
-            width: '25%',
-            defaultSortOrder: 'ascend',
-            sorter: (row1: IAppraisalItem, row2: IAppraisalItem) => row1.meta.name.localeCompare(row2.meta.name),
-            render: (row: IAppraisalItem) => {
-                return h(
-                    CopyText,
-                    {
+                    });
+                },
+            },
+            {
+                title: 'Name',
+                key: 'name',
+                width: '25%',
+                defaultSortOrder: 'ascend',
+                sorter: (row1: IAppraisalItem, row2: IAppraisalItem) =>
+                    row1.meta.name.localeCompare(row2.meta.name),
+                render: (row: IAppraisalItem) => {
+                    return h(CopyText, {
                         value: row.meta.name,
-                    },
-                )
-            }
-        }, {
-            align: 'right',
-            title: 'Quantity',
-            key: 'quantity',
-            width: '15%',
-            sorter: (row1: IAppraisalItem, row2: IAppraisalItem) => row1.quantity - row2.quantity,
-            render: (row: IAppraisalItem) => {
-                return h(
-                    CopyText,
-                    {
+                    });
+                },
+            },
+            {
+                align: 'right',
+                title: 'Quantity',
+                key: 'quantity',
+                width: '15%',
+                sorter: (row1: IAppraisalItem, row2: IAppraisalItem) =>
+                    row1.quantity - row2.quantity,
+                render: (row: IAppraisalItem) => {
+                    return h(CopyText, {
                         value: row.quantity,
                         number: true,
-                    },
-                )
-            }
-        }, {
-            key: 'attrs',
-            title: () => {
-                return h(
-                    NButton,
-                    {
-                        style: 'width: 100%;',
-                        quaternary: true,
-                        onClick: () => this.single = !this.single,
-                    },
-                    () => [
-                        h(
-                            'span',
-                            {
-                                style: `font-weight: ${!this.single ? 'bold' : 'normal'}; margin-right: 10px`,
-                            },
-                            'Stack\t'
-                        ),
-                        h(
-                            NIcon,
-                            {},
-                            () => [
-                                h(ArrowsAltH),
-                            ]
-                        ),
-                        h(
-                            'span',
-                            {
-                                style: `font-weight: ${this.single ? 'bold' : 'normal'}; margin-left: 10px`,
-                            },
-                            '\tSingle'
-                        ),
-                    ]
-                )
-            },
-            children: [{
-                align: 'right',
-                title: 'Volume (m3)',
-                key: 'volume',
-                width: '15%',
-                sorter: (row1: IAppraisalItem, row2: IAppraisalItem) => {
-                    let quantityRow1 = this.single ? 1 : row1.quantity;
-                    let quantityRow2 = this.single ? 1 : row2.quantity;
-
-                    if (row1.meta.repackaged && row2.meta.repackaged) {
-                        return (row1.meta.repackaged * quantityRow1) - (row2.meta.repackaged * quantityRow2);
-                    } else if (row1.meta.repackaged) {
-                        return (row1.meta.repackaged * quantityRow1) - (row2.meta.volume * quantityRow2);
-                    } else if (row2.meta.repackaged) {
-                        return (row1.meta.volume * quantityRow1) - (row2.meta.repackaged * quantityRow2);
-                    } else {
-                        return (row1.meta.volume * quantityRow1) - (row2.meta.volume * quantityRow2);
-                    }
+                    });
                 },
-                render: (row: IAppraisalItem) => {
-                    let volume = 0;
-                    if (row.meta.repackaged) {
-                        volume = row.meta.repackaged;
-                    } else {
-                        volume = row.meta.volume;
-                    }
-
-                    if (!this.single) {
-                        volume *= row.quantity;
-                    }
-
+            },
+            {
+                key: 'attrs',
+                title: () => {
                     return h(
-                        CopyText,
+                        NButton,
                         {
-                            value: volume,
-                            number: true,
-                            withComma: true,
+                            style: 'width: 100%;',
+                            quaternary: true,
+                            onClick: () => (this.single = !this.single),
                         },
-                    )
-                }
-            }, {
-                align: 'right',
-                title: 'Buy (ISK)',
-                key: 'buy',
-                width: '25%',
-                sorter: (row1: IAppraisalItem, row2: IAppraisalItem) => row1.buy.max - row2.buy.max,
-                render: (row: IAppraisalItem) => {
-                    let value = row.buy.max;
+                        () => [
+                            h(
+                                'span',
+                                {
+                                    style: `font-weight: ${!this.single ? 'bold' : 'normal'}; margin-right: 10px`,
+                                },
+                                'Stack\t',
+                            ),
+                            h(NIcon, {}, () => [h(ArrowsAltH)]),
+                            h(
+                                'span',
+                                {
+                                    style: `font-weight: ${this.single ? 'bold' : 'normal'}; margin-left: 10px`,
+                                },
+                                '\tSingle',
+                            ),
+                        ],
+                    );
+                },
+                children: [
+                    {
+                        align: 'right',
+                        title: 'Volume (m3)',
+                        key: 'volume',
+                        width: '15%',
+                        sorter: (
+                            row1: IAppraisalItem,
+                            row2: IAppraisalItem,
+                        ) => {
+                            let quantityRow1 = this.single ? 1 : row1.quantity;
+                            let quantityRow2 = this.single ? 1 : row2.quantity;
 
-                    if (this.single) {
-                        value = row.buy.per_item.max;
-                    }
-
-                    return h(
-                        CopyText,
-                        {
-                            value: value,
-                            number: true,
-                            withComma: true,
+                            if (row1.meta.repackaged && row2.meta.repackaged) {
+                                return (
+                                    row1.meta.repackaged * quantityRow1 -
+                                    row2.meta.repackaged * quantityRow2
+                                );
+                            } else if (row1.meta.repackaged) {
+                                return (
+                                    row1.meta.repackaged * quantityRow1 -
+                                    row2.meta.volume * quantityRow2
+                                );
+                            } else if (row2.meta.repackaged) {
+                                return (
+                                    row1.meta.volume * quantityRow1 -
+                                    row2.meta.repackaged * quantityRow2
+                                );
+                            } else {
+                                return (
+                                    row1.meta.volume * quantityRow1 -
+                                    row2.meta.volume * quantityRow2
+                                );
+                            }
                         },
-                    )
-                }
-            }, {
-                align: 'right',
-                title: 'Sell (ISK)',
-                key: 'sell',
-                width: '25%',
-                sorter: (row1: IAppraisalItem, row2: IAppraisalItem) => row1.sell.min - row2.sell.min,
-                render: (row: IAppraisalItem) => {
-                    let value = row.sell.min;
+                        render: (row: IAppraisalItem) => {
+                            let volume = 0;
+                            if (row.meta.repackaged) {
+                                volume = row.meta.repackaged;
+                            } else {
+                                volume = row.meta.volume;
+                            }
 
-                    if (this.single) {
-                        value = row.sell.per_item.min;
-                    }
+                            if (!this.single) {
+                                volume *= row.quantity;
+                            }
 
-                    return h(
-                        CopyText,
-                        {
-                            value: value,
-                            number: true,
-                            withComma: true,
+                            return h(CopyText, {
+                                value: volume,
+                                number: true,
+                                withComma: true,
+                            });
                         },
-                    )
-                }
-            }]
-        }];
+                    },
+                    {
+                        align: 'right',
+                        title: 'Buy (ISK)',
+                        key: 'buy',
+                        width: '25%',
+                        sorter: (row1: IAppraisalItem, row2: IAppraisalItem) =>
+                            row1.buy.max - row2.buy.max,
+                        render: (row: IAppraisalItem) => {
+                            let value = row.buy.max;
+
+                            if (this.single) {
+                                value = row.buy.per_item.max;
+                            }
+
+                            return h(CopyText, {
+                                value: value,
+                                number: true,
+                                withComma: true,
+                            });
+                        },
+                    },
+                    {
+                        align: 'right',
+                        title: 'Sell (ISK)',
+                        key: 'sell',
+                        width: '25%',
+                        sorter: (row1: IAppraisalItem, row2: IAppraisalItem) =>
+                            row1.sell.min - row2.sell.min,
+                        render: (row: IAppraisalItem) => {
+                            let value = row.sell.min;
+
+                            if (this.single) {
+                                value = row.sell.per_item.min;
+                            }
+
+                            return h(CopyText, {
+                                value: value,
+                                number: true,
+                                withComma: true,
+                            });
+                        },
+                    },
+                ],
+            },
+        ];
     }
 
     public switchViewMode() {
@@ -838,7 +952,9 @@ class AppraisalShow extends Vue {
         if (this.appraisal.raw && !this.viewMode) {
             this.rawAppraisal = this.appraisal.raw;
         } else {
-            this.appraisal.items.forEach(i => this.rawAppraisal += `${i.meta.name}\t${i.quantity}\n`);
+            this.appraisal.items.forEach(
+                (i) => (this.rawAppraisal += `${i.meta.name}\t${i.quantity}\n`),
+            );
         }
     }
 }
@@ -848,6 +964,6 @@ export default toNative(AppraisalShow);
 
 <style scoped>
 :deep(.low-data td) {
-  color: rgb(255, 179, 71) !important;
+    color: rgb(255, 179, 71) !important;
 }
 </style>

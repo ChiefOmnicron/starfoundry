@@ -22,23 +22,38 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="group in structure_groups" :key="group.structure_group_id">
+                    <tr
+                        v-for="group in structure_groups"
+                        :key="group.structure_group_id"
+                    >
                         <td>
                             {{ group.name }}
                         </td>
                         <td>
                             <template v-for="system in group.structure_systems">
-                                <system :system-id="system" dotlan v-if="system" /><br>
+                                <system
+                                    :system-id="system"
+                                    dotlan
+                                    v-if="system"
+                                /><br />
                             </template>
                         </td>
                         <td>
-                            <template v-for="structure in group.structure_types">
-                                {{ structure }}<br>
+                            <template
+                                v-for="structure in group.structure_types"
+                            >
+                                {{ structure }}<br />
                             </template>
                         </td>
                         <td>
-                            <template v-for="service in group.structure_services">
-                                <item :type-id="service" v-slot="{ item }" v-if="service">
+                            <template
+                                v-for="service in group.structure_services"
+                            >
+                                <item
+                                    :type-id="service"
+                                    v-slot="{ item }"
+                                    v-if="service"
+                                >
                                     {{ service_name(item.name) }}
                                 </item>
                             </template>
@@ -64,7 +79,10 @@ import { events } from '@/main';
 import { StructureGroup, StructureGroupService } from '@/sdk/structure_group';
 
 import { ROUTE_CHANGE } from '@/event_bus';
-import { ROUTE_STRUCUTRE_GROUP_DYNAMIC_NEW, ROUTE_STRUCUTRE_GROUP_NEW } from './router';
+import {
+    ROUTE_STRUCUTRE_GROUP_DYNAMIC_NEW,
+    ROUTE_STRUCUTRE_GROUP_NEW,
+} from './router';
 
 import Card from '@/components/Card.vue';
 import Item from '@/components/Item.vue';
@@ -86,27 +104,23 @@ import System from '@/components/System.vue';
         PageHeader,
         StructureGroupWrapper,
         System,
-    }
+    },
 })
 class StructureGroupsOverview extends Vue {
     public busy: boolean = false;
 
     public structure_groups: StructureGroup[] = [];
 
-    public new_structure_group         = ROUTE_STRUCUTRE_GROUP_NEW;
+    public new_structure_group = ROUTE_STRUCUTRE_GROUP_NEW;
     public new_dynamic_structure_group = ROUTE_STRUCUTRE_GROUP_DYNAMIC_NEW;
 
     public async created() {
-        events.$emit(
-            ROUTE_CHANGE,
-            this.$route.name
-        );
+        events.$emit(ROUTE_CHANGE, this.$route.name);
 
         this.busy = true;
-        await StructureGroupService
-            .all()
-            .then(x => {
-                this.structure_groups = x
+        await StructureGroupService.all()
+            .then((x) => {
+                this.structure_groups = x;
             })
             .catch((e: any) => console.error(e));
         this.busy = false;

@@ -1,11 +1,9 @@
 <template>
-    <card
-        danger
-        title="Danger Zone"
-    >
+    <card danger title="Danger Zone">
         <n-space justify="space-between" style="padding: 10px">
             <div>
-                <b>{{ objectTitle }}</b><br>
+                <b>{{ objectTitle }}</b
+                ><br />
                 {{ objectDescription }}
             </div>
 
@@ -20,11 +18,9 @@
             </n-button>
         </n-space>
 
-        <confirm-dialog
-            v-model:show="showConfirm"
-            :confirm="confirmRemove"
-        >
-            Are you sure you want to delete the entry? This cannot be reversed!<br>
+        <confirm-dialog v-model:show="showConfirm" :confirm="confirmRemove">
+            Are you sure you want to delete the entry? This cannot be
+            reversed!<br />
             Please type in "delete" to confirm.
         </confirm-dialog>
     </card>
@@ -45,9 +41,7 @@ import ConfirmDialog from './ConfirmDialog.vue';
         Card,
         ConfirmDialog,
     },
-    emits: [
-        'delete'
-    ]
+    emits: ['delete'],
 })
 class DeleteObject extends Vue {
     @Prop({

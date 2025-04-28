@@ -1,10 +1,12 @@
-import axios from "axios";
-import type { StockBlueprintId, TypeId, Uuid } from "@/sdk/utils";
+import axios from 'axios';
+import type { StockBlueprintId, TypeId, Uuid } from '@/sdk/utils';
 
 const STOCK_BLUEPRINT_PATH: string = '/api/v1/stocks/blueprints';
 
 export class StockBlueprintService {
-    public static cache: { [stockBlueprintId: StockBlueprintId]: StockBlueprint } = {};
+    public static cache: {
+        [stockBlueprintId: StockBlueprintId]: StockBlueprint;
+    } = {};
 
     public static async list(
         filter: IStockBlueprintFilter,
@@ -13,29 +15,29 @@ export class StockBlueprintService {
             .get<StockBlueprintId[]>(STOCK_BLUEPRINT_PATH, {
                 params: filter,
             })
-            .then(x => {
+            .then((x) => {
                 let response: StockBlueprintId[] = [];
                 if (x.data) {
                     response = x.data;
                 }
 
                 return Promise.allSettled(
-                    response
-                        .map(y => {
-                            if (!this.cache) {
-                                this.cache = {};
-                            }
+                    response.map((y) => {
+                        if (!this.cache) {
+                            this.cache = {};
+                        }
 
-                            this.cache[y] = new StockBlueprint(y);
-                            return this.cache[y].load();
-                        })
-                    )
+                        this.cache[y] = new StockBlueprint(y);
+                        return this.cache[y].load();
+                    }),
+                );
             })
-            .then(x => x
-                .filter(x => x.status === 'fulfilled')
-                // TS does not understand that it has a value as it is
-                // definitly a successful promise
-                .map((x: any) => x.value)
+            .then((x) =>
+                x
+                    .filter((x) => x.status === 'fulfilled')
+                    // TS does not understand that it has a value as it is
+                    // definitly a successful promise
+                    .map((x: any) => x.value),
             );
     }
 
@@ -55,22 +57,20 @@ export class StockBlueprintService {
     ): Promise<StockBlueprint> {
         return axios
             .post(`${STOCK_BLUEPRINT_PATH}`, structure)
-            .then(x => this.fetch(x.data));
+            .then((x) => this.fetch(x.data));
     }
 }
 
 export class StockBlueprint {
     private loader: Promise<any> | null;
 
-    private _info: IStockBlueprint                  = <any>null;
+    private _info: IStockBlueprint = <any>null;
     private _thresholds: IStockBlueprintThreshold[] = [];
 
-    public constructor(
-        private _stockBlueprintId: StockBlueprintId,
-    ) {
+    public constructor(private _stockBlueprintId: StockBlueprintId) {
         this.loader = axios
             .get(`${STOCK_BLUEPRINT_PATH}/${this._stockBlueprintId}`)
-            .then(x => this._info = x.data);
+            .then((x) => (this._info = x.data));
     }
 
     public async load(): Promise<StockBlueprint> {
@@ -85,7 +85,7 @@ export class StockBlueprint {
     public async loadThresholds(): Promise<IStockBlueprintThreshold[]> {
         return await axios
             .get(`${STOCK_BLUEPRINT_PATH}/${this._stockBlueprintId}/thresholds`)
-            .then(x => {
+            .then((x) => {
                 this._thresholds = x.data;
                 return x.data;
             });
@@ -95,17 +95,16 @@ export class StockBlueprint {
         return await axios
             .put(
                 `${STOCK_BLUEPRINT_PATH}/${this._stockBlueprintId}/thresholds`,
-                this._thresholds
+                this._thresholds,
             )
-            .then(_ => this.loadThresholds());
+            .then((_) => this.loadThresholds());
     }
 
     public async save(): Promise<void> {
-        return await axios
-            .put(
-                `${STOCK_BLUEPRINT_PATH}/${this._stockBlueprintId}`,
-                this._info
-            );
+        return await axios.put(
+            `${STOCK_BLUEPRINT_PATH}/${this._stockBlueprintId}`,
+            this._info,
+        );
     }
 
     public async remove(): Promise<void> {
@@ -119,7 +118,7 @@ export class StockBlueprint {
     }
 
     get name(): string {
-        return this._info.name
+        return this._info.name;
     }
 
     get description(): string {
@@ -148,18 +147,18 @@ export interface IStockBlueprintFilter {
 }
 
 export interface IStockBlueprint {
-    id?:           Uuid;
-    name:          string;
-    description:   string;
+    id?: Uuid;
+    name: string;
+    description: string;
     notifications: Uuid[];
 }
 
 export interface IStockBlueprintThreshold {
-    id?:      Uuid;
-    type_id:  TypeId;
-    want:     number;
+    id?: Uuid;
+    type_id: TypeId;
+    want: number;
     critical: number;
     min_runs: number;
-    min_me:   number;
-    min_te:   number;
+    min_me: number;
+    min_te: number;
 }

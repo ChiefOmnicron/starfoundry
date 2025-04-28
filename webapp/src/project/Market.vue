@@ -5,10 +5,7 @@
             v-if="!initialLoad && !messages.hasError(messages) && project"
         />
 
-        <common-messages
-            :message="messages"
-            @close="commonMessagesClose"
-        />
+        <common-messages :message="messages" @close="commonMessagesClose" />
 
         <n-tabs type="line">
             <n-tab-pane name="overview" tab="Overview">
@@ -37,7 +34,10 @@ import { NButton, NInput, NTabPane, NTabs } from 'naive-ui';
 import { type Uuid } from '@/sdk/utils';
 import { ProjectService, type Project } from '@/sdk/project';
 
-import CommonMessages, { DEFAULT_COMMON_MESSAGES, type ICommonMessages } from '@/components/CommonMessages.vue';
+import CommonMessages, {
+    DEFAULT_COMMON_MESSAGES,
+    type ICommonMessages,
+} from '@/components/CommonMessages.vue';
 import CompressedMinerals from '@/project/market/CompressedMinerals.vue';
 import MarketOverview from '@/project/market/Overview.vue';
 import MarketRecommendation from '@/project/market/Recommendation.vue';
@@ -46,20 +46,20 @@ import MarketRecommendationMinerals from '@/project/market/RecommendationMineral
 import PageHeader from '@/components/PageHeader.vue';
 
 @Component({
-  components: {
-    NButton,
-    NInput,
-    NTabPane,
-    NTabs,
+    components: {
+        NButton,
+        NInput,
+        NTabPane,
+        NTabs,
 
-    CommonMessages,
-    CompressedMinerals,
-    MarketOverview,
-    MarketRecommendation,
-    MarketRecommendationGas,
-    MarketRecommendationMinerals,
-    PageHeader,
-  }
+        CommonMessages,
+        CompressedMinerals,
+        MarketOverview,
+        MarketRecommendation,
+        MarketRecommendationGas,
+        MarketRecommendationMinerals,
+        PageHeader,
+    },
 })
 class ProjectsMarket extends Vue {
     @Prop({
@@ -76,16 +76,15 @@ class ProjectsMarket extends Vue {
     public async created() {
         this.initialLoad = true;
 
-        await ProjectService
-            .fetch(this.projectId)
-            .then(x => {
+        await ProjectService.fetch(this.projectId)
+            .then((x) => {
                 this.project = x;
                 this.initialLoad = false;
             })
-            .catch(e => {
+            .catch((e) => {
                 if (e.response.status === 404) {
                     this.messages.notFound = true;
-                } else if(e.response.status === 403) {
+                } else if (e.response.status === 403) {
                     this.messages.forbidden = true;
                 } else {
                     this.messages.loadingError = true;

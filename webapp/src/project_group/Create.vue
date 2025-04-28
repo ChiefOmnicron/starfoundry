@@ -47,12 +47,22 @@ import { events } from '@/main';
 import { ROUTE_CHANGE } from '@/event_bus';
 import { Component, Vue, toNative } from 'vue-facing-decorator';
 import {
-    type FormRules, NButton, NCard, NForm, NFormItem, NInput, NInputNumber,
-  NSpace, NText
+    type FormRules,
+    NButton,
+    NCard,
+    NForm,
+    NFormItem,
+    NInput,
+    NInputNumber,
+    NSpace,
+    NText,
 } from 'naive-ui';
 
 import { ROUTE_PROJECT_GROUP } from '@/project_group/router';
-import { ProjectGroupService, type ICreateProjectGroup } from '@/project_group/service';
+import {
+    ProjectGroupService,
+    type ICreateProjectGroup,
+} from '@/project_group/service';
 
 import Card from '@/components/Card.vue';
 import CardMargin from '@/components/CardMargin.vue';
@@ -72,7 +82,7 @@ import PageHeader from '@/components/PageHeader.vue';
         Card,
         CardMargin,
         PageHeader,
-    }
+    },
 })
 class ProjectGroupNew extends Vue {
     public formRef: any = null;
@@ -86,38 +96,36 @@ class ProjectGroupNew extends Vue {
     public new_project_group: ICreateProjectGroup = <any>{};
 
     public async created() {
-        events.$emit(
-            ROUTE_CHANGE,
-            this.$route.name
-        );
+        events.$emit(ROUTE_CHANGE, this.$route.name);
     }
 
     public async create() {
         let groupId = '';
 
-        ProjectGroupService
-            .create(this.new_project_group)
-            .then(x => {
-                console.log(x)
+        ProjectGroupService.create(this.new_project_group)
+            .then((x) => {
+                console.log(x);
                 groupId = x;
                 this.$router.push({
                     name: ROUTE_PROJECT_GROUP,
                     params: {
-                        groupId
-                    }
-                })
+                        groupId,
+                    },
+                });
             })
-            .catch(e => {
-                console.error(e)
+            .catch((e) => {
+                console.error(e);
             });
     }
 
     public rules: FormRules = {
-        name: [{
-            required: true,
-            message: 'The field is required'
-        }]
-    }
+        name: [
+            {
+                required: true,
+                message: 'The field is required',
+            },
+        ],
+    };
 }
 
 export default toNative(ProjectGroupNew);

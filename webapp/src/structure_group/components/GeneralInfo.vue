@@ -16,8 +16,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, toNative } from 'vue-facing-decorator'
-import { FormRules, FormItemRule, NForm, NFormItem, NInput} from 'naive-ui';
+import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
+import { FormRules, FormItemRule, NForm, NFormItem, NInput } from 'naive-ui';
 
 import { IStructureGroup } from '@/sdk/structure_group';
 
@@ -26,24 +26,26 @@ import { IStructureGroup } from '@/sdk/structure_group';
         NForm,
         NFormItem,
         NInput,
-    }
+    },
 })
 class StructureGroupGeneralInfo extends Vue {
     @Prop
     public info: IStructureGroup = <any>{};
 
     public rules: FormRules = {
-        name: [{
-            required: true,
-            validator (_: FormItemRule, value: string) {
-                if (!value || value === '') {
-                    return new Error('This field is required')
-                }
-                return true
+        name: [
+            {
+                required: true,
+                validator(_: FormItemRule, value: string) {
+                    if (!value || value === '') {
+                        return new Error('This field is required');
+                    }
+                    return true;
+                },
+                trigger: ['input', 'blur'],
             },
-            trigger: ['input', 'blur']
-        }],
-    }
+        ],
+    };
 }
 
 export default toNative(StructureGroupGeneralInfo);
