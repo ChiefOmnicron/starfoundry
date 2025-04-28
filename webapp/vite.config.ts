@@ -4,7 +4,8 @@ import { sentryVitePlugin } from '@sentry/vite-plugin';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import vueDevTools from 'vite-plugin-vue-devtools';
-import conditionalCompile from 'vite-plugin-conditional-compiler';
+import conditionalCompile from "vite-plugin-conditional-compiler";
+import tailwindcss from '@tailwindcss/vite';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -15,6 +16,7 @@ export default defineConfig({
         vue(),
         vueDevTools(),
         conditionalCompile(),
+        tailwindcss(),
         sentryVitePlugin({
             org: 'starfoundry',
             project: 'starfoundry',
