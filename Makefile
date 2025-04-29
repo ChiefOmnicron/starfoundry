@@ -41,51 +41,50 @@ run-web-dev:
 
 .PHONY: web-test
 web-test: web-test-chrome web-test-firefox web-test-edge
-	sudo chown -R $(id -u):$(id -g) ./webapp/node_modules ./webapp/cypress
 
 .PHONY: web-test-chrome
 web-test-chrome:
 	docker run \
 		-v ${PWD}/webapp:/webapp \
 		-w /webapp \
+		--user ${shell id -u} \
 		--rm \
 		--entrypoint cypress \
 		cypress/included:14.3.2 \
 		run --component --browser chrome
-	sudo chown -R $(id -u):$(id -g) ./webapp/node_modules ./webapp/cypress
 
 .PHONY: web-test-firefox
 web-test-firefox:
 	docker run \
 		-v ${PWD}/webapp:/webapp \
 		-w /webapp \
+		--user ${shell id -u} \
 		--rm \
 		--entrypoint cypress \
 		cypress/included:14.3.2 \
 		run --component --browser firefox
-	sudo chown -R $(id -u):$(id -g) ./webapp/node_modules ./webapp/cypress
 
 .PHONY: web-test-edge
 web-test-edge:
 	docker run \
 		-v ${PWD}/webapp:/webapp \
 		-w /webapp \
+		--user ${shell id -u} \
 		--rm \
 		--entrypoint cypress \
 		cypress/included:14.3.2 \
 		run --component --browser edge
-	sudo chown -R $(id -u):$(id -g) ./webapp/node_modules ./webapp/cypress
 
 .PHONY: web-test-dev
 web-test-dev:
 	docker run \
 		-v ${PWD}/webapp:/webapp \
 		-w /webapp \
+		--user ${shell id -u} \
 		--rm \
 		--entrypoint cypress \
 		cypress/included:14.3.2 \
 		run --component --browser chrome --spec src/notification/overview/integration/**.cy.ts
-	sudo chown -R $(id -u):$(id -g) ./webapp/node_modules ./webapp/cypress
 
 aaa:
 	echo ${VITE_SENTRY}
