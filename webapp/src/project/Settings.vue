@@ -98,6 +98,7 @@ class ProjectSettings extends Vue {
         await ProjectService.fetch(this.projectId)
             .then((x) => {
                 this.project = x;
+                this.project.info.sell_price = x.finance.sell_price;
                 return this.project.fetchPermissionIsOwner();
             })
             .then((_) => this.project.fetchPermissionCanWrite())

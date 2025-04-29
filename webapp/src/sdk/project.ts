@@ -331,7 +331,7 @@ export class Project {
             name: this._info.name,
             status: this._info.status,
             orderer: this._info.orderer,
-            sell_price: this._info.finance.sell_price,
+            sell_price: this._info.sell_price,
             notes: this._info.notes,
             project_group_id: this._info.project_group_id,
         });
