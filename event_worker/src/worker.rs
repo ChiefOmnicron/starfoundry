@@ -1,8 +1,8 @@
 use sqlx::{types::Uuid, PgPool};
 use std::time::Duration;
+use tokio::time::sleep;
 
 use crate::error::{Error, Result};
-use tokio::time::sleep;
 
 /// Registers itself as a new worker
 /// 
@@ -20,8 +20,10 @@ pub async fn register_worker(
         .id;
 
     if let Err(e) = remove_dead_workers(pool).await {
-        tracing::warn!("Failed deleting dead workers, {e}");
+        tracing::warn!("failed deleting dead workers, {e}");
     }
+
+    tracing::info!("worker registered");
 
     Ok(worker_id)
 }

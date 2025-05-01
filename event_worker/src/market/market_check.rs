@@ -7,28 +7,30 @@ pub async fn task(
     task: &mut Task,
     pool: &PgPool,
 ) -> Result<()> {
-    match market_npc(pool).await {
+    match validate_market_npc(pool).await {
         Ok(new_entries) => {
             if new_entries > 0 {
-                task.add_log(format!("Added {new_entries} NPC markets"))
+                task.add_log(format!("added {new_entries} NPC markets"))
+            } else {
+                task.add_log(format!("everything okay"))
             }
         },
         Err(e) => task.add_error(e.to_string()),
     };
 
-    match market_player(pool).await {
+    match validate_market_player(pool).await {
         Ok(new_entries) => {
             if new_entries > 0 {
-                task.add_log(format!("Added {new_entries} player markets"))
+                task.add_log(format!("added {new_entries} player markets"))
             }
         },
         Err(e) => task.add_error(e.to_string()),
     };
 
-    match market_prices(pool).await {
+    match validate_market_prices(pool).await {
         Ok(new_entries) => {
             if new_entries > 0 {
-                task.add_log(format!("Added {new_entries} market prices"))
+                task.add_log(format!("added {new_entries} market prices"))
             }
         },
         Err(e) => task.add_error(e.to_string()),
@@ -37,9 +39,10 @@ pub async fn task(
     Ok(())
 }
 
-async fn market_npc(
+async fn validate_market_npc(
     pool: &PgPool
 ) -> Result<usize> {
+    // todo make it configurable
     let market_stations_target = vec![
         // Jita
         (10000002, 60003760),
@@ -95,7 +98,7 @@ async fn market_npc(
         .map_err(Error::InsertNewJobs)
 }
 
-async fn market_player(
+async fn validate_market_player(
     pool: &PgPool
 ) -> Result<usize> {
     struct MarketStation {
@@ -177,7 +180,7 @@ async fn market_player(
         .map_err(Error::InsertNewJobs)
 }
 
-async fn market_prices(
+async fn validate_market_prices(
     pool: &PgPool
 ) -> Result<usize> {
     let has_entry = sqlx::query!("

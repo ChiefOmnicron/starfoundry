@@ -28,14 +28,21 @@ use tracing_subscriber::EnvFilter;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenvy::dotenv().ok();
 
-    tracing_subscriber::fmt()
-        .with_env_filter(EnvFilter::from_default_env())
-        .init();
+    if cfg!(debug_assertions) {
+        tracing_subscriber::fmt()
+            .with_env_filter(EnvFilter::from_default_env())
+            .init();
+    } else {
+        tracing_subscriber::fmt()
+            .json()
+            .with_env_filter(EnvFilter::from_default_env())
+            .init();
+    }
 
     let pg_addr = std::env::var("DATABASE_URL")
         .expect("DATABASE_URL ENV not set");
     let pool = PgPoolOptions::new()
-        .min_connections(25)
+        .min_connections(10)
         .connect(&pg_addr)
         .await?;
 
@@ -244,7 +251,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 continue;
             },
             _ => {
-                tracing::info!("No new tasks");
+                tracing::info!("no new tasks, waiting");
                 ()
             },
         };

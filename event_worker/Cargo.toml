@@ -20,7 +20,7 @@ starfoundry_libs-types = { path = "../libs/types" }
 thiserror = "2.0.12"
 tokio = { version = "1.43.0", features = ["full"] }
 tracing = "0.1.41"
-tracing-subscriber =  { version = "0.3.19", features = ["env-filter"] }
+tracing-subscriber =  { version = "0.3.19", features = ["env-filter", "json"] }
 url = "2.5.4"
 uuid = { version = "1.15.1", features = ["v4"] }
 warp = "0.3.7"

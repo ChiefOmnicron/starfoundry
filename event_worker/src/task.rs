@@ -8,11 +8,13 @@ use crate::error::{Error, Result};
 use serde::Serialize;
 use prometheus_client::encoding::EncodeLabelValue;
 
+/// Fetches any available task, respects other workers that already are working
+/// on the tasks
+/// https://stackoverflow.com/questions/6507475/job-queue-as-sql-table-with-multiple-consumers-postgresql
 pub async fn fetch_task(
     pool:      &PgPool,
     worker_id: &Uuid,
 ) -> Result<Option<Task>> {
-    // https://stackoverflow.com/questions/6507475/job-queue-as-sql-table-with-multiple-consumers-postgresql
     sqlx::query!(r#"
             UPDATE event_queue
             SET
@@ -105,6 +107,7 @@ pub enum WorkerTask {
 }
 
 impl WorkerTask {
+    /// Determines how long the task will be idle until it can be run again
     pub fn timeout(
         &self,
     ) -> NaiveDateTime {
@@ -136,6 +139,9 @@ impl WorkerTask {
         }
     }
 
+    /// Adds the given amount of minutes until the next task execution
+    /// If a task is within 11:00 and 11:29, it will always be set to 11:30
+    /// 
     fn add_minutes(
         &self,
         minutes: u64,
@@ -154,6 +160,8 @@ impl WorkerTask {
         date
     }
 
+    /// Tasks after downtime will run at 11:30, with the downtime being at 11:00
+    /// 
     fn after_downtime(
         &self,
     ) -> NaiveDateTime {
@@ -170,6 +178,8 @@ impl WorkerTask {
         NaiveDateTime::new(day, time)
     }
 
+    /// These tasks will run at 11:00
+    /// 
     fn during_downtime(
         &self,
     ) -> NaiveDateTime {
@@ -207,6 +217,9 @@ pub struct Task {
 }
 
 impl Task {
+    /// Fetches the additional data as a json from the given type.
+    /// The given type must implement [std::fmt::Debug] and [serde::de::DeserializeOwned]
+    /// 
     pub fn additional_data<T>(
         &self,
     ) -> Option<T>
@@ -221,6 +234,9 @@ impl Task {
         }
     }
 
+    /// Sets the additional data for a task
+    /// The given type must implement [std::fmt::Debug] and [serde::de::DeserializeOwned]
+    /// 
     pub fn set_additional_data<T>(
         &mut self,
         additional_data: Option<T>,
@@ -230,6 +246,8 @@ impl Task {
         self.additional_data = serde_json::to_value(additional_data).ok();
     }
 
+    /// Adds an additional error line to the task error log
+    /// 
     pub fn add_error<S: Into<String>>(
         &mut self,
         error: S
@@ -241,6 +259,8 @@ impl Task {
         }
     }
 
+    /// Adds a standard log to the task
+    /// 
     pub fn add_log<S: Into<String>>(
         &mut self,
         log: S
@@ -252,6 +272,9 @@ impl Task {
         }
     }
 
+    /// Finishes the task and sets the logs and error logs.
+    /// Additionally it will create a new task.
+    /// 
     pub async fn finish(
         self,
         pool:   &PgPool,
@@ -284,11 +307,7 @@ impl Task {
                     process_after,
                     additional_data
                 )
-                VALUES (
-                    $1,
-                    $2,
-                    $3
-                )
+                VALUES ($1, $2, $3)
             ",
                 self.task as _,
                 self.task.timeout(),
