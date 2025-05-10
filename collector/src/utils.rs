@@ -10,7 +10,7 @@ pub async fn corporation_ids(
 ) -> Result<Vec<CorporationId>> {
     let corporation_id = sqlx::query!(r#"
             SELECT character_id AS "corporation_id!: CorporationId"
-            FROM credentials
+            FROM credential
             WHERE credential_type = 'CORPORATION'
               AND character_main IS NOT NULL
               AND character_id IS NOT NULL
@@ -29,7 +29,7 @@ pub async fn character_ids(
 ) -> Result<Vec<CharacterId>> {
     let character_ids = sqlx::query!(r#"
             SELECT character_id AS "character_id!: CharacterId"
-            FROM credentials
+            FROM credential
             WHERE credential_type = 'CHARACTER'
               AND character_id IS NOT NULL
         "#)

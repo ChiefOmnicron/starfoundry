@@ -23,7 +23,7 @@ pub async fn fetch_defaults(
 
     let markets = sqlx::query!("
             SELECT structure_id
-            FROM project_group_default_markets
+            FROM project_group_default_market
             WHERE project_group_id = $1
         ",
             *group_uuid,

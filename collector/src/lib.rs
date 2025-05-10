@@ -2,6 +2,7 @@ pub mod error;
 pub mod config;
 
 pub mod tasks;
+pub mod sql;
 mod utils;
 
 use chrono::{Datelike, DateTime, Utc, Timelike, TimeZone};

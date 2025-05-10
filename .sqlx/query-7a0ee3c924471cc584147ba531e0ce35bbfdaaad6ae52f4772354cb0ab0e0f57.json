@@ -1,0 +1,65 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                name,\n                status AS \"status: ProjectStatus\",\n                orderer,\n                note,\n                structure_group_id,\n                project_group_id\n            FROM project\n            WHERE id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 1,
+        "name": "status: ProjectStatus",
+        "type_info": {
+          "Custom": {
+            "name": "project_status",
+            "kind": {
+              "Enum": [
+                "PREPARING",
+                "IN_PROGRESS",
+                "PAUSED",
+                "ABORTED",
+                "DONE"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "orderer",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "note",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "structure_group_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 5,
+        "name": "project_group_id",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "7a0ee3c924471cc584147ba531e0ce35bbfdaaad6ae52f4772354cb0ab0e0f57"
+}

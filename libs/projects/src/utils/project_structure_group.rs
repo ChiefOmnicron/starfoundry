@@ -31,7 +31,7 @@ async fn structure_group(
 ) -> Result<Option<ProjectStructureGroup>> {
     let structure_uuids = sqlx::query!("
             SELECT structure_ids
-            FROM structure_groups
+            FROM structure_group
             WHERE id = $1
         ",
             *group_id,
@@ -86,7 +86,7 @@ async fn structure_dynamic_groups(
 
     let group_ids = sqlx::query!("
             SELECT group_ids
-            FROM structure_dynamic_groups
+            FROM structure_dynamic_group
             WHERE id = $1
         ",
             *group_id,

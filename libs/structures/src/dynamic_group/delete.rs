@@ -9,7 +9,7 @@ pub async fn delete(
     group_uuid:   StructureDynamicGroupUuid,
 ) -> Result<StructureDynamicGroupUuid> {
     sqlx::query!(r#"
-            DELETE FROM structure_dynamic_groups
+            DELETE FROM structure_dynamic_group
             WHERE id = $1
               AND owner = $2
         "#,

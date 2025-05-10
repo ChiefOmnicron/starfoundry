@@ -18,8 +18,8 @@ pub async fn fetch(
                 cost,
                 job_id,
                 structure_id
-            FROM project_jobs pj
-            JOIN items i ON i.type_id = pj.type_id
+            FROM project_job pj
+            JOIN item i ON i.type_id = pj.type_id
             WHERE pj.project_id = $1
             AND (
                 (

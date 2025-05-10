@@ -17,7 +17,7 @@ pub async fn update(
     blueprint_stock:    UpdateBlueprintStock,
 ) -> Result<(), BlueprintStockError> {
     let result = sqlx::query!("
-            UPDATE stock_blueprints
+            UPDATE stock_blueprint
             SET name = $3,
                 description = $4,
                 notifications = $5

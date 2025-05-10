@@ -7,7 +7,7 @@ pub async fn fetch(
 ) -> Result<Option<Finance>> {
     let sell_price = sqlx::query!("
             SELECT sell_price
-            FROM projects
+            FROM project
             WHERE id = $1
         ",
             *project_uuid
@@ -31,7 +31,7 @@ pub async fn fetch(
 
     let jobs = sqlx::query!("
             SELECT SUM(cost) AS jobs
-            FROM project_jobs
+            FROM project_job
             WHERE project_id = $1
         ",
             *project_uuid
@@ -67,7 +67,7 @@ pub async fn fetch(
 
     let stocks = sqlx::query!("
             SELECT SUM(cost) AS stocks
-            FROM project_stocks
+            FROM project_stock
             WHERE project_id = $1
         ",
             *project_uuid

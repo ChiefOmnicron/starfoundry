@@ -18,7 +18,7 @@ pub async fn create(
         .map_err(Error::TransactionBeginError)?;
 
     let project_uuid: ProjectUuid = sqlx::query!("
-            INSERT INTO projects
+            INSERT INTO project
             (
                 owner,
                 name,
@@ -27,7 +27,7 @@ pub async fn create(
 
                 sell_price,
                 orderer,
-                notes
+                note
             )
             VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING id
@@ -38,7 +38,7 @@ pub async fn create(
             *project_data.structure_group_id,
             project_data.sell_price,
             project_data.orderer,
-            project_data.notes,
+            project_data.note,
         )
         .fetch_one(&mut *transaction)
         .await
@@ -46,7 +46,7 @@ pub async fn create(
         .map_err(Error::CreateProject)?;
 
     sqlx::query!("
-            INSERT INTO project_market_structures (project_id, structure_id)
+            INSERT INTO project_market_structure (project_id, structure_id)
             SELECT $1, UNNEST(
                 $2::UUID[]
             )
@@ -126,7 +126,7 @@ pub async fn create(
                 SELECT
                     type_id,
                     adjusted_price
-                FROM market_prices
+                FROM market_price
             ",
         )
         .fetch_all(pool)

@@ -21,7 +21,7 @@ impl StructureService {
     ) -> Result<()> {
         let result = sqlx::query!("
                 SELECT id
-                FROM structures
+                FROM structure
                 WHERE id = $1
                 AND owner = $2
             ",
@@ -47,8 +47,8 @@ impl StructureService {
     ) -> Result<()> {
         let result = sqlx::query!("
                 SELECT p.id
-                FROM projects p
-                JOIN project_group_members pgm ON pgm.group_id = project_group_id
+                FROM project p
+                JOIN project_group_member pgm ON pgm.group_id = project_group_id
                 WHERE p.id = $1
                 AND (
                     pgm.character_id = $2 OR
@@ -81,8 +81,8 @@ impl StructureService {
     ) -> Result<()> {
         let result = sqlx::query!("
                 SELECT p.id
-                FROM projects p
-                JOIN project_group_members pgm ON pgm.group_id = project_group_id
+                FROM project p
+                JOIN project_group_member pgm ON pgm.group_id = project_group_id
                 WHERE p.id = $1
                 AND (
                     pgm.character_id = $2 OR
@@ -110,7 +110,7 @@ impl StructureService {
     ) -> Result<()> {
         let project = sqlx::query!("
                 SELECT id
-                FROM structures
+                FROM structure
                 WHERE id = $1
             ",
                 *self.0,

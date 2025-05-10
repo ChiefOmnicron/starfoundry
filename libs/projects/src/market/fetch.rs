@@ -19,7 +19,7 @@ pub async fn fetch(
                 cost,
                 source
             FROM project_market pm
-            JOIN items i
+            JOIN item i
               ON i.type_id = pm.type_id
             WHERE pm.project_id = $1
             ORDER BY item_name

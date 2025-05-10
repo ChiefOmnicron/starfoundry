@@ -17,7 +17,7 @@ pub async fn fetch(
                 name,
                 description,
                 notifications
-            FROM stock_blueprints
+            FROM stock_blueprint
             WHERE owner = $1
             AND id = $2
         "#,

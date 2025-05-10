@@ -17,7 +17,7 @@ pub async fn create(
 
     // create the group
     let group_id = sqlx::query!("
-            INSERT INTO project_groups (
+            INSERT INTO project_group(
                 owner,
                 name,
                 description
@@ -36,7 +36,7 @@ pub async fn create(
 
     // add the owner as member of the group
     sqlx::query!("
-            INSERT INTO project_group_members (
+            INSERT INTO project_group_member(
                 group_id,
                 character_id,
                 accepted,
@@ -61,7 +61,7 @@ pub async fn create(
 
     // add the defaults
     sqlx::query!("
-            INSERT INTO project_group_default_markets(
+            INSERT INTO project_group_default_market(
                 project_group_id,
                 structure_id
             )

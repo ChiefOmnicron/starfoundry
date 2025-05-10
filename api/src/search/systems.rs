@@ -11,7 +11,7 @@ pub async fn systems(
 ) -> Result<Vec<System>, SearchError> {
     let systems = sqlx::query!("
             SELECT *
-            FROM systems
+            FROM system
             WHERE
                 ($1 AND LOWER(system_name) LIKE LOWER($2)) OR
                 system_id = $3

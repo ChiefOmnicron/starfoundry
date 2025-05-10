@@ -30,7 +30,7 @@ pub async fn blueprints(
                 i.name         AS "name!",
                 i.base_price
             FROM blueprint_json bsjon
-            JOIN items i ON i.type_id = bsjon.btype_id
+            JOIN item i ON i.type_id = bsjon.btype_id
             ORDER BY i.name
         "#)
         .fetch_all(pool)

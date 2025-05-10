@@ -1,0 +1,32 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                owner,\n                structure_id,\n                region_id\n            FROM structure s\n            JOIN system sys ON s.system_id = sys.system_id\n            -- filter for standup market hub I\n            WHERE 35892 = ANY(services)\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "owner",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "structure_id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 2,
+        "name": "region_id",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "47d4a806a232e9c610c1c94d906a104edb65c702818aaf236206d75de7e12389"
+}

@@ -30,7 +30,7 @@ pub async fn run(
 
     tracing::debug!("Clearing database");
     sqlx::query!("
-            DELETE FROM items
+            DELETE FROM item
         ")
         .execute(&mut *transaction)
         .await
@@ -63,7 +63,7 @@ pub async fn run(
 
     tracing::debug!("Inserting data");
     sqlx::query!("
-            INSERT INTO items
+            INSERT INTO item
             (
                 category_id,
                 group_id,

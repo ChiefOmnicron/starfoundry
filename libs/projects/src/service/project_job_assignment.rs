@@ -18,7 +18,7 @@ impl ProjectJobAssignmentService {
     ) -> Result<()> {
         let project = sqlx::query!("
                 SELECT id
-                FROM project_job_assignments
+                FROM project_job_assignment
                 WHERE id = $1
             ",
                 *self.0,

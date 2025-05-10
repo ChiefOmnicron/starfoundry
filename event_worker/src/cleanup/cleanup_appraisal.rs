@@ -8,7 +8,7 @@ pub async fn task(
     pool:  &PgPool,
 ) -> Result<()> {
         sqlx::query!("
-                DELETE FROM appraisals
+                DELETE FROM appraisal
                 WHERE DATE(created_at) < DATE(NOW() - INTERVAL '90 DAY')
             ")
             .execute(pool)

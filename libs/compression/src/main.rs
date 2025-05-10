@@ -163,7 +163,7 @@ async fn fetch_asteroid_prices(
             SELECT
                 average_price,
                 type_id
-            FROM market_prices
+            FROM market_price
             WHERE type_id = ANY($1)
         ",
             &type_ids,
@@ -192,7 +192,7 @@ async fn fetch_gas_prices(
             SELECT
                 average_price,
                 type_id
-            FROM market_prices
+            FROM market_price
             WHERE type_id = ANY($1)
         ",
             &type_ids,
@@ -221,7 +221,7 @@ async fn fetch_astoid_limits(
             SELECT
                 SUM(remaining) AS total,
                 type_id
-            FROM market_orders_latest
+            FROM market_order_latest
             WHERE type_id = ANY($1)
             AND structure_id = 60003760
             AND is_buy = false
@@ -253,7 +253,7 @@ async fn fetch_gas_limits(
             SELECT
                 SUM(remaining) AS total,
                 type_id
-            FROM market_orders_latest
+            FROM market_order_latest
             WHERE type_id = ANY($1)
             AND structure_id = 60003760
             AND is_buy = false
@@ -281,7 +281,7 @@ async fn name(
 ) -> String {
     sqlx::query!("
             SELECT name
-            FROM items
+            FROM item
             WHERE type_id = $1
         ",
             type_id,

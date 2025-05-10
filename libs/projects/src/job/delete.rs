@@ -8,7 +8,7 @@ pub async fn delete(
     job_uuid:     ProjectJobUuid,
 ) -> Result<()> {
     sqlx::query!("
-            DELETE FROM project_jobs
+            DELETE FROM project_job
             WHERE project_id = $1
               AND id = $2
         ",

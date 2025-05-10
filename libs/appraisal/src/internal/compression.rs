@@ -192,8 +192,8 @@ async fn fetch_asteroid_prices_average(
             SELECT
                 MIN(price) as "price!",
                 type_id
-            FROM   market_orders_latest
-            WHERE  market_orders_latest.type_id = ANY($1)
+            FROM   market_order_latest
+            WHERE  market_order_latest.type_id = ANY($1)
               AND  is_buy = false
               AND  structure_id = 60003760
             GROUP  BY type_id
@@ -224,8 +224,8 @@ async fn fetch_gas_prices_average(
             SELECT
                 MIN(price) as "price!",
                 type_id
-            FROM   market_orders_latest
-            WHERE  market_orders_latest.type_id = ANY($1)
+            FROM   market_order_latest
+            WHERE  market_order_latest.type_id = ANY($1)
               AND  is_buy = false
               AND  structure_id = 60003760
             GROUP  BY type_id
@@ -256,7 +256,7 @@ async fn fetch_astoid_limits(
             SELECT
                 SUM(remaining) AS total,
                 type_id
-            FROM market_orders_latest
+            FROM market_order_latest
             WHERE type_id = ANY($1)
             AND structure_id = 60003760
             AND is_buy = false
@@ -288,7 +288,7 @@ async fn fetch_gas_limits(
             SELECT
                 SUM(remaining) AS total,
                 type_id
-            FROM market_orders_latest
+            FROM market_order_latest
             WHERE type_id = ANY($1)
             AND structure_id = 60003760
             AND is_buy = false

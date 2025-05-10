@@ -10,7 +10,7 @@ pub async fn update_member(
     permissions: UpdateProjectGroupMember,
 ) -> Result<()> {
     sqlx::query!("
-            UPDATE project_group_members
+            UPDATE project_group_member
             SET
                 projects = $3,
                 project_group = $4,

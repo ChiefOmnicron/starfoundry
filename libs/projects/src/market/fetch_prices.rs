@@ -18,12 +18,12 @@ pub async fn fetch_prices(
                 pm.quantity,
                 mol.remaining,
                 mol.price
-            FROM projects p
-            JOIN project_market_structures pms ON pms.project_id = p.id
-            JOIN structures s ON s.id = pms.structure_id
+            FROM project p
+            JOIN project_market_structure pms ON pms.project_id = p.id
+            JOIN structure s ON s.id = pms.structure_id
             JOIN project_market pm ON pm.project_id = p.id
-            JOIN market_orders_latest mol ON (mol.structure_id = s.structure_id AND mol.type_id = pm.type_id)
-            JOIN items i ON i.type_id = mol.type_id
+            JOIN market_order_latest mol ON (mol.structure_id = s.structure_id AND mol.type_id = pm.type_id)
+            JOIN item i ON i.type_id = mol.type_id
             WHERE
                 p.id = $1
                 AND pm.source IS NULL

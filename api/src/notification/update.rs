@@ -16,7 +16,7 @@ pub async fn update(
     notification:    UpdateNotification,
 ) -> Result<(), NotificationError> {
     let result = sqlx::query!("
-            UPDATE notifications
+            UPDATE notification
             SET
                 target = $3,
                 url = $4,

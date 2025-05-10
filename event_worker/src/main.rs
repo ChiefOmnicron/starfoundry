@@ -2,6 +2,7 @@
 
 mod api;
 mod asset;
+mod check;
 mod cleanup;
 mod error;
 mod industry;
@@ -56,6 +57,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let credential_cache = CredentialCache::load_from_database(&pool.clone()).await?;
     let credential_cache = Arc::new(Mutex::new(credential_cache));
 
+    // check if all check tasks are in the database and if not add them
+    crate::check::self_::task(&pool).await?;
+
     let pool_clone = pool.clone();
     tokio::task::spawn(async move {
         worker::background_task(pool_clone, worker_id).await
@@ -96,20 +100,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     match x.task {
                         // asset
                         WorkerTask::AssetCheck => {
-                            asset::asset_check::task(
+                            asset::check::task(
                                 &mut x,
                                 &pool,
                             ).await
                         },
                         WorkerTask::AssetCharacterBlueprints => {
-                            asset::asset_character_blueprints::task(
+                            asset::character_blueprints::task(
                                 &mut x,
                                 &pool,
                                 &credential_cache,
                             ).await
                         },
                         WorkerTask::AssetCorporationBlueprints => {
-                            asset::asset_corporation_blueprints::task(
+                            asset::corporation_blueprints::task(
                                 &mut x,
                                 &pool,
                                 &credential_cache,
@@ -170,17 +174,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                 &credential_cache,
                             ).await
                         },
-    
+
                         // market
                         WorkerTask::MarketCheck => {
-                            market::market_check::task(
+                            market::check::task(
                                 &mut x,
                                 &pool
                             )
                             .await
                         },
                         WorkerTask::MarketLatestPlayer => {
-                            market::market_player_latest::task(
+                            market::player_latest::task(
                                 &mut x,
                                 &pool,
                                 &credential_cache
@@ -188,7 +192,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                             .await
                         },
                         WorkerTask::MarketLatestNpc => {
-                            market::market_npc_latest::task(
+                            market::npc_latest::task(
                                 &mut x,
                                 &pool,
                                 &credential_cache,
@@ -196,14 +200,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                             .await
                         },
                         WorkerTask::MarketPrices => {
-                            market::market_prices::task(
+                            market::prices::task(
                                 &mut x,
                                 &pool,
                                 &credential_cache,
                             )
                             .await
                         },
-    
+
                         // sde
                         WorkerTask::SdeCheck => {
                             sde::sde_check::task(
@@ -217,10 +221,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                 &pool
                             ).await
                         },
-    
+
                         // stock
                         WorkerTask::StockCheck => {
-                            stock::stock_check::task(
+                            stock::check::task(
                                 &mut x,
                                 &pool,
                             ).await

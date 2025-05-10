@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE structure_dynamic_group\n            SET\n                name = $3,\n                group_ids = $4\n            WHERE id = $1\n              AND owner = $2\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4",
+        "Varchar",
+        "UuidArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "49a00d39d8607e0283527fcf1b4a5fe9d283a2ccc148da45e5095323c11ccb70"
+}

@@ -39,7 +39,7 @@ async fn insert_into_database(
 
     tracing::debug!("Clearing blueprint_json database");
     sqlx::query!("
-            DELETE FROM systems
+            DELETE FROM system
         ")
         .execute(&mut *transaction)
         .await?;
@@ -76,7 +76,7 @@ async fn insert_into_database(
 
     tracing::debug!("Inserting data");
     sqlx::query!("
-            INSERT INTO systems
+            INSERT INTO system
             (
                 region_id,
                 region_name,

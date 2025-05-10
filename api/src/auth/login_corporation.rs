@@ -12,7 +12,7 @@ pub async fn login_corporation(
     corporation_id: CorporationId,
 ) -> Result<String, AuthError> {
     let token = sqlx::query!("
-            INSERT INTO credentials (
+            INSERT INTO credential (
                 character_id,
                 character_main,
                 intention,

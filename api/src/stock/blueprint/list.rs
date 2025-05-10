@@ -12,7 +12,7 @@ pub async fn list(
 ) -> Result<Vec<Uuid>, BlueprintStockError> {
     sqlx::query!(r#"
             SELECT id
-            FROM stock_blueprints
+            FROM stock_blueprint
             WHERE
                 owner = $1
                 ORDER BY name

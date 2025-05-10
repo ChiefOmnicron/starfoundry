@@ -2,6 +2,8 @@ use starfoundry_libs_types::{CharacterId, CorporationId, StationId};
 use thiserror::Error;
 use uuid::Uuid;
 
+use crate::task::WorkerTask;
+
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 #[derive(Error, Debug)]
@@ -19,6 +21,10 @@ pub enum Error {
     // task general
     #[error("error while fetching a new task, '{0}'")]
     FetchTask(sqlx::Error),
+    #[error("failed to fetch check task {1:?}, error: {0}")]
+    FetchCheck(sqlx::Error, WorkerTask),
+    #[error("failed to insert chec task {1:?}, error '{0}'")]
+    InsertCheck(sqlx::Error, WorkerTask),
     #[error("error while parsing additional data for task, task: '{1}' - '{0}'")]
     ParseAdditionalData(serde_json::Error, Uuid),
     #[error("error while updating task, task: '{1}' - '{0}'")]

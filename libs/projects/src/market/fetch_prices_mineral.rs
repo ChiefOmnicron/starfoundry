@@ -19,12 +19,12 @@ pub async fn fetch_minerals(
                 pm.quantity,
                 remaining,
                 price
-            FROM market_orders_latest mol
+            FROM market_order_latest mol
             JOIN project_market pm
               ON pm.type_id = mol.type_id
-            JOIN items i
+            JOIN item i
               ON i.type_id = pm.type_id
-            JOIN structures s
+            JOIN structure s
               ON s.structure_id = mol.structure_id
             WHERE pm.source IS NULL
               AND pm.cost IS NULL

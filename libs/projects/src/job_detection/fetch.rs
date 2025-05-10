@@ -12,8 +12,8 @@ pub async fn fetch(
                 ij.runs,
                 ij.end_date,
                 ij.job_id
-            FROM job_detection_logs jdl
-            JOIN industry_jobs ij ON ij.job_id = jdl.job_id
+            FROM job_detection_log jdl
+            JOIN industry_job ij ON ij.job_id = jdl.job_id
             WHERE is_delivered = false
             ORDER BY end_date ASC
         ")

@@ -1,46 +1,149 @@
+mod error;
+
+use std::str::FromStr;
+
+use sqlx::PgPool;
 use sqlx::postgres::PgPoolOptions;
+use uuid::Uuid;
 
-
-/// ENV variable for the database URL
-const PG_ADDR: &str = "DATABASE_URL";
+pub use self::error::*;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenvy::dotenv().ok();
 
-    let pg_addr = std::env::var(PG_ADDR).expect("Expected that a DATABASE_URL ENV is set");
+    let pg_addr = std::env::var("DATABASE_URL").expect("Expected that a DATABASE_URL ENV is set");
     let pool = PgPoolOptions::new()
         .connect(&pg_addr)
         .await?;
     sqlx::migrate!().run(&pool).await?;
 
-    // TODO add if they don't exist
-    // INSERT INTO event_queue (task) VALUES ('ASSET_CHECK');
-    // INSERT INTO event_queue (task) VALUES ('CLEANUP_CHECK');
-    // INSERT INTO event_queue (task) VALUES ('INDUSTRY_CHECK');
-    // INSERT INTO event_queue (task) VALUES ('MARKET_CHECK');
-    // INSERT INTO event_queue (task) VALUES ('SDE_CHECK');
-    // INSERT INTO event_queue (task) VALUES ('STOCK_CHECK');
+    default_user(&pool).await?;
+    default_project_group(&pool).await?;
+    default_project_group_member(&pool).await?;
+    npc_stations(&pool).await?;
 
-    // TODO add if they don't exist
+    Ok(())
+}
+
+async fn default_user(
+    pool: &PgPool,
+) -> Result<(), Error> {
     sqlx::query!("
-            INSERT INTO structures (
+            INSERT INTO character (
+                character_id,
+                corporation_id,
+                character_name,
+                corporation_name
+            )
+            VALUES ($1, $2, $3, $4)
+            ON CONFLICT DO NOTHING
+        ",
+            0,
+            0,
+            "Default Character",
+            "Default Corporation",
+        )
+        .execute(pool)
+        .await
+        .map(drop)
+        .map_err(Error::InsertDefaultUser)
+}
+
+async fn default_project_group(
+    pool: &PgPool,
+) -> Result<(), Error> {
+    sqlx::query!("
+            INSERT INTO project_group (
+                id,
+                owner,
+                name,
+                description
+            )
+            VALUES ($1, $2, $3, $4)
+            ON CONFLICT DO NOTHING
+        ",
+            Uuid::default(),
+            0,
+            "Default",
+            "Default Group",
+        )
+        .execute(pool)
+        .await
+        .map(drop)
+        .map_err(Error::InsertDefaultProjectGroup)
+}
+
+async fn default_project_group_member(
+    pool: &PgPool,
+) -> Result<(), Error> {
+    sqlx::query!("
+            INSERT INTO project_group_member (
+                group_id,
+                character_id,
+                accepted,
+                projects,
+                structures
+            )
+            VALUES ($1, $2, $3, $4, $5)
+            ON CONFLICT DO NOTHING
+        ",
+            Uuid::default(),
+            0,
+            true,
+            "WRITE",
+            "WRITE",
+        )
+        .execute(pool)
+        .await
+        .map(drop)
+        .map_err(Error::InsertDefaultProjectGroupMember)
+}
+
+async fn npc_stations(
+    pool: &PgPool,
+) -> Result<(), Error> {
+    let stations = vec![
+        (Uuid::from_str("00000000-0000-0000-0000-000000000001").unwrap(), 60003760, 30000142, "Jita 4-4"),
+        (Uuid::from_str("00000000-0000-0000-0000-000000000002").unwrap(), 60008494, 30002187, "Amarr"),
+    ];
+
+    for (id, structure_id, system_id, name) in stations {
+        let exists = sqlx::query!("
+                SELECT 1 AS exists
+                FROM structure
+                WHERE id = $1
+            ",
+                id,
+            )
+            .fetch_optional(pool)
+            .await
+            .map_err(|e| Error::FetchStation(e, id))?;
+
+        if let None = exists {
+            sqlx::query!("
+                INSERT INTO structure (
+                    id,
+                    structure_id,
+                    system_id,
+                    type_id,
+                    security,
+                    name,
+                    owner,
+                    services
+                )
+                VALUES ($1, $2, $3, 0, 'HIGHSEC', $4, 0, '{35878}')
+            ",
                 id,
                 structure_id,
                 system_id,
-                type_id,
-                security,
                 name,
-                owner,
-                services
             )
-            VALUES
-            ('00000000-0000-0000-0000-000000000001', 60003760, 30000142, 0, 'HIGHSEC', 'Jita 4-4', 0, '{35878}'),
-            ('00000000-0000-0000-0000-000000000002', 60008494, 30002187, 0, 'HIGHSEC', 'Amarr', 0, '{35878}')
-        ")
-        .execute(&pool)
-        .await
-        .unwrap();
+            .execute(pool)
+            .await
+            .map_err(|e| Error::InsertStation(e, id))?;
+        }
+    }
 
     Ok(())
 }

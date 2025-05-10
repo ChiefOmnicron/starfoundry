@@ -12,7 +12,7 @@ pub async fn update_threshold(
     thresholds:         Vec<AddThreshold>,
 ) -> Result<(), BlueprintStockError> {
     sqlx::query!("
-            DELETE FROM stock_blueprint_thresholds
+            DELETE FROM stock_blueprint_threshold
             WHERE blueprint_stock_id = $1
         ",
             *blueprint_stock_id,
@@ -38,7 +38,7 @@ pub async fn update_threshold(
     }
 
     sqlx::query!("
-            INSERT INTO stock_blueprint_thresholds (
+            INSERT INTO stock_blueprint_threshold(
                 blueprint_stock_id,
                 type_id,
                 want,

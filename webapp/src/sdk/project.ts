@@ -332,7 +332,7 @@ export class Project {
             status: this._info.status,
             orderer: this._info.orderer,
             sell_price: this._info.sell_price,
-            notes: this._info.notes,
+            note: this._info.note,
             project_group_id: this._info.project_group_id,
         });
     }
@@ -354,8 +354,8 @@ export class Project {
         this._info.name = name;
     }
 
-    get notes(): string {
-        return this._info.notes || '';
+    get note(): string {
+        return this._info.note || '';
     }
 
     get status(): string {
@@ -433,7 +433,7 @@ export interface IProject {
     products: IProduct[];
 
     sell_price?: number;
-    notes?: string;
+    note?: string;
     orderer: string;
     finance: IFinance;
 
@@ -618,7 +618,7 @@ export interface ICreateProject {
     stocks: IParsedRow[];
 
     orderer?: string;
-    notes?: string;
+    note?: string;
     sell_price?: number;
 
     structure_group_id: string;

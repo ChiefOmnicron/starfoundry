@@ -7,5 +7,7 @@ license.workspace = true
 
 [dependencies]
 dotenvy = "0.15.7"
-sqlx = { version = "0.8.3", features = ["runtime-tokio-rustls", "postgres"] }
-tokio = { version = "1.43.0", features = ["full"] }
+sqlx = { version = "0.8.5", features = ["runtime-tokio-rustls", "postgres", "uuid"] }
+thiserror = "2.0.12"
+tokio = { version = "1.45.0", features = ["full"] }
+uuid = "1.16.0"

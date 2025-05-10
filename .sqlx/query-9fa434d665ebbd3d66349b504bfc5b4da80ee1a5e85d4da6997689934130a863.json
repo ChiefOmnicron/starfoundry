@@ -1,0 +1,111 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                DISTINCT(pj.type_id) AS \"type_id: TypeId\",\n                depends_on,\n\n                i.name,\n                i.base_price,\n                i.volume,\n                i.category_id,\n                i.group_id,\n                i.meta_group_id,\n\n                id,\n                runs,\n                status AS \"status: ProjectJobStatus\",\n                cost,\n                job_id,\n                structure_id\n            FROM project_job pj\n            JOIN blueprint_dependency bd ON pj.type_id = bd.ptype_id\n            JOIN item i ON i.type_id = pj.type_id\n            WHERE project_id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "type_id: TypeId",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "depends_on",
+        "type_info": "Int4Array"
+      },
+      {
+        "ordinal": 2,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "base_price",
+        "type_info": "Float4"
+      },
+      {
+        "ordinal": 4,
+        "name": "volume",
+        "type_info": "Float4"
+      },
+      {
+        "ordinal": 5,
+        "name": "category_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "group_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "meta_group_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 8,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 9,
+        "name": "runs",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 10,
+        "name": "status: ProjectJobStatus",
+        "type_info": {
+          "Custom": {
+            "name": "project_job_status",
+            "kind": {
+              "Enum": [
+                "WAITING_FOR_MATERIALS",
+                "BUILDING",
+                "DONE"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 11,
+        "name": "cost",
+        "type_info": "Float8"
+      },
+      {
+        "ordinal": 12,
+        "name": "job_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 13,
+        "name": "structure_id",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false
+    ]
+  },
+  "hash": "9fa434d665ebbd3d66349b504bfc5b4da80ee1a5e85d4da6997689934130a863"
+}

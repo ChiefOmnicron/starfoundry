@@ -20,7 +20,7 @@ pub async fn add_with_transaction(
         .map(|x| x.material_efficiency as i32)
         .collect::<Vec<_>>();
     sqlx::query!("
-            INSERT INTO project_products
+            INSERT INTO project_product
             (
                 project_id,
                 type_id,

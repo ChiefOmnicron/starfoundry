@@ -19,7 +19,7 @@ pub async fn resolve_id(
                 i.volume      AS "volume!",
                 i.name        AS "name!",
                 i.base_price
-            FROM items i
+            FROM item i
             WHERE i.type_id = $1
         "#,
             *type_id

@@ -27,9 +27,9 @@ pub async fn startable_jobs(
                 cost,
                 job_id,
                 structure_id
-            FROM project_jobs pj
-            JOIN blueprint_dependencies bd ON pj.type_id = bd.ptype_id
-            JOIN items i ON i.type_id = pj.type_id
+            FROM project_job pj
+            JOIN blueprint_dependency bd ON pj.type_id = bd.ptype_id
+            JOIN item i ON i.type_id = pj.type_id
             WHERE project_id = $1
         "#,
             *project_uuid,

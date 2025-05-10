@@ -15,8 +15,8 @@ pub async fn fetch(
                 i.name AS "item_name",
                 i.category_id,
                 i.group_id
-            FROM project_stocks ps
-            JOIN items i
+            FROM project_stock ps
+            JOIN item i
               ON i.type_id = ps.type_id
             WHERE ps.project_id = $1
             ORDER BY i.name

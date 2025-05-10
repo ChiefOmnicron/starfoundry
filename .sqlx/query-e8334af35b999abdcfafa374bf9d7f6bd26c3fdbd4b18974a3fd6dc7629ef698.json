@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO character (\n                character_id,\n                corporation_id,\n                character_name,\n                corporation_name\n            )\n            VALUES ($1, $2, $3, $4)\n            ON CONFLICT DO NOTHING\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4",
+        "Varchar",
+        "Varchar"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "e8334af35b999abdcfafa374bf9d7f6bd26c3fdbd4b18974a3fd6dc7629ef698"
+}

@@ -35,7 +35,7 @@ pub async fn list(
 
     let ids = sqlx::query!(r#"
             SELECT id
-            FROM projects
+            FROM project
             WHERE
                 (
                     NOT (LOWER(name) LIKE '%' || LOWER($2) || '%') IS FALSE AND

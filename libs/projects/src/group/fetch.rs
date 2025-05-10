@@ -11,7 +11,7 @@ pub async fn fetch(
             SELECT
                 name,
                 description
-            FROM project_groups pg
+            FROM project_group pg
             WHERE pg.id = $1
         ",
             *group_id,

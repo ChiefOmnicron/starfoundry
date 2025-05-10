@@ -61,8 +61,8 @@ impl CredentialCache {
                     refresh_token,
                     c.character_id,
                     c.corporation_id
-                FROM   credentials cred
-                JOIN   characters c ON c.character_id = cred.character_id
+                FROM   credential cred
+                JOIN   character c ON c.character_id = cred.character_id
                 WHERE  cred.character_id IS NOT NULL
                 AND  refresh_token IS NOT NULL
                 AND  credential_type = 'CHARACTER'
@@ -88,7 +88,7 @@ impl CredentialCache {
                 SELECT
                     refresh_token,
                     character_id AS "character_id!"
-                FROM   credentials cred
+                FROM   credential cred
                 WHERE  character_id IS NOT NULL
                 AND    refresh_token IS NOT NULL
                 AND    credential_type = 'CORPORATION'

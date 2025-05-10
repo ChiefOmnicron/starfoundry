@@ -9,7 +9,7 @@ pub async fn remove_member(
     member_id:        CharacterId,
 ) -> Result<()> {
     sqlx::query!("
-        DELETE FROM project_group_members
+        DELETE FROM project_group_member
         WHERE group_id = $1
         AND character_id = $2
     ",

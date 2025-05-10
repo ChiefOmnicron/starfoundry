@@ -1,0 +1,50 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                bsjon.btype_id AS \"type_id!\",\n                i.category_id  AS \"category_id!\",\n                i.group_id     AS \"group_id!\",\n                i.volume       AS \"volume!\",\n                i.name         AS \"name!\",\n                i.base_price\n            FROM blueprint_json bsjon\n            JOIN item i ON i.type_id = bsjon.btype_id\n            ORDER BY i.name\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "type_id!",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "category_id!",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "group_id!",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "volume!",
+        "type_info": "Float4"
+      },
+      {
+        "ordinal": 4,
+        "name": "name!",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "base_price",
+        "type_info": "Float4"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "32a811f459b4969b98209a4b8cb01305add84b2905e3dd4e136411a786b45cd6"
+}

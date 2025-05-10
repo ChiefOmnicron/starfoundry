@@ -14,7 +14,7 @@ pub async fn fetch(
                 id,
                 name,
                 structure_ids
-            FROM structure_groups
+            FROM structure_group
             WHERE owner = $1
             AND id = $2
         ",

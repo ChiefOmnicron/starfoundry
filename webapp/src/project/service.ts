@@ -111,7 +111,7 @@ export type JobId = Uuid;
 
 export interface IProjectInfo {
     orderer?: string;
-    notes?: string;
+    note?: string;
 
     sell_price?: number;
     excess: number;
@@ -149,7 +149,7 @@ export interface ICreateProject {
     stocks: IParsedRow[];
 
     orderer?: string;
-    notes?: string;
+    note?: string;
     sell_price?: number;
 
     structures: {

@@ -9,7 +9,7 @@ pub async fn login(
     pool: &PgPool,
 ) -> Result<String, AuthError> {
     let token = sqlx::query!("
-            INSERT INTO credentials (intention, credential_type)
+            INSERT INTO credential (intention, credential_type)
             VALUES ($1, 'CHARACTER')
             RETURNING token
         ",

@@ -39,12 +39,12 @@
             />
         </n-form-item>
 
-        <n-form-item path="notes" label="Notes">
+        <n-form-item path="note" label="Note">
             <n-input
                 :disabled="readonly"
                 type="textarea"
-                v-model:value="info.notes"
-                placeholder="Notes"
+                v-model:value="info.note"
+                placeholder="Note"
             />
         </n-form-item>
 

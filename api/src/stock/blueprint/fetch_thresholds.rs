@@ -11,7 +11,7 @@ pub async fn fetch_threshold(
 ) -> Result<Vec<BlueprintStockThreshold>, BlueprintStockError> {
     let result = sqlx::query!("
         SELECT id
-        FROM stock_blueprints
+        FROM stock_blueprint
         WHERE id = $1
     ",
         *blueprint_stock_id
@@ -26,7 +26,7 @@ pub async fn fetch_threshold(
 
     sqlx::query!(r#"
             SELECT *
-            FROM stock_blueprint_thresholds
+            FROM stock_blueprint_threshold
             WHERE blueprint_stock_id = $1
         "#,
             *blueprint_stock_id

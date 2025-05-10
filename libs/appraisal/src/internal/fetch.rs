@@ -18,7 +18,7 @@ pub async fn fetch(
                 comment,
                 raw,
                 price_modifier
-            FROM appraisals
+            FROM appraisal
             WHERE code = $1
         ",
             code,
@@ -50,10 +50,10 @@ pub async fn fetch(
                 amps.max AS sell_max,
                 amps.avg AS sell_avg,
                 amps.total_orders AS sell_total_orders
-            FROM appraisal_items ai
-            JOIN items i ON i.type_id = ai.type_id
-            JOIN appraisal_market_prices ampb ON ampb.appraisal_id = $1 AND ampb.type_id = i.type_id AND ampb.is_buy = true
-            JOIN appraisal_market_prices amps ON amps.appraisal_id = $1 AND amps.type_id = i.type_id AND amps.is_buy = false
+            FROM appraisal_item ai
+            JOIN item i ON i.type_id = ai.type_id
+            JOIN appraisal_market_price ampb ON ampb.appraisal_id = $1 AND ampb.type_id = i.type_id AND ampb.is_buy = true
+            JOIN appraisal_market_price amps ON amps.appraisal_id = $1 AND amps.type_id = i.type_id AND amps.is_buy = false
             WHERE ai.appraisal_id = $1
         ",
             appraisal.id,

@@ -1,0 +1,58 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                character_name,\n                c.character_id,\n                accepted,\n                projects,\n                project_group,\n                structures,\n                (pg.owner = c.character_id) AS is_owner\n            FROM project_group_member pgm\n            JOIN project_group pg ON pg.id = pgm.group_id\n            JOIN character c ON c.character_id = pgm.character_id\n            WHERE group_id = $1\n            ORDER BY character_name ASC\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "character_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 1,
+        "name": "character_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "accepted",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 3,
+        "name": "projects",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "project_group",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "structures",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 6,
+        "name": "is_owner",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      null
+    ]
+  },
+  "hash": "35ed2dae163e6d39ae2c81128ccc88c854f1a7664e1ed84ef5ad660f6d262ab5"
+}

@@ -10,7 +10,7 @@ use crate::{ProjectGroupUuid, ProjectStatus};
         "status": "DONE",
         "orderer": "its for somebody I used to know",
         "project_group_id": "60f5931b-bea5-45a1-a2ea-520d2535b138",
-        "notes": null,
+        "note": null,
         "sell_price": 1337
     })
 )]
@@ -21,6 +21,6 @@ pub struct UpdateProject {
     pub orderer:          Option<String>,
     pub sell_price:       Option<f64>,
 
-    pub notes:            Option<String>,
+    pub note:             Option<String>,
     pub project_group_id: Option<ProjectGroupUuid>,
 }

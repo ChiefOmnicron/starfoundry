@@ -15,7 +15,7 @@ pub async fn create(
     notification: CreateNotification,
 ) -> Result<NotificationUuid, NotificationError> {
     sqlx::query!("
-            INSERT INTO notifications (
+            INSERT INTO notification(
                 target,
                 url,
                 name,

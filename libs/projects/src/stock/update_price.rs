@@ -39,7 +39,7 @@ pub async fn update_price(
         .collect::<Vec<_>>();
 
     sqlx::query!("
-            UPDATE project_stocks
+            UPDATE project_stock
             SET cost = data.cost
             FROM (
                 SELECT
@@ -47,7 +47,7 @@ pub async fn update_price(
                     UNNEST($3::REAL[]) AS cost
             ) AS data
             WHERE project_id = $1
-              AND project_stocks.type_id = data.type_id
+              AND project_stock.type_id = data.type_id
         ",
             *project_uuid,
             &type_ids,

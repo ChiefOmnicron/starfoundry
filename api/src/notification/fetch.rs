@@ -17,7 +17,7 @@ pub async fn fetch(
                 target AS "target: NotificationTarget",
                 url,
                 name
-            FROM notifications
+            FROM notification
             WHERE id = $1
             AND owner = $2
         "#,

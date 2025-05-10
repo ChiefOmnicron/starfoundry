@@ -15,7 +15,7 @@ pub async fn add_threshold(
 ) -> Result<(), BlueprintStockError> {
     let result = sqlx::query!("
             SELECT id
-            FROM stock_blueprints
+            FROM stock_blueprint
             WHERE id = $1
         ",
             *blueprint_stock_id
@@ -45,7 +45,7 @@ pub async fn add_threshold(
     }
 
     sqlx::query!("
-            INSERT INTO stock_blueprint_thresholds (
+            INSERT INTO stock_blueprint_threshold(
                 blueprint_stock_id,
                 type_id,
                 want,

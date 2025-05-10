@@ -11,7 +11,7 @@ pub async fn login_alt(
     main: CharacterId,
 ) -> Result<String, AuthError> {
     let token = sqlx::query!("
-            INSERT INTO credentials (character_main, intention, credential_type)
+            INSERT INTO credential (character_main, intention, credential_type)
             VALUES ($1, $2, 'CHARACTER')
             RETURNING token
         ",

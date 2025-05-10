@@ -20,7 +20,7 @@ impl ProjectGroupService {
     ) -> Result<()> {
         let result = sqlx::query!("
                 SELECT id
-                FROM project_groups
+                FROM project_group
                 WHERE id = $1
                 AND owner = $2
             ",
@@ -45,8 +45,8 @@ impl ProjectGroupService {
     ) -> Result<()> {
         let result = sqlx::query!("
                 SELECT pg.id
-                FROM project_groups pg
-                JOIN project_group_members pgm ON pgm.group_id = pg.id
+                FROM project_group pg
+                JOIN project_group_member pgm ON pgm.group_id = pg.id
                 WHERE pg.id = $1
                 AND (
                     pgm.character_id = $2 OR
@@ -78,8 +78,8 @@ impl ProjectGroupService {
     ) -> Result<()> {
         let result = sqlx::query!("
                 SELECT pg.id
-                FROM project_groups pg
-                JOIN project_group_members pgm ON pgm.group_id = pg.id
+                FROM project_group pg
+                JOIN project_group_member pgm ON pgm.group_id = pg.id
                 WHERE pg.id = $1
                 AND (
                     pgm.character_id = $2 OR
@@ -107,7 +107,7 @@ impl ProjectGroupService {
     ) -> Result<()> {
         let project = sqlx::query!("
                 SELECT id
-                FROM project_groups
+                FROM project_group
                 WHERE id = $1
             ",
                 *self.0,

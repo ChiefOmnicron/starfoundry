@@ -136,7 +136,7 @@ async fn create(
                     MIN(price) AS "min!",
                     MAX(price) AS "max!",
                     SUM(remaining) AS "total_orders!"
-                FROM market_orders_latest
+                FROM market_order_latest
                 WHERE is_buy = true
                 AND structure_id = $1
                 AND type_id = $2
@@ -153,7 +153,7 @@ async fn create(
                     MIN(price) AS "min!",
                     MAX(price) AS "max!",
                     SUM(remaining) AS "total_orders!"
-                FROM market_orders_latest
+                FROM market_order_latest
                 WHERE is_buy = false
                 AND structure_id = $1
                 AND type_id = $2
@@ -250,7 +250,7 @@ async fn create(
             .map_err(Error::DatabaseError)?;
 
         let new_appraisal = sqlx::query!("
-                INSERT INTO appraisals(
+                INSERT INTO appraisal(
                     code,
                     structure_id,
 
@@ -274,7 +274,7 @@ async fn create(
         appraisal_id = new_appraisal.id;
 
         let buy_ids = sqlx::query!("
-                INSERT INTO appraisal_market_prices(
+                INSERT INTO appraisal_market_price(
                     is_buy,
                     appraisal_id,
                     type_id,
@@ -308,7 +308,7 @@ async fn create(
             .collect::<Vec<_>>();
 
         let sell_ids = sqlx::query!("
-                INSERT INTO appraisal_market_prices(
+                INSERT INTO appraisal_market_price(
                     is_buy,
                     appraisal_id,
                     type_id,
@@ -342,7 +342,7 @@ async fn create(
             .collect::<Vec<_>>();
 
         sqlx::query!("
-                INSERT INTO appraisal_items (
+                INSERT INTO appraisal_item (
                     appraisal_id,
 
                     type_id,

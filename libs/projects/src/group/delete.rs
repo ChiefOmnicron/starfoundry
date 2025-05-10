@@ -7,7 +7,7 @@ pub async fn delete(
     group_id: ProjectGroupUuid,
 ) -> Result<ProjectGroupUuid> {
     sqlx::query!("
-        DELETE FROM project_groups
+        DELETE FROM project_group
         WHERE id = $1
         RETURNING id
     ",

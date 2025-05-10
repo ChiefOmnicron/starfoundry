@@ -12,7 +12,7 @@ pub async fn update_job_delete(
     // check if the job id is already assigned
     let project_id = sqlx::query!("
             SELECT project_id
-            FROM project_jobs
+            FROM project_job
             WHERE job_id = $1
         ",
             *job_id,
@@ -34,7 +34,7 @@ pub async fn update_job_delete(
 
         if update.delete_from_source {
             sqlx::query!("
-                    DELETE FROM project_jobs
+                    DELETE FROM project_job
                     WHERE project_id = $1
                     AND job_id = $2
                 ",
@@ -46,7 +46,7 @@ pub async fn update_job_delete(
                 .map_err(|e| Error::DeleteFromProjectJobByJobId(e, job_id))?;
         } else {
             sqlx::query!("
-                    UPDATE project_jobs
+                    UPDATE project_job
                     SET
                         status = 'WAITING_FOR_MATERIALS',
                         job_id = NULL,
@@ -65,7 +65,7 @@ pub async fn update_job_delete(
 
     if update.ignore {
         sqlx::query!("
-                UPDATE industry_jobs
+                UPDATE industry_job
                 SET ignore = true
                 WHERE job_id = $1
             ",
@@ -78,7 +78,7 @@ pub async fn update_job_delete(
 
     // update in job detection log
     sqlx::query!("
-            UPDATE job_detection_logs
+            UPDATE job_detection_log
             SET project_id = NULL
             WHERE job_id = $1
         ",

@@ -1,0 +1,19 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                INSERT INTO appraisal_item (\n                    appraisal_id,\n\n                    type_id,\n                    quantity,\n\n                    buy,\n                    sell,\n\n                    low_data\n                )\n                SELECT $1, * FROM UNNEST(\n                    $2::INTEGER[],\n                    $3::BIGINT[],\n                    $4::UUID[],\n                    $5::UUID[],\n                    $6::BOOLEAN[]\n                )\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4Array",
+        "Int8Array",
+        "UuidArray",
+        "UuidArray",
+        "BoolArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "aba622f2e438b9a99c79ec1fdbb2067f37f9f1a0d3bfc60555dae4448dbebd08"
+}

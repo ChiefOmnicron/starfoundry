@@ -109,6 +109,10 @@ docker-build:
 		--target collector \
 		.
 	docker build \
+		-t ${DOCKER_REPO}/starfoundry/database-upgrade \
+		--target database-upgrade \
+		.
+	docker build \
 		-t ${DOCKER_REPO}/starfoundry/event-worker \
 		--target event-worker \
 		.
@@ -146,6 +150,10 @@ docker-push: docker-build
 	docker tag ${DOCKER_REPO}/starfoundry/collector:latest ${DOCKER_REPO}/starfoundry/collector:${GIT_REV}
 	docker push ${DOCKER_REPO}/starfoundry/collector:latest
 	docker push ${DOCKER_REPO}/starfoundry/collector:${GIT_REV}
+
+	docker tag ${DOCKER_REPO}/starfoundry/database-upgrade:latest ${DOCKER_REPO}/starfoundry/database-upgrade:${GIT_REV}
+	docker push ${DOCKER_REPO}/starfoundry/database-upgrade:latest
+	docker push ${DOCKER_REPO}/starfoundry/database-upgrade:${GIT_REV}
 
 	docker tag ${DOCKER_REPO}/starfoundry/event-worker:latest ${DOCKER_REPO}/starfoundry/event-worker:${GIT_REV}
 	docker push ${DOCKER_REPO}/starfoundry/event-worker:latest

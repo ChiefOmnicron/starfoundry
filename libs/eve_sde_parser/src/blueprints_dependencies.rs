@@ -57,7 +57,7 @@ async fn insert_into_database(
 
     tracing::debug!("Clearing blueprint_dependencies database");
     sqlx::query!("
-            DELETE FROM blueprint_dependencies
+            DELETE FROM blueprint_dependency
         ")
         .execute(&mut *transaction)
         .await
@@ -76,7 +76,7 @@ async fn insert_into_database(
             .collect::<Vec<_>>();
 
         sqlx::query!("
-            INSERT INTO blueprint_dependencies
+            INSERT INTO blueprint_dependency
             (
                 btype_id,
                 ptype_id,

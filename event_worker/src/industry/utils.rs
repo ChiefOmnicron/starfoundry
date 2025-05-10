@@ -51,9 +51,9 @@ pub async fn fetch_startable_default_group_jobs(
                     runs,
                     pj.status AS "status!: ProjectJobStatus",
                     job_id AS "job_id: JobId",
-                    created_at
-                FROM project_jobs pj
-                JOIN projects p ON p.id = pj.project_id
+                    pj.created_at
+                FROM project_job pj
+                JOIN project p ON p.id = pj.project_id
                 WHERE p.status = 'IN_PROGRESS'
                 AND (
                     pj.status = 'WAITING_FOR_MATERIALS' OR
@@ -87,10 +87,10 @@ pub async fn fetch_startable_specific_group_jobs(
                     runs,
                     pj.status AS "status!: ProjectJobStatus",
                     job_id AS "job_id: JobId",
-                    created_at
-                FROM project_jobs pj
-                JOIN projects p ON p.id = pj.project_id
-                JOIN project_group_members pgm ON pgm.group_id = p.project_group_id
+                    pj.created_at
+                FROM project_job pj
+                JOIN project p ON p.id = pj.project_id
+                JOIN project_group_member pgm ON pgm.group_id = p.project_group_id
                 WHERE p.status = 'IN_PROGRESS'
                 AND (
                     pj.status = 'WAITING_FOR_MATERIALS' OR
@@ -112,7 +112,7 @@ pub async fn fetch_done_job_ids(
 ) -> Result<Vec<JobId>> {
     sqlx::query!(r#"
             SELECT job_id AS "job_id!"
-            FROM project_jobs
+            FROM project_job
             WHERE job_id = ANY($1)
             AND status = 'DONE'
         "#,
@@ -169,7 +169,7 @@ pub async fn resolve_main_character_from_character(
 ) -> Result<CharacterId> {
     sqlx::query!("
             SELECT character_main
-            FROM credentials
+            FROM credential
             WHERE character_id = $1
         ",
             *character_id,
@@ -196,7 +196,7 @@ pub async fn resolve_main_character_from_corporation(
 ) -> Result<Vec<CharacterId>> {
     sqlx::query!("
             SELECT character_main
-            FROM credentials
+            FROM credential
             WHERE character_id = $1
         ",
             *corporation_id,
@@ -245,7 +245,7 @@ pub async fn update_industry_jobs(
             .collect::<Vec<_>>();
 
         sqlx::query!("
-                UPDATE project_jobs
+                UPDATE project_job
                 SET cost   =       data.cost,
                     status =       data.status,
                     job_id =       data.job_id,
@@ -259,7 +259,7 @@ pub async fn update_industry_jobs(
                         UNNEST($6::INTEGER[]) AS character_id
                 ) AS data
                 WHERE project_id = $1
-                AND project_jobs.id = data.id
+                AND project_job.id = data.id
             ",
                 project_id,
                 &ids,
@@ -278,7 +278,7 @@ pub async fn update_industry_jobs(
         for entry in updates {
             if entry.cost.is_none() && entry.job_id.is_some() {
                 sqlx::query!("
-                        UPDATE project_jobs
+                        UPDATE project_job
                         SET job_id = NULL
                         WHERE id = $1
                     ",
@@ -298,13 +298,13 @@ pub async fn update_finished_jobs(
     pool: &PgPool,
 ) -> Result<()> {
     sqlx::query!("
-            UPDATE project_jobs
+            UPDATE project_job
             SET status = 'DONE'
             WHERE status = 'BUILDING'
             AND id = ANY(
                 SELECT id
-                FROM project_jobs pj
-                JOIN industry_jobs ij ON ij.job_id = pj.job_id
+                FROM project_job pj
+                JOIN industry_job ij ON ij.job_id = pj.job_id
                 WHERE pj.status = 'BUILDING'
                 AND TO_TIMESTAMP(end_date, 'YYYY-MM-DDTHH:MI:SS') < NOW()
                 AND ij.is_delivered = true
@@ -345,7 +345,7 @@ pub async fn insert_job_detection_log(
     }
 
     sqlx::query!("
-            INSERT INTO job_detection_logs
+            INSERT INTO job_detection_log
             (
                 type_id,
                 job_id,
@@ -374,7 +374,7 @@ pub async fn cleanup_delivered_jobs(
     //character_corporation_id: i32,
 ) -> Result<()> {
     sqlx::query!("
-            UPDATE industry_jobs
+            UPDATE industry_job
             SET is_delivered = true
             WHERE is_delivered = false
             AND end_date::TIMESTAMPTZ < NOW()
@@ -391,7 +391,7 @@ pub async fn fetch_ignored_jobs(
 ) -> Result<Vec<JobId>> {
     let ignored_jobs = sqlx::query!("
             SELECT job_id
-            FROM industry_jobs
+            FROM industry_job
             WHERE is_delivered = false
             AND ignore = true
         ")

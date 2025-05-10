@@ -1,0 +1,64 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                c.id,\n                c.alliance_id             AS \"alliance_id: AllianceId\",\n                c.alliance_name,\n                c.character_id            AS \"character_id!: CharacterId\",\n                c.character_name,\n                c.corporation_id          AS \"corporation_id!: CorporationId\",\n                c.corporation_name,\n                auth.credential_type\n            FROM  credential auth\n            JOIN  character c ON c.character_id = auth.character_id\n            WHERE c.character_id = $1\n              AND auth.credential_type = 'CHARACTER'\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "alliance_id: AllianceId",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "alliance_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "character_id!: CharacterId",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "character_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "corporation_id!: CorporationId",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "corporation_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 7,
+        "name": "credential_type",
+        "type_info": "Varchar"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "4209dd9138ef91bf41a8221254baa7e6274fb067e106aeabc43e70b52be150f2"
+}

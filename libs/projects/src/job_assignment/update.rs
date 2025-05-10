@@ -8,7 +8,7 @@ pub async fn update_job_state(
     job_id:        ProjectJobUuid,
 ) -> Result<()> {
     sqlx::query!("
-            UPDATE project_job_assignments
+            UPDATE project_job_assignment
             SET started = true
             WHERE id = $1
               AND job_id = $2

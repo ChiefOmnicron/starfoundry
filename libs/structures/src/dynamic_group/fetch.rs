@@ -13,7 +13,7 @@ pub async fn fetch(
                 id,
                 name,
                 group_ids
-            FROM structure_dynamic_groups
+            FROM structure_dynamic_group
             WHERE owner = $1
               AND id = $2
         "#,

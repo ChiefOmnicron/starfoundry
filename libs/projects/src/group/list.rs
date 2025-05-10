@@ -29,8 +29,8 @@ pub async fn list(
     sqlx::query!(
         "
             SELECT pg.id
-            FROM project_groups pg
-            JOIN project_group_members pgm ON pg.id = pgm.group_id
+            FROM project_group pg
+            JOIN project_group_member pgm ON pg.id = pgm.group_id
             WHERE pgm.character_id = $1 AND
                 NOT (projects = ANY($2::VARCHAR[])) IS FALSE AND
                 NOT (structures = ANY($3::VARCHAR[])) IS FALSE AND

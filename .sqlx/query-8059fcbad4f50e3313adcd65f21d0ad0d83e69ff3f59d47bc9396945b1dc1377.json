@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        UPDATE project_group\n        SET\n            name = $2,\n            description = $3\n        WHERE id = $1\n    ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Varchar",
+        "Varchar"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "8059fcbad4f50e3313adcd65f21d0ad0d83e69ff3f59d47bc9396945b1dc1377"
+}

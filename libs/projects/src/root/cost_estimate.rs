@@ -68,7 +68,7 @@ pub async fn cost_estimate(
                 SELECT
                     type_id,
                     adjusted_price
-                FROM market_prices
+                FROM market_price
             ",
         )
         .fetch_all(pool)
@@ -191,8 +191,8 @@ pub async fn cost_estimate(
                     mol.type_id,
                     remaining,
                     price
-                FROM market_orders_latest mol
-                JOIN structures s ON s.structure_id = mol.structure_id
+                FROM market_order_latest mol
+                JOIN structure s ON s.structure_id = mol.structure_id
                 WHERE mol.type_id = $1
                 AND is_buy = false
                 ORDER BY price ASC

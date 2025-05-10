@@ -17,15 +17,18 @@ END;
 $$
 LANGUAGE plpgsql;
 
-CREATE TABLE IF NOT EXISTS notifications (
-    id     UUID                NOT NULL DEFAULT gen_random_uuid(),
+CREATE TABLE IF NOT EXISTS notification (
+    id         UUID                NOT NULL DEFAULT gen_random_uuid(),
 
-    target NOTIFICATION_TARGET NOT NULL,
-    url    VARCHAR             NOT NULL,
+    target     NOTIFICATION_TARGET NOT NULL,
+    url        VARCHAR             NOT NULL,
 
-    name   VARCHAR             NOT NULL,
+    name       VARCHAR             NOT NULL,
 
-    owner  INTEGER             NOT NULL,
+    owner      INTEGER             NOT NULL,
+
+    created_at TIMESTAMPTZ         NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ         NOT NULL DEFAULT NOW(),
 
     PRIMARY KEY (id)
 );

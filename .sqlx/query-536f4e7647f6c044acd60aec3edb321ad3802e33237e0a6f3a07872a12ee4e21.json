@@ -1,0 +1,19 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO project_job (\n                project_id,\n                type_id,\n                runs,\n                cost,\n                job_id,\n                structure_id,\n                status\n            )\n            VALUES ($1, $2, $3, $4, $5, $6, 'BUILDING')\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4",
+        "Int4",
+        "Float8",
+        "Int4",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "536f4e7647f6c044acd60aec3edb321ad3802e33237e0a6f3a07872a12ee4e21"
+}

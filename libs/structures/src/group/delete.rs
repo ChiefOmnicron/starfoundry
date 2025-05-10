@@ -10,7 +10,7 @@ pub async fn delete(
 ) -> Result<StructureGroupUuid> {
     sqlx::query!(
         "
-            DELETE FROM structure_groups
+            DELETE FROM structure_group
             WHERE id = $1
         ",
             *group_uuid,

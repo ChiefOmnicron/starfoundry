@@ -14,7 +14,7 @@ pub async fn task(
 
     let ids = sqlx::query!("
             SELECT id
-            FROM stock_blueprints
+            FROM stock_blueprint
         ")
         .fetch_all(pool)
         .await

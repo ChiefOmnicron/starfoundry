@@ -19,11 +19,11 @@ pub async fn fetch(
                 i.category_id,
                 i.group_id,
                 i.meta_group_id
-            FROM project_job_assignments pja
-            JOIN project_jobs pj ON pj.id = pja.job_id
-            JOIN projects p ON p.id = pj.project_id
-            JOIN items i ON i.type_id = pj.type_id
-            JOIN structures s ON s.id = pj.structure_id
+            FROM project_job_assignment pja
+            JOIN project_job pj ON pj.id = pja.job_id
+            JOIN project p ON p.id = pj.project_id
+            JOIN item i ON i.type_id = pj.type_id
+            JOIN structure s ON s.id = pj.structure_id
             WHERE pja.id = $1
             ORDER BY i.name
         ",

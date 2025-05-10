@@ -17,7 +17,7 @@ pub async fn add_with_transaction(
         .collect::<Vec<_>>();
 
     sqlx::query!("
-        INSERT INTO project_stocks
+        INSERT INTO project_stock
         (
             project_id,
             type_id,

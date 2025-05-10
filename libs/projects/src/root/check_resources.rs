@@ -20,7 +20,7 @@ pub async fn check_resources(
                 type_id,
                 runs,
                 structure_id
-            FROM project_jobs
+            FROM project_job
             WHERE id = ANY($1)
         ",
             &resources_jobs.job_ids.iter().map(|x| **x).collect::<Vec<_>>(),

@@ -12,7 +12,7 @@ use crate::{AddProduct, ProjectGroupUuid, StockMinimal};
         "orderer": "its for somebody I used to know",
         "project_group_id": "60f5931b-bea5-45a1-a2ea-520d2535b138",
         "structure_group_id": "caf60b7a-5abd-41b7-bc01-721f049def56",
-        "notes": null,
+        "note": null,
         "sell_price": 4_200_000_000f64,
 
         "blacklist": [
@@ -52,7 +52,7 @@ pub struct CreateProject {
     pub project_group_id:    ProjectGroupUuid,
 
     pub orderer:             Option<String>,
-    pub notes:               Option<String>,
+    pub note:                Option<String>,
     pub sell_price:          Option<f64>,
 
     pub markets:             Vec<StructureUuid>,

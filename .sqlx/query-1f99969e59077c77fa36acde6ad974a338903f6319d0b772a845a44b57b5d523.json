@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT DISTINCT character_id AS \"character_id!: CharacterId\"\n            FROM   credential\n            WHERE character_main = $1\n            AND credential_type = 'CORPORATION'\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "character_id!: CharacterId",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "1f99969e59077c77fa36acde6ad974a338903f6319d0b772a845a44b57b5d523"
+}

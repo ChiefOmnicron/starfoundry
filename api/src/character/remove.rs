@@ -10,7 +10,7 @@ pub async fn remove(
     character_id: CharacterId
 ) -> Result<(), CharacterError> {
     sqlx::query!("
-            DELETE FROM characters WHERE character_id = $1
+            DELETE FROM character WHERE character_id = $1
         ",
             *character_id
         )
@@ -18,7 +18,7 @@ pub async fn remove(
         .await
         .map_err(CharacterError::RemoveCharacter)?;
     sqlx::query!("
-            DELETE FROM characters WHERE character_id = $1
+            DELETE FROM character WHERE character_id = $1
         ",
             *character_id
         )

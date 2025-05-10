@@ -21,9 +21,9 @@ pub async fn active_jobs(
                 ij.end_date,
                 ij.activity AS "activity: IndustryActivity",
                 s.name AS structure_name
-            FROM project_jobs pj
-            JOIN industry_jobs ij ON ij.job_id = pj.job_id
-            JOIN structures s ON (s.structure_id = ij.facility_id AND s.id = pj.structure_id)
+            FROM project_job pj
+            JOIN industry_job ij ON ij.job_id = pj.job_id
+            JOIN structure s ON (s.structure_id = ij.facility_id AND s.id = pj.structure_id)
             WHERE
                 pj.project_id = $1 AND
                 (pj.status = 'BUILDING' OR ij.is_delivered = false)

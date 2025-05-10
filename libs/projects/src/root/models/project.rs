@@ -12,7 +12,7 @@ use crate::{Product, Finance, ProjectGroupUuid, ProjectStatus};
         "orderer": "its for somebody I used to know",
         "project_group_id": "60f5931b-bea5-45a1-a2ea-520d2535b138",
         "structure_group_id": "caf60b7a-5abd-41b7-bc01-721f049def56",
-        "notes": null,
+        "note": null,
 
         "products": [
             {
@@ -40,7 +40,7 @@ pub struct Project {
     pub project_group_id:   ProjectGroupUuid,
     pub structure_group_id: StructureGroupUuid,
 
-    pub notes:              Option<String>,
+    pub note:               Option<String>,
 
     pub products:           Vec<Product>,
     pub finance:            Finance

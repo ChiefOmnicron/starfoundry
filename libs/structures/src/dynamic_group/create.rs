@@ -9,7 +9,7 @@ pub async fn create(
     group:        StructureDynamicGroup,
 ) -> Result<StructureDynamicGroupUuid> {
     let id = sqlx::query!(r#"
-            INSERT INTO structure_dynamic_groups
+            INSERT INTO structure_dynamic_group
             (
                 name,
                 group_ids,

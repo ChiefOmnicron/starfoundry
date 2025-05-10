@@ -148,7 +148,7 @@ pub async fn load_items(
                 group_id,
                 meta_group_id,
                 repackaged
-            FROM items
+            FROM item
         ")
         .fetch_all(pool)
         .await
@@ -197,7 +197,7 @@ pub async fn load_type_ids(
                 group_id,
                 meta_group_id,
                 repackaged
-            FROM items
+            FROM item
         ")
         .fetch_all(pool)
         .await

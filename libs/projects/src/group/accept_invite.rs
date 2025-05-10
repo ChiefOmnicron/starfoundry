@@ -9,7 +9,7 @@ pub async fn accept_invite(
     group_id:     ProjectGroupUuid,
 ) -> Result<()> {
     sqlx::query!("
-        INSERT INTO project_group_members (
+        INSERT INTO project_group_member(
             group_id,
             character_id
         )

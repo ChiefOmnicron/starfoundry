@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE credential\n            SET\n                character_id  = $1,\n                refresh_token = $2,\n                access_token  = $3\n            WHERE token = $4\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Varchar",
+        "Varchar",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "7fc3013b84622997e39ce69a3d9d45bae4a8904a6a1057750d4c08d4be35c643"
+}

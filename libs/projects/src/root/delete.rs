@@ -7,7 +7,7 @@ pub async fn delete(
     project_uuid: ProjectUuid,
 ) -> Result<()> {
     sqlx::query!("
-            DELETE FROM projects
+            DELETE FROM project
             WHERE id = $1
         ",
             *project_uuid,

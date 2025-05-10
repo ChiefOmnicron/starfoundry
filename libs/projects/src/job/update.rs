@@ -17,7 +17,7 @@ pub async fn update(
     };
 
     sqlx::query!("
-            UPDATE project_jobs
+            UPDATE project_job
             SET cost = $3,
                 status = $4,
                 job_id = $5

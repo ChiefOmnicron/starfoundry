@@ -98,7 +98,7 @@ impl Identity {
     ) -> Result<String, AuthError> {
         let refresh_token = sqlx::query!("
                 SELECT refresh_token
-                FROM credentials
+                FROM credential
                 WHERE character_id = $1
                 LIMIT 1
             ",
@@ -127,7 +127,7 @@ impl Identity {
     ) -> Result<CorporationId, AuthError> {
         let character = sqlx::query!("
                 SELECT corporation_id
-                FROM characters
+                FROM character
                 WHERE character_id = $1
             ",
             *self.character_id
@@ -150,7 +150,7 @@ impl Identity {
         // the id definitly exists
         let character_ids = sqlx::query!(r#"
                 SELECT character_id AS "character_id!: CharacterId"
-                FROM   credentials
+                FROM   credential
                 WHERE
                     (character_id = $1 OR character_main = $1) AND
                     credential_type = 'CHARACTER' AND
@@ -184,7 +184,7 @@ impl Identity {
         // the id definitly exists
         let character_ids = sqlx::query!(r#"
                 SELECT character_id AS "character_id!: CharacterId"
-                FROM   credentials
+                FROM   credential
                 WHERE
                     character_main = $1 AND
                     credential_type = 'CORPORATION' AND

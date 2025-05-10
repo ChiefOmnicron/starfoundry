@@ -11,10 +11,10 @@ pub async fn fetch(
                 name,
                 status AS "status: ProjectStatus",
                 orderer,
-                notes,
+                note,
                 structure_group_id,
                 project_group_id
-            FROM projects
+            FROM project
             WHERE id = $1
         "#,
             *project_uuid,
@@ -35,7 +35,7 @@ pub async fn fetch(
             project_group_id:   x.project_group_id.into(),
 
             orderer:            x.orderer,
-            notes:              x.notes,
+            note:               x.note,
 
             products:           crate::product::fetch(&pool, project_uuid).await?,
             finance,

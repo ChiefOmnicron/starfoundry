@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE notification\n            SET\n                target = $3,\n                url = $4,\n                name = $5\n            WHERE id = $1\n            AND owner = $2\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4",
+        {
+          "Custom": {
+            "name": "notification_target",
+            "kind": {
+              "Enum": [
+                "DISCORD",
+                "JSON"
+              ]
+            }
+          }
+        },
+        "Varchar",
+        "Varchar"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "eb7907700856182ebe9baa720efc4903df319292390a21b011ea4ac3c6f91413"
+}

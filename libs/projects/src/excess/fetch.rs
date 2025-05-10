@@ -16,7 +16,7 @@ pub async fn fetch(
                 quantity,
                 cost
             FROM project_excess pe
-            JOIN items i ON i.type_id = pe.type_id
+            JOIN item i ON i.type_id = pe.type_id
             WHERE pe.project_id = $1
             ORDER BY item_name
         "#,

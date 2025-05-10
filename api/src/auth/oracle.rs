@@ -26,7 +26,7 @@ pub async fn oracle(
     };
 
     sqlx::query!("
-            DELETE FROM characters
+            DELETE FROM character
             WHERE character_id = $1
         ",
             character_id,

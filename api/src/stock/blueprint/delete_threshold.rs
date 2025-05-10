@@ -11,7 +11,7 @@ pub async fn delete_threshold(
     threshold_id: BlueprintStockUuid,
 ) -> Result<(), BlueprintStockError> {
     let result = sqlx::query!("
-            DELETE FROM stock_blueprint_thresholds
+            DELETE FROM stock_blueprint_threshold
             WHERE id = $1
         ",
             *threshold_id,

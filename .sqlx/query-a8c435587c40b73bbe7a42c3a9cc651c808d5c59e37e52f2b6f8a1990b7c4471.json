@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        CREATE TABLE IF NOT EXISTS wallet_corporation(\n            id          BIGINT  NOT NULL,\n            receiver    BIGINT  NOT NULL,\n            sender      BIGINT  NOT NULL,\n\n            corporation BIGINT  NOT NULL,\n            division    INTEGER NOT NULL,\n\n            amount      FLOAT   NOT NULL,\n            balance     FLOAT   NOT NULL,\n\n            date        VARCHAR NOT NULL,\n            ref_type    VARCHAR NOT NULL,\n\n            reason      VARCHAR,\n            context_id  BIGINT,\n\n            PRIMARY KEY(id)\n        );\n    ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "a8c435587c40b73bbe7a42c3a9cc651c808d5c59e37e52f2b6f8a1990b7c4471"
+}

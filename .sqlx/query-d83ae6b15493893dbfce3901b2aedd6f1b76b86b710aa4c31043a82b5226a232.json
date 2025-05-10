@@ -1,0 +1,34 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT DISTINCT character_id AS \"character_id!: CharacterId\",\n                   character_main        AS \"character_main: CharacterId\",\n                   credential_type\n            FROM   credential\n            WHERE  character_main = $1\n                AND character_id IS NOT NULL\n                AND credential_type = 'CHARACTER'\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "character_id!: CharacterId",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "character_main: CharacterId",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "credential_type",
+        "type_info": "Varchar"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      true,
+      true,
+      false
+    ]
+  },
+  "hash": "d83ae6b15493893dbfce3901b2aedd6f1b76b86b710aa4c31043a82b5226a232"
+}

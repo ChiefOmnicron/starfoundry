@@ -13,9 +13,9 @@ pub async fn create(
 
     let job_ids = sqlx::query!("
             SELECT DISTINCT(pj.id) AS job_id
-            FROM projects p
-            JOIN project_group_members pgm ON pgm.group_id = project_group_id
-            JOIN project_jobs pj ON p.id = pj.project_id
+            FROM project p
+            JOIN project_group_member pgm ON pgm.group_id = project_group_id
+            JOIN project_job pj ON p.id = pj.project_id
             WHERE (
                 pgm.character_id = $1 OR
                 p.owner = $1
@@ -44,7 +44,7 @@ pub async fn create(
         })?;
 
     sqlx::query!("
-            INSERT INTO project_job_assignments
+            INSERT INTO project_job_assignment
             (
                 id,
                 job_id

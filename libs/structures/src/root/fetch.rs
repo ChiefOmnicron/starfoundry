@@ -18,15 +18,15 @@ pub async fn fetch(
             SELECT
                 id,
                 name,
-                structures.system_id,
+                structure.system_id,
                 system_name,
                 structure_id,
-                structures.security  AS "security!: Security",
+                structure.security  AS "security!: Security",
                 type_id,
                 rigs,
                 services
-            FROM structures
-            JOIN systems ON systems.system_id = structures.system_id
+            FROM structure
+            JOIN system ON system.system_id = structure.system_id
             WHERE owner = $1
             AND id = $2
         "#,
@@ -113,15 +113,15 @@ pub async fn danger_no_permission_fetch(
             SELECT
                 id,
                 name,
-                structures.system_id,
+                structure.system_id,
                 system_name,
                 structure_id,
-                structures.security  AS "security!: Security",
+                structure.security  AS "security!: Security",
                 type_id,
                 rigs,
                 services
-            FROM structures
-            JOIN systems ON systems.system_id = structures.system_id
+            FROM structure
+            JOIN system ON system.system_id = structure.system_id
             WHERE id = $1
         "#,
             *structure_uuid,

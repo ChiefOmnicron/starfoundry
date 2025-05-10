@@ -90,8 +90,8 @@ class ProjectOverview extends Vue {
                 is_number: true,
             },
             {
-                field: 'Notes',
-                value: project.notes,
+                field: 'Note',
+                value: project.note,
             },
         ];
     }

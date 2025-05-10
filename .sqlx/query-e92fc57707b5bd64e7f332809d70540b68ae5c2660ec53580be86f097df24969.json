@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE project_stock\n            SET cost = data.cost\n            FROM (\n                SELECT\n                    UNNEST($2::INTEGER[]) AS type_id,\n                    UNNEST($3::REAL[]) AS cost\n            ) AS data\n            WHERE project_id = $1\n              AND project_stock.type_id = data.type_id\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4Array",
+        "Float4Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "e92fc57707b5bd64e7f332809d70540b68ae5c2660ec53580be86f097df24969"
+}

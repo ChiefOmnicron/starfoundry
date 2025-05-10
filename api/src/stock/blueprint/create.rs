@@ -15,7 +15,7 @@ pub async fn create(
     blueprint_stock: CreateBlueprintStock,
 ) -> Result<BlueprintStockUuid, BlueprintStockError> {
     sqlx::query!("
-            INSERT INTO stock_blueprints (
+            INSERT INTO stock_blueprint(
                 name,
                 description,
                 owner,

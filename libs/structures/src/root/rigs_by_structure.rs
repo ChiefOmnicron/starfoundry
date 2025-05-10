@@ -12,8 +12,8 @@ pub async fn rig_by_structure_type_id(
             SELECT
                 i.type_id,
                 i.name
-            FROM structure_rigs sr
-            JOIN items i ON i.type_id = sr.type_id
+            FROM structure_rig sr
+            JOIN item i ON i.type_id = sr.type_id
             WHERE structures @> ARRAY[$1]::INTEGER[]
             ORDER BY i.name
         "#,

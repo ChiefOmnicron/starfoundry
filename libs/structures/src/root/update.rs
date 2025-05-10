@@ -10,7 +10,7 @@ pub async fn update(
     structure:      UpdateStructure,
 ) -> Result<StructureUuid> {
     let result = sqlx::query!("
-            UPDATE structures
+            UPDATE structure
             SET
                 type_id   = $3,
                 rigs      = $4,

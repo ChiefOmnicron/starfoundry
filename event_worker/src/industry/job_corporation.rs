@@ -190,7 +190,7 @@ pub async fn task(
     }
 
     sqlx::query!("
-            INSERT INTO industry_jobs
+            INSERT INTO industry_job
             (
                 character_corporation_id,
                 blueprint_id,

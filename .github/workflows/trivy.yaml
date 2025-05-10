@@ -2,12 +2,14 @@ name: trivy
 
 on:
   workflow_run:
-    workflows: ["cicd"]
+    workflows:
+      - cicd
     types:
       - completed
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ "main" ]
+    branches:
+      - main
   schedule:
     - cron: '0 1 * * 0'
 
@@ -35,6 +37,14 @@ jobs:
           format: 'sarif'
           template: '@/contrib/sarif.tpl'
           output: 'trivy-results-api.sarif'
+          severity: 'CRITICAL,HIGH'
+      - name: Trivy Database Upgrade
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{vars.DOCKER_REPO}}/starfoundry/database-upgrade:${{ env.COMMIT_SHORT_SHA }}'
+          format: 'sarif'
+          template: '@/contrib/sarif.tpl'
+          output: 'trivy-results-database-upgrade.sarif'
           severity: 'CRITICAL,HIGH'
       - name: Trivy Event Worker
         uses: aquasecurity/trivy-action@master
@@ -74,22 +84,27 @@ jobs:
         with:
           category: api
           sarif_file: 'trivy-results-api.sarif'
-      - name: Upload Trivy api scan results
+      - name: Upload Trivy database-upgrade scan results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          category: api
+          sarif_file: 'trivy-results-database-upgrade.sarif'
+      - name: Upload Trivy event-worker scan results
         uses: github/codeql-action/upload-sarif@v3
         with:
           category: event-worker
           sarif_file: 'trivy-results-event-worker.sarif'
-      - name: Upload Trivy api scan results
+      - name: Upload Trivy web scan results
         uses: github/codeql-action/upload-sarif@v3
         with:
           category: web
           sarif_file: 'trivy-results-web.sarif'
-      - name: Upload Trivy api scan results
+      - name: Upload Trivy meta-webserver scan results
         uses: github/codeql-action/upload-sarif@v3
         with:
           category: meta-webserver
           sarif_file: 'trivy-results-web.sarif'
-      - name: Upload Trivy api scan results
+      - name: Upload Trivy repository scan results
         uses: github/codeql-action/upload-sarif@v3
         with:
           category: repository

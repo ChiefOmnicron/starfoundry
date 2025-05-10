@@ -1,0 +1,64 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT\n                    sbt.blueprint_stock_id,\n                    sbt.want,\n                    sbt.critical,\n                    sbt.min_runs,\n                    sbt.min_me,\n                    sbt.min_te,\n                    i.type_id,\n                    i.name\n                FROM stock_blueprint_threshold sbt\n                JOIN item i ON i.type_id = sbt.type_id\n                JOIN blueprints_temp bt ON bt.type_id = sbt.type_id\n                WHERE blueprint_stock_id = $1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "blueprint_stock_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "want",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "critical",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "min_runs",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "min_me",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "min_te",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "type_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "name",
+        "type_info": "Varchar"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "1188e4362b98edb0a2d69ebdafba85b15f0939e1d3fb6dc376442d531284a452"
+}

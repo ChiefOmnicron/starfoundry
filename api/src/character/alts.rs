@@ -25,7 +25,7 @@ pub async fn alts(
             SELECT DISTINCT character_id AS "character_id!: CharacterId",
                    character_main        AS "character_main: CharacterId",
                    credential_type
-            FROM   credentials
+            FROM   credential
             WHERE  character_main = $1
                 AND character_id IS NOT NULL
                 AND credential_type = 'CHARACTER'

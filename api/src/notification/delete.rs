@@ -13,7 +13,7 @@ pub async fn delete(
     notification_id: NotificationUuid,
 ) -> Result<(), NotificationError> {
     let result = sqlx::query!("
-            DELETE FROM notifications
+            DELETE FROM notification
             WHERE id = $1
             AND owner = $2
         ",

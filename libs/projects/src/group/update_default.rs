@@ -24,7 +24,7 @@ pub async fn update_default(
         .map_err(|e| Error::UpdateGroupDefaults(e, group_id))?;
 
     sqlx::query!("
-            DELETE FROM project_group_default_markets
+            DELETE FROM project_group_default_market
             WHERE project_group_id = $1
         ",
             *group_id,
@@ -34,7 +34,7 @@ pub async fn update_default(
         .map_err(|e| Error::UpdateGroupDefaults(e, group_id))?;
 
     sqlx::query!("
-            INSERT INTO project_group_default_markets (
+            INSERT INTO project_group_default_market (
                 project_group_id,
                 structure_id
             )

@@ -25,7 +25,8 @@ RUN         cargo build --release --target x86_64-unknown-linux-gnu && \
             strip target/x86_64-unknown-linux-gnu/release/starfoundry_bin-api && \
             strip target/x86_64-unknown-linux-gnu/release/starfoundry_bin-collector && \
             strip target/x86_64-unknown-linux-gnu/release/starfoundry_bin-event_worker && \
-            strip target/x86_64-unknown-linux-gnu/release/starfoundry_bin-meta_webserver
+            strip target/x86_64-unknown-linux-gnu/release/starfoundry_bin-meta_webserver && \
+            strip target/x86_64-unknown-linux-gnu/release/starfoundry_bin-database_upgrade
 
 ################################################################################
 # APPRAISAL only
@@ -145,6 +146,21 @@ RUN         apt-get clean && \
 COPY        --from=builder-all /usr/src/starfoundry/target/x86_64-unknown-linux-gnu/release/starfoundry_bin-collector /usr/local/bin/collector
 
 CMD         ["/usr/local/bin/collector"]
+
+
+################################################################################
+# Running database-upgrade container
+################################################################################
+FROM        ubuntu:24.04 AS database-upgrade
+
+RUN         apt-get update && \
+            apt-get install -y ca-certificates
+RUN         apt-get clean && \
+            rm -rf /var/lib/apt/lists/*
+
+COPY        --from=builder-all /usr/src/starfoundry/target/x86_64-unknown-linux-gnu/release/starfoundry_bin-database_upgrade /usr/local/bin/database_upgrade
+
+CMD         ["/usr/local/bin/database_upgrade"]
 
 ################################################################################
 # Running event-worker container

@@ -1,0 +1,18 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE stock_blueprint\n            SET name = $3,\n                description = $4,\n                notifications = $5\n            WHERE id = $1\n            AND owner = $2\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4",
+        "Varchar",
+        "Varchar",
+        "UuidArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "88fd88fce7109120c60af228f7d3bd209ac1693a0034dcb6fdc55e70346290fe"
+}

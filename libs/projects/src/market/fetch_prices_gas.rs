@@ -17,7 +17,7 @@ pub async fn fetch_gas(
                 pm.type_id,
                 pm.quantity
             FROM project_market pm
-            JOIN items i ON i.type_id = pm.type_id
+            JOIN item i ON i.type_id = pm.type_id
             WHERE source IS NULL
               AND cost IS NULL
               AND project_id = $1
@@ -64,9 +64,9 @@ pub async fn fetch_gas(
                 i.volume,
                 remaining,
                 price
-            FROM market_orders_latest mol
-            JOIN items i ON i.type_id = mol.type_id
-            JOIN structures s ON s.structure_id = mol.structure_id
+            FROM market_order_latest mol
+            JOIN item i ON i.type_id = mol.type_id
+            JOIN structure s ON s.structure_id = mol.structure_id
             WHERE i.type_id = ANY($1::INTEGER[])
             AND is_buy = false
               ORDER BY price ASC

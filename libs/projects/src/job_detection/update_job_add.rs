@@ -16,7 +16,7 @@ pub async fn update_job_add(
     // check if the job id is already assigned
     let project_id = sqlx::query!("
             SELECT project_id
-            FROM project_jobs
+            FROM project_job
             WHERE job_id = $1
         ",
             *job_id,
@@ -41,7 +41,7 @@ pub async fn update_job_add(
 
             if update.delete_from_source {
                 sqlx::query!("
-                        DELETE FROM project_jobs
+                        DELETE FROM project_job
                         WHERE project_id = $1
                         AND job_id = $2
                     ",
@@ -53,7 +53,7 @@ pub async fn update_job_add(
                     .map_err(|e| Error::DeleteFromProjectJobByJobId(e, job_id))?;
             } else {
                 sqlx::query!("
-                        UPDATE project_jobs
+                        UPDATE project_job
                         SET
                             status = 'WAITING_FOR_MATERIALS',
                             job_id = NULL,
@@ -76,8 +76,8 @@ pub async fn update_job_add(
                 type_id,
                 runs,
                 cost
-            FROM industry_jobs ij
-            JOIN job_detection_logs jdl ON jdl.job_id = ij.job_id
+            FROM industry_job ij
+            JOIN job_detection_log jdl ON jdl.job_id = ij.job_id
             WHERE ij.job_id = $1
         ",
             *job_id,
@@ -91,7 +91,7 @@ pub async fn update_job_add(
     // was started, and even if it's done, the job detection will recognize it
     // in the next cycle and just update it to 'DONE'
     sqlx::query!("
-            INSERT INTO project_jobs (
+            INSERT INTO project_job (
                 project_id,
                 type_id,
                 runs,
@@ -115,7 +115,7 @@ pub async fn update_job_add(
 
     // update in job detection log
     sqlx::query!("
-            UPDATE job_detection_logs
+            UPDATE job_detection_log
             SET project_id = $1
             WHERE job_id = $2
         ",

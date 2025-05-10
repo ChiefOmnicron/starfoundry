@@ -18,7 +18,7 @@ pub async fn blueprint_originals(
                 volume,
                 name,
                 base_price
-            FROM items
+            FROM item
             WHERE category_id = 9
             AND (
                 meta_group_id = 1

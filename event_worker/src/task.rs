@@ -52,8 +52,8 @@ pub async fn fetch_task(
 }
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, EncodeLabelValue, sqlx::Type)]
-#[sqlx(rename_all = "SCREAMING_SNAKE_CASE")]
 #[sqlx(type_name = "EVENT_WORKER_TASK")]
+#[sqlx(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum WorkerTask {
     /// check if all asset tasks are in the queue
     AssetCheck,

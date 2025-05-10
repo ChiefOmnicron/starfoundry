@@ -10,7 +10,7 @@ pub async fn register_worker(
     pool: &PgPool,
 ) -> Result<Uuid> {
     let worker_id = sqlx::query!("
-            INSERT INTO event_workers (last_seen)
+            INSERT INTO event_worker (last_seen)
             VALUES (NOW())
             RETURNING id
         ")
@@ -35,7 +35,7 @@ pub async fn refresh_last_seen(
     worker_id: Uuid,
 ) -> Result<()> {
     sqlx::query!("
-            UPDATE event_workers
+            UPDATE event_worker
             SET last_seen = NOW()
             WHERE id = $1
         ",
@@ -54,10 +54,10 @@ pub async fn remove_dead_workers(
     pool: &PgPool,
 ) -> Result<()> {
     let dead_worker_id = sqlx::query!("
-            DELETE FROM event_workers
+            DELETE FROM event_worker
             WHERE id IN (
                 SELECT id
-                FROM event_workers
+                FROM event_worker
                 WHERE last_seen < NOW() - INTERVAL '5 minutes'
                 LIMIT 1
             )

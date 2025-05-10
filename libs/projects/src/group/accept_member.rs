@@ -9,7 +9,7 @@ pub async fn accept_member(
     group_id:     ProjectGroupUuid,
 ) -> Result<()> {
     sqlx::query!("
-            UPDATE project_group_members
+            UPDATE project_group_member
             SET
                 accepted = TRUE,
                 projects = 'READ',

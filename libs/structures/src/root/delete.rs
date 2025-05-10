@@ -9,7 +9,7 @@ pub async fn delete(
     structure_uuid: StructureUuid,
 ) -> Result<()> {
     let result = sqlx::query!(r#"
-            DELETE FROM structures
+            DELETE FROM structure
             WHERE owner = $1
             AND id = $2
         "#,

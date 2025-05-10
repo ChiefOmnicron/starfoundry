@@ -9,7 +9,7 @@ pub async fn list(
 ) -> Result<Vec<StructureDynamicGroupUuid>> {
     let ids = sqlx::query!(r#"
             SELECT id
-            FROM structure_dynamic_groups
+            FROM structure_dynamic_group
             WHERE owner = $1
         "#,
             *character_id,

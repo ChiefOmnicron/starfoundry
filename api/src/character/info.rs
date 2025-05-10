@@ -39,8 +39,8 @@ pub async fn info(
                 c.corporation_id          AS "corporation_id!: CorporationId",
                 c.corporation_name,
                 auth.credential_type
-            FROM  credentials auth
-            JOIN  characters c ON c.character_id = auth.character_id
+            FROM  credential auth
+            JOIN  character c ON c.character_id = auth.character_id
             WHERE c.character_id = $1
               AND auth.credential_type = 'CHARACTER'
         "#,
@@ -108,8 +108,8 @@ pub async fn info_corporation(
                 c.corporation_id          AS "corporation_id!: CorporationId",
                 c.corporation_name,
                 auth.credential_type
-            FROM  credentials auth
-            JOIN  characters c ON c.corporation_id = auth.character_id
+            FROM  credential auth
+            JOIN  character c ON c.corporation_id = auth.character_id
             WHERE auth.character_id = $1 
               AND auth.credential_type = 'CORPORATION'
         "#,

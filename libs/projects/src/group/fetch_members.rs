@@ -16,9 +16,9 @@ pub async fn fetch_members(
                 project_group,
                 structures,
                 (pg.owner = c.character_id) AS is_owner
-            FROM project_group_members pgm
-            JOIN project_groups pg ON pg.id = pgm.group_id
-            JOIN characters c ON c.character_id = pgm.character_id
+            FROM project_group_member pgm
+            JOIN project_group pg ON pg.id = pgm.group_id
+            JOIN character c ON c.character_id = pgm.character_id
             WHERE group_id = $1
             ORDER BY character_name ASC
         ",

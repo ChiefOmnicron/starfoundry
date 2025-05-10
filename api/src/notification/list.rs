@@ -23,7 +23,7 @@ pub async fn list(
 
     sqlx::query!(r#"
             SELECT id
-            FROM notifications
+            FROM notification
             WHERE
                 (
                     NOT (LOWER(name) LIKE '%' || LOWER($2) || '%') IS FALSE AND

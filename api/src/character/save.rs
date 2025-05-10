@@ -16,7 +16,7 @@ pub async fn save(
     character: &Character,
 ) -> Result<(), CharacterError> {
     sqlx::query!("
-            INSERT INTO characters
+            INSERT INTO character
             (
                 alliance_id, alliance_name,
                 character_id, character_name,

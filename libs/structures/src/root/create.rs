@@ -11,7 +11,7 @@ pub async fn create(
     let structure_id: i32 = structure.structure_type.into();
 
     sqlx::query!("
-            INSERT INTO structures
+            INSERT INTO structure
             (
                 owner,
                 type_id,

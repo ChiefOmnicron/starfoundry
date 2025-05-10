@@ -1,4 +1,4 @@
-pub mod market_check;
-pub mod market_npc_latest;
-pub mod market_player_latest;
-pub mod market_prices;
+pub mod check;
+pub mod npc_latest;
+pub mod player_latest;
+pub mod prices;

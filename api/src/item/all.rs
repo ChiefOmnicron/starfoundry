@@ -27,7 +27,7 @@ pub async fn all(
                 volume,
                 name,
                 base_price
-            FROM items
+            FROM item
             -- Exclude some of the categories that we won´t need
             WHERE category_id != ALL(ARRAY[30, 63, 91, 2118])
             ORDER BY name

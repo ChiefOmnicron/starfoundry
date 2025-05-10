@@ -11,7 +11,7 @@ pub async fn list(
 ) -> Result<Vec<Uuid>> {
     sqlx::query!(r#"
             SELECT id
-            FROM structures
+            FROM structure
             WHERE
                 NOT (LOWER(name) LIKE '%' || LOWER($2) || '%') IS FALSE AND
                 NOT (system_id = $3) IS FALSE AND

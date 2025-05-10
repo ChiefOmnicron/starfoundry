@@ -1,0 +1,20 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT job_id\n            FROM industry_job\n            WHERE is_delivered = false\n            AND ignore = true\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "job_id",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "0c996b9c1286476592b6256706bff3c490274cf2fa2b86a989c87d40d52db42c"
+}

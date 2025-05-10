@@ -21,7 +21,7 @@ pub async fn corporations(
 ) -> Result<Vec<Character>, CharacterError> {
     let corporations = sqlx::query!(r#"
             SELECT DISTINCT character_id AS "character_id!: CharacterId"
-            FROM   credentials
+            FROM   credential
             WHERE character_main = $1
             AND credential_type = 'CORPORATION'
         "#,

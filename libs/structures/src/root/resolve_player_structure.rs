@@ -20,7 +20,7 @@ pub async fn resolve_player_structure(
 
     let security = sqlx::query!("
                 SELECT security
-                FROM systems
+                FROM system
                 WHERE system_id = $1
             ",
             *structure.system_id,

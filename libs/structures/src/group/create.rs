@@ -10,7 +10,7 @@ pub async fn create(
 ) -> Result<StructureGroupUuid> {
     let structure_group_id = sqlx::query!(
         "
-            INSERT INTO structure_groups
+            INSERT INTO structure_group
             (
                 owner,
                 name,

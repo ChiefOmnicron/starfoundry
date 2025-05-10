@@ -19,7 +19,7 @@ pub async fn resolve_bulk_names(
                 i.volume      AS "volume!",
                 i.name        AS "name!",
                 i.base_price
-            FROM items i
+            FROM item i
             WHERE name = ANY($1::VARCHAR[])
         "#,
             &names

@@ -194,8 +194,8 @@ impl StockBlueprint {
                 SELECT
                     url,
                     target AS "target!: NotificationTarget"
-                FROM stock_blueprints sb
-                JOIN notifications n ON n.id = ANY(sb.notifications)
+                FROM stock_blueprint sb
+                JOIN notification n ON n.id = ANY(sb.notifications)
                 WHERE sb.id = $1
             "#,
                 self.id,

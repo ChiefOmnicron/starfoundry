@@ -9,13 +9,13 @@ pub async fn update(
     info:         UpdateProject,
 ) -> Result<()> {
     sqlx::query!("
-            UPDATE projects
+            UPDATE project
             SET
                 name = $2,
                 status = $3,
                 sell_price = $4,
                 orderer = $5,
-                notes = $6,
+                note = $6,
                 project_group_id = $7
             WHERE id = $1
         ",
@@ -24,7 +24,7 @@ pub async fn update(
             &info.status as _,
             &info.sell_price as _,
             &info.orderer as _,
-            &info.notes as _,
+            &info.note as _,
             *info.project_group_id.unwrap_or(Uuid::default().into()),
         )
         .execute(pool)

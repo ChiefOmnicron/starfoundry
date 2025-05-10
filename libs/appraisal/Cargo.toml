@@ -6,12 +6,12 @@ version.workspace = true
 license.workspace = true
 
 [dependencies]
-async-trait = "0.1.87"
-rand = "0.9.0"
-reqwest = { version = "0.12.12", features = ["json", "rustls-tls"] }
-serde = { version = "1.0.218", features = ["derive"] }
+async-trait = "0.1.88"
+rand = "0.9.1"
+reqwest = { version = "0.12.15", features = ["json", "rustls-tls"] }
+serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"
-sqlx = "0.8.3"
+sqlx = "0.8.5"
 starfoundry_libs-compression = { path = "../compression" }
 starfoundry_libs-items = { path = "../items" }
 starfoundry_libs-types = { path = "../types" }

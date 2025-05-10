@@ -19,7 +19,7 @@ pub async fn fetch(
                 groups,
                 i.name
             FROM structure_dogma
-            JOIN items i ON i.type_id = ptype_id
+            JOIN item i ON i.type_id = ptype_id
             WHERE ptype_id = $1
         "#,
             *rig_type_id,
@@ -50,7 +50,7 @@ pub async fn fetch(
 
     let name = sqlx::query!("
             SELECT name
-            FROM items
+            FROM item
             WHERE type_id = $1
         ",
             *rig_type_id,

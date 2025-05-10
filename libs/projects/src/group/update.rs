@@ -8,7 +8,7 @@ pub async fn update(
     info:     UpdateProjectGroup,
 ) -> Result<()> {
     sqlx::query!("
-        UPDATE project_groups
+        UPDATE project_group
         SET
             name = $2,
             description = $3

@@ -1,0 +1,24 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO credential (\n                character_id,\n                character_main,\n                intention,\n                credential_type\n            )\n            VALUES (\n                $1,\n                $2,\n                $3,\n                'CORPORATION'\n            )\n            RETURNING token\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "token",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4",
+        "Varchar"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "9db1679a017f3a3500c065c2f34b2f2941980ac51a2e2bd1ac2ae185e3a8e735"
+}

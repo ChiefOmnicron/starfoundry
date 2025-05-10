@@ -20,7 +20,7 @@ pub async fn callback(
 
     let res = sqlx::query!("
             SELECT intention, token
-            FROM   credentials
+            FROM   credential
             WHERE  token = $1
         ",
             state
@@ -33,7 +33,7 @@ pub async fn callback(
     if intention == Intention::LoginCorporation {
         let corporation_id = sqlx::query!("
                 SELECT corporation_id
-                FROM characters
+                FROM character
                 WHERE character_id = $1
                 ",
                     *character_id,
@@ -44,7 +44,7 @@ pub async fn callback(
                 .corporation_id;
 
         sqlx::query!("
-            UPDATE credentials
+            UPDATE credential
                 SET
                     character_id   = $1,
                     refresh_token  = $2,
@@ -61,7 +61,7 @@ pub async fn callback(
             .map_err(AuthError::CannotUpdateLogin)?;
     } else {
         sqlx::query!("
-            UPDATE credentials
+            UPDATE credential
             SET
                 character_id  = $1,
                 refresh_token = $2,

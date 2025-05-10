@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE project_job\n            SET status = 'DONE'\n            WHERE status = 'BUILDING'\n            AND id = ANY(\n                SELECT id\n                FROM project_job pj\n                JOIN industry_job ij ON ij.job_id = pj.job_id\n                WHERE pj.status = 'BUILDING'\n                AND TO_TIMESTAMP(end_date, 'YYYY-MM-DDTHH:MI:SS') < NOW()\n                AND ij.is_delivered = true\n            )\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "736c071fe8740191050fe473e0322c7a96b3685caa7e0cf85ac297e79f8f395f"
+}

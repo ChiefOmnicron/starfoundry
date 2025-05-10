@@ -10,7 +10,7 @@ pub async fn update(
     group:        StructureDynamicGroup,
 ) -> Result<()> {
     sqlx::query!(r#"
-            UPDATE structure_dynamic_groups
+            UPDATE structure_dynamic_group
             SET
                 name = $3,
                 group_ids = $4

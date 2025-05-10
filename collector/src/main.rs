@@ -1,5 +1,6 @@
 use sqlx::postgres::PgPoolOptions;
 use starfoundry_bin_collector::execute;
+use starfoundry_bin_collector::sql::ensure_tables;
 use starfoundry_libs_eve_api::CredentialCache;
 use std::sync::{Arc, Mutex};
 use tracing_subscriber::EnvFilter;
@@ -20,6 +21,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .min_connections(25)
         .connect(&pg_addr)
         .await?;
+
+    ensure_tables(&pool).await;
 
     let credential_cache = CredentialCache::load_from_database(&pool.clone()).await?;
     let credential_cache = Arc::new(Mutex::new(credential_cache));

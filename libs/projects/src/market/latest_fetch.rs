@@ -13,7 +13,7 @@ pub async fn last_fetch(
             FROM event_queue
             WHERE (additional_data ->> 'structure_id')::BIGINT = (
                 SELECT structure_id
-                FROM structures
+                FROM structure
                 WHERE id = $1
             )
             AND status = 'DONE'

@@ -28,7 +28,7 @@ pub async fn run(
 
     tracing::debug!("Clearing database");
     sqlx::query!("
-            DELETE FROM structure_rigs
+            DELETE FROM structure_rig
         ")
         .execute(&mut *transaction)
         .await
@@ -38,7 +38,7 @@ pub async fn run(
     tracing::debug!("Inserting data starting");
     for structure in structure_rigs {
         sqlx::query!("
-            INSERT INTO structure_rigs
+            INSERT INTO structure_rig
             (
                 type_id,
                 structures

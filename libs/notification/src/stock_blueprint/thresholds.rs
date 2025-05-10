@@ -33,8 +33,8 @@ impl BlueprintThresholds {
                     sbt.min_te,
                     i.type_id,
                     i.name
-                FROM stock_blueprint_thresholds sbt
-                JOIN items i ON i.type_id = sbt.type_id
+                FROM stock_blueprint_threshold sbt
+                JOIN item i ON i.type_id = sbt.type_id
                 JOIN blueprints_temp bt ON bt.type_id = sbt.type_id
                 WHERE blueprint_stock_id = $1
             ",

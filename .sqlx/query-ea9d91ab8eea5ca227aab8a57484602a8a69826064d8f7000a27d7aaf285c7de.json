@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                i.type_id,\n                i.name\n            FROM structure_rig sr\n            JOIN item i ON i.type_id = sr.type_id\n            WHERE structures @> ARRAY[$1]::INTEGER[]\n            ORDER BY i.name\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "type_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Varchar"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "ea9d91ab8eea5ca227aab8a57484602a8a69826064d8f7000a27d7aaf285c7de"
+}

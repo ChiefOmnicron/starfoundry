@@ -13,7 +13,7 @@ pub async fn delete(
     blueprint_stock_id: BlueprintStockUuid,
 ) -> Result<(), BlueprintStockError> {
     let result = sqlx::query!("
-            DELETE FROM stock_blueprints
+            DELETE FROM stock_blueprint
             WHERE id = $1
             AND owner = $2
         ",
