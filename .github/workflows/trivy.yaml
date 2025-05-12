@@ -87,7 +87,7 @@ jobs:
       - name: Upload Trivy database-upgrade scan results
         uses: github/codeql-action/upload-sarif@v3
         with:
-          category: api
+          category: database-upgrade
           sarif_file: 'trivy-results-database-upgrade.sarif'
       - name: Upload Trivy event-worker scan results
         uses: github/codeql-action/upload-sarif@v3
