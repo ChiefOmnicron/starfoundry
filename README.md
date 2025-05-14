@@ -1,9 +1,18 @@
 # StarFoundry
 
-StarFoundry contains mutliple projects.
+StarFoundry contains multiple projects.
 
 Core of it all is an industry tool, that I am developing for some time.
 Second is an appraisal tool, which was developed as a little side project.
+
+## Crates
+
+The repository follows the monorepo approach.
+The following topics describe the different crates.
+
+### Meta-Webserver
+
+Read more in the crate [README.md](meta_webserver/README.md)
 
 ## Appraisal
 
@@ -29,4 +38,4 @@ The application is heavily inspired by [janice](https://janice.e-351.com/) and t
 
 ### Self-Hosting
 
-Sonn tm
+Soon tm

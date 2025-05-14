@@ -1,18 +1,23 @@
+/// Webserver for generating HTML pages that satisfy the needs of bots
+/// 
+/// Currently supported StarFoundry modules:
+/// - Appraisal
+/// 
+
+mod appraisal;
+mod config;
+
 use handlebars::Handlebars;
-use serde_json::json;
 use serde::Serialize;
 use sqlx::postgres::PgPoolOptions;
 use std::sync::Arc;
 use tracing_subscriber::EnvFilter;
 use warp::Filter;
 
-use crate::config::Config;
-use starfoundry_libs_appraisal::internal::fetch;
 use sqlx::PgPool;
 use std::convert::Infallible;
-use num_format::{Locale, ToFormattedString};
 
-mod config;
+use crate::config::Config;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -29,86 +34,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     tracing::info!("Starting server");
 
-    let template = r#"<!DOCTYPE html>
-        <html>
-        <head>
-            <title>Appraisal {{code}}: Buy {{ buy }} / Sell {{ sell }}</title>
-
-            <meta name="description" content="{{ description }}">
-        </head>
-        </html>"#;
-
     let mut hb = Handlebars::new();
-    // register the template
-    hb.register_template_string("template.html", template).unwrap();
+    hb.register_template_string("appraisal.html", appraisal::template()).unwrap();
     let hb = Arc::new(hb);
 
     let handlebars = move |with_template| render(with_template, hb.clone());
 
     let route = warp::get()
         .and(with_pool(pool.clone()))
-        //.and(with_hb(hb.clone()))
         .and(warp::path!("appraisal" / String))
-        //.then(|pool: PgPool, hb: Arc<Handlebars>, code: String| async move {
-        .then(|pool: PgPool, code: String| async move {
-            let data = fetch(
-                    &pool,
-                    code.clone(),
-                )
-                .await
-                .unwrap()
-                .unwrap();
-            let items = data
-                .items
-                .iter()
-                .map(|x| {
-                    format!("{} - {}", x.meta.name, x.quantity.to_formatted_string(&Locale::en))
-                })
-                .collect::<Vec<_>>()
-                .join("\n");
-
-            let buy= data
-                .items
-                .iter()
-                .map(|x| x.buy.max)
-                .sum::<f64>()
-                .round();
-            let buy = if buy >= 1_000_000_000f64 {
-                format!("{:.2} Billion", buy / 1_000_000_000f64)
-            } else if buy >= 1_000_000f64 {
-                format!("{:.2} Million", buy / 1_000_000f64)
-            } else if buy >= 1_000_000f64 {
-                format!("{:.2} Thousand", buy / 1_000f64)
-            } else {
-                format!("{:.2}", buy)
-            };
-
-            let sell = data
-                .items
-                .iter()
-                .map(|x| x.sell.min)
-                .sum::<f64>()
-                .round();
-            let sell = if sell >= 1_000_000_000f64 {
-                format!("{:.2} Billion", sell / 1_000_000_000f64)
-            } else if sell >= 1_000_000f64 {
-                format!("{:.2} Million", sell / 1_000_000f64)
-            } else if sell >= 1_000_000f64 {
-                format!("{:.2} Thousand", sell / 1_000f64)
-            } else {
-                format!("{:.2}", sell)
-            };
-
-            WithTemplate {
-                name: "template.html",
-                value: json!({
-                    "code": code,
-                    "description" : items,
-                    "buy": buy,
-                    "sell": sell,
-                }),
-            }
-        })
+        .then(appraisal::appraisal)
         .map(handlebars);
 
     warp::serve(route).run(config.server_address).await;
@@ -126,7 +61,7 @@ where
     warp::reply::html(render)
 }
 
-struct WithTemplate<T: Serialize> {
+pub struct WithTemplate<T: Serialize> {
     name: &'static str,
     value: T,
 }
