@@ -1,0 +1,2449 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "StarFoundry API",
+        "description": "# API\n\nThe API provides an interface for external tools. It is free to use, I only ask that you don't abuse it, otherwise I will have to do counter messures.\n\n**Base URL**\n\n`https://api.industry.starfoundry.space`\n\n## API Versioning\n\nThe API is versioned by an path param. `https://api.industry.starfoundry.space/v{version}`. You can omitt the version, then the default version will be used.\n\n| Version | Status | Default |\n|---------|--------|---------|\n| v1      | Active | Yes     |\n\n## User-Agent\n\nPlease provide a [user agent](https://www.rfc-editor.org/rfc/rfc9110.html#section-10.1.5)\n\nUser Agent Example\n\n`User-Agent: SomeBot ($url, $versionNumber)`\n\n## Content Type\n\nThe API always answers with `Content-Type: application/json`, other content types will be rejected.\n\n## Contact\n\n- Discord: https://discord.gg/qShbyn4r9N\n- GitHub: https://github.com/ChiefOmnicron/starfoundry\n- Ingame: mail to 'Eistonen Kodan Sasen'\n",
+        "contact": {
+            "url": "https://github.com/ChiefOmnicron/starfoundry"
+        },
+        "license": {
+            "name": "Dual licensed under Apache-2.0 and MIT"
+        },
+        "version": "0.1.0"
+    },
+    "paths": {
+        "/projects": {
+            "get": {
+                "tags": [
+                    "projects"
+                ],
+                "summary": "/projects",
+                "description": "Fetches a list of projects that match the given filter\n\n## Security\n- authenticated\n- project:read\n\n",
+                "operationId": "project_list",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "default": "<empty string>"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "default": "PREPARING,IN_PROGRESS,PAUSED,DONE"
+                        }
+                    },
+                    {
+                        "name": "project_group",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "oneOf": [
+                                {
+                                    "type": "null"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/ProjectGroupUuid"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of projects the character has access to",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ProjectUuid"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "the given parameters are incorrect"
+                    },
+                    "401": {
+                        "description": "authenticate and then try again"
+                    },
+                    "500": {
+                        "description": "there was an unknown error"
+                    }
+                },
+                "security": [
+                    {
+                        "jwt": [
+                            "project:read"
+                        ]
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "projects"
+                ],
+                "summary": "/projects",
+                "description": "Creates a new project and returns it's id\n\n## Security\n- authenticated\n\n",
+                "operationId": "projects_create",
+                "requestBody": {
+                    "description": "Information about the project",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateProject"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "ID of the new project",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProjectUuid"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "the given parameters are incorrect"
+                    },
+                    "401": {
+                        "description": "authenticate and then try again"
+                    },
+                    "415": {
+                        "description": "wrong media type, must be application/json"
+                    },
+                    "500": {
+                        "description": "there was an unknown error"
+                    }
+                },
+                "security": [
+                    {
+                        "jwt": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ActiveJob": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "type_id",
+                    "runs",
+                    "status",
+                    "structure_uuid",
+                    "delivered",
+                    "end_date",
+                    "activity",
+                    "structure_name"
+                ],
+                "properties": {
+                    "activity": {
+                        "$ref": "#/components/schemas/IndustryActivity"
+                    },
+                    "cost": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "format": "double"
+                    },
+                    "delivered": {
+                        "type": "boolean"
+                    },
+                    "end_date": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "job_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32"
+                    },
+                    "runs": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/ProjectJobStatus"
+                    },
+                    "structure_name": {
+                        "type": "string"
+                    },
+                    "structure_uuid": {
+                        "$ref": "#/components/schemas/StructureUuid"
+                    },
+                    "type_id": {
+                        "$ref": "#/components/schemas/TypeId"
+                    }
+                },
+                "example": {
+                    "activity": "MANUFACTURING",
+                    "cost": 1337,
+                    "delivered": false,
+                    "end_date": "2024-12-29T20:20:42Z",
+                    "id": "3b51c53e-d266-4d2d-b8b5-0a7325e53814",
+                    "job_id": 588054964,
+                    "runs": 10,
+                    "status": "IN_PROGRESS",
+                    "structure_name": "1DQ1-A - Example Station",
+                    "structure_uuid": "f18015ef-7be9-4f46-8bda-95f25d4f24b7",
+                    "type_id": 73790
+                }
+            },
+            "AddMarket": {
+                "type": "object",
+                "required": [
+                    "type_id",
+                    "quantity"
+                ],
+                "properties": {
+                    "cost": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "format": "float"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "source": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "type_id": {
+                        "$ref": "#/components/schemas/TypeId"
+                    }
+                },
+                "example": {
+                    "cost": 1337,
+                    "quantity": 1,
+                    "source": "1DQ1-A",
+                    "type_id": 73790
+                }
+            },
+            "AddMisc": {
+                "type": "object",
+                "required": [
+                    "item",
+                    "cost"
+                ],
+                "properties": {
+                    "cost": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "item": {
+                        "type": "string"
+                    },
+                    "quantity": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32"
+                    }
+                },
+                "example": {
+                    "cost": 1337,
+                    "description": "JF Fuel cost Jita > 1DQ",
+                    "item": "Hauling",
+                    "quantity": null
+                }
+            },
+            "AddProduct": {
+                "type": "object",
+                "required": [
+                    "quantity",
+                    "material_efficiency",
+                    "type_id"
+                ],
+                "properties": {
+                    "material_efficiency": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "type_id": {
+                        "$ref": "#/components/schemas/TypeId"
+                    }
+                }
+            },
+            "AdditionalProduct": {
+                "type": "object",
+                "required": [
+                    "quantity",
+                    "type_id"
+                ],
+                "properties": {
+                    "quantity": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "type_id": {
+                        "$ref": "#/components/schemas/TypeId"
+                    }
+                }
+            },
+            "Appraisal": {
+                "type": "object",
+                "title": "Appraisal",
+                "required": [
+                    "created_at",
+                    "items",
+                    "invalid",
+                    "market_id",
+                    "price_modifier",
+                    "total"
+                ],
+                "properties": {
+                    "code": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "code that was used to create the appraisal, will be null if it was for compression or reprocessing\nwill be 10 characters long, [a-zA-z0-9]"
+                    },
+                    "comment": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "comment for the appraisal"
+                    },
+                    "created_at": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "timestamp when it was created in milliseconds"
+                    },
+                    "invalid": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "includes all fields that could not be parsed"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AppraisalItem"
+                        },
+                        "description": "all parsed items with their pricing information"
+                    },
+                    "market_id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "market that was used to create the appraisal"
+                    },
+                    "price_modifier": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "the price modifier is applied on the return data"
+                    },
+                    "raw": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "initial appraisal input"
+                    },
+                    "total": {
+                        "$ref": "#/components/schemas/AppraisalTotal"
+                    }
+                },
+                "example": {
+                    "code": "cidx8nzQNW",
+                    "comment": "",
+                    "created_at": 1744099132822,
+                    "invalid": [],
+                    "items": [
+                        {
+                            "buy": {
+                                "max": 409.00001525878906,
+                                "min": 0.9999999776482582,
+                                "per_item": {
+                                    "avg": 2.9603448458144377,
+                                    "max": 4.090000152587891,
+                                    "min": 0.009999999776482582
+                                },
+                                "total_orders": 13046927471
+                            },
+                            "low_data": false,
+                            "meta": {
+                                "category_id": 4,
+                                "group_id": 18,
+                                "meta_group_id": null,
+                                "name": "Tritanium",
+                                "repackaged": null,
+                                "type_id": 34,
+                                "volume": 0.01
+                            },
+                            "quantity": 100,
+                            "sell": {
+                                "max": 1000000.0,
+                                "min": 438.0000114440918,
+                                "per_item": {
+                                    "avg": 257.6819049365937,
+                                    "max": 10000.0,
+                                    "min": 4.380000114440918
+                                },
+                                "total_orders": 8652196750
+                            },
+                            "type_id": 34,
+                            "volume": 1.0
+                        },
+                        {
+                            "buy": {
+                                "max": 2100.0,
+                                "min": 0.9999999776482582,
+                                "per_item": {
+                                    "avg": 14.890000105204601,
+                                    "max": 21.0,
+                                    "min": 0.009999999776482582
+                                },
+                                "total_orders": 3170777127
+                            },
+                            "low_data": false,
+                            "meta": {
+                                "category_id": 4,
+                                "group_id": 18,
+                                "meta_group_id": null,
+                                "name": "Pyerite",
+                                "repackaged": null,
+                                "type_id": 35,
+                                "volume": 0.01
+                            },
+                            "quantity": 100,
+                            "sell": {
+                                "max": 100000000.0,
+                                "min": 2317.0000076293945,
+                                "per_item": {
+                                    "avg": 24009.31952381134,
+                                    "max": 1000000.0,
+                                    "min": 23.170000076293945
+                                },
+                                "total_orders": 1543005951
+                            },
+                            "type_id": 35,
+                            "volume": 1.0
+                        }
+                    ],
+                    "market_id": 60003760,
+                    "price_modifier": 100,
+                    "total": {
+                        "buy": 2509.000015258789,
+                        "sell": 2755.0000190734863,
+                        "volume": 2.0
+                    }
+                }
+            },
+            "AppraisalCreateBody": {
+                "type": "object",
+                "title": "AppraisalCreateBody",
+                "required": [
+                    "appraisal"
+                ],
+                "properties": {
+                    "appraisal": {
+                        "type": "string",
+                        "description": "raw entry of the items that should be appraised"
+                    },
+                    "comment": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "comment for the appraisal, per default empty"
+                    },
+                    "market_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64",
+                        "description": "market that should be used, jita is the default"
+                    },
+                    "persist": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/Persistance",
+                                "description": "whether or not the apprisal should be stored, persist per default\ncan either 'Persist' or 'NonPersist'"
+                            }
+                        ]
+                    },
+                    "price_modifier": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32",
+                        "description": "modifier for the price, default is 100%"
+                    }
+                },
+                "example": {
+                    "appraisal": "Tritanium\t100\nPyerite\t100",
+                    "comment": "this is a cool comment",
+                    "market": 60003760,
+                    "persist": "Persist",
+                    "price_modifier": 100
+                }
+            },
+            "AppraisalItem": {
+                "type": "object",
+                "required": [
+                    "quantity",
+                    "type_id",
+                    "low_data",
+                    "volume",
+                    "meta",
+                    "buy",
+                    "sell"
+                ],
+                "properties": {
+                    "buy": {
+                        "$ref": "#/components/schemas/MarketEntry",
+                        "description": "buy information"
+                    },
+                    "low_data": {
+                        "type": "boolean",
+                        "description": "if there are not enough items on the market to cover the requested amount"
+                    },
+                    "meta": {
+                        "$ref": "#/components/schemas/Item",
+                        "description": "general item information"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "sell": {
+                        "$ref": "#/components/schemas/MarketEntry",
+                        "description": "sell information"
+                    },
+                    "type_id": {
+                        "$ref": "#/components/schemas/TypeId"
+                    },
+                    "volume": {
+                        "type": "number",
+                        "format": "float"
+                    }
+                },
+                "example": {
+                    "buy": {
+                        "max": 2100.0,
+                        "min": 0.9999999776482582,
+                        "per_item": {
+                            "avg": 14.890000105204601,
+                            "max": 21.0,
+                            "min": 0.009999999776482582
+                        },
+                        "total_orders": 3170777127
+                    },
+                    "low_data": false,
+                    "meta": {
+                        "category_id": 4,
+                        "group_id": 18,
+                        "meta_group_id": null,
+                        "name": "Pyerite",
+                        "repackaged": null,
+                        "type_id": 35,
+                        "volume": 0.01
+                    },
+                    "quantity": 100,
+                    "sell": {
+                        "max": 100000000.0,
+                        "min": 2317.0000076293945,
+                        "per_item": {
+                            "avg": 24009.31952381134,
+                            "max": 1000000.0,
+                            "min": 23.170000076293945
+                        },
+                        "total_orders": 1543005951
+                    },
+                    "type_id": 35,
+                    "volume": 1.0
+                }
+            },
+            "AppraisalList": {
+                "type": "string",
+                "enum": [
+                    "INTERNAL",
+                    "JANICE"
+                ]
+            },
+            "AppraisalMarket": {
+                "type": "object",
+                "required": [
+                    "name",
+                    "market_id"
+                ],
+                "properties": {
+                    "market_id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "example": [
+                    {
+                        "market_id": 60003760,
+                        "name": "Jita 4-4"
+                    },
+                    {
+                        "market_id": 60008494,
+                        "name": "Amarr"
+                    }
+                ]
+            },
+            "AppraisalTotal": {
+                "type": "object",
+                "required": [
+                    "buy",
+                    "sell",
+                    "volume"
+                ],
+                "properties": {
+                    "buy": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "sell": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "volume": {
+                        "type": "number",
+                        "format": "float"
+                    }
+                },
+                "example": {
+                    "total": {
+                        "buy": 2509.000015258789,
+                        "sell": 2755.0000190734863,
+                        "volume": 2.0
+                    }
+                }
+            },
+            "CategoryId": {
+                "type": "integer",
+                "format": "int32",
+                "description": "Represents an ID-Type from EVE"
+            },
+            "CharacterId": {
+                "type": "integer",
+                "format": "int32",
+                "description": "Represents an ID-Type from EVE"
+            },
+            "CheckResources": {
+                "type": "object",
+                "required": [
+                    "job_ids",
+                    "resources"
+                ],
+                "properties": {
+                    "job_ids": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ProjectJobUuid"
+                        },
+                        "description": "jobs that should be started"
+                    },
+                    "resources": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/StockMinimal"
+                        },
+                        "description": "available materials"
+                    }
+                }
+            },
+            "CompressionOptions": {
+                "type": "object",
+                "properties": {
+                    "allow_minerals": {
+                        "type": "boolean"
+                    },
+                    "allow_uncompressed_gas": {
+                        "type": "boolean"
+                    },
+                    "allow_uncompressed_moon": {
+                        "type": "boolean"
+                    },
+                    "allow_uncompressed_ore": {
+                        "type": "boolean"
+                    },
+                    "blacklist": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TypeId"
+                        }
+                    },
+                    "gas_decompression": {
+                        "$ref": "#/components/schemas/GasReprocessingEfficiency"
+                    },
+                    "ore_reprocessing": {
+                        "$ref": "#/components/schemas/OreReprocessingEfficiency"
+                    }
+                },
+                "example": {
+                    "allow_minerals": false,
+                    "allow_uncompressed_gas": false,
+                    "allow_uncompressed_moon": false,
+                    "allow_uncompressed_ore": false,
+                    "blacklist": [],
+                    "gas_decompression": "AthanorLvl5",
+                    "ore_reprocessing": "NsTataraT2"
+                }
+            },
+            "CompressionResult": {
+                "type": "object",
+                "required": [
+                    "compression_appraisal"
+                ],
+                "properties": {
+                    "compression_appraisal": {
+                        "$ref": "#/components/schemas/Appraisal"
+                    },
+                    "overage_appraisal": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/Appraisal"
+                            }
+                        ]
+                    }
+                }
+            },
+            "CostEstimateConfiguration": {
+                "type": "object",
+                "required": [
+                    "products",
+                    "structure_group"
+                ],
+                "properties": {
+                    "products": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CostEstimateProduct"
+                        }
+                    },
+                    "stocks": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/StockMinimal"
+                        }
+                    },
+                    "structure_group": {
+                        "$ref": "#/components/schemas/StructureGroupUuid"
+                    }
+                }
+            },
+            "CostEstimateProduct": {
+                "type": "object",
+                "description": "information about a product being built\n",
+                "required": [
+                    "quantity",
+                    "type_id"
+                ],
+                "properties": {
+                    "material_efficiency": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "type_id": {
+                        "$ref": "#/components/schemas/TypeId"
+                    }
+                },
+                "example": {
+                    "material_efficiency": 0,
+                    "quantity": 1,
+                    "type_id": 73790
+                }
+            },
+            "CostEstimateResponse": {
+                "type": "object",
+                "required": [
+                    "market_cost_total",
+                    "manufacturing_cost_total",
+                    "excess_cost_total",
+                    "excess_entries"
+                ],
+                "properties": {
+                    "excess_cost_total": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "excess_entries": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ExcessCostEstimateEntry"
+                        }
+                    },
+                    "manufacturing_cost_total": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "market_cost_total": {
+                        "type": "number",
+                        "format": "float"
+                    }
+                }
+            },
+            "CreateJobAssignment": {
+                "type": "object",
+                "required": [
+                    "job_ids"
+                ],
+                "properties": {
+                    "job_ids": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ProjectJobUuid"
+                        }
+                    }
+                }
+            },
+            "CreateProject": {
+                "type": "object",
+                "required": [
+                    "name",
+                    "products",
+                    "structure_group_id",
+                    "project_group_id",
+                    "markets"
+                ],
+                "properties": {
+                    "additional_products": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AdditionalProduct"
+                        },
+                        "description": "products that either shouldn't be build or cannot be build, but still\nbelong to the project"
+                    },
+                    "blacklist": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TypeId"
+                        }
+                    },
+                    "markets": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/StructureUuid"
+                        }
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "note": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "orderer": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "products": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AddProduct"
+                        },
+                        "description": "products that should be build in the project"
+                    },
+                    "project_group_id": {
+                        "$ref": "#/components/schemas/ProjectGroupUuid"
+                    },
+                    "sell_price": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "format": "double"
+                    },
+                    "stocks": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/StockMinimal"
+                        }
+                    },
+                    "structure_group_id": {
+                        "$ref": "#/components/schemas/StructureGroupUuid"
+                    }
+                },
+                "example": {
+                    "additional_products": [
+                        {
+                            "quantity": 50000,
+                            "type_id": 16274
+                        }
+                    ],
+                    "blacklist": [
+                        4312,
+                        4247,
+                        4051,
+                        4246
+                    ],
+                    "markets": [
+                        "00000000-0000-0000-0000-000000000001"
+                    ],
+                    "name": "My Project Name",
+                    "note": null,
+                    "orderer": "its for somebody I used to know",
+                    "products": [
+                        {
+                            "item_name": "Revelation Navy Issue",
+                            "material_efficiency": 0,
+                            "quantity": 1,
+                            "type_id": 73790
+                        }
+                    ],
+                    "project_group_id": "60f5931b-bea5-45a1-a2ea-520d2535b138",
+                    "sell_price": 4200000000.0,
+                    "stocks": [
+                        {
+                            "quantity": 3315,
+                            "type_id": 11399
+                        }
+                    ],
+                    "structure_group_id": "caf60b7a-5abd-41b7-bc01-721f049def56"
+                }
+            },
+            "ExcessCostEstimateEntry": {
+                "type": "object",
+                "required": [
+                    "type_id",
+                    "quantity",
+                    "cost"
+                ],
+                "properties": {
+                    "cost": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "type_id": {
+                        "$ref": "#/components/schemas/TypeId"
+                    }
+                }
+            },
+            "ExcessEntry": {
+                "type": "object",
+                "required": [
+                    "item_name",
+                    "quantity",
+                    "type_id",
+                    "category_id",
+                    "group_id"
+                ],
+                "properties": {
+                    "category_id": {
+                        "$ref": "#/components/schemas/CategoryId"
+                    },
+                    "cost": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "format": "double"
+                    },
+                    "group_id": {
+                        "$ref": "#/components/schemas/GroupId"
+                    },
+                    "item_name": {
+                        "type": "string"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "type_id": {
+                        "$ref": "#/components/schemas/TypeId"
+                    }
+                },
+                "example": [
+                    {
+                        "category_id": 4,
+                        "group_id": 18,
+                        "item_name": "Morphite",
+                        "quantity": 3315,
+                        "type_id": 11399
+                    },
+                    {
+                        "category_id": 4,
+                        "item_name": "Pyerite",
+                        "quantity": 637895,
+                        "type_id": 35
+                    }
+                ]
+            },
+            "ExcessGroup": {
+                "type": "object",
+                "description": "Stocks grouped by their category_id and group_id",
+                "required": [
+                    "header",
+                    "entries"
+                ],
+                "properties": {
+                    "entries": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ExcessEntry"
+                        }
+                    },
+                    "header": {
+                        "type": "string"
+                    }
+                },
+                "example": [
+                    {
+                        "entries": [
+                            {
+                                "category_id": 4,
+                                "group_id": 18,
+                                "item_name": "Morphite",
+                                "quantity": 3315,
+                                "type_id": 11399
+                            }
+                        ],
+                        "header": "MINERALS"
+                    },
+                    {
+                        "entries": [
+                            {
+                                "category_id": 4,
+                                "group_id": 427,
+                                "item_name": "Cadmium",
+                                "quantity": 196,
+                                "type_id": 16643
+                            }
+                        ],
+                        "header": "MOON_MATERIALS"
+                    }
+                ]
+            },
+            "Finance": {
+                "type": "object",
+                "description": "different finance information per project",
+                "required": [
+                    "excess",
+                    "jobs",
+                    "market",
+                    "misc",
+                    "stock",
+                    "sell_price"
+                ],
+                "properties": {
+                    "excess": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "jobs": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "market": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "misc": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "sell_price": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "stock": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                }
+            },
+            "GasReprocessingEfficiency": {
+                "type": "string",
+                "enum": [
+                    "AthanorLvl0",
+                    "AthanorLvl1",
+                    "AthanorLvl2",
+                    "AthanorLvl3",
+                    "AthanorLvl4",
+                    "AthanorLvl5",
+                    "TataraLvl0",
+                    "TataraLvl1",
+                    "TataraLvl2",
+                    "TataraLvl3",
+                    "TataraLvl4",
+                    "TataraLvl5"
+                ]
+            },
+            "GroupId": {
+                "type": "integer",
+                "format": "int32",
+                "description": "Represents an ID-Type from EVE"
+            },
+            "IndustryActivity": {
+                "type": "string",
+                "enum": [
+                    "MANUFACTURING",
+                    "TIME_EFFICIENCY_RESEARCH",
+                    "MATERIAL_EFFICIENCY_RESEARCH",
+                    "COPYING",
+                    "INVENTION",
+                    "REACTIONS",
+                    "UNKNOWN"
+                ]
+            },
+            "Item": {
+                "type": "object",
+                "required": [
+                    "name",
+                    "volume",
+                    "category_id",
+                    "group_id",
+                    "type_id"
+                ],
+                "properties": {
+                    "category_id": {
+                        "$ref": "#/components/schemas/CategoryId"
+                    },
+                    "group_id": {
+                        "$ref": "#/components/schemas/GroupId"
+                    },
+                    "meta_group_id": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/GroupId"
+                            }
+                        ]
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "repackaged": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32"
+                    },
+                    "type_id": {
+                        "$ref": "#/components/schemas/TypeId"
+                    },
+                    "volume": {
+                        "type": "number",
+                        "format": "float"
+                    }
+                }
+            },
+            "JobAssignmentEntry": {
+                "type": "object",
+                "required": [
+                    "job_id",
+                    "type_id",
+                    "structure_name",
+                    "project_name",
+                    "item_name",
+                    "runs",
+                    "started",
+                    "category_id",
+                    "group_id"
+                ],
+                "properties": {
+                    "category_id": {
+                        "$ref": "#/components/schemas/CategoryId"
+                    },
+                    "group_id": {
+                        "$ref": "#/components/schemas/GroupId"
+                    },
+                    "item_name": {
+                        "type": "string"
+                    },
+                    "job_id": {
+                        "$ref": "#/components/schemas/ProjectJobUuid"
+                    },
+                    "meta_group_id": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/GroupId"
+                            }
+                        ]
+                    },
+                    "project_name": {
+                        "type": "string"
+                    },
+                    "runs": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "started": {
+                        "type": "boolean"
+                    },
+                    "structure_name": {
+                        "type": "string"
+                    },
+                    "type_id": {
+                        "$ref": "#/components/schemas/TypeId"
+                    }
+                },
+                "example": {
+                    "category_id": 17,
+                    "group_id": 873,
+                    "item_name": "Neuolink Protection Cell",
+                    "job_id": null,
+                    "meta_group_id": null,
+                    "project_name": "My cool project",
+                    "runs": 1,
+                    "started": false,
+                    "structure_name": "1DQ1-A - Example Structure",
+                    "type_id": 57488
+                }
+            },
+            "JobAssignmentGroup": {
+                "type": "object",
+                "required": [
+                    "header",
+                    "entries"
+                ],
+                "properties": {
+                    "entries": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/JobAssignmentGroupEntry"
+                        }
+                    },
+                    "header": {
+                        "type": "string"
+                    }
+                },
+                "example": [
+                    {
+                        "entries": [
+                            {
+                                "category_id": 17,
+                                "group_id": 873,
+                                "item_name": "Neuolink Protection Cell",
+                                "job_id": null,
+                                "meta_group_id": null,
+                                "project_name": "My cool project",
+                                "runs": 1,
+                                "started": false,
+                                "structure_name": "1DQ1-A - Example Structure",
+                                "type_id": 57488
+                            }
+                        ],
+                        "header": "My cool project"
+                    }
+                ]
+            },
+            "JobAssignmentGroupEntry": {
+                "type": "object",
+                "required": [
+                    "header",
+                    "entries"
+                ],
+                "properties": {
+                    "entries": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/JobAssignmentEntry"
+                        }
+                    },
+                    "header": {
+                        "type": "string"
+                    }
+                }
+            },
+            "JobDetection": {
+                "type": "object",
+                "required": [
+                    "type_id",
+                    "runs",
+                    "end_date",
+                    "job_id"
+                ],
+                "properties": {
+                    "end_date": {
+                        "type": "string"
+                    },
+                    "job_id": {
+                        "$ref": "#/components/schemas/JobId"
+                    },
+                    "project_uuid": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/ProjectUuid"
+                            }
+                        ]
+                    },
+                    "runs": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "type_id": {
+                        "$ref": "#/components/schemas/TypeId"
+                    }
+                }
+            },
+            "JobEntry": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "type_id",
+                    "runs",
+                    "status",
+                    "structure_uuid",
+                    "item_name",
+                    "category_id",
+                    "group_id"
+                ],
+                "properties": {
+                    "category_id": {
+                        "$ref": "#/components/schemas/CategoryId"
+                    },
+                    "cost": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "format": "double"
+                    },
+                    "group_id": {
+                        "$ref": "#/components/schemas/GroupId"
+                    },
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "item_name": {
+                        "type": "string"
+                    },
+                    "job_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32"
+                    },
+                    "meta_group_id": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/GroupId"
+                            }
+                        ]
+                    },
+                    "runs": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/ProjectJobStatus"
+                    },
+                    "structure_uuid": {
+                        "$ref": "#/components/schemas/StructureUuid"
+                    },
+                    "type_id": {
+                        "$ref": "#/components/schemas/TypeId"
+                    }
+                },
+                "example": {
+                    "category_id": 17,
+                    "cost": 1337,
+                    "group_id": 873,
+                    "id": "e953781d-dc45-42b8-92e3-f6b07afaca6e",
+                    "item_name": "Neuolink Protection Cell",
+                    "job_id": null,
+                    "meta_group_id": null,
+                    "runs": 1,
+                    "status": "WAITING_FOR_MATERIALS",
+                    "structure_uuid": "1f39057c-c35b-4578-8309-50e84db3ee93",
+                    "type_id": 57488
+                }
+            },
+            "JobGroup": {
+                "type": "object",
+                "required": [
+                    "header",
+                    "entries"
+                ],
+                "properties": {
+                    "entries": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/JobEntry"
+                        }
+                    },
+                    "header": {
+                        "type": "string"
+                    }
+                },
+                "example": [
+                    {
+                        "entries": [
+                            {
+                                "category_id": 17,
+                                "cost": 1337,
+                                "group_id": 873,
+                                "id": "e953781d-dc45-42b8-92e3-f6b07afaca6e",
+                                "item_name": "Neuolink Protection Cell",
+                                "job_id": null,
+                                "meta_group_id": null,
+                                "runs": 1,
+                                "status": "WAITING_FOR_MATERIALS",
+                                "structure_uuid": "1f39057c-c35b-4578-8309-50e84db3ee93",
+                                "type_id": 57488
+                            }
+                        ],
+                        "header": "CAPITAL_CONSTRUCTION_COMPONENTS"
+                    }
+                ]
+            },
+            "JobId": {
+                "type": "integer",
+                "format": "int32",
+                "description": "Represents an ID-Type from EVE"
+            },
+            "MarketEntry": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "quantity",
+                    "item_name",
+                    "type_id",
+                    "category_id",
+                    "group_id"
+                ],
+                "properties": {
+                    "category_id": {
+                        "$ref": "#/components/schemas/CategoryId"
+                    },
+                    "cost": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "format": "double"
+                    },
+                    "group_id": {
+                        "$ref": "#/components/schemas/GroupId"
+                    },
+                    "id": {
+                        "$ref": "#/components/schemas/ProjectMarketUuid"
+                    },
+                    "item_name": {
+                        "type": "string"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "source": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "type_id": {
+                        "$ref": "#/components/schemas/TypeId"
+                    }
+                },
+                "example": {
+                    "category_id": 6,
+                    "cost": 4200000,
+                    "group_id": 485,
+                    "id": "55623aff-c707-4cf3-816e-13110f78f757",
+                    "item_name": "Revelation Navy Issue",
+                    "quantity": 1,
+                    "source": "1DQ1-A",
+                    "type_id": 73790
+                }
+            },
+            "MarketEntyPerItem": {
+                "type": "object",
+                "required": [
+                    "avg",
+                    "max",
+                    "min"
+                ],
+                "properties": {
+                    "avg": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "max": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "min": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                }
+            },
+            "MarketGroup": {
+                "type": "object",
+                "required": [
+                    "header",
+                    "entries"
+                ],
+                "properties": {
+                    "entries": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/MarketEntry"
+                        }
+                    },
+                    "header": {
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "entries": [
+                        {
+                            "category_id": 6,
+                            "cost": 4200000,
+                            "group_id": 485,
+                            "id": "55623aff-c707-4cf3-816e-13110f78f757",
+                            "item_name": "Revelation Navy Issue",
+                            "quantity": 1,
+                            "source": "1DQ1-A",
+                            "type_id": 73790
+                        }
+                    ],
+                    "header": "UNGROUPED"
+                }
+            },
+            "MarketRecommendation": {
+                "type": "object",
+                "required": [
+                    "structure_id",
+                    "item_name",
+                    "source",
+                    "type_id",
+                    "quantity",
+                    "remaining",
+                    "price",
+                    "volume"
+                ],
+                "properties": {
+                    "item_name": {
+                        "type": "string"
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0
+                    },
+                    "remaining": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0
+                    },
+                    "source": {
+                        "type": "string"
+                    },
+                    "structure_id": {
+                        "$ref": "#/components/schemas/StructureUuid"
+                    },
+                    "type_id": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "volume": {
+                        "type": "number",
+                        "format": "float"
+                    }
+                },
+                "example": {
+                    "item_name": "Fullerite-C28",
+                    "quantity": 100,
+                    "remaining": 1000,
+                    "source": "Jita 4-4",
+                    "type_id": 30375,
+                    "volume": 2
+                }
+            },
+            "Misc": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "item",
+                    "cost"
+                ],
+                "properties": {
+                    "cost": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "id": {
+                        "$ref": "#/components/schemas/ProjectMiscUuid"
+                    },
+                    "item": {
+                        "type": "string"
+                    },
+                    "quantity": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32"
+                    }
+                },
+                "example": {
+                    "cost": 1337,
+                    "description": "JF Fuel cost Jita > 1DQ",
+                    "id": "25507fee-0531-4dd1-8e3c-8b83b24fefba",
+                    "item": "Hauling",
+                    "quantity": null
+                }
+            },
+            "OreReprocessingEfficiency": {
+                "type": "string",
+                "enum": [
+                    "HsAthanorNoRig",
+                    "HsAthanorT1",
+                    "HsAthanorT2",
+                    "HsTataraNoRig",
+                    "HsTataraT1",
+                    "HsTataraT2",
+                    "LsAthanorNoRig",
+                    "LsAthanorT1",
+                    "LsAthanorT2",
+                    "LsTataraNoRig",
+                    "LsTataraT1",
+                    "LsTataraT2",
+                    "NsAthanorNoRig",
+                    "NsAthanorT1",
+                    "NsAthanorT2",
+                    "NsTataraNoRig",
+                    "NsTataraT1",
+                    "NsTataraT2"
+                ]
+            },
+            "Persistance": {
+                "type": "string",
+                "enum": [
+                    "Persist",
+                    "NonPersist"
+                ]
+            },
+            "Product": {
+                "type": "object",
+                "description": "information about a product being built\n",
+                "required": [
+                    "quantity",
+                    "type_id"
+                ],
+                "properties": {
+                    "material_efficiency": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "type_id": {
+                        "$ref": "#/components/schemas/TypeId"
+                    }
+                },
+                "example": {
+                    "material_efficiency": 0,
+                    "quantity": 1,
+                    "type_id": 73790
+                }
+            },
+            "Project": {
+                "type": "object",
+                "required": [
+                    "name",
+                    "status",
+                    "orderer",
+                    "project_group_id",
+                    "structure_group_id",
+                    "products",
+                    "finance"
+                ],
+                "properties": {
+                    "finance": {
+                        "$ref": "#/components/schemas/Finance"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "note": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "orderer": {
+                        "type": "string"
+                    },
+                    "products": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Product"
+                        }
+                    },
+                    "project_group_id": {
+                        "$ref": "#/components/schemas/ProjectGroupUuid"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/ProjectStatus"
+                    },
+                    "structure_group_id": {
+                        "$ref": "#/components/schemas/StructureGroupUuid"
+                    }
+                },
+                "example": {
+                    "finance": {
+                        "excess": 1276522,
+                        "jobs": 182774340,
+                        "market": 1988189400,
+                        "misc": 100000,
+                        "sell_price": 4200000000.0,
+                        "stock": 0
+                    },
+                    "name": "My Project Name",
+                    "note": null,
+                    "orderer": "its for somebody I used to know",
+                    "products": [
+                        {
+                            "item_name": "Revelation Navy Issue",
+                            "material_efficiency": 0,
+                            "quantity": 1,
+                            "type_id": 73790
+                        }
+                    ],
+                    "project_group_id": "60f5931b-bea5-45a1-a2ea-520d2535b138",
+                    "status": "DONE",
+                    "structure_group_id": "caf60b7a-5abd-41b7-bc01-721f049def56"
+                }
+            },
+            "ProjectGroupUuid": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Uuid wrapper for tool specific ids. Mostly for type safety and\ncode clarity",
+                "example": "68b92c75-b0c7-459e-8d50-6a6572090319"
+            },
+            "ProjectJobAssignmentUuid": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Uuid wrapper for tool specific ids. Mostly for type safety and\ncode clarity",
+                "example": "99a1cac5-a64d-4e23-820b-92f62d0937ff"
+            },
+            "ProjectJobStatus": {
+                "type": "string",
+                "enum": [
+                    "WAITING_FOR_MATERIALS",
+                    "BUILDING",
+                    "DONE"
+                ]
+            },
+            "ProjectJobUuid": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Uuid wrapper for tool specific ids. Mostly for type safety and\ncode clarity",
+                "example": "d1294b59-6429-4a22-be5d-b363022f2965"
+            },
+            "ProjectMarketUuid": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Uuid wrapper for tool specific ids. Mostly for type safety and\ncode clarity",
+                "example": "beb7d031-c945-4e8c-b648-46edfb8b4d38"
+            },
+            "ProjectMiscUuid": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Uuid wrapper for tool specific ids. Mostly for type safety and\ncode clarity",
+                "example": "5bb74cba-00c8-41c7-b27f-8fa8dbd13933"
+            },
+            "ProjectStatus": {
+                "type": "string",
+                "description": "Different states of the project\n\nA newly created project will always be in the status `Preparing`.\nWhen the projects switches into `InProgress` the job detection gets active\nfor that project.\nAfterwards the project is either `Done` or `Closed`. Job detection then gets\ndeaktivated again.\n",
+                "enum": [
+                    "PREPARING",
+                    "IN_PROGRESS",
+                    "PAUSED",
+                    "DONE"
+                ]
+            },
+            "ProjectUuid": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Uuid wrapper for tool specific ids. Mostly for type safety and\ncode clarity",
+                "example": "30773e13-ab0a-44a3-81f3-43401a570e20"
+            },
+            "ReprocessingOptions": {
+                "type": "object",
+                "properties": {
+                    "gas_decompression": {
+                        "$ref": "#/components/schemas/GasReprocessingEfficiency"
+                    },
+                    "ore_reprocessing": {
+                        "$ref": "#/components/schemas/OreReprocessingEfficiency"
+                    },
+                    "scrap_reprocessing": {
+                        "$ref": "#/components/schemas/ScrapReprocessingEfficiency"
+                    }
+                }
+            },
+            "ScrapReprocessingEfficiency": {
+                "type": "string",
+                "enum": [
+                    "Lvl0",
+                    "Lvl1",
+                    "Lvl2",
+                    "Lvl3",
+                    "Lvl4",
+                    "Lvl5"
+                ]
+            },
+            "StartableJobEntry": {
+                "type": "object",
+                "required": [
+                    "depends_on",
+                    "id",
+                    "type_id",
+                    "runs",
+                    "status",
+                    "structure_uuid",
+                    "group_id",
+                    "category_id",
+                    "item_name"
+                ],
+                "properties": {
+                    "category_id": {
+                        "$ref": "#/components/schemas/CategoryId"
+                    },
+                    "cost": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "format": "double"
+                    },
+                    "depends_on": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TypeId"
+                        }
+                    },
+                    "group_id": {
+                        "$ref": "#/components/schemas/GroupId"
+                    },
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "item_name": {
+                        "type": "string"
+                    },
+                    "job_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32"
+                    },
+                    "meta_group_id": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/GroupId"
+                            }
+                        ]
+                    },
+                    "runs": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/ProjectJobStatus"
+                    },
+                    "structure_uuid": {
+                        "$ref": "#/components/schemas/StructureUuid"
+                    },
+                    "type_id": {
+                        "$ref": "#/components/schemas/TypeId"
+                    }
+                },
+                "example": {
+                    "category_id": 4,
+                    "cost": null,
+                    "depends_on": [
+                        16657,
+                        33337
+                    ],
+                    "group_id": 429,
+                    "id": "ad69a405-48cf-45ed-947a-16476d25d132",
+                    "item_name": "Terahertz Metamaterials",
+                    "job_id": null,
+                    "meta_group_id": null,
+                    "runs": 5,
+                    "status": "WAITING_FOR_MATERIALS",
+                    "structure_uuid": "5f3f3120-82be-44a6-91a9-dea011c03186",
+                    "type_id": 33360
+                }
+            },
+            "StartableJobGroup": {
+                "type": "object",
+                "required": [
+                    "header",
+                    "entries"
+                ],
+                "properties": {
+                    "entries": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/StartableJobEntry"
+                        }
+                    },
+                    "header": {
+                        "type": "string"
+                    }
+                },
+                "example": [
+                    {
+                        "entries": [
+                            {
+                                "category_id": 4,
+                                "cost": null,
+                                "depends_on": [
+                                    16657,
+                                    33337
+                                ],
+                                "group_id": 429,
+                                "id": "ad69a405-48cf-45ed-947a-16476d25d132",
+                                "item_name": "Terahertz Metamaterials",
+                                "job_id": null,
+                                "meta_group_id": null,
+                                "runs": 5,
+                                "status": "WAITING_FOR_MATERIALS",
+                                "structure_uuid": "5f3f3120-82be-44a6-91a9-dea011c03186",
+                                "type_id": 33360
+                            }
+                        ],
+                        "header": "COMPOSITE_REACTIONS"
+                    }
+                ]
+            },
+            "Stock": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/StockEntry"
+                }
+            },
+            "StockEntry": {
+                "type": "object",
+                "required": [
+                    "item_name",
+                    "quantity",
+                    "type_id",
+                    "category_id",
+                    "group_id"
+                ],
+                "properties": {
+                    "category_id": {
+                        "$ref": "#/components/schemas/CategoryId"
+                    },
+                    "cost": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "format": "double"
+                    },
+                    "group_id": {
+                        "$ref": "#/components/schemas/GroupId"
+                    },
+                    "item_name": {
+                        "type": "string"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "type_id": {
+                        "$ref": "#/components/schemas/TypeId"
+                    }
+                },
+                "example": [
+                    {
+                        "category_id": 4,
+                        "group_id": 18,
+                        "item_name": "Morphite",
+                        "quantity": 3315,
+                        "type_id": 11399
+                    },
+                    {
+                        "category_id": 4,
+                        "item_name": "Pyerite",
+                        "quantity": 637895,
+                        "type_id": 35
+                    }
+                ]
+            },
+            "StockGroup": {
+                "type": "object",
+                "description": "Stocks grouped by their category_id and group_id",
+                "required": [
+                    "header",
+                    "entries"
+                ],
+                "properties": {
+                    "entries": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/StockEntry"
+                        }
+                    },
+                    "header": {
+                        "type": "string"
+                    }
+                },
+                "example": [
+                    {
+                        "entries": [
+                            {
+                                "category_id": 4,
+                                "group_id": 18,
+                                "item_name": "Morphite",
+                                "quantity": 3315,
+                                "type_id": 11399
+                            }
+                        ],
+                        "header": "MINERALS"
+                    },
+                    {
+                        "entries": [
+                            {
+                                "category_id": 4,
+                                "group_id": 427,
+                                "item_name": "Cadmium",
+                                "quantity": 196,
+                                "type_id": 16643
+                            }
+                        ],
+                        "header": "MOON_MATERIALS"
+                    }
+                ]
+            },
+            "StockMinimal": {
+                "type": "object",
+                "required": [
+                    "quantity",
+                    "type_id"
+                ],
+                "properties": {
+                    "quantity": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "type_id": {
+                        "$ref": "#/components/schemas/TypeId"
+                    }
+                },
+                "example": {
+                    "quantity": 3315,
+                    "type_id": 11399
+                }
+            },
+            "StructureGroupUuid": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Uuid wrapper for tool specific ids. Mostly for type safety and\ncode clarity",
+                "example": "663669be-c0cf-44ff-9146-3fe0a9b51cf3"
+            },
+            "StructureUuid": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Uuid wrapper for tool specific ids. Mostly for type safety and\ncode clarity",
+                "example": "b6479495-7c8a-475a-bee5-4d8897066024"
+            },
+            "TypeId": {
+                "type": "integer",
+                "format": "int32",
+                "description": "Represents an ID-Type from EVE"
+            },
+            "UpdateExcessPrice": {
+                "type": "object",
+                "required": [
+                    "appraisal"
+                ],
+                "properties": {
+                    "appraisal": {
+                        "$ref": "#/components/schemas/AppraisalList"
+                    }
+                }
+            },
+            "UpdateJob": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "status"
+                ],
+                "properties": {
+                    "character_id": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/CharacterId"
+                            }
+                        ]
+                    },
+                    "cost": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "format": "float"
+                    },
+                    "id": {
+                        "$ref": "#/components/schemas/ProjectUuid"
+                    },
+                    "job_id": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/JobId"
+                            }
+                        ]
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/ProjectJobStatus"
+                    }
+                }
+            },
+            "UpdateJobDetectionAdd": {
+                "type": "object",
+                "required": [
+                    "delete_from_source",
+                    "target_project_uuid",
+                    "structure_id"
+                ],
+                "properties": {
+                    "delete_from_source": {
+                        "type": "boolean"
+                    },
+                    "structure_id": {
+                        "$ref": "#/components/schemas/StructureUuid"
+                    },
+                    "target_project_uuid": {
+                        "$ref": "#/components/schemas/ProjectUuid"
+                    }
+                }
+            },
+            "UpdateJobDetectionDelete": {
+                "type": "object",
+                "required": [
+                    "delete_from_source",
+                    "ignore"
+                ],
+                "properties": {
+                    "delete_from_source": {
+                        "type": "boolean"
+                    },
+                    "ignore": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "UpdateJobDetectionReplace": {
+                "type": "object",
+                "required": [
+                    "delete_from_source",
+                    "job_uuids",
+                    "structure_id",
+                    "target_project_uuid"
+                ],
+                "properties": {
+                    "delete_from_source": {
+                        "type": "boolean"
+                    },
+                    "job_uuids": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ProjectJobUuid"
+                        }
+                    },
+                    "structure_id": {
+                        "$ref": "#/components/schemas/StructureUuid"
+                    },
+                    "target_project_uuid": {
+                        "$ref": "#/components/schemas/ProjectUuid"
+                    }
+                }
+            },
+            "UpdateMarket": {
+                "type": "object",
+                "required": [
+                    "type_id",
+                    "quantity",
+                    "cost",
+                    "source"
+                ],
+                "properties": {
+                    "cost": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "source": {
+                        "type": "string"
+                    },
+                    "type_id": {
+                        "$ref": "#/components/schemas/TypeId"
+                    }
+                },
+                "example": {
+                    "cost": 1337,
+                    "quantity": 5,
+                    "source": "1DQ1-A",
+                    "type_id": 73790
+                }
+            },
+            "UpdateMineral": {
+                "type": "object",
+                "required": [
+                    "type_id",
+                    "quantity"
+                ],
+                "properties": {
+                    "quantity": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "type_id": {
+                        "$ref": "#/components/schemas/TypeId"
+                    }
+                },
+                "example": {
+                    "quantity": 5,
+                    "type_id": 73790
+                }
+            },
+            "UpdateMisc": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "item",
+                    "cost"
+                ],
+                "properties": {
+                    "cost": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "id": {
+                        "$ref": "#/components/schemas/ProjectMiscUuid"
+                    },
+                    "item": {
+                        "type": "string"
+                    },
+                    "quantity": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32"
+                    }
+                },
+                "example": {
+                    "cost": 1337,
+                    "description": "JF Fuel cost Jita > 1DQ",
+                    "id": "25507fee-0531-4dd1-8e3c-8b83b24fefba",
+                    "item": "Hauling",
+                    "quantity": null
+                }
+            },
+            "UpdateProject": {
+                "type": "object",
+                "required": [
+                    "name",
+                    "status"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "note": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "orderer": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "project_group_id": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/ProjectGroupUuid"
+                            }
+                        ]
+                    },
+                    "sell_price": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "format": "double"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/ProjectStatus"
+                    }
+                },
+                "example": {
+                    "name": "My cool project name",
+                    "note": null,
+                    "orderer": "its for somebody I used to know",
+                    "project_group_id": "60f5931b-bea5-45a1-a2ea-520d2535b138",
+                    "sell_price": 1337,
+                    "status": "DONE"
+                }
+            },
+            "UpdateStockPrice": {
+                "type": "object",
+                "required": [
+                    "appraisal"
+                ],
+                "properties": {
+                    "appraisal": {
+                        "$ref": "#/components/schemas/AppraisalList"
+                    }
+                }
+            },
+            "Version": {
+                "type": "object",
+                "required": [
+                    "git_tag",
+                    "version"
+                ],
+                "properties": {
+                    "git_tag": {
+                        "type": "string"
+                    },
+                    "version": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "jwt": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    }
+}

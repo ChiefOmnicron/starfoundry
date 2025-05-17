@@ -4,6 +4,9 @@ use utoipa::{IntoParams, ToSchema};
 use crate::ProjectGroupUuid;
 
 #[derive(Debug, Default, Deserialize, ToSchema, IntoParams)]
+#[into_params(
+    parameter_in = Query
+)]
 pub struct ProjectFilter {
     #[serde(default)]
     #[param(
@@ -11,9 +14,14 @@ pub struct ProjectFilter {
     )]
     pub name:   Option<String>,
 
-    // workourd as arrays aren´t supported
+    // workaround as arrays aren´t supported
+    /// Possible values:
+    /// - DONE
+    /// - IN_PROGRESS
+    /// - PREPARING
+    /// - PAUSED
     #[param(
-        default = json!("PREPARING,IN_PROGRESS,PAUSED,DONE")
+        default = json!("IN_PROGRESS")
     )]
     #[serde(default = "default_status")]
     pub status: Option<String>,
@@ -23,5 +31,5 @@ pub struct ProjectFilter {
 }
 
 fn default_status() -> Option<String> {
-    Some("PREPARING,IN_PROGRESS,PAUSED,DONE".into())
+    Some("IN_PROGRESS".into())
 }

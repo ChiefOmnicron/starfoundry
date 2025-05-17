@@ -1,0 +1,10 @@
+{
+    "name": "@starfoundry/typescript-web-api-client",
+    "version": "0.1.0",
+    "private": true,
+    "author": "ChiefOmnicron <eistonen.kodan.sasen@gmail.com>",
+    "license": "MIT OR Apache-2.0",
+    "dependencies": {
+        "axios": "1.8.4"
+    }
+}

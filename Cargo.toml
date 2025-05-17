@@ -21,6 +21,7 @@ members = [
   'libs/notification',
   'libs/structures',
   'libs/types',
+  'clients/generator',
 ]
 resolver = "2"
 

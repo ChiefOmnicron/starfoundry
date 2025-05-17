@@ -66,6 +66,7 @@ pub async fn create(
 
 #[derive(Debug, Deserialize, ToSchema)]
 #[schema(
+    title = "AppraisalCreateBody",
     example = json!({
         "appraisal": "Tritanium\t100\nPyerite\t100",
         "comment": "this is a cool comment",
