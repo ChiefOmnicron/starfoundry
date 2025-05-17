@@ -8,14 +8,14 @@ use warp::filters::BoxedFilter;
 
 use crate::{with_identity, with_pool};
 
-mod create;
-mod delete;
-mod fetch;
-mod list;
-mod permission;
-mod resolve_player_structure;
-mod rigs;
-mod update;
+pub mod create;
+pub mod delete;
+pub mod fetch;
+pub mod list;
+pub mod permission;
+pub mod resolve_player_structure;
+pub mod rigs;
+pub mod update;
 
 pub mod service {
     pub use super::create::*;

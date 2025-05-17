@@ -69,6 +69,15 @@ use crate::BadRequestPayload;
         crate::project::stock::fetch,
         crate::project::stock::update_price,
 
+        crate::structure::service::can_write,
+        crate::structure::service::create,
+        crate::structure::service::delete,
+        crate::structure::service::fetch,
+        crate::structure::service::is_owner,
+        crate::structure::service::resolve_player_structure,
+        crate::structure::service::rig_by_structure_type_id,
+        crate::structure::service::update,
+
         crate::version::version,
     ),
 )]

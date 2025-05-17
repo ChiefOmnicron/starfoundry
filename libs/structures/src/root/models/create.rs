@@ -23,7 +23,7 @@ use crate::{Security, StructureType};
 pub struct CreateStructure {
     /// Name of the structure
     pub name:              String,
-    /// Location of the strucutre
+    /// Location of the structure
     pub system_id:         SystemId,
     /// Security of the location the structure is in
     pub security:          Security,
