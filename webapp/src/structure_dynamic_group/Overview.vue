@@ -63,10 +63,9 @@ import {
 } from '@/sdk/structure_dynamic_group';
 
 import { ROUTE_CHANGE } from '@/event_bus';
-import { ROUTE_STRUCUTRE_GROUP_NEW } from './router';
+import { ROUTE_STRUCTURE_GROUP_NEW } from './router';
 
 import Card from '@/components/Card.vue';
-import Item from '@/components/Item.vue';
 import Loader from '@/components/Loader.vue';
 import NoEntries from '@/components/NoEntries.vue';
 import PageHeader from '@/components/PageHeader.vue';
@@ -79,7 +78,6 @@ import System from '@/components/System.vue';
         NTable,
 
         Card,
-        Item,
         Loader,
         NoEntries,
         PageHeader,
@@ -92,7 +90,7 @@ class StructureDynamicGroupsOverview extends Vue {
 
     public structure_groups: StructureDynamicGroup[] = [];
 
-    public new_structure_group = ROUTE_STRUCUTRE_GROUP_NEW;
+    public new_structure_group = ROUTE_STRUCTURE_GROUP_NEW;
 
     public async created() {
         events.$emit(ROUTE_CHANGE, this.$route.name);

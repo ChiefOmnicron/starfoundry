@@ -1,32 +1,25 @@
 <template>
     <span v-if="item">
-        {{ transform(item.name) }}
+        <slot :item="item"></slot>
     </span>
 </template>
 
 <script lang="ts">
-import { h } from 'vue';
 import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
 
 import { ItemService, type IItem } from '@/sdk/item';
-import type { TypeId } from '@/sdk/utils';
 
 @Component({
     components: {},
     emits: ['loading'],
 })
-class Item extends Vue {
+class ItemWrapper extends Vue {
     // TypeId of the item to resolve
     @Prop({
         type: Number,
         required: true,
     })
     public typeId!: number;
-
-    @Prop({
-        type: Function,
-    })
-    public transform!: (value: any) => string;
 
     public item: IItem = <any>{};
 
@@ -35,6 +28,7 @@ class Item extends Vue {
 
         await ItemService.get(this.typeId)
             .then((x) => {
+                console.log(x)
                 this.item = x;
                 this.$emit('loading', false);
             })
@@ -44,21 +38,5 @@ class Item extends Vue {
     }
 }
 
-export default toNative(Item);
-
-export const renderFunction = (
-    typeId: TypeId,
-    transform: (value: any) => string = (v: any) => v,
-) => {
-    return h(
-        Item,
-        {
-            typeId,
-            transform,
-            // otherwise the component may not re-render when it's changed with
-            // filters
-            key: typeId,
-        }
-    )
-}
+export default toNative(ItemWrapper);
 </script>

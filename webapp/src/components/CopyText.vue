@@ -1,7 +1,7 @@
 <template>
     <n-tooltip trigger="click">
         <template #trigger>
-            <item
+            <item-wrapper
                 :disabled="disabled"
                 :type-id="value"
                 style="cursor: pointer"
@@ -11,7 +11,7 @@
                 <span @click="copyToClipboard(item.name)">
                     {{ item.name }}
                 </span>
-            </item>
+            </item-wrapper>
 
             <format-number
                 :disabled="disabled"
@@ -49,7 +49,7 @@ import { NIcon, NTooltip } from 'naive-ui';
 
 import { Copy } from '@vicons/fa';
 import FormatNumber from '@/components/FormatNumber.vue';
-import Item from '@/components/Item.vue';
+import ItemWrapper from '@/components/ItemWrapper.vue';
 
 @Component({
     components: {
@@ -59,7 +59,7 @@ import Item from '@/components/Item.vue';
         Copy,
 
         FormatNumber,
-        Item,
+        ItemWrapper,
     },
 })
 class CopyText extends Vue {

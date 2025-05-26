@@ -1,18 +1,17 @@
 <template>
     <n-dropdown
         :options="filterOptions"
-        :render-label="renderLabel"
         :show="showOptions"
         @clickoutside="onClickOutside"
         @select="filterSelected"
         placement="bottom-start"
-        trigger="click"
+        trigger="manual"
     >
         <n-input
-            @click="showOptions = true"
+            @click="handleShowDropdown"
             @keydown="handleKeydown"
             data-cy="filter-text"
-            placeholder="#WithFilter"
+            placeholder="Filter"
             ref="filterInput"
             type="text"
             v-model:value="search"
@@ -22,23 +21,29 @@
                     <search />
                 </n-icon>
             </template>
+
+            <!--template #suffix>
+                <n-icon @click="createFilterBookmark">
+                    <bookmark-regular />
+                </n-icon>
+            </template-->
         </n-input>
     </n-dropdown>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
-import { NDropdown, NIcon, NInput, NSelect } from 'naive-ui';
-import { Search } from '@vicons/fa';
-import { type VNode } from 'vue';
+import { NDropdown, NIcon, NInput } from 'naive-ui';
+import { Bookmark, BookmarkRegular, Search } from '@vicons/fa';
 
 @Component({
     components: {
         NDropdown,
         NIcon,
         NInput,
-        NSelect,
 
+        Bookmark,
+        BookmarkRegular,
         Search,
     },
     emits: [
@@ -58,7 +63,7 @@ class Filter extends Vue {
         type: Object,
         required: true,
     })
-    public options!: any;
+    public options!: { [key: string]: IFilterOption };
 
     @Prop({
         required: true,
@@ -85,10 +90,9 @@ class Filter extends Vue {
     public filterOptionsOrig: any = [];
     public showOptions: boolean = false;
 
-    public entries_orig = this.entries;
+    public bookmark: boolean = false;
 
     public created() {
-        console.log(this.options)
         for (let key of Object.keys(this.options)) {
             let val = this.options[key];
             this.filterOptions.push({
@@ -96,7 +100,6 @@ class Filter extends Vue {
                 key: key,
             });
         }
-        console.log(this.filterOptionsOrig)
 
         this.$watch(
             () => this.filters,
@@ -131,28 +134,17 @@ class Filter extends Vue {
             } else {
                 this.filterOptions = [];
 
-                if (entry.name) {
-                    entry.options.sort((a: any, b: any) =>
-                        a[entry.name] < b[entry.name] ? -1 : 1,
-                    );
-                }
-
                 for (let option of entry.options) {
-                    let key = option[entry.key] ? option[entry.key] : option;
-                    let exists = this.filterOptions.find(
-                        (x: any) => x.key === key,
-                    );
-                    if (exists) {
-                        continue;
+                    if (this.filters[this.selectedKey]) {
+                        let exists = this.filters[this.selectedKey].find(
+                            (x: any) => x === option.key
+                        );
+                        if (exists) {
+                            continue;
+                        }
                     }
 
-                    let label = option[entry.name]
-                        ? option[entry.name]
-                        : option;
-                    this.filterOptions.push({
-                        label,
-                        key,
-                    });
+                    this.filterOptions.push(option)
                 }
             }
         } else {
@@ -194,18 +186,22 @@ class Filter extends Vue {
         }
     }
 
-    public renderLabel(x: any) {
-        const entry = this.options[this.selectedKey];
-
-        if (entry && entry.template) {
-            return entry.template(x.key);
-        } else {
-            return x.label;
-        }
-    }
-
     public onClickOutside() {
         this.showOptions = false;
+    }
+
+    public createFilterBookmark() {
+        this.bookmark = true;
+        this.showOptions = false;
+    }
+
+    public handleShowDropdown() {
+        if (this.bookmark) {
+            this.showOptions = false;
+            this.bookmark = false;
+        } else {
+            this.showOptions = true;
+        }
     }
 
     private reset() {
@@ -219,6 +215,7 @@ class Filter extends Vue {
         this.$emit('touched', true);
 
         let filters: { [key: string]: string } = {};
+
         for (const key in this.filters) {
             if (this.options[key].preRequest) {
                 filters[key] = this.options[key].preRequest(
@@ -235,6 +232,13 @@ class Filter extends Vue {
         this.$emit('busy', true);
         this.searchFunction(<any>filters)
             .then((x: any) => {
+                const url = new URL(<any>window.location);
+                url.search = '';
+                for (let key of Object.keys(filters)) {
+                    url.searchParams.set(key, filters[key]);
+                }
+                window.history.pushState({}, '', url);
+
                 this.$emit('update:entries', x);
                 this.$emit('busy', false);
             })
@@ -256,9 +260,6 @@ export interface IFilterOption {
     // if kept undefined it will assume a string input
     // otherwise it will show a dropdown with the given options
     options?: any[];
-    // if options is an array of objects, the field name that should be used
-    // as a name needs to be set
-    name?: string;
     // if options is an array of objects, the field that should be used as
     // filter needs to be set
     key?: string;
@@ -268,13 +269,8 @@ export interface IFilterOption {
     // filter: configuration for the filter
     // value: selected value
     preRequest?: (filter: IFilterOption, value: any) => string;
-    // allows to overwrite the template that is shown when a filter is selected
-    //
-    // filter: configuration for the filter
-    // value: selected value
-    template?: (filter: IFilterOption, value: any) => VNode;
-    // transforms the entry inplace, allows for overwriting the text shown,
-    // without generating a new elememnt
+    // transforms the entry in-place, allows for overwriting the text shown,
+    // without generating a new element
     //
     // filter: configuration for the filter
     // value: selected value

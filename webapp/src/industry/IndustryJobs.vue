@@ -37,11 +37,11 @@
                                 {{ j.activity_id }}
                             </td>
                             <td>
-                                <item :tid="j.blueprint_type_id">
+                                <item-wrapper :tid="j.blueprint_type_id">
                                     <template v-slot="{ item }">
                                         {{ rename(item.name) }}
                                     </template>
-                                </item>
+                                </item-wrapper>
                             </td>
                             <td>
                                 {{ j.runs }}
@@ -146,7 +146,7 @@ import { Service, type IIndustryJob } from '@/industry/service';
 import CharacterInfo from '@/characters/components/CharacterInfo.vue';
 import CorporationInfo from '@/characters/components/CorporationInfo.vue';
 import FormatNumber from '@/components/FormatNumber.vue';
-import Item from '@/components/Item.vue';
+import ItemWrapper from '@/components/ItemWrapper.vue';
 import EveIcon from '@/components/EveIcon.vue';
 import Loader from '@/components/Loader.vue';
 import NoEntries from '@/components/NoEntries.vue';
@@ -165,7 +165,7 @@ import PageHeader from '@/components/PageHeader.vue';
         CharacterInfo,
         CorporationInfo,
         FormatNumber,
-        Item,
+        ItemWrapper,
         EveIcon,
         Loader,
         NoEntries,

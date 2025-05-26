@@ -45,7 +45,7 @@
 
             <n-table>
                 <tr>
-                    <th style="width: 150px">Nmae</th>
+                    <th style="width: 150px">Name</th>
                     <td>
                         {{ structure.name }}
                     </td>
@@ -53,12 +53,12 @@
                 <tr>
                     <th style="width: 150px">Structure Type</th>
                     <td>
-                        <item
+                        <item-wrapper
                             :type-id="structure.structureTypeId"
                             v-slot="{ item }"
                         >
                             {{ item.name }}
-                        </item>
+                        </item-wrapper>
                     </td>
                 </tr>
                 <tr>
@@ -148,7 +148,7 @@ import DeleteObject from '@/components/DeleteObject.vue';
 import EveIcon from '@/components/EveIcon.vue';
 import InstalledRigs from '@/structure/components/InstalledRigs.vue';
 import InstalledServices from '@/structure/components/InstalledServices.vue';
-import Item from '@/components/Item.vue';
+import ItemWrapper from '@/components/ItemWrapper.vue';
 import Loader from '@/components/Loader.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import ProjectGroupSelector from '@/components/selectors/ProjectGroupSelector.vue';
@@ -171,7 +171,7 @@ import System from '@/components/System.vue';
         EveIcon,
         InstalledRigs,
         InstalledServices,
-        Item,
+        ItemWrapper,
         Loader,
         PageHeader,
         ProjectGroupSelector,

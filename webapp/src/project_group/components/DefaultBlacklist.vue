@@ -41,7 +41,6 @@ import DataTable, {
     type IDataTableDefinition,
 } from '@/components/DataTable.vue';
 import EveIcon from '@/components/EveIcon.vue';
-import Item from '@/components/Item.vue';
 import ItemSelector from '@/components/selectors/ItemSelector.vue';
 
 @Component({
@@ -51,7 +50,6 @@ import ItemSelector from '@/components/selectors/ItemSelector.vue';
 
         DataTable,
         EveIcon,
-        Item,
         ItemSelector,
     },
     emits: ['update:blacklist'],

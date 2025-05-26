@@ -2,15 +2,15 @@
     <n-space>
         <template :key="key" v-for="(values, key) in filters">
             <n-tag
-                v-for="entry in options[key].multiple ? values : [values]"
-                @close="handleClose(key.toString())"
-                style="height: 25px"
+                @close="handleClose(key.toString(), entry)"
                 closable
+                style="height: 25px"
+                v-for="entry in options[key].multiple ? values : [values]"
             >
                 <n-space class="filter" align="center" size="small">
                     <strong>{{ options[key].label }}: </strong>
 
-                    <item
+                    <item-wrapper
                         :type-id="entry"
                         v-if="options[key].item"
                         v-slot="{ item }"
@@ -21,7 +21,7 @@
                                 item.name,
                             )
                         }}
-                    </item>
+                    </item-wrapper>
 
                     <div v-else-if="options[key].template">
                         <component v-bind:is="options[key].template(entry)" />
@@ -40,23 +40,35 @@
                 </n-space>
             </n-tag>
         </template>
+
+        <template v-if="Object.keys(filters).length > 0">
+            <n-button
+                quaternary
+                size="tiny"
+                type="info"
+                @click="clearFilters"
+            >
+                Clear filters
+            </n-button>
+        </template>
     </n-space>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
-import { NSpace, NTag } from 'naive-ui';
+import { NButton, NSpace, NTag } from 'naive-ui';
 
 import { type IFilterOption } from './Filter.vue';
 
-import Item from '@/components/Item.vue';
+import ItemWrapper from '@/components/ItemWrapper.vue';
 
 @Component({
     components: {
+        NButton,
         NSpace,
         NTag,
 
-        Item,
+        ItemWrapper,
     },
 })
 class FilterElement extends Vue {
@@ -72,8 +84,12 @@ class FilterElement extends Vue {
     })
     public options!: any;
 
-    public handleClose(key: string) {
-        delete this.filters[key];
+    public handleClose(key: string, entry: any) {
+        if (this.filters[key].length > 1) {
+            this.filters[key] = this.filters[key].filter((x: any) => x !== entry);
+        } else {
+            delete this.filters[key];
+        }
     }
 
     public joinValues(values: any): string {
@@ -82,6 +98,12 @@ class FilterElement extends Vue {
 
     public transform(_: IFilterOption, value: string): string {
         return value;
+    }
+
+    public clearFilters() {
+        for (let key of Object.keys(this.filters)) {
+            delete this.filters[key];
+        }
     }
 }
 

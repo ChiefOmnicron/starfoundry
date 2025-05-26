@@ -49,13 +49,13 @@
                             <template
                                 v-for="service in group.structure_services"
                             >
-                                <item
+                                <item-wrapper
                                     :type-id="service"
                                     v-slot="{ item }"
                                     v-if="service"
                                 >
                                     {{ service_name(item.name) }}
-                                </item>
+                                </item-wrapper>
                             </template>
                         </td>
                     </tr>
@@ -85,7 +85,7 @@ import {
 } from './router';
 
 import Card from '@/components/Card.vue';
-import Item from '@/components/Item.vue';
+import ItemWrapper from '@/components/ItemWrapper.vue';
 import Loader from '@/components/Loader.vue';
 import NoEntries from '@/components/NoEntries.vue';
 import PageHeader from '@/components/PageHeader.vue';
@@ -98,7 +98,7 @@ import System from '@/components/System.vue';
         NTable,
 
         Card,
-        Item,
+        ItemWrapper,
         Loader,
         NoEntries,
         PageHeader,

@@ -30,6 +30,21 @@
             </n-button>
         </no-entries>
 
+        <action-group
+            data-cy="structuresActionGroup"
+            v-if="
+                pageLoadingState.isInitialDataLoaded &&
+                (structures.length > 0 || pageLoadingState.hasFilter)
+            "
+        >
+            <n-button
+                @click="$router.push({ name: routeStructureCreate })"
+                type="info"
+            >
+                Add Structure
+            </n-button>
+        </action-group>
+
         <div
             style="margin-bottom: 10px"
             data-cy="structuresFilter"
@@ -55,21 +70,6 @@
             />
         </div>
 
-        <action-group
-            data-cy="structuresActionGroup"
-            v-if="
-                pageLoadingState.isInitialDataLoaded &&
-                (structures.length > 0 || pageLoadingState.hasFilter)
-            "
-        >
-            <n-button
-                @click="$router.push({ name: routeStructureCreate })"
-                type="info"
-            >
-                Add Structure
-            </n-button>
-        </action-group>
-
         <loader
             data-cy="structuresLoaderApi"
             :busy="pageLoadingState.loading"
@@ -89,12 +89,12 @@
             content-style="padding: 0"
             data-cy="structuresDataTable"
             no-title
-            v-if="pageLoadingState.showDataTable && structures.length > 0"
         >
-            <data-table
-                :definitions="tableDefinition()"
-                :entries="structures"
-                v-if="structures.length > 0"
+            <n-data-table
+                :columns="tableDefinition()"
+                :data="structures"
+                :row-key="(row: Structure) => row.id"
+                striped
             />
         </card>
     </div>
@@ -104,30 +104,30 @@
 import { Component, Vue, toNative } from 'vue-facing-decorator';
 import { h, type VNode } from 'vue';
 
-import { ROUTE_STRUCTURE, ROUTE_STRUCUTRES_CREATE } from '@/structure/router';
+import { ROUTE_STRUCTURE, ROUTE_STRUCTURES_CREATE } from '@/structure/router';
 
 import type { TypeId } from '@/sdk/utils';
 import { Structure, StructureService } from '@/sdk/structure';
+import { ItemService, type IItem } from '@/sdk/item';
 
-import { NButton, NEmpty, NSpace, NTable } from 'naive-ui';
+import { renderFunction as itemRenderFunction } from '@/components/Item.vue';
+import { renderFunction as systemRenderFunction } from '@/components/System.vue';
+
+import { NButton, NDataTable, NEmpty, NSpace, NTable } from 'naive-ui';
 import ActionGroup from '@/components/ActionGroup.vue';
 import Alert from '@/components/Alert.vue';
 import Card from '@/components/Card.vue';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
-import DataTable, {
-    type IDataTableDefinition,
-} from '@/components/DataTable.vue';
 import FilterElement from '@/components/FilterElement.vue';
-import FilterText, { type IFilterOption } from '@/components/Filter.vue';
-import Item from '@/components/Item.vue';
+import FilterText, { type IFilterOption } from '@/components/FilterV2.vue';
 import Loader from '@/components/Loader.vue';
 import NoEntries from '@/components/NoEntries.vue';
 import PageHeader from '@/components/PageHeader.vue';
-import System from '@/components/System.vue';
 
 @Component({
     components: {
         NButton,
+        NDataTable,
         NEmpty,
         NSpace,
         NTable,
@@ -136,14 +136,11 @@ import System from '@/components/System.vue';
         Alert,
         Card,
         ConfirmDialog,
-        DataTable,
         FilterElement,
         FilterText,
-        Item,
         Loader,
         NoEntries,
         PageHeader,
-        System,
     },
 })
 class StructureOverview extends Vue {
@@ -151,7 +148,7 @@ class StructureOverview extends Vue {
 
     public structures: Structure[] = [];
     public routeStructure: string = ROUTE_STRUCTURE;
-    public routeStructureCreate: string = ROUTE_STRUCUTRES_CREATE;
+    public routeStructureCreate: string = ROUTE_STRUCTURES_CREATE;
 
     public filters: any = {};
     public filterOptions: { [key: string]: IFilterOption } = {};
@@ -171,94 +168,126 @@ class StructureOverview extends Vue {
             });
     }
 
-    public tableDefinition(): IDataTableDefinition[] {
+    public tableDefinition() {
         return [
             {
-                header: 'Name',
+                title: 'Name',
                 key: 'name',
-                width: 400,
-                visible: true,
-                routing: {
-                    route: ROUTE_STRUCTURE,
-                    key: 'structureId',
-                    value: 'id',
-                },
             },
             {
-                header: 'Location',
+                title: 'Location',
                 key: 'location',
-                width: 300,
-                visible: true,
-                render(row: Structure): VNode {
-                    return h(System, {
-                        systemId: row.systemId,
-                        dotlan: true,
-                    });
-                },
+                render: (row: Structure): VNode => {
+                    return systemRenderFunction(
+                        row.systemId,
+                        true,
+                    );
+                }
             },
             {
-                header: 'Type',
+                title: 'Type',
                 key: 'structureTypeId',
-                item: true,
-                width: 200,
-                visible: true,
+                filter(value: TypeId, row: Structure) {
+                    return row.structureTypeId === value;
+                },
+                render: (row: Structure): VNode => {
+                    return itemRenderFunction(
+                        row.structureTypeId,
+                    )
+                }
             },
             {
-                header: 'Services',
+                title: 'Services',
                 key: 'services',
-                width: 400,
-                visible: true,
-                array: true,
-                item: true,
-                transform: this.formatService,
+                filter(value: TypeId, row: Structure) {
+                    return row.services.indexOf(value) > -1;
+                },
+                render: (row: Structure): VNode => {
+                    return h(
+                        'div',
+                        {},
+                        [
+                            row
+                                .services
+                                .map(x => h(
+                                    'div',
+                                    {},
+                                    itemRenderFunction(x, this.formatService),
+                                ))
+                        ]
+                    )
+                }
             },
             {
-                header: 'Rigs',
+                title: 'Rigs',
                 key: 'rigs',
-                width: 700,
-                visible: true,
-                array: true,
-                item: true,
-                transform: this.formatService,
+                filter(value: TypeId, row: Structure) {
+                    return row.rigs.indexOf(value) > -1;
+                },
+                render: (row: Structure): VNode => {
+                    return h(
+                        'div',
+                        {},
+                        [
+                            row
+                                .rigs
+                                .map(x => h(
+                                    'div',
+                                    {},
+                                    itemRenderFunction(x, this.formatService),
+                                ))
+                        ]
+                    )
+                }
             },
-        ];
+        ]
     }
 
     private filterDefinition() {
         this.filterOptions = {
             name: {
-                label: 'structure.overview.filters.name',
+                label: 'Name',
             },
-            /*rigs: {
-                label: 'structure.overview.filters.rigs',
-                name: 'name',
-                key: 'type_id',
+            rigs: {
+                label: 'Rigs',
+                key: 'rigs',
                 multiple: true,
-                item: true,
-                options: [...new Set(
-                    (this.structures || [])
-                        .map(x => x.rigs)
-                        .flat()
-                )],
+                options: [...new Set(this.structures.flatMap(x => x.rigs))]
+                    .map(x => {
+                        return {
+                            label: this.formatService(ItemService.getSync(x).name),
+                            key: x,
+                        }
+                    }),
                 transform: (
                     _: IFilterOption,
-                    value: string,
-                ) => this.formatService(value),
+                    value: TypeId,
+                ) => {
+                    let item = ItemService.getSync(value);
+                    return this.formatService(item.name);
+                },
             },
             services: {
-                label: 'structure.overview.filters.services',
-                name: 'name',
-                key: 'type_id',
+                label: 'Services',
+                key: 'services',
                 multiple: true,
-                item: true,
-                options: this.service_options(),
+                options: [...new Set(this.structures.flatMap(x => x.services))]
+                    .map(x => {
+                        return {
+                            label: this.formatService(ItemService.getSync(x).name),
+                            key: x,
+                        }
+                    }),
                 transform: (
                     _: IFilterOption,
-                    value: string,
-                ) => this.formatService(value),
-            },*/
-            system_id: {
-                label: 'structure.overview.filters.systemId',
+                    value: TypeId,
+                ) => {
+                    let item = ItemService.getSync(value);
+                    return this.formatService(item.name);
+                },
+            },
+            /*system_id: {
+                label: 'System',
                 name: 'name',
                 key: 'system_id',
                 options: this.systemOptions(),
@@ -276,20 +305,19 @@ class StructureOverview extends Vue {
                         if (value) {
                             return value.name;
                         } else {
-                            return 'Unkown system';
+                            return 'Unknown system';
                         }
                     } else {
-                        return 'Unkown system';
+                        return 'Unknown system';
                     }
                 },
-            },
-            type_id: {
-                label: 'structure.overview.filters.typeId',
+            },*/
+            /*type_id: {
+                label: 'Structure Type',
                 name: 'name',
                 key: 'type_id',
-                item: true,
                 options: this.structure_options(),
-            },
+            },*/
         };
     }
 

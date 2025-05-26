@@ -1,6 +1,6 @@
 export const ROUTE_STRUCTURE = 'structure';
 export const ROUTE_STRUCTURES = 'structures';
-export const ROUTE_STRUCUTRES_CREATE = 'structures_create';
+export const ROUTE_STRUCTURES_CREATE = 'structures_create';
 
 export default [
     {
@@ -24,7 +24,7 @@ export default [
     },
     {
         path: '/structures/new',
-        name: ROUTE_STRUCUTRES_CREATE,
+        name: ROUTE_STRUCTURES_CREATE,
         component: () =>
             import(
                 /* webpackChunkName: "structure_create" */

@@ -65,7 +65,7 @@ export class ItemService {
         return cached;
     }
 
-    public static get_sync(type_id: TypeId): IItem {
+    public static getSync(type_id: TypeId): IItem {
         const stored = localStorage.getItem(<any>type_id);
 
         if (stored) {

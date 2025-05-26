@@ -8,9 +8,9 @@
             >
                 <n-form-item label="Item" path="type_id">
                     <eve-icon :id="newEntry.type_id" />
-                    <item :type-id="newEntry.type_id" v-slot="{ item }">
+                    <item-wrapper :type-id="newEntry.type_id" v-slot="{ item }">
                         {{ item.name }}
-                    </item>
+                    </item-wrapper>
                 </n-form-item>
 
                 <n-form-item label="Quantity" path="quantity">
@@ -70,7 +70,7 @@ import ActionGroup from '@/components/ActionGroup.vue';
 import Card from '@/components/Card.vue';
 import EveIcon from '@/components/EveIcon.vue';
 import FormatNumberInput from '@/components/inputs/FormatNumber.vue';
-import Item from '@/components/Item.vue';
+import ItemWrapper from '@/components/ItemWrapper.vue';
 
 @Component({
     components: {
@@ -84,7 +84,7 @@ import Item from '@/components/Item.vue';
         Card,
         EveIcon,
         FormatNumberInput,
-        Item,
+        ItemWrapper,
     },
     emits: ['close', 'close:value'],
 })

@@ -16,10 +16,13 @@
 </template>
 
 <script lang="ts">
-import { NButton, NText } from 'naive-ui';
+import { h } from 'vue';
 import { Component, Prop, Vue, toNative } from 'vue-facing-decorator';
 
+import { NButton, NText } from 'naive-ui';
+
 import { type ISystem, SystemService } from '@/services/system';
+import type { SystemId } from '@/utils';
 
 @Component({
     components: {
@@ -60,4 +63,20 @@ class System extends Vue {
 }
 
 export default toNative(System);
+
+export const renderFunction = (
+    systemId: SystemId,
+    dotlan:   boolean,
+) => {
+    return h(
+        System,
+        {
+            systemId,
+            dotlan,
+            // otherwise the component may not re-render when it's changed with
+            // filters
+            key: systemId,
+        }
+    )
+}
 </script>

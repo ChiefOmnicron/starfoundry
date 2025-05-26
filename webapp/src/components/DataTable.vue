@@ -79,12 +79,12 @@
                                 :width="columnWidth(definition)"
                             >
                                 <div v-if="!definition.array">
-                                    <item
+                                    <item-wrapper
                                         :type-id="entry[definition.key]"
                                         v-slot="{ item }"
                                     >
                                         {{ item.name }}
-                                    </item>
+                                    </item-wrapper>
                                 </div>
                                 <div v-else-if="definition.array">
                                     <template
@@ -93,7 +93,7 @@
                                         ]"
                                     >
                                         <div>
-                                            <item
+                                            <item-wrapper
                                                 :type-id="arrayEntry"
                                                 v-slot="{ item }"
                                             >
@@ -103,7 +103,7 @@
                                                         transform
                                                     )(item.name)
                                                 }}
-                                            </item>
+                                            </item-wrapper>
                                         </div>
                                     </template>
                                 </div>
@@ -158,7 +158,7 @@ import { type VNode } from 'vue';
 import CopyText from '@/components/CopyText.vue';
 import EveIcon from './EveIcon.vue';
 import FormatNumber from '@/components/FormatNumber.vue';
-import Item from '@/components/Item.vue';
+import ItemWrapper from '@/components/ItemWrapper.vue';
 import Project from '@/components/Project.vue';
 
 @Component({
@@ -169,7 +169,7 @@ import Project from '@/components/Project.vue';
         CopyText,
         EveIcon,
         FormatNumber,
-        Item,
+        ItemWrapper,
         Project,
     },
 })
