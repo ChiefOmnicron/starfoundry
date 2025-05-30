@@ -1,25 +1,17 @@
-import { fileURLToPath, URL } from 'node:url';
-import { sentryVitePlugin } from '@sentry/vite-plugin';
+import { defineConfig } from "vite";
+import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
+import react from "@vitejs/plugin-react";
 
-import { defineConfig } from 'vite';
-import vue from '@vitejs/plugin-vue';
-import vueDevTools from 'vite-plugin-vue-devtools';
-import conditionalCompile from 'vite-plugin-conditional-compiler';
+import { fileURLToPath, URL } from 'node:url';
 
 // https://vite.dev/config/
 export default defineConfig({
-    build: {
-        sourcemap: true,
-    },
     plugins: [
-        vue(),
-        vueDevTools(),
-        conditionalCompile(),
-        sentryVitePlugin({
-            org: 'starfoundry',
-            project: 'starfoundry',
-            authToken: process.env.SENTRY_AUTH_TOKEN,
+        TanStackRouterVite({
+            target: 'react',
+            autoCodeSplitting: true,
         }),
+        react(),
     ],
     resolve: {
         alias: {
