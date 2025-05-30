@@ -1,10 +1,13 @@
+use serde::Serialize;
 use sqlx::PgPool;
-use starfoundry_libs_projects::{ProjectGroupUuid, ProjectGroup, ProjectGroupService};
+use starfoundry_libs_projects::{ProjectGroupService, ProjectGroupUuid};
+use utoipa::ToSchema;
 use warp::{Reply, Rejection};
 
 use crate::{ReplyError, Identity};
 use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 use crate::project_group::ProjectGroupUuidPath;
+use uuid::Uuid;
 
 /// /project-groups/{projectGroupUuid}
 /// 
@@ -20,7 +23,7 @@ use crate::project_group::ProjectGroupUuidPath;
     ),
     responses(
         (
-            body = ProjectGroup,
+            body = ProjectGroupResponse,
             description = "Information about the group",
             status = OK,
         ),
@@ -52,4 +55,28 @@ pub async fn fetch(
             Err(ReplyError::Internal.into())
         },
     }
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+#[schema(
+    example = json!({
+        "id": "022e57de-0571-43d1-b9c6-4a0d97940177",
+        "name": "My cool project group",
+        "members": 1,
+        "projects": 10,
+        "description": "Contains some really cool projects"
+    })
+)]
+pub struct ProjectGroupResponse {
+    /// UUID of the group
+    pub id:          Uuid,
+    /// Name of the group
+    pub name:        String,
+    /// Number of members in the group
+    pub members:     i64,
+    /// Number of projects in the group
+    pub projects:    i64,
+
+    /// Description of the group
+    pub description: Option<String>,
 }
