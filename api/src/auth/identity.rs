@@ -6,7 +6,7 @@ use std::sync::{Arc, Mutex};
 use warp::Filter;
 use warp::filters::BoxedFilter;
 
-use super::{AuthError, validate_jwt};
+use super::AuthError;
 use crate::ReplyError;
 
 /// Represents a logged in character.
@@ -217,20 +217,29 @@ pub fn with_identity(
 ) -> BoxedFilter<(Identity,)> {
     warp::any()
         .map(move || (pool.clone(), credential_cache.clone()))
-        .and(warp::cookie("token"))
-        .and_then(move |params: (PgPool, Arc<Mutex<CredentialCache>>), token: String| {
+        // TODO: reimplement
+        //.and(warp::cookie("token"))
+        //.and_then(move |params: (PgPool, Arc<Mutex<CredentialCache>>), token: String| {
+        .and_then(move |params: (PgPool, Arc<Mutex<CredentialCache>>)| {
             let (pool, credential_cache) = params;
 
-            let token = if let Ok(claim) = validate_jwt(token) {
+            /*let token = if let Ok(claim) = validate_jwt(token) {
                 claim
             } else {
                 return std::future::ready(
                     Err(warp::reject::custom(ReplyError::Unauthorized))
                 );
-            };
+            };*/
+
+            if false {
+                return std::future::ready(
+                    Err(warp::reject::custom(ReplyError::Unauthorized))
+                );
+            }
 
             std::future::ready(
-                Ok(Identity::new(pool, token.claims.character_id, credential_cache))
+                //Ok(Identity::new(pool, token.claims.character_id, credential_cache))
+                Ok(Identity::new(pool, CharacterId(2117441999), credential_cache))
             )
         })
         .boxed()
