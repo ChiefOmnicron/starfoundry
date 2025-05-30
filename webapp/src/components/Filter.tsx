@@ -1,0 +1,266 @@
+import {
+    Combobox,
+    Pill,
+    PillsInput,
+    useCombobox,
+} from "@mantine/core";
+import { useEffect, useState, type ReactElement } from "react";
+
+export function Filter(
+    {
+        entries,
+        onFilterChange,
+    }: FilterProp,
+): ReactElement {
+    const [search, setSearch] = useState('');
+
+    const [currentSelected, setCurrentSelected] = useState<FilterPropEntry | undefined>(undefined);
+    const [currentSelectedOptions, setCurrentSelectedOptions] = useState<FilterPropOption[]>([]);
+    const [selectedFilters, setSelectFilters] = useState<SelectedFilter[]>([]);
+
+    const [options, setOptions] = useState(entries);
+    const [originalOptions] = useState(entries);
+
+    const combobox = useCombobox({
+        onDropdownClose: () => combobox.resetSelectedOption(),
+        onDropdownOpen: () => combobox.updateSelectedOptionIndex('active'),
+    });
+
+    useEffect(() => {
+        resetOptions();
+        onFilterChange(selectedFilters);
+    }, [selectedFilters]);
+
+    /// adds an entry to the list of selected filters
+    const addToValues = (
+        label: string,
+        key: string,
+        value: string,
+    ) => {
+        // add the entry to our array of selected filters
+        setSelectFilters(filters => [...filters, {
+            key,
+            label,
+            value,
+        }]);
+    }
+
+    // check for options that no longer can be selected, or that were removed
+    // and therefor can be added again
+    const resetOptions = () => {
+        setOptions(
+            originalOptions.filter(x => {
+                const findFilter = selectedFilters.filter(y => y.key === x.key);
+                if (findFilter.length > 0) {
+                    return x.type === 'MULTISELECT' && findFilter.length < (x.options || []).length;
+                }
+
+                return true;
+            })
+        );
+    }
+
+    const handleValueSelect = (value: string) => {
+        if (currentSelectedOptions.length === 0) {
+            const currentSelected = entries.find(x => x.key === value);
+            // make sure the value of the selected option is shown
+            setSearch(`${currentSelected?.label}: `);
+
+            // set the selected option for later use
+            setCurrentSelected(currentSelected);
+
+            if (currentSelected?.type === 'INPUT') {
+                combobox.closeDropdown();
+            }
+
+            // replace the dropdown options with the options from the selected option
+            const filters = selectedFilters.filter(y => y.key === value);
+            setCurrentSelectedOptions(
+                (
+                    currentSelected?.options || []
+                ).filter(x => !filters.find(y => y.value === x.label))
+            );
+        } else {
+            // store the label for later use
+            // it is pretty sure that the value is set, just making sure
+            const label = (currentSelected || { label: ''}).label;
+            const key = (currentSelected || { key: ''}).key;
+            // add the entries to the input
+            addToValues(label, key, value);
+
+            // reset search, current selected, and the options
+            setSearch('');
+            setCurrentSelected(undefined);
+            setCurrentSelectedOptions([]);
+        }
+    };
+
+    const handleValueRemove = (val: SelectedFilter) => {
+        setSelectFilters((current) => current.filter((v) => v !== val));
+    };
+
+    // show the primary entries
+    const optionsFirstLevel = options
+        .map((item) => (
+            <Combobox.Option
+                value={item.key}
+                key={item.key}
+            >
+                <span>{item.label}</span>
+            </Combobox.Option>
+        ));
+
+    // show sub options from an entry
+    const optionsSecondLevel = currentSelectedOptions
+        .map((item: FilterPropOption) => (
+            <Combobox.Option
+                value={item.label}
+                key={item.key}
+            >
+                <span>{item.label}</span>
+            </Combobox.Option>
+        ));
+
+    // render for the values
+    const values = selectedFilters.map((item) => (
+        <Pill
+            key={`${item.key}_${item.value}`}
+            withRemoveButton
+            onRemove={() => handleValueRemove(item)}
+            styles={{
+                root: {
+                    borderRadius: 0,
+                }
+            }}
+        >
+            {item.label}: {item.value}
+        </Pill>
+    ));
+
+    const showDropdownEntries = () => {
+        if (currentSelected && currentSelected.type === 'INPUT') {
+            return;
+        } else if (currentSelectedOptions.length === 0) {
+            if (optionsFirstLevel.length > 0) {
+                return optionsFirstLevel;
+            } else {
+                return <Combobox.Empty>Nothing found...</Combobox.Empty>;
+            }
+        } else {
+            return optionsSecondLevel;
+        }
+    }
+
+    return (
+        <Combobox
+            store={combobox}
+            onOptionSubmit={handleValueSelect}
+            withinPortal={false}
+        >
+            <Combobox.DropdownTarget>
+                <PillsInput onClick={() => combobox.openDropdown()}>
+                    <Pill.Group>
+                        {values}
+
+                        <Combobox.EventsTarget>
+                            <PillsInput.Field
+                                onFocus={() => combobox.openDropdown()}
+                                onBlur={() => combobox.closeDropdown()}
+                                value={search}
+                                placeholder="Filter"
+                                onChange={(event) => {
+                                    combobox.updateSelectedOptionIndex();
+                                    setSearch(event.currentTarget.value);
+
+                                    if (event.currentTarget.value === '') {
+                                        setSearch('');
+                                        setCurrentSelected(undefined);
+                                        setCurrentSelectedOptions([]);
+                                        resetOptions();
+                                    }
+                                }}
+                                onKeyDown={(event) => {
+                                    if (
+                                        event.key === "Backspace" &&
+                                        search.length === 0
+                                    ) {
+                                        event.preventDefault();
+                                        handleValueRemove(
+                                            selectedFilters[selectedFilters.length - 1],
+                                        );
+                                    }
+
+                                    if (search.endsWith(':')) {
+                                        setSearch('');
+                                        setCurrentSelected(undefined);
+                                        setCurrentSelectedOptions([]);
+                                    }
+
+                                    // prevent that non-selectable items are added
+                                    if (currentSelected?.type !== 'INPUT') {
+                                        return;
+                                    }
+
+                                    if (
+                                        event.key === 'Enter' &&
+                                        currentSelected &&
+                                        search.length > 0 &&
+                                        !search.endsWith(': ')
+                                    ) {
+                                        let value = search.replace(`${currentSelected.label}: `, '');
+
+                                        addToValues(
+                                            currentSelected.label,
+                                            currentSelected.key,
+                                            value,
+                                        );
+
+                                        setSearch('');
+                                        setCurrentSelected(undefined);
+                                        setCurrentSelectedOptions([]);
+
+                                        combobox.openDropdown();
+                                    }
+                                }}
+                            />
+                        </Combobox.EventsTarget>
+                    </Pill.Group>
+                </PillsInput>
+            </Combobox.DropdownTarget>
+
+            <Combobox.Dropdown>
+                <Combobox.Options>
+                    { showDropdownEntries() }
+                </Combobox.Options>
+            </Combobox.Dropdown>
+        </Combobox>
+    );
+}
+
+export type FilterProp = {
+    entries: FilterPropEntry[];
+    onFilterChange: (filters: SelectedFilter[]) => void,
+}
+
+export type FilterPropEntry = {
+    // shown as the option name
+    label: string;
+    // unique key to identify the entry
+    key: string;
+    // input: free string input
+    // select: one value from the entry field can be selected
+    // multiselect: one or more values can be selected from the entry field
+    type: 'INPUT' | 'SELECT' | 'MULTISELECT';
+    options?: FilterPropOption[];
+};
+
+export type FilterPropOption = {
+    label: string;
+    key: string;
+};
+
+export type SelectedFilter = {
+    value: string;
+    label: string;
+    key: string;
+};

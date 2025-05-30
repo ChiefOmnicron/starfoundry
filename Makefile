@@ -37,7 +37,7 @@ sqlx-prepare:
 	cargo sqlx prepare  --workspace -- --all-targets --all-features
 
 run-web-dev:
-	cd webapp; npm run serve
+	cd webapp; npm run dev
 
 .PHONY: web-test
 web-test: web-test-chrome web-test-firefox web-test-edge
