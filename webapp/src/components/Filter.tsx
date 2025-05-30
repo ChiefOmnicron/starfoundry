@@ -6,6 +6,52 @@ import {
 } from "@mantine/core";
 import { useEffect, useState, type ReactElement } from "react";
 
+//     const exampleData: FilterPropEntry[] = [{
+//        label: 'Single Select',
+//        key: 'single',
+//        type: 'SELECT',
+//        options: [{
+//            label: 'A',
+//            key: 'a',
+//        }, {
+//            label: 'B',
+//            key: 'b',
+//        }, {
+//            label: 'C',
+//            key: 'c',
+//        }],
+//    }, {
+//        label: 'Multiselect',
+//        key: 'multi',
+//        type: 'MULTISELECT',
+//        options: [{
+//            label: 'D',
+//            key: 'd'
+//        }, {
+//            label: 'E',
+//            key: 'e'
+//        }, {
+//            label: 'F',
+//            key: 'f'
+//        }, {
+//            label: 'G',
+//            key: 'g'
+//        }]
+//    }, {
+//        label: 'Name',
+//        key: 'name',
+//        type: 'INPUT',
+//    }];
+//
+//    const filterChange = (filters: SelectedFilter[]) => {
+//        console.log(filters)
+//    }
+//
+//    <Filter
+//        entries={exampleData}
+//        onFilterChange={filterChange}
+//    />
+//
 export function Filter(
     {
         entries,
