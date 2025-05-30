@@ -1,7 +1,7 @@
 ################################################################################
 # ALL
 ################################################################################
-FROM        clux/muslrust:nightly AS builder-all
+FROM        ghcr.io/blackdex/rust-musl:x86_64-musl-nightly AS builder-all
 
 ENV         SQLX_OFFLINE=true
 
