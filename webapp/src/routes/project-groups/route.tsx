@@ -1,4 +1,4 @@
-import { Filter, type FilterPropEntry, type SelectedFilter } from '@/components/Filter';
+import Filter, { type FilterPropEntry, type SelectedFilter } from '@/components/Filter';
 import { fetchProjectGroup, type ProjectGroup } from '@/services/project-group/fetch';
 import { LIST_PROJECT_GROUPS, listProjectGroups } from '@/services/project-group/list';
 import { Card, Table, Text, Title, UnstyledButton } from '@mantine/core';
@@ -135,7 +135,6 @@ function ProjectGroups() {
 
         <Card
             padding='0'
-            mt='md'
         >
             <div className='p-2'>
                 <Table striped>
