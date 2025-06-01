@@ -52,7 +52,9 @@ import { useEffect, useState, type ReactElement } from "react";
 //        onFilterChange={filterChange}
 //    />
 //
-export function Filter(
+// Inspired by https://medium.com/@lodestar-design/process-doc-how-i-polish-micro-interactions-for-search-filters-in-a-table-bd729a55895c
+//
+export default function Filter(
     {
         entries,
         onFilterChange,
@@ -173,13 +175,14 @@ export function Filter(
             key={`${item.key}_${item.value}`}
             withRemoveButton
             onRemove={() => handleValueRemove(item)}
+            size="md"
             styles={{
                 root: {
                     borderRadius: 0,
                 }
             }}
         >
-            {item.label}: {item.value}
+            <strong>{item.label}</strong>: {item.value}
         </Pill>
     ));
 
@@ -199,17 +202,28 @@ export function Filter(
 
     return (
         <Combobox
+            data-cy="filterCombobox"
             store={combobox}
             onOptionSubmit={handleValueSelect}
             withinPortal={false}
         >
             <Combobox.DropdownTarget>
-                <PillsInput onClick={() => combobox.openDropdown()}>
-                    <Pill.Group>
+                <PillsInput
+                    onClick={() => combobox.openDropdown()}
+                    styles={{
+                        input: {
+                            borderLeft: 0,
+                            borderRight: 0,
+                            borderTop: 0,
+                        }
+                    }}
+                >
+                    <Pill.Group data-cy="filterSelectedGroup">
                         {values}
 
                         <Combobox.EventsTarget>
                             <PillsInput.Field
+                                data-cy="filterInput"
                                 onFocus={() => combobox.openDropdown()}
                                 onBlur={() => combobox.closeDropdown()}
                                 value={search}
@@ -275,7 +289,7 @@ export function Filter(
             </Combobox.DropdownTarget>
 
             <Combobox.Dropdown>
-                <Combobox.Options>
+                <Combobox.Options data-cy="filterDropdownOption">
                     { showDropdownEntries() }
                 </Combobox.Options>
             </Combobox.Dropdown>
