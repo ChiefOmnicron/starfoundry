@@ -50,8 +50,8 @@ web-test-chrome:
 		--user ${shell id -u} \
 		--rm \
 		--entrypoint cypress \
-		cypress/included:14.3.2 \
-		run --component --browser chrome
+		cypress/included:14.4.0 \
+		run --component --browser chrome --headless --no-runner-ui
 
 .PHONY: web-test-firefox
 web-test-firefox:
@@ -61,8 +61,8 @@ web-test-firefox:
 		--user ${shell id -u} \
 		--rm \
 		--entrypoint cypress \
-		cypress/included:14.3.2 \
-		run --component --browser firefox
+		cypress/included:14.4.0 \
+		run --component --browser firefox --headless --no-runner-ui
 
 .PHONY: web-test-edge
 web-test-edge:
@@ -72,27 +72,8 @@ web-test-edge:
 		--user ${shell id -u} \
 		--rm \
 		--entrypoint cypress \
-		cypress/included:14.3.2 \
-		run --component --browser edge
-
-.PHONY: web-test-dev
-web-test-dev:
-	docker run \
-		-v ${PWD}/webapp:/webapp \
-		-w /webapp \
-		--user ${shell id -u} \
-		--rm \
-		--entrypoint cypress \
-		cypress/included:14.3.2 \
-		run --component --browser chrome --spec src/notification/overview/integration/**.cy.ts
-
-aaa:
-	echo ${VITE_SENTRY}
-	docker build \
-		-t ${DOCKER_REPO}/starfoundry/web-appraisal \
-		--build-arg VITE_SENTRY=${VITE_SENTRY} \
-		--target webapp-appraisal \
-		.
+		cypress/included:14.4.0 \
+		run --component --browser edge --headless --no-runner-ui
 
 .PHONY: docker-build
 docker-build:
