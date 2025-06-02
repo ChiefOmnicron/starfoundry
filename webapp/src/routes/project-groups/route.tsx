@@ -1,15 +1,22 @@
 import Filter, { type FilterPropEntry, type SelectedFilter } from '@/components/Filter';
-import { fetchProjectGroup, type ProjectGroup } from '@/services/project-group/fetch';
+import { FETCH_PROJECT_GROUPS, fetchProjectGroup, type ProjectGroup } from '@/services/project-group/fetch';
 import { LIST_PROJECT_GROUPS, listProjectGroups, type ProjectGroupFilter } from '@/services/project-group/list';
+import type { Uuid } from '@/services/utils';
 import { Card, Table, Text, Title, UnstyledButton } from '@mantine/core';
-import { useQueries, useQuery, type UseQueryResult } from '@tanstack/react-query';
+import { useQueries, useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 export const Route = createFileRoute('/project-groups')({
     component: ProjectGroups,
 });
+
+const filters: FilterPropEntry[] = [{
+    label: 'Name',
+    key: 'name',
+    type: 'STRING',
+}];
 
 const columnHelper = createColumnHelper<ProjectGroup>();
 const columns = [
@@ -46,21 +53,27 @@ const columns = [
 function ProjectGroups() {
     const [filterParams, setFilterParams] = useState<ProjectGroupFilter>({});
 
+    const filterChange = (filters: SelectedFilter[]) => {
+        setFilterParams({
+            name: filters.find(x => x.key === 'name')?.value as string,
+        });
+    };
+
     const {
         isPending,
         error,
         data: projectGroupUuids
     } = useQuery({
-        queryKey: [LIST_PROJECT_GROUPS],
+        queryKey: [LIST_PROJECT_GROUPS, filterParams],
         queryFn: async () => listProjectGroups(filterParams),
     });
 
     const projectGroups: UseQueryResult<ProjectGroup>[] = useQueries({
         queries: projectGroupUuids
-            ? projectGroupUuids.map(uuid => {
+            ? projectGroupUuids.map((uuid: Uuid) => {
                 return {
-                    queryKey: [LIST_PROJECT_GROUPS, uuid],
-                    queryFn: async () => fetchProjectGroup(uuid)
+                    queryKey: [FETCH_PROJECT_GROUPS, uuid],
+                    queryFn: async () => fetchProjectGroup(uuid),
                 }
             })
             : []
@@ -71,12 +84,13 @@ function ProjectGroups() {
         data: projectGroups
             .filter(x => !!x.data)
             .map(x => x.data),
+        autoResetPageIndex: false,
         getCoreRowModel: getCoreRowModel(),
     });
 
-    if (isPending || projectGroups.filter(x => x.isPending).length > 0) {
+    /*if (isPending || projectGroups.filter(x => x.isPending).length > 0) {
         return 'Loading'
-    }
+    }*/
 
     if (error) {
         return `Error: ${error.message}`;
@@ -86,51 +100,36 @@ function ProjectGroups() {
         return `Error: ${projectGroups.map(x => x.error)}`;
     }
 
-    const exampleData: FilterPropEntry[] = [{
-        label: 'Name',
-        key: 'name',
-        type: 'STRING',
-    }];
-
-    const filterChange = (filters: SelectedFilter[]) => {
-        console.log(filters)
-
-        for (const filter of filters) {
-            console.log(filter, typeof filter.value)
-            if (typeof filter.value == 'number') {
-
-            }
-        }
-    }
-
     return <>
         <Title order={1}>Project Groups</Title>
         <Text size='md'>Project groups allow you to set defaults and collaborate with other capsuleers</Text>
 
         <Filter
-            entries={exampleData}
+            entries={filters}
             onFilterChange={filterChange}
         />
 
-        <Card
-            padding='0'
-        >
-            <div className='p-2'>
-                <Table striped>
-                    <Table.Thead>
-                    {table.getHeaderGroups().map(headerGroup => (
-                        <Table.Tr key={headerGroup.id}>
-                            {headerGroup.headers.map(header => (
-                                <Table.Th key={header.id}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext()
-                                    )}
-                                </Table.Th>
-                            ))}
-                        </Table.Tr>
-                    ))}
-                    </Table.Thead>
+        { projectGroups.map(x => x.data?.name) }
+        { projectGroups.map(x => x.data?.members) }
+        { projectGroups.map(x => x.data?.description) }
+        { projectGroups.map(x => x.data?.projects) }
+
+        <div className='p-2'>
+            <Table striped>
+                <Table.Thead>
+                {table.getHeaderGroups().map(headerGroup => (
+                    <Table.Tr key={headerGroup.id}>
+                        {headerGroup.headers.map(header => (
+                            <Table.Th key={header.id}>
+                                {flexRender(
+                                    header.column.columnDef.header,
+                                    header.getContext()
+                                )}
+                            </Table.Th>
+                        ))}
+                    </Table.Tr>
+                ))}
+                </Table.Thead>
                     <Table.Tbody>
                         {table.getRowModel().rows.map(row => (
                             <Table.Tr key={row.id}>
@@ -142,8 +141,7 @@ function ProjectGroups() {
                             </Table.Tr>
                         ))}
                     </Table.Tbody>
-                </Table>
-            </div>
-        </Card>
+            </Table>
+        </div>
     </>
 }
