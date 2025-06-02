@@ -34,12 +34,14 @@ pub async fn list(
             WHERE pgm.character_id = $1 AND
                 NOT (projects = ANY($2::VARCHAR[])) IS FALSE AND
                 NOT (structures = ANY($3::VARCHAR[])) IS FALSE AND
+                NOT (LOWER(name) LIKE '%' || LOWER($4) || '%') IS FALSE AND
                 accepted = TRUE
             ORDER BY pg.name ASC
         ",
             *character_id,
             &filter_projects,
             &filter_structures,
+            filter.name,
         )
         .fetch_all(pool)
         .await
