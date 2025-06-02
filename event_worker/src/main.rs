@@ -23,8 +23,7 @@ use task::{fetch_task, TaskStatus, WorkerTask};
 use tokio::time::sleep;
 use tracing_subscriber::EnvFilter;
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+#[tokio::main]async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenvy::dotenv().ok();
 
     if cfg!(debug_assertions) {
