@@ -15,11 +15,11 @@ const themeOverride = createTheme({
     fontFamily: '"Roboto Mono", monospace',
     fontFamilyMonospace: '"Roboto Mono", monospace',
     radius: {
-        lg: "0",
-        md: "0",
-        sm: "0",
-        xl: "0",
-        xs: "0"
+        lg: '0',
+        md: '0',
+        sm: '0',
+        xl: '0',
+        xs: '0',
     },
 });
 
