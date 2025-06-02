@@ -1,13 +1,14 @@
 use serde::Deserialize;
 use utoipa::ToSchema;
 
-
 #[derive(Debug, Deserialize, ToSchema)]
 pub struct ProjectGroupFilter {
     #[serde(default = "default_read")]
     pub structures: String,
     #[serde(default = "default_read")]
     pub projects:   String,
+    #[serde(default)]
+    pub name: Option<String>,
 }
 
 fn default_read() -> String {
@@ -19,6 +20,7 @@ impl Default for ProjectGroupFilter {
         Self {
             structures: default_read(),
             projects:   default_read(),
+            name: None,
         }
     }
 }
