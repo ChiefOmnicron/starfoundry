@@ -1,10 +1,11 @@
 import Filter, { type FilterPropEntry, type SelectedFilter } from '@/components/Filter';
 import { fetchProjectGroup, type ProjectGroup } from '@/services/project-group/fetch';
-import { LIST_PROJECT_GROUPS, listProjectGroups } from '@/services/project-group/list';
+import { LIST_PROJECT_GROUPS, listProjectGroups, type ProjectGroupFilter } from '@/services/project-group/list';
 import { Card, Table, Text, Title, UnstyledButton } from '@mantine/core';
 import { useQueries, useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { useState } from 'react';
 
 export const Route = createFileRoute('/project-groups')({
     component: ProjectGroups,
@@ -43,13 +44,15 @@ const columns = [
 ];
 
 function ProjectGroups() {
+    const [filterParams, setFilterParams] = useState<ProjectGroupFilter>({});
+
     const {
         isPending,
         error,
         data: projectGroupUuids
     } = useQuery({
         queryKey: [LIST_PROJECT_GROUPS],
-        queryFn: async () => listProjectGroups({}),
+        queryFn: async () => listProjectGroups(filterParams),
     });
 
     const projectGroups: UseQueryResult<ProjectGroup>[] = useQueries({
@@ -84,44 +87,20 @@ function ProjectGroups() {
     }
 
     const exampleData: FilterPropEntry[] = [{
-        label: 'Single Select',
-        key: 'single',
-        type: 'SELECT',
-        options: [{
-            label: 'A',
-            key: 'a',
-        }, {
-            label: 'B',
-            key: 'b',
-        }, {
-            label: 'C',
-            key: 'c',
-        }],
-    }, {
-        label: 'Multiselect',
-        key: 'multi',
-        type: 'MULTISELECT',
-        options: [{
-            label: 'D',
-            key: 'd'
-        }, {
-            label: 'E',
-            key: 'e'
-        }, {
-            label: 'F',
-            key: 'f'
-        }, {
-            label: 'G',
-            key: 'g'
-        }]
-    }, {
         label: 'Name',
         key: 'name',
-        type: 'INPUT',
+        type: 'STRING',
     }];
 
     const filterChange = (filters: SelectedFilter[]) => {
         console.log(filters)
+
+        for (const filter of filters) {
+            console.log(filter, typeof filter.value)
+            if (typeof filter.value == 'number') {
+
+            }
+        }
     }
 
     return <>

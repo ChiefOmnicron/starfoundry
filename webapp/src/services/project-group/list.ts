@@ -13,6 +13,6 @@ export const listProjectGroups = async (
     )
     .then(x => x.data);
 
-export interface ProjectGroupFilter {
-
+export type ProjectGroupFilter = {
+    name?: string;
 }
