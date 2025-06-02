@@ -155,7 +155,7 @@ describe('Filter General', () => {
         const exampleData: FilterPropEntry[] = [{
             key: 'a',
             label: 'Input',
-            type: 'INPUT',
+            type: 'STRING',
         }];
 
         cy.mount(
