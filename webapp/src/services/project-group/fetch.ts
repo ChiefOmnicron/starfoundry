@@ -5,7 +5,7 @@ export const FETCH_PROJECT_GROUPS = 'fetchProjectGroups';
 
 export const fetchProjectGroup = async (
     projectGroupUuid: Uuid,
-): Promise<Uuid[]> => axios.get(
+): Promise<ProjectGroup[]> => axios.get(
         `/api/project-groups/${projectGroupUuid}`
     )
     .then(x => x.data);
