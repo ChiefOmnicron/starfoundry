@@ -40,7 +40,7 @@ import { useEffect, useState, type ReactElement } from "react";
 //    }, {
 //        label: 'Name',
 //        key: 'name',
-//        type: 'INPUT',
+//        type: 'STRING',
 //    }];
 //
 //    const filterChange = (filters: SelectedFilter[]) => {
@@ -54,6 +54,20 @@ import { useEffect, useState, type ReactElement } from "react";
 //
 // Inspired by https://medium.com/@lodestar-design/process-doc-how-i-polish-micro-interactions-for-search-filters-in-a-table-bd729a55895c
 //
+// TODO: allow for string filters to
+//  - contain ...Az... - *search*
+//  - startsWith Az... - search*
+//  - endsWith ...Az   - *search
+//  - equals =         - = search
+//  - not equals !=    - != search
+// https://ux.stackexchange.com/questions/75704/what-symbol-can-be-used-to-denote-contains
+// TODO: allow for integer filters
+// - greater than > - >
+// - lesser than < - <
+// - greater or equal >= - >=
+// - lesser or equal <= - <=
+// - equal = - =
+// - not equal != - !=
 export default function Filter(
     {
         entries,
@@ -76,6 +90,8 @@ export default function Filter(
 
     useEffect(() => {
         resetOptions();
+
+        // TODO: add mutliselect into an array
         onFilterChange(selectedFilters);
     }, [selectedFilters]);
 
@@ -117,7 +133,7 @@ export default function Filter(
             // set the selected option for later use
             setCurrentSelected(currentSelected);
 
-            if (currentSelected?.type === 'INPUT') {
+            if (currentSelected?.type === 'STRING') {
                 combobox.closeDropdown();
             }
 
@@ -187,7 +203,7 @@ export default function Filter(
     ));
 
     const showDropdownEntries = () => {
-        if (currentSelected && currentSelected.type === 'INPUT') {
+        if (currentSelected && currentSelected.type === 'STRING') {
             return;
         } else if (currentSelectedOptions.length === 0) {
             if (optionsFirstLevel.length > 0) {
@@ -257,7 +273,7 @@ export default function Filter(
                                     }
 
                                     // prevent that non-selectable items are added
-                                    if (currentSelected?.type !== 'INPUT') {
+                                    if (currentSelected?.type !== 'STRING') {
                                         return;
                                     }
 
@@ -310,7 +326,7 @@ export type FilterPropEntry = {
     // input: free string input
     // select: one value from the entry field can be selected
     // multiselect: one or more values can be selected from the entry field
-    type: 'INPUT' | 'SELECT' | 'MULTISELECT';
+    type: 'STRING' | 'SELECT' | 'MULTISELECT';
     options?: FilterPropOption[];
 };
 
@@ -320,7 +336,7 @@ export type FilterPropOption = {
 };
 
 export type SelectedFilter = {
-    value: string;
+    value: number | string | Array<string>;
     label: string;
     key: string;
 };
