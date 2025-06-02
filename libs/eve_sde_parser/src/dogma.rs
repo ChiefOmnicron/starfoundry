@@ -153,7 +153,7 @@ fn manufacture_modifier(
     let mut value = 0f32;
     let mut categories = Vec::new();
     let mut groups = Vec::new();
-    if let Some(materials) = &modifier.material && !materials.is_empty() {
+    if let Some(materials) = &modifier.material {
         for modifier in materials {
             for effect in dogma.effects.iter() {
                 if let Some(x) = dogma_attributes.get(
@@ -195,7 +195,7 @@ fn manufacture_modifier(
     let mut value = 0f32;
     let mut categories = Vec::new();
     let mut groups = Vec::new();
-    if let Some(times) = &modifier.time && !times.is_empty() {
+    if let Some(times) = &modifier.time {
         for modifier in times {
             for effect in dogma.effects.iter() {
                 if let Some(x) = dogma_attributes.get(&(effect.effect_id, modifier.attribute)) {
@@ -253,7 +253,7 @@ fn reaction_modifier(
     let mut value = 0f32;
     let mut categories = Vec::new();
     let mut groups = Vec::new();
-    if let Some(materials) = &modifier.material && !materials.is_empty() {
+    if let Some(materials) = &modifier.material {
         for modifier in materials {
             for effect in dogma.effects.iter() {
                 if let Some(x) = dogma_attributes.get(&(effect.effect_id, modifier.attribute)) {
@@ -285,7 +285,7 @@ fn reaction_modifier(
     let mut categories = Vec::new();
     let mut groups = Vec::new();
 
-    if let Some(times) = &modifier.time && !times.is_empty() {
+    if let Some(times) = &modifier.time {
         for modifier in times {
             for effect in dogma.effects.iter() {
                 if let Some(x) = dogma_attributes.get(&(effect.effect_id, modifier.attribute)) {

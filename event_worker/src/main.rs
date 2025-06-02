@@ -1,5 +1,3 @@
-#![feature(duration_constructors_lite)]
-
 mod api;
 mod asset;
 mod check;

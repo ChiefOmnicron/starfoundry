@@ -1,7 +1,7 @@
 ################################################################################
 # ALL
 ################################################################################
-FROM        clux/muslrust:nightly AS builder-all
+FROM        rust:1.87.0 AS builder-all
 
 ENV         SQLX_OFFLINE=true
 
@@ -31,7 +31,7 @@ RUN         cargo build --release --target x86_64-unknown-linux-gnu && \
 ################################################################################
 # APPRAISAL only
 ################################################################################
-FROM        clux/muslrust:nightly AS builder-appraisal
+FROM        rust:1.87.0 AS builder-appraisal
 
 ENV         SQLX_OFFLINE=true
 

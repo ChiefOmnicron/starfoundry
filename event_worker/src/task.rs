@@ -147,12 +147,12 @@ impl WorkerTask {
         minutes: u64,
     ) -> NaiveDateTime {
         let now = Utc::now();
-        let date = now.naive_utc() + Duration::from_mins(minutes);
+        let date = now.naive_utc() + Duration::from_secs(minutes * 60);
 
         // if it's between 11:00 and 11:30 delay it, otherwise add the minutes
         let date = if date.time().hour() == 11 && date.time().minute() < 30 {
             let minutes = (30 - date.time().minute()) as u64;
-            date + Duration::from_mins(minutes)
+            date + Duration::from_secs(minutes * 60)
         } else {
             date
         };

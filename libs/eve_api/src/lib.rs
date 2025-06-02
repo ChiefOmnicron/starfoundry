@@ -17,7 +17,6 @@
     clippy::unwrap_used
 )]
 #![allow(clippy::redundant_field_names)]
-#![feature(stmt_expr_attributes)]
 
 /// Groups all requests together that are in the industry group
 mod industry;
