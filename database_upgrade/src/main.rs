@@ -19,8 +19,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     sqlx::migrate!().run(&pool).await?;
 
     default_user(&pool).await?;
-    default_project_group(&pool).await?;
-    default_project_group_member(&pool).await?;
     npc_stations(&pool).await?;
 
     Ok(())
@@ -48,56 +46,6 @@ async fn default_user(
         .await
         .map(drop)
         .map_err(Error::InsertDefaultUser)
-}
-
-async fn default_project_group(
-    pool: &PgPool,
-) -> Result<(), Error> {
-    sqlx::query!("
-            INSERT INTO project_group (
-                id,
-                owner,
-                name,
-                description
-            )
-            VALUES ($1, $2, $3, $4)
-            ON CONFLICT DO NOTHING
-        ",
-            Uuid::default(),
-            0,
-            "Default",
-            "Default Group",
-        )
-        .execute(pool)
-        .await
-        .map(drop)
-        .map_err(Error::InsertDefaultProjectGroup)
-}
-
-async fn default_project_group_member(
-    pool: &PgPool,
-) -> Result<(), Error> {
-    sqlx::query!("
-            INSERT INTO project_group_member (
-                group_id,
-                character_id,
-                accepted,
-                projects,
-                structures
-            )
-            VALUES ($1, $2, $3, $4, $5)
-            ON CONFLICT DO NOTHING
-        ",
-            Uuid::default(),
-            0,
-            true,
-            "WRITE",
-            "WRITE",
-        )
-        .execute(pool)
-        .await
-        .map(drop)
-        .map_err(Error::InsertDefaultProjectGroupMember)
 }
 
 async fn npc_stations(

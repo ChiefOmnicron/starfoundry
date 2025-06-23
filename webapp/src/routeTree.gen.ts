@@ -13,6 +13,10 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as ProjectGroupsRouteImport } from './routes/project-groups/route'
 import { Route as AboutRouteImport } from './routes/about/route'
+import { Route as ProjectGroupsIndexImport } from './routes/project-groups/index'
+import { Route as ProjectGroupsCreateImport } from './routes/project-groups/create'
+import { Route as ProjectGroupsProjectGroupIdRouteImport } from './routes/project-groups_/$projectGroupId.route'
+import { Route as ProjectGroupsProjectGroupIdOverviewImport } from './routes/project-groups_/$projectGroupId.overview'
 
 // Create/Update Routes
 
@@ -27,6 +31,32 @@ const AboutRouteRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRoute,
 } as any)
+
+const ProjectGroupsIndexRoute = ProjectGroupsIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProjectGroupsRouteRoute,
+} as any)
+
+const ProjectGroupsCreateRoute = ProjectGroupsCreateImport.update({
+  id: '/create',
+  path: '/create',
+  getParentRoute: () => ProjectGroupsRouteRoute,
+} as any)
+
+const ProjectGroupsProjectGroupIdRouteRoute =
+  ProjectGroupsProjectGroupIdRouteImport.update({
+    id: '/project-groups_/$projectGroupId',
+    path: '/project-groups/$projectGroupId',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const ProjectGroupsProjectGroupIdOverviewRoute =
+  ProjectGroupsProjectGroupIdOverviewImport.update({
+    id: '/overview',
+    path: '/overview',
+    getParentRoute: () => ProjectGroupsProjectGroupIdRouteRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -46,44 +76,132 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectGroupsRouteImport
       parentRoute: typeof rootRoute
     }
+    '/project-groups_/$projectGroupId': {
+      id: '/project-groups_/$projectGroupId'
+      path: '/project-groups/$projectGroupId'
+      fullPath: '/project-groups/$projectGroupId'
+      preLoaderRoute: typeof ProjectGroupsProjectGroupIdRouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/project-groups/create': {
+      id: '/project-groups/create'
+      path: '/create'
+      fullPath: '/project-groups/create'
+      preLoaderRoute: typeof ProjectGroupsCreateImport
+      parentRoute: typeof ProjectGroupsRouteImport
+    }
+    '/project-groups/': {
+      id: '/project-groups/'
+      path: '/'
+      fullPath: '/project-groups/'
+      preLoaderRoute: typeof ProjectGroupsIndexImport
+      parentRoute: typeof ProjectGroupsRouteImport
+    }
+    '/project-groups_/$projectGroupId/overview': {
+      id: '/project-groups_/$projectGroupId/overview'
+      path: '/overview'
+      fullPath: '/project-groups/$projectGroupId/overview'
+      preLoaderRoute: typeof ProjectGroupsProjectGroupIdOverviewImport
+      parentRoute: typeof ProjectGroupsProjectGroupIdRouteImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface ProjectGroupsRouteRouteChildren {
+  ProjectGroupsCreateRoute: typeof ProjectGroupsCreateRoute
+  ProjectGroupsIndexRoute: typeof ProjectGroupsIndexRoute
+}
+
+const ProjectGroupsRouteRouteChildren: ProjectGroupsRouteRouteChildren = {
+  ProjectGroupsCreateRoute: ProjectGroupsCreateRoute,
+  ProjectGroupsIndexRoute: ProjectGroupsIndexRoute,
+}
+
+const ProjectGroupsRouteRouteWithChildren =
+  ProjectGroupsRouteRoute._addFileChildren(ProjectGroupsRouteRouteChildren)
+
+interface ProjectGroupsProjectGroupIdRouteRouteChildren {
+  ProjectGroupsProjectGroupIdOverviewRoute: typeof ProjectGroupsProjectGroupIdOverviewRoute
+}
+
+const ProjectGroupsProjectGroupIdRouteRouteChildren: ProjectGroupsProjectGroupIdRouteRouteChildren =
+  {
+    ProjectGroupsProjectGroupIdOverviewRoute:
+      ProjectGroupsProjectGroupIdOverviewRoute,
+  }
+
+const ProjectGroupsProjectGroupIdRouteRouteWithChildren =
+  ProjectGroupsProjectGroupIdRouteRoute._addFileChildren(
+    ProjectGroupsProjectGroupIdRouteRouteChildren,
+  )
+
 export interface FileRoutesByFullPath {
   '/about': typeof AboutRouteRoute
-  '/project-groups': typeof ProjectGroupsRouteRoute
+  '/project-groups': typeof ProjectGroupsRouteRouteWithChildren
+  '/project-groups/$projectGroupId': typeof ProjectGroupsProjectGroupIdRouteRouteWithChildren
+  '/project-groups/create': typeof ProjectGroupsCreateRoute
+  '/project-groups/': typeof ProjectGroupsIndexRoute
+  '/project-groups/$projectGroupId/overview': typeof ProjectGroupsProjectGroupIdOverviewRoute
 }
 
 export interface FileRoutesByTo {
   '/about': typeof AboutRouteRoute
-  '/project-groups': typeof ProjectGroupsRouteRoute
+  '/project-groups/$projectGroupId': typeof ProjectGroupsProjectGroupIdRouteRouteWithChildren
+  '/project-groups/create': typeof ProjectGroupsCreateRoute
+  '/project-groups': typeof ProjectGroupsIndexRoute
+  '/project-groups/$projectGroupId/overview': typeof ProjectGroupsProjectGroupIdOverviewRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/about': typeof AboutRouteRoute
-  '/project-groups': typeof ProjectGroupsRouteRoute
+  '/project-groups': typeof ProjectGroupsRouteRouteWithChildren
+  '/project-groups_/$projectGroupId': typeof ProjectGroupsProjectGroupIdRouteRouteWithChildren
+  '/project-groups/create': typeof ProjectGroupsCreateRoute
+  '/project-groups/': typeof ProjectGroupsIndexRoute
+  '/project-groups_/$projectGroupId/overview': typeof ProjectGroupsProjectGroupIdOverviewRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/about' | '/project-groups'
+  fullPaths:
+    | '/about'
+    | '/project-groups'
+    | '/project-groups/$projectGroupId'
+    | '/project-groups/create'
+    | '/project-groups/'
+    | '/project-groups/$projectGroupId/overview'
   fileRoutesByTo: FileRoutesByTo
-  to: '/about' | '/project-groups'
-  id: '__root__' | '/about' | '/project-groups'
+  to:
+    | '/about'
+    | '/project-groups/$projectGroupId'
+    | '/project-groups/create'
+    | '/project-groups'
+    | '/project-groups/$projectGroupId/overview'
+  id:
+    | '__root__'
+    | '/about'
+    | '/project-groups'
+    | '/project-groups_/$projectGroupId'
+    | '/project-groups/create'
+    | '/project-groups/'
+    | '/project-groups_/$projectGroupId/overview'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   AboutRouteRoute: typeof AboutRouteRoute
-  ProjectGroupsRouteRoute: typeof ProjectGroupsRouteRoute
+  ProjectGroupsRouteRoute: typeof ProjectGroupsRouteRouteWithChildren
+  ProjectGroupsProjectGroupIdRouteRoute: typeof ProjectGroupsProjectGroupIdRouteRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   AboutRouteRoute: AboutRouteRoute,
-  ProjectGroupsRouteRoute: ProjectGroupsRouteRoute,
+  ProjectGroupsRouteRoute: ProjectGroupsRouteRouteWithChildren,
+  ProjectGroupsProjectGroupIdRouteRoute:
+    ProjectGroupsProjectGroupIdRouteRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -97,14 +215,37 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/about",
-        "/project-groups"
+        "/project-groups",
+        "/project-groups_/$projectGroupId"
       ]
     },
     "/about": {
       "filePath": "about/route.tsx"
     },
     "/project-groups": {
-      "filePath": "project-groups/route.tsx"
+      "filePath": "project-groups/route.tsx",
+      "children": [
+        "/project-groups/create",
+        "/project-groups/"
+      ]
+    },
+    "/project-groups_/$projectGroupId": {
+      "filePath": "project-groups_/$projectGroupId.route.tsx",
+      "children": [
+        "/project-groups_/$projectGroupId/overview"
+      ]
+    },
+    "/project-groups/create": {
+      "filePath": "project-groups/create.tsx",
+      "parent": "/project-groups"
+    },
+    "/project-groups/": {
+      "filePath": "project-groups/index.tsx",
+      "parent": "/project-groups"
+    },
+    "/project-groups_/$projectGroupId/overview": {
+      "filePath": "project-groups_/$projectGroupId.overview.tsx",
+      "parent": "/project-groups_/$projectGroupId"
     }
   }
 }

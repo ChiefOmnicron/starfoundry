@@ -3,7 +3,7 @@ use starfoundry_libs_appraisal::internal::{CompressionOptions, CompressionResult
 use warp::reject::Rejection;
 use warp::reply::Reply;
 
-use crate::api_docs::{BadRequestWithPayload, InternalServerError, NotFound};
+use crate::api_docs::{BadRequest, InternalServerError, NotFound};
 use crate::metric::{RequestStatus, WithMetric};
 use crate::{BadRequestPayload, ReplyError};
 
@@ -31,7 +31,7 @@ use crate::{BadRequestPayload, ReplyError};
             description = "Appraisal for the compressed ores. Will not contain a code. Also includes an appraisal for the overage",
             status = OK,
         ),
-        BadRequestWithPayload,
+        BadRequest,
         NotFound,
         InternalServerError,
     ),

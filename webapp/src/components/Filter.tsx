@@ -209,7 +209,7 @@ export default function Filter(
             if (optionsFirstLevel.length > 0) {
                 return optionsFirstLevel;
             } else {
-                return <Combobox.Empty>Nothing found...</Combobox.Empty>;
+                return;
             }
         } else {
             return optionsSecondLevel;
@@ -225,7 +225,6 @@ export default function Filter(
         >
             <Combobox.DropdownTarget>
                 <PillsInput
-                    onClick={() => combobox.openDropdown()}
                     styles={{
                         input: {
                             borderLeft: 0,
@@ -240,7 +239,7 @@ export default function Filter(
                         <Combobox.EventsTarget>
                             <PillsInput.Field
                                 data-cy="filterInput"
-                                onFocus={() => combobox.openDropdown()}
+                                onFocus={() => showDropdownEntries() ? combobox.openDropdown() : false}
                                 onBlur={() => combobox.closeDropdown()}
                                 value={search}
                                 placeholder="Filter"
@@ -295,7 +294,9 @@ export default function Filter(
                                         setCurrentSelected(undefined);
                                         setCurrentSelectedOptions([]);
 
-                                        combobox.openDropdown();
+                                        if (showDropdownEntries()) {
+                                            combobox.openDropdown();
+                                        }
                                     }
                                 }}
                             />
