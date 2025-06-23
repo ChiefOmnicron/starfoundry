@@ -11,13 +11,6 @@ CREATE TABLE IF NOT EXISTS project_group (
 
     PRIMARY KEY (id)
 );
--- default project group
---
--- the database migration application is also validating that the group exists,
--- and if not creates it
-INSERT INTO project_group (id, owner, name, description)
-VALUES ('00000000-0000-0000-0000-000000000000', 0, 'Default', 'Default Group')
-ON CONFLICT DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS project_group_member (
     id                UUID        NOT NULL DEFAULT gen_random_uuid(),
@@ -45,13 +38,6 @@ CREATE TABLE IF NOT EXISTS project_group_member (
         ON DELETE CASCADE
 );
 CREATE UNIQUE INDEX IF NOT EXISTS project_group_member_group_character ON project_group_member(group_id, character_id);
--- inserts a default project member to the default project group
---
--- the database migration application also validates that the user exists and if
--- not inserts it
-INSERT INTO project_group_member (group_id, character_id, accepted, projects, structures)
-VALUES ('00000000-0000-0000-0000-000000000000', 0, TRUE, 'WRITE', 'WRITE')
-ON CONFLICT DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS project_group_default_market (
     project_group_id UUID        NOT NULL,

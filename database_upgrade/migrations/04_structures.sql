@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS structure_group (
     created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-    PRIMARY KEY (id, owner),
+    PRIMARY KEY (id),
 
     FOREIGN KEY (owner)
         REFERENCES character (character_id)

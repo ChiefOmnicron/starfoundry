@@ -5,15 +5,11 @@ use starfoundry_bin_api::*;
 use starfoundry_bin_api::config::Config;
 use starfoundry_bin_api::metric::Metric;
 use starfoundry_libs_eve_api::CredentialCache;
-use std::convert::Infallible;
 use std::net::SocketAddr;
 use std::sync::{Arc, Mutex};
 use tracing_subscriber::EnvFilter;
 use utoipa::OpenApi;
 use warp::Filter;
-use warp::http::StatusCode;
-use warp::reject::Rejection;
-use warp::reply::Reply;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -115,7 +111,7 @@ impl Server {
             let routes = base
                 .or(v1)
                 .or(special_routes)
-                .recover(handle_rejection)
+                .recover(crate::rejection::handle_rejection)
                 .with(warp::wrap_fn(|f| metric_wrapper(f, metric.clone())));
 
             warp::serve(routes)
@@ -145,7 +141,7 @@ impl Server {
             let routes = base
                 .or(v1)
                 .or(special_routes)
-                .recover(handle_rejection)
+                .recover(crate::rejection::handle_rejection)
                 .with(warp::wrap_fn(|f| metric_wrapper(f, metric.clone())));
 
             warp::serve(routes)
@@ -153,33 +149,4 @@ impl Server {
                 .await;
         }
     }
-}
-
-async fn handle_rejection(err: Rejection) -> Result<impl Reply, Infallible> {
-    let code;
-    let mut json = warp::reply::json(&());
-
-    if let Some(ReplyError::Forbidden) = err.find() {
-        code = StatusCode::NOT_FOUND;
-    } else if let Some(ReplyError::BadRequest) = err.find() {
-        code = StatusCode::BAD_REQUEST;
-    } else if let Some(ReplyError::BadRequestWithPayload(x)) = err.find() {
-        code = StatusCode::BAD_REQUEST;
-        json = warp::reply::json(&x);
-    } else if let Some(ReplyError::Unauthorized) = err.find() {
-        code = StatusCode::UNAUTHORIZED;
-    } else if let Some(ReplyError::Forbidden) = err.find() {
-        code = StatusCode::FORBIDDEN;
-    } else if let Some(ReplyError::Forbidden) = err.find() {
-        code = StatusCode::NOT_FOUND;
-    } else if let Some(ReplyError::Internal) = err.find() {
-        code = StatusCode::INTERNAL_SERVER_ERROR;
-    } else if let Some(ReplyError::NotFound) = err.find() {
-        code = StatusCode::NOT_FOUND;
-    } else {
-        tracing::error!("Unhandled error {:?}", err);
-        code = StatusCode::UNAUTHORIZED;
-    }
-
-    Ok(warp::reply::with_status(json, code))
 }

@@ -28,6 +28,7 @@ pub mod metric;
 pub mod notification;
 pub mod project;
 pub mod project_group;
+pub mod rejection;
 pub mod search;
 pub mod stock;
 pub mod structure_dynamic_group;
@@ -39,6 +40,9 @@ pub use self::error::*;
 pub use self::auth::{with_identity, Identity};
 
 use crate::metric::{with_metric, Metric};
+
+#[cfg(test)]
+mod test_util;
 
 pub fn with_pool(
     pool: PgPool,

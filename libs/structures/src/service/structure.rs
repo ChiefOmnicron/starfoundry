@@ -40,6 +40,7 @@ impl StructureService {
     }
 
     // TODO: wrong query!
+    // TODO: remove hard coded values
     pub async fn assert_read_access(
         &self,
         pool:         &PgPool,
@@ -50,13 +51,10 @@ impl StructureService {
                 FROM project p
                 JOIN project_group_member pgm ON pgm.group_id = project_group_id
                 WHERE p.id = $1
+                AND pgm.character_id = $2
                 AND (
-                    pgm.character_id = $2 OR
-                    p.owner = $2
-                )
-                AND (
-                    pgm.projects = 'WRITE' OR
-                    pgm.projects = 'READ'
+                    permission & 1 = 1 OR
+                    permission & 2 = 2
                 )
             ",
                 *self.0,
@@ -84,11 +82,12 @@ impl StructureService {
                 FROM project p
                 JOIN project_group_member pgm ON pgm.group_id = project_group_id
                 WHERE p.id = $1
+                AND pgm.character_id = $2
                 AND (
-                    pgm.character_id = $2 OR
-                    p.owner = $2
+                    -- TODO: replace with enum values
+                    permission & 1 = 1 OR
+                    permission & 8 = 8
                 )
-                AND pgm.projects = 'WRITE'
             ",
                 *self.0,
                 *character_id,
