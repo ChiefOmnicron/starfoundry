@@ -10,7 +10,9 @@ const MantineLinkComponent = React.forwardRef<
   HTMLAnchorElement,
   RouterLinkProps
 >((props, ref) => {
-  return <NavLink ref={ref} {...props} />
+    return <NavLink
+        ref={ref} {...props}
+    />
 })
 
 const CreatedLinkComponent = createLink(MantineLinkComponent)
@@ -18,5 +20,7 @@ const CreatedLinkComponent = createLink(MantineLinkComponent)
 export const CustomLink: LinkComponent<typeof MantineLinkComponent> = (
   props,
 ) => {
-  return <CreatedLinkComponent preload="intent" {...props} />
+    return <CreatedLinkComponent
+        preload="intent" {...props}
+    />
 }
