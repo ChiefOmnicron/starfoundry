@@ -5,7 +5,7 @@ use utoipa::ToSchema;
 use warp::{Reply, Rejection};
 
 use crate::{ReplyError, Identity};
-use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
+use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
 use crate::project_group::ProjectGroupUuidPath;
 use uuid::Uuid;
 
@@ -29,6 +29,7 @@ use uuid::Uuid;
         ),
         Unauthorized,
         Forbidden,
+        NotFound,
         InternalServerError,
     ),
 )]
@@ -48,7 +49,7 @@ pub async fn fetch(
             Err(ReplyError::Forbidden.into())
         },
         Err(starfoundry_libs_projects::Error::ProjectGroupNotFound(_)) => {
-            Err(ReplyError::Forbidden.into())
+            Err(ReplyError::NotFound.into())
         },
         Err(e) => {
             tracing::error!("Unexpected error, {e}");

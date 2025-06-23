@@ -14,7 +14,7 @@ pub async fn list(
         crate::group::list(pool, character_id, Default::default())
             .await?
             .into_iter()
-            .map(|x| *x)
+            .map(|x| x.id)
             .collect::<Vec<_>>()
     };
 
