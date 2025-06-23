@@ -2,10 +2,10 @@ import { AppShell, Avatar, Burger, createTheme, DEFAULT_THEME, Group, MantinePro
 import { useDisclosure } from '@mantine/hooks';
 import { CustomLink } from '@/components/RouterLink';
 
-import { createRootRoute, Outlet } from '@tanstack/react-router';
+import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
 import type { ReactElement } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import type { RouterContext } from '@/main';
 
 const routes = [
     { link: '/project-groups', label: 'Project Groups' },
@@ -24,9 +24,8 @@ const themeOverride = createTheme({
 });
 
 const theme = mergeMantineTheme(DEFAULT_THEME, themeOverride);
-const queryClient = new QueryClient();
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<RouterContext>()({
     component: LayoutComponent,
 });
 
@@ -90,12 +89,10 @@ function LayoutComponent(): ReactElement {
                     </AppShell.Section>
                 </AppShell.Navbar>
 
-                <AppShell.Main m="md">
-                    <QueryClientProvider client={queryClient}>
-                        <Outlet />
+                <AppShell.Main>
+                    <Outlet />
 
-                        <ReactQueryDevtools />
-                    </QueryClientProvider>
+                    <ReactQueryDevtools />
                 </AppShell.Main>
             </AppShell>
         </MantineProvider>

@@ -12,8 +12,7 @@ pub async fn accept_member(
             UPDATE project_group_member
             SET
                 accepted = TRUE,
-                projects = 'READ',
-                structures = 'READ'
+                permission = 2
             WHERE group_id = $1
             AND character_id = $2
         ",

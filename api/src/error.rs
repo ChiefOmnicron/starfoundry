@@ -10,6 +10,7 @@ pub enum ReplyError {
     Internal,
     NotFound,
 
+    Validation(String),
     BadRequestWithPayload(BadRequestPayload),
 }
 

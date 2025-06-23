@@ -1,5 +1,5 @@
 use sqlx::PgPool;
-use starfoundry_libs_projects::{ProjectGroupUuid, ProjectGroupService, UpdateProjectGroupMember};
+use starfoundry_libs_projects::{ProjectGroupUuid, ProjectGroupService, ProjectGroupPermission};
 use starfoundry_libs_types::CharacterId;
 use warp::{Reply, Rejection};
 use warp::http::StatusCode;
@@ -18,7 +18,7 @@ use crate::project_group::ProjectGroupUuidPath;
     operation_id = "project_groups_update_members",
     path = "/project-groups/{projectGroupUuid}/members/{characterId}",
     tag = "project-groups",
-    request_body = UpdateProjectGroupMember,
+    request_body = ProjectGroupPermission,
     params(
         ProjectGroupUuidPath,
         CharacterIdPath
@@ -38,11 +38,11 @@ pub async fn update_member(
     identity:            Identity,
     project_group_uuid:  ProjectGroupUuid,
     member_character_id: CharacterId,
-    info:                UpdateProjectGroupMember,
+    info:                ProjectGroupPermission,
 ) -> Result<impl Reply, Rejection> {
     let project_group = ProjectGroupService::new(project_group_uuid);
 
-    match project_group.update_member(
+    match project_group.update_member_permission(
         &pool,
         identity.character_id(),
         member_character_id,

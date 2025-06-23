@@ -1,7 +1,6 @@
-use utoipa::{openapi, Modify, OpenApi};
+use utoipa::{openapi, Modify, OpenApi, ToSchema};
 use utoipa::openapi::security::{HttpAuthScheme, HttpBuilder, SecurityScheme};
-
-use crate::BadRequestPayload;
+use serde::Serialize;
 
 #[cfg(not(feature = "appraisal"))]
 #[derive(OpenApi)]
@@ -18,78 +17,11 @@ use crate::BadRequestPayload;
     ),
     modifiers(&Auth),
     paths(
-        crate::appraisal::compression,
-        crate::appraisal::create,
-        crate::appraisal::fetch,
-        crate::appraisal::markets,
-        crate::appraisal::reprocessing,
-
         crate::healthcheck::healthz,
         crate::healthcheck::readyz,
 
-        crate::job_detection::fetch,
-        crate::job_detection::update_job_add,
-        crate::job_detection::update_job_delete,
-        crate::job_detection::update_job_replace,
-
-        crate::project::excess::fetch,
-        crate::project::excess::update_price,
-        crate::project::job::active,
-        crate::project::job::delete,
-        crate::project::job::fetch,
-        crate::project::job::startable,
-        crate::project::job::update,
-        crate::project::job_assignment::create,
-        crate::project::job_assignment::fetch,
-        crate::project::job_assignment::update_job_state,
-        crate::project::market::add,
-        crate::project::market::delete,
-        crate::project::market::fetch_prices_gas,
-        crate::project::market::fetch_prices_minerals,
-        crate::project::market::fetch_prices,
-        crate::project::market::fetch,
-        crate::project::market::last_fetch,
-        crate::project::market::update,
-        crate::project::market::update_bulk,
-        crate::project::market::update_minerals,
-        crate::project::misc::add,
-        crate::project::misc::delete,
-        crate::project::misc::fetch,
-        crate::project::misc::update,
-        crate::project::permission::can_write,
-        crate::project::permission::is_owner,
-        crate::project::product::fetch,
-        crate::project::service::check_resources,
-        crate::project::service::cost_estimate,
-        crate::project::service::create,
-        crate::project::service::delete,
-        crate::project::service::fetch,
-        crate::project::service::list,
-        crate::project::service::update,
-        crate::project::stock::fetch,
-        crate::project::stock::update_price,
-
-        crate::project_group::accept_invite,
-        crate::project_group::accept_member,
         crate::project_group::create,
-        crate::project_group::delete,
-        crate::project_group::fetch_default,
-        crate::project_group::fetch_members,
-        crate::project_group::fetch,
         crate::project_group::list,
-        crate::project_group::remove_member,
-        crate::project_group::update_default,
-        crate::project_group::update_member,
-        crate::project_group::update,
-
-        crate::structure::service::can_write,
-        crate::structure::service::create,
-        crate::structure::service::delete,
-        crate::structure::service::fetch,
-        crate::structure::service::is_owner,
-        crate::structure::service::resolve_player_structure,
-        crate::structure::service::rig_by_structure_type_id,
-        crate::structure::service::update,
 
         crate::version::version,
     ),
@@ -130,40 +62,84 @@ pub struct ApiDoc;
 pub struct NoContent;
 
 /// the given parameters are incorrect
-#[derive(utoipa::IntoResponses)]
-#[response(status = BAD_REQUEST)]
-pub struct BadRequest;
-
-/// the given parameters are incorrect
+#[allow(dead_code)]
 #[derive(utoipa::IntoResponses)]
 #[response(
     status = BAD_REQUEST,
     example = json!({
-        "error": "NO_SOLUTION",
-        "description": "No solution found for compression request. Adjust the parameters."
+        "error": "DESERIALIZATION_ERROR",
+        "description": "The body could not be parsed, make sure it's valid json and validate the routes requires parameters"
     })
 )]
-pub struct BadRequestWithPayload(pub BadRequestPayload);
+pub struct BadRequest {
+    /// General error name
+    pub error: BadRequestError,
+    /// Human description of the error
+    pub description: String,
+}
 
-/// the ressource was not found
+#[derive(Debug, Serialize, ToSchema)]
+#[serde(rename_all = "UPPERCASE")]
+pub enum BadRequestError {
+    Deserialization,
+    Validation,
+}
+
+/// the resource was not found
 #[derive(utoipa::IntoResponses)]
 #[response(status = NOT_FOUND)]
-pub struct NotFound;
+#[response(
+    status = NOT_FOUND,
+    example = json!({
+        "error": "NOT_FOUND",
+        "description": "Authenticate and try again"
+    })
+)]
+pub struct NotFound {
+    /// General error name
+    pub error: String,
+    /// Human description of the error
+    pub description: String,
+}
 
 /// authenticate and then try again
 #[derive(utoipa::IntoResponses)]
 #[response(status = UNAUTHORIZED)]
-pub struct Unauthorized;
+#[response(
+    status = UNAUTHORIZED,
+    example = json!({
+        "error": "UNAUTHORIZED",
+        "description": "Authenticate and try again"
+    })
+)]
+pub struct Unauthorized {
+    /// General error name
+    pub error: String,
+    /// Human description of the error
+    pub description: String,
+}
 
-/// the user is not allowed to use the ressource
+/// the user is not allowed to use the resource
 #[derive(utoipa::IntoResponses)]
 #[response(status = FORBIDDEN)]
 pub struct Forbidden;
 
 /// there was an unknown error
+#[allow(dead_code)]
 #[derive(utoipa::IntoResponses)]
-#[response(status = INTERNAL_SERVER_ERROR)]
-pub struct InternalServerError;
+#[response(
+    status = INTERNAL_SERVER_ERROR,
+    example = json!({
+        "error": "UNKNOWN",
+        "description": "An unknown error occurred"
+    })
+)]
+pub struct InternalServerError {
+    /// General error name
+    pub error: String,
+    /// Human description of the error
+    pub description: String,
+}
 
 /// wrong media type, must be application/json
 #[derive(utoipa::IntoResponses)]

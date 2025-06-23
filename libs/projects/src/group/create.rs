@@ -3,13 +3,33 @@ use starfoundry_libs_types::CharacterId;
 use std::str::FromStr;
 use uuid::Uuid;
 
-use crate::{CreateProjectGroup, Error, ProjectGroupUuid, Result};
+use crate::{CreateProjectGroup, Error, ProjectGroupPermissionCode, ProjectGroupUuid, Result};
 
 pub async fn create(
     pool:         &PgPool,
     character_id: CharacterId,
     info:         CreateProjectGroup,
 ) -> Result<ProjectGroupUuid> {
+    let name = if info.name.len() <= 100 {
+        if info.name.trim().is_empty() {
+            return Err(Error::ValidationError("Field 'name' must be set".into()));
+        }
+
+        info.name
+    } else {
+        return Err(Error::ValidationError("Field 'name' is too long, max length: 100".into()));
+    };
+
+    let description = match info.description {
+        Some(x) => {
+            if x.len() >= 10_000 {
+                return Err(Error::ValidationError("Field 'description' is too long, max length: 10_000".into()));
+            }
+            Some(x)
+        },
+        None => None,
+    };
+
     let mut transaction = pool
         .begin()
         .await
@@ -26,8 +46,8 @@ pub async fn create(
             RETURNING id
         ",
             *character_id,
-            info.name,
-            info.description,
+            name,
+            description,
         )
         .fetch_one(&mut *transaction)
         .await
@@ -39,21 +59,15 @@ pub async fn create(
             INSERT INTO project_group_member(
                 group_id,
                 character_id,
-                accepted,
-                projects,
-                project_group,
-                structures
+                permission
             )
             VALUES (
-                $1, $2,
-                TRUE,
-                'WRITE',
-                'WRITE',
-                'WRITE'
+                $1, $2, $3
             )
         ",
             *group_id,
-            *character_id
+            *character_id,
+            *ProjectGroupPermissionCode::ReadGroup,
         )
         .execute(&mut *transaction)
         .await
@@ -81,4 +95,73 @@ pub async fn create(
         .await
         .map_err(Error::TransactionCommitError)?;
     Ok(group_id)
+}
+
+
+#[cfg(test)]
+mod create_project_group_test {
+    use sqlx::PgPool;
+    use starfoundry_libs_types::CharacterId;
+
+    use crate::{CreateProjectGroup, Error};
+
+    #[sqlx::test(migrator = "crate::test_util::MIGRATOR")]
+    async fn no_body(
+        pool: PgPool,
+    ) {
+        let result = super::create(
+                &pool,
+                CharacterId(1),
+                CreateProjectGroup {
+                    name:        String::new(),
+                    description: None,
+                }
+            )
+            .await;
+        assert!(result.is_err());
+        assert!(matches!(result, Err(Error::ValidationError(_))));
+    }
+
+    #[sqlx::test(migrator = "crate::test_util::MIGRATOR")]
+    async fn missing_name(
+        pool: PgPool,
+    ) {
+        let result = super::create(
+                &pool,
+                CharacterId(1),
+                CreateProjectGroup {
+                    name:        String::new(),
+                    description: Some(String::from("Test description")),
+                }
+            )
+            .await;
+        assert!(result.is_err());
+        assert!(matches!(result, Err(Error::ValidationError(_))));
+    }
+
+    #[sqlx::test(migrator = "crate::test_util::MIGRATOR")]
+    async fn happy_path(
+        pool: PgPool,
+    ) {
+        let result = super::create(
+                &pool,
+                CharacterId(1),
+                CreateProjectGroup {
+                    name:        String::from("My shared projects"),
+                    description: Some(String::from("My cool description")),
+                }
+            )
+            .await;
+        assert!(result.is_ok());
+
+        let entry = sqlx::query!(
+                "SELECT * FROM project_group WHERE id = $1",
+                *result.unwrap(),
+            )
+            .fetch_one(&pool)
+            .await
+            .unwrap();
+        assert_eq!(entry.name, "My shared projects");
+        assert_eq!(entry.description.unwrap(), "My cool description");
+    }
 }
