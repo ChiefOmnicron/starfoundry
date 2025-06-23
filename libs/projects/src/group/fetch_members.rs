@@ -1,6 +1,6 @@
 use sqlx::PgPool;
 
-use crate::{Error, ProjectGroupUuid, ProjectGroupMember, Result};
+use crate::{Error, ProjectGroupMember, ProjectGroupPermission, ProjectGroupUuid, Result};
 
 pub async fn fetch_members(
     pool:       &PgPool,
@@ -12,9 +12,7 @@ pub async fn fetch_members(
                 character_name,
                 c.character_id,
                 accepted,
-                projects,
-                project_group,
-                structures,
+                permission,
                 (pg.owner = c.character_id) AS is_owner
             FROM project_group_member pgm
             JOIN project_group pg ON pg.id = pgm.group_id
@@ -34,9 +32,7 @@ pub async fn fetch_members(
                     character_id:   x.character_id.into(),
 
                     accepted:       x.accepted,
-                    projects:       x.projects,
-                    project_group:  x.project_group,
-                    structures:     x.structures,
+                    permission:     ProjectGroupPermission::new(x.permission),
                     is_owner:       x.is_owner.unwrap_or(false),
                 })
                 .collect::<Vec<_>>()

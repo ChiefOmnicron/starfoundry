@@ -1,11 +1,12 @@
 import axios from "axios";
-import type { Uuid } from "../utils";
+import { useQuery } from "@tanstack/react-query";
+import type { ProjectGroup } from "./fetch";
 
 export const LIST_PROJECT_GROUPS = 'listProjectGroups';
 
 export const listProjectGroups = async (
     filter: ProjectGroupFilter,
-): Promise<Uuid[]> => axios.get(
+): Promise<ProjectGroup[]> => axios.get(
         '/api/project-groups',
         {
             params: filter,
@@ -15,4 +16,14 @@ export const listProjectGroups = async (
 
 export type ProjectGroupFilter = {
     name?: string;
+}
+
+export const useListProjectGroup = (
+    filterParams: ProjectGroupFilter,
+) => {
+    return useQuery({
+        queryKey: [LIST_PROJECT_GROUPS, filterParams],
+        queryFn: async () => listProjectGroups(filterParams),
+        initialData: [],
+    })
 }
