@@ -39,9 +39,6 @@ use crate::api_docs::{BadRequest, InternalServerError, Unauthorized};
         Unauthorized,
         InternalServerError,
     ),
-    security (
-        ("jwt" = ["project_group:read"])
-    ),
 )]
 pub async fn list(
     pool:     PgPool,
@@ -80,10 +77,9 @@ mod list_project_group_test {
     ) {
         let filter = warp::any()
             .clone()
-            .and(warp::path!("project-groups" / ..))
             .and(with_pool(pool.clone()))
             .and(with_identity(pool.clone(), credential_cache(pool.clone()).await))
-            .and(warp::path::end())
+            .and(warp::path!("project-groups"))
             .and(warp::get())
             .and(warp::query())
             .and_then(super::list)

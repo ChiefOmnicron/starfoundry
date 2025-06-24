@@ -32,9 +32,6 @@ use crate::Identity;
         Unauthorized,
         InternalServerError,
     ),
-    security (
-        ("jwt" = ["project:read"])
-    ),
 )]
 pub async fn list(
     pool:     PgPool,

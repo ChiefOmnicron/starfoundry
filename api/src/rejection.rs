@@ -28,7 +28,19 @@ pub async fn handle_rejection(err: Rejection) -> Result<impl Reply, Infallible> 
             "error": "UNAUTHORIZED",
             "description": "Authenticate and try again"
         }));
+    } else if let Some(ReplyError::Forbidden) = err.find() {
+        code = StatusCode::FORBIDDEN;
+        json = warp::reply::json(&serde_json::json!({
+            "error": "FORBIDDEN",
+            "description": "You are not allowed to perform this action"
+        }));
     } else if let Some(ReplyError::NotFound) = err.find() {
+        code = StatusCode::NOT_FOUND;
+        json = warp::reply::json(&serde_json::json!({
+            "error": "NOT_FOUND",
+            "description": "The requested resource was not found"
+        }));
+    } else if err.is_not_found() {
         code = StatusCode::NOT_FOUND;
         json = warp::reply::json(&serde_json::json!({
             "error": "NOT_FOUND",

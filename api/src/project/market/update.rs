@@ -37,9 +37,6 @@ use crate::project::market::ProjectMarketUuidPath;
         UnsupportedMediaType,
         InternalServerError,
     ),
-    security (
-        ("jwt" = ["project:write"])
-    ),
 )]
 pub async fn update(
     pool:         PgPool,

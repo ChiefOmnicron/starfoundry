@@ -1,7 +1,7 @@
 import LoadingAnimation from '@/components/LoadingAnimation';
 import { FETCH_PROJECT_GROUP, useFetchProjectGroup } from '@/services/project-group/fetch';
 import { updateProjectGroup, type UpdateProjectGroup } from '@/services/project-group/update_group';
-import { Alert, Button, Flex, Textarea, TextInput } from '@mantine/core';
+import { Alert, Button, Card, Flex, Textarea, TextInput } from '@mantine/core';
 import { useForm } from '@tanstack/react-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router'
@@ -54,6 +54,7 @@ export function ProjectGroupOverview() {
 
     if (isError && !projectGroup) {
         return <Alert
+            mt="sm"
             variant='light'
             color='red'
             title='Unknown loading error'
@@ -66,19 +67,25 @@ export function ProjectGroupOverview() {
     const notification = () => {
         if (successfulUpdate) {
             return <Alert
+                mt="sm"
                 variant='light'
                 color='green'
                 title='Update successful'
                 data-cy="successfulUpdate"
+                onClose={ () => setSuccessfulUpdated(false) }
+                withCloseButton
             >
                 The project group was updated
             </Alert>;
         } else if (errorUpdate) {
             return <Alert
+                mt="sm"
                 variant='light'
                 color='red'
                 title='Update error'
                 data-cy="errorUpdate"
+                onClose={ () => setErrorUpdated(undefined) }
+                withCloseButton
             >
                 There was an error while updating. Please try again later.
             </Alert>;
@@ -95,64 +102,67 @@ export function ProjectGroupOverview() {
                 form.handleSubmit();
             }}
         >
-            <form.Field
-                name="name"
-                validators={{
-                    onBlur: ({ value }) => {
-                        return (value.trimStart().length === 0 ? 'The field is required' : undefined) ||
-                            (value.length > 100 ? 'Maximum allowed chars is 100' : undefined)
-                    }
-                }}
-                children={(field) => {
-                    return <>
-                        <TextInput
-                            data-1p-ignore
-                            data-cy="name"
-                            label="Name"
-                            description="Name of the new project group"
-                            placeholder="My cool project group"
-                            id={field.name}
-                            name={field.name}
-                            value={field.state.value}
-                            error={
-                                !field.state.meta.isValid && field.state.meta.errors.join(', ')
-                            }
-                            onBlur={field.handleBlur}
-                            onChange={(e) => field.handleChange(e.target.value)}
-                        />
-                    </>
-                }}
-            />
-            <form.Field
-                name="description"
-                validators={{
-                    onBlur: ({ value }) => {
-                        return (value.length > 10000 ? 'Maximum allowed chars is 10000' : undefined)
-                    }
-                }}
-                children={(field) => {
-                    return <>
-                        <Textarea
-                            data-1p-ignore
-                            data-cy="description"
-                            mt="sm"
-                            label="Description (optional)"
-                            description="Description of the project group"
-                            placeholder="Only cool projects in here"
-                            id={field.name}
-                            name={field.name}
-                            value={field.state.value}
-                            error={
-                                !field.state.meta.isValid && field.state.meta.errors.join(', ')
-                            }
-                            onBlur={field.handleBlur}
-                            onChange={(e) => field.handleChange(e.target.value)}
-                            autosize
-                            minRows={3}
-                        />
-                    </>
-                }}
-            />
+            <Card mt="sm">
+                <form.Field
+                    name="name"
+                    validators={{
+                        onBlur: ({ value }) => {
+                            return (value.trimStart().length === 0 ? 'The field is required' : undefined) ||
+                                (value.length > 100 ? 'Maximum allowed chars is 100' : undefined)
+                        }
+                    }}
+                    children={(field) => {
+                        return <>
+                            <TextInput
+                                data-1p-ignore
+                                data-cy="name"
+                                label="Name"
+                                description="Name of the new project group"
+                                placeholder="My cool project group"
+                                id={field.name}
+                                name={field.name}
+                                value={field.state.value}
+                                error={
+                                    !field.state.meta.isValid && field.state.meta.errors.join(', ')
+                                }
+                                onBlur={field.handleBlur}
+                                onChange={(e) => field.handleChange(e.target.value)}
+                            />
+                        </>
+                    }}
+                />
+                <form.Field
+                    name="description"
+                    validators={{
+                        onBlur: ({ value }) => {
+                            return (value.length > 10000 ? 'Maximum allowed chars is 10000' : undefined)
+                        }
+                    }}
+                    children={(field) => {
+                        return <>
+                            <Textarea
+                                data-1p-ignore
+                                data-cy="description"
+                                mt="sm"
+                                label="Description (optional)"
+                                description="Description of the project group"
+                                placeholder="Only cool projects in here"
+                                id={field.name}
+                                name={field.name}
+                                value={field.state.value}
+                                error={
+                                    !field.state.meta.isValid && field.state.meta.errors.join(', ')
+                                }
+                                onBlur={field.handleBlur}
+                                onChange={(e) => field.handleChange(e.target.value)}
+                                autosize
+                                minRows={3}
+                            />
+                        </>
+                    }}
+                />
+            </Card>
+
             <form.Subscribe
                 selector={(state) => [state.canSubmit, state.isSubmitting]}
                 children={([canSubmit, isSubmitting]) => (
@@ -160,6 +170,14 @@ export function ProjectGroupOverview() {
                         justify="flex-end"
                         gap="sm"
                     >
+                        <Button
+                            color="red"
+                            data-cy="delete"
+                            mt="sm"
+                        >
+                            Delete
+                        </Button>
+
                         <Button
                             data-cy="save"
                             mt="sm"

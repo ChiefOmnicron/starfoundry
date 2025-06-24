@@ -33,9 +33,6 @@ use crate::project::ProjectUuidPath;
         Forbidden,
         InternalServerError,
     ),
-    security (
-        ("jwt" = ["project:owner"])
-    ),
 )]
 pub async fn delete(
     pool:         PgPool,
