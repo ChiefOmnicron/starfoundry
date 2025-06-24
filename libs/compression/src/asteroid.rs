@@ -2380,7 +2380,7 @@ impl Asteroid {
                         Mineral::Pyerite,
                     ],
                     vec![
-                        84f64 * self.ore_modifier(),
+                        92f64 * self.ore_modifier(),
                     ],
                 )
             },
@@ -2518,7 +2518,7 @@ impl Asteroid {
                     ],
                     vec![
                         150f64 * self.ore_modifier(),
-                        90f64 * self.ore_modifier(),
+                        99f64 * self.ore_modifier(),
                     ],
                 )
             },

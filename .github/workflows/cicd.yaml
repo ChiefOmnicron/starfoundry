@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@master
       - name: Run cargo test
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/starfoundry
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/old
         run: cargo test
 
   test-web:
