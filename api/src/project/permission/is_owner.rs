@@ -31,9 +31,6 @@ use crate::api_docs::{Forbidden, InternalServerError, NoContent, Unauthorized};
         Forbidden,
         InternalServerError,
     ),
-    security (
-        ("jwt" = ["project:owner"])
-    ),
 )]
 pub async fn is_owner(
     pool:         PgPool,

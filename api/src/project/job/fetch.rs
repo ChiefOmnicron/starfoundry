@@ -52,9 +52,6 @@ use crate::project::ProjectUuidPath;
         Forbidden,
         InternalServerError,
     ),
-    security (
-        ("jwt" = ["project:read"])
-    ),
 )]
 pub async fn fetch(
     pool:         PgPool,

@@ -61,9 +61,6 @@ use crate::api_docs::{BadRequest, Forbidden, InternalServerError, Unauthorized};
         Forbidden,
         InternalServerError,
     ),
-    security (
-        ("jwt" = ["project:read"])
-    ),
 )]
 pub async fn fetch(
     pool:         PgPool,

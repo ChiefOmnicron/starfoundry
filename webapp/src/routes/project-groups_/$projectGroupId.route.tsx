@@ -1,18 +1,17 @@
 import LoadingAnimation from '@/components/LoadingAnimation';
 import { fetchProjectGroupQuery, useFetchProjectGroup } from '@/services/project-group/fetch';
-import { Alert, Tabs, Title } from '@mantine/core'
-import { createFileRoute, Outlet, useNavigate } from '@tanstack/react-router'
+import { Alert, Title } from '@mantine/core'
+import { createFileRoute, Outlet } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/project-groups_/$projectGroupId')({
-    component: ProjectGroupId,
+    component: ProjectGroupHeader,
     loader: async ({ context, params }) => {
         const queryClient = context.queryClient;
         queryClient.prefetchQuery(fetchProjectGroupQuery(params.projectGroupId));
     }
 })
 
-function ProjectGroupId() {
-    const navigation = useNavigate({ from: Route.fullPath });
+export function ProjectGroupHeader() {
     const { projectGroupId } = Route.useParams();
 
     const {
@@ -48,24 +47,6 @@ function ProjectGroupId() {
         >
             Project Group '{ projectGroups?.name }'
         </Title>
-
-        <Tabs
-            value={ openTab }
-            onChange={(value) => navigation(
-                {
-                    to: `/project-groups/${projectGroupId}/${value}`
-                }
-            )}
-        >
-            <Tabs.List>
-                <Tabs.Tab value="overview">Overview</Tabs.Tab>
-                <Tabs.Tab value="projects">Projects</Tabs.Tab>
-                <Tabs.Tab value="structures">Structures</Tabs.Tab>
-                <Tabs.Tab value="members">Members</Tabs.Tab>
-                <Tabs.Tab value="defaults">Defaults</Tabs.Tab>
-            </Tabs.List>
-        </Tabs>
-
 
         <Outlet />
     </>
