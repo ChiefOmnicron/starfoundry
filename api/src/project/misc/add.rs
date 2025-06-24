@@ -38,9 +38,6 @@ use crate::api_docs::{BadRequest, Forbidden, InternalServerError, Unauthorized};
         Forbidden,
         InternalServerError,
     ),
-    security (
-        ("jwt" = ["project:write"])
-    ),
 )]
 pub async fn add(
     pool:         PgPool,

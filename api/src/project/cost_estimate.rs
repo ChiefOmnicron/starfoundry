@@ -30,9 +30,6 @@ use crate::api_docs::{BadRequest, InternalServerError, Unauthorized, Unsupported
         UnsupportedMediaType,
         InternalServerError,
     ),
-    security (
-        ("jwt" = []),
-    ),
 )]
 pub async fn cost_estimate(
     pool:     PgPool,

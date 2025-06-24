@@ -34,9 +34,6 @@ use crate::project::ProjectUuidPath;
         Forbidden,
         InternalServerError,
     ),
-    security (
-        ("jwt" = ["project:read"])
-    ),
 )]
 pub async fn fetch_prices_minerals(
     pool:         PgPool,

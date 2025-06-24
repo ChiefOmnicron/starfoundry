@@ -30,6 +30,7 @@ pub enum ProjectGroupPermissionCode {
     WriteStructure,
     WriteDefault,
     WriteMember,
+    WriteGroup,
 }
 
 impl Deref for ProjectGroupPermissionCode {
@@ -43,6 +44,7 @@ impl Deref for ProjectGroupPermissionCode {
             Self::WriteStructure    => &8i32,
             Self::WriteDefault      => &16i32,
             Self::WriteMember       => &32i32,
+            Self::WriteGroup        => &64i32,
         }
     }
 }

@@ -32,9 +32,6 @@ use crate::project::ProjectUuidPath;
         Forbidden,
         InternalServerError,
     ),
-    security (
-        ("jwt" = ["project:write"])
-    ),
 )]
 pub async fn delete(
     pool:         PgPool,
@@ -57,9 +54,6 @@ pub async fn delete(
             Ok(response)
         },
         Err(starfoundry_libs_projects::Error::Forbidden(_, _)) => {
-            Err(ReplyError::Forbidden.into())
-        },
-        Err(starfoundry_libs_projects::Error::ProjectGroupNotFound(_)) => {
             Err(ReplyError::Forbidden.into())
         },
         Err(e) => {

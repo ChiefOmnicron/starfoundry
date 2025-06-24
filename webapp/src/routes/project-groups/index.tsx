@@ -1,4 +1,4 @@
-import { Alert, Button, Card, Center, Flex, Stack, Table, Title, UnstyledButton } from '@mantine/core';
+import { Alert, Button, Card, Center, Flex, Pill, Stack, Table, Title, UnstyledButton } from '@mantine/core';
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { Route as createProjectGroupRoute } from '@/routes/project-groups/create';
@@ -39,6 +39,15 @@ const columns = [
         cell: info => info.getValue(),
         header: () => 'Description',
     }),
+    columnHelper.accessor('is_owner', {
+        id: 'is_owner',
+        cell: info => {
+            if (info.getValue()) {
+                return <Pill>Owner</Pill>
+            }
+        },
+        header: () => '',
+    }),
     columnHelper.accessor('members', {
         id: 'members',
         cell: info => info.getValue(),
@@ -76,7 +85,7 @@ export function ProjectGroups() {
     });
 
     const createProjectGroup = () => {
-        navigation({ to: createProjectGroupRoute.fullPath });
+        navigation({ to: createProjectGroupRoute.to });
     }
 
     const dataTable = () => {
