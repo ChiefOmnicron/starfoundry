@@ -3,6 +3,8 @@ use warp::{Reply, Rejection};
 
 /// /readyz
 /// 
+/// Checks that the database connection is up and running
+/// 
 #[utoipa::path(
     get,
     operation_id = "readyz",

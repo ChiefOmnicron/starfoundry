@@ -53,9 +53,6 @@ pub async fn delete(
         Err(starfoundry_libs_projects::Error::Forbidden(_, _)) => {
             Err(ReplyError::Forbidden.into())
         },
-        Err(starfoundry_libs_projects::Error::ProjectGroupNotFound(_)) => {
-            Err(ReplyError::Forbidden.into())
-        },
         Err(e) => {
             tracing::error!("Unexpected error, {e}");
             Err(ReplyError::Internal.into())

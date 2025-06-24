@@ -1,5 +1,4 @@
-use utoipa::{openapi, Modify, OpenApi, ToSchema};
-use utoipa::openapi::security::{HttpAuthScheme, HttpBuilder, SecurityScheme};
+use utoipa::{OpenApi, ToSchema};
 use serde::Serialize;
 
 #[cfg(not(feature = "appraisal"))]
@@ -15,13 +14,14 @@ use serde::Serialize;
             name = "Dual licensed under Apache-2.0 and MIT"
         ),
     ),
-    modifiers(&Auth),
     paths(
         crate::healthcheck::healthz,
         crate::healthcheck::readyz,
 
         crate::project_group::create,
+        crate::project_group::fetch,
         crate::project_group::list,
+        crate::project_group::update,
 
         crate::version::version,
     ),
@@ -145,25 +145,3 @@ pub struct InternalServerError {
 #[derive(utoipa::IntoResponses)]
 #[response(status = UNSUPPORTED_MEDIA_TYPE)]
 pub struct UnsupportedMediaType;
-
-#[cfg(not(feature = "appraisal"))]
-#[derive(Debug)]
-struct Auth;
-
-#[cfg(not(feature = "appraisal"))]
-impl Modify for Auth {
-    fn modify(&self, openapi: &mut openapi::OpenApi) {
-        if let Some(schema) = openapi.components.as_mut() {
-            schema.add_security_scheme(
-                "jwt",
-                SecurityScheme::Http
-                (
-                    HttpBuilder::new()
-                        .scheme(HttpAuthScheme::Bearer)
-                        .bearer_format("JWT")
-                        .build(),
-                ),
-            );
-        }
-    }
-}

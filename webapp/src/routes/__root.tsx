@@ -2,13 +2,37 @@ import { AppShell, Avatar, Burger, createTheme, DEFAULT_THEME, Group, MantinePro
 import { useDisclosure } from '@mantine/hooks';
 import { CustomLink } from '@/components/RouterLink';
 
-import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
+import { createRootRouteWithContext, Outlet, useRouterState } from '@tanstack/react-router';
 import type { ReactElement } from 'react';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import type { RouterContext } from '@/main';
 
+import { Route as ProjectGroupRoute } from '@/routes/project-groups_/$projectGroupId.route';
+import { Route as ProjectGroupOverviewRoute } from '@/routes/project-groups_/$projectGroupId.overview';
+import { Route as ProjectGroupProjectsRoute } from '@/routes/project-groups_/$projectGroupId.projects';
+
 const routes = [
-    { link: '/project-groups', label: 'Project Groups' },
+    {
+        link: '/project-groups',
+        label: 'Project Groups',
+        subpath: ProjectGroupRoute.to,
+        paths: [{
+            link: ProjectGroupOverviewRoute.to,
+            label: 'Overview'
+        }, {
+            link: ProjectGroupProjectsRoute.to,
+            label: 'Projects'
+        }, {
+            link: '/project-groups/$projectGroupId/structures',
+            label: 'Structures'
+        }, {
+            link: '/project-groups/$projectGroupId/members',
+            label: 'Members'
+        }, {
+            link: '/project-groups/$projectGroupId/defaults',
+            label: 'Defaults'
+        }]
+    },
 ];
 
 const themeOverride = createTheme({
@@ -30,8 +54,50 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 });
 
 function LayoutComponent(): ReactElement {
-    console.log(theme)
     const [opened, { toggle }] = useDisclosure();
+
+    const router = useRouterState();
+
+    const projectGroups = (): ReactElement[] => {
+        return routes
+            .map(route => {
+                if (router.matches[router.matches.length - 2].fullPath === route.subpath) {
+                    const match = router.matches[router.matches.length - 2];
+                    const params: any = match.params;
+
+                    const subRoutes = route
+                        .paths
+                        .map(subRoute => {
+                            return (<CustomLink
+                                key={ subRoute.label.toLowerCase() }
+                                to={ subRoute.link }
+                                label={ subRoute.label }
+                                params={params}
+                            />)
+                        });
+
+                    return (
+                        <CustomLink
+                            key={ route.label.toLowerCase() }
+                            to={ route.link }
+                            label={ route.label }
+                            rightSection={ <></> }
+                            opened
+                        >
+                            { subRoutes }
+                        </CustomLink>
+                    )
+                }
+
+                return (
+                    <CustomLink
+                        key={ route.label.toLowerCase() }
+                        to={ route.link }
+                        label={ route.label }
+                    />
+                );
+            });
+    }
 
     return (
         <MantineProvider
@@ -65,7 +131,7 @@ function LayoutComponent(): ReactElement {
 
                 <AppShell.Navbar>
                     <AppShell.Section grow my="md" component={ScrollArea}>
-                        { navEntries() }
+                        { projectGroups() }
                     </AppShell.Section>
                     <AppShell.Section>
                         <UnstyledButton>
@@ -97,17 +163,4 @@ function LayoutComponent(): ReactElement {
             </AppShell>
         </MantineProvider>
     );
-}
-
-function navEntries(): ReactElement[] {
-    return routes
-        .map(x => {
-            return (
-                <CustomLink
-                    key={ x.label.toLowerCase() }
-                    to={ x.link }
-                    label={ x.label }
-                />
-            )
-        })
 }
