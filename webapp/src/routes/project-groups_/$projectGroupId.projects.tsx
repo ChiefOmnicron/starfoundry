@@ -1,46 +1,84 @@
+import LoadingAnimation from '@/components/LoadingAnimation';
+import { FETCH_PROJECT_GROUP, useFetchProjectGroup } from '@/services/project-group/fetch';
+import { updateProjectGroup, type UpdateProjectGroup } from '@/services/project-group/update_group';
 import { Alert, Button, Card, Flex, Textarea, TextInput } from '@mantine/core';
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Route as listProjectGroupRoute } from '@/routes/project-groups/index';
-import { useForm } from '@tanstack/react-form'
-import { createProjectGroup, type CreateProjectGroup } from '@/services/project-group/create';
+import { useForm } from '@tanstack/react-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { LIST_PROJECT_GROUPS } from '@/services/project-group/list';
+import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react';
 
-export const Route = createFileRoute('/project-groups/create')({
-    component: CreateProjectGroup,
+export const Route = createFileRoute(
+    '/project-groups_/$projectGroupId/projects',
+)({
+    component: ProjectGroupProjects,
 })
 
-export function CreateProjectGroup() {
+export function ProjectGroupProjects() {
+    return <>Heyo</>
     const queryClient = useQueryClient();
-    const navigation = useNavigate({ from: Route.fullPath });
+    const { projectGroupId } = Route.useParams();
 
+    const [successfulUpdate, setSuccessfulUpdated] = useState<boolean>();
     const [errorUpdate, setErrorUpdated] = useState<string | undefined>();
 
-    const create = useMutation({
-        mutationFn: async (data: CreateProjectGroup) => {
-            return await createProjectGroup(data);
-        },
+    const {
+        isError,
+        isPending,
+        data: projectGroup,
+    } = useFetchProjectGroup(projectGroupId);
+
+    const update = useMutation({
+        mutationFn: (data: UpdateProjectGroup) => updateProjectGroup(projectGroupId, data),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: [LIST_PROJECT_GROUPS] })
+            setErrorUpdated(undefined);
+            setSuccessfulUpdated(true);
+            queryClient.invalidateQueries({ queryKey: [FETCH_PROJECT_GROUP] })
         },
     });
 
     const form = useForm({
         defaultValues: {
-            name: '',
-            description: '',
+            name: projectGroup?.name || '',
+            description: projectGroup?.description || '',
         },
-        onSubmit: async ({ value }) => await create
+        onSubmit: async ({ value }) => await update
             .mutateAsync(value)
             .catch(error => {
                 setErrorUpdated(error);
+                setSuccessfulUpdated(false);
             }),
-            // TODO: redirect
     });
 
+    if (isPending) {
+        return LoadingAnimation();
+    }
+
+    if (isError && !projectGroup) {
+        return <Alert
+            mt="sm"
+            variant='light'
+            color='red'
+            title='Unknown loading error'
+            data-cy="error"
+        >
+            There was an unknown error while loading the data. Please try again later.
+        </Alert>
+    }
+
     const notification = () => {
-        if (errorUpdate) {
+        if (successfulUpdate) {
+            return <Alert
+                mt="sm"
+                variant='light'
+                color='green'
+                title='Update successful'
+                data-cy="successfulUpdate"
+                onClose={ () => setSuccessfulUpdated(false) }
+                withCloseButton
+            >
+                The project group was updated
+            </Alert>;
+        } else if (errorUpdate) {
             return <Alert
                 mt="sm"
                 variant='light'
@@ -50,7 +88,7 @@ export function CreateProjectGroup() {
                 onClose={ () => setErrorUpdated(undefined) }
                 withCloseButton
             >
-                There was an error while creating. Please try again later.
+                There was an error while updating. Please try again later.
             </Alert>;
         }
     };
@@ -65,7 +103,7 @@ export function CreateProjectGroup() {
                 form.handleSubmit();
             }}
         >
-            <Card>
+            <Card mt="sm">
                 <form.Field
                     name="name"
                     validators={{
@@ -134,21 +172,21 @@ export function CreateProjectGroup() {
                         gap="sm"
                     >
                         <Button
+                            color="red"
+                            data-cy="delete"
                             mt="sm"
-                            variant="subtle"
-                            color="gray"
-                            onClick={() => navigation({ to: listProjectGroupRoute.to })}
                         >
-                            Back
+                            Delete
                         </Button>
+
                         <Button
-                            data-cy="create"
+                            data-cy="save"
                             mt="sm"
                             type="submit"
                             disabled={!canSubmit || isSubmitting}
                             loading={isSubmitting}
                         >
-                            Create
+                            Save
                         </Button>
                     </Flex>
                 )}

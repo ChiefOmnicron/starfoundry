@@ -35,9 +35,6 @@ use crate::project::ProjectUuidPath;
         UnsupportedMediaType,
         InternalServerError,
     ),
-    security (
-        ("jwt" = ["project:write"])
-    ),
 )]
 pub async fn update_minerals(
     pool:         PgPool,

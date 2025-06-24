@@ -39,5 +39,6 @@ INSERT INTO project_group_permission (bit, name, comment) VALUES
 (4, 'Write Project', 'Allows to use the group to create new projects'),
 (8, 'Write Structure', 'Allows to add additional structures to the group'),
 (16, 'Write Defaults', 'Allows to update the group defaults'),
-(32, 'Write Members', 'Allows to add additional members to the group')
+(32, 'Write Members', 'Allows to add additional members to the group'),
+(64, 'Write Group', 'Allows to perform updates on the group itself')
 ON CONFLICT DO NOTHING;

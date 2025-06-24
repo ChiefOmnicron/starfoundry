@@ -34,9 +34,6 @@ use crate::api_docs::{BadRequest, InternalServerError};
         BadRequest,
         InternalServerError,
     ),
-    security (
-        ("jwt" = ["project:read"])
-    ),
 )]
 pub async fn create(
     pool:           PgPool,
