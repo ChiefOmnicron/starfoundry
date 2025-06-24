@@ -31,9 +31,6 @@ use crate::api_docs::{Forbidden, InternalServerError, NoContent, Unauthorized};
         Forbidden,
         InternalServerError,
     ),
-    security (
-        ("jwt" = ["project:write"])
-    ),
 )]
 pub async fn can_write(
     pool:         PgPool,

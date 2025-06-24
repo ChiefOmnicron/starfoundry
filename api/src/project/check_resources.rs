@@ -32,9 +32,6 @@ use crate::api_docs::{BadRequest, InternalServerError, NoContent, UnsupportedMed
         UnsupportedMediaType,
         InternalServerError,
     ),
-    security (
-        ("jwt" = [])
-    ),
 )]
 pub async fn check_resources(
     pool:            PgPool,

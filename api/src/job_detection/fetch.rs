@@ -29,9 +29,6 @@ use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
         Forbidden,
         InternalServerError,
     ),
-    security (
-        ("jwt" = [])
-    ),
 )]
 pub async fn fetch(
     pool:      PgPool,

@@ -10,25 +10,7 @@ pub async fn create(
     character_id: CharacterId,
     info:         CreateProjectGroup,
 ) -> Result<ProjectGroupUuid> {
-    let name = if info.name.len() <= 100 {
-        if info.name.trim().is_empty() {
-            return Err(Error::ValidationError("Field 'name' must be set".into()));
-        }
-
-        info.name
-    } else {
-        return Err(Error::ValidationError("Field 'name' is too long, max length: 100".into()));
-    };
-
-    let description = match info.description {
-        Some(x) => {
-            if x.len() >= 10_000 {
-                return Err(Error::ValidationError("Field 'description' is too long, max length: 10_000".into()));
-            }
-            Some(x)
-        },
-        None => None,
-    };
+    info.valid()?;
 
     let mut transaction = pool
         .begin()
@@ -46,8 +28,8 @@ pub async fn create(
             RETURNING id
         ",
             *character_id,
-            name,
-            description,
+            info.name,
+            info.description,
         )
         .fetch_one(&mut *transaction)
         .await

@@ -38,9 +38,6 @@ use crate::job_detection::JobIdPath;
         Forbidden,
         InternalServerError,
     ),
-    security (
-        ("jwt" = ["project:write"])
-    ),
 )]
 pub async fn update_job_delete(
     pool:      PgPool,

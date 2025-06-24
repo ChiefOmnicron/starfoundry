@@ -1,8 +1,8 @@
 use warp::{Reply, Rejection};
 
-/// healthz
+/// /healthz
 ///
-/// Checks if the servic is ready to accept connections
+/// Checks if the service is ready to accept connections
 /// 
 #[utoipa::path(
     get,

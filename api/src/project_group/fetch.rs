@@ -11,7 +11,15 @@ use uuid::Uuid;
 
 /// /project-groups/{projectGroupUuid}
 /// 
-/// Fetches additional information about a project group
+/// Alternative route: `/v1/project-groups/{projectGroupUuid}`
+/// 
+/// ---
+/// 
+/// Fetches information about a project group
+/// 
+/// ## Security
+/// - authenticated
+/// - project_group: read
 /// 
 #[utoipa::path(
     get,
@@ -40,16 +48,16 @@ pub async fn fetch(
 ) -> Result<impl Reply, Rejection> {
     let project_group = ProjectGroupService::new(project_group_uuid);
 
-    match project_group.fetch(
+    match dbg!(project_group.fetch(
         &pool,
         identity.character_id(),
-    ).await {
+    ).await) {
         Ok(x) => Ok(warp::reply::json(&x)),
-        Err(starfoundry_libs_projects::Error::Forbidden(_, _)) => {
-            Err(ReplyError::Forbidden.into())
-        },
         Err(starfoundry_libs_projects::Error::ProjectGroupNotFound(_)) => {
             Err(ReplyError::NotFound.into())
+        },
+        Err(starfoundry_libs_projects::Error::Forbidden(_, _)) => {
+            Err(ReplyError::Forbidden.into())
         },
         Err(e) => {
             tracing::error!("Unexpected error, {e}");
@@ -80,4 +88,65 @@ pub struct ProjectGroupResponse {
 
     /// Description of the group
     pub description: Option<String>,
+}
+
+#[cfg(test)]
+mod fetch_project_group_test {
+    use sqlx::PgPool;
+    use starfoundry_libs_projects::ProjectGroupUuid;
+    use warp::Filter;
+    use warp::http::StatusCode;
+
+    use crate::test_util::credential_cache;
+    use crate::{with_identity, with_pool};
+
+    #[sqlx::test(
+        fixtures("fetch"),
+        migrator = "crate::test_util::MIGRATOR",
+    )]
+    async fn happy_path(
+        pool: PgPool,
+    ) {
+        let filter = warp::any()
+            .clone()
+            .and(with_pool(pool.clone()))
+            .and(with_identity(pool.clone(), credential_cache(pool.clone()).await))
+            .and(warp::path!("project-groups" / ProjectGroupUuid))
+            .and(warp::get())
+            .and_then(super::fetch)
+            .recover(crate::rejection::handle_rejection);
+
+        let response = warp::test::request()
+            .path("/project-groups/00000000-0000-0000-0000-000000000001")
+            .method("GET")
+            .reply(&filter)
+            .await;
+
+        assert_eq!(response.status(), StatusCode::OK);
+    }
+
+    #[sqlx::test(
+        fixtures("fetch"),
+        migrator = "crate::test_util::MIGRATOR",
+    )]
+    async fn no_entry_with_default_uuid(
+        pool: PgPool,
+    ) {
+        let filter = warp::any()
+            .clone()
+            .and(with_pool(pool.clone()))
+            .and(with_identity(pool.clone(), credential_cache(pool.clone()).await))
+            .and(warp::path!("project-groups" / ProjectGroupUuid))
+            .and(warp::get())
+            .and_then(super::fetch)
+            .recover(crate::rejection::handle_rejection);
+
+        let response = warp::test::request()
+            .path("/project-groups/00000000-0000-0000-0000-000000000000")
+            .method("GET")
+            .reply(&filter)
+            .await;
+
+        assert_eq!(response.status(), StatusCode::NOT_FOUND);
+    }
 }

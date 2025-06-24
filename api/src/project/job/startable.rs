@@ -50,9 +50,6 @@ use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
         Forbidden,
         InternalServerError,
     ),
-    security (
-        ("jwt" = ["project:read"])
-    ),
 )]
 pub async fn startable(
     pool:         PgPool,
