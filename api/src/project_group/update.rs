@@ -76,12 +76,10 @@ pub async fn update(
 mod update_project_group_test {
     use serde_json::json;
     use sqlx::PgPool;
-    use starfoundry_libs_projects::ProjectGroupUuid;
     use warp::Filter;
     use warp::http::StatusCode;
 
     use crate::test_util::credential_cache;
-    use crate::{with_identity, with_pool};
 
     #[sqlx::test(
         fixtures("update"),
@@ -90,14 +88,12 @@ mod update_project_group_test {
     async fn no_body(
         pool: PgPool,
     ) {
+        let base_path = warp::any().boxed();
+        let credential_cache = credential_cache(pool.clone()).await;
+
         let filter = warp::any()
             .clone()
-            .and(with_pool(pool.clone()))
-            .and(with_identity(pool.clone(), credential_cache(pool.clone()).await))
-            .and(warp::path!("project-groups" / ProjectGroupUuid))
-            .and(warp::put())
-            .and(warp::body::json())
-            .and_then(super::update)
+            .and(crate::project_group::api(pool, base_path, credential_cache))
             .recover(crate::rejection::handle_rejection);
 
         let response = warp::test::request()
@@ -117,14 +113,12 @@ mod update_project_group_test {
     async fn missing_name(
         pool: PgPool,
     ) {
+        let base_path = warp::any().boxed();
+        let credential_cache = credential_cache(pool.clone()).await;
+
         let filter = warp::any()
             .clone()
-            .and(with_pool(pool.clone()))
-            .and(with_identity(pool.clone(), credential_cache(pool.clone()).await))
-            .and(warp::path!("project-groups" / ProjectGroupUuid))
-            .and(warp::put())
-            .and(warp::body::json())
-            .and_then(super::update)
+            .and(crate::project_group::api(pool, base_path, credential_cache))
             .recover(crate::rejection::handle_rejection);
 
         let response = warp::test::request()
@@ -146,14 +140,12 @@ mod update_project_group_test {
     async fn happy_path(
         pool: PgPool,
     ) {
+        let base_path = warp::any().boxed();
+        let credential_cache = credential_cache(pool.clone()).await;
+
         let filter = warp::any()
             .clone()
-            .and(with_pool(pool.clone()))
-            .and(with_identity(pool.clone(), credential_cache(pool.clone()).await))
-            .and(warp::path!("project-groups" / ProjectGroupUuid))
-            .and(warp::put())
-            .and(warp::body::json())
-            .and_then(super::update)
+            .and(crate::project_group::api(pool.clone(), base_path, credential_cache))
             .recover(crate::rejection::handle_rejection);
 
         let response = warp::test::request()

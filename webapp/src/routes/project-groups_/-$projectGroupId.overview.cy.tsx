@@ -61,10 +61,23 @@ describe('Project Group Overview', () => {
             },
         ).as('fetchProjectGroup');
 
+        cy.intercept(
+            {
+                method: 'GET',
+                url: '/api/project-groups/e52744df-a140-4e72-b24c-18f534d0ae94/can-write',
+            },
+            (req) => {
+                req.reply({
+                    statusCode: 204,
+                });
+            },
+        ).as('canWriteProjectGroup');
+
         cy.mount(componentMount());
 
         cy.get('[data-cy="loading"]').should('be.visible');
         cy.wait('@fetchProjectGroup');
+        cy.wait('@canWriteProjectGroup');
 
         cy.get('[data-cy="name"]').should('have.value', 'Test');
         cy.get('[data-cy="description"]').should('have.value', 'Some description');
@@ -105,9 +118,22 @@ describe('Project Group Overview', () => {
             },
         ).as('updateProjectGroup');
 
+        cy.intercept(
+            {
+                method: 'GET',
+                url: '/api/project-groups/e52744df-a140-4e72-b24c-18f534d0ae94/can-write',
+            },
+            (req) => {
+                req.reply({
+                    statusCode: 204,
+                });
+            },
+        ).as('canWriteProjectGroup');
+
         cy.mount(componentMount());
 
         cy.wait('@fetchProjectGroup');
+        cy.wait('@canWriteProjectGroup');
 
         cy.get('[data-cy="name"]').should('have.value', 'Test');
         cy.get('[data-cy="description"]').should('have.value', 'Some description');
@@ -164,9 +190,22 @@ describe('Project Group Overview', () => {
             },
         ).as('updateProjectGroup');
 
+        cy.intercept(
+            {
+                method: 'GET',
+                url: '/api/project-groups/e52744df-a140-4e72-b24c-18f534d0ae94/can-write',
+            },
+            (req) => {
+                req.reply({
+                    statusCode: 204,
+                });
+            },
+        ).as('canWriteProjectGroup');
+
         cy.mount(componentMount());
 
         cy.wait('@fetchProjectGroup');
+        cy.wait('@canWriteProjectGroup');
 
         cy.get('[data-cy="name"]').should('have.value', 'Test');
         cy.get('[data-cy="description"]').should('have.value', 'Some description');
@@ -206,12 +245,170 @@ describe('Project Group Overview', () => {
             },
         ).as('fetchProjectGroup');
 
+        cy.intercept(
+            {
+                method: 'GET',
+                url: '/api/project-groups/e52744df-a140-4e72-b24c-18f534d0ae94/can-write',
+            },
+            (req) => {
+                req.reply({
+                    statusCode: 204,
+                });
+            },
+        ).as('canWriteProjectGroup');
+
         cy.mount(componentMount());
 
         cy.wait('@fetchProjectGroup');
+        cy.wait('@canWriteProjectGroup');
         cy.get('[data-cy="name"]').clear();
         cy.get('[data-cy="description"]').clear().type('Cool project');
         cy.get('[data-cy="save"]').should('be.disabled');
         cy.get('[data-cy="name"]').should('have.attr', 'data-error');
+    });
+
+    it('the user is allowed authorized to update the group', () => {
+        cy.intercept(
+            {
+                method: 'GET',
+                url: '/api/project-groups/e52744df-a140-4e72-b24c-18f534d0ae94',
+            },
+            (req) => {
+                req.reply({
+                    body: {
+                        id: 'e52744df-a140-4e72-b24c-18f534d0ae94',
+                        name: 'Test',
+                        members: 1,
+                        projects: 0,
+                        is_owner: true,
+
+                        description: 'Some description',
+                    },
+                    statusCode: 200,
+                });
+            },
+        ).as('fetchProjectGroup');
+
+        cy.intercept(
+            {
+                method: 'GET',
+                url: '/api/project-groups/e52744df-a140-4e72-b24c-18f534d0ae94/can-write',
+            },
+            (req) => {
+                req.reply({
+                    statusCode: 204,
+                });
+            },
+        ).as('canWriteProjectGroup');
+
+        cy.mount(componentMount());
+
+        cy.wait('@fetchProjectGroup');
+        cy.wait('@canWriteProjectGroup');
+        cy.get('[data-cy="name"]').should('be.enabled');
+        cy.get('[data-cy="description"]').should('be.enabled');
+        cy.get('[data-cy="save"]').should('exist');
+        cy.get('[data-cy="danger-zone-header"]').should('exist');
+        cy.get('[data-cy="danger-zone-card"]').should('exist');
+    });
+
+    it('the user is not authorized to update the group', () => {
+        cy.intercept(
+            {
+                method: 'GET',
+                url: '/api/project-groups/e52744df-a140-4e72-b24c-18f534d0ae94',
+            },
+            (req) => {
+                req.reply({
+                    body: {
+                        id: 'e52744df-a140-4e72-b24c-18f534d0ae94',
+                        name: 'Test',
+                        members: 1,
+                        projects: 0,
+                        is_owner: true,
+
+                        description: 'Some description',
+                    },
+                    statusCode: 200,
+                });
+            },
+        ).as('fetchProjectGroup');
+
+        cy.intercept(
+            {
+                method: 'GET',
+                url: '/api/project-groups/e52744df-a140-4e72-b24c-18f534d0ae94/can-write',
+            },
+            (req) => {
+                req.reply({
+                    statusCode: 403,
+                });
+            },
+        ).as('canWriteProjectGroup');
+
+        cy.mount(componentMount());
+
+        cy.wait('@fetchProjectGroup');
+        cy.wait('@canWriteProjectGroup');
+        cy.get('[data-cy="name"]').should('be.disabled');
+        cy.get('[data-cy="description"]').should('be.disabled');
+        cy.get('[data-cy="save"]').should('not.exist');
+        cy.get('[data-cy="danger-zone-header"]').should('not.exist');
+        cy.get('[data-cy="danger-zone-card"]').should('not.exist');
+    });
+
+    it('error while deleting', () => {
+        cy.intercept(
+            {
+                method: 'GET',
+                url: '/api/project-groups/e52744df-a140-4e72-b24c-18f534d0ae94',
+            },
+            (req) => {
+                req.reply({
+                    body: {
+                        id: 'e52744df-a140-4e72-b24c-18f534d0ae94',
+                        name: 'Test',
+                        members: 1,
+                        projects: 0,
+                        is_owner: true,
+
+                        description: 'Some description',
+                    },
+                    statusCode: 200,
+                });
+            },
+        ).as('fetchProjectGroup');
+
+        cy.intercept(
+            {
+                method: 'GET',
+                url: '/api/project-groups/e52744df-a140-4e72-b24c-18f534d0ae94/can-write',
+            },
+            (req) => {
+                req.reply({
+                    statusCode: 204,
+                });
+            },
+        ).as('canWriteProjectGroup');
+
+        cy.intercept(
+            {
+                method: 'DELETE',
+                url: '/api/project-groups/e52744df-a140-4e72-b24c-18f534d0ae94',
+            },
+            (req) => {
+                req.reply({
+                    statusCode: 400,
+                });
+            },
+        ).as('deleteProjectGroup');
+
+        cy.mount(componentMount());
+
+        cy.wait('@fetchProjectGroup');
+        cy.wait('@canWriteProjectGroup');
+        cy.get('[data-cy="delete"]').click();
+        cy.wait('@deleteProjectGroup');
+        cy.get('[data-cy="errorDelete"]').should('be.visible');
     });
 });
