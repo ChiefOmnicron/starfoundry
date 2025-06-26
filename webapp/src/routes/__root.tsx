@@ -7,20 +7,16 @@ import type { ReactElement } from 'react';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import type { RouterContext } from '@/main';
 
-import { Route as ProjectGroupRoute } from '@/routes/project-groups_/$projectGroupId.route';
-import { Route as ProjectGroupOverviewRoute } from '@/routes/project-groups_/$projectGroupId.overview';
-import { Route as ProjectGroupProjectsRoute } from '@/routes/project-groups_/$projectGroupId.projects';
-
 const routes = [
     {
         link: '/project-groups',
         label: 'Project Groups',
-        subpath: ProjectGroupRoute.to,
+        subpath: '/project-groups/$projectGroupId',
         paths: [{
-            link: ProjectGroupOverviewRoute.to,
+            link: '/project-groups/$projectGroupId/overview',
             label: 'Overview'
         }, {
-            link: ProjectGroupProjectsRoute.to,
+            link: '/project-groups/$projectGroupId/projects',
             label: 'Projects'
         }, {
             link: '/project-groups/$projectGroupId/structures',
@@ -61,7 +57,7 @@ function LayoutComponent(): ReactElement {
     const projectGroups = (): ReactElement[] => {
         return routes
             .map(route => {
-                if (router.matches[router.matches.length - 2].fullPath === route.subpath) {
+                if (router.matches[router.matches.length - 2] && router.matches[router.matches.length - 2].fullPath === route.subpath) {
                     const match = router.matches[router.matches.length - 2];
                     const params: any = match.params;
 

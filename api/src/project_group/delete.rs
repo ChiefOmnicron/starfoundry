@@ -4,12 +4,20 @@ use warp::{Reply, Rejection};
 use warp::http::StatusCode;
 
 use crate::{ReplyError, Identity};
-use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
+use crate::api_docs::{Forbidden, InternalServerError, NoContent, NotFound, Unauthorized};
 use super::ProjectGroupUuidPath;
 
-/// /project-groups/{projectGroupUuid}/members
+/// /project-groups/{projectGroupUuid}
 /// 
-/// Fetches all members of a group
+/// Alternative route: `/v1/project-groups/{projectGroupUuid}`
+/// 
+/// ---
+/// 
+/// Deletes the group
+/// 
+/// ## Security
+/// - authenticated
+/// - project_group:write
 /// 
 #[utoipa::path(
     delete,
@@ -20,10 +28,8 @@ use super::ProjectGroupUuidPath;
         ProjectGroupUuidPath,
     ),
     responses(
-        (
-            description = "Members of the group",
-            status = NO_CONTENT,
-        ),
+        NoContent,
+        NotFound,
         Unauthorized,
         Forbidden,
         InternalServerError,
@@ -36,23 +42,100 @@ pub async fn delete(
 ) -> Result<impl Reply, Rejection> {
     let project_group = ProjectGroupService::new(project_group_uuid);
 
-    match project_group.delete(
+    match dbg!(project_group.delete(
         &pool,
         identity.character_id(),
-    ).await {
-        Ok(x) => {
-            let response = warp::reply::with_status(
-                warp::reply::json(&x),
-                StatusCode::NO_CONTENT,
-            );
-            Ok(response)
+    ).await) {
+        Ok(_) => Ok(warp::reply::with_status(
+            warp::reply::json(&()),
+            StatusCode::NO_CONTENT,
+        )),
+        Err(starfoundry_libs_projects::Error::ProjectGroupNotFound(_)) => {
+            Err(ReplyError::NotFound.into())
         },
-        Err(starfoundry_libs_projects::Error::Forbidden(_, _)) => {
-            Err(ReplyError::Forbidden.into())
-        },
+        Err(starfoundry_libs_projects::Error::FetchGroupPermissions(_, _)) |
+        Err(starfoundry_libs_projects::Error::Forbidden(_, _)) => Err(ReplyError::Forbidden.into()),
         Err(e) => {
             tracing::error!("Unexpected error, {e}");
             Err(ReplyError::Internal.into())
         },
+    }
+}
+
+#[cfg(test)]
+mod delete_project_group_test {
+    use sqlx::PgPool;
+    use warp::Filter;
+    use warp::http::StatusCode;
+
+    use crate::test_util::credential_cache;
+
+    #[sqlx::test(
+        fixtures("delete"),
+        migrator = "crate::test_util::MIGRATOR"
+    )]
+    async fn user_does_not_have_the_permission(
+        pool: PgPool,
+    ) {
+        let base_path = warp::any().boxed();
+        let credential_cache = credential_cache(pool.clone()).await;
+
+        let filter = warp::any()
+            .clone()
+            .and(crate::project_group::api(pool, base_path, credential_cache))
+            .recover(crate::rejection::handle_rejection);
+
+        let response = warp::test::request()
+            .path("/project-groups/00000000-0000-0000-0000-000000000002")
+            .method("DELETE")
+            .reply(&filter)
+            .await;
+        assert_eq!(response.status(), StatusCode::FORBIDDEN);
+    }
+
+    #[sqlx::test(
+        fixtures("delete"),
+        migrator = "crate::test_util::MIGRATOR"
+    )]
+    async fn does_not_exist(
+        pool: PgPool,
+    ) {
+        let base_path = warp::any().boxed();
+        let credential_cache = credential_cache(pool.clone()).await;
+
+        let filter = warp::any()
+            .clone()
+            .and(crate::project_group::api(pool, base_path, credential_cache))
+            .recover(crate::rejection::handle_rejection);
+
+        let response = warp::test::request()
+            .path("/project-groups/00000000-0000-0000-0000-000000000000")
+            .method("DELETE")
+            .reply(&filter)
+            .await;
+        assert_eq!(response.status(), StatusCode::NOT_FOUND);
+    }
+
+    #[sqlx::test(
+        fixtures("delete"),
+        migrator = "crate::test_util::MIGRATOR"
+    )]
+    async fn happy_path(
+        pool: PgPool,
+    ) {
+        let base_path = warp::any().boxed();
+        let credential_cache = credential_cache(pool.clone()).await;
+
+        let filter = warp::any()
+            .clone()
+            .and(crate::project_group::api(pool, base_path, credential_cache))
+            .recover(crate::rejection::handle_rejection);
+
+        let response = warp::test::request()
+            .path("/project-groups/00000000-0000-0000-0000-000000000001")
+            .method("DELETE")
+            .reply(&filter)
+            .await;
+        assert_eq!(response.status(), StatusCode::NO_CONTENT);
     }
 }
