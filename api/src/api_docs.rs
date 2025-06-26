@@ -18,6 +18,7 @@ use serde::Serialize;
         crate::healthcheck::healthz,
         crate::healthcheck::readyz,
 
+        crate::project_group::can_write,
         crate::project_group::create,
         crate::project_group::fetch,
         crate::project_group::list,
@@ -119,10 +120,22 @@ pub struct Unauthorized {
     pub description: String,
 }
 
-/// the user is not allowed to use the resource
+/// you are not allowed to see the resource
 #[derive(utoipa::IntoResponses)]
 #[response(status = FORBIDDEN)]
-pub struct Forbidden;
+#[response(
+    status = FORBIDDEN,
+    example = json!({
+        "error": "FORBIDDEN",
+        "description": "You are not authorized to see this resource"
+    })
+)]
+pub struct Forbidden {
+    /// General error name
+    pub error: String,
+    /// Human description of the error
+    pub description: String,
+}
 
 /// there was an unknown error
 #[allow(dead_code)]

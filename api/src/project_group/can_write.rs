@@ -1,65 +1,62 @@
-use serde::Serialize;
 use sqlx::PgPool;
-use starfoundry_libs_projects::{ProjectGroupService, ProjectGroupUuid};
-use utoipa::ToSchema;
-use uuid::Uuid;
+use starfoundry_libs_projects::{ProjectGroupPermissionCode, ProjectGroupService, ProjectGroupUuid};
 use warp::{Reply, Rejection};
+use warp::http::StatusCode;
 
 use crate::{ReplyError, Identity};
-use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
+use crate::api_docs::{Forbidden, InternalServerError, NoContent, NotFound, Unauthorized};
 use crate::project_group::ProjectGroupUuidPath;
 
-/// /project-groups/{projectGroupUuid}
+/// /project-groups/{projectGroupUuid}/can-write
 /// 
-/// Alternative route: `/v1/project-groups/{projectGroupUuid}`
+/// Alternative route: `/v1/project-groups/{projectGroupUuid}/can-write`
 /// 
 /// ---
 /// 
-/// Fetches information about a project group
+/// Returns a 2xx status code if the requesting character is allowed to write
+/// the group, otherwise a 4xx status code
 /// 
 /// ## Security
 /// - authenticated
-/// - project_group:read
+/// - project_group:write
 /// 
 #[utoipa::path(
     get,
-    operation_id = "project_groups_fetch",
-    path = "/project-groups/{projectGroupUuid}",
+    operation_id = "project_groups_can_write",
+    path = "/project-groups/{projectGroupUuid}/can-write",
     tag = "project-groups",
     params(
         ProjectGroupUuidPath,
     ),
     responses(
-        (
-            body = ProjectGroupResponse,
-            description = "Information about the group",
-            status = OK,
-        ),
+        NoContent,
         NotFound,
-        Unauthorized,
         Forbidden,
-        NotFound,
+        Unauthorized,
         InternalServerError,
     ),
 )]
-pub async fn fetch(
+pub async fn can_write(
     pool:               PgPool,
     identity:           Identity,
     project_group_uuid: ProjectGroupUuid,
 ) -> Result<impl Reply, Rejection> {
     let project_group = ProjectGroupService::new(project_group_uuid);
 
-    match project_group.fetch(
+    match project_group.assert_write_access(
         &pool,
         identity.character_id(),
+        ProjectGroupPermissionCode::WriteGroup,
     ).await {
-        Ok(x) => Ok(warp::reply::json(&x)),
+        Ok(_) => Ok(warp::reply::with_status(
+            warp::reply::json(&()),
+            StatusCode::NO_CONTENT,
+        )),
         Err(starfoundry_libs_projects::Error::ProjectGroupNotFound(_)) => {
             Err(ReplyError::NotFound.into())
         },
-        Err(starfoundry_libs_projects::Error::Forbidden(_, _)) => {
-            Err(ReplyError::Forbidden.into())
-        },
+        Err(starfoundry_libs_projects::Error::FetchGroupPermissions(_, _)) |
+        Err(starfoundry_libs_projects::Error::Forbidden(_, _)) => Err(ReplyError::Forbidden.into()),
         Err(e) => {
             tracing::error!("Unexpected error, {e}");
             Err(ReplyError::Internal.into())
@@ -67,41 +64,41 @@ pub async fn fetch(
     }
 }
 
-#[derive(Debug, Serialize, ToSchema)]
-#[schema(
-    example = json!({
-        "id": "022e57de-0571-43d1-b9c6-4a0d97940177",
-        "name": "My cool project group",
-        "members": 1,
-        "projects": 10,
-        "description": "Contains some really cool projects"
-    })
-)]
-pub struct ProjectGroupResponse {
-    /// UUID of the group
-    pub id:          Uuid,
-    /// Name of the group
-    pub name:        String,
-    /// Number of members in the group
-    pub members:     i64,
-    /// Number of projects in the group
-    pub projects:    i64,
-
-    /// Description of the group
-    pub description: Option<String>,
-}
-
 #[cfg(test)]
-mod fetch_project_group_test {
+mod can_write_project_group_test {
     use sqlx::PgPool;
     use warp::Filter;
     use warp::http::StatusCode;
 
     use crate::test_util::credential_cache;
 
+    // TODO: add unhappy path
     #[sqlx::test(
-        fixtures("fetch"),
-        migrator = "crate::test_util::MIGRATOR",
+        fixtures("can_write"),
+        migrator = "crate::test_util::MIGRATOR"
+    )]
+    async fn does_not_exist(
+        pool: PgPool,
+    ) {
+        let base_path = warp::any().boxed();
+        let credential_cache = credential_cache(pool.clone()).await;
+
+        let filter = warp::any()
+            .clone()
+            .and(crate::project_group::api(pool, base_path, credential_cache))
+            .recover(crate::rejection::handle_rejection);
+
+        let response = warp::test::request()
+            .path("/project-groups/00000000-0000-0000-0000-000000000000/can-write")
+            .method("GET")
+            .reply(&filter)
+            .await;
+        assert_eq!(response.status(), StatusCode::NOT_FOUND);
+    }
+
+    #[sqlx::test(
+        fixtures("can_write"),
+        migrator = "crate::test_util::MIGRATOR"
     )]
     async fn happy_path(
         pool: PgPool,
@@ -115,35 +112,10 @@ mod fetch_project_group_test {
             .recover(crate::rejection::handle_rejection);
 
         let response = warp::test::request()
-            .path("/project-groups/00000000-0000-0000-0000-000000000001")
+            .path("/project-groups/00000000-0000-0000-0000-000000000001/can-write")
             .method("GET")
             .reply(&filter)
             .await;
-
-        assert_eq!(response.status(), StatusCode::OK);
-    }
-
-    #[sqlx::test(
-        fixtures("fetch"),
-        migrator = "crate::test_util::MIGRATOR",
-    )]
-    async fn no_entry_with_default_uuid(
-        pool: PgPool,
-    ) {
-        let base_path = warp::any().boxed();
-        let credential_cache = credential_cache(pool.clone()).await;
-
-        let filter = warp::any()
-            .clone()
-            .and(crate::project_group::api(pool, base_path, credential_cache))
-            .recover(crate::rejection::handle_rejection);
-
-        let response = warp::test::request()
-            .path("/project-groups/00000000-0000-0000-0000-000000000000")
-            .method("GET")
-            .reply(&filter)
-            .await;
-
-        assert_eq!(response.status(), StatusCode::NOT_FOUND);
+        assert_eq!(response.status(), StatusCode::NO_CONTENT);
     }
 }
