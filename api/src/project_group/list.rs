@@ -61,12 +61,11 @@ pub async fn list(
 #[cfg(test)]
 mod list_project_group_test {
     use sqlx::PgPool;
+    use starfoundry_libs_projects::ProjectGroup;
     use warp::Filter;
     use warp::http::StatusCode;
 
     use crate::test_util::credential_cache;
-    use crate::{with_identity, with_pool};
-    use starfoundry_libs_projects::ProjectGroup;
 
     #[sqlx::test(
         fixtures("list"),
@@ -75,14 +74,12 @@ mod list_project_group_test {
     async fn happy_path(
         pool: PgPool,
     ) {
+        let base_path = warp::any().boxed();
+        let credential_cache = credential_cache(pool.clone()).await;
+
         let filter = warp::any()
             .clone()
-            .and(with_pool(pool.clone()))
-            .and(with_identity(pool.clone(), credential_cache(pool.clone()).await))
-            .and(warp::path!("project-groups"))
-            .and(warp::get())
-            .and(warp::query())
-            .and_then(super::list)
+            .and(crate::project_group::api(pool, base_path, credential_cache))
             .recover(crate::rejection::handle_rejection);
 
         let response = warp::test::request()
