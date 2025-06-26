@@ -1,5 +1,24 @@
 import axios from 'axios';
 
+export const MARKETS = [
+    {
+        label: 'Jita 4-4',
+        key: 60003760,
+    },
+    {
+        label: 'Amarr',
+        key: 60008494,
+    },
+    {
+        label: 'UALX-3',
+        key: 1046664001931,
+    },
+    {
+        label: 'C-J6MT',
+        key: 1049588174021,
+    },
+];
+
 export async function createAppraisal(
     appraisal: string,
     market_id: number,

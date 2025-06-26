@@ -39,16 +39,12 @@ pub async fn markets(
         market_id: 60008494,
     });
     markets.push(AppraisalMarket {
-        name: "E3OI-U".into(),
-        market_id: 1040278453044,
-    });
-    markets.push(AppraisalMarket {
         name: "UALX-3".into(),
         market_id: 1046664001931,
     });
     markets.push(AppraisalMarket {
-        name: "K7D-II".into(),
-        market_id: 1043661023026,
+        name: "C-J6MT".into(),
+        market_id: 1049588174021,
     });
 
     metric.inc_appraisal_market_count(RequestStatus::Ok);
