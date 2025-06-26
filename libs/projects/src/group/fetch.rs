@@ -33,14 +33,16 @@ pub async fn fetch(
         )
         .fetch_one(pool)
         .await
-        .map(|x| ProjectGroup {
-            id:          x.id,
-            name:        x.name,
-            members:     x.members.unwrap_or(1),
-            projects:    x.projects.unwrap_or(0),
-            is_owner:    x.is_owner.unwrap_or_default(),
+        .map(|x| {
+            ProjectGroup {
+                id:          x.id,
+                name:        x.name,
+                members:     x.members.unwrap_or(1),
+                projects:    x.projects.unwrap_or(0),
+                is_owner:    x.is_owner.unwrap_or_default(),
 
-            description: x.description,
+                description: x.description,
+            }
         })
         .map_err(|e| Error::FetchGroup(e, group_id).into())
 }
