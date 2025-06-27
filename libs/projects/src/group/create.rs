@@ -39,17 +39,18 @@ pub async fn create(
     // add the owner as member of the group
     sqlx::query!("
             INSERT INTO project_group_member(
+                accepted,
                 group_id,
                 character_id,
                 permission
             )
             VALUES (
-                $1, $2, $3
+                TRUE, $1, $2, $3
             )
         ",
             *group_id,
             *character_id,
-            *ProjectGroupPermissionCode::ReadGroup,
+            *ProjectGroupPermissionCode::Owner,
         )
         .execute(&mut *transaction)
         .await

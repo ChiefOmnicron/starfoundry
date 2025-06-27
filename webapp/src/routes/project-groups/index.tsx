@@ -8,8 +8,19 @@ import { useState } from 'react';
 import Filter, { type FilterPropEntry, type SelectedFilter } from '@/components/Filter';
 import LoadingAnimation from '@/components/LoadingAnimation';
 
+interface QueryParams {
+    deleted?: boolean;
+}
+
 export const Route = createFileRoute('/project-groups/')({
     component: ProjectGroups,
+    validateSearch: (params: {
+        deleted: boolean,
+    }): QueryParams => {
+        return {
+            deleted: (params.deleted) || false
+        };
+    }
 });
 
 const filters: FilterPropEntry[] = [{
@@ -62,6 +73,7 @@ const columns = [
 
 export function ProjectGroups() {
     const navigation = useNavigate({ from: Route.fullPath });
+    const { deleted: deletedResource } = Route.useSearch();
 
     const [filterParams, setFilterParams] = useState<ProjectGroupFilter>({});
     const filterChange = (filters: SelectedFilter[]) => {
@@ -86,6 +98,20 @@ export function ProjectGroups() {
 
     const createProjectGroup = () => {
         navigation({ to: createProjectGroupRoute.to });
+    }
+
+    const notification = () => {
+        if (deletedResource) {
+            return <Alert
+                mt="sm"
+                variant='light'
+                color='green'
+                title='Delete successful'
+                data-cy="deleteSuccessful"
+            >
+                The project group was successfully deleted
+            </Alert>;
+        }
     }
 
     const dataTable = () => {
@@ -174,6 +200,8 @@ export function ProjectGroups() {
     }
 
     return <>
+        { notification() }
+
         { content() }
     </>
 }

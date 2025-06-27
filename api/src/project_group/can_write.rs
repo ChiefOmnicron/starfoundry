@@ -4,7 +4,7 @@ use warp::{Reply, Rejection};
 use warp::http::StatusCode;
 
 use crate::{ReplyError, Identity};
-use crate::api_docs::{Forbidden, InternalServerError, NoContent, NotFound, Unauthorized};
+use crate::api_docs::{Forbidden, InternalServerError, NoContent, Unauthorized};
 use crate::project_group::ProjectGroupUuidPath;
 
 /// /project-groups/{projectGroupUuid}/can-write
@@ -30,7 +30,6 @@ use crate::project_group::ProjectGroupUuidPath;
     ),
     responses(
         NoContent,
-        NotFound,
         Forbidden,
         Unauthorized,
         InternalServerError,
@@ -52,9 +51,7 @@ pub async fn can_write(
             warp::reply::json(&()),
             StatusCode::NO_CONTENT,
         )),
-        Err(starfoundry_libs_projects::Error::ProjectGroupNotFound(_)) => {
-            Err(ReplyError::NotFound.into())
-        },
+        Err(starfoundry_libs_projects::Error::ProjectGroupNotFound(_)) |
         Err(starfoundry_libs_projects::Error::FetchGroupPermissions(_, _)) |
         Err(starfoundry_libs_projects::Error::Forbidden(_, _)) => Err(ReplyError::Forbidden.into()),
         Err(e) => {
@@ -93,7 +90,7 @@ mod can_write_project_group_test {
             .method("GET")
             .reply(&filter)
             .await;
-        assert_eq!(response.status(), StatusCode::NOT_FOUND);
+        assert_eq!(response.status(), StatusCode::FORBIDDEN);
     }
 
     #[sqlx::test(
