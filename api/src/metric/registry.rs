@@ -28,6 +28,7 @@ pub enum RequestStatus {
 pub struct RouteLabels {
     pub method: Method,
     pub status: u16,
+    pub agent:  String,
     pub route:  String,
 }
 
@@ -38,9 +39,9 @@ pub struct RequestLabel {
 
 #[derive(Clone, Debug)]
 pub struct Metric {
-    route_count:        Family<RouteLabels, Counter>,
-    route_status:       Family<RouteLabels, Counter>,
-    route_duration:     Family<RouteLabels, Histogram>,
+    route_count:             Family<RouteLabels, Counter>,
+    route_status:            Family<RouteLabels, Counter>,
+    route_duration:          Family<RouteLabels, Histogram>,
 
     appraisals_created:      Family<RequestLabel, Gauge>,
     appraisals_fetch:        Family<RequestLabel, Gauge>,
@@ -133,10 +134,12 @@ impl Metric {
         &self,
         method: &warp::http::Method,
         status: &warp::http::StatusCode,
+        agent:  &str,
         path:   &str,
     ) {
         let method = from_warp_method(method);
         let status = status.as_u16();
+        let agent = agent.into();
         let route = sanitize_path(path);
 
         self.route_count.get_or_create(
@@ -144,6 +147,7 @@ impl Metric {
                 method,
                 status,
                 route,
+                agent,
             }
         ).inc();
     }
@@ -152,17 +156,20 @@ impl Metric {
         &self,
         method:   &warp::http::Method,
         status:   &warp::http::StatusCode,
+        agent:    &str,
         path:     &str,
         duration: f64,
     ) {
         let method = from_warp_method(method);
         let status = status.as_u16();
+        let agent = agent.into();
         let route = sanitize_path(path);
 
         self.route_duration.get_or_create(
             &RouteLabels {
                 method,
                 status,
+                agent,
                 route,
             }
         ).observe(duration);

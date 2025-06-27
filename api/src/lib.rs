@@ -9,6 +9,8 @@ use std::sync::{Arc, Mutex};
 use std::time::Instant;
 use warp::{Filter, Reply};
 use warp::filters::path::FullPath;
+use warp::http::HeaderMap;
+use warp::reject::Rejection;
 use warp::reply::Response;
 
 pub mod api_docs;
@@ -61,24 +63,31 @@ where
 {
     warp::any()
         .map(|| Instant::now())
+        .and(warp::header::headers_cloned())
         .and(warp::filters::path::full())
         .and(warp::method())
         .and(with_metric(metric.clone()))
         .and(filter)
-        .map(|duration: Instant, path: FullPath, method: warp::http::Method, metric: Arc<Metric>, res: T| {
+        .map(|duration: Instant, headers: HeaderMap, path: FullPath, method: warp::http::Method, metric: Arc<Metric>, res: T| {
             let res = res.into_response();
 
+            let agent = headers
+                .get(warp::http::header::USER_AGENT)
+                .map(|x| x.to_str().unwrap_or("Unknown"))
+                .unwrap_or("Unknown");
             {
                 metric
                     .inc_route_count(
                         &method,
                         &res.status(),
-                        path.as_str()
+                        agent,
+                        path.as_str(),
                     );
                 metric
                     .add_route_duration(
                         &method,
                         &res.status(),
+                        agent,
                         path.as_str(),
                         duration.elapsed().as_secs_f64()
                     );
