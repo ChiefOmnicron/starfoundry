@@ -125,6 +125,45 @@ describe('Project Group General', () => {
         cy.get('[data-cy="error"]').should('not.exist');
         cy.get('[data-cy="noData"]').should('not.exist');
     });
+
+    it('show delete successful message', () => {
+        cy.intercept(
+            {
+                method: 'GET',
+                url: '/api/project-groups',
+            },
+            [{
+                name: 'Test',
+                member: 1,
+                projects: 0,
+                description: 'Test 123'
+            }],
+        ).as('getProjectGroups');
+
+        const componentMount = () => {
+            const routeTree = createRootRoute({
+                component: ProjectGroups,
+                beforeLoad: ({ search }: { search: any }) => {
+                    search.deleted = true;
+                }
+            });
+            const router = createRouter({
+                routeTree,
+                defaultStaleTime: 0,
+                scrollRestoration: true,
+            });
+            return(
+                <MantineProvider>
+                    <QueryClientProvider client={queryClient}>
+                        <RouterProvider router={router} />
+                    </QueryClientProvider>
+                </MantineProvider>
+            );
+        }
+        cy.mount(componentMount());
+
+        cy.wait('@getProjectGroups');
+        cy.get('[data-cy="deleteSuccessful"]').should('be.visible');
+    });
 });
 
-// <RouterProvider router={rootRoute} />

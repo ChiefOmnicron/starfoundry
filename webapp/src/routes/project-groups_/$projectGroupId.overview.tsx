@@ -1,8 +1,9 @@
 import { Alert, Button, Card, Flex, Grid, Text, Textarea, TextInput, Title } from '@mantine/core';
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { deleteProjectGroup } from '@/services/project-group/delete';
 import { FETCH_PROJECT_GROUP, useFetchProjectGroup } from '@/services/project-group/fetch';
 import { LIST_PROJECT_GROUPS } from '@/services/project-group/list';
+import { Route as ProjectGroupRoute } from '@/routes/project-groups/index';
 import { updateProjectGroup, type UpdateProjectGroup } from '@/services/project-group/update_group';
 import { useCanWriteProjectGroup } from '@/services/project-group/can_write_group';
 import { useForm } from '@tanstack/react-form';
@@ -10,15 +11,28 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import LoadingAnimation from '@/components/LoadingAnimation';
 
+interface QueryParams {
+    created?: boolean;
+}
+
 export const Route = createFileRoute(
     '/project-groups_/$projectGroupId/overview',
 )({
     component: ProjectGroupOverview,
+    validateSearch: (params: {
+        created: boolean,
+    }): QueryParams => {
+        return {
+            created: (params.created) || false
+        };
+    }
 })
 
 export function ProjectGroupOverview() {
+    const navigation = useNavigate();
     const queryClient = useQueryClient();
     const { projectGroupId } = Route.useParams();
+    const { created: createdResource } = Route.useSearch();
 
     const [successfulUpdate, setSuccessfulUpdated] = useState<boolean>();
     const [errorDelete, setErrorDelete] = useState<string | undefined>();
@@ -46,8 +60,14 @@ export function ProjectGroupOverview() {
     const mutationDelete = useMutation({
         mutationFn: () => deleteProjectGroup(projectGroupId),
         onSuccess: () => {
-            // TODO: route back to list
             queryClient.invalidateQueries({ queryKey: [FETCH_PROJECT_GROUP, LIST_PROJECT_GROUPS] });
+
+            navigation({
+                to: ProjectGroupRoute.to,
+                search: {
+                    deleted: true,
+                }
+            });
         },
     });
 
@@ -101,6 +121,16 @@ export function ProjectGroupOverview() {
                 withCloseButton
             >
                 The project group was updated
+            </Alert>;
+        } else if (createdResource) {
+            return <Alert
+                mt="sm"
+                variant='light'
+                color='green'
+                title='Create successful'
+                data-cy="createSuccessful"
+            >
+                The project group was successfully created
             </Alert>;
         } else if (errorUpdate) {
             return <Alert
@@ -162,7 +192,7 @@ export function ProjectGroupOverview() {
                         </Text>
                         <Text
                         >
-                            Can not be recovered
+                            This can not be reversed
                         </Text>
                     </Grid.Col>
                     <Grid.Col span={6}>
