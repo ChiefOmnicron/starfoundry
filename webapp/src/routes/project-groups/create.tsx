@@ -1,10 +1,11 @@
 import { Alert, Button, Card, Flex, Textarea, TextInput } from '@mantine/core';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Route as listProjectGroupRoute } from '@/routes/project-groups/index';
-import { useForm } from '@tanstack/react-form'
 import { createProjectGroup, type CreateProjectGroup } from '@/services/project-group/create';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { LIST_PROJECT_GROUPS } from '@/services/project-group/list';
+import { Route as listProjectGroupRoute } from '@/routes/project-groups/index';
+import { Route as ProjectGroupOverviewRoute } from '@/routes/project-groups_/$projectGroupId.overview';
+import { useForm } from '@tanstack/react-form'
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 
 export const Route = createFileRoute('/project-groups/create')({
@@ -33,10 +34,20 @@ export function CreateProjectGroup() {
         },
         onSubmit: async ({ value }) => await create
             .mutateAsync(value)
+            .then(x => {
+                navigation({
+                    to: ProjectGroupOverviewRoute.to,
+                    params: {
+                        projectGroupId: x.id,
+                    },
+                    search: {
+                        created: true,
+                    }
+                });
+            })
             .catch(error => {
                 setErrorUpdated(error);
             }),
-            // TODO: redirect
     });
 
     const notification = () => {
