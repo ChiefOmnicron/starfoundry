@@ -411,4 +411,67 @@ describe('Project Group Overview', () => {
         cy.wait('@deleteProjectGroup');
         cy.get('[data-cy="errorDelete"]').should('be.visible');
     });
+
+    it('show the successfully created banner', () => {
+        cy.intercept(
+            {
+                method: 'GET',
+                url: '/api/project-groups/e52744df-a140-4e72-b24c-18f534d0ae94',
+            },
+            (req) => {
+                req.reply({
+                    body: {
+                        id: 'e52744df-a140-4e72-b24c-18f534d0ae94',
+                        name: 'Test',
+                        members: 1,
+                        projects: 0,
+                        is_owner: true,
+
+                        description: 'Some description',
+                    },
+                    statusCode: 200,
+                });
+            },
+        ).as('fetchProjectGroup');
+
+        cy.intercept(
+            {
+                method: 'GET',
+                url: '/api/project-groups/e52744df-a140-4e72-b24c-18f534d0ae94/can-write',
+            },
+            (req) => {
+                req.reply({
+                    statusCode: 204,
+                });
+            },
+        ).as('canWriteProjectGroup');
+
+
+        const componentMount = () => {
+            const routeTree = createRootRoute({
+                component: ProjectGroupOverview,
+                beforeLoad: ({ params, search }: { params: any, search: any }) => {
+                    params.projectGroupId = 'e52744df-a140-4e72-b24c-18f534d0ae94';
+                    search.created = true;
+                }
+            });
+            const router = createRouter({
+                routeTree,
+                defaultStaleTime: 0,
+                scrollRestoration: true,
+            });
+            return(
+                <MantineProvider>
+                    <QueryClientProvider client={queryClient}>
+                        <RouterProvider router={router} />
+                    </QueryClientProvider>
+                </MantineProvider>
+            );
+        }
+        cy.mount(componentMount());
+
+        cy.wait('@fetchProjectGroup');
+        cy.wait('@canWriteProjectGroup');
+        cy.get('[data-cy="createSuccessful"]').should('be.visible');
+    });
 });

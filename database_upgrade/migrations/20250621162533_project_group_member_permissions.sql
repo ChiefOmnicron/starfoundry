@@ -25,6 +25,8 @@ ALTER TABLE project_group_member DROP COLUMN structures;
 ALTER TABLE project_group_member DROP COLUMN project_group;
 
 ALTER TABLE project_group_member ALTER COLUMN permission DROP DEFAULT;
+ALTER TABLE project ALTER COLUMN project_group_id DROP NOT NULL;
+ALTER TABLE project ALTER COLUMN project_group_id DROP DEFAULT;
 
 CREATE TABLE IF NOT EXISTS project_group_permission (
     bit     INTEGER NOT NULL,

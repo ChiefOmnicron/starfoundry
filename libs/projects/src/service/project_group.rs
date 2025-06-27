@@ -208,15 +208,12 @@ impl ProjectGroupService {
         pool:         &PgPool,
         character_id: CharacterId,
     ) -> Result<ProjectGroupUuid> {
-        dbg!("a");
         self.assert_exists(pool).await?;
-        dbg!("b");
         self.assert_write_access(
             pool,
             character_id,
             ProjectGroupPermissionCode::WriteGroup,
         ).await?;
-        dbg!("c");
 
         crate::group::delete(
             pool,
