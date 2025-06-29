@@ -1,7 +1,8 @@
 import LoadingAnimation from '@/components/LoadingAnimation';
+import { LoadingError } from '@/components/LoadingError';
 import { canWriteProjectGroupQuery } from '@/services/project-group/can_write_group';
 import { fetchProjectGroupQuery, useFetchProjectGroup } from '@/services/project-group/fetch';
-import { Alert, Title } from '@mantine/core'
+import { Title } from '@mantine/core'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/project-groups_/$projectGroupId')({
@@ -27,14 +28,7 @@ export function ProjectGroupHeader() {
     }
 
     if (isError) {
-        return <Alert
-            variant='light'
-            color='red'
-            title='Unknown loading error'
-            data-cy="error"
-        >
-            There was an unknown error while loading the data. Please try again later.
-        </Alert>
+        return LoadingError();
     }
 
     return <>

@@ -10,6 +10,8 @@ import { useForm } from '@tanstack/react-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import LoadingAnimation from '@/components/LoadingAnimation';
+import { LoadingError } from '@/components/LoadingError';
+import { DeleteResourceButton } from '@/components/DeleteResourceButton';
 
 interface QueryParams {
     created?: boolean;
@@ -23,7 +25,7 @@ export const Route = createFileRoute(
         created: boolean,
     }): QueryParams => {
         return {
-            created: (params.created) || false
+            created: (params.created) || undefined
         };
     }
 })
@@ -31,6 +33,7 @@ export const Route = createFileRoute(
 export function ProjectGroupOverview() {
     const navigation = useNavigate();
     const queryClient = useQueryClient();
+
     const { projectGroupId } = Route.useParams();
     const { created: createdResource } = Route.useSearch();
 
@@ -89,15 +92,7 @@ export function ProjectGroupOverview() {
     }
 
     if (isError && !projectGroup) {
-        return <Alert
-            mt="sm"
-            variant='light'
-            color='red'
-            title='Unknown loading error'
-            data-cy="error"
-        >
-            There was an unknown error while loading the data. Please try again later.
-        </Alert>
+        return LoadingError();
     }
 
     const deleteGroup = async () => {
@@ -199,13 +194,10 @@ export function ProjectGroupOverview() {
                         <Flex
                             justify="flex-end"
                         >
-                            <Button
-                                data-cy="delete"
-                                color="red"
-                                onClick={ () => deleteGroup() }
-                            >
-                                Delete
-                            </Button>
+                            <DeleteResourceButton
+                                resource={projectGroup.name}
+                                onConfirm={() => deleteGroup()}
+                            />
                         </Flex>
                     </Grid.Col>
                 </Grid>

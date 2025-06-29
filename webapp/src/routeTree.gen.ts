@@ -16,8 +16,9 @@ import { Route as AboutRouteImport } from './routes/about/route'
 import { Route as ProjectGroupsIndexImport } from './routes/project-groups/index'
 import { Route as ProjectGroupsCreateImport } from './routes/project-groups/create'
 import { Route as ProjectGroupsProjectGroupIdRouteImport } from './routes/project-groups_/$projectGroupId.route'
-import { Route as ProjectGroupsProjectGroupIdProjectsImport } from './routes/project-groups_/$projectGroupId.projects'
 import { Route as ProjectGroupsProjectGroupIdOverviewImport } from './routes/project-groups_/$projectGroupId.overview'
+import { Route as ProjectGroupsProjectGroupIdMembersImport } from './routes/project-groups_/$projectGroupId.members'
+import { Route as ProjectGroupsProjectGroupIdDefaultsImport } from './routes/project-groups_/$projectGroupId.defaults'
 
 // Create/Update Routes
 
@@ -52,17 +53,24 @@ const ProjectGroupsProjectGroupIdRouteRoute =
     getParentRoute: () => rootRoute,
   } as any)
 
-const ProjectGroupsProjectGroupIdProjectsRoute =
-  ProjectGroupsProjectGroupIdProjectsImport.update({
-    id: '/projects',
-    path: '/projects',
-    getParentRoute: () => ProjectGroupsProjectGroupIdRouteRoute,
-  } as any)
-
 const ProjectGroupsProjectGroupIdOverviewRoute =
   ProjectGroupsProjectGroupIdOverviewImport.update({
     id: '/overview',
     path: '/overview',
+    getParentRoute: () => ProjectGroupsProjectGroupIdRouteRoute,
+  } as any)
+
+const ProjectGroupsProjectGroupIdMembersRoute =
+  ProjectGroupsProjectGroupIdMembersImport.update({
+    id: '/members',
+    path: '/members',
+    getParentRoute: () => ProjectGroupsProjectGroupIdRouteRoute,
+  } as any)
+
+const ProjectGroupsProjectGroupIdDefaultsRoute =
+  ProjectGroupsProjectGroupIdDefaultsImport.update({
+    id: '/defaults',
+    path: '/defaults',
     getParentRoute: () => ProjectGroupsProjectGroupIdRouteRoute,
   } as any)
 
@@ -105,18 +113,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectGroupsIndexImport
       parentRoute: typeof ProjectGroupsRouteImport
     }
+    '/project-groups_/$projectGroupId/defaults': {
+      id: '/project-groups_/$projectGroupId/defaults'
+      path: '/defaults'
+      fullPath: '/project-groups/$projectGroupId/defaults'
+      preLoaderRoute: typeof ProjectGroupsProjectGroupIdDefaultsImport
+      parentRoute: typeof ProjectGroupsProjectGroupIdRouteImport
+    }
+    '/project-groups_/$projectGroupId/members': {
+      id: '/project-groups_/$projectGroupId/members'
+      path: '/members'
+      fullPath: '/project-groups/$projectGroupId/members'
+      preLoaderRoute: typeof ProjectGroupsProjectGroupIdMembersImport
+      parentRoute: typeof ProjectGroupsProjectGroupIdRouteImport
+    }
     '/project-groups_/$projectGroupId/overview': {
       id: '/project-groups_/$projectGroupId/overview'
       path: '/overview'
       fullPath: '/project-groups/$projectGroupId/overview'
       preLoaderRoute: typeof ProjectGroupsProjectGroupIdOverviewImport
-      parentRoute: typeof ProjectGroupsProjectGroupIdRouteImport
-    }
-    '/project-groups_/$projectGroupId/projects': {
-      id: '/project-groups_/$projectGroupId/projects'
-      path: '/projects'
-      fullPath: '/project-groups/$projectGroupId/projects'
-      preLoaderRoute: typeof ProjectGroupsProjectGroupIdProjectsImport
       parentRoute: typeof ProjectGroupsProjectGroupIdRouteImport
     }
   }
@@ -138,16 +153,19 @@ const ProjectGroupsRouteRouteWithChildren =
   ProjectGroupsRouteRoute._addFileChildren(ProjectGroupsRouteRouteChildren)
 
 interface ProjectGroupsProjectGroupIdRouteRouteChildren {
+  ProjectGroupsProjectGroupIdDefaultsRoute: typeof ProjectGroupsProjectGroupIdDefaultsRoute
+  ProjectGroupsProjectGroupIdMembersRoute: typeof ProjectGroupsProjectGroupIdMembersRoute
   ProjectGroupsProjectGroupIdOverviewRoute: typeof ProjectGroupsProjectGroupIdOverviewRoute
-  ProjectGroupsProjectGroupIdProjectsRoute: typeof ProjectGroupsProjectGroupIdProjectsRoute
 }
 
 const ProjectGroupsProjectGroupIdRouteRouteChildren: ProjectGroupsProjectGroupIdRouteRouteChildren =
   {
+    ProjectGroupsProjectGroupIdDefaultsRoute:
+      ProjectGroupsProjectGroupIdDefaultsRoute,
+    ProjectGroupsProjectGroupIdMembersRoute:
+      ProjectGroupsProjectGroupIdMembersRoute,
     ProjectGroupsProjectGroupIdOverviewRoute:
       ProjectGroupsProjectGroupIdOverviewRoute,
-    ProjectGroupsProjectGroupIdProjectsRoute:
-      ProjectGroupsProjectGroupIdProjectsRoute,
   }
 
 const ProjectGroupsProjectGroupIdRouteRouteWithChildren =
@@ -161,8 +179,9 @@ export interface FileRoutesByFullPath {
   '/project-groups/$projectGroupId': typeof ProjectGroupsProjectGroupIdRouteRouteWithChildren
   '/project-groups/create': typeof ProjectGroupsCreateRoute
   '/project-groups/': typeof ProjectGroupsIndexRoute
+  '/project-groups/$projectGroupId/defaults': typeof ProjectGroupsProjectGroupIdDefaultsRoute
+  '/project-groups/$projectGroupId/members': typeof ProjectGroupsProjectGroupIdMembersRoute
   '/project-groups/$projectGroupId/overview': typeof ProjectGroupsProjectGroupIdOverviewRoute
-  '/project-groups/$projectGroupId/projects': typeof ProjectGroupsProjectGroupIdProjectsRoute
 }
 
 export interface FileRoutesByTo {
@@ -170,8 +189,9 @@ export interface FileRoutesByTo {
   '/project-groups/$projectGroupId': typeof ProjectGroupsProjectGroupIdRouteRouteWithChildren
   '/project-groups/create': typeof ProjectGroupsCreateRoute
   '/project-groups': typeof ProjectGroupsIndexRoute
+  '/project-groups/$projectGroupId/defaults': typeof ProjectGroupsProjectGroupIdDefaultsRoute
+  '/project-groups/$projectGroupId/members': typeof ProjectGroupsProjectGroupIdMembersRoute
   '/project-groups/$projectGroupId/overview': typeof ProjectGroupsProjectGroupIdOverviewRoute
-  '/project-groups/$projectGroupId/projects': typeof ProjectGroupsProjectGroupIdProjectsRoute
 }
 
 export interface FileRoutesById {
@@ -181,8 +201,9 @@ export interface FileRoutesById {
   '/project-groups_/$projectGroupId': typeof ProjectGroupsProjectGroupIdRouteRouteWithChildren
   '/project-groups/create': typeof ProjectGroupsCreateRoute
   '/project-groups/': typeof ProjectGroupsIndexRoute
+  '/project-groups_/$projectGroupId/defaults': typeof ProjectGroupsProjectGroupIdDefaultsRoute
+  '/project-groups_/$projectGroupId/members': typeof ProjectGroupsProjectGroupIdMembersRoute
   '/project-groups_/$projectGroupId/overview': typeof ProjectGroupsProjectGroupIdOverviewRoute
-  '/project-groups_/$projectGroupId/projects': typeof ProjectGroupsProjectGroupIdProjectsRoute
 }
 
 export interface FileRouteTypes {
@@ -193,16 +214,18 @@ export interface FileRouteTypes {
     | '/project-groups/$projectGroupId'
     | '/project-groups/create'
     | '/project-groups/'
+    | '/project-groups/$projectGroupId/defaults'
+    | '/project-groups/$projectGroupId/members'
     | '/project-groups/$projectGroupId/overview'
-    | '/project-groups/$projectGroupId/projects'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/about'
     | '/project-groups/$projectGroupId'
     | '/project-groups/create'
     | '/project-groups'
+    | '/project-groups/$projectGroupId/defaults'
+    | '/project-groups/$projectGroupId/members'
     | '/project-groups/$projectGroupId/overview'
-    | '/project-groups/$projectGroupId/projects'
   id:
     | '__root__'
     | '/about'
@@ -210,8 +233,9 @@ export interface FileRouteTypes {
     | '/project-groups_/$projectGroupId'
     | '/project-groups/create'
     | '/project-groups/'
+    | '/project-groups_/$projectGroupId/defaults'
+    | '/project-groups_/$projectGroupId/members'
     | '/project-groups_/$projectGroupId/overview'
-    | '/project-groups_/$projectGroupId/projects'
   fileRoutesById: FileRoutesById
 }
 
@@ -256,8 +280,9 @@ export const routeTree = rootRoute
     "/project-groups_/$projectGroupId": {
       "filePath": "project-groups_/$projectGroupId.route.tsx",
       "children": [
-        "/project-groups_/$projectGroupId/overview",
-        "/project-groups_/$projectGroupId/projects"
+        "/project-groups_/$projectGroupId/defaults",
+        "/project-groups_/$projectGroupId/members",
+        "/project-groups_/$projectGroupId/overview"
       ]
     },
     "/project-groups/create": {
@@ -268,12 +293,16 @@ export const routeTree = rootRoute
       "filePath": "project-groups/index.tsx",
       "parent": "/project-groups"
     },
-    "/project-groups_/$projectGroupId/overview": {
-      "filePath": "project-groups_/$projectGroupId.overview.tsx",
+    "/project-groups_/$projectGroupId/defaults": {
+      "filePath": "project-groups_/$projectGroupId.defaults.tsx",
       "parent": "/project-groups_/$projectGroupId"
     },
-    "/project-groups_/$projectGroupId/projects": {
-      "filePath": "project-groups_/$projectGroupId.projects.tsx",
+    "/project-groups_/$projectGroupId/members": {
+      "filePath": "project-groups_/$projectGroupId.members.tsx",
+      "parent": "/project-groups_/$projectGroupId"
+    },
+    "/project-groups_/$projectGroupId/overview": {
+      "filePath": "project-groups_/$projectGroupId.overview.tsx",
       "parent": "/project-groups_/$projectGroupId"
     }
   }

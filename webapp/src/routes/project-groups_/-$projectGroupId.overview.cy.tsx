@@ -408,6 +408,8 @@ describe('Project Group Overview', () => {
         cy.wait('@fetchProjectGroup');
         cy.wait('@canWriteProjectGroup');
         cy.get('[data-cy="delete"]').click();
+        cy.get('[data-cy="confirmDeleteText"]').type('Test');
+        cy.get('[data-cy="confirmDelete"]').click();
         cy.wait('@deleteProjectGroup');
         cy.get('[data-cy="errorDelete"]').should('be.visible');
     });
