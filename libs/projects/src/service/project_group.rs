@@ -243,7 +243,7 @@ impl ProjectGroupService {
         .await
     }
 
-    pub async fn fetch_default(
+    pub async fn fetch_defaults(
         &self,
         pool:         &PgPool,
         character_id: CharacterId,
