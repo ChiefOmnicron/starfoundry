@@ -24,7 +24,7 @@ pub fn parse(
     }
 
     let file = File::open(&path)
-        .map_err(|x| Error::CannotOpenTypeIdsFile((x, path)))?;
+        .map_err(|x| Error::CannotOpenTypeIdsFile(x, path))?;
 
     serde_yaml::from_reader(file)
         .map(|x| {

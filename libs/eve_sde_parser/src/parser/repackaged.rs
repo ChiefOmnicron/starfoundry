@@ -23,7 +23,7 @@ pub fn parse(
     }
 
     let file = File::open(&path)
-        .map_err(|x| Error::CannotOpenRepackagedVolumes((x, path)))?;
+        .map_err(|x| Error::CannotOpenRepackagedVolumes(x, path))?;
 
     let data: HashMap<TypeId, f64> = serde_json::from_reader(file)
         .map(|x| {

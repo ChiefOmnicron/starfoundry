@@ -25,7 +25,7 @@ pub fn parse(
     }
 
     let file = File::open(&path)
-        .map_err(|x| Error::CannotOpenBlueprintsFile((x, path)))?;
+        .map_err(|x| Error::CannotOpenBlueprintsFile(x, path))?;
 
     serde_yaml::from_reader(file)
         .map(|x| {

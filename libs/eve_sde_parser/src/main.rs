@@ -6,9 +6,6 @@ use starfoundry_libs_eve_sde_parser::Error;
 use std::time::Instant;
 use tracing_subscriber::EnvFilter;
 
-/// ENV variable for the database URL
-const PG_ADDR: &str           = "DATABASE_URL";
-
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     dotenvy::dotenv().ok();
@@ -17,7 +14,7 @@ async fn main() -> Result<(), Error> {
         .with_env_filter(EnvFilter::from_default_env())
         .init();
 
-    let pg_addr = std::env::var(PG_ADDR)
+    let pg_addr = std::env::var("DATABASE_URL")
         .expect("Expected that a DATABASE_URL ENV is set");
     let pool = PgPoolOptions::new()
         .min_connections(20)

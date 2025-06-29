@@ -23,7 +23,7 @@ pub fn parse(
     }
 
     let file = File::open(&path)
-        .map_err(|x| Error::CannotOpenIndustryModifierSources((x, path)))?;
+        .map_err(|x| Error::CannotOpenIndustryModifierSources(x, path))?;
 
     let data: HashMap<usize, ModifyResource> = serde_json::from_reader(file)
         .map(|x| {
