@@ -10,7 +10,6 @@ use std::time::Instant;
 use warp::{Filter, Reply};
 use warp::filters::path::FullPath;
 use warp::http::HeaderMap;
-use warp::reject::Rejection;
 use warp::reply::Response;
 
 pub mod api_docs;

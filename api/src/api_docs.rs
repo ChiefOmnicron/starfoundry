@@ -21,6 +21,7 @@ use serde::Serialize;
         crate::project_group::can_write,
         crate::project_group::create,
         crate::project_group::fetch,
+        crate::project_group::fetch_defaults,
         crate::project_group::list,
         crate::project_group::update,
 
