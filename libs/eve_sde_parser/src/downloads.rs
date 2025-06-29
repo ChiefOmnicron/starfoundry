@@ -93,7 +93,7 @@ fn unzip(
     let input = format!("{directory}/{FOLDER_INPUT}/{filename}");
     let out = format!("{directory}/{FOLDER_INPUT}");
 
-    Command::new("gunzip")
+    Command::new("unzip")
         .args([input, "-d".into(), out])
         .output()
         .map(drop)
