@@ -1,5 +1,5 @@
 import { MantineProvider } from "@mantine/core";
-import Filter, { type FilterPropEntry } from "./Filter";
+import { Filter, type FilterPropEntry } from "./Filter";
 
 describe('Filter General', () => {
     it('should show two options and select the first one, and select the first one from that', () => {

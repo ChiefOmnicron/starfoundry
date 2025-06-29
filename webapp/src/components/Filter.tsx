@@ -68,7 +68,7 @@ import { useEffect, useState, type ReactElement } from "react";
 // - lesser or equal <= - <=
 // - equal = - =
 // - not equal != - !=
-export default function Filter(
+export function Filter(
     {
         entries,
         onFilterChange,
