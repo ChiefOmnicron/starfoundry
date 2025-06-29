@@ -5,8 +5,9 @@ import { Route as createProjectGroupRoute } from '@/routes/project-groups/create
 import { type ProjectGroup } from '@/services/project-group/fetch';
 import { useListProjectGroup, type ProjectGroupFilter } from '@/services/project-group/list';
 import { useState } from 'react';
-import Filter, { type FilterPropEntry, type SelectedFilter } from '@/components/Filter';
+import { Filter, type FilterPropEntry, type SelectedFilter } from '@/components/Filter';
 import LoadingAnimation from '@/components/LoadingAnimation';
+import { LoadingError } from '@/components/LoadingError';
 
 interface QueryParams {
     deleted?: boolean;
@@ -18,7 +19,7 @@ export const Route = createFileRoute('/project-groups/')({
         deleted: boolean,
     }): QueryParams => {
         return {
-            deleted: (params.deleted) || false
+            deleted: (params.deleted) || undefined
         };
     }
 });
@@ -171,14 +172,7 @@ export function ProjectGroups() {
         if (isPending || isFetching) {
             return LoadingAnimation();
         } else if (isError) {
-            return <Alert
-                variant='light'
-                color='red'
-                title='Unknown loading error'
-                data-cy="error"
-            >
-                There was an unknown error while loading the data. Please try again later.
-            </Alert>
+            return LoadingError();
         } else if (projectGroups.length > 0) {
             return dataTable();
         } else {

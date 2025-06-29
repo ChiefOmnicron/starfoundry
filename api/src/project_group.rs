@@ -14,7 +14,7 @@ mod accept_member;
 mod can_write;
 mod create;
 mod delete;
-mod fetch_default;
+mod fetch_defaults;
 mod fetch_members;
 mod fetch;
 mod list;
@@ -29,7 +29,7 @@ pub use self::can_write::*;
 pub use self::create::*;
 pub use self::delete::*;
 pub use self::fetch::*;
-pub use self::fetch_default::*;
+pub use self::fetch_defaults::*;
 pub use self::fetch_members::*;
 pub use self::list::*;
 pub use self::remove_member::*;
@@ -89,13 +89,13 @@ pub fn api(
 
     let fetch_default = group_path
         .clone()
-        .and(warp::path!(ProjectGroupUuid / "default"))
+        .and(warp::path!(ProjectGroupUuid / "defaults"))
         .and(warp::get())
-        .and_then(fetch_default);
+        .and_then(fetch_defaults);
 
     let update_default = group_path
         .clone()
-        .and(warp::path!(ProjectGroupUuid / "default"))
+        .and(warp::path!(ProjectGroupUuid / "defaults"))
         .and(warp::put())
         .and(warp::body::json())
         .and_then(update_default);

@@ -15,13 +15,15 @@ const routes = [
         paths: [{
             link: '/project-groups/$projectGroupId/overview',
             label: 'Overview'
-        }, {
+        },
+        // TODO: implement
+        /*{
             link: '/project-groups/$projectGroupId/projects',
             label: 'Projects'
         }, {
             link: '/project-groups/$projectGroupId/structures',
             label: 'Structures'
-        }, {
+        }, */{
             link: '/project-groups/$projectGroupId/members',
             label: 'Members'
         }, {
