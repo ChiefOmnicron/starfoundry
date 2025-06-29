@@ -1,21 +1,18 @@
-use serde::Serialize;
 use sqlx::PgPool;
-use starfoundry_libs_projects::{ProjectGroupService, ProjectGroupUuid};
-use utoipa::ToSchema;
-use uuid::Uuid;
+use starfoundry_libs_projects::{ProjectGroupDefault, ProjectGroupService, ProjectGroupUuid};
 use warp::{Reply, Rejection};
 
 use crate::{ReplyError, Identity};
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
-use crate::project_group::ProjectGroupUuidPath;
+use super::ProjectGroupUuidPath;
 
-/// /project-groups/{projectGroupUuid}
+/// /project-groups/{projectGroupUuid}/defaults
 /// 
-/// Alternative route: `/v1/project-groups/{projectGroupUuid}`
+/// Alternative route: `/v1/project-groups/{projectGroupUuid}/defaults`
 /// 
 /// ---
 /// 
-/// Fetches information about a project group
+/// Fetches the defaults configured by the project group
 /// 
 /// ## Security
 /// - authenticated
@@ -23,32 +20,32 @@ use crate::project_group::ProjectGroupUuidPath;
 /// 
 #[utoipa::path(
     get,
-    operation_id = "project_groups_fetch",
-    path = "/project-groups/{projectGroupUuid}",
+    operation_id = "project_groups_fetch_default",
+    path = "/project-groups/{projectGroupUuid}/defaults",
     tag = "project-groups",
     params(
         ProjectGroupUuidPath,
     ),
     responses(
         (
-            body = ProjectGroupResponse,
-            description = "Information about the group",
+            body = ProjectGroupDefault,
+            description = "Defaults of the group",
             status = OK,
         ),
+        NotFound,
         Unauthorized,
         Forbidden,
-        NotFound,
         InternalServerError,
     ),
 )]
-pub async fn fetch(
+pub async fn fetch_defaults(
     pool:               PgPool,
     identity:           Identity,
     project_group_uuid: ProjectGroupUuid,
 ) -> Result<impl Reply, Rejection> {
     let project_group = ProjectGroupService::new(project_group_uuid);
 
-    match project_group.fetch(
+    match project_group.fetch_defaults(
         &pool,
         identity.character_id(),
     ).await {
@@ -66,33 +63,8 @@ pub async fn fetch(
     }
 }
 
-// TODO: replace with ProjectGroup
-#[derive(Debug, Serialize, ToSchema)]
-#[schema(
-    example = json!({
-        "id": "022e57de-0571-43d1-b9c6-4a0d97940177",
-        "name": "My cool project group",
-        "members": 1,
-        "projects": 10,
-        "description": "Contains some really cool projects"
-    })
-)]
-pub struct ProjectGroupResponse {
-    /// UUID of the group
-    pub id:          Uuid,
-    /// Name of the group
-    pub name:        String,
-    /// Number of members in the group
-    pub members:     i64,
-    /// Number of projects in the group
-    pub projects:    i64,
-
-    /// Description of the group
-    pub description: Option<String>,
-}
-
 #[cfg(test)]
-mod fetch_project_group_test {
+mod fetch_defaults_project_group_test {
     use sqlx::PgPool;
     use warp::Filter;
     use warp::http::StatusCode;
@@ -100,7 +72,7 @@ mod fetch_project_group_test {
     use crate::test_util::credential_cache;
 
     #[sqlx::test(
-        fixtures("fetch"),
+        fixtures("fetch", "fetch_default"),
         migrator = "crate::test_util::MIGRATOR",
     )]
     async fn happy_path(
@@ -115,7 +87,7 @@ mod fetch_project_group_test {
             .recover(crate::rejection::handle_rejection);
 
         let response = warp::test::request()
-            .path("/project-groups/00000000-0000-0000-0000-000000000001")
+            .path("/project-groups/00000000-0000-0000-0000-000000000001/defaults")
             .method("GET")
             .reply(&filter)
             .await;
@@ -124,7 +96,7 @@ mod fetch_project_group_test {
     }
 
     #[sqlx::test(
-        fixtures("fetch"),
+        fixtures("fetch", "fetch_default"),
         migrator = "crate::test_util::MIGRATOR",
     )]
     async fn no_entry_with_default_uuid(
@@ -139,7 +111,7 @@ mod fetch_project_group_test {
             .recover(crate::rejection::handle_rejection);
 
         let response = warp::test::request()
-            .path("/project-groups/00000000-0000-0000-0000-000000000000")
+            .path("/project-groups/00000000-0000-0000-0000-000000000000/defaults")
             .method("GET")
             .reply(&filter)
             .await;
