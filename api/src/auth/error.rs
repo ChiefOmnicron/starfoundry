@@ -1,44 +1,78 @@
-#[derive(Debug)]
+use thiserror::Error;
+use axum::response::{IntoResponse, Response};
+use axum::http::StatusCode;
+
+use crate::api_docs::ErrorResponse;
+use axum::Json;
+
+pub type Result<T, E = AuthError> = std::result::Result<T, E>;
+
+#[derive(Debug, Error)]
+#[non_exhaustive]
 pub enum AuthError {
-    InvalidToken,
+    #[error("missing query parameter")]
+    InvalidEveLoginResponse,
+    #[error("invalid JWT-Token from Eve")]
+    InvalidEveJwtToken,
+    #[error("invalid Identity")]
     InvalidIdentity,
+    #[error("Identity not found in credential cache")]
+    IdentityNotFound,
 
-    CreateAuthClient(starfoundry_libs_eve_api::Error),
-    ConnectError(starfoundry_libs_eve_api::Error),
-    SqlError(sqlx::Error),
+    #[error("error while inserting token, error: '{0}'")]
+    InsertTokenError(sqlx::Error),
+    #[error("error while getting token, error: '{0}'")]
+    GetTokenError(sqlx::Error),
 
-    // Callback errors
-    InvalidCode,
-    InvalidState,
-    InvalidIntention,
-    InvalidCharacter,
-    CannotGetIntentionToken(sqlx::Error),
-    UnknownCharacter(sqlx::Error),
-    CannotUpdateLogin(sqlx::Error),
-    CannotUpdateEsiTokens(sqlx::Error),
+    #[error("error while updating login, error: '{0}'")]
+    UpdateLogin(sqlx::Error),
 
-    // Secure token errors
+    #[error("error performing eve api call, error: '{0}'")]
+    EveApiError(starfoundry_libs_eve_api::Error),
+
+    #[error("missing env 'SECRET_KEY'")]
     MissingEnvSecretKey,
-    HmacInitError,
-    InvalidBase64,
+    #[error("error decoding jwt, error '{0}'")]
+    JsonWebTokenDecode(jsonwebtoken::errors::Error),
+    #[error("error encoding jwt, error '{0}'")]
+    JsonWebTokenEncode(jsonwebtoken::errors::Error),
 
-    JsonWebTokenEncode(jsonwebtoken::errors::Error,),
-    JsonWebTokenDecode(jsonwebtoken::errors::Error,),
-
-    // FIXME: proper error
-    FixMe
+    #[error("generic sqlx error: '{0}'")]
+    GenericSqlxError(sqlx::Error),
 }
 
-impl warp::reject::Reject for AuthError {}
+impl IntoResponse for AuthError {
+    fn into_response(self) -> Response {
+        match self {
+            Self::IdentityNotFound |
+            Self::InvalidEveJwtToken |
+            Self::InvalidEveLoginResponse |
+            Self::InvalidIdentity => {
+                tracing::warn!("{}", self.to_string());
+                (
+                    StatusCode::BAD_REQUEST,
+                    Json(
+                        ErrorResponse {
+                            error: "INVALID_RESPONSE".into(),
+                            description: self.to_string(),
+                        }
+                    )
+                ).into_response()
+            }
 
-impl From<sqlx::Error> for AuthError {
-    fn from(x: sqlx::Error) -> Self {
-        Self::SqlError(x)
-    }
-}
-
-impl From<starfoundry_libs_eve_api::Error> for AuthError {
-    fn from(x: starfoundry_libs_eve_api::Error) -> Self {
-        Self::ConnectError(x)
+            _ => {
+                tracing::error!("{}", self.to_string());
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(
+                        ErrorResponse {
+                            error: "UNKNOWN".into(),
+                            description: "An unknown error occurred, please try again later.".into(),
+                        }
+                    )
+                ).into_response()
+            },
+        }
+        .into_response()
     }
 }

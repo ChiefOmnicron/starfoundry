@@ -91,7 +91,7 @@ describe('Project Group General', () => {
         cy.get('[data-cy="create"]').should('have.attr', 'data-loading');
         cy.wait('@updateProjectGroup');
 
-        cy.get('[data-cy="errorUpdate"]').should('be.visible');
+        cy.get('[data-cy="errorCreate"]').should('be.visible');
     });
 
     it('should not allow to create a group with only a description', () => {

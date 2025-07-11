@@ -15,6 +15,7 @@ use crate::{Error, Result};
         "description": "Bunch of cool projects"
     })
 )]
+#[deprecated]
 pub struct ProjectGroup {
     pub id:          Uuid,
     pub name:        String,
@@ -32,6 +33,7 @@ pub struct ProjectGroup {
         "description": "Bunch of cool projects"
     })
 )]
+#[deprecated]
 pub struct CreateProjectGroup {
     /// Maximum length 100
     pub name:        String,

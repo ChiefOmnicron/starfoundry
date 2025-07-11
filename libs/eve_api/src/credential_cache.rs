@@ -65,7 +65,10 @@ impl CredentialCache {
                 JOIN   character c ON c.character_id = cred.character_id
                 WHERE  cred.character_id IS NOT NULL
                 AND  refresh_token IS NOT NULL
-                AND  credential_type = 'CHARACTER'
+                AND  (
+                    credential_type = 'CHARACTER' OR
+                    credential_type = 'CHARACTER_ALT'
+                )
             ")
             .fetch_all(pool)
             .await

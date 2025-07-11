@@ -10,7 +10,7 @@ use std::sync::{Arc, Mutex};
 use url::Url;
 
 use crate::{Cache, Error};
-use crate::oauth_token::EveOAuthToken;
+use crate::oauth_token::EveJwtToken;
 
 /// Client for communicating with the EVE-API using an authenticated character.
 ///
@@ -65,6 +65,11 @@ impl EveApiClient {
     /// Name of the ENV of the user agent
     const ENV_USER_AGENT: &'static str = "EVE_USER_AGENT";
 
+    /// Returns the client_id from the environment
+    pub fn client_id() -> String {
+        std::env::var(Self::ENV_CLIENT_ID).unwrap_or_default()
+    }
+
     /// Gets the initial access token,
     ///
     /// [More information](https://docs.esi.evetech.net/docs/sso/web_based_sso_flow.html)
@@ -82,7 +87,7 @@ impl EveApiClient {
     /// If the retrieving of an `access_token` fails the function will return
     /// an error
     ///
-    pub async fn access_token(code: &str) -> Result<EveOAuthToken, Error> {
+    pub async fn access_token(code: &str) -> Result<EveJwtToken, Error> {
         let mut map = HashMap::new();
         map.insert("grant_type", "authorization_code");
         map.insert("code", code);
@@ -1016,11 +1021,11 @@ impl EveApiClient {
     ///
     async fn get_token(
         form: HashMap<&str, &str>
-    ) -> Result<EveOAuthToken, Error> {
-        let client_id =
-            std::env::var(Self::ENV_CLIENT_ID).map_err(|_| Error::env_client_id())?;
-        let secret_key =
-            std::env::var(Self::ENV_SECRET_KEY).map_err(|_| Error::env_secret_key())?;
+    ) -> Result<EveJwtToken, Error> {
+        let client_id = std::env::var(Self::ENV_CLIENT_ID)
+            .map_err(|_| Error::env_client_id())?;
+        let secret_key = std::env::var(Self::ENV_SECRET_KEY)
+            .map_err(|_| Error::env_secret_key())?;
 
         let response = Client::new()
             .post(Self::EVE_TOKEN_URL)

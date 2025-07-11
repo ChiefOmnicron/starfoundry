@@ -7,15 +7,15 @@ import { RouterProvider, createRouter } from '@tanstack/react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import ReactDOM from 'react-dom/client';
-
-const queryClient = new QueryClient();
+import { AuthProvider, useAuth, type AuthContext } from './auth';
 
 // Create a new router instance
 const router = createRouter({
     routeTree,
     context: {
-        queryClient,
-    }
+        auth: undefined!,
+        queryClient: undefined!,
+    },
 });
 
 // Register the router instance for type safety
@@ -25,6 +25,25 @@ declare module '@tanstack/react-router' {
     }
 }
 
+function Inner() {
+    const auth = useAuth();
+    const queryClient = new QueryClient();
+
+    return (
+        <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} context={{ auth, queryClient }} />
+        </QueryClientProvider>
+    )
+}
+
+function App() {
+    return (
+        <AuthProvider>
+            <Inner />
+        </AuthProvider>
+    );
+}
+
 // Render the app
 const rootElement = document.getElementById('root')!
 
@@ -32,13 +51,12 @@ if (!rootElement.innerHTML) {
     const root = ReactDOM.createRoot(rootElement)
     root.render(
         <StrictMode>
-            <QueryClientProvider client={queryClient}>
-                <RouterProvider router={router} context={{ queryClient }} />
-            </QueryClientProvider>
+            <App />
         </StrictMode>,
     )
 }
 
 export type RouterContext = {
+    auth: AuthContext,
     queryClient: QueryClient;
 };

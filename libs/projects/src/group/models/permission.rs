@@ -3,6 +3,7 @@ use utoipa::ToSchema;
 use std::ops::Deref;
 
 #[derive(Debug, Deserialize, Serialize, ToSchema)]
+#[deprecated]
 pub struct ProjectGroupPermission(i32);
 
 impl ProjectGroupPermission {

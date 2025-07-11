@@ -1,17 +1,23 @@
-use serde::Serialize;
-use sqlx::PgPool;
-use starfoundry_libs_projects::{ProjectGroupService, ProjectGroupUuid};
-use utoipa::ToSchema;
-use uuid::Uuid;
-use warp::{Reply, Rejection};
+mod service;
 
-use crate::{ReplyError, Identity};
+pub use self::service::*;
+
+use axum::extract::{Path, State};
+use axum::http::StatusCode;
+use axum::Json;
+use axum::response::IntoResponse;
+
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
-use crate::project_group::ProjectGroupUuidPath;
+use crate::AppState;
+use crate::auth::ExtractIdentity;
+use crate::project_group::error::Result;
+use crate::project_group::list::ProjectGroup;
+use crate::project_group::ProjectGroupUuid;
 
-/// /project-groups/{projectGroupUuid}
+/// Fetch Group
 /// 
-/// Alternative route: `/v1/project-groups/{projectGroupUuid}`
+/// - Alternative route: `/latest/project-groups/{ProjectGroupUuid}`
+/// - Alternative route: `/v1/project-groups/{ProjectGroupUuid}`
 /// 
 /// ---
 /// 
@@ -23,15 +29,14 @@ use crate::project_group::ProjectGroupUuidPath;
 /// 
 #[utoipa::path(
     get,
-    operation_id = "project_groups_fetch",
-    path = "/project-groups/{projectGroupUuid}",
+    path = "/{ProjectGroupUuid}",
     tag = "project-groups",
     params(
-        ProjectGroupUuidPath,
+        ProjectGroupUuid,
     ),
     responses(
         (
-            body = ProjectGroupResponse,
+            body = ProjectGroup,
             description = "Information about the group",
             status = OK,
         ),
@@ -40,110 +45,120 @@ use crate::project_group::ProjectGroupUuidPath;
         NotFound,
         InternalServerError,
     ),
+    security(
+        ("api_key" = [])
+    ),
 )]
-pub async fn fetch(
-    pool:               PgPool,
-    identity:           Identity,
-    project_group_uuid: ProjectGroupUuid,
-) -> Result<impl Reply, Rejection> {
-    let project_group = ProjectGroupService::new(project_group_uuid);
+pub async fn api(
+    State(state):              State<AppState>,
+    ExtractIdentity(identity): ExtractIdentity,
+    Path(project_group_uuid):  Path<ProjectGroupUuid>,
+) -> Result<impl IntoResponse> {
+    let entry = fetch(
+            &state.pool,
+            identity.character_id(),
+            project_group_uuid
+        )
+        .await?;
 
-    match project_group.fetch(
-        &pool,
-        identity.character_id(),
-    ).await {
-        Ok(x) => Ok(warp::reply::json(&x)),
-        Err(starfoundry_libs_projects::Error::ProjectGroupNotFound(_)) => {
-            Err(ReplyError::NotFound.into())
-        },
-        Err(starfoundry_libs_projects::Error::Forbidden(_, _)) => {
-            Err(ReplyError::Forbidden.into())
-        },
-        Err(e) => {
-            tracing::error!("Unexpected error, {e}");
-            Err(ReplyError::Internal.into())
-        },
+    if let Some(x) = entry {
+        Ok(
+            (
+                StatusCode::OK,
+                Json(x)
+            )
+            .into_response()
+        )
+    } else {
+        Ok(
+            (
+                StatusCode::NO_CONTENT,
+                ()
+            )
+            .into_response()
+        )
     }
 }
 
-// TODO: replace with ProjectGroup
-#[derive(Debug, Serialize, ToSchema)]
-#[schema(
-    example = json!({
-        "id": "022e57de-0571-43d1-b9c6-4a0d97940177",
-        "name": "My cool project group",
-        "members": 1,
-        "projects": 10,
-        "description": "Contains some really cool projects"
-    })
-)]
-pub struct ProjectGroupResponse {
-    /// UUID of the group
-    pub id:          Uuid,
-    /// Name of the group
-    pub name:        String,
-    /// Number of members in the group
-    pub members:     i64,
-    /// Number of projects in the group
-    pub projects:    i64,
-
-    /// Description of the group
-    pub description: Option<String>,
-}
-
 #[cfg(test)]
-mod fetch_project_group_test {
+mod tests {
+    use axum::body::Body;
+    use axum::extract::Request;
+    use axum::http::header::AUTHORIZATION;
+    use axum::http::StatusCode;
     use sqlx::PgPool;
-    use warp::Filter;
-    use warp::http::StatusCode;
+    use starfoundry_libs_types::CharacterId;
 
-    use crate::test_util::credential_cache;
+    use crate::auth::JwtToken;
+    use crate::project_group::project_group_test_routes;
 
     #[sqlx::test(
-        fixtures("fetch"),
-        migrator = "crate::test_util::MIGRATOR",
+        fixtures("base"),
+        migrator = "crate::test_util::MIGRATOR"
     )]
     async fn happy_path(
         pool: PgPool,
     ) {
-        let base_path = warp::any().boxed();
-        let credential_cache = credential_cache(pool.clone()).await;
-
-        let filter = warp::any()
-            .clone()
-            .and(crate::project_group::api(pool, base_path, credential_cache))
-            .recover(crate::rejection::handle_rejection);
-
-        let response = warp::test::request()
-            .path("/project-groups/00000000-0000-0000-0000-000000000001")
+        let token = JwtToken::new(CharacterId(1));
+        let request = Request::builder()
+            .uri("/00000000-0000-0000-0000-000000000001")
             .method("GET")
-            .reply(&filter)
-            .await;
-
+            .header(AUTHORIZATION, token.generate().unwrap())
+            .body(Body::empty())
+            .unwrap();
+        let response = project_group_test_routes(pool, request).await;
         assert_eq!(response.status(), StatusCode::OK);
     }
 
     #[sqlx::test(
-        fixtures("fetch"),
-        migrator = "crate::test_util::MIGRATOR",
+        fixtures("base"),
+        migrator = "crate::test_util::MIGRATOR"
     )]
-    async fn no_entry_with_default_uuid(
+    async fn unauthorized(
         pool: PgPool,
     ) {
-        let base_path = warp::any().boxed();
-        let credential_cache = credential_cache(pool.clone()).await;
-
-        let filter = warp::any()
-            .clone()
-            .and(crate::project_group::api(pool, base_path, credential_cache))
-            .recover(crate::rejection::handle_rejection);
-
-        let response = warp::test::request()
-            .path("/project-groups/00000000-0000-0000-0000-000000000000")
+        let request = Request::builder()
+            .uri("/00000000-0000-0000-0000-000000000001")
             .method("GET")
-            .reply(&filter)
-            .await;
+            .body(Body::empty())
+            .unwrap();
+        let response = project_group_test_routes(pool, request).await;
+        assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
+    }
 
+    #[sqlx::test(
+        fixtures("base"),
+        migrator = "crate::test_util::MIGRATOR"
+    )]
+    async fn forbidden(
+        pool: PgPool,
+    ) {
+        let token = JwtToken::new(CharacterId(1));
+        let request = Request::builder()
+            .uri("/00000000-0000-0000-0000-000000000005")
+            .method("GET")
+            .header(AUTHORIZATION, token.generate().unwrap())
+            .body(Body::empty())
+            .unwrap();
+        let response = project_group_test_routes(pool, request).await;
+        assert_eq!(response.status(), StatusCode::FORBIDDEN);
+    }
+
+    #[sqlx::test(
+        fixtures("base"),
+        migrator = "crate::test_util::MIGRATOR"
+    )]
+    async fn not_found(
+        pool: PgPool,
+    ) {
+        let token = JwtToken::new(CharacterId(1));
+        let request = Request::builder()
+            .uri("/00000000-0000-0000-0000-000000000000")
+            .method("GET")
+            .header(AUTHORIZATION, token.generate().unwrap())
+            .body(Body::empty())
+            .unwrap();
+        let response = project_group_test_routes(pool, request).await;
         assert_eq!(response.status(), StatusCode::NOT_FOUND);
     }
 }

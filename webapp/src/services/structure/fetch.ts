@@ -1,54 +1,29 @@
-import axios from "axios";
-import type { TypeId, Uuid } from "../utils";
+import { axiosClient } from "@/services/client";
 import { useQuery } from "@tanstack/react-query";
+import type { Structure } from "./list";
+import type { Uuid } from "@/services/utils";
 
 export const FETCH_STRUCTURE = 'fetchStructure';
 
 export const fetchStructure = async (
-    filter: StructureFilter,
-): Promise<Structure[]> => axios.get(
-        `/api/structures`,
-        {
-            params: filter,
-        }
+    id: Uuid,
+): Promise<Structure> => (await axiosClient())
+    .get(
+        `/api/structures/${id}`,
     )
     .then(x => x.data);
 
-export type Structure = {
-    id:                Uuid,
-    name:              string,
-    system_id:         number,
-    security:          'HIGHSEC' | 'LOWSEC' | 'NULLSEC',
-    structure_type:    TypeId,
-    rigs:              StructureRig[],
-    services:          TypeId[],
-    structure_id:      number,
-}
-
-export type StructureRig = {
-    name:            string,
-    type_id:         TypeId,
-
-    material?:       number,
-    time?:           number,
-    category_groups: number[],
-}
-
-export type StructureFilter = {
-
-}
-
 // For general use
 export const useFetchStructure = (
-    filter: StructureFilter,
+    id: Uuid,
 ) => {
-    return useQuery(fetchStructureQuery(filter));
+    return useQuery(fetchStructureQuery(id));
 }
 
-// For pre-fetching
+// For pre-listing
 export const fetchStructureQuery = (
-    filter: StructureFilter,
+    id: Uuid,
 ) => ({
-    queryKey: [FETCH_STRUCTURE, filter],
-    queryFn: async () => fetchStructure(filter),
+    queryKey: [FETCH_STRUCTURE, id],
+    queryFn: async () => fetchStructure(id),
 });
