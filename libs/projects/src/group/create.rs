@@ -5,6 +5,7 @@ use uuid::Uuid;
 
 use crate::{CreateProjectGroup, Error, ProjectGroupPermissionCode, ProjectGroupUuid, Result};
 
+#[deprecated]
 pub async fn create(
     pool:         &PgPool,
     character_id: CharacterId,

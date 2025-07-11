@@ -4,9 +4,6 @@ CREATE TABLE IF NOT EXISTS credential (
     character_id            INTEGER,
     character_main          INTEGER,
 
-    -- intention of the user
-    -- e.g. LOGIN, LOGIN_ALT, REAUTH
-    intention               VARCHAR     NOT NULL,
     credential_type         VARCHAR     NOT NULL,
 
     -- token so that we can verify the user

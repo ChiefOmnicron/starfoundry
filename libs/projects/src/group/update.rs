@@ -2,6 +2,7 @@ use sqlx::PgPool;
 
 use crate::{Error, ProjectGroupUuid, UpdateProjectGroup, Result};
 
+#[deprecated]
 pub async fn update(
     pool:     &PgPool,
     group_id: ProjectGroupUuid,

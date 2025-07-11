@@ -118,10 +118,6 @@ async fn prepare_data(
     let mut items = Vec::new();
 
     for (type_id, entry) in type_ids {
-        if !entry.published {
-            continue;
-        }
-
         let type_id = *type_id;
         let group_id = entry.group_id.into();
         let category_id = group_ids

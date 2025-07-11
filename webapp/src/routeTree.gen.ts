@@ -15,6 +15,7 @@ import { Route as ProjectGroupsRouteImport } from './routes/project-groups/route
 import { Route as AboutRouteImport } from './routes/about/route'
 import { Route as ProjectGroupsIndexImport } from './routes/project-groups/index'
 import { Route as ProjectGroupsCreateImport } from './routes/project-groups/create'
+import { Route as AuthLoginImport } from './routes/auth/login'
 import { Route as ProjectGroupsProjectGroupIdRouteImport } from './routes/project-groups_/$projectGroupId.route'
 import { Route as ProjectGroupsProjectGroupIdOverviewImport } from './routes/project-groups_/$projectGroupId.overview'
 import { Route as ProjectGroupsProjectGroupIdMembersImport } from './routes/project-groups_/$projectGroupId.members'
@@ -44,6 +45,12 @@ const ProjectGroupsCreateRoute = ProjectGroupsCreateImport.update({
   id: '/create',
   path: '/create',
   getParentRoute: () => ProjectGroupsRouteRoute,
+} as any)
+
+const AuthLoginRoute = AuthLoginImport.update({
+  id: '/auth/login',
+  path: '/auth/login',
+  getParentRoute: () => rootRoute,
 } as any)
 
 const ProjectGroupsProjectGroupIdRouteRoute =
@@ -97,6 +104,13 @@ declare module '@tanstack/react-router' {
       path: '/project-groups/$projectGroupId'
       fullPath: '/project-groups/$projectGroupId'
       preLoaderRoute: typeof ProjectGroupsProjectGroupIdRouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginImport
       parentRoute: typeof rootRoute
     }
     '/project-groups/create': {
@@ -177,6 +191,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRouteRoute
   '/project-groups': typeof ProjectGroupsRouteRouteWithChildren
   '/project-groups/$projectGroupId': typeof ProjectGroupsProjectGroupIdRouteRouteWithChildren
+  '/auth/login': typeof AuthLoginRoute
   '/project-groups/create': typeof ProjectGroupsCreateRoute
   '/project-groups/': typeof ProjectGroupsIndexRoute
   '/project-groups/$projectGroupId/defaults': typeof ProjectGroupsProjectGroupIdDefaultsRoute
@@ -187,6 +202,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/about': typeof AboutRouteRoute
   '/project-groups/$projectGroupId': typeof ProjectGroupsProjectGroupIdRouteRouteWithChildren
+  '/auth/login': typeof AuthLoginRoute
   '/project-groups/create': typeof ProjectGroupsCreateRoute
   '/project-groups': typeof ProjectGroupsIndexRoute
   '/project-groups/$projectGroupId/defaults': typeof ProjectGroupsProjectGroupIdDefaultsRoute
@@ -199,6 +215,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRouteRoute
   '/project-groups': typeof ProjectGroupsRouteRouteWithChildren
   '/project-groups_/$projectGroupId': typeof ProjectGroupsProjectGroupIdRouteRouteWithChildren
+  '/auth/login': typeof AuthLoginRoute
   '/project-groups/create': typeof ProjectGroupsCreateRoute
   '/project-groups/': typeof ProjectGroupsIndexRoute
   '/project-groups_/$projectGroupId/defaults': typeof ProjectGroupsProjectGroupIdDefaultsRoute
@@ -212,6 +229,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/project-groups'
     | '/project-groups/$projectGroupId'
+    | '/auth/login'
     | '/project-groups/create'
     | '/project-groups/'
     | '/project-groups/$projectGroupId/defaults'
@@ -221,6 +239,7 @@ export interface FileRouteTypes {
   to:
     | '/about'
     | '/project-groups/$projectGroupId'
+    | '/auth/login'
     | '/project-groups/create'
     | '/project-groups'
     | '/project-groups/$projectGroupId/defaults'
@@ -231,6 +250,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/project-groups'
     | '/project-groups_/$projectGroupId'
+    | '/auth/login'
     | '/project-groups/create'
     | '/project-groups/'
     | '/project-groups_/$projectGroupId/defaults'
@@ -243,6 +263,7 @@ export interface RootRouteChildren {
   AboutRouteRoute: typeof AboutRouteRoute
   ProjectGroupsRouteRoute: typeof ProjectGroupsRouteRouteWithChildren
   ProjectGroupsProjectGroupIdRouteRoute: typeof ProjectGroupsProjectGroupIdRouteRouteWithChildren
+  AuthLoginRoute: typeof AuthLoginRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -250,6 +271,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectGroupsRouteRoute: ProjectGroupsRouteRouteWithChildren,
   ProjectGroupsProjectGroupIdRouteRoute:
     ProjectGroupsProjectGroupIdRouteRouteWithChildren,
+  AuthLoginRoute: AuthLoginRoute,
 }
 
 export const routeTree = rootRoute
@@ -264,7 +286,8 @@ export const routeTree = rootRoute
       "children": [
         "/about",
         "/project-groups",
-        "/project-groups_/$projectGroupId"
+        "/project-groups_/$projectGroupId",
+        "/auth/login"
       ]
     },
     "/about": {
@@ -284,6 +307,9 @@ export const routeTree = rootRoute
         "/project-groups_/$projectGroupId/members",
         "/project-groups_/$projectGroupId/overview"
       ]
+    },
+    "/auth/login": {
+      "filePath": "auth/login.tsx"
     },
     "/project-groups/create": {
       "filePath": "project-groups/create.tsx",

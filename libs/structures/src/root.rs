@@ -12,7 +12,7 @@ pub use self::models::*;
 pub(crate) use self::create::*;
 pub(crate) use self::delete::*;
 pub(crate) use self::fetch::*;
-pub(crate) use self::list::*;
+pub use self::list::*;
 pub(crate) use self::resolve_player_structure::*;
 pub(crate) use self::rigs_by_structure::*;
 pub(crate) use self::update::*;

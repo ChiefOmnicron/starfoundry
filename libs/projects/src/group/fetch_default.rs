@@ -3,6 +3,7 @@ use starfoundry_libs_types::TypeId;
 
 use crate::{Error, ProjectGroupDefault, ProjectGroupUuid, Result};
 
+#[deprecated]
 pub async fn fetch_defaults(
     pool:       &PgPool,
     group_uuid: ProjectGroupUuid,

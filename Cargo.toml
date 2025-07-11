@@ -8,6 +8,7 @@ panic = 'abort'
 [workspace]
 members = [
   'api',
+  'api_old',
   'collector',
   'database_upgrade',
   'event_worker',
