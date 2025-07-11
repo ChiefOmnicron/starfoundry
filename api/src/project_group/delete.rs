@@ -1,15 +1,21 @@
-use sqlx::PgPool;
-use starfoundry_libs_projects::{ProjectGroupUuid, ProjectGroupService};
-use warp::{Reply, Rejection};
-use warp::http::StatusCode;
+mod service;
 
-use crate::{ReplyError, Identity};
-use crate::api_docs::{Forbidden, InternalServerError, NoContent, NotFound, Unauthorized};
-use super::ProjectGroupUuidPath;
+pub use self::service::*;
 
-/// /project-groups/{projectGroupUuid}
+use axum::extract::{Path, State};
+use axum::http::StatusCode;
+use axum::Json;
+use axum::response::IntoResponse;
+
+use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
+use crate::AppState;
+use crate::project_group::error::Result;
+use crate::project_group::ProjectGroupUuid;
+
+/// Delete Group
 /// 
-/// Alternative route: `/v1/project-groups/{projectGroupUuid}`
+/// - Alternative route: `/latest/project-groups/{ProjectGroupUuid}`
+/// - Alternative route: `/v1/project-groups/{ProjectGroupUuid}`
 /// 
 /// ---
 /// 
@@ -21,121 +27,133 @@ use super::ProjectGroupUuidPath;
 /// 
 #[utoipa::path(
     delete,
-    operation_id = "project_groups_delete",
-    path = "/project-groups/{projectGroupUuid}",
+    path = "/{ProjectGroupUuid}",
     tag = "project-groups",
     params(
-        ProjectGroupUuidPath,
+        ProjectGroupUuid,
     ),
     responses(
-        NoContent,
+        (
+            description = "The group was successfully deleted",
+            status = NO_CONTENT,
+        ),
         NotFound,
         Unauthorized,
         Forbidden,
         InternalServerError,
     ),
+    security(
+        ("api_key" = [])
+    ),
 )]
-pub async fn delete(
-    pool:               PgPool,
-    identity:           Identity,
-    project_group_uuid: ProjectGroupUuid,
-) -> Result<impl Reply, Rejection> {
-    let project_group = ProjectGroupService::new(project_group_uuid);
+pub async fn api(
+    State(state):             State<AppState>,
+    Path(project_group_uuid): Path<ProjectGroupUuid>,
+) -> Result<impl IntoResponse> {
 
-    match dbg!(project_group.delete(
-        &pool,
-        identity.character_id(),
-    ).await) {
-        Ok(_) => Ok(warp::reply::with_status(
-            warp::reply::json(&()),
-            StatusCode::NO_CONTENT,
-        )),
-        Err(starfoundry_libs_projects::Error::ProjectGroupNotFound(_)) => {
-            Err(ReplyError::NotFound.into())
-        },
-        Err(starfoundry_libs_projects::Error::FetchGroupPermissions(_, _)) |
-        Err(starfoundry_libs_projects::Error::Forbidden(_, _)) => Err(ReplyError::Forbidden.into()),
-        Err(e) => {
-            tracing::error!("Unexpected error, {e}");
-            Err(ReplyError::Internal.into())
-        },
-    }
+    delete(
+        &state.pool,
+        project_group_uuid,
+    ).await?;
+
+    let response: Vec<String> = Vec::new();
+    Ok((
+        StatusCode::NO_CONTENT,
+        Json(response)
+    ))
 }
 
 #[cfg(test)]
-mod delete_project_group_test {
+mod tests {
+    use axum::body::Body;
+    use axum::extract::Request;
+    use axum::http::header::AUTHORIZATION;
+    use axum::http::StatusCode;
     use sqlx::PgPool;
-    use warp::Filter;
-    use warp::http::StatusCode;
+    use starfoundry_libs_types::CharacterId;
 
-    use crate::test_util::credential_cache;
-
-    #[sqlx::test(
-        fixtures("delete"),
-        migrator = "crate::test_util::MIGRATOR"
-    )]
-    async fn user_does_not_have_the_permission(
-        pool: PgPool,
-    ) {
-        let base_path = warp::any().boxed();
-        let credential_cache = credential_cache(pool.clone()).await;
-
-        let filter = warp::any()
-            .clone()
-            .and(crate::project_group::api(pool, base_path, credential_cache))
-            .recover(crate::rejection::handle_rejection);
-
-        let response = warp::test::request()
-            .path("/project-groups/00000000-0000-0000-0000-000000000002")
-            .method("DELETE")
-            .reply(&filter)
-            .await;
-        assert_eq!(response.status(), StatusCode::FORBIDDEN);
-    }
+    use crate::auth::JwtToken;
+    use crate::project_group::project_group_test_routes;
 
     #[sqlx::test(
-        fixtures("delete"),
-        migrator = "crate::test_util::MIGRATOR"
-    )]
-    async fn does_not_exist(
-        pool: PgPool,
-    ) {
-        let base_path = warp::any().boxed();
-        let credential_cache = credential_cache(pool.clone()).await;
-
-        let filter = warp::any()
-            .clone()
-            .and(crate::project_group::api(pool, base_path, credential_cache))
-            .recover(crate::rejection::handle_rejection);
-
-        let response = warp::test::request()
-            .path("/project-groups/00000000-0000-0000-0000-000000000000")
-            .method("DELETE")
-            .reply(&filter)
-            .await;
-        assert_eq!(response.status(), StatusCode::NOT_FOUND);
-    }
-
-    #[sqlx::test(
-        fixtures("delete"),
+        fixtures("base"),
         migrator = "crate::test_util::MIGRATOR"
     )]
     async fn happy_path(
         pool: PgPool,
     ) {
-        let base_path = warp::any().boxed();
-        let credential_cache = credential_cache(pool.clone()).await;
-
-        let filter = warp::any()
-            .clone()
-            .and(crate::project_group::api(pool, base_path, credential_cache))
-            .recover(crate::rejection::handle_rejection);
-
-        let response = warp::test::request()
-            .path("/project-groups/00000000-0000-0000-0000-000000000001")
+        let token = JwtToken::new(CharacterId(1));
+        let request = Request::builder()
+            .uri("/00000000-0000-0000-0000-000000000001")
             .method("DELETE")
-            .reply(&filter)
-            .await;
+            .header(AUTHORIZATION, token.generate().unwrap())
+            .body(Body::empty())
+            .unwrap();
+        let response = project_group_test_routes(pool, request).await;
         assert_eq!(response.status(), StatusCode::NO_CONTENT);
+    }
+
+    #[sqlx::test(
+        fixtures("base"),
+        migrator = "crate::test_util::MIGRATOR"
+    )]
+    async fn unauthorized(
+        pool: PgPool,
+    ) {
+        let request = Request::builder()
+            .uri("/00000000-0000-0000-0000-000000000001")
+            .method("DELETE")
+            .body(Body::empty())
+            .unwrap();
+        let response = project_group_test_routes(pool, request).await;
+        assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
+    }
+
+    #[sqlx::test(
+        fixtures("base"),
+        migrator = "crate::test_util::MIGRATOR"
+    )]
+    async fn forbidden(
+        pool: PgPool,
+    ) {
+        // in the group, but only read permission
+        let token = JwtToken::new(CharacterId(2));
+        let request = Request::builder()
+            .uri("/00000000-0000-0000-0000-000000000001")
+            .method("DELETE")
+            .header(AUTHORIZATION, token.generate().unwrap())
+            .body(Body::empty())
+            .unwrap();
+        let response = project_group_test_routes(pool.clone(), request).await;
+        assert_eq!(response.status(), StatusCode::FORBIDDEN);
+
+        // has the permission to write but isn't an owner
+        let token = JwtToken::new(CharacterId(3));
+        let request = Request::builder()
+            .uri("/00000000-0000-0000-0000-000000000001")
+            .method("DELETE")
+            .header(AUTHORIZATION, token.generate().unwrap())
+            .body(Body::empty())
+            .unwrap();
+        let response = project_group_test_routes(pool, request).await;
+        assert_eq!(response.status(), StatusCode::FORBIDDEN);
+    }
+
+    #[sqlx::test(
+        fixtures("base"),
+        migrator = "crate::test_util::MIGRATOR"
+    )]
+    async fn not_found(
+        pool: PgPool,
+    ) {
+        let token = JwtToken::new(CharacterId(1));
+        let request = Request::builder()
+            .uri("/00000000-0000-0000-0000-000000000010")
+            .method("DELETE")
+            .header(AUTHORIZATION, token.generate().unwrap())
+            .body(Body::empty())
+            .unwrap();
+        let response = project_group_test_routes(pool, request).await;
+        assert_eq!(response.status(), StatusCode::NOT_FOUND);
     }
 }

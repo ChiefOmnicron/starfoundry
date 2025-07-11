@@ -1,21 +1,21 @@
-use std::net::SocketAddr;
+use tokio::net::TcpListener;
 
 #[derive(Debug)]
 pub struct Config {
     pub database_url:   String,
-    pub server_address: SocketAddr,
+    pub server_address: TcpListener,
 }
 
 impl Config {
-    pub fn load() -> Self {
+    pub async fn load() -> Self {
         let mut has_all = true;
 
         let server_address = if let Ok(x) = std::env::var("SERVER_ADDRESS") {
-            x.parse().unwrap()
+            tokio::net::TcpListener::bind(x).await.unwrap()
         } else {
             has_all = false;
             tracing::error!("Missing ENV 'SERVER_ADDRESS'");
-            "0.0.0.0:8080".parse().unwrap()
+            tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap()
         };
 
         let database_url: String = if let Ok(x) = std::env::var("DATABASE_URL") {

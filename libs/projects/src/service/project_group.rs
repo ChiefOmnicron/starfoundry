@@ -4,6 +4,7 @@ use starfoundry_libs_types::CharacterId;
 use crate::{CreateProjectGroup, Error, ProjectGroup, ProjectGroupMember, ProjectGroupPermission, ProjectGroupPermissionCode, ProjectGroupUuid, Result, UpdateProjectGroup};
 use crate::group::{ProjectGroupDefault, ProjectGroupFilter};
 
+#[deprecated]
 pub struct ProjectGroupService(ProjectGroupUuid);
 
 impl ProjectGroupService {
@@ -13,6 +14,7 @@ impl ProjectGroupService {
         ProjectGroupService(project_uuid)
     }
 
+    #[deprecated]
     pub async fn assert_owner(
         &self,
         pool:         &PgPool,

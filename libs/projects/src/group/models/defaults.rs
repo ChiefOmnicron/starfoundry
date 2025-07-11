@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
-use starfoundry_libs_structures::StructureUuid;
 use starfoundry_libs_types::TypeId;
 use utoipa::ToSchema;
+use starfoundry_libs_structures::StructureUuid;
 
 #[derive(Debug, Deserialize, Serialize, ToSchema)]
 #[schema(
@@ -17,6 +17,7 @@ use utoipa::ToSchema;
         ],
     })
 )]
+#[deprecated]
 pub struct ProjectGroupDefault {
     /// Reference to a structure
     /// Does NOT use the game internal id

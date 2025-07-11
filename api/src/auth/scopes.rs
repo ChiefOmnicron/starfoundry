@@ -15,9 +15,6 @@ const ESI_READ_CORPORATION_ASSETS: &str        = "esi-assets.read_corporation_as
 const ESI_READ_INDUSTRY_JOBS: &str             = "esi-industry.read_character_jobs.v1";
 const ESI_READ_CORPORATION_INDUSTRY_JOBS: &str = "esi-industry.read_corporation_jobs.v1";
 
-const ESI_READ_WALLET_CHARACTER: &str          = "esi-wallet.read_character_wallet.v1";
-const ESI_READ_WALLET_CORPORATION: &str        = "esi-wallet.read_corporation_wallets.v1";
-
 pub const ESI_CHARACTER: &[&str] = &[
     ESI_PUBLIC_DATA,
 
@@ -27,8 +24,6 @@ pub const ESI_CHARACTER: &[&str] = &[
     ESI_READ_INDUSTRY_JOBS,
     ESI_READ_STRUCTURE_MARKETS,
 
-    ESI_READ_WALLET_CHARACTER,
-
     ESI_UNIVERSE_STRUCTURES,
     ESI_READ_SKILLS,
 ];
@@ -37,5 +32,4 @@ pub const ESI_CORPORATION: &[&str] = &[
     ESI_READ_CORPORATION_ASSETS,
     ESI_READ_CORPORATION_BLUEPRINTS,
     ESI_READ_CORPORATION_INDUSTRY_JOBS,
-    ESI_READ_WALLET_CORPORATION,
 ];
