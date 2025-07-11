@@ -2,6 +2,7 @@ use sqlx::PgPool;
 
 use crate::{Error, ProjectGroupMember, ProjectGroupPermission, ProjectGroupUuid, Result};
 
+#[deprecated]
 pub async fn fetch_members(
     pool:       &PgPool,
     group_uuid: ProjectGroupUuid,

@@ -2,7 +2,7 @@ use base64::{Engine as _, engine::general_purpose};
 use serde::Deserialize;
 use starfoundry_libs_types::CharacterId;
 
-use crate::Error;
+use crate::{Error, EveApiClient};
 
 /// Decoded access token
 #[derive(Debug, Deserialize)]
@@ -18,17 +18,28 @@ pub struct EveOAuthPayload {
 }
 
 impl EveOAuthPayload {
+    // TODO: add rsa validation
     /// Validates that the given payload is valid and comes from eve
-    pub fn is_valid(&self) -> bool {
+    pub fn is_valid(
+        &self,
+    ) -> bool {
         let mut result = true;
 
-        if !self.aud.contains(&"EVE Online".into()) {
-            tracing::error!("Invalid Audience");
+        if
+            !self.iss.contains("https://login.eveonline.com") ||
+            !self.iss.contains("login.eveonline.com")
+        {
+            tracing::error!("Invalid ISS");
             result = false
         }
-        // TODO: update to https://login.eveonline.com
-        if !self.iss.contains("login.eveonline.com") {
-            tracing::error!("Invalid ISS");
+
+        if !self.aud.contains(&"EVE Online".into()) {
+            tracing::error!("Invalid Audience, does not include 'Eve Online'");
+            result = false
+        }
+
+        if !self.aud.contains(&EveApiClient::client_id()) {
+            tracing::error!("Invalid Audience, does not include our client_id");
             result = false
         }
 
@@ -56,10 +67,10 @@ impl Scp {
     }
 }
 
-/// Parsed version of the response from EVE after a successfull login.
+/// Parsed version of the response from EVE after a successful login.
 ///
 #[derive(Debug, Deserialize)]
-pub struct EveOAuthToken {
+pub struct EveJwtToken {
     /// Access token required for every request
     pub access_token: String,
     /// Type of the token
@@ -70,7 +81,33 @@ pub struct EveOAuthToken {
     pub refresh_token: String,
 }
 
-impl EveOAuthToken {
+impl EveJwtToken {
+    /// Validates the incoming token.
+    /// 
+    /// # Errors
+    /// 
+    /// It will only return true when the token is valid.
+    /// If parsing the token fails, it will return false.
+    /// 
+    pub fn validate(&self) -> bool {
+        let payload = self.access_token.to_string();
+        let payload = payload.split('.').collect::<Vec<_>>();
+        let payload = payload.get(1).copied().unwrap_or_default();
+        let decoded = if let Ok(x) = general_purpose::STANDARD_NO_PAD.decode(payload) {
+            x
+        } else {
+            return false;
+        };
+
+        let decoded: EveOAuthPayload = if let Ok(x) = serde_json::from_slice(&decoded) {
+            x
+        } else {
+            return false;
+        };
+
+        decoded.is_valid()
+    }
+
     /// Extracts the payload from the access token
     ///
     /// # Errors

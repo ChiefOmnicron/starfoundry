@@ -3,6 +3,7 @@ use starfoundry_libs_types::CharacterId;
 
 use crate::{Error, ProjectGroupUuid, Result};
 
+#[deprecated]
 pub async fn remove_member(
     pool:             &PgPool,
     project_group_id: ProjectGroupUuid,

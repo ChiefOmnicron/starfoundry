@@ -1,20 +1,12 @@
+use starfoundry_libs_types::TypeId;
 use thiserror::Error;
 
-#[derive(Error, Debug)]
-pub enum ItemError {
-    #[error("fetching all items {0}")]
-    FetchAll(sqlx::Error),
-    #[error("fetching blueprint originals")]
-    FetchBlueprintOriginals(sqlx::Error),
-    #[error("fetching builable items")]
-    FetchBuildable(sqlx::Error),
-    #[error("resolving item id")]
-    ResolveId(sqlx::Error),
-    #[error("resolving item names")]
-    BulkResolveName(sqlx::Error),
+pub type Result<T, E = ItemError> = std::result::Result<T, E>;
 
-    #[error("Error loading item cache {0}")]
-    BuildupItemCache(starfoundry_libs_items::Error),
+#[derive(Debug, Error)]
+#[non_exhaustive]
+pub enum ItemError {
+    #[error("error while fetching item '{1}', error: '{0}'")]
+    FetchItem(sqlx::Error, TypeId),
 }
 
-impl warp::reject::Reject for ItemError { }

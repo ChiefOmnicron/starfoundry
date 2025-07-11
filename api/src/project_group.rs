@@ -1,152 +1,180 @@
-use sqlx::PgPool;
-use starfoundry_libs_eve_api::Credentials;
-use starfoundry_libs_projects::ProjectGroupUuid;
-use starfoundry_libs_types::CharacterId;
-use utoipa::IntoParams;
-use warp::Filter;
-use warp::filters::BoxedFilter;
-use warp::reply::Reply;
-
-use crate::{with_identity, with_pool};
-
-mod accept_invite;
-mod accept_member;
-mod can_write;
 mod create;
 mod delete;
-mod fetch_defaults;
-mod fetch_members;
+mod error;
+mod fetch_members_self;
 mod fetch;
+mod list_default_blacklist;
+mod list_default_market;
+mod list_members;
 mod list;
-mod remove_member;
-mod update_default;
-mod update_member;
+mod permission;
 mod update;
 
-pub use self::accept_member::*;
-pub use self::accept_invite::*;
-pub use self::can_write::*;
-pub use self::create::*;
-pub use self::delete::*;
-pub use self::fetch::*;
-pub use self::fetch_defaults::*;
-pub use self::fetch_members::*;
-pub use self::list::*;
-pub use self::remove_member::*;
-pub use self::update::*;
-pub use self::update_default::*;
-pub use self::update_member::*;
+use axum::extract::{Path, Request, State};
+use axum::middleware;
+use axum::middleware::Next;
+use axum::response::IntoResponse;
+use starfoundry_libs_types::starfoundry_uuid;
+use utoipa_axum::router::OpenApiRouter;
+use utoipa_axum::routes;
 
-pub fn api(
-    pool:             PgPool,
-    base_path:        BoxedFilter<()>,
-    credential_cache: Credentials,
-) -> BoxedFilter<(impl Reply,)> {
-    let group_path = base_path
-        .clone()
-        .and(warp::path!("project-groups" / ..))
-        .and(with_pool(pool.clone()))
-        .and(with_identity(pool.clone(), credential_cache.clone()));
+use crate::AppState;
+use crate::auth::{assert_login, ExtractIdentity};
+use crate::project_group::error::Result;
 
-    let create = group_path
-        .clone()
-        .and(warp::path::end())
-        .and(warp::post())
-        .and(warp::body::json())
-        .and_then(create);
+pub fn routes(
+    state: AppState,
+) -> OpenApiRouter<AppState> {
+    let create = OpenApiRouter::new()
+        .routes(routes!(create::api))
+        .route_layer(middleware::from_fn(assert_login));
 
-    let list = group_path
-        .clone()
-        .and(warp::path::end())
-        .and(warp::get())
-        .and(warp::query())
-        .and_then(list);
+    let list = OpenApiRouter::new()
+        .routes(routes!(list::api))
+        .route_layer(middleware::from_fn(assert_login));
 
-    let can_write = group_path
-        .clone()
-        .and(warp::path!(ProjectGroupUuid / "can-write"))
-        .and(warp::get())
-        .and_then(can_write);
+    let update = OpenApiRouter::new()
+        .routes(routes!(update::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_write_group))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists))
+        .route_layer(middleware::from_fn(assert_login));
 
-    let fetch = group_path
-        .clone()
-        .and(warp::path!(ProjectGroupUuid))
-        .and(warp::get())
-        .and_then(fetch);
+    let delete = OpenApiRouter::new()
+        .routes(routes!(delete::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_owner))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists))
+        .route_layer(middleware::from_fn(assert_login));
 
-    let delete = group_path
-        .clone()
-        .and(warp::path!(ProjectGroupUuid))
-        .and(warp::delete())
-        .and_then(delete);
+    let fetch = OpenApiRouter::new()
+        .routes(routes!(fetch::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists))
+        .route_layer(middleware::from_fn(assert_login));
 
-    let update = group_path
-        .clone()
-        .and(warp::path!(ProjectGroupUuid))
-        .and(warp::put())
-        .and(warp::body::json())
-        .and_then(update);
+    let list_members = OpenApiRouter::new()
+        .routes(routes!(list_members::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists))
+        .route_layer(middleware::from_fn(assert_login));
 
-    let fetch_default = group_path
-        .clone()
-        .and(warp::path!(ProjectGroupUuid / "defaults"))
-        .and(warp::get())
-        .and_then(fetch_defaults);
+    let fetch_members_self = OpenApiRouter::new()
+        .routes(routes!(fetch_members_self::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists))
+        .route_layer(middleware::from_fn(assert_login));
 
-    let update_default = group_path
-        .clone()
-        .and(warp::path!(ProjectGroupUuid / "defaults"))
-        .and(warp::put())
-        .and(warp::body::json())
-        .and_then(update_default);
+    let list_default_blacklist = OpenApiRouter::new()
+        .routes(routes!(list_default_blacklist::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists))
+        .route_layer(middleware::from_fn(assert_login));
 
-    let accept_invite = group_path
-        .clone()
-        .and(warp::path!(ProjectGroupUuid / "members" / "invite"))
-        .and(warp::put())
-        .and_then(accept_invite);
+    let list_default_market = OpenApiRouter::new()
+        .routes(routes!(list_default_market::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists))
+        .route_layer(middleware::from_fn(assert_login));
 
-    let accept_member = group_path
-        .clone()
-        .and(warp::path!(ProjectGroupUuid / "members" / CharacterId / "accept"))
-        .and(warp::put())
-        .and_then(accept_member);
-
-    let fetch_members = group_path
-        .clone()
-        .and(warp::path!(ProjectGroupUuid / "members"))
-        .and(warp::get())
-        .and_then(fetch_members);
-
-    let remove_member = group_path
-        .clone()
-        .and(warp::path!(ProjectGroupUuid / "members" / CharacterId))
-        .and(warp::delete())
-        .and_then(remove_member);
-
-    let update_member = group_path
-        .clone()
-        .and(warp::path!(ProjectGroupUuid / "members" / CharacterId))
-        .and(warp::body::json())
-        .and(warp::put())
-        .and_then(update_member);
-
-    create
-        .or(list)
-        .or(can_write)
-        .or(fetch)
-        .or(delete)
-        .or(update)
-        .or(fetch_default)
-        .or(update_default)
-        .or(accept_invite)
-        .or(accept_member)
-        .or(fetch_members)
-        .or(remove_member)
-        .or(update_member)
-        .boxed()
+    OpenApiRouter::new()
+        .merge(create)
+        .merge(list)
+        .merge(update)
+        .merge(delete)
+        .merge(fetch)
+        .merge(list_members)
+        .merge(fetch_members_self)
+        .merge(list_default_blacklist)
+        .merge(list_default_market)
 }
 
-#[derive(IntoParams)]
-#[into_params(names("projectGroupUuid"))]
-pub struct ProjectGroupUuidPath(pub ProjectGroupUuid);
+starfoundry_uuid!(ProjectGroupUuid, "ProjectGroupUuid");
+
+async fn assert_exists(
+    State(state): State<AppState>,
+    Path(project_group_uuid): Path<ProjectGroupUuid>,
+    request: Request,
+    next: Next,
+) -> Result<impl IntoResponse> {
+    permission::assert_exists(
+            &state.pool,
+            project_group_uuid,
+        )
+        .await?;
+
+    Ok(next.run(request).await)
+}
+
+async fn assert_read(
+    State(state): State<AppState>,
+    Path(project_group_uuid): Path<ProjectGroupUuid>,
+    ExtractIdentity(identity): ExtractIdentity,
+    request: Request,
+    next: Next,
+) -> Result<impl IntoResponse> {
+    permission::assert_read_access(
+            &state.pool,
+            project_group_uuid,
+            identity.character_id(),
+        )
+        .await?;
+
+    Ok(next.run(request).await)
+}
+
+async fn assert_write_group(
+    State(state): State<AppState>,
+    Path(project_group_uuid): Path<ProjectGroupUuid>,
+    ExtractIdentity(identity): ExtractIdentity,
+    request: Request,
+    next: Next,
+) -> Result<impl IntoResponse> {
+    permission::assert_write_access(
+            &state.pool,
+            project_group_uuid,
+            identity.character_id(),
+            permission::ProjectGroupPermissionCode::WriteGroup,
+        )
+        .await?;
+
+    Ok(next.run(request).await)
+}
+
+async fn assert_owner(
+    State(state): State<AppState>,
+    Path(project_group_uuid): Path<ProjectGroupUuid>,
+    ExtractIdentity(identity): ExtractIdentity,
+    request: Request,
+    next: Next,
+) -> Result<impl IntoResponse> {
+    permission::assert_write_access(
+            &state.pool,
+            project_group_uuid,
+            identity.character_id(),
+            permission::ProjectGroupPermissionCode::Owner,
+        )
+        .await?;
+
+    Ok(next.run(request).await)
+}
+
+#[cfg(test)]
+pub async fn project_group_test_routes(
+    pool: sqlx::PgPool,
+    request: axum::http::Request<axum::body::Body>,
+) -> axum::http::Response<axum::body::Body> {
+    use tower::ServiceExt;
+
+    let credential_cache = crate::test_util::credential_cache(pool.clone()).await;
+    let state = AppState {
+        pool: pool.clone(),
+        credential_cache: credential_cache,
+    };
+    let (app, _) = crate::project_group::routes(state.clone()).split_for_parts();
+    let app = app.with_state(state.clone());
+
+    app
+        .clone()
+        .oneshot(request)
+        .await
+        .unwrap()
+}

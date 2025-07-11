@@ -52,11 +52,33 @@ async fn npc_stations(
     pool: &PgPool,
 ) -> Result<(), Error> {
     let stations = vec![
-        (Uuid::from_str("00000000-0000-0000-0000-000000000001").unwrap(), 60003760, 30000142, "Jita 4-4"),
-        (Uuid::from_str("00000000-0000-0000-0000-000000000002").unwrap(), 60008494, 30002187, "Amarr"),
+        (
+            // uuid
+            Uuid::from_str("00000000-0000-0000-0000-000000000001").unwrap(),
+            // structure_id
+            60003760,
+            // system_id
+            30000142,
+            // type_id
+            52678,
+            // name
+            "Jita 4-4"
+        ),
+        (
+            // uuid
+            Uuid::from_str("00000000-0000-0000-0000-000000000002").unwrap(),
+            // structure_id
+            60008494,
+            // system_id
+            30002187,
+            // type_id
+            1932,
+            // name
+            "Amarr"
+        ),
     ];
 
-    for (id, structure_id, system_id, name) in stations {
+    for (id, structure_id, system_id, type_id, name) in stations {
         let exists = sqlx::query!("
                 SELECT 1 AS exists
                 FROM structure
@@ -80,11 +102,12 @@ async fn npc_stations(
                     owner,
                     services
                 )
-                VALUES ($1, $2, $3, 0, 'HIGHSEC', $4, 0, '{35878}')
+                VALUES ($1, $2, $3, $4, 'HIGHSEC', $5, 0, '{35892}')
             ",
                 id,
                 structure_id,
                 system_id,
+                type_id,
                 name,
             )
             .execute(pool)

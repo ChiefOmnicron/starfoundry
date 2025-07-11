@@ -1,28 +1,29 @@
-use warp::{Reply, Rejection};
+use axum::http::{header, StatusCode};
+use axum::response::IntoResponse;
 
-/// /healthz
+/// Healthz
 ///
 /// Checks if the service is ready to accept connections
 /// 
 #[utoipa::path(
     get,
-    operation_id = "healthz",
     path = "/healthz",
     tag = "healthcheck",
     responses(
         (
+            body = String,
             description = "Everything is a-okay",
             status = OK,
+            example = json!("healthy"),
         ),
     ),
 )]
-pub async fn healthz() -> Result<impl Reply, Rejection> {
-    Ok(warp::reply::with_header(
-        warp::reply::with_status(
-            warp::reply::json(&String::from("healthy")),
-            warp::http::StatusCode::OK,
-        ),
-        "Cache-Control",
-        "no-cache"
-    ))
+pub async fn healthz() -> impl IntoResponse {
+    (
+        StatusCode::OK,
+        [(
+            header::CACHE_CONTROL, "no-cache"
+        )],
+        "healthy"
+    )
 }

@@ -1,15 +1,20 @@
 import LoadingAnimation from '@/components/LoadingAnimation';
 import { LoadingError } from '@/components/LoadingError';
-import { canWriteProjectGroupQuery } from '@/services/project-group/can_write_group';
 import { fetchProjectGroupQuery, useFetchProjectGroup } from '@/services/project-group/fetch';
+import { fetchProjectGroupMemberSelfQuery } from '@/services/project-group/fetch_members_self';
 import { Title } from '@mantine/core'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/project-groups_/$projectGroupId')({
+    beforeLoad: async ({ context }) => {
+        if (!await context.auth.isAuthenticated()) {
+            throw context.auth.login();
+        }
+    },
     component: ProjectGroupHeader,
     loader: async ({ context, params }) => {
         const queryClient = context.queryClient;
-        queryClient.prefetchQuery(canWriteProjectGroupQuery(params.projectGroupId));
+        queryClient.prefetchQuery(fetchProjectGroupMemberSelfQuery(params.projectGroupId));
         queryClient.prefetchQuery(fetchProjectGroupQuery(params.projectGroupId));
     }
 })

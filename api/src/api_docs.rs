@@ -1,7 +1,12 @@
-use utoipa::{OpenApi, ToSchema};
+use axum::extract::rejection::JsonRejection;
+use axum::http::header::AUTHORIZATION;
+use axum::http::StatusCode;
+use axum::response::IntoResponse;
 use serde::Serialize;
+use utoipa::{Modify, OpenApi};
+use utoipa::openapi::security::{ApiKey, ApiKeyValue, SecurityScheme};
+use axum::Json;
 
-#[cfg(not(feature = "appraisal"))]
 #[derive(OpenApi)]
 #[openapi(
     info(
@@ -14,54 +19,24 @@ use serde::Serialize;
             name = "Dual licensed under Apache-2.0 and MIT"
         ),
     ),
-    paths(
-        crate::healthcheck::healthz,
-        crate::healthcheck::readyz,
-
-        crate::project_group::can_write,
-        crate::project_group::create,
-        crate::project_group::fetch,
-        crate::project_group::fetch_defaults,
-        crate::project_group::list,
-        crate::project_group::update,
-
-        crate::version::version,
-    ),
+    modifiers(&SecurityAddon),
 )]
 pub struct ApiDoc;
 
-#[cfg(feature = "appraisal")]
-#[derive(OpenApi)]
-#[openapi(
-    info(
-        title = "StarFoundry Appraisal API",
-        description = include_str!("api_doc_appraisal.md"),
-        contact(
-            url = "https://github.com/ChiefOmnicron/starfoundry"
-        ),
-        license(
-            name = "Dual licensed under Apache-2.0 and MIT"
-        ),
-    ),
-    paths(
-        crate::appraisal::compression,
-        crate::appraisal::create,
-        crate::appraisal::fetch,
-        crate::appraisal::markets,
-        crate::appraisal::reprocessing,
+struct SecurityAddon;
 
-        crate::healthcheck::healthz,
-        crate::healthcheck::readyz,
-
-        crate::version::version,
-    ),
-)]
-pub struct ApiDoc;
-
-/// the operation was successful, but does not return any data
-#[derive(utoipa::IntoResponses)]
-#[response(status = NO_CONTENT)]
-pub struct NoContent;
+impl Modify for SecurityAddon {
+    fn modify(&self, openapi: &mut utoipa::openapi::OpenApi) {
+        if let Some(components) = openapi.components.as_mut() {
+            components.add_security_scheme(
+                "api_key",
+                SecurityScheme::ApiKey(
+                    ApiKey::Header(ApiKeyValue::new(AUTHORIZATION.to_string()))
+                ),
+            )
+        }
+    }
+}
 
 /// the given parameters are incorrect
 #[allow(dead_code)]
@@ -75,36 +50,13 @@ pub struct NoContent;
 )]
 pub struct BadRequest {
     /// General error name
-    pub error: BadRequestError,
-    /// Human description of the error
-    pub description: String,
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-#[serde(rename_all = "UPPERCASE")]
-pub enum BadRequestError {
-    Deserialization,
-    Validation,
-}
-
-/// the resource was not found
-#[derive(utoipa::IntoResponses)]
-#[response(status = NOT_FOUND)]
-#[response(
-    status = NOT_FOUND,
-    example = json!({
-        "error": "NOT_FOUND",
-        "description": "Authenticate and try again"
-    })
-)]
-pub struct NotFound {
-    /// General error name
     pub error: String,
     /// Human description of the error
     pub description: String,
 }
 
 /// authenticate and then try again
+#[allow(dead_code)]
 #[derive(utoipa::IntoResponses)]
 #[response(status = UNAUTHORIZED)]
 #[response(
@@ -121,17 +73,36 @@ pub struct Unauthorized {
     pub description: String,
 }
 
-/// you are not allowed to see the resource
+/// you are not allowed to see this resource
+#[allow(dead_code)]
 #[derive(utoipa::IntoResponses)]
 #[response(status = FORBIDDEN)]
 #[response(
     status = FORBIDDEN,
     example = json!({
         "error": "FORBIDDEN",
-        "description": "You are not authorized to see this resource"
+        "description": "Get good and try again"
     })
 )]
 pub struct Forbidden {
+    /// General error name
+    pub error: String,
+    /// Human description of the error
+    pub description: String,
+}
+
+/// no resource found
+#[allow(dead_code)]
+#[derive(utoipa::IntoResponses)]
+#[response(status = NOT_FOUND)]
+#[response(
+    status = NOT_FOUND,
+    example = json!({
+        "error": "NOT_FOUND",
+        "description": "No resource found"
+    })
+)]
+pub struct NotFound {
     /// General error name
     pub error: String,
     /// Human description of the error
@@ -155,7 +126,98 @@ pub struct InternalServerError {
     pub description: String,
 }
 
-/// wrong media type, must be application/json
+/// authenticate and then try again
+#[allow(dead_code)]
 #[derive(utoipa::IntoResponses)]
 #[response(status = UNSUPPORTED_MEDIA_TYPE)]
-pub struct UnsupportedMediaType;
+#[response(
+    status = UNSUPPORTED_MEDIA_TYPE,
+    example = json!({
+        "error": "UNSUPPORTED_MEDIA_TYPE",
+        "description": "The datatype is invalid. Try application/json"
+    })
+)]
+pub struct UnsupportedMediaType {
+    /// General error name
+    pub error: String,
+    /// Human description of the error
+    pub description: String,
+}
+
+/// authenticate and then try again
+#[allow(dead_code)]
+#[derive(utoipa::IntoResponses)]
+#[response(status = UNPROCESSABLE_ENTITY)]
+#[response(
+    status = UNPROCESSABLE_ENTITY,
+    example = json!({
+        "error": "UNPROCESSABLE_ENTITY",
+        "description": "The given data is not valid"
+    })
+)]
+pub struct UnprocessableEntity {
+    /// General error name
+    pub error: String,
+    /// Human description of the error
+    pub description: String,
+}
+
+/// Use in error types
+#[derive(Serialize)]
+pub struct ErrorResponse {
+    /// General error name
+    pub error: String,
+    /// Human description of the error
+    pub description: String,
+}
+
+pub fn format_json_errors(
+    error: JsonRejection,
+) -> impl IntoResponse {
+    match error {
+        JsonRejection::JsonDataError(_) => {
+            (
+                StatusCode::UNPROCESSABLE_ENTITY,
+                Json(
+                    ErrorResponse {
+                        error: "UNPROCESSABLE_ENTITY".into(),
+                        description: "Make sure that all required fields are set".into(),
+                    }
+                )
+            )
+        },
+        JsonRejection::JsonSyntaxError(_) => {
+            (
+                StatusCode::BAD_REQUEST,
+                Json(
+                    ErrorResponse {
+                        error: "BAD_REQUEST".into(),
+                        description: "Validate that the data you send is valid".into(),
+                    }
+                )
+            )
+        },
+        JsonRejection::MissingJsonContentType(_) => {
+            (
+                StatusCode::UNSUPPORTED_MEDIA_TYPE,
+                Json(
+                    ErrorResponse {
+                        error: "UNSUPPORTED_MEDIA_TYPE".into(),
+                        description: "The datatype is invalid. Try application/json".into(),
+                    }
+                )
+            )
+        },
+        _ => {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(
+                    ErrorResponse {
+                        error: "UNKNOWN".into(),
+                        description: "An unknown error occurred, please try again later.".into(),
+                    }
+                )
+            )
+        }
+    }
+}

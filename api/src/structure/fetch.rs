@@ -1,60 +1,167 @@
-use sqlx::PgPool;
-use starfoundry_libs_structures::{Structure, StructureService, StructureUuid};
-use warp::{Reply, Rejection};
+mod service;
+mod structure;
+mod structure_rig;
 
-use crate::{ReplyError, Identity};
-use crate::api_docs::{BadRequest, Forbidden, InternalServerError, Unauthorized};
+pub use self::service::*;
+pub use self::structure::*;
+pub use self::structure_rig::*;
 
-/// /structures/{structureId}
+use axum::extract::{Path, State};
+use axum::http::StatusCode;
+use axum::Json;
+use axum::response::IntoResponse;
+
+use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
+use crate::AppState;
+use crate::structure::error::Result;
+use crate::structure::StructureUuid;
+
+/// Fetch Structure
+/// 
+/// - Alternative route: `/latest/structures/{StructureUuid}`
+/// - Alternative route: `/v1/structures/{StructureUuid}`
+/// 
+/// ---
+/// 
+/// Fetches information about a structure
+/// 
+/// ## Security
+/// - authenticated
+/// - structure:read
 /// 
 #[utoipa::path(
     get,
-    operation_id = "structures_fetch",
-    path = "/structures/{structureId}",
+    path = "/{StructureUuid}",
     tag = "structures",
     params(
-        (
-            "structureId" = StructureUuid,
-            description = "UUID of the structure to fetch",
-        ),
+        StructureUuid,
     ),
     responses(
         (
             body = Structure,
-            content_type = "application/json",
-            description = "Information about the requested structure",
+            description = "Information about the structure",
             status = OK,
         ),
-        BadRequest,
         Unauthorized,
         Forbidden,
+        NotFound,
         InternalServerError,
     ),
+    security(
+        ("api_key" = [])
+    ),
 )]
-pub async fn fetch(
-    pool:           PgPool,
-    identity:       Identity,
-    structure_uuid: StructureUuid,
-) -> Result<impl Reply, Rejection> {
-    let structure_service = StructureService::new(structure_uuid);
+// TODO: check that the user can access the structure
+#[axum::debug_handler]
+pub async fn api(
+    State(state):         State<AppState>,
+    Path(structure_uuid): Path<StructureUuid>,
+) -> Result<impl IntoResponse> {
+    dbg!(structure_uuid);
+    let entry = fetch(
+            &state.pool,
+            structure_uuid
+        )
+        .await?;
 
-    match structure_service.fetch(
-        &pool,
-        identity.character_id(),
-    ).await {
-        Ok(Some(x)) => Ok(warp::reply::json(&x)),
-        Ok(None)    => {
-            Err(ReplyError::Forbidden.into())
-        },
-        Err(starfoundry_libs_structures::Error::Forbidden(_, _)) => {
-            Err(ReplyError::Forbidden.into())
-        },
-        Err(starfoundry_libs_structures::Error::StructureNotFound(_)) => {
-            Err(ReplyError::Forbidden.into())
-        },
-        Err(e) => {
-            tracing::error!("Unexpected error fetching structures, {e}");
-            Err(ReplyError::Internal.into())
-        },
+    if let Some(x) = entry {
+        Ok(
+            (
+                StatusCode::OK,
+                Json(x)
+            )
+            .into_response()
+        )
+    } else {
+        Ok(
+            (
+                StatusCode::NO_CONTENT,
+                ()
+            )
+            .into_response()
+        )
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use axum::body::Body;
+    use axum::extract::Request;
+    use axum::http::header::AUTHORIZATION;
+    use axum::http::StatusCode;
+    use sqlx::PgPool;
+    use starfoundry_libs_types::CharacterId;
+
+    use crate::auth::JwtToken;
+    use crate::structure::structure_test_routes;
+
+    #[sqlx::test(
+        fixtures("base"),
+        migrator = "crate::test_util::MIGRATOR"
+    )]
+    async fn happy_path(
+        pool: PgPool,
+    ) {
+        let token = JwtToken::new(CharacterId(1));
+        let request = Request::builder()
+            .uri("/00000000-0000-0000-0000-000000000001")
+            .method("GET")
+            .header(AUTHORIZATION, token.generate().unwrap())
+            .body(Body::empty())
+            .unwrap();
+        let response = structure_test_routes(pool, request).await;
+        assert_eq!(response.status(), StatusCode::OK);
+    }
+
+    #[sqlx::test(
+        fixtures("base"),
+        migrator = "crate::test_util::MIGRATOR"
+    )]
+    async fn unauthorized(
+        pool: PgPool,
+    ) {
+        let request = Request::builder()
+            .uri("/00000000-0000-0000-0000-000000000001")
+            .method("GET")
+            .body(Body::empty())
+            .unwrap();
+        let response = structure_test_routes(pool, request).await;
+        assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
+    }
+
+    #[sqlx::test(
+        fixtures("base"),
+        migrator = "crate::test_util::MIGRATOR"
+    )]
+    async fn forbidden(
+        pool: PgPool,
+    ) {
+        let token = JwtToken::new(CharacterId(1));
+        let request = Request::builder()
+            .uri("/00000000-0000-0000-0000-000000000002")
+            .method("GET")
+            .header(AUTHORIZATION, token.generate().unwrap())
+            .body(Body::empty())
+            .unwrap();
+        let response = structure_test_routes(pool, request).await;
+        assert_eq!(response.status(), StatusCode::FORBIDDEN);
+    }
+
+    #[sqlx::test(
+        fixtures("base"),
+        migrator = "crate::test_util::MIGRATOR"
+    )]
+    async fn not_found(
+        pool: PgPool,
+    ) {
+        let token = JwtToken::new(CharacterId(1));
+        let request = Request::builder()
+            .uri("/00000000-0000-0000-0000-000000000000")
+            .method("GET")
+            .header(AUTHORIZATION, token.generate().unwrap())
+            .body(Body::empty())
+            .unwrap();
+        let response = structure_test_routes(pool, request).await;
+        assert_eq!(response.status(), StatusCode::NOT_FOUND);
     }
 }

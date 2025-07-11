@@ -1,19 +1,24 @@
 import { Alert, Button, Card, Center, Flex, Pill, Stack, Table, Title, UnstyledButton } from '@mantine/core';
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { Filter, type FilterPropEntry, type SelectedFilter } from '@/components/Filter';
+import { LoadingError } from '@/components/LoadingError';
 import { Route as createProjectGroupRoute } from '@/routes/project-groups/create';
 import { type ProjectGroup } from '@/services/project-group/fetch';
 import { useListProjectGroup, type ProjectGroupFilter } from '@/services/project-group/list';
 import { useState } from 'react';
-import { Filter, type FilterPropEntry, type SelectedFilter } from '@/components/Filter';
 import LoadingAnimation from '@/components/LoadingAnimation';
-import { LoadingError } from '@/components/LoadingError';
 
 interface QueryParams {
     deleted?: boolean;
 }
 
 export const Route = createFileRoute('/project-groups/')({
+    beforeLoad: async ({ context }) => {
+        if (!await context.auth.isAuthenticated()) {
+            throw context.auth.login();
+        }
+    },
     component: ProjectGroups,
     validateSearch: (params: {
         deleted: boolean,
@@ -62,11 +67,11 @@ const columns = [
     }),
     columnHelper.accessor('members', {
         id: 'members',
-        cell: info => info.getValue(),
+        cell: info => info.cell.row.original.members.length,
         header: () => 'Members',
     }),
-    columnHelper.accessor('projects', {
-        id: 'projects',
+    columnHelper.accessor('project_count', {
+        id: 'project_count',
         cell: info => info.getValue(),
         header: () => 'Projects',
     }),

@@ -1,15 +1,24 @@
-use sqlx::PgPool;
-use starfoundry_libs_projects::{ProjectGroupUuid, ProjectGroupService, UpdateProjectGroup};
-use warp::{Reply, Rejection};
-use warp::http::StatusCode;
+mod service;
+mod update;
 
-use crate::{ReplyError, Identity};
-use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
-use crate::project_group::ProjectGroupUuidPath;
+pub use self::service::*;
+pub use self::update::*;
 
-/// /project-groups/{projectGroupUuid}
+use axum::extract::{Path, State};
+use axum::http::StatusCode;
+use axum::Json;
+use axum::response::IntoResponse;
+
+use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized, UnprocessableEntity, UnsupportedMediaType};
+use crate::project_group::ProjectGroupUuid;
+use crate::AppState;
+use crate::project_group::error::Result;
+
+
+/// Update General Group
 /// 
-/// Alternative route: `/v1/project-groups/{projectGroupUuid}`
+/// - Alternative route: `/v1/project-groups/{ProjectGroupUuid}`
+/// - Alternative route: `/latest/project-groups/{ProjectGroupUuid}`
 /// 
 /// ---
 /// 
@@ -17,16 +26,15 @@ use crate::project_group::ProjectGroupUuidPath;
 /// 
 /// ## Security
 /// - authenticated
-/// - project_group: write
+/// - project_group:write
 /// 
 #[utoipa::path(
     put,
-    operation_id = "project_groups_update",
-    path = "/project-groups/{projectGroupUuid}",
+    path = "/{ProjectGroupUuid}",
     tag = "project-groups",
     request_body = UpdateProjectGroup,
     params(
-        ProjectGroupUuidPath,
+        ProjectGroupUuid,
     ),
     responses(
         (
@@ -36,136 +44,211 @@ use crate::project_group::ProjectGroupUuidPath;
         Unauthorized,
         Forbidden,
         NotFound,
+        UnsupportedMediaType,
+        UnprocessableEntity,
         InternalServerError,
     ),
+    security(
+        ("api_key" = [])
+    ),
 )]
-pub async fn update(
-    pool:               PgPool,
-    identity:           Identity,
-    project_group_uuid: ProjectGroupUuid,
-    info:               UpdateProjectGroup,
-) -> Result<impl Reply, Rejection> {
-    let project_group = ProjectGroupService::new(project_group_uuid);
+pub async fn api(
+    State(state):             State<AppState>,
+    Path(project_group_uuid): Path<ProjectGroupUuid>,
+    Json(update_info):        Json<UpdateProjectGroup>,
+) -> Result<impl IntoResponse> {
+    update(
+        &state.pool,
+        project_group_uuid,
+        update_info,
+    ).await?;
 
-    match project_group.update(
-        &pool,
-        identity.character_id(),
-        info,
-    ).await {
-        Ok(x) => {
-            let response = warp::reply::with_status(
-                warp::reply::json(&x),
-                StatusCode::NO_CONTENT,
-            );
-            Ok(response)
-        },
-        Err(starfoundry_libs_projects::Error::ProjectGroupNotFound(_)) => {
-            Err(ReplyError::NotFound.into())
-        },
-        Err(starfoundry_libs_projects::Error::Forbidden(_, _)) => {
-            Err(ReplyError::Forbidden.into())
-        },
-        Err(e) => {
-            tracing::error!("Unexpected error, {e}");
-            Err(ReplyError::Internal.into())
-        },
-    }
+    Ok((
+        StatusCode::NO_CONTENT,
+    ))
 }
 
 #[cfg(test)]
-mod update_project_group_test {
-    use serde_json::json;
+mod tests {
+    use axum::body::Body;
+    use axum::extract::Request;
+    use axum::http::header::{AUTHORIZATION, CONTENT_TYPE};
+    use axum::http::StatusCode;
     use sqlx::PgPool;
-    use warp::Filter;
-    use warp::http::StatusCode;
+    use starfoundry_libs_types::CharacterId;
 
-    use crate::test_util::credential_cache;
-
-    #[sqlx::test(
-        fixtures("update"),
-        migrator = "crate::test_util::MIGRATOR",
-    )]
-    async fn no_body(
-        pool: PgPool,
-    ) {
-        let base_path = warp::any().boxed();
-        let credential_cache = credential_cache(pool.clone()).await;
-
-        let filter = warp::any()
-            .clone()
-            .and(crate::project_group::api(pool, base_path, credential_cache))
-            .recover(crate::rejection::handle_rejection);
-
-        let response = warp::test::request()
-            .path("/project-groups/00000000-0000-0000-0000-000000000001")
-            .method("PUT")
-            .json(&json!({}))
-            .reply(&filter)
-            .await;
-
-        assert_eq!(response.status(), StatusCode::BAD_REQUEST);
-    }
+    use crate::auth::JwtToken;
+    use crate::project_group::project_group_test_routes;
+    use crate::project_group::update::UpdateProjectGroup;
 
     #[sqlx::test(
-        fixtures("update"),
-        migrator = "crate::test_util::MIGRATOR",
-    )]
-    async fn missing_name(
-        pool: PgPool,
-    ) {
-        let base_path = warp::any().boxed();
-        let credential_cache = credential_cache(pool.clone()).await;
-
-        let filter = warp::any()
-            .clone()
-            .and(crate::project_group::api(pool, base_path, credential_cache))
-            .recover(crate::rejection::handle_rejection);
-
-        let response = warp::test::request()
-            .path("/project-groups/00000000-0000-0000-0000-000000000001")
-            .method("PUT")
-            .json(&json!({
-                "description": "My cool description"
-            }))
-            .reply(&filter)
-            .await;
-
-        assert_eq!(response.status(), StatusCode::BAD_REQUEST);
-    }
-
-    #[sqlx::test(
-        fixtures("update"),
-        migrator = "crate::test_util::MIGRATOR",
+        fixtures("base"),
+        migrator = "crate::test_util::MIGRATOR"
     )]
     async fn happy_path(
         pool: PgPool,
     ) {
-        let base_path = warp::any().boxed();
-        let credential_cache = credential_cache(pool.clone()).await;
-
-        let filter = warp::any()
-            .clone()
-            .and(crate::project_group::api(pool.clone(), base_path, credential_cache))
-            .recover(crate::rejection::handle_rejection);
-
-        let response = warp::test::request()
-            .path("/project-groups/00000000-0000-0000-0000-000000000001")
+        let token = JwtToken::new(CharacterId(1));
+        let request = Request::builder()
+            .uri("/00000000-0000-0000-0000-000000000001")
+            .header(AUTHORIZATION, token.generate().unwrap())
+            .header(CONTENT_TYPE, "application/json")
             .method("PUT")
-            .json(&json!({
-                "name": "My shared projects",
-                "description": "My cool description"
-            }))
-            .reply(&filter)
-            .await;
+            .body(Body::new(
+                serde_json::to_string(&UpdateProjectGroup {
+                    description: Some("Update Description".into()),
+                    name: "Update Name".into(),
+                }).unwrap()
+            ))
+            .unwrap();
+        let response = project_group_test_routes(pool.clone(), request).await;
         assert_eq!(response.status(), StatusCode::NO_CONTENT);
 
-        let entry = sqlx::query!(
-                "SELECT * FROM project_group WHERE id = '00000000-0000-0000-0000-000000000001'",
-            )
+        let entry = sqlx::query!("
+                SELECT pg.*
+                FROM project_group pg
+                WHERE pg.id = '00000000-0000-0000-0000-000000000001'
+            ")
             .fetch_one(&pool)
             .await
             .unwrap();
-        assert_eq!(entry.name, "My shared projects");
-        assert_eq!(entry.description.unwrap(), "My cool description");
+        assert_eq!(entry.name, "Update Name");
+        assert_eq!(entry.description.unwrap(), "Update Description");
+    }
+
+    #[sqlx::test(
+        fixtures("base"),
+        migrator = "crate::test_util::MIGRATOR"
+    )]
+    async fn unsupported_media_type(
+        pool: PgPool,
+    ) {
+        let token = JwtToken::new(CharacterId(1));
+        let request = Request::builder()
+            .uri("/00000000-0000-0000-0000-000000000001")
+            .header(AUTHORIZATION, token.generate().unwrap())
+            .header(CONTENT_TYPE, "text/plain")
+            .method("PUT")
+            .body(Body::new(
+                serde_json::to_string(&UpdateProjectGroup {
+                    description: Some("Update Description".into()),
+                    name: "Update Name".into(),
+                }).unwrap()
+            ))
+            .unwrap();
+        let response = project_group_test_routes(pool, request).await;
+        assert_eq!(response.status(), StatusCode::UNSUPPORTED_MEDIA_TYPE);
+    }
+
+    #[sqlx::test(
+        fixtures("base"),
+        migrator = "crate::test_util::MIGRATOR"
+    )]
+    async fn bad_request_no_body(
+        pool: PgPool,
+    ) {
+        let token = JwtToken::new(CharacterId(1));
+        let request = Request::builder()
+            .uri("/00000000-0000-0000-0000-000000000001")
+            .header(AUTHORIZATION, token.generate().unwrap())
+            .header(CONTENT_TYPE, "application/json")
+            .method("PUT")
+            .body(Body::empty())
+            .unwrap();
+        let response = project_group_test_routes(pool.clone(), request).await;
+        assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+    }
+
+    #[sqlx::test(
+        fixtures("base"),
+        migrator = "crate::test_util::MIGRATOR"
+    )]
+    async fn bad_request_no_name(
+        pool: PgPool,
+    ) {
+        let token = JwtToken::new(CharacterId(1));
+        let request = Request::builder()
+            .uri("/00000000-0000-0000-0000-000000000001")
+            .header(AUTHORIZATION, token.generate().unwrap())
+            .header(CONTENT_TYPE, "application/json")
+            .method("PUT")
+            .body(Body::new(
+                serde_json::to_string(&serde_json::json!({
+                    "description": "My cool description",
+                })).unwrap()
+            ))
+            .unwrap();
+        let response = project_group_test_routes(pool.clone(), request).await;
+        assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
+    }
+
+    #[sqlx::test(
+        fixtures("base"),
+        migrator = "crate::test_util::MIGRATOR"
+    )]
+    async fn unauthorized(
+        pool: PgPool,
+    ) {
+        let request = Request::builder()
+            .uri("/00000000-0000-0000-0000-000000000001")
+            .header(CONTENT_TYPE, "application/json")
+            .method("PUT")
+            .body(Body::new(
+                serde_json::to_string(&UpdateProjectGroup {
+                    description: Some("Update Description".into()),
+                    name: "Update Name".into(),
+                }).unwrap()
+            ))
+            .unwrap();
+        let response = project_group_test_routes(pool.clone(), request).await;
+        assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
+    }
+
+    #[sqlx::test(
+        fixtures("base"),
+        migrator = "crate::test_util::MIGRATOR"
+    )]
+    async fn forbidden(
+        pool: PgPool,
+    ) {
+        let token = JwtToken::new(CharacterId(2));
+        let request = Request::builder()
+            .uri("/00000000-0000-0000-0000-000000000001")
+            .header(AUTHORIZATION, token.generate().unwrap())
+            .header(CONTENT_TYPE, "application/json")
+            .method("PUT")
+            .body(Body::new(
+                serde_json::to_string(&UpdateProjectGroup {
+                    description: Some("Update Description".into()),
+                    name: "Update Name".into(),
+                }).unwrap()
+            ))
+            .unwrap();
+        let response = project_group_test_routes(pool.clone(), request).await;
+        assert_eq!(response.status(), StatusCode::FORBIDDEN);
+    }
+
+    #[sqlx::test(
+        fixtures("base"),
+        migrator = "crate::test_util::MIGRATOR"
+    )]
+    async fn not_found(
+        pool: PgPool,
+    ) {
+        let token = JwtToken::new(CharacterId(1));
+        let request = Request::builder()
+            .uri("/00000000-0000-0000-0000-000000000010")
+            .header(AUTHORIZATION, token.generate().unwrap())
+            .header(CONTENT_TYPE, "application/json")
+            .method("PUT")
+            .body(Body::new(
+                serde_json::to_string(&UpdateProjectGroup {
+                    description: Some("Update Description".into()),
+                    name: "Update Name".into(),
+                }).unwrap()
+            ))
+            .unwrap();
+        let response = project_group_test_routes(pool.clone(), request).await;
+        assert_eq!(response.status(), StatusCode::NOT_FOUND);
     }
 }

@@ -2,7 +2,7 @@ import { AppShell, Avatar, Burger, createTheme, DEFAULT_THEME, Group, MantinePro
 import { useDisclosure } from '@mantine/hooks';
 import { CustomLink } from '@/components/RouterLink';
 
-import { createRootRouteWithContext, Outlet, useRouterState } from '@tanstack/react-router';
+import { createRootRouteWithContext, Outlet, useLoaderData, useRouterState } from '@tanstack/react-router';
 import type { ReactElement } from 'react';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import type { RouterContext } from '@/main';
@@ -49,6 +49,11 @@ const theme = mergeMantineTheme(DEFAULT_THEME, themeOverride);
 
 export const Route = createRootRouteWithContext<RouterContext>()({
     component: LayoutComponent,
+    loader: async ({ context }) => {
+        return {
+            isAuthenticated: await context.auth.isAuthenticated()
+        }
+    }
 });
 
 function LayoutComponent(): ReactElement {
@@ -97,6 +102,42 @@ function LayoutComponent(): ReactElement {
             });
     }
 
+    const sideNavigation = (): ReactElement => {
+        const { isAuthenticated } = Route.useLoaderData();
+
+        if (isAuthenticated) {
+            return (
+                <AppShell.Navbar>
+                    <AppShell.Section grow my="md" component={ScrollArea}>
+                        { projectGroups() }
+                    </AppShell.Section>
+                    <AppShell.Section>
+                        <UnstyledButton>
+                            <Group>
+                                <Avatar
+                                    src="https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-8.png"
+                                    radius="xl"
+                                />
+
+                                <div style={{ flex: 1 }}>
+                                    <Text size="sm" fw={500}>
+                                        John Doe
+                                    </Text>
+
+                                    <Text c="dimmed" size="xs">
+                                        john.doe@example.com
+                                    </Text>
+                                </div>
+                            </Group>
+                        </UnstyledButton>
+                    </AppShell.Section>
+                </AppShell.Navbar>
+            );
+        } else {
+            return <></>
+        }
+    }
+
     return (
         <MantineProvider
             forceColorScheme='dark'
@@ -127,31 +168,7 @@ function LayoutComponent(): ReactElement {
                     </Group>
                 </AppShell.Header>
 
-                <AppShell.Navbar>
-                    <AppShell.Section grow my="md" component={ScrollArea}>
-                        { projectGroups() }
-                    </AppShell.Section>
-                    <AppShell.Section>
-                        <UnstyledButton>
-                            <Group>
-                                <Avatar
-                                    src="https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-8.png"
-                                    radius="xl"
-                                />
-
-                                <div style={{ flex: 1 }}>
-                                    <Text size="sm" fw={500}>
-                                        John Doe
-                                    </Text>
-
-                                    <Text c="dimmed" size="xs">
-                                        john.doe@example.com
-                                    </Text>
-                                </div>
-                            </Group>
-                        </UnstyledButton>
-                    </AppShell.Section>
-                </AppShell.Navbar>
+                { sideNavigation() }
 
                 <AppShell.Main>
                     <Outlet />

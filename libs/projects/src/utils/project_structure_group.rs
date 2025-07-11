@@ -51,7 +51,7 @@ async fn structure_group(
 
         for structure_uuid in structure_uuids {
             let structure = StructureService::new(structure_uuid)
-                .fetch(pool, character_id)
+                .danger_no_permission_fetch(pool)
                 .await?
                 .ok_or_else(|| Error::StructureNotFound(structure_uuid))?;
 

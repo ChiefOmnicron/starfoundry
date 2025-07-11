@@ -1,50 +1,56 @@
-use sqlx::PgPool;
-use warp::{Reply, Rejection};
+use axum::extract::State;
+use axum::http::{header, StatusCode};
+use axum::response::IntoResponse;
 
-/// /readyz
+use crate::AppState;
+
+/// Readyz
 /// 
 /// Checks that the database connection is up and running
 /// 
 #[utoipa::path(
     get,
-    operation_id = "readyz",
     path = "/readyz",
     tag = "healthcheck",
     responses(
         (
+            body = String,
             description = "Everything is a-okay",
             status = OK,
+            example = json!("healthy"),
         ),
         (
+            body = String,
             description = "Not ready",
             status = INTERNAL_SERVER_ERROR,
+            example = json!("unhealthy"),
         )
     ),
 )]
 pub async fn readyz(
-    pool: PgPool,
-) -> Result<impl Reply, Rejection> {
+    State(state): State<AppState>,
+) -> impl IntoResponse {
+    let pool = state.pool.clone();
+
     let postgres_version = sqlx::query!("SELECT version()")
         .fetch_one(&pool)
         .await;
 
     if postgres_version.is_err() {
-        return Ok(warp::reply::with_header(
-            warp::reply::with_status(
-                warp::reply::json(&String::from("unhealthy")),
-                warp::http::StatusCode::INTERNAL_SERVER_ERROR,
-            ),
-            "Cache-Control",
-            "no-cache"
-        ));
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            [(
+                header::CACHE_CONTROL, "no-cache"
+            )],
+            "unhealthy"
+        );
     }
 
-    Ok(warp::reply::with_header(
-        warp::reply::with_status(
-            warp::reply::json(&String::from("healthy")),
-            warp::http::StatusCode::OK,
-        ),
-        "Cache-Control",
-        "no-cache"
-    ))
+    (
+        StatusCode::OK,
+        [(
+            header::CACHE_CONTROL, "no-cache"
+        )],
+        "healthy"
+    )
 }

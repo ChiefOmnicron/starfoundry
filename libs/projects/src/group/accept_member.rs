@@ -3,6 +3,7 @@ use starfoundry_libs_types::CharacterId;
 
 use crate::{Error, ProjectGroupUuid, Result};
 
+#[deprecated]
 pub async fn accept_member(
     pool:         &PgPool,
     character_id: CharacterId,

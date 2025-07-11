@@ -4,6 +4,7 @@ use utoipa::ToSchema;
 use crate::{Error, Result};
 
 #[derive(Debug, Deserialize, ToSchema)]
+#[deprecated]
 pub struct UpdateProjectGroup {
     pub name:        String,
     pub description: Option<String>,

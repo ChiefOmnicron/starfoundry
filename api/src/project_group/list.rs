@@ -1,13 +1,25 @@
-use sqlx::PgPool;
-use starfoundry_libs_projects::{ProjectGroup, ProjectGroupFilter, ProjectGroupService};
-use warp::{Reply, Rejection};
+mod project_group;
+mod filter;
+mod service;
 
-use crate::{ReplyError, Identity};
+pub use self::filter::*;
+pub use self::project_group::*;
+pub use self::service::*;
+
+use axum::http::StatusCode;
+use axum::Json;
+use axum::response::IntoResponse;
+use axum::extract::{Query, State};
+
 use crate::api_docs::{BadRequest, InternalServerError, Unauthorized};
+use crate::AppState;
+use crate::auth::ExtractIdentity;
+use crate::project_group::error::Result;
 
-/// /project-groups
+/// List Groups
 /// 
-/// Alternative route: `/v1/project-groups`
+/// - Alternative route: `/latest/project-groups`
+/// - Alternative route: `/v1/project-groups`
 /// 
 /// ---
 /// 
@@ -19,94 +31,152 @@ use crate::api_docs::{BadRequest, InternalServerError, Unauthorized};
 /// 
 #[utoipa::path(
     get,
-    operation_id = "project_groups_fetch",
-    path = "/project-groups",
+    path = "/",
     tag = "project-groups",
-    params(
-        (
-            "name" = Option<String>,
-            Query,
-            description = "Fuzzy search for a name"
-        ),
-    ),
+    params(ProjectGroupFilter),
     responses(
         (
             body = Vec<ProjectGroup>,
             description = "List all groups that match the given filters",
             status = OK,
         ),
+        (
+            description = "There aren't any project groups created",
+            status = NO_CONTENT,
+        ),
         BadRequest,
         Unauthorized,
         InternalServerError,
     ),
+    security(
+        ("api_key" = [])
+    ),
 )]
-pub async fn list(
-    pool:     PgPool,
-    identity: Identity,
-    filter:   ProjectGroupFilter,
-) -> Result<impl Reply, Rejection> {
-    match ProjectGroupService::list(
-        &pool,
-        identity.character_id(),
-        filter,
-    ).await {
-        Ok(x) => Ok(warp::reply::json(&x)),
-        Err(e) => {
-            tracing::error!("Unexpected error, {e}");
-            Err(ReplyError::Internal.into())
-        },
+pub async fn api(
+    State(state):              State<AppState>,
+    ExtractIdentity(identity): ExtractIdentity,
+    Query(filter):             Query<ProjectGroupFilter>,
+) -> Result<impl IntoResponse> {
+    let data = list(
+            &state.pool,
+            identity.character_id(),
+            filter,
+        ).await?;
+
+    if data.is_empty() {
+        Ok(
+            (
+                StatusCode::NO_CONTENT,
+                Json(data),
+            )
+            .into_response()
+        )
+    } else {
+        Ok(
+            (
+                StatusCode::OK,
+                Json(data),
+            )
+            .into_response()
+        )
     }
 }
 
 #[cfg(test)]
-mod list_project_group_test {
+mod tests {
+    use axum::body::Body;
+    use axum::extract::Request;
+    use axum::http::header::AUTHORIZATION;
+    use axum::http::StatusCode;
+    use http_body_util::BodyExt;
     use sqlx::PgPool;
-    use starfoundry_libs_projects::ProjectGroup;
-    use warp::Filter;
-    use warp::http::StatusCode;
+    use starfoundry_libs_types::CharacterId;
 
-    use crate::test_util::credential_cache;
+    use crate::auth::JwtToken;
+    use crate::project_group::list::ProjectGroup;
+    use crate::project_group::project_group_test_routes;
 
     #[sqlx::test(
-        fixtures("list"),
+        fixtures("base"),
         migrator = "crate::test_util::MIGRATOR"
     )]
-    async fn happy_path(
+    async fn happy_path_all(
         pool: PgPool,
     ) {
-        let base_path = warp::any().boxed();
-        let credential_cache = credential_cache(pool.clone()).await;
-
-        let filter = warp::any()
-            .clone()
-            .and(crate::project_group::api(pool, base_path, credential_cache))
-            .recover(crate::rejection::handle_rejection);
-
-        let response = warp::test::request()
-            .path("/project-groups")
+        let token = JwtToken::new(CharacterId(1));
+        let request = Request::builder()
+            .uri("/")
             .method("GET")
-            .reply(&filter)
-            .await;
+            .header(AUTHORIZATION, token.generate().unwrap())
+            .body(Body::empty())
+            .unwrap();
+        let response = project_group_test_routes(pool.clone(), request).await;
         assert_eq!(response.status(), StatusCode::OK);
-        let body: Vec<ProjectGroup> = serde_json::from_slice(&response.body()).unwrap();
+        let body: Vec<ProjectGroup> = serde_json::from_slice(
+            &response.into_body().collect().await.unwrap().to_bytes()
+        ).unwrap();
         assert_eq!(body.len(), 4);
+    }
 
-        let response = warp::test::request()
-            .path("/project-groups?name=Filter")
+    #[sqlx::test(
+        fixtures("base"),
+        migrator = "crate::test_util::MIGRATOR"
+    )]
+    async fn happy_path_filter(
+        pool: PgPool,
+    ) {
+        // Filter
+        let token = JwtToken::new(CharacterId(1));
+        let request = Request::builder()
+            .uri("/?name=Filter")
             .method("GET")
-            .reply(&filter)
-            .await;
+            .header(AUTHORIZATION, token.generate().unwrap())
+            .body(Body::empty())
+            .unwrap();
+        let response = project_group_test_routes(pool.clone(), request).await;
         assert_eq!(response.status(), StatusCode::OK);
-        let body: Vec<ProjectGroup> = serde_json::from_slice(&response.body()).unwrap();
+        let body: Vec<ProjectGroup> = serde_json::from_slice(
+            &response.into_body().collect().await.unwrap().to_bytes()
+        ).unwrap();
         assert_eq!(body.len(), 2);
+    }
 
-        let response = warp::test::request()
-            .path("/project-groups?name=SomeGibberish")
+    #[sqlx::test(
+        fixtures("base"),
+        migrator = "crate::test_util::MIGRATOR"
+    )]
+    async fn happy_path_empty(
+        pool: PgPool,
+    ) {
+        // Empty
+        let token = JwtToken::new(CharacterId(1));
+        let request = Request::builder()
+            .uri("/?name=SomeGibberish")
             .method("GET")
-            .reply(&filter)
-            .await;
-        assert_eq!(response.status(), StatusCode::OK);
-        let body: Vec<ProjectGroup> = serde_json::from_slice(&response.body()).unwrap();
+            .header(AUTHORIZATION, token.generate().unwrap())
+            .body(Body::empty())
+            .unwrap();
+        let response = project_group_test_routes(pool.clone(), request).await;
+        assert_eq!(response.status(), StatusCode::NO_CONTENT);
+        let body: Vec<ProjectGroup> = serde_json::from_slice(
+            &response.into_body().collect().await.unwrap().to_bytes()
+        ).unwrap();
         assert_eq!(body.len(), 0);
+    }
+
+    #[sqlx::test(
+        fixtures("base"),
+        migrator = "crate::test_util::MIGRATOR"
+    )]
+    async fn unauthorized(
+        pool: PgPool,
+    ) {
+        let request = Request::builder()
+            .uri("/")
+            .method("GET")
+            .body(Body::empty())
+            .unwrap();
+        let response = project_group_test_routes(pool.clone(), request).await;
+        assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
     }
 }

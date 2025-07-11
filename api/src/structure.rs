@@ -1,121 +1,92 @@
-use sqlx::PgPool;
-use starfoundry_libs_eve_api::Credentials;
-use starfoundry_libs_structures::StructureUuid;
-use starfoundry_libs_types::{StructureId, TypeId};
-use utoipa::IntoParams;
-use warp::{Filter, Reply};
-use warp::filters::BoxedFilter;
+mod error;
+mod fetch;
+mod list;
+mod permission;
 
-use crate::{with_identity, with_pool};
+pub use self::error::StructureError;
+pub use self::fetch::Structure;
 
-pub mod create;
-pub mod delete;
-pub mod fetch;
-pub mod list;
-pub mod permission;
-pub mod resolve_player_structure;
-pub mod rigs;
-pub mod update;
+use axum::extract::{Path, Request, State};
+use axum::middleware::{self, Next};
+use axum::response::IntoResponse;
+use starfoundry_libs_types::starfoundry_uuid;
+use utoipa_axum::router::OpenApiRouter;
+use utoipa_axum::routes;
 
-pub mod service {
-    pub use super::create::*;
-    pub use super::delete::*;
-    pub use super::fetch::*;
-    pub use super::list::*;
-    pub use super::permission::*;
-    pub use super::resolve_player_structure::*;
-    pub use super::rigs::*;
-    pub use super::update::*;
+use crate::AppState;
+use crate::auth::{assert_login, ExtractIdentity};
+use crate::structure::error::Result;
+
+pub fn routes(
+    state: AppState,
+) -> OpenApiRouter<AppState> {
+    let list = OpenApiRouter::new()
+        .routes(routes!(list::api))
+        .route_layer(middleware::from_fn(assert_login));
+
+    let fetch = OpenApiRouter::new()
+        .routes(routes!(fetch::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists))
+        .route_layer(middleware::from_fn(assert_login));
+
+    OpenApiRouter::new()
+        .merge(list)
+        .merge(fetch)
 }
 
-/// Filters that build up the api for this part of the application
-pub fn api(
-    pool:        PgPool,
-    base_path:   BoxedFilter<()>,
-    credentials: Credentials,
-) -> BoxedFilter<(impl Reply,)> {
-    let path = base_path
-        .clone()
-        .and(warp::path!("structures" / ..))
-        .and(with_pool(pool.clone()))
-        .boxed();
+starfoundry_uuid!(StructureUuid, "StructureUuid");
 
-    let list = path
-        .clone()
-        .and(with_identity(pool.clone(), credentials.clone()))
-        .and(warp::path::end())
-        .and(warp::get())
-        .and(warp::query())
-        .and_then(service::list)
-        .boxed();
-
-    let fetch = path
-        .clone()
-        .and(with_identity(pool.clone(), credentials.clone()))
-        .and(warp::path!(StructureUuid))
-        .and(warp::get())
-        .and_then(service::fetch)
-        .boxed();
-
-    let create = path
-        .clone()
-        .and(with_identity(pool.clone(), credentials.clone()))
-        .and(warp::path::end())
-        .and(warp::post())
-        .and(warp::body::json())
-        .and_then(service::create)
-        .boxed();
-
-    let update = path
-        .clone()
-        .and(with_identity(pool.clone(), credentials.clone()))
-        .and(warp::path!(StructureUuid))
-        .and(warp::put())
-        .and(warp::body::json())
-        .and_then(service::update)
-        .boxed();
-
-    let delete = path
-        .clone()
-        .and(with_identity(pool.clone(), credentials.clone()))
-        .and(warp::path!(StructureUuid))
-        .and(warp::delete())
-        .and_then(service::delete)
-        .boxed();
-
-    // Lookup in the eve api for the name
-    let resolve_player_structure = path
-        .clone()
-        .and(with_identity(pool.clone(), credentials.clone()))
-        .and(warp::path!(StructureId / "resolve"))
-        .and(warp::get())
-        .and_then(service::resolve_player_structure)
-        .boxed();
-
-    let rigs = path
-        .clone()
-        .and(warp::path!(TypeId / "rigs"))
-        .and(warp::get())
-        .and_then(service::rig_by_structure_type_id)
-        .boxed();
-
-    list
-        .or(create)
-        .or(delete)
-        .or(fetch)
-        .or(update)
-        .or(resolve_player_structure)
-        .or(rigs)
-        .or(
-            permission::api(
-                pool,
-                base_path,
-                credentials,
-            )
+async fn assert_exists(
+    State(state): State<AppState>,
+    Path(project_group_uuid): Path<StructureUuid>,
+    request: Request,
+    next: Next,
+) -> Result<impl IntoResponse> {
+    permission::assert_exists(
+            &state.pool,
+            project_group_uuid,
         )
-        .boxed()
+        .await?;
+
+    Ok(next.run(request).await)
 }
 
-#[derive(IntoParams)]
-#[into_params(names("structureUuid"))]
-pub struct StructureUuidPath(pub StructureUuid);
+async fn assert_read(
+    State(state): State<AppState>,
+    Path(project_group_uuid): Path<StructureUuid>,
+    ExtractIdentity(identity): ExtractIdentity,
+    request: Request,
+    next: Next,
+) -> Result<impl IntoResponse> {
+    permission::assert_read_access(
+            &state.pool,
+            project_group_uuid,
+            identity.character_id(),
+        )
+        .await?;
+
+    Ok(next.run(request).await)
+}
+
+#[cfg(test)]
+pub async fn structure_test_routes(
+    pool: sqlx::PgPool,
+    request: axum::http::Request<axum::body::Body>,
+) -> axum::http::Response<axum::body::Body> {
+    use tower::ServiceExt;
+
+    let credential_cache = crate::test_util::credential_cache(pool.clone()).await;
+    let state = AppState {
+        pool: pool.clone(),
+        credential_cache: credential_cache,
+    };
+    let (app, _) = crate::structure::routes(state.clone()).split_for_parts();
+    let app = app.with_state(state.clone());
+
+    app
+        .clone()
+        .oneshot(request)
+        .await
+        .unwrap()
+}
