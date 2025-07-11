@@ -8,7 +8,16 @@ The API provides an interface for external tools. It is free to use, I only ask 
 
 ## API Versioning
 
-The API is versioned by an path param. `https://api.industry.starfoundry.space/v{version}`. You can omitt the version, then the default version will be used.
+The API is versioned by an path param.
+
+Example:
+- `https://api.industry.starfoundry.space/v{version}`
+- `https://api.industry.starfoundry.space/latest`
+- `https://api.industry.starfoundry.space`
+
+All three shown above paths result in the same request.
+
+If you omit adding a version or latest, the default version shown in the table below will be used.
 
 | Version | Status | Default |
 |---------|--------|---------|

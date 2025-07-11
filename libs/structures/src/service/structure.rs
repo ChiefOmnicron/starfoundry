@@ -1,9 +1,8 @@
 use sqlx::PgPool;
 use starfoundry_libs_eve_api::EveApiClient;
 use starfoundry_libs_types::{CharacterId, StructureId, TypeId};
-use uuid::Uuid;
 
-use crate::{CreateStructure, Error, ResolvedStructure, Result, Structure, StructureRig, StructureUuid, UpdateStructure};
+use crate::{CreateStructure, Error, ResolvedStructure, Result, Structure, StructureDatabase, StructureRig, StructureUuid, UpdateStructure};
 
 pub struct StructureService(StructureUuid);
 
@@ -129,7 +128,7 @@ impl StructureService {
         pool:         &PgPool,
         character_id: CharacterId,
         filter:       crate::root::StructureListFilter,
-    ) -> Result<Vec<Uuid>> {
+    ) -> Result<Vec<StructureDatabase>> {
         crate::root::list(
                 pool,
                 character_id,
@@ -142,7 +141,7 @@ impl StructureService {
         &self,
         pool:         &PgPool,
         character_id: CharacterId,
-    ) -> Result<Option<Structure>> {
+    ) -> Result<Option<StructureDatabase>> {
         crate::root::fetch(
                 pool,
                 character_id,

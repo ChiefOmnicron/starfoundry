@@ -41,6 +41,9 @@ pub enum StructureType {
     /// https://everef.net/type/40340
     PalatineKeepstar,
 
+    NpcAmarr,
+    NpcJita,
+
     Invalid,
 }
 
@@ -141,6 +144,9 @@ impl From<i32> for StructureType {
             47516 => Self::PrometheusFortizar,
             40340 => Self::PalatineKeepstar,
 
+            1932  => Self::NpcAmarr,
+            52678 => Self::NpcJita,
+
             _     => Self::Invalid,
         }
     }
@@ -172,6 +178,9 @@ impl From<&StructureType> for i32 {
             StructureType::MarginisFortizar   => 47515,
             StructureType::PrometheusFortizar => 47516,
             StructureType::PalatineKeepstar   => 40340,
+
+            StructureType::NpcAmarr           => 1932,
+            StructureType::NpcJita            => 52678,
 
             StructureType::Invalid            => 0,
         }

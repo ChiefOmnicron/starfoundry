@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { LoadingError } from '@/components/LoadingError';
-import { ProjectGroupMarket } from './-components/market';
+import { ProjectGroupMarket } from './-components/Market';
 import { useFetchProjectGroupDefaults } from '@/services/project-group/fetch_defaults';
 import LoadingAnimation from '@/components/LoadingAnimation';
 

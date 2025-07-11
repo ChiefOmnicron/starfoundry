@@ -1,13 +1,14 @@
-import axios from "axios";
-import type { Uuid } from "../utils";
+import { axiosClient } from "@/services/client";
 import type { ProjectGroup } from "./fetch";
+import type { Uuid } from "@/services/utils";
 
 export const CREATE_PROJECT_GROUPS = 'updateProjectGroup';
 
 export const updateProjectGroup = async (
     id: Uuid,
     data: UpdateProjectGroup,
-): Promise<ProjectGroup> => axios.put(
+): Promise<ProjectGroup> => (await axiosClient())
+    .put(
         `/api/project-groups/${id}`,
         data,
     )

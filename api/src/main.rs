@@ -1,15 +1,32 @@
-use prometheus_client::registry::Registry;
-use sqlx::PgPool;
+mod api_docs;
+mod auth;
+mod config;
+mod healthcheck;
+mod metrics;
+mod project_group;
+mod utils;
+mod state;
+
+pub use self::state::*;
+
+use axum::{middleware, Router};
 use sqlx::postgres::PgPoolOptions;
-use starfoundry_bin_api::*;
-use starfoundry_bin_api::config::Config;
-use starfoundry_bin_api::metric::Metric;
-use starfoundry_libs_eve_api::CredentialCache;
-use std::net::SocketAddr;
+use starfoundry_libs_eve_api::{CredentialCache};
 use std::sync::{Arc, Mutex};
+use tower_http::compression::CompressionLayer;
+use tower_http::decompression::RequestDecompressionLayer;
+use tower::ServiceBuilder;
 use tracing_subscriber::EnvFilter;
+use utoipa_axum::router::OpenApiRouter;
+use utoipa_scalar::{Scalar, Servable};
 use utoipa::OpenApi;
-use warp::Filter;
+
+use crate::config::Config;
+use crate::api_docs::ApiDoc;
+use crate::metrics::{setup_metrics_recorder, path_metrics};
+
+#[cfg(test)]
+mod test_util;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -26,127 +43,55 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .init();
     }
 
-    let config = Config::load();
+    let config = Config::load().await;
 
     let pool = PgPoolOptions::new()
         .connect(&config.database_url)
         .await?;
 
-    tracing::info!("Starting server");
-
     let credential_cache = CredentialCache::load_from_database(&pool.clone()).await?;
     let credential_cache = Arc::new(Mutex::new(credential_cache));
 
-    let server = Server::new(
+    let shared_state = AppState {
         pool,
         credential_cache,
-    );
+    };
 
-    server.listen(&config.server_address).await;
+
+    let router = app(shared_state);
+    axum::serve(config.server_address, router).await.unwrap();
 
     Ok(())
 }
 
-struct Server {
-    pool:             PgPool,
-    credential_cache: Arc<Mutex<CredentialCache>>,
-}
+fn app(
+    state: AppState,
+) -> Router {
+    let metrics = setup_metrics_recorder();
 
-impl Server {
-    pub fn new(
-        pool:             PgPool,
-        credential_cache: Arc<Mutex<CredentialCache>>,
-    ) -> Self {
-        Self { pool, credential_cache }
-    }
+    // build our application with a route
+    let (router, api) = OpenApiRouter::with_openapi(ApiDoc::openapi())
+        .nest("/auth", auth::routes())
+        .nest("/project-groups", project_group::routes(state.clone()))
+        .layer(
+            ServiceBuilder::new()
+                .layer(middleware::from_fn(path_metrics))
+                .layer(RequestDecompressionLayer::new())
+                .layer(CompressionLayer::new())
+        )
+        .with_state(state.clone())
+        .split_for_parts();
 
-    pub async fn listen(
-        self,
-        server_address: &SocketAddr,
-    ) {
-        let metrics = Metric::new();
-        let mut registry = Registry::with_prefix("starfoundry");
-        metrics.register(&mut registry);
-        let registry = Arc::new(registry);
-        let metric = Arc::new(metrics);
+    let router = router.merge(Scalar::with_url("/", api));
 
-        let api_doc = warp::path::end()
-            .and(warp::get())
-            .map(|| warp::reply::html(include_str!("api.html")));
-        let definition = warp::path!("definition")
-            .and(warp::get())
-            .map(|| warp::reply::json(&crate::api_docs::ApiDoc::openapi()));
+    let router_v1 = Router::new().nest("/v1", router.clone());
+    let router_latest = Router::new().nest("/latest", router.clone());
 
-        let base_path = warp::any().boxed();
-        let base_path_v1 = warp::path!("v1" / ..).boxed();
-
-        let appraisal               = appraisal::api(self.pool.clone(), metric.clone(), base_path.clone());
-        let auth                    = auth::api(self.pool.clone(), base_path.clone(), self.credential_cache.clone());
-        let characters              = character::api(self.pool.clone(), base_path.clone(), self.credential_cache.clone());
-        let corporations            = corporation::api(self.pool.clone(), base_path.clone(), self.credential_cache.clone());
-        let indy                    = industry::api(self.pool.clone(), base_path.clone(), self.credential_cache.clone());
-        let item                    = item::api(self.pool.clone(), base_path.clone());
-        let job_detection           = job_detection::api(self.pool.clone(), base_path.clone(), self.credential_cache.clone());
-        let notifications           = notification::api(self.pool.clone(), base_path.clone(), self.credential_cache.clone());
-        let projects                = project::api(self.pool.clone(), base_path.clone(), self.credential_cache.clone());
-        let project_groups          = project_group::api(self.pool.clone(), base_path.clone(), self.credential_cache.clone());
-        let stock                   = stock::api(self.pool.clone(), base_path.clone(), self.credential_cache.clone());
-        let search                  = search::api(self.pool.clone(), base_path.clone());
-        let structure               = structure::api(self.pool.clone(), base_path.clone(), self.credential_cache.clone());
-        let structure_dynamic_group = structure_dynamic_group::api(self.pool.clone(), base_path.clone(), self.credential_cache.clone());
-        let structure_group         = structure_group::api(self.pool.clone(), base_path.clone(), self.credential_cache.clone());
-        let version                 = version::api(base_path.clone());
-
-        let special_routes = crate::healthcheck::api(self.pool.clone())
-            .or(crate::metric::api(registry.clone(), metric.clone()))
-            .or(version);
-
-        if cfg!(feature = "appraisal") {
-            let base = crate::healthcheck::api(self.pool.clone())
-                .or(appraisal)
-                .or(api_doc)
-                .or(definition);
-
-            let v1 = base_path_v1.and(base.clone());
-            let routes = base
-                .or(v1)
-                .or(special_routes)
-                .recover(crate::rejection::handle_rejection)
-                .with(warp::wrap_fn(|f| metric_wrapper(f, metric.clone())));
-
-            warp::serve(routes)
-                .run(*server_address)
-                .await;
-        } else {
-            let base = crate::feature_flags::api(base_path.clone())
-                .or(appraisal)
-                .or(api_doc)
-                .or(definition)
-                .or(auth)
-                .or(characters)
-                .or(corporations)
-                .or(indy)
-                .or(item)
-                .or(job_detection)
-                .or(notifications)
-                .or(projects)
-                .or(project_groups)
-                .or(search)
-                .or(stock)
-                .or(structure)
-                .or(structure_dynamic_group)
-                .or(structure_group);
-
-            let v1 = base_path_v1.and(base.clone());
-            let routes = base
-                .or(v1)
-                .or(special_routes)
-                .recover(crate::rejection::handle_rejection)
-                .with(warp::wrap_fn(|f| metric_wrapper(f, metric.clone())));
-
-            warp::serve(routes)
-                .run(*server_address)
-                .await;
-        }
-    }
+    router
+        .merge(router_v1)
+        .merge(router_latest)
+        .nest("/health", healthcheck::routes().with_state(state))
+        .route("/metrics", axum::routing::get(|| async move {
+            metrics::route(metrics)
+        }))
 }

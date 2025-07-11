@@ -1,4 +1,4 @@
-import axios from "axios";
+import { axiosClient } from "@/services/client";
 import { useQuery } from "@tanstack/react-query";
 import type { ProjectGroup } from "./fetch";
 
@@ -6,7 +6,8 @@ export const LIST_PROJECT_GROUPS = 'listProjectGroups';
 
 export const listProjectGroups = async (
     filter: ProjectGroupFilter,
-): Promise<ProjectGroup[]> => axios.get(
+): Promise<ProjectGroup[]> => (await axiosClient())
+    .get(
         '/api/project-groups',
         {
             params: filter,

@@ -16,6 +16,6 @@ pub use self::root::*;
 pub use self::service::*;
 
 use starfoundry_libs_types::starfoundry_uuid;
-starfoundry_uuid!(StructureUuid);
-starfoundry_uuid!(StructureGroupUuid);
-starfoundry_uuid!(StructureDynamicGroupUuid);
+starfoundry_uuid!(StructureUuid, "StructureUuid");
+starfoundry_uuid!(StructureGroupUuid, "StructureGroupUuid");
+starfoundry_uuid!(StructureDynamicGroupUuid, "StructureDynamicGroupUuid");

@@ -1,11 +1,12 @@
-import axios from "axios";
-import type { Uuid } from "../utils";
+import { axiosClient } from "@/services/client";
+import type { Uuid } from "@/services/utils";
 
 export const CREATE_PROJECT_GROUPS = 'createProjectGroup';
 
 export const createProjectGroup = async (
     data: CreateProjectGroup,
-): Promise<CreateProjectGroupResponse> => axios.post(
+): Promise<CreateProjectGroupResponse> => (await axiosClient())
+    .post(
         '/api/project-groups',
         data,
     )

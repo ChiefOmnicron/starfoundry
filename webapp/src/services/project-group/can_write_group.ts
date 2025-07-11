@@ -1,12 +1,13 @@
-import axios from "axios";
-import type { Uuid } from "../utils";
+import { axiosClient } from "@/services/client";
 import { useQuery } from "@tanstack/react-query";
+import type { Uuid } from "@/services/utils";
 
 export const CAN_WRITE_PROJECT_GROUP = 'canWriteProjectGroup';
 
 export const canWriteProjectGroup = async (
     projectGroupUuid: Uuid,
-): Promise<boolean> => axios.get(
+): Promise<boolean> => (await axiosClient())
+    .get(
         `/api/project-groups/${projectGroupUuid}/can-write`
     )
     .then(_ => true)

@@ -1,12 +1,13 @@
-import axios from "axios";
-import type { Uuid } from "../utils";
+import { axiosClient } from "@/services/client";
 import { useQuery } from "@tanstack/react-query";
+import type { Uuid } from "@/services/utils";
 
 export const FETCH_PROJECT_GROUP = 'fetchProjectGroup';
 
 export const fetchProjectGroup = async (
     projectGroupUuid: Uuid,
-): Promise<ProjectGroup> => axios.get(
+): Promise<ProjectGroup> => (await axiosClient())
+    .get(
         `/api/project-groups/${projectGroupUuid}`
     )
     .then(x => x.data);

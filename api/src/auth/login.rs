@@ -1,29 +1,60 @@
-use sqlx::PgPool;
+use axum::extract::State;
+use axum::http::StatusCode;
+use axum::response::{IntoResponse, Redirect};
 use starfoundry_libs_eve_api::EveApiClient;
-use tracing::instrument;
 
-use super::{AuthError, Intention};
+use crate::api_docs::InternalServerError;
+use crate::AppStateExtractor;
+use crate::auth::error::{AuthError, Result};
 
-#[instrument(level = "error", skip(pool))]
+/// Login Main
+/// 
+/// Logs in a new main character.
+/// For alt characters or corporations the endpoints `/login/alt` or `/login/corporation` should be used
+/// 
+/// Upon a successful authentication, it will return a JWT-Token and a Refresh-Token.
+/// The JWT-Token shall not be saved locally, and should stay in memory.
+/// The Refresh-Token is returned as a cookie, and must be send to obtain a new JWT-Token.
+/// 
+#[utoipa::path(
+    get,
+    path = "/login",
+    tag = "auth",
+    responses(
+        (
+            status = TEMPORARY_REDIRECT,
+            description = "Redirects to the Eve Login Server",
+            body = String,
+            content_type = "text/plain",
+            example = json!("https://login.eveonline.com/v2/oauth/authorize/")
+        ),
+        InternalServerError,
+    ),
+)]
 pub async fn login(
-    pool: &PgPool,
-) -> Result<String, AuthError> {
+    State(state): AppStateExtractor,
+) -> Result<impl IntoResponse> {
+    let pool = state.pool.clone();
+
     let token = sqlx::query!("
-            INSERT INTO credential (intention, credential_type)
-            VALUES ($1, 'CHARACTER')
+            INSERT INTO credential (credential_type)
+            VALUES ('CHARACTER')
             RETURNING token
-        ",
-            Intention::Login.to_string(),
-        )
-        .fetch_one(pool)
-        .await?
+        ")
+        .fetch_one(&pool)
+        .await
+        .map_err(AuthError::InsertTokenError)?
         .token;
 
-    Ok(
-        EveApiClient::auth_uri(
+    let url = EveApiClient::auth_uri(
             &token.to_string(),
             &crate::auth::ESI_CHARACTER.join(" ")
-        )?
-        .to_string()
-    )
+        )
+        .map_err(AuthError::EveApiError)?
+        .to_string();
+
+    Ok((
+        StatusCode::TEMPORARY_REDIRECT,
+        Redirect::temporary(&url),
+    ))
 }

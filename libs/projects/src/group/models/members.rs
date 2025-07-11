@@ -1,7 +1,6 @@
 use serde::Serialize;
 use starfoundry_libs_types::CharacterId;
 use utoipa::ToSchema;
-
 use crate::ProjectGroupPermission;
 
 #[derive(Debug, Serialize, ToSchema)]

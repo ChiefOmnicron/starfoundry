@@ -3,6 +3,7 @@ use starfoundry_libs_types::CharacterId;
 
 use crate::{Error, ProjectGroupPermission, ProjectGroupUuid, Result};
 
+#[deprecated]
 pub async fn update_member_permission(
     pool:        &PgPool,
     group_id:    ProjectGroupUuid,

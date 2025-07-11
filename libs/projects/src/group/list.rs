@@ -3,8 +3,9 @@ use starfoundry_libs_types::CharacterId;
 
 use crate::{Error, ProjectGroup, Result};
 use serde::Deserialize;
-use utoipa::ToSchema;
+use utoipa::{IntoParams, ToSchema};
 
+#[deprecated]
 pub async fn list(
     pool:         &PgPool,
     character_id: CharacterId,
@@ -66,9 +67,15 @@ pub async fn list(
         .map_err(Error::ListGroups)
 }
 
-#[derive(Debug, Default, Deserialize, ToSchema)]
+#[derive(Debug, Default, Deserialize, ToSchema, IntoParams)]
+#[into_params(parameter_in = Query)]
+#[deprecated]
 pub struct ProjectGroupFilter {
     #[serde(default)]
+    #[param(
+        example = json!("ProjectGroup1337"),
+        required = false,
+    )]
     pub name:  Option<String>,
     #[serde(default)]
     pub owner: Option<bool>,

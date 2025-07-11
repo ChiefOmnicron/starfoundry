@@ -3,17 +3,14 @@ use starfoundry_libs_eve_api::{CredentialCache, EveApiClient};
 use starfoundry_libs_types::{CharacterId, CorporationId};
 use std::fmt::{self, Debug, Formatter};
 use std::sync::{Arc, Mutex};
-use warp::Filter;
-use warp::filters::BoxedFilter;
-
-use super::AuthError;
-use crate::ReplyError;
+use crate::auth::error::{AuthError, Result};
 
 /// Represents a logged in character.
+#[derive(Clone)]
 pub struct Identity {
     pool:             PgPool,
-    character_id:     CharacterId,
     credential_cache: Option<Arc<Mutex<CredentialCache>>>,
+    character_id:     CharacterId,
 }
 
 impl Identity {
@@ -30,13 +27,13 @@ impl Identity {
     ///
     pub fn new(
         pool:             PgPool,
-        character_id:     CharacterId,
         credential_cache: Arc<Mutex<CredentialCache>>,
+        character_id:     CharacterId,
     ) -> Self {
         Self {
             pool,
-            character_id:     character_id.into(),
             credential_cache: Some(credential_cache),
+            character_id:     character_id.into(),
         }
     }
 
@@ -46,8 +43,8 @@ impl Identity {
     ) -> Self {
         Self {
             pool,
-            character_id:     character_id.into(),
             credential_cache: None,
+            character_id:     character_id.into(),
         }
     }
 
@@ -62,7 +59,7 @@ impl Identity {
     ///
     /// A newly created authentication client, with a fresh token.
     ///
-    pub async fn api_client(&self) -> Result<EveApiClient, AuthError> {
+    pub async fn api_client(&self) -> Result<EveApiClient> {
         if let Some(credential_cache) = &self.credential_cache {
             let client = {
                 credential_cache
@@ -75,18 +72,19 @@ impl Identity {
                 .get(self.character_id)
                 .await
                 .map_err(|e| {
-                    dbg!(e);
-                    AuthError::FixMe
+                    tracing::error!("{}", e);
+                    AuthError::IdentityNotFound
                 })
         } else {
             let corporation_id = self.corporation_id().await?;
 
             let refresh_token = self.refresh_token().await?;
             let client = EveApiClient::new_with_refresh_token(
-                self.character_id,
-                corporation_id,
-                refresh_token,
-            )?;
+                    self.character_id,
+                    corporation_id,
+                    refresh_token,
+                )
+                .map_err(AuthError::EveApiError)?;
             Ok(client)
         }
     }
@@ -124,16 +122,17 @@ impl Identity {
     ///
     pub async fn corporation_id(
         &self,
-    ) -> Result<CorporationId, AuthError> {
+    ) -> Result<CorporationId> {
         let character = sqlx::query!("
-                SELECT corporation_id
-                FROM character
-                WHERE character_id = $1
-            ",
-            *self.character_id
-        )
-        .fetch_optional(&self.pool)
-        .await?;
+                    SELECT corporation_id
+                    FROM character
+                    WHERE character_id = $1
+                ",
+                *self.character_id
+            )
+            .fetch_optional(&self.pool)
+            .await
+            .map_err(AuthError::GenericSqlxError)?;
 
         if let Some(x) = character {
             Ok(x.corporation_id.into())
@@ -145,9 +144,9 @@ impl Identity {
     /// Gets its own identity and of the alts
     pub async fn character_identities(
         &self,
-    ) -> Result<Vec<Identity>, AuthError> {
+    ) -> Result<Vec<Identity>> {
         // With the condition that character_id must not be null, we know that
-        // the id definitly exists
+        // the id definitely exists
         let character_ids = sqlx::query!(r#"
                 SELECT character_id AS "character_id!: CharacterId"
                 FROM   credential
@@ -159,7 +158,8 @@ impl Identity {
                 *self.character_id,
             )
             .fetch_all(&self.pool)
-            .await?
+            .await
+            .map_err(|_| AuthError::IdentityNotFound)?
             .into_iter()
             .map(|x| x.character_id)
             .collect::<Vec<_>>();
@@ -177,11 +177,11 @@ impl Identity {
     }
 
     /// Gets its own identity and of the alts
-    pub async fn corporation_identites(
+    pub async fn corporation_identities(
         &self,
-    ) -> Result<Vec<Identity>, AuthError> {
+    ) -> Result<Vec<Identity>> {
         // With the condition that character_id must not be null, we know that
-        // the id definitly exists
+        // the id definitely exists
         let character_ids = sqlx::query!(r#"
                 SELECT character_id AS "character_id!: CharacterId"
                 FROM   credential
@@ -193,7 +193,8 @@ impl Identity {
                 *self.character_id,
             )
             .fetch_all(&self.pool)
-            .await?
+            .await
+            .map_err(|_| AuthError::IdentityNotFound)?
             .into_iter()
             .map(|x| x.character_id)
             .collect::<Vec<_>>();
@@ -209,40 +210,6 @@ impl Identity {
         }
         Ok(clients)
     }
-}
-
-pub fn with_identity(
-    pool:             PgPool,
-    credential_cache: Arc<Mutex<CredentialCache>>,
-) -> BoxedFilter<(Identity,)> {
-    warp::any()
-        .map(move || (pool.clone(), credential_cache.clone()))
-        // TODO: reimplement
-        //.and(warp::cookie("token"))
-        //.and_then(move |params: (PgPool, Arc<Mutex<CredentialCache>>), token: String| {
-        .and_then(move |params: (PgPool, Arc<Mutex<CredentialCache>>)| {
-            let (pool, credential_cache) = params;
-
-            /*let token = if let Ok(claim) = validate_jwt(token) {
-                claim
-            } else {
-                return std::future::ready(
-                    Err(warp::reject::custom(ReplyError::Unauthorized))
-                );
-            };*/
-
-            if false {
-                return std::future::ready(
-                    Err(warp::reject::custom(ReplyError::Unauthorized))
-                );
-            }
-
-            std::future::ready(
-                //Ok(Identity::new(pool, token.claims.character_id, credential_cache))
-                Ok(Identity::new(pool, CharacterId(2117441999), credential_cache))
-            )
-        })
-        .boxed()
 }
 
 impl Debug for Identity {

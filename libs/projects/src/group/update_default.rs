@@ -3,6 +3,7 @@ use sqlx::PgPool;
 use crate::{Error, ProjectGroupUuid, Result};
 use super::ProjectGroupDefault;
 
+#[deprecated]
 pub async fn update_default(
     pool:     &PgPool,
     group_id: ProjectGroupUuid,
