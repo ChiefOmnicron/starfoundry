@@ -1,4 +1,5 @@
 use chrono::{NaiveDateTime, Utc};
+use reqwest::header::{HeaderMap, HeaderValue};
 use reqwest::{Client, Response, StatusCode};
 use serde::de::DeserializeOwned;
 use serde::Serialize;
@@ -115,8 +116,12 @@ impl EveApiClient {
         let user_agent = std::env::var(Self::ENV_USER_AGENT)
             .map_err(|_| Error::env_user_agent())?;
 
+        let mut headers = HeaderMap::new();
+        headers.insert("X-Compatibility-Date", HeaderValue::from_static("2025-07-01"));
+
         let client = Client::builder()
             .user_agent(user_agent)
+            .default_headers(headers)
             .pool_idle_timeout(None)
             .build()
             .map_err(Error::CouldNotConstructClient)?;
@@ -162,8 +167,12 @@ impl EveApiClient {
         let user_agent = std::env::var(Self::ENV_USER_AGENT)
             .map_err(|_| Error::env_user_agent())?;
 
+        let mut headers = HeaderMap::new();
+        headers.insert("X-Compatibility-Date", HeaderValue::from_static("2025-07-01"));
+
         let client = Client::builder()
             .user_agent(user_agent)
+            .default_headers(headers)
             .pool_idle_timeout(None)
             .build()
             .map_err(Error::CouldNotConstructClient)?;
