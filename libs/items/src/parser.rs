@@ -233,6 +233,7 @@ fn sanitize_name(
         .replace("  Hauler", " Hauler")
         .replace("  skin", " skin")
         .replace("  SKIN", " SKIN")
+        .trim_start()
         .trim_end()
         .to_string()
 }
@@ -542,6 +543,7 @@ Triple Neutron Blaster Cannon II, Void XL".into();
                 &all_items,
                 &format!("{name_lower} 1"),
             );
+            dbg!(name_lower, &result);
             assert_eq!(result.items.len(), 1);
             assert_eq!(result.items[0].item_name, item.name.clone());
             assert_eq!(result.items[0].type_id, item.type_id);

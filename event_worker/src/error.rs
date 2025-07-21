@@ -23,7 +23,7 @@ pub enum Error {
     FetchTask(sqlx::Error),
     #[error("failed to fetch check task {1:?}, error: {0}")]
     FetchCheck(sqlx::Error, WorkerTask),
-    #[error("failed to insert chec task {1:?}, error '{0}'")]
+    #[error("failed to insert check task {1:?}, error '{0}'")]
     InsertCheck(sqlx::Error, WorkerTask),
     #[error("error while parsing additional data for task, task: '{1}' - '{0}'")]
     ParseAdditionalData(serde_json::Error, Uuid),
@@ -37,7 +37,7 @@ pub enum Error {
     ApiError(starfoundry_libs_eve_api::Error),
     #[error("error creating transaction, '{0}'")]
     BeginTransaction(sqlx::Error),
-    #[error("error commiting transaction, '{0}'")]
+    #[error("error committing transaction, '{0}'")]
     CommitTransaction(sqlx::Error),
 
     // assets

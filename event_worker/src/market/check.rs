@@ -18,6 +18,17 @@ pub async fn task(
         Err(e) => task.add_error(e.to_string()),
     };
 
+    match validate_market_region(pool).await {
+        Ok(new_entries) => {
+            if new_entries > 0 {
+                task.add_log(format!("added {new_entries} Region markets"))
+            } else {
+                task.add_log(format!("everything okay"))
+            }
+        },
+        Err(e) => task.add_error(e.to_string()),
+    };
+
     match validate_market_player(pool).await {
         Ok(new_entries) => {
             if new_entries > 0 {
@@ -98,12 +109,65 @@ async fn validate_market_npc(
         .map_err(Error::InsertNewJobs)
 }
 
+async fn validate_market_region(
+    pool: &PgPool
+) -> Result<usize> {
+    // todo make it configurable
+    let market_stations_target = vec![
+        // Plex Region
+        19000001,
+    ];
+
+    let market_stations_is = sqlx::query!("
+            SELECT
+                (additional_data ->> 'region_id')::INTEGER AS region_id
+            FROM event_queue
+            WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
+            AND task = 'MARKET_LATEST_NPC'
+        ")
+        .fetch_all(pool)
+        .await
+        .map_err(Error::FetchMarketNpcQueue)
+        .map(|x| {
+            x
+                .iter()
+                .map(|y| y.region_id.unwrap_or_default())
+                .collect::<Vec<_>>()
+        })?;
+
+    let mut new_entries = Vec::new();
+    for market_station in market_stations_target {
+        if !market_stations_is.contains(&market_station) {
+            let additional_data = serde_json::json!({
+                "region_id": market_station,
+            });
+            new_entries.push(additional_data);
+        }
+    }
+
+    tracing::info!("Added {} new npc market jobs", new_entries.len());
+
+    sqlx::query!("
+            INSERT INTO event_queue (task, additional_data)
+            SELECT 'MARKET_LATEST_REGION', * FROM UNNEST(
+                $1::JSONB[]
+            )
+        ",
+            &new_entries
+        )
+        .execute(pool)
+        .await
+        .map(|_| new_entries.len())
+        .map_err(Error::InsertNewJobs)
+}
+
 async fn validate_market_player(
     pool: &PgPool
 ) -> Result<usize> {
     struct MarketStation {
         structure_id: i64,
         owner_id: i32,
+        region_id: i32,
     }
 
     let market_stations_target = sqlx::query!("
@@ -124,6 +188,7 @@ async fn validate_market_player(
             MarketStation {
                 owner_id: x.owner,
                 structure_id: x.structure_id,
+                region_id: x.region_id,
             }
         })
         .collect::<Vec<_>>();
@@ -131,7 +196,8 @@ async fn validate_market_player(
     let market_stations_is = sqlx::query!("
             SELECT
                 (additional_data ->> 'structure_id')::BIGINT AS structure_id,
-                (additional_data ->> 'owner_id')::INTEGER AS owner_id
+                (additional_data ->> 'owner_id')::INTEGER AS owner_id,
+                (additional_data ->> 'region_id')::INTEGER AS region_id
             FROM event_queue
             WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
             AND task = 'MARKET_LATEST_PLAYER'
@@ -145,6 +211,7 @@ async fn validate_market_player(
                 .map(|y| MarketStation {
                     owner_id: y.owner_id.unwrap_or_default(),
                     structure_id: y.structure_id.unwrap_or_default(),
+                    region_id: y.region_id.unwrap_or_default(),
                 })
                 .collect::<Vec<_>>()
         })?;
@@ -159,6 +226,7 @@ async fn validate_market_player(
             let additional_data = serde_json::json!({
                 "structure_id": market_station.structure_id,
                 "owner_id": market_station.owner_id,
+                "region_id": market_station.region_id,
             });
             new_entries.push(additional_data);
         }

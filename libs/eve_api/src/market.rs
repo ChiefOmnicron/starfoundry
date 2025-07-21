@@ -124,7 +124,7 @@ pub struct Market {
 }
 
 /// Determines if an market entry is a Buy or Sell order
-#[derive(Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
 pub enum BuyOrder {
     /// Entry is a buy order
     Buy,

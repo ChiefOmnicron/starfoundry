@@ -46,7 +46,7 @@ pub async fn run(
     let mut name          = Vec::new();
 
     for item in items {
-        // fix weird nameing
+        // fix weird naming
         if item.name == "Fullerides" {
             name.push("Fulleride".into());
         } else {
@@ -100,7 +100,7 @@ pub async fn run(
         .commit()
         .await
         .map_err(Error::TransactionError)?;
-    tracing::debug!("Transaction commited");
+    tracing::debug!("Transaction committed");
 
     tracing::info!(
         "Finished processing items, task took {:.2}s",
@@ -127,7 +127,7 @@ async fn prepare_data(
         let category_id = group_ids
             .get(&group_id)
             .map(|x| x.category_id.into())
-            .expect("Every entry should have a categroy id");
+            .expect("Every entry should have a category id");
         let volume = entry.volume.unwrap_or(0f32);
         let meta_group_id = entry.meta_group_id.map(Into::into);
         let name = entry.name().unwrap_or(format!("Unknown name {}", type_id));

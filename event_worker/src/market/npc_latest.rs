@@ -100,6 +100,7 @@ pub async fn task(
             INSERT INTO market_order_latest
             (
                 structure_id,
+                region_id,
                 order_id,
 
                 type_id,
@@ -108,18 +109,19 @@ pub async fn task(
                 expires,
                 is_buy
             )
-            SELECT $1, * FROM UNNEST(
-                $2::BIGINT[],
-                $3::INTEGER[],
+            SELECT $1, $2, * FROM UNNEST(
+                $3::BIGINT[],
                 $4::INTEGER[],
-                $5::FLOAT[],
-                $6::TIMESTAMP[],
-                $7::BOOLEAN[]
+                $5::INTEGER[],
+                $6::FLOAT[],
+                $7::TIMESTAMP[],
+                $8::BOOLEAN[]
             )
             ON CONFLICT (order_id)
             DO UPDATE SET remaining = EXCLUDED.remaining
         ",
             *additional_data.structure_id,
+            *additional_data.region_id,
             &order_ids,
 
             &type_id,

@@ -331,13 +331,3 @@ pub struct DatabaseEntry {
     categories: Vec<usize>,
     groups:     Vec<usize>,
 }
-
-#[derive(Clone, Copy, Debug, sqlx::Type)]
-#[sqlx(type_name = "BONUS_MODIFIER")]
-#[sqlx(rename_all = "SCREAMING_SNAKE_CASE")]
-pub enum BonusModifier {
-    ManufacturingMaterial,
-    ManufactureTime,
-    ReactionMaterial,
-    ReactionTime,
-}

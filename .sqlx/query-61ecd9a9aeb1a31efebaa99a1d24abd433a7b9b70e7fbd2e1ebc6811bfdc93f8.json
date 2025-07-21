@@ -25,6 +25,7 @@
                 "MARKET_CHECK",
                 "MARKET_LATEST_NPC",
                 "MARKET_LATEST_PLAYER",
+                "MARKET_LATEST_REGION",
                 "MARKET_PRICES",
                 "SDE_CHECK",
                 "SDE_DOWNLOAD",

@@ -9,9 +9,7 @@ use crate::task::Task;
 
 #[derive(Debug, Deserialize)]
 struct AdditionalData {
-    structure_id: StationId,
-    region_id:    RegionId,
-    owner_id:     CharacterId,
+    region_id:  RegionId,
 }
 
 pub async fn task(
@@ -33,7 +31,7 @@ pub async fn task(
 
     let client = if let Some(client) = crate::utils::eve_api_client(
             credentials.clone(),
-            additional_data.owner_id,
+            CharacterId(0),
         )
         .await {
         client
@@ -45,7 +43,7 @@ pub async fn task(
     };
 
     let mut entries = match client
-        .market_by_structure(&additional_data.structure_id.into())
+        .market_by_region(&additional_data.region_id.into())
         .await
         .map_err(|e| Error::ApiError(e)) {
             Ok(x) => x,
@@ -55,32 +53,37 @@ pub async fn task(
             }
         };
 
-    let mut order_ids  = Vec::new();
-    let mut type_id    = Vec::new();
-    let mut price      = Vec::new();
-    let mut remaining  = Vec::new();
-    let mut expires    = Vec::new();
-    let mut is_buy     = Vec::new();
-
     entries.sort_by(|a, b| a.order_id.cmp(&b.order_id));
     entries.dedup_by_key(|x| x.order_id);
 
-    for entry in entries {
-        if *entry.location_id != *additional_data.structure_id {
-            continue;
-        }
-
-        order_ids.push(*entry.order_id as i64);
-        type_id.push(*entry.type_id as i32);
-        price.push(entry.price as f64);
-        remaining.push(entry.volume_remain as i32);
-        expires.push(
-            entry.issued
-                .checked_add_days(Days::new(entry.duration as u64))
-                .unwrap()
-        );
-        is_buy.push(entry.is_buy_order.into());
-    }
+    let order_ids = entries
+        .iter()
+        .map(|x| *x.order_id as i64)
+        .collect::<Vec<_>>();
+    let type_id = entries
+        .iter()
+        .map(|x| *x.type_id as i32)
+        .collect::<Vec<_>>();
+    let price = entries
+        .iter()
+        .map(|x| x.price as f64)
+        .collect::<Vec<_>>();
+    let remaining = entries
+        .iter()
+        .map(|x| x.volume_remain as i32)
+        .collect::<Vec<_>>();
+    let expires = entries
+        .iter()
+        .map(|x| x
+            .issued
+            .checked_add_days(Days::new(x.duration as u64))
+            .unwrap()
+        )
+        .collect::<Vec<_>>();
+    let is_buy = entries
+        .iter()
+        .map(|x| x.is_buy_order.into())
+        .collect::<Vec<_>>();
 
     let mut transaction = pool
         .begin()
@@ -89,13 +92,16 @@ pub async fn task(
 
     sqlx::query!("
             DELETE FROM market_order_latest
-            WHERE structure_id = $1
+            WHERE
+                region_id = $1 AND
+                structure_id = 0
         ",
-            *additional_data.structure_id
+            *additional_data.region_id
         )
         .execute(&mut *transaction)
         .await
-        .map_err(|e| Error::DeleteLatestOrders(e, additional_data.structure_id))?;
+        // proper error
+        .map_err(|e| Error::DeleteLatestOrders(e, StationId(*additional_data.region_id as i64)))?;
 
     sqlx::query!("
             INSERT INTO market_order_latest
@@ -110,18 +116,17 @@ pub async fn task(
                 expires,
                 is_buy
             )
-            SELECT $1, $2, * FROM UNNEST(
-                $3::BIGINT[],
+            SELECT 0, $1, * FROM UNNEST(
+                $2::BIGINT[],
+                $3::INTEGER[],
                 $4::INTEGER[],
-                $5::INTEGER[],
-                $6::FLOAT[],
-                $7::TIMESTAMP[],
-                $8::BOOLEAN[]
+                $5::FLOAT[],
+                $6::TIMESTAMP[],
+                $7::BOOLEAN[]
             )
             ON CONFLICT (order_id)
             DO UPDATE SET remaining = EXCLUDED.remaining
         ",
-            *additional_data.structure_id,
             *additional_data.region_id,
             &order_ids,
 
@@ -133,7 +138,7 @@ pub async fn task(
         )
         .execute(&mut *transaction)
         .await
-        .map_err(|e| Error::InsertLatestOrders(e, additional_data.structure_id))?;
+        .map_err(|e| Error::InsertLatestOrders(e, StationId(*additional_data.region_id as i64)))?;
 
     transaction
         .commit()

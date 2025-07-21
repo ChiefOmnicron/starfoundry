@@ -90,6 +90,8 @@ pub enum WorkerTask {
     MarketLatestNpc,
     /// fetches the latest player orders
     MarketLatestPlayer,
+    /// fetches the latest region orders
+    MarketLatestRegion,
     /// fetches the latest market prices
     MarketPrices,
 
@@ -129,6 +131,7 @@ impl WorkerTask {
             Self::MarketCheck                => self.add_minutes(5),
             Self::MarketLatestNpc            => self.add_minutes(5),
             Self::MarketLatestPlayer         => self.add_minutes(5),
+            Self::MarketLatestRegion         => self.add_minutes(5),
             Self::MarketPrices               => self.add_minutes(60),
 
             Self::SdeCheck                   => self.add_minutes(120),

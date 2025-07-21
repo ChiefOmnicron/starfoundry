@@ -24,7 +24,7 @@ CREATE TYPE EVENT_WORKER_TASK AS ENUM (
     'INDUSTRY_CHECK',
     -- pulls the indy jobs for a specific character and runs the job detection on it
     'INDUSTRY_JOBS_CHARACTER',
-    -- pulls the indy jobs for a specific coproration nd runs the job detection on it
+    -- pulls the indy jobs for a specific corporation nd runs the job detection on it
     'INDUSTRY_JOBS_CORPORATION',
     -- fetches the current industry index
     'INDUSTRY_INDEX',
@@ -35,6 +35,8 @@ CREATE TYPE EVENT_WORKER_TASK AS ENUM (
     'MARKET_LATEST_NPC',
     -- fetches the latest player orders
     'MARKET_LATEST_PLAYER',
+    -- fetches the latest region orders
+    'MARKET_LATEST_REGION',
     -- fetches the latest market prices
     'MARKET_PRICES',
 

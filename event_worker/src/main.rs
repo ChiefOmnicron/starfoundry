@@ -117,7 +117,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                 &credential_cache,
                             ).await
                         },
-    
+
                         // cleanup
                         WorkerTask::CleanupCheck => {
                             cleanup::cleanup_check::task(
@@ -143,7 +143,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                 &pool,
                             ).await
                         },
-    
+
                         // industry
                         WorkerTask::IndustryCheck => {
                             industry::job_check::task(
@@ -191,6 +191,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         },
                         WorkerTask::MarketLatestNpc => {
                             market::npc_latest::task(
+                                &mut x,
+                                &pool,
+                                &credential_cache,
+                            )
+                            .await
+                        },
+                        WorkerTask::MarketLatestRegion => {
+                            market::region_latest::task(
                                 &mut x,
                                 &pool,
                                 &credential_cache,
