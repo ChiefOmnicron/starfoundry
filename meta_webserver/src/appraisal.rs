@@ -8,8 +8,11 @@ use crate::WithTemplate;
 const TEMPLATE: &str = r#"<!DOCTYPE html>
 <html>
     <head>
+        <link rel="icon" type="image/svg+xml" href="/favicon.ico">
+
         <title>Appraisal {{code}}: Buy {{ buy }} / Sell {{ sell }}</title>
 
+        <meta name="application-name" content="StarFoundry Appraisal">
         <meta name="description" content="{{ description }}">
     </head>
 </html>"#;
