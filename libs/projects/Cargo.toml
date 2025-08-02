@@ -15,5 +15,6 @@ starfoundry_libs-items = { path = "../items" }
 starfoundry_libs-structures = { path = "../structures" }
 starfoundry_libs-types = { path = "../types" }
 thiserror = "2.0.12"
+tracing = "0.1.41"
 utoipa = "5.3.1"
 uuid = "1.16.0"

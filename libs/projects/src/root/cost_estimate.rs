@@ -14,6 +14,7 @@ pub async fn cost_estimate(
     character_id: CharacterId,
     project_data: CostEstimateConfiguration,
 ) -> Result<CostEstimateResponse> {
+    tracing::error!("start");
     let blueprint_overwrites = project_data
         .products
         .iter()
@@ -26,12 +27,14 @@ pub async fn cost_estimate(
             }
         ))
         .collect::<HashMap<_, _>>();
+    tracing::error!("overwrites");
 
     let structure_groups = group_structures(
         pool,
         character_id,
         project_data.structure_group,
     ).await?;
+    tracing::error!("strucutres");
 
     let mut systems = structure_groups
         .iter()
@@ -40,6 +43,7 @@ pub async fn cost_estimate(
         .collect::<Vec<_>>();
     systems.sort();
     systems.dedup();
+    tracing::error!("systems");
 
     let mut system_index = HashMap::new();
     for system in systems {
@@ -63,6 +67,7 @@ pub async fn cost_estimate(
             (index.manufacturing, index.reaction)
         );
     }
+    tracing::error!("system index");
 
     let material_cost = sqlx::query!("
                 SELECT
@@ -77,11 +82,13 @@ pub async fn cost_estimate(
         .into_iter()
         .map(|x| (x.type_id.into(), x.adjusted_price))
         .collect::<HashMap<_, _>>();
+    tracing::error!("materials");
 
     let mut selected_tree: Option<EngineResult> = None;
     let mut selected_tree_total_cost = f32::INFINITY;
 
     for structure_group in structure_groups {
+        tracing::error!("structure_group iter start");
         let config = ProjectConfigBuilder::default()
             .add_blacklists(vec![4051, 4246, 4247, 4312])
             .add_blueprint_overwrites(blueprint_overwrites.clone())
@@ -113,13 +120,14 @@ pub async fn cost_estimate(
                 continue;
             };
         }
+        tracing::error!("structure_group iter engine");
 
         let mut tree = engine;
         let tree = tree
             .apply_bonus()
             .add_stocks(&project_data.stocks)
             .finalize();
-        tree.write_debug_file();
+        tracing::error!("structure_group iter tree");
 
         let total_cost = tree.total_cost();
 
@@ -127,6 +135,7 @@ pub async fn cost_estimate(
             selected_tree = Some(tree);
             selected_tree_total_cost = total_cost;
         }
+        tracing::error!("structure_group iter cost");
     }
 
     let (tree, stocks) = if let Some(x) = selected_tree {
@@ -140,6 +149,7 @@ pub async fn cost_estimate(
             excess_entries: Vec::new(),
         });
     };
+    tracing::error!("tree");
 
     let mut excess_entries = Vec::new();
     tree
@@ -161,6 +171,7 @@ pub async fn cost_estimate(
                 });
             }
         });
+    tracing::error!("excess");
 
     let mut stocks = stocks
         .into_iter()
@@ -168,6 +179,7 @@ pub async fn cost_estimate(
         .collect::<Vec<_>>();
     stocks.sort_by_key(|x| x.type_id);
     stocks.dedup();
+    tracing::error!("stocks");
 
     let materials_required = tree
         .iter()
@@ -179,6 +191,7 @@ pub async fn cost_estimate(
             )
         })
         .collect::<HashMap<_, _>>();
+    tracing::error!("material");
 
     // Find markets that can support the required amount
     let mut viable_markets: HashMap<i32, MarketPrice> = HashMap::new();
@@ -213,6 +226,7 @@ pub async fn cost_estimate(
                 }
             )
             .collect::<Vec<_>>();
+        tracing::error!("prices");
 
         // Group all prices by the structure_id and type_id
         let mut grouped_by_station = HashMap::new();
@@ -265,6 +279,7 @@ pub async fn cost_estimate(
             }
         }
     }
+    tracing::error!("materials required");
 
     let manufacturing_cost_total: f32 = tree
         .iter()
@@ -299,6 +314,7 @@ pub async fn cost_estimate(
         })
         .collect::<Vec<_>>();
 
+    tracing::error!("done");
     Ok(CostEstimateResponse {
         manufacturing_cost_total,
         market_cost_total,

@@ -76,7 +76,7 @@ async fn add_check_if_not_exists(
 
     if !tasks {
         sqlx::query!("
-                INSERT INTO event_queue
+                INSERT INTO event_queue (task)
                 VALUES($1)
             ",
                 task as _,

@@ -7,6 +7,7 @@ pub async fn task(
     task: &mut Task,
     pool: &PgPool,
 ) -> Result<()> {
+    dbg!("a");
     match character_blueprints(pool).await {
         Ok(new_entries) => {
             if new_entries > 0 {
@@ -16,6 +17,7 @@ pub async fn task(
         Err(e) => task.add_error(e.to_string()),
     };
 
+    dbg!("b");
     match corporation_blueprints(pool).await {
         Ok(new_entries) => {
             if new_entries > 0 {
