@@ -33,7 +33,7 @@ jobs:
       - name: Trivy API
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{vars.DOCKER_REPO}}/starfoundry/api:${{ env.COMMIT_SHORT_SHA }}'
+          image-ref: '${{vars.DOCKER_REPO}}/starfoundry/api:latest'
           format: 'sarif'
           template: '@/contrib/sarif.tpl'
           output: 'trivy-results-api.sarif'
@@ -41,7 +41,7 @@ jobs:
       - name: Trivy Database Upgrade
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{vars.DOCKER_REPO}}/starfoundry/database-upgrade:${{ env.COMMIT_SHORT_SHA }}'
+          image-ref: '${{vars.DOCKER_REPO}}/starfoundry/database-upgrade:latest'
           format: 'sarif'
           template: '@/contrib/sarif.tpl'
           output: 'trivy-results-database-upgrade.sarif'
@@ -49,7 +49,7 @@ jobs:
       - name: Trivy Event Worker
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{vars.DOCKER_REPO}}/starfoundry/event-worker:${{ env.COMMIT_SHORT_SHA }}'
+          image-ref: '${{vars.DOCKER_REPO}}/starfoundry/event-worker:latest'
           format: 'sarif'
           template: '@/contrib/sarif.tpl'
           output: 'trivy-results-event-worker.sarif'
@@ -57,7 +57,7 @@ jobs:
       - name: Trivy Web
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{vars.DOCKER_REPO}}/starfoundry/web:${{ env.COMMIT_SHORT_SHA }}'
+          image-ref: '${{vars.DOCKER_REPO}}/starfoundry/web:latest'
           format: 'sarif'
           template: '@/contrib/sarif.tpl'
           output: 'trivy-results-web.sarif'
@@ -65,7 +65,7 @@ jobs:
       - name: Trivy Meta Web
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{vars.DOCKER_REPO}}/starfoundry/meta-webserver:${{ env.COMMIT_SHORT_SHA }}'
+          image-ref: '${{vars.DOCKER_REPO}}/starfoundry/meta-webserver:latest'
           format: 'sarif'
           template: '@/contrib/sarif.tpl'
           output: 'trivy-results-meta-webserver.sarif'
