@@ -47,6 +47,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         pool,
     };
 
+    tracing::info!("Starting app server on {}", config.app_address.local_addr().unwrap());
+    tracing::info!("Starting service server on {}", config.service_address.local_addr().unwrap());
+
     select! {
         r = axum::serve(config.app_address, app(shared_state.clone())) => {
             if r.is_err() {

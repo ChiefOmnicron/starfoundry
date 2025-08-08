@@ -15,7 +15,7 @@ use crate::auth::error::{AuthError, Result};
 /// ---
 /// 
 /// Logs in a new main character.
-/// For alt characters or corporations the endpoints `/login/alt` or `/login/corporation` should be used
+/// For alt characters or corporations the endpoints `/login/character` or `/login/corporation` should be used
 /// 
 /// Upon a successful authentication, it will return a JWT-Token and a Refresh-Token.
 /// The JWT-Token shall not be saved locally, and should stay in memory.
