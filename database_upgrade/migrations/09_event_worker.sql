@@ -112,6 +112,7 @@ CREATE TABLE IF NOT EXISTS event_queue (
 
     PRIMARY KEY (id)
 );
+CREATE INDEX IF NOT EXISTS event_queue_event ON event_queue (task);
 
 CREATE TABLE IF NOT EXISTS event_worker (
     id             UUID      NOT NULL DEFAULT gen_random_uuid(),
