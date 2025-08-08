@@ -50,7 +50,6 @@ use crate::structure::list::filter::StructureFilter;
         ("api_key" = [])
     ),
 )]
-#[axum::debug_handler]
 pub async fn api(
     State(state):              State<AppState>,
     ExtractIdentity(identity): ExtractIdentity,

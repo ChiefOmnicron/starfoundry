@@ -22,6 +22,7 @@ members = [
   'libs/notification',
   'libs/structures',
   'libs/types',
+  'service_auth',
 ]
 resolver = "2"
 
