@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      #- rewrite
 
 env:
   AWS_REGION: eu-central-1

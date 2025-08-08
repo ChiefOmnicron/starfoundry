@@ -22,7 +22,7 @@ members = [
   'libs/notification',
   'libs/structures',
   'libs/types',
-  'service_auth',
+  'service_eve_api',
 ]
 resolver = "2"
 

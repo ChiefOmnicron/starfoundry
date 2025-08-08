@@ -39,6 +39,7 @@ use crate::auth::error::{AuthError, Result};
 pub async fn login(
     State(state): State<AppState>,
 ) -> Result<impl IntoResponse> {
+    dbg!("old");
     let pool = state.pool.clone();
 
     let token = sqlx::query!("

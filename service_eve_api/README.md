@@ -1,4 +1,6 @@
-# Auth
+# EVE API Wrapper
+
+Handles the auth side and wrapping the EVE-API for all services within the StarFoundry eco system.
 
 ## Vision
 - Login from all StarFoundry Services
@@ -13,6 +15,7 @@
 - Config file
   - Domain
   - Admins
+  - Whitelist
   - Scopes
 - Contain redirect link
 - Validate that a Domain is actually allowed to login
@@ -25,18 +28,45 @@
 - Properly validate EVE token
 - Properly validate our own JWT token
 
-## Environment
+## Configuration
 
-### APP_ADDRESS
-**Parameter**: `STARFOUNDRY_AUTH_APP_ADDRESS`
+The services uses a mix of environment variables and a config file.
+
+### Environment
+
+#### APP_ADDRESS
+**Parameter**: `STARFOUNDRY_EVE_APP_ADDRESS`
 
 **Default**: `0.0.0.0:8080`
 
 **Description**: Sets the address the app server should listen to
 
-### SERVICE_ADDRESS
-**Parameter**: `STARFOUNDRY_AUTH_SERVICE_ADDRESS`
+#### SERVICE_ADDRESS
+**Parameter**: `STARFOUNDRY_EVE_SERVICE_ADDRESS`
 
 **Default**: `0.0.0.0:8081`
 
 **Description**: Sets the address the healthcheck and metrics listen to
+
+# TODO:
+# EveClient ENVs
+
+## STARFOUNDRY_EVE_CLIENT_API_URL
+
+Default: https://esi.evetech.net
+
+## STARFOUNDRY_EVE_CLIENT_OAUTH_AUTHORIZATION_URL
+
+Default: https://login.eveonline.com/v2/oauth/authorize
+
+## STARFOUNDRY_EVE_CLIENT_OAUTH_JWT_KEYS_URL
+
+Default: https://login.eveonline.com/oauth/jwks
+
+## STARFOUNDRY_EVE_CLIENT_OAUTH_TOKEN_URL
+
+Default: https://login.eveonline.com/v2/oauth/token
+
+## STARFOUNDRY_EVE_USER_AGENT
+
+Default: StarFoundry

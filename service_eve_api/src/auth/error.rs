@@ -4,6 +4,7 @@ use axum::http::StatusCode;
 
 use crate::api_docs::ErrorResponse;
 use axum::Json;
+use crate::client::EveApiError;
 
 pub type Result<T, E = AuthError> = std::result::Result<T, E>;
 
@@ -28,10 +29,8 @@ pub enum AuthError {
     UpdateLogin(sqlx::Error),
 
     #[error("error performing eve api call, error: '{0}'")]
-    EveApiError(starfoundry_libs_eve_api::Error),
+    EveApiError(EveApiError),
 
-    #[error("missing env 'SECRET_KEY'")]
-    MissingEnvSecretKey,
     #[error("error decoding jwt, error '{0}'")]
     JsonWebTokenDecode(jsonwebtoken::errors::Error),
     #[error("error encoding jwt, error '{0}'")]

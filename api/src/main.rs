@@ -72,7 +72,7 @@ fn app(
 
     // build our application with a route
     let (router, api) = OpenApiRouter::with_openapi(ApiDoc::openapi())
-        .nest("/auth", auth::routes())
+        //.nest("/auth", auth::routes())
         .nest("/project-groups", project_group::routes(state.clone()))
         .nest("/structures", structure::routes(state.clone()))
         .layer(

@@ -1,15 +1,15 @@
 use axum::extract::{Query, State};
 use axum::http::header::{LOCATION, SET_COOKIE};
 use axum::http::StatusCode;
-use axum::response::{IntoResponse, Redirect};
-use starfoundry_libs_eve_api::EveApiClient;
+use axum::response::IntoResponse;
 use std::collections::HashMap;
 use std::str::FromStr;
 use uuid::Uuid;
 
 use crate::api_docs::{BadRequest, InternalServerError};
 use crate::AppState;
-use crate::auth::error::AuthError;
+use crate::auth::error::{AuthError, Result};
+use crate::client::EveApiClient;
 
 const QUERY_PARAM_CODE: &str = "code";
 const QUERY_PARAM_STATE: &str = "state";
@@ -47,8 +47,8 @@ const QUERY_PARAM_STATE: &str = "state";
 pub async fn callback(
     State(state):        State<AppState>,
     Query(query_params): Query<HashMap<String, String>>,
-) -> impl IntoResponse {
-    let pool = state.pool.clone();
+) -> Result<impl IntoResponse> {
+    let pool = state.postgres.clone();
 
     let code = query_params
         .get(QUERY_PARAM_CODE)
@@ -59,21 +59,11 @@ pub async fn callback(
     let state_param = Uuid::from_str(&state_param)
         .map_err(|_| AuthError::InvalidEveLoginResponse)?;
 
-    let token = EveApiClient::access_token(code)
-        .await
-        .map_err(AuthError::EveApiError)?;
-
-    if !token.validate() {
-        return Err(AuthError::InvalidEveJwtToken);
-    }
-
-    let character_id = token
-        .character_id()
-        .map_err(AuthError::EveApiError)?;
-
+    // fetch the state_param, it should match the token we inserted earlier
+    // if it's not their, it's either a wrong request or the login window expired
     let login_attempt = sqlx::query!("
-            SELECT token, credential_type
-            FROM   credential
+            SELECT credential_type
+            FROM   login_attempt
             WHERE  token = $1
         ",
             state_param,
@@ -81,6 +71,31 @@ pub async fn callback(
         .fetch_one(&pool)
         .await
         .map_err(AuthError::GetTokenError)?;
+
+    let token = EveApiClient::access_token(
+            state.eve_api.client_id.clone(),
+            state.eve_api.secret_key.clone(),
+            state.eve_api.urls.oauth_token.clone(),
+            code
+        )
+        .await
+        .map_err(AuthError::EveApiError)?;
+
+    let claims = if let Ok(x) = token.validate(
+        state.eve_api.urls.oauth_jwt_keys.clone(),
+        state.eve_api.client_id.clone(),
+    ).await {
+        x
+    } else {
+        return Ok((
+            StatusCode::BAD_REQUEST,
+        ).into_response());
+    };
+    dbg!(&claims);
+
+    let character_id = token
+        .character_id()
+        .map_err(AuthError::EveApiError)?;
 
     if login_attempt.credential_type == "CORPORATION" {
         let corporation_id = sqlx::query!("
@@ -137,6 +152,7 @@ pub async fn callback(
         .unwrap();
 
     let eve_client = EveApiClient::new_with_refresh_token(
+            state.eve_api.clone(),
             character_id,
             character_info.corporation_id,
             token.refresh_token.clone(),
@@ -225,6 +241,8 @@ pub async fn callback(
         .execute(&pool)
         .await
         .unwrap();
+
+    let redirect: String = "https://industry.dev.starfoundry.space".into();
 
     Ok((
         StatusCode::TEMPORARY_REDIRECT,

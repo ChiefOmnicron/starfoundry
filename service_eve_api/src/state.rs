@@ -2,10 +2,17 @@ use axum::extract::{FromRef, FromRequestParts};
 use axum::http::request::Parts;
 use sqlx::PgPool;
 use std::convert::Infallible;
+use std::sync::Arc;
+use std::collections::HashMap;
+
+use crate::client::ConfigEveApi;
+use crate::config::ConfigFileDomain;
 
 #[derive(Clone)]
 pub struct AppState {
-    pub pool: PgPool,
+    pub postgres:       PgPool,
+    pub auth_domains:   Arc<HashMap<String, ConfigFileDomain>>,
+    pub eve_api:        Arc<ConfigEveApi>,
 }
 
 impl<S> FromRequestParts<S> for AppState

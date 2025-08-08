@@ -20,24 +20,24 @@ CREATE TABLE IF NOT EXISTS credential (
 CREATE INDEX IF NOT EXISTS credential_character_main ON credential (character_main);
 
 -- contains all characters that successfully logged in
-CREATE TABLE IF NOT EXISTS character (
-    id                      UUID        NOT NULL DEFAULT gen_random_uuid(),
-
-    character_id            INTEGER     NOT NULL,
-    corporation_id          INTEGER     NOT NULL,
-
-    character_name          VARCHAR(50) NOT NULL,
-    corporation_name        VARCHAR(50) NOT NULL,
-
-    alliance_id             INTEGER,
-    alliance_name           VARCHAR(50),
-
-    created_at              TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at              TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-
-    PRIMARY KEY (character_id)
-);
-CREATE UNIQUE INDEX IF NOT EXISTS character_id ON character (id);
+--CREATE TABLE IF NOT EXISTS character (
+--    id                      UUID        NOT NULL DEFAULT gen_random_uuid(),
+--
+--    character_id            INTEGER     NOT NULL,
+--    corporation_id          INTEGER     NOT NULL,
+--
+--    character_name          VARCHAR(50) NOT NULL,
+--    corporation_name        VARCHAR(50) NOT NULL,
+--
+--    alliance_id             INTEGER,
+--    alliance_name           VARCHAR(50),
+--
+--    created_at              TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+--    updated_at              TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+--
+--    PRIMARY KEY (character_id)
+--);
+--CREATE UNIQUE INDEX IF NOT EXISTS character_id ON character (id);
 
 -- default user, used for API calls that do not need an authenticated user
 --

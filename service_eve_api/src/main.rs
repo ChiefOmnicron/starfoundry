@@ -1,5 +1,6 @@
 mod api_docs;
-//mod auth;
+mod auth;
+mod client;
 mod config;
 mod healthcheck;
 mod metrics;
@@ -9,6 +10,7 @@ pub use self::state::*;
 
 use axum::{middleware, Router};
 use sqlx::postgres::PgPoolOptions;
+use std::sync::Arc;
 use tokio::select;
 use tower_http::compression::CompressionLayer;
 use tower_http::decompression::RequestDecompressionLayer;
@@ -39,13 +41,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let config = Config::load().await?;
 
-    let pool = PgPoolOptions::new()
-        .connect(&config.database_url)
+    let postgres = PgPoolOptions::new()
+        .connect(&config.database_uri)
         .await?;
+    sqlx::migrate!().run(&postgres).await?;
 
     let shared_state = AppState {
-        pool,
+        postgres,
+        auth_domains: Arc::new(config.domains),
+        eve_api:      Arc::new(config.eve_config),
     };
+
+    tracing::info!("Starting app server on {}", config.app_address.local_addr().unwrap());
+    tracing::info!("Starting service server on {}", config.service_address.local_addr().unwrap());
 
     select! {
         r = axum::serve(config.app_address, app(shared_state.clone())) => {
@@ -68,7 +76,7 @@ fn app(
 ) -> Router {
     // build our application with a route
     let (router, api) = OpenApiRouter::with_openapi(ApiDoc::openapi())
-        //.nest("/auth", auth::routes())
+        .nest("/auth", auth::routes())
         .layer(
             ServiceBuilder::new()
                 .layer(middleware::from_fn(path_metrics))
