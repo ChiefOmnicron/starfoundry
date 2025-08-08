@@ -123,7 +123,7 @@ async fn validate_market_region(
                 (additional_data ->> 'region_id')::INTEGER AS region_id
             FROM event_queue
             WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
-            AND task = 'MARKET_LATEST_NPC'
+            AND task = 'MARKET_LATEST_REGION'
         ")
         .fetch_all(pool)
         .await
