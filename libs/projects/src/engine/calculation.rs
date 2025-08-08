@@ -292,12 +292,14 @@ impl CalculationEngine {
     /// Writes the current state of the tree to disk
     /// 
     #[allow(unused)]
+    #[cfg(debug_assertions)]
     pub fn write_debug_file(&mut self) -> &mut Self {
         self.write_debug_file_named("DependencyTreeDebug.json");
         self
     }
 
     #[allow(unused)]
+    #[cfg(debug_assertions)]
     pub fn write_debug_file_named(
         &mut self,
         name: &str,
@@ -675,7 +677,7 @@ impl CalculationEngine {
                 .collect::<Vec<_>>();
 
             // Grab the actual structures
-            let structures = if !structure_ids.is_empty() {
+            let structures = if structure_ids.len() > 0 {
                 structures_clone
                     .iter()
                     .filter(|x| structure_ids.contains(&x.id))
@@ -684,16 +686,12 @@ impl CalculationEngine {
                 continue;
             };
 
-            if structures.is_empty() {
-                continue;
-            }
-
             // Find the structure with the best ME bonus and the lowest system bonus
             let mut selected_structure = None;
             let mut total_me = 0f32;
             let mut selected_system_cost = f32::INFINITY;
             for structure in structures {
-                if blueprint.typ == BlueprintTyp::Reaction {
+                /*if blueprint.typ == BlueprintTyp::Reaction {
                     // TODO: more precise decision
                     if !(structure.services.contains(&45539.into()) ||
                         structure.services.contains(&45537.into()) ||
@@ -714,7 +712,7 @@ impl CalculationEngine {
                     } else if !structure.services.contains(&35878.into()) {
                         continue;
                     }
-                }
+                }*/
 
                 if blueprint.item.group_id == 485.into() ||
                     blueprint.item.group_id == 547.into() ||
@@ -803,15 +801,19 @@ impl CalculationEngine {
                 )
                 .map(|x| (x.material, x.time));
 
-            if let Some((Some(me), Some(te))) = rig {
-                self.apply_me_bonus(
-                    blueprint.product_type_id,
-                    me,
-                );
-                self.apply_te_bonus(
-                    blueprint.product_type_id,
-                    te,
-                );
+            if let Some((me, te)) = rig {
+                if let Some(me) = me {
+                    self.apply_me_bonus(
+                        blueprint.product_type_id,
+                        me,
+                    );
+                }
+                if let Some(te) = te {
+                    self.apply_te_bonus(
+                        blueprint.product_type_id,
+                        te,
+                    );
+                }
                 self.partial_calculation(blueprint.product_type_id);
             }
 
