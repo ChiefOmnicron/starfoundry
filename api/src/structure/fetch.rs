@@ -52,7 +52,6 @@ use crate::structure::StructureUuid;
     ),
 )]
 // TODO: check that the user can access the structure
-#[axum::debug_handler]
 pub async fn api(
     State(state):         State<AppState>,
     Path(structure_uuid): Path<StructureUuid>,
