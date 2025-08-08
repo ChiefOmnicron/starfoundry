@@ -19,7 +19,6 @@ pub fn job_detection(
     used_ids:        &mut Vec<Uuid>,
     used_job_ids:    &mut Vec<JobId>,
 ) -> (HashMap<Uuid, Vec<UpdateJobRequest>>, Vec<IndustryJobEntry>) {
-    tracing::info!("container names {:?}", &container_names);
     let now = chrono::Utc::now().naive_utc();
 
     // List of entries that need to be updated
@@ -103,11 +102,9 @@ pub fn job_detection(
                 used_ids.push(job.id);
                 used_job_ids.push(entry.job_id);
             } else {
-                tracing::info!("found container, but no matching job {}", container);
                 unmatched_jobs.push(entry);
             }
         } else {
-            tracing::info!("didn't found a container {}", entry.output_location_id);
             unmatched_jobs.push(entry);
         }
     }
