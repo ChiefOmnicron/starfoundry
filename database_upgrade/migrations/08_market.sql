@@ -37,5 +37,6 @@ CREATE TABLE IF NOT EXISTS market_order_latest (
     -- Date the order expires naturally
     expires    TIMESTAMP NOT NULL
 );
-CREATE INDEX IF NOT EXISTS market_order_latest ON market_order_latest(type_id);
+CREATE INDEX IF NOT EXISTS market_order_type_id ON market_order_latest(type_id);
+CREATE INDEX IF NOT EXISTS market_order_structure_id ON market_order_latest(structure_id);
 CREATE UNIQUE INDEX IF NOT EXISTS market_order_latest_orderid ON market_order_latest(order_id);
