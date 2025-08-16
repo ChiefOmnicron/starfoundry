@@ -157,6 +157,7 @@ impl Default for ProjectConfigBuilder {
 /// 
 fn default_blueprint_overwrites() -> HashMap<TypeId, BlueprintBonus> {
     vec![
+        // TODO: fetch them from the database
         // Zirnitra
         (52907.into(), BlueprintBonus::no_bonus(52907.into())),
         // Capital Ultratidal Entropic Unit
