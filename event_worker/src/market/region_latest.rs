@@ -92,9 +92,9 @@ pub async fn task(
 
     sqlx::query!("
             DELETE FROM market_order_latest
-            WHERE
-                region_id = $1 AND
-                structure_id = 0
+            WHERE region_id = $1
+            AND structure_id = 0
+            AND expires < NOW()
         ",
             *additional_data.region_id
         )
@@ -125,7 +125,10 @@ pub async fn task(
                 $7::BOOLEAN[]
             )
             ON CONFLICT (order_id)
-            DO UPDATE SET remaining = EXCLUDED.remaining
+            DO UPDATE SET
+                remaining = EXCLUDED.remaining,
+                expires = EXCLUDED.expires,
+                price = EXCLUDED.price
         ",
             *additional_data.region_id,
             &order_ids,
