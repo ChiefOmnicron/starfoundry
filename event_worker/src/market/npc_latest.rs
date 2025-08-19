@@ -1,11 +1,12 @@
-use chrono::Days;
 use serde::Deserialize;
 use sqlx::PgPool;
 use starfoundry_libs_eve_api::Credentials;
 use starfoundry_libs_types::{CharacterId, RegionId, StationId};
 
 use crate::error::{Error, Result};
+use crate::market::insert::insert_structure_market;
 use crate::task::Task;
+use crate::utils::additional_data;
 
 #[derive(Debug, Deserialize)]
 struct AdditionalData {
@@ -18,17 +19,7 @@ pub async fn task(
     pool:        &PgPool,
     credentials: &Credentials,
 ) -> Result<()> {
-    // grab the additional data
-    let additional_data = if let Some(x) = task.additional_data::<AdditionalData>() {
-        x
-    } else {
-        tracing::error!(
-            "additional data was empty, but was expected to be filled, task: {:?}",
-            task.task
-        );
-        task.add_error("additional data was empty");
-        return Err(Error::NoOp);
-    };
+    let additional_data = additional_data::<AdditionalData>(task)?;
 
     let client = if let Some(client) = crate::utils::eve_api_client(
             credentials.clone(),
@@ -43,7 +34,7 @@ pub async fn task(
         return Ok(())
     };
 
-    let mut entries = match client
+    let entries = match client
         .market_by_region(&additional_data.region_id.into())
         .await
         .map_err(|e| Error::ApiError(e)) {
@@ -54,7 +45,14 @@ pub async fn task(
             }
         };
 
-    let mut order_ids  = Vec::new();
+    insert_structure_market(
+        pool,
+        additional_data.structure_id,
+        additional_data.region_id,
+        entries
+    ).await?;
+
+    /*let mut order_ids  = Vec::new();
     let mut type_id    = Vec::new();
     let mut price      = Vec::new();
     let mut remaining  = Vec::new();
@@ -141,7 +139,7 @@ pub async fn task(
     transaction
         .commit()
         .await
-        .map_err(Error::CommitTransaction)?;
+        .map_err(Error::CommitTransaction)?;*/
 
     Ok(())
 }

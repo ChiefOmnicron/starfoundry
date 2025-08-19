@@ -104,6 +104,8 @@ pub enum Error {
 
     #[error("sde error {0}")]
     SdeError(starfoundry_libs_eve_sde_parser::Error),
+    #[error("general sqlx error: {0}")]
+    GenericSqlxError(sqlx::Error),
 
     // stock
     #[error("error whilw fetching blueprint stocks, error: '{0}'")]

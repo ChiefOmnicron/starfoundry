@@ -7,6 +7,7 @@ use std::collections::HashMap;
 use crate::error::{Error, Result};
 use crate::industry::utils::{fetch_ignored_jobs, resolve_container_names};
 use crate::task::Task;
+use crate::utils::additional_data;
 use super::job_detection::job_detection;
 use super::utils::{cleanup_delivered_jobs, fetch_done_job_ids, fetch_startable_jobs, insert_job_detection_log, resolve_main_character_from_corporation, update_finished_jobs, update_industry_jobs};
 
@@ -20,17 +21,7 @@ pub async fn task(
     pool:        &PgPool,
     credentials: &Credentials
 ) -> Result<()> {
-    // grab the additional data
-    let additional_data = if let Some(x) = task.additional_data::<AdditionalData>() {
-        x
-    } else {
-        tracing::error!(
-            "additional data was empty, but was expected to be filled, task: {:?}",
-            task.task
-        );
-        task.add_error("additional data was empty");
-        return Err(Error::NoOp);
-    };
+    let additional_data = additional_data::<AdditionalData>(task)?;
 
     //if let Err(e) = cleanup_delivered_jobs(pool, *additional_data.corporation_id).await {
     //    tracing::warn!("{}", e);

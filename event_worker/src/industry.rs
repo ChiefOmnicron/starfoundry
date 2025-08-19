@@ -11,16 +11,6 @@ pub mod job_corporation;
 mod job_detection;
 mod utils;
 
-#[derive(Debug, Clone, sqlx::Type)]
-#[sqlx(type_name = "PROJECT_STATUS")]
-#[sqlx(rename_all = "SCREAMING_SNAKE_CASE")]
-pub enum JobDetectionChange {
-    /// the job was started
-    Building,
-    /// a job is now done
-    Done,
-}
-
 #[derive(Clone, Debug)]
 struct StartableIndustryJobs {
     pub project_name: String,

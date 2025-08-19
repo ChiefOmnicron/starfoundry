@@ -6,6 +6,7 @@ use starfoundry_libs_types::{CharacterId, RegionId, StationId};
 
 use crate::error::{Error, Result};
 use crate::task::Task;
+use crate::utils::additional_data;
 
 #[derive(Debug, Deserialize)]
 struct AdditionalData {
@@ -17,17 +18,7 @@ pub async fn task(
     pool:        &PgPool,
     credentials: &Credentials,
 ) -> Result<()> {
-    // grab the additional data
-    let additional_data = if let Some(x) = task.additional_data::<AdditionalData>() {
-        x
-    } else {
-        tracing::error!(
-            "additional data was empty, but was expected to be filled, task: {:?}",
-            task.task
-        );
-        task.add_error("additional data was empty");
-        return Err(Error::NoOp);
-    };
+    let additional_data = additional_data::<AdditionalData>(task)?;
 
     let client = if let Some(client) = crate::utils::eve_api_client(
             credentials.clone(),

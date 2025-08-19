@@ -1,70 +1,29 @@
-use serde::Deserialize;
+use chrono::Days;
 use sqlx::PgPool;
-use starfoundry_libs_eve_api::Credentials;
-use starfoundry_libs_types::{CharacterId, RegionId, StationId};
+use starfoundry_libs_eve_api::Market;
+use starfoundry_libs_types::{RegionId, StationId};
 
 use crate::error::{Error, Result};
-use crate::market::insert::insert_structure_market;
-use crate::task::Task;
-use crate::utils::additional_data;
 
-#[derive(Debug, Deserialize)]
-struct AdditionalData {
+pub async fn insert_structure_market(
+    pool:         &PgPool,
     structure_id: StationId,
     region_id:    RegionId,
-    owner_id:     CharacterId,
-}
-
-pub async fn task(
-    task:        &mut Task,
-    pool:        &PgPool,
-    credentials: &Credentials,
+    entries:      Vec<Market>,
 ) -> Result<()> {
-    let additional_data = additional_data::<AdditionalData>(task)?;
+    let mut entries = entries;
+    entries.sort_by(|a, b| a.order_id.cmp(&b.order_id));
+    entries.dedup_by_key(|x| x.order_id);
 
-    let client = if let Some(client) = crate::utils::eve_api_client(
-            credentials.clone(),
-            additional_data.owner_id,
-        )
-        .await {
-        client
-    } else {
-        // The client with CharacterId 0 will always be there, as we add him
-        // when initializing the credential cache
-        task.add_error("no default credentials");
-        return Ok(())
-    };
-
-    let entries = match client
-        .market_by_structure(&additional_data.structure_id.into())
-        .await
-        .map_err(|e| Error::ApiError(e)) {
-            Ok(x) => x,
-            Err(e) => {
-                task.add_error(e.to_string());
-                return Err(Error::NoOp);
-            }
-        };
-
-    insert_structure_market(
-        pool,
-        additional_data.structure_id,
-        additional_data.region_id,
-        entries
-    ).await?;
-
-    /*let mut order_ids  = Vec::new();
+    let mut order_ids  = Vec::new();
     let mut type_id    = Vec::new();
     let mut price      = Vec::new();
     let mut remaining  = Vec::new();
     let mut expires    = Vec::new();
     let mut is_buy     = Vec::new();
 
-    entries.sort_by(|a, b| a.order_id.cmp(&b.order_id));
-    entries.dedup_by_key(|x| x.order_id);
-
     for entry in entries {
-        if *entry.location_id != *additional_data.structure_id {
+        if *entry.location_id != *structure_id {
             continue;
         }
 
@@ -88,13 +47,12 @@ pub async fn task(
     sqlx::query!("
             DELETE FROM market_order_latest
             WHERE structure_id = $1
-            AND expires < NOW()
         ",
-            *additional_data.structure_id
+            *structure_id
         )
         .execute(&mut *transaction)
         .await
-        .map_err(|e| Error::DeleteLatestOrders(e, additional_data.structure_id))?;
+        .map_err(|e| Error::DeleteLatestOrders(e, structure_id))?;
 
     sqlx::query!("
             INSERT INTO market_order_latest
@@ -123,8 +81,8 @@ pub async fn task(
                 expires = EXCLUDED.expires,
                 price = EXCLUDED.price
         ",
-            *additional_data.structure_id,
-            *additional_data.region_id,
+            *structure_id,
+            *region_id,
             &order_ids,
 
             &type_id,
@@ -135,12 +93,18 @@ pub async fn task(
         )
         .execute(&mut *transaction)
         .await
-        .map_err(|e| Error::InsertLatestOrders(e, additional_data.structure_id))?;
+        .map_err(|e| Error::InsertLatestOrders(e, structure_id))?;
 
     transaction
         .commit()
         .await
-        .map_err(Error::CommitTransaction)?;*/
+        .map_err(Error::CommitTransaction)?;
+
+    // run the analyzer to optimize queries
+    sqlx::query!("ANALYZE market_order_latest")
+        .execute(pool)
+        .await
+        .map_err(Error::GenericSqlxError)?;
 
     Ok(())
 }
