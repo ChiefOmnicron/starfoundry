@@ -1,5 +1,5 @@
 use sqlx::PgPool;
-use starfoundry_libs_appraisal::AppraisalEntry;
+use starfoundry_lib_appraisal::AppraisalEntry;
 
 use crate::{appraisal, Error, ProjectUuid, Result, UpdateStockPrice};
 use super::fetch;

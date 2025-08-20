@@ -1,6 +1,6 @@
 use sqlx::PgPool;
-use starfoundry_libs_appraisal::AppraisalEntry;
-use starfoundry_libs_types::{CharacterId, TypeId};
+use starfoundry_lib_appraisal::AppraisalEntry;
+use starfoundry_lib_types::{CharacterId, TypeId};
 use std::collections::HashMap;
 
 use crate::{appraisal, group_structures, AddExcess, AppraisalList, BlueprintBonus, BlueprintTyp, CostEstimateConfiguration, CostEstimateResponse, Error, MarketPrice, Result};

@@ -1,0 +1,26 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT structure.id\n            FROM structure\n            JOIN system ON system.system_id = structure.system_id\n            WHERE\n                NOT (LOWER(structure.name) LIKE '%' || LOWER($2) || '%') IS FALSE AND\n                NOT (structure.system_id = $3) IS FALSE AND\n                NOT (structure.type_id = $4) IS FALSE AND\n                NOT ($5::INTEGER IS NULL OR $5::INTEGER = ANY(services)) IS FALSE AND\n                (owner = $1 OR owner = 0)\n                ORDER BY structure.name\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Text",
+        "Int4",
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "3e51d8d5ef4c527b959e0fb83718439a125b5d242b69f1e65f0009150b640f40"
+}

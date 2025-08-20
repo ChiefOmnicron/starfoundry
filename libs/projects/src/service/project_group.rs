@@ -1,9 +1,10 @@
 use sqlx::PgPool;
-use starfoundry_libs_types::CharacterId;
+use starfoundry_lib_types::CharacterId;
 
-use crate::{CreateProjectGroup, Error, ProjectGroup, ProjectGroupMember, ProjectGroupUuid, Result, UpdateProjectGroup, UpdateProjectGroupMember};
+use crate::{CreateProjectGroup, Error, ProjectGroup, ProjectGroupMember, ProjectGroupPermission, ProjectGroupPermissionCode, ProjectGroupUuid, Result, UpdateProjectGroup};
 use crate::group::{ProjectGroupDefault, ProjectGroupFilter};
 
+#[deprecated]
 pub struct ProjectGroupService(ProjectGroupUuid);
 
 impl ProjectGroupService {
@@ -13,6 +14,7 @@ impl ProjectGroupService {
         ProjectGroupService(project_uuid)
     }
 
+    #[deprecated]
     pub async fn assert_owner(
         &self,
         pool:         &PgPool,
@@ -48,17 +50,16 @@ impl ProjectGroupService {
                 FROM project_group pg
                 JOIN project_group_member pgm ON pgm.group_id = pg.id
                 WHERE pg.id = $1
+                AND pgm.character_id = $2
                 AND (
-                    pgm.character_id = $2 OR
-                    pg.owner = $2
-                )
-                AND (
-                    pgm.projects = 'WRITE' OR
-                    pgm.projects = 'READ'
+                    permission & $3 = $3 OR
+                    permission & $4 = $4
                 )
             ",
                 *self.0,
                 *character_id,
+                *ProjectGroupPermissionCode::Owner,
+                *ProjectGroupPermissionCode::ReadGroup,
             )
             .fetch_optional(pool)
             .await
@@ -75,20 +76,23 @@ impl ProjectGroupService {
         &self,
         pool:         &PgPool,
         character_id: CharacterId,
+        permission:   ProjectGroupPermissionCode,
     ) -> Result<()> {
         let result = sqlx::query!("
                 SELECT pg.id
                 FROM project_group pg
                 JOIN project_group_member pgm ON pgm.group_id = pg.id
                 WHERE pg.id = $1
+                AND pgm.character_id = $2
                 AND (
-                    pgm.character_id = $2 OR
-                    pg.owner = $2
+                    permission & $3 = $3 OR
+                    permission & $4 = $4
                 )
-                AND pgm.project_group = 'WRITE'
             ",
                 *self.0,
                 *character_id,
+                *ProjectGroupPermissionCode::Owner,
+                *permission,
             )
             .fetch_optional(pool)
             .await
@@ -104,7 +108,7 @@ impl ProjectGroupService {
     pub async fn assert_exists(
         &self,
         pool: &PgPool,
-    ) -> Result<()> {
+    ) -> Result<Option<()>> {
         let project = sqlx::query!("
                 SELECT id
                 FROM project_group
@@ -117,7 +121,7 @@ impl ProjectGroupService {
             .map_err(|e| Error::FetchGroup(e, self.0))?;
 
         if project.is_some() {
-            Ok(())
+            Ok(Some(()))
         } else {
             Err(Error::ProjectGroupNotFound(self.0))
         }
@@ -127,7 +131,7 @@ impl ProjectGroupService {
         pool:         &PgPool,
         character_id: CharacterId,
         filter:       ProjectGroupFilter,
-    ) -> Result<Vec<ProjectGroupUuid>> {
+    ) -> Result<Vec<ProjectGroup>> {
         crate::group::list(
             pool,
             character_id,
@@ -146,6 +150,7 @@ impl ProjectGroupService {
 
         crate::group::fetch(
             pool,
+            character_id,
             self.0,
         )
         .await
@@ -173,7 +178,11 @@ impl ProjectGroupService {
         requester_character_id: CharacterId,
     ) -> Result<()> {
         self.assert_exists(pool).await?;
-        self.assert_write_access(pool, character_id).await?;
+        self.assert_write_access(
+            pool,
+            character_id,
+            ProjectGroupPermissionCode::WriteMember,
+        ).await?;
 
         crate::group::accept_member(
             pool,
@@ -202,7 +211,11 @@ impl ProjectGroupService {
         character_id: CharacterId,
     ) -> Result<ProjectGroupUuid> {
         self.assert_exists(pool).await?;
-        self.assert_write_access(pool, character_id).await?;
+        self.assert_write_access(
+            pool,
+            character_id,
+            ProjectGroupPermissionCode::WriteGroup,
+        ).await?;
 
         crate::group::delete(
             pool,
@@ -218,7 +231,11 @@ impl ProjectGroupService {
         info:         UpdateProjectGroup,
     ) -> Result<()> {
         self.assert_exists(pool).await?;
-        self.assert_write_access(pool, character_id).await?;
+        self.assert_write_access(
+            pool,
+            character_id,
+            ProjectGroupPermissionCode::WriteGroup,
+        ).await?;
 
         crate::group::update(
             pool,
@@ -228,7 +245,7 @@ impl ProjectGroupService {
         .await
     }
 
-    pub async fn fetch_default(
+    pub async fn fetch_defaults(
         &self,
         pool:         &PgPool,
         character_id: CharacterId,
@@ -250,7 +267,11 @@ impl ProjectGroupService {
         defaults:     ProjectGroupDefault,
     ) -> Result<()> {
         self.assert_exists(pool).await?;
-        self.assert_write_access(pool, character_id).await?;
+        self.assert_write_access(
+            pool,
+            character_id,
+            ProjectGroupPermissionCode::WriteDefault,
+        ).await?;
 
         crate::group::update_default(
             pool,
@@ -275,17 +296,21 @@ impl ProjectGroupService {
         .await
     }
 
-    pub async fn update_member(
+    pub async fn update_member_permission(
         &self,
         pool:                &PgPool,
         character_id:        CharacterId,
         member_character_id: CharacterId,
-        permission:          UpdateProjectGroupMember,
+        permission:          ProjectGroupPermission,
     ) -> Result<()> {
         self.assert_exists(pool).await?;
-        self.assert_write_access(pool, character_id).await?;
+        self.assert_write_access(
+            pool,
+            character_id,
+            ProjectGroupPermissionCode::WriteMember,
+        ).await?;
 
-        crate::group::update_member(
+        crate::group::update_member_permission(
             pool,
             self.0,
             member_character_id,
@@ -301,7 +326,11 @@ impl ProjectGroupService {
         member_character_id: CharacterId
     ) -> Result<()> {
         self.assert_exists(pool).await?;
-        self.assert_write_access(pool, character_id).await?;
+        self.assert_write_access(
+            pool,
+            character_id,
+            ProjectGroupPermissionCode::WriteMember,
+        ).await?;
 
         crate::group::remove_member(
             pool,

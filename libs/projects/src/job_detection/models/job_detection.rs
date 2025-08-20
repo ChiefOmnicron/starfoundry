@@ -1,5 +1,5 @@
 use serde::Serialize;
-use starfoundry_libs_types::{JobId, TypeId};
+use starfoundry_lib_types::{JobId, TypeId};
 use utoipa::ToSchema;
 
 use crate::ProjectUuid;

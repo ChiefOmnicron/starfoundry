@@ -1,7 +1,7 @@
 use serde::Serialize;
-use starfoundry_libs_items::Item;
-use starfoundry_libs_structures::Structure;
-use starfoundry_libs_types::TypeId;
+use starfoundry_lib_items::Item;
+use starfoundry_lib_structures::Structure;
+use starfoundry_lib_types::TypeId;
 use std::collections::HashMap;
 
 use super::{Bonus, DependencyBuildCost};

@@ -1,6 +1,6 @@
 use serde::Serialize;
-use starfoundry_libs_structures::StructureUuid;
-use starfoundry_libs_types::{CategoryId, GroupId, TypeId};
+use starfoundry_lib_structures::StructureUuid;
+use starfoundry_lib_types::{CategoryId, GroupId, TypeId};
 use utoipa::ToSchema;
 use uuid::Uuid;
 

@@ -1,0 +1,111 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                structure.id,\n                structure.type_id,\n                structure.structure_id,\n                structure.name AS \"structure_name\",\n                structure.security AS \"security_group!: Security\",\n                structure.services,\n                structure.rigs,\n                system.*\n            FROM structure\n            JOIN system ON system.system_id = structure.system_id\n            WHERE\n                structure.id = $1\n                ORDER BY structure.name\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "type_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "structure_id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 3,
+        "name": "structure_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "security_group!: Security",
+        "type_info": {
+          "Custom": {
+            "name": "system_security",
+            "kind": {
+              "Enum": [
+                "NULLSEC",
+                "LOWSEC",
+                "HIGHSEC"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "services",
+        "type_info": "Int4Array"
+      },
+      {
+        "ordinal": 6,
+        "name": "rigs",
+        "type_info": "Int4Array"
+      },
+      {
+        "ordinal": 7,
+        "name": "region_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 8,
+        "name": "constellation_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 9,
+        "name": "system_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 10,
+        "name": "region_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 11,
+        "name": "constellation_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 12,
+        "name": "system_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 13,
+        "name": "security",
+        "type_info": "Float4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "e357060087c90c718ee31b663ad8c8522378ddd78194e0ca4220eca98af6bf7a"
+}

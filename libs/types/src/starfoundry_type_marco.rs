@@ -9,7 +9,7 @@
 ///
 #[macro_export]
 macro_rules! starfoundry_uuid {
-    ($name:ident) => {
+    ($name:ident, $name_str:tt) => {
         /// Uuid wrapper for tool specific ids. Mostly for type safety and
         /// code clarity
         #[derive(
@@ -19,7 +19,8 @@ macro_rules! starfoundry_uuid {
         #[derive(sqlx::Type, serde::Deserialize, serde::Serialize)]
         #[sqlx(transparent)]
         #[serde(transparent)]
-        #[derive(utoipa::ToSchema)]
+        #[derive(utoipa::ToSchema, utoipa::IntoParams)]
+        #[into_params(names($name_str))]
         #[schema(
             example = json!(uuid::Uuid::new_v4()),
             value_type = Uuid,

@@ -2,6 +2,7 @@ use sqlx::PgPool;
 
 use crate::{Error, ProjectGroupUuid, Result};
 
+#[deprecated]
 pub async fn delete(
     pool:     &PgPool,
     group_id: ProjectGroupUuid,
