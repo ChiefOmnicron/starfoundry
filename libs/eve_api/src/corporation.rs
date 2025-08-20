@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use starfoundry_libs_types::{AllianceId, CorporationId, ItemId, LocationId, TypeId};
+use starfoundry_lib_types::{AllianceId, CorporationId, ItemId, LocationId, TypeId};
 
 use crate::{AssetEntry, AssetName, Cache, Error, EveApiClient};
 

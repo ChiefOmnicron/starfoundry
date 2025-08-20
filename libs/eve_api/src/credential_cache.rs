@@ -1,5 +1,5 @@
 use sqlx::PgPool;
-use starfoundry_libs_types::CharacterId;
+use starfoundry_lib_types::CharacterId;
 use std::collections::HashMap;
 use std::time::{Instant, Duration};
 
@@ -52,11 +52,18 @@ impl CredentialCache {
     /// Clears the cache and reloads all credentials from the database
     pub async fn refresh(
         &mut self,
-        pool: &PgPool,
+        _pool: &PgPool,
     ) -> Result<(), Error> {
+        struct TmpCred {
+            character_id: i32,
+            corporation_id: i32,
+            refresh_token: Option<String>,
+        }
+
         self.0 = HashMap::new();
 
-        let credentials = sqlx::query!("
+        let credentials: Vec<TmpCred> = Vec::new();
+        /*let credentials = sqlx::query!("
                 SELECT
                     refresh_token,
                     c.character_id,
@@ -69,7 +76,7 @@ impl CredentialCache {
             ")
             .fetch_all(pool)
             .await
-            .unwrap();
+            .unwrap();*/
 
         for credential in credentials {
             let client = EveApiClient::new_with_refresh_token(
@@ -84,7 +91,8 @@ impl CredentialCache {
             );
         }
 
-        let credentials = sqlx::query!(r#"
+        let credentials: Vec<TmpCred> = Vec::new();
+        /*let credentials = sqlx::query!(r#"
                 SELECT
                     refresh_token,
                     character_id AS "character_id!"
@@ -95,7 +103,7 @@ impl CredentialCache {
             "#)
             .fetch_all(pool)
             .await
-            .unwrap();
+            .unwrap();*/
 
         for credential in credentials {
             let client = EveApiClient::new_with_refresh_token(

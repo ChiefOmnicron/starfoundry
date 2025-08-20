@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use starfoundry_libs_types::{SystemId, TypeId};
+use starfoundry_lib_types::{SystemId, TypeId};
 use utoipa::ToSchema;
 
 use crate::{Security, StructureType};

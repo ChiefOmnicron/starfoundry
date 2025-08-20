@@ -1,0 +1,52 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                character_id,\n                character_name,\n                corporation_id,\n                corporation_name,\n                alliance_id,\n                alliance_name\n            FROM character\n            WHERE character_id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "character_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "character_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "corporation_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "corporation_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "alliance_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "alliance_name",
+        "type_info": "Varchar"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      true
+    ]
+  },
+  "hash": "095b8f34b59a3bf3281920ab535b98029b6b3066df9be2b5bab255f4ed7de3b9"
+}

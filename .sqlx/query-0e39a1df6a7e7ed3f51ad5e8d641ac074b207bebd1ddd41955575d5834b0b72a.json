@@ -1,0 +1,154 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                structure.id,\n                structure.structure_id,\n                structure.name AS \"structure_name\",\n                structure.security AS \"security_group!: Security\",\n                structure.services,\n                structure.rigs,\n                system.*,\n                item.*\n            FROM structure\n            JOIN system ON system.system_id = structure.system_id\n            JOIN item ON item.type_id = structure.type_id\n            WHERE owner = $1\n            AND id = $2\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "structure_id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 2,
+        "name": "structure_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "security_group!: Security",
+        "type_info": {
+          "Custom": {
+            "name": "system_security",
+            "kind": {
+              "Enum": [
+                "NULLSEC",
+                "LOWSEC",
+                "HIGHSEC"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "services",
+        "type_info": "Int4Array"
+      },
+      {
+        "ordinal": 5,
+        "name": "rigs",
+        "type_info": "Int4Array"
+      },
+      {
+        "ordinal": 6,
+        "name": "region_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "constellation_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 8,
+        "name": "system_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 9,
+        "name": "region_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 10,
+        "name": "constellation_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 11,
+        "name": "system_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 12,
+        "name": "security",
+        "type_info": "Float4"
+      },
+      {
+        "ordinal": 13,
+        "name": "type_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 14,
+        "name": "category_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 15,
+        "name": "group_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 16,
+        "name": "meta_group_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 17,
+        "name": "base_price",
+        "type_info": "Float4"
+      },
+      {
+        "ordinal": 18,
+        "name": "volume",
+        "type_info": "Float4"
+      },
+      {
+        "ordinal": 19,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 20,
+        "name": "repackaged",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "0e39a1df6a7e7ed3f51ad5e8d641ac074b207bebd1ddd41955575d5834b0b72a"
+}

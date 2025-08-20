@@ -1,6 +1,6 @@
 use sqlx::PgPool;
-use starfoundry_libs_structures::{StructureGroupUuid, StructureService, StructureUuid};
-use starfoundry_libs_types::CharacterId;
+use starfoundry_lib_structures::{StructureGroupUuid, StructureService, StructureUuid};
+use starfoundry_lib_types::CharacterId;
 
 use crate::{Error, ProjectStructureGroup, Result, StructureMapping};
 
@@ -51,7 +51,7 @@ async fn structure_group(
 
         for structure_uuid in structure_uuids {
             let structure = StructureService::new(structure_uuid)
-                .fetch(pool, character_id)
+                .danger_no_permission_fetch(pool)
                 .await?
                 .ok_or_else(|| Error::StructureNotFound(structure_uuid))?;
 

@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                INSERT INTO eve_credential (\n                    character_id,\n                    refresh_token,\n                    character_main\n                ) VALUES ($1, $2, $3)\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Varchar",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "f6b0fb9893c921a49d40f145d82f3d8b0a0763c58870f243afe408bc0df0b5d5"
+}

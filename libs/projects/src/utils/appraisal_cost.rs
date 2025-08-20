@@ -1,7 +1,7 @@
 use serde::Deserialize;
-use starfoundry_libs_appraisal::{ExternalAppraisal, AppraisalEntry, JaniceAppraisal, Persistance};
-use starfoundry_libs_appraisal::internal::InternalAppraisal;
-use starfoundry_libs_types::TypeId;
+use starfoundry_lib_appraisal::{ExternalAppraisal, AppraisalEntry, JaniceAppraisal, Persistance};
+use starfoundry_lib_appraisal::internal::InternalAppraisal;
+use starfoundry_lib_types::TypeId;
 use std::collections::HashMap;
 use utoipa::ToSchema;
 

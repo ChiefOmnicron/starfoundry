@@ -1,6 +1,6 @@
 use reqwest::Client;
 use reqwest::header::{HeaderMap, HeaderValue};
-use starfoundry_libs_types::TypeId;
+use starfoundry_lib_types::TypeId;
 use std::collections::HashMap;
 
 use crate::{ExternalAppraisal, AppraisalEntry, Error, Persistance, Result};

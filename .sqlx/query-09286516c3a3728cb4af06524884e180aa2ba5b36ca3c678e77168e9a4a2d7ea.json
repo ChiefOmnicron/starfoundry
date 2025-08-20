@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE project_group_member\n            SET permission = $3\n            WHERE group_id = $1\n              AND character_id = $2\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "09286516c3a3728cb4af06524884e180aa2ba5b36ca3c678e77168e9a4a2d7ea"
+}
