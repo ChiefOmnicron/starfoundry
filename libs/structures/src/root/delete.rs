@@ -1,5 +1,5 @@
 use sqlx::PgPool;
-use starfoundry_libs_types::CharacterId;
+use starfoundry_lib_types::CharacterId;
 
 use crate::{Error, Result, StructureUuid};
 

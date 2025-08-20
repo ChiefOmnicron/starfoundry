@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use starfoundry_libs_types::TypeId;
+use starfoundry_lib_types::TypeId;
 use std::collections::HashMap;
 use std::fs::File;
 use std::path::Path;

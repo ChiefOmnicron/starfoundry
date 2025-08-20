@@ -1,0 +1,41 @@
+name: rust-tests
+
+on:
+  workflow_call:
+    inputs:
+      folder:
+        description: 'Folder to a rust project that should be tested'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  dependencies:
+    name: dependencies
+    runs-on: [self-hosted, linux]
+    steps:
+      - uses: actions/checkout@master
+      - name: Install dependencies
+        run: |
+          cd ${{ inputs.folder }}
+          npm install
+
+  test:
+    name: tests
+    runs-on: [self-hosted, linux]
+    needs: [dependencies]
+    steps:
+      - uses: actions/checkout@master
+      - name: Run tests
+        run: |
+          docker run \
+            -v ${PWD}/${{ inputs.folder }}:/webapp \
+            -w /webapp \
+            --user ${shell id -u} \
+            --rm \
+            --entrypoint cypress \
+            cypress/included:15.1.0 \
+            run --component --browser chrome

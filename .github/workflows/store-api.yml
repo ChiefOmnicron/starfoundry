@@ -1,0 +1,40 @@
+name: store-api
+
+on:
+  push:
+    branches:
+      - main
+      - rewrite
+    paths:
+      - store/**
+      - eve-gateway_lib/**
+  pull_request:
+    paths:
+      - store/**
+      - eve-gateway_lib/**
+
+concurrency:
+  # Make sure every job on main has unique group id (run_id), so cancel-in-progress only affects PR's
+  # https://stackoverflow.com/questions/74117321/if-condition-in-concurrency-in-gha
+  group: ${{ github.workflow }}-${{ github.head_ref && github.ref || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read # for checkout
+  packages: write # for ghcr.io
+
+jobs:
+  test:
+    uses: ./.github/workflows/common_rust_test.yaml
+    secrets: inherit
+    with:
+      folder: store
+
+  build-image:
+    uses: ./.github/workflows/common_build_docker.yaml
+    secrets: inherit
+    needs:
+      - test
+    with:
+      name: store/api
+      image: store-api

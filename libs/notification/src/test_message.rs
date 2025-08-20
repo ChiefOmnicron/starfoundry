@@ -1,5 +1,6 @@
-use crate::{Discord, DiscordEmbed, Error, Notification, NotificationTarget};
 use serde::Serialize;
+
+use crate::{send_json_notification, Discord, DiscordEmbed, Error, NotificationTarget};
 
 pub struct TestMessage;
 
@@ -15,9 +16,12 @@ impl TestMessage {
     ) -> Result<String, String> {
         match target {
             NotificationTarget::Discord => {
-                let discord = self.discord_message();
+                let discord = self
+                    .discord_message()
+                    .send(url)
+                    .await;
 
-                match self.discord(url, vec![discord]).await {
+                match discord {
                     Ok(x)  => Ok(x),
                     Err(Error::ResponseError(x, _)) => Err(format!("{x}")),
                     Err(e) => Err(format!("{e}"))
@@ -26,7 +30,7 @@ impl TestMessage {
             NotificationTarget::Json => {
                 let json = self.json_message();
 
-                match self.json(url, json).await {
+                match send_json_notification(url, json).await {
                     Ok(x)  => Ok(x),
                     Err(Error::ResponseError(x, _)) => Err(format!("{x}")),
                     Err(e) => Err(format!("{e}"))
@@ -68,5 +72,3 @@ impl TestMessage {
         serde_json::to_value(&message).unwrap_or_default()
     }
 }
-
-impl Notification for TestMessage {}

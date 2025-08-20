@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
-use starfoundry_libs_items::Item;
-use starfoundry_libs_types::TypeId;
+use starfoundry_lib_items::Item;
+use starfoundry_lib_types::TypeId;
 
 use crate::{BlueprintTyp, Error, Result};
 

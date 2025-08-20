@@ -1,0 +1,48 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                pg.id,\n                pg.name,\n                pg.description,\n                pg.owner = $1 AS is_owner,\n                (\n                    SELECT COUNT(*)\n                    FROM project\n                    WHERE project_group_id = pg.id\n                ) AS projects\n            FROM project_group pg\n            JOIN project_group_member pgm ON pg.id = pgm.group_id\n            -- fetch all projects where the user is a member\n            WHERE pgm.character_id = $1 AND\n                NOT (LOWER(name) LIKE '%' || LOWER($2) || '%') IS FALSE AND\n                NOT (owner = $1 OR $3) IS FALSE AND\n                -- make sure the user got accepted into the group\n                accepted = TRUE\n            ORDER BY pg.name ASC\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "description",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "is_owner",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 4,
+        "name": "projects",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Text",
+        "Bool"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      null,
+      null
+    ]
+  },
+  "hash": "881324f43e9f71de6264b695f84ca417b00c478fdcff6f22871e45429274f465"
+}

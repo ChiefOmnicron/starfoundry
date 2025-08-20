@@ -2,7 +2,7 @@ mod janice;
 
 pub use self::janice::*;
 
-use starfoundry_libs_types::TypeId;
+use starfoundry_lib_types::TypeId;
 
 use crate::{Error, Persistance};
 

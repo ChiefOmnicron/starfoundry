@@ -2,7 +2,7 @@
 //! application.
 
 use sqlx::postgres::PgPoolOptions;
-use starfoundry_libs_eve_sde_parser::Error;
+use starfoundry_lib_eve_sde_parser::Error;
 use std::time::Instant;
 use tracing_subscriber::EnvFilter;
 
@@ -24,7 +24,7 @@ async fn main() -> Result<(), Error> {
 
     let start = Instant::now();
 
-    starfoundry_libs_eve_sde_parser::import_sde(&pool, None).await?;
+    starfoundry_lib_eve_sde_parser::import_sde(&pool, None).await?;
 
     tracing::info!("Total run time: {}ms", start.elapsed().as_millis());
 

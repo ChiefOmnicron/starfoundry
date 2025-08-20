@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO eve_credential (\n                character_id,\n                refresh_token,\n                character_main\n            ) VALUES ($1, $2, $3)\n            ON CONFLICT (character_id) DO UPDATE\n            SET refresh_token = EXCLUDED.refresh_token\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Varchar",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "0eb226fcec759c675d1a7e367b908a0a2efd0b715ef19710f20a40c5b17dd0b3"
+}

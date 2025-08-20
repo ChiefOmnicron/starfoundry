@@ -1,5 +1,5 @@
 use serde::Serialize;
-use starfoundry_libs_structures::StructureUuid;
+use starfoundry_lib_structures::StructureUuid;
 use utoipa::ToSchema;
 use uuid::Uuid;
 

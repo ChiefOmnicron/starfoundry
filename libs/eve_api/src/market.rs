@@ -1,6 +1,6 @@
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize, Deserializer};
-use starfoundry_libs_types::{StationId, OrderId, LocationId, TypeId, RegionId};
+use starfoundry_lib_types::{StationId, OrderId, LocationId, TypeId, RegionId};
 
 use crate::{Cache, Error, EveApiClient};
 
