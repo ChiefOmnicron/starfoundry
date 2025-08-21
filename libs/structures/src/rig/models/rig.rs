@@ -4,7 +4,7 @@ use utoipa::ToSchema;
 
 #[derive(Clone, Debug, Serialize, ToSchema)]
 pub struct StructureRig {
-    /// name of the rig, wihtout `Standup ?-Size`
+    /// name of the rig
     pub name:            String,
     /// [TypeId] of the rig
     pub type_id:         TypeId,

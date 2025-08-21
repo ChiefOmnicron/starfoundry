@@ -91,7 +91,13 @@ impl CalculationEngine {
                 .entry(stock.type_id)
                 .and_modify(|x: &mut DependencyTreeEntry| {
                     has_update = true;
-                    x.stock += stock.quantity
+                    x.stock += stock.quantity;
+
+                    if x.is_product {
+                        x.needed = (x.needed as u32).saturating_sub(stock.quantity as u32) as f32;
+                        x.runs = vec![x.needed as u32];
+                        self.stocks.insert(x.product_type_id, stock.clone());
+                    }
                 });
 
             if has_update {
@@ -107,6 +113,7 @@ impl CalculationEngine {
             .clone()
             .into_iter()
             .map(|(_, stock)| stock)
+            .filter(|x| x.quantity > 0)
             .collect::<Vec<_>>()
     }
 
@@ -181,10 +188,6 @@ impl CalculationEngine {
     pub fn finalize(
         &mut self,
     ) -> EngineResult {
-        // 12 days in seconds
-        // days * hours * minutes * seconds
-        //let split_after = (12 * 24 * 60 * 60) as f32;
-
         for ptype_id in self.tree
                             .iter()
                             .filter(|(_, x)|
@@ -420,7 +423,7 @@ impl CalculationEngine {
                     }
                 });
 
-            // Our product, will not be in any children
+            // the product will not be in any children
             if updated_runs.is_empty() {
                 continue;
             }
@@ -642,6 +645,12 @@ impl CalculationEngine {
         &mut self,
     ) {
         for (type_id, _) in self.stocks.clone().iter() {
+            if let Some(x) = self.tree.get(type_id) {
+                if x.is_product {
+                    continue;
+                }
+            }
+
             if self
                 .tree
                 .iter()
@@ -924,5 +933,513 @@ impl CalculationEngine {
 
         new_bonus.after = entry.time;
         entry.bonus.push(new_bonus);
+    }
+}
+
+#[cfg(test)]
+mod calculation_tests {
+    use sqlx::PgPool;
+    use sqlx::postgres::PgPoolOptions;
+    use starfoundry_libs_structures::{Security, Structure};
+    use uuid::Uuid;
+    use std::str::FromStr;
+
+    use crate::{ProjectConfigBuilder, StructureMapping};
+
+    use super::*;
+
+    async fn pool() -> PgPool {
+        dotenvy::dotenv().ok();
+        let pg_addr = std::env::var("DATABASE_URL").unwrap();
+        let pool = PgPoolOptions::new()
+            .max_connections(1)
+            .connect(&pg_addr)
+            .await
+            .unwrap();
+        pool
+    }
+
+    async fn load_dependency(
+        quanttiy: u32,
+        type_id: TypeId
+    ) -> Dependency {
+        let pool = pool().await;
+        let dependency = sqlx::query!("
+                SELECT data
+                FROM blueprint_json
+                WHERE ptype_id = $1
+            ",
+                *type_id
+            )
+            .fetch_one(&pool)
+            .await
+            .map(|x| x.data)
+            .unwrap();
+        Dependency::try_from(quanttiy, dependency).unwrap()
+    }
+
+    async fn calculation_engine() -> CalculationEngine {
+        let pool = pool().await;
+
+        let manufacturing_a = Structure {
+            id: Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap().into(),
+            name: "Sotiyo manufacturing".into(),
+            system_id: 30002019.into(),
+            security: Security::Nullsec,
+            structure_type: StructureType::Sotiyo,
+            structure_id: 1337i64,
+            services: vec![
+                TypeId(35878),
+                TypeId(35881),
+            ],
+            rigs: vec![
+                starfoundry_libs_structures::rig::fetch(&pool, TypeId::from(37180)).await.unwrap(),
+                starfoundry_libs_structures::rig::fetch(&pool, TypeId::from(37178)).await.unwrap(),
+                starfoundry_libs_structures::rig::fetch(&pool, TypeId::from(43704)).await.unwrap(),
+            ],
+        };
+
+        let reaction_a = Structure {
+            id: Uuid::from_str("00000000-0000-0000-0000-000000000001").unwrap().into(),
+            name: "Tatara reactions".into(),
+            system_id: 30002019.into(),
+            security: Security::Nullsec,
+            structure_type: StructureType::Tatara,
+            structure_id: 1338i64,
+            services: vec![
+                TypeId(35899), // Reprocessing
+                TypeId(45539), // Biochemical Reactor
+                TypeId(45537), // Composite Reactor
+                TypeId(45538), // Hybrid Reactor
+            ],
+            rigs: vec![
+                starfoundry_libs_structures::rig::fetch(&pool, TypeId::from(46497)).await.unwrap(),
+            ],
+        };
+
+        let mapping = vec![
+            StructureMapping {
+                structure_uuid: manufacturing_a.id,
+                category_group: manufacturing_a.category_groups(),
+            },
+            StructureMapping {
+                structure_uuid: reaction_a.id,
+                category_group: reaction_a.category_groups(),
+            },
+        ];
+
+        let system_index = sqlx::query!("
+                    SELECT
+                        system_id,
+                        manufacturing,
+                        reaction
+                    FROM industry_index
+                    WHERE timestamp = (
+                        SELECT timestamp
+                        FROM industry_index
+                        WHERE system_id = ANY($1)
+                        GROUP BY system_id, timestamp
+                        ORDER BY timestamp DESC
+                        LIMIT 1
+                    )
+                    AND system_id = ANY($1)
+                ",
+                &vec![30003950]
+            )
+            .fetch_all(&pool)
+            .await
+            .unwrap()
+            .into_iter()
+            .map(|x| (x.system_id.into(), (x.manufacturing, x.reaction)))
+            .collect::<HashMap<_, _>>();
+
+        let material_cost = sqlx::query!("
+                    SELECT
+                        type_id,
+                        adjusted_price
+                    FROM market_price
+                ",
+            )
+            .fetch_all(&pool)
+            .await
+            .unwrap()
+            .into_iter()
+            .map(|x| (x.type_id.into(), x.adjusted_price))
+            .collect::<HashMap<_, _>>();
+
+        let config = ProjectConfigBuilder::default()
+            .add_structures(vec![manufacturing_a, reaction_a])
+            .add_structure_mappings(mapping)
+            .add_blacklists(vec![4051, 4246, 4247, 4312])
+            .set_system_index(system_index)
+            .set_material_cost(material_cost)
+            .build();
+        CalculationEngine::new(config)
+    }
+
+    #[tokio::test]
+    async fn caracal1() {
+        let caracal = load_dependency(1, TypeId(621)).await;
+        let calculation_result = calculation_engine()
+            .await
+            .add(caracal)
+            .apply_bonus()
+            .finalize();
+
+        assert_eq!(calculation_result.tree.get(&34.into()).unwrap().needed.ceil(), 460933f32);
+        assert_eq!(calculation_result.tree.get(&35.into()).unwrap().needed.ceil(), 153645f32);
+        assert_eq!(calculation_result.tree.get(&36.into()).unwrap().needed.ceil(),  30729f32);
+        assert_eq!(calculation_result.tree.get(&37.into()).unwrap().needed.ceil(),   8536f32);
+        assert_eq!(calculation_result.tree.get(&38.into()).unwrap().needed.ceil(),   1281f32);
+        assert_eq!(calculation_result.tree.get(&39.into()).unwrap().needed.ceil(),    299f32);
+        assert_eq!(calculation_result.tree.get(&40.into()).unwrap().needed.ceil(),    120f32);
+    }
+
+    #[tokio::test]
+    async fn caracal5() {
+        let caracal = load_dependency(5, TypeId(621)).await;
+        let calculation_result = calculation_engine()
+            .await
+            .add(caracal)
+            .apply_bonus()
+            .finalize();
+
+        assert_eq!(calculation_result.tree.get(&34.into()).unwrap().needed.ceil(), 2304661f32);
+        assert_eq!(calculation_result.tree.get(&35.into()).unwrap().needed.ceil(),  768221f32);
+        assert_eq!(calculation_result.tree.get(&36.into()).unwrap().needed.ceil(),  153645f32);
+        assert_eq!(calculation_result.tree.get(&37.into()).unwrap().needed.ceil(),   42679f32);
+        assert_eq!(calculation_result.tree.get(&38.into()).unwrap().needed.ceil(),    6402f32);
+        assert_eq!(calculation_result.tree.get(&39.into()).unwrap().needed.ceil(),    1494f32);
+        assert_eq!(calculation_result.tree.get(&40.into()).unwrap().needed.ceil(),     598f32);
+
+        assert_eq!(calculation_result.tree.get(&621.into()).unwrap().runs, vec![5]);
+    }
+
+    #[tokio::test]
+    async fn caracal_warden() {
+        let caracal = load_dependency(1, TypeId(621)).await;
+        let warden  = load_dependency(10, TypeId(23559)).await;
+
+        let calculation_result = calculation_engine()
+            .await
+            .add(caracal)
+            .add(warden)
+            .apply_bonus()
+            .finalize();
+
+        assert_eq!(calculation_result.tree.get(&34.into()).unwrap().needed.ceil(), 465338f32);
+        assert_eq!(calculation_result.tree.get(&35.into()).unwrap().needed.ceil(), 238397f32);
+        assert_eq!(calculation_result.tree.get(&36.into()).unwrap().needed.ceil(),  30729f32);
+        assert_eq!(calculation_result.tree.get(&37.into()).unwrap().needed.ceil(),   8536f32);
+        assert_eq!(calculation_result.tree.get(&38.into()).unwrap().needed.ceil(),   1316f32);
+        assert_eq!(calculation_result.tree.get(&39.into()).unwrap().needed.ceil(),    299f32);
+        assert_eq!(calculation_result.tree.get(&40.into()).unwrap().needed.ceil(),    274f32);
+    }
+
+    #[tokio::test]
+    async fn product_is_in_stock_single() {
+        // Caracal
+        let stocks = vec![
+            StockMinimal {
+                type_id:  TypeId(621),
+                quantity: 1,
+            }
+        ];
+
+        let caracal = load_dependency(1, TypeId(621)).await;
+        let calculation_result = calculation_engine()
+            .await
+            .add(caracal)
+            .add_stocks(&stocks)
+            .apply_bonus()
+            .finalize();
+
+        for (_, entry) in calculation_result.tree {
+            assert_eq!(entry.needed, 0f32);
+        }
+
+        assert_eq!(calculation_result.stocks.len(), 1);
+        assert_eq!(calculation_result.stocks[0].type_id, TypeId(621));
+    }
+
+    #[tokio::test]
+    async fn product_is_in_stock_multiple() {
+        // Caracal
+        let stocks = vec![
+            StockMinimal {
+                type_id:  TypeId(621),
+                quantity: 1,
+            }
+        ];
+
+        let caracal = load_dependency(2, TypeId(621)).await;
+        let calculation_result = calculation_engine()
+            .await
+            .add(caracal)
+            .add_stocks(&stocks)
+            .apply_bonus()
+            .finalize();
+
+        assert_eq!(calculation_result.tree.get(&34.into()).unwrap().needed.ceil(), 460933f32);
+        assert_eq!(calculation_result.tree.get(&35.into()).unwrap().needed.ceil(), 153645f32);
+        assert_eq!(calculation_result.tree.get(&36.into()).unwrap().needed.ceil(),  30729f32);
+        assert_eq!(calculation_result.tree.get(&37.into()).unwrap().needed.ceil(),   8536f32);
+        assert_eq!(calculation_result.tree.get(&38.into()).unwrap().needed.ceil(),   1281f32);
+        assert_eq!(calculation_result.tree.get(&39.into()).unwrap().needed.ceil(),    299f32);
+        assert_eq!(calculation_result.tree.get(&40.into()).unwrap().needed.ceil(),    120f32);
+
+        assert_eq!(calculation_result.stocks.len(), 1);
+        assert_eq!(calculation_result.stocks[0].type_id, TypeId(621));
+    }
+
+    // Regression test - Adding T1 and T2 of the same product, the T1 is ignored
+    #[tokio::test]
+    async fn t1_and_t2_product() {
+        let steel_plates_t1 = load_dependency(1, TypeId(11279)).await;
+        let steel_plates_t2 = load_dependency(1, TypeId(20353)).await;
+        let calculation_result = calculation_engine()
+            .await
+            .add(steel_plates_t1)
+            .add(steel_plates_t2)
+            .apply_bonus()
+            .finalize();
+
+        assert_eq!(calculation_result.tree.get(&11279.into()).unwrap().runs, vec![2]);
+        assert_eq!(calculation_result.tree.get(&20353.into()).unwrap().runs, vec![1]);
+
+        assert_eq!(calculation_result.tree.get(&34.into()).unwrap().needed.ceil(), 32806f32);
+        assert_eq!(calculation_result.tree.get(&35.into()).unwrap().needed.ceil(), 31129f32);
+        assert_eq!(calculation_result.tree.get(&36.into()).unwrap().needed.ceil(), 23440f32);
+        assert_eq!(calculation_result.tree.get(&37.into()).unwrap().needed.ceil(),  1568f32);
+        assert_eq!(calculation_result.tree.get(&38.into()).unwrap().needed.ceil(),    31f32);
+        assert_eq!(calculation_result.tree.get(&39.into()).unwrap().needed.ceil(),     4f32);
+        assert_eq!(calculation_result.tree.get(&40.into()).unwrap().needed.ceil(),    21f32);
+    }
+
+    // Regression test - Tests that splitting something into multiple stacks
+    //                   does not merge them into a single stack
+    #[tokio::test]
+    async fn split_runs() {
+        let nanite = load_dependency(20, TypeId(28668)).await;
+        let calculation_result = calculation_engine()
+            .await
+            .add(nanite.clone())
+            .add(nanite)
+            .apply_bonus()
+            .finalize();
+
+        assert_eq!(calculation_result.tree.get(&28668.into()).unwrap().runs, vec![20, 20]);
+
+        assert_eq!(calculation_result.tree.get(&17392.into()).unwrap().needed.ceil(),  40f32);
+        assert_eq!(calculation_result.tree.get(&2348.into()).unwrap().needed.ceil(),   40f32);
+        assert_eq!(calculation_result.tree.get(&2463.into()).unwrap().needed.ceil(),  138f32);
+    }
+
+    #[tokio::test]
+    async fn naglfar_1() {
+        let testfolder = std::env::var("CARGO_MANIFEST_DIR").unwrap();
+        let file = std::fs::File::open(format!("{}/testdata/naglfar.json", testfolder)).unwrap();
+        let parsed: Dependency = serde_json::from_reader(file).unwrap();
+
+        let mut tree = calculation_engine().await;
+        tree.add(parsed);
+
+        let calculation_result = tree
+            .apply_bonus()
+            .finalize();
+        calculation_result.write_debug_file();
+
+        // Booster Gas Clouds
+        assert_eq!(calculation_result.tree.get(&25278.into()).unwrap().needed.ceil(),       20f32);
+        assert_eq!(calculation_result.tree.get(&25279.into()).unwrap().needed.ceil(),       20f32);
+        assert_eq!(calculation_result.tree.get(&28694.into()).unwrap().needed.ceil(),      156f32);
+        assert_eq!(calculation_result.tree.get(&28695.into()).unwrap().needed.ceil(),     1091f32);
+        assert_eq!(calculation_result.tree.get(&28696.into()).unwrap().needed.ceil(),      156f32);
+        assert_eq!(calculation_result.tree.get(&28697.into()).unwrap().needed.ceil(),      156f32);
+        assert_eq!(calculation_result.tree.get(&28698.into()).unwrap().needed.ceil(),      156f32);
+        assert_eq!(calculation_result.tree.get(&28699.into()).unwrap().needed.ceil(),      156f32);
+        assert_eq!(calculation_result.tree.get(&28700.into()).unwrap().needed.ceil(),     1091f32);
+        assert_eq!(calculation_result.tree.get(&28701.into()).unwrap().needed.ceil(),      156f32);
+
+        // Fullerenes
+        assert_eq!(calculation_result.tree.get(&30370.into()).unwrap().needed.ceil(),    11685f32);
+        assert_eq!(calculation_result.tree.get(&30371.into()).unwrap().needed.ceil(),    11879f32);
+        assert_eq!(calculation_result.tree.get(&30372.into()).unwrap().needed.ceil(),    12172f32);
+        assert_eq!(calculation_result.tree.get(&30373.into()).unwrap().needed.ceil(),    11198f32);
+        assert_eq!(calculation_result.tree.get(&30374.into()).unwrap().needed.ceil(),    11685f32);
+        assert_eq!(calculation_result.tree.get(&30375.into()).unwrap().needed.ceil(),    11976f32);
+        assert_eq!(calculation_result.tree.get(&30376.into()).unwrap().needed.ceil(),     1656f32);
+        assert_eq!(calculation_result.tree.get(&30377.into()).unwrap().needed.ceil(),      585f32);
+        assert_eq!(calculation_result.tree.get(&30378.into()).unwrap().needed.ceil(),      585f32);
+
+        // Raw Moon Materials
+        assert_eq!(calculation_result.tree.get(&16633.into()).unwrap().needed.ceil(),    66403f32);
+        assert_eq!(calculation_result.tree.get(&16634.into()).unwrap().needed.ceil(),    66305f32);
+        assert_eq!(calculation_result.tree.get(&16635.into()).unwrap().needed.ceil(),    21715f32);
+        assert_eq!(calculation_result.tree.get(&16636.into()).unwrap().needed.ceil(),    21813f32);
+        assert_eq!(calculation_result.tree.get(&16639.into()).unwrap().needed.ceil(),      293f32);
+        assert_eq!(calculation_result.tree.get(&16642.into()).unwrap().needed.ceil(),      391f32);
+        assert_eq!(calculation_result.tree.get(&16643.into()).unwrap().needed.ceil(),      196f32);
+        assert_eq!(calculation_result.tree.get(&16644.into()).unwrap().needed.ceil(),       98f32);
+        assert_eq!(calculation_result.tree.get(&16646.into()).unwrap().needed.ceil(),      391f32);
+        assert_eq!(calculation_result.tree.get(&16647.into()).unwrap().needed.ceil(),       98f32);
+        assert_eq!(calculation_result.tree.get(&16648.into()).unwrap().needed.ceil(),       98f32);
+        assert_eq!(calculation_result.tree.get(&16649.into()).unwrap().needed.ceil(),       98f32);
+        assert_eq!(calculation_result.tree.get(&16650.into()).unwrap().needed.ceil(),       98f32);
+        assert_eq!(calculation_result.tree.get(&16651.into()).unwrap().needed.ceil(),      391f32);
+        assert_eq!(calculation_result.tree.get(&16652.into()).unwrap().needed.ceil(),       98f32);
+        assert_eq!(calculation_result.tree.get(&16653.into()).unwrap().needed.ceil(),       98f32);
+
+        // Minerals
+        assert_eq!(calculation_result.tree.get(&34.into()).unwrap().needed.ceil(),     3568889f32);
+        assert_eq!(calculation_result.tree.get(&35.into()).unwrap().needed.ceil(),    10569714f32);
+        assert_eq!(calculation_result.tree.get(&36.into()).unwrap().needed.ceil(),     2976841f32);
+        assert_eq!(calculation_result.tree.get(&37.into()).unwrap().needed.ceil(),      816905f32);
+        assert_eq!(calculation_result.tree.get(&38.into()).unwrap().needed.ceil(),       88037f32);
+        assert_eq!(calculation_result.tree.get(&39.into()).unwrap().needed.ceil(),       41749f32);
+        assert_eq!(calculation_result.tree.get(&40.into()).unwrap().needed.ceil(),       20884f32);
+        assert_eq!(calculation_result.tree.get(&11399.into()).unwrap().needed.ceil(),     1281f32);
+
+        // Fuel Blocks
+        assert_eq!(calculation_result.tree.get(&4051.into()).unwrap().needed.ceil(),       667f32);
+        assert_eq!(calculation_result.tree.get(&4246.into()).unwrap().needed.ceil(),      1014f32);
+        assert_eq!(calculation_result.tree.get(&4247.into()).unwrap().needed.ceil(),       642f32);
+        assert_eq!(calculation_result.tree.get(&4312.into()).unwrap().needed.ceil(),       822f32);
+
+        // PI
+        assert_eq!(calculation_result.tree.get(&2312.into()).unwrap().needed.ceil(),       390f32);
+        assert_eq!(calculation_result.tree.get(&2319.into()).unwrap().needed.ceil(),       817f32);
+        assert_eq!(calculation_result.tree.get(&2401.into()).unwrap().needed.ceil(),      3671f32);
+        assert_eq!(calculation_result.tree.get(&2463.into()).unwrap().needed.ceil(),       817f32);
+        assert_eq!(calculation_result.tree.get(&2867.into()).unwrap().needed.ceil(),         6f32);
+        assert_eq!(calculation_result.tree.get(&2868.into()).unwrap().needed.ceil(),        27f32);
+        assert_eq!(calculation_result.tree.get(&2870.into()).unwrap().needed.ceil(),        13f32);
+        assert_eq!(calculation_result.tree.get(&2871.into()).unwrap().needed.ceil(),         8f32);
+        assert_eq!(calculation_result.tree.get(&2872.into()).unwrap().needed.ceil(),        33f32);
+        assert_eq!(calculation_result.tree.get(&2876.into()).unwrap().needed.ceil(),        40f32);
+        assert_eq!(calculation_result.tree.get(&3645.into()).unwrap().needed.ceil(),      3671f32);
+        assert_eq!(calculation_result.tree.get(&3775.into()).unwrap().needed.ceil(),       390f32);
+
+        // Commodities
+        assert_eq!(calculation_result.tree.get(&57443.into()).unwrap().needed.ceil(),        1f32);
+        assert_eq!(calculation_result.tree.get(&57445.into()).unwrap().needed.ceil(),        4f32);
+        assert_eq!(calculation_result.tree.get(&57446.into()).unwrap().needed.ceil(),        4f32);
+        assert_eq!(calculation_result.tree.get(&57447.into()).unwrap().needed.ceil(),        4f32);
+        assert_eq!(calculation_result.tree.get(&57448.into()).unwrap().needed.ceil(),       30f32);
+        assert_eq!(calculation_result.tree.get(&57450.into()).unwrap().needed.ceil(),        1f32);
+        assert_eq!(calculation_result.tree.get(&57452.into()).unwrap().needed.ceil(),       66f32);
+    }
+
+    /// Test that includes stock of a item with sub dependencies
+    #[tokio::test]
+    async fn naglfar_with_stock_1() {
+        let testfolder = std::env::var("CARGO_MANIFEST_DIR").unwrap();
+
+        let file = std::fs::File::open(format!("{}/testdata/naglfar.json", testfolder)).unwrap();
+        let parsed: Dependency = serde_json::from_reader(file).unwrap();
+
+        // Neurolink Protection Cell
+        let stocks = vec![
+            StockMinimal {
+                type_id:  TypeId(57488),
+                quantity: 1,
+            }
+        ];
+
+        let calculation_result = calculation_engine()
+            .await
+            .add(parsed)
+            .add_stocks(&stocks)
+            .apply_bonus()
+            .finalize();
+
+        calculation_result.write_debug_file();
+
+        // Materials that are no longer needed because of the stock
+        assert_eq!(calculation_result.tree.get(&2329.into()).unwrap().needed.ceil(),         0f32);
+        assert_eq!(calculation_result.tree.get(&2346.into()).unwrap().needed.ceil(),         0f32);
+        assert_eq!(calculation_result.tree.get(&2348.into()).unwrap().needed.ceil(),         0f32);
+        assert_eq!(calculation_result.tree.get(&2361.into()).unwrap().needed.ceil(),         0f32);
+        assert_eq!(calculation_result.tree.get(&9842.into()).unwrap().needed.ceil(),         0f32);
+        assert_eq!(calculation_result.tree.get(&11399.into()).unwrap().needed.ceil(),        0f32);
+        assert_eq!(calculation_result.tree.get(&28694.into()).unwrap().needed.ceil(),        0f32);
+        assert_eq!(calculation_result.tree.get(&28696.into()).unwrap().needed.ceil(),        0f32);
+        assert_eq!(calculation_result.tree.get(&28697.into()).unwrap().needed.ceil(),        0f32);
+        assert_eq!(calculation_result.tree.get(&28698.into()).unwrap().needed.ceil(),        0f32);
+        assert_eq!(calculation_result.tree.get(&28699.into()).unwrap().needed.ceil(),        0f32);
+        assert_eq!(calculation_result.tree.get(&28701.into()).unwrap().needed.ceil(),        0f32);
+        assert_eq!(calculation_result.tree.get(&57443.into()).unwrap().needed.ceil(),        0f32);
+        assert_eq!(calculation_result.tree.get(&57445.into()).unwrap().needed.ceil(),        0f32);
+        assert_eq!(calculation_result.tree.get(&57446.into()).unwrap().needed.ceil(),        0f32);
+        assert_eq!(calculation_result.tree.get(&57447.into()).unwrap().needed.ceil(),        0f32);
+        assert_eq!(calculation_result.tree.get(&57450.into()).unwrap().needed.ceil(),        0f32);
+        assert_eq!(calculation_result.tree.get(&57452.into()).unwrap().needed.ceil(),        0f32);
+
+        // Booster Gas Clouds
+        assert_eq!(calculation_result.tree.get(&25278.into()).unwrap().needed.ceil(),       20f32);
+        assert_eq!(calculation_result.tree.get(&25279.into()).unwrap().needed.ceil(),       20f32);
+        assert_eq!(calculation_result.tree.get(&28695.into()).unwrap().needed.ceil(),      935f32);
+        assert_eq!(calculation_result.tree.get(&28700.into()).unwrap().needed.ceil(),      935f32);
+
+        // Fullerenes
+        assert_eq!(calculation_result.tree.get(&30370.into()).unwrap().needed.ceil(),      975f32);
+        assert_eq!(calculation_result.tree.get(&30371.into()).unwrap().needed.ceil(),     1169f32);
+        assert_eq!(calculation_result.tree.get(&30372.into()).unwrap().needed.ceil(),     1462f32);
+        assert_eq!(calculation_result.tree.get(&30373.into()).unwrap().needed.ceil(),      488f32);
+        assert_eq!(calculation_result.tree.get(&30374.into()).unwrap().needed.ceil(),      975f32);
+        assert_eq!(calculation_result.tree.get(&30375.into()).unwrap().needed.ceil(),     1266f32);
+        assert_eq!(calculation_result.tree.get(&30376.into()).unwrap().needed.ceil(),     1656f32);
+        assert_eq!(calculation_result.tree.get(&30377.into()).unwrap().needed.ceil(),      585f32);
+        assert_eq!(calculation_result.tree.get(&30378.into()).unwrap().needed.ceil(),      585f32);
+
+        // Raw Moon Materials
+        assert_eq!(calculation_result.tree.get(&16633.into()).unwrap().needed.ceil(),    66112f32);
+        assert_eq!(calculation_result.tree.get(&16634.into()).unwrap().needed.ceil(),    66014f32);
+        assert_eq!(calculation_result.tree.get(&16635.into()).unwrap().needed.ceil(),    21424f32);
+        assert_eq!(calculation_result.tree.get(&16636.into()).unwrap().needed.ceil(),    21522f32);
+        assert_eq!(calculation_result.tree.get(&16639.into()).unwrap().needed.ceil(),      293f32);
+        assert_eq!(calculation_result.tree.get(&16642.into()).unwrap().needed.ceil(),      391f32);
+        assert_eq!(calculation_result.tree.get(&16643.into()).unwrap().needed.ceil(),      196f32);
+        assert_eq!(calculation_result.tree.get(&16644.into()).unwrap().needed.ceil(),       98f32);
+        assert_eq!(calculation_result.tree.get(&16646.into()).unwrap().needed.ceil(),      391f32);
+        assert_eq!(calculation_result.tree.get(&16647.into()).unwrap().needed.ceil(),       98f32);
+        assert_eq!(calculation_result.tree.get(&16648.into()).unwrap().needed.ceil(),       98f32);
+        assert_eq!(calculation_result.tree.get(&16649.into()).unwrap().needed.ceil(),       98f32);
+        assert_eq!(calculation_result.tree.get(&16650.into()).unwrap().needed.ceil(),       98f32);
+        assert_eq!(calculation_result.tree.get(&16651.into()).unwrap().needed.ceil(),      391f32);
+        assert_eq!(calculation_result.tree.get(&16652.into()).unwrap().needed.ceil(),       98f32);
+        assert_eq!(calculation_result.tree.get(&16653.into()).unwrap().needed.ceil(),       98f32);
+
+        // Minerals
+        assert_eq!(calculation_result.tree.get(&34.into()).unwrap().needed.ceil(),     2926313f32);
+        assert_eq!(calculation_result.tree.get(&35.into()).unwrap().needed.ceil(),    10569714f32);
+        assert_eq!(calculation_result.tree.get(&36.into()).unwrap().needed.ceil(),     2976841f32);
+        assert_eq!(calculation_result.tree.get(&37.into()).unwrap().needed.ceil(),      816905f32);
+        assert_eq!(calculation_result.tree.get(&38.into()).unwrap().needed.ceil(),       88037f32);
+        assert_eq!(calculation_result.tree.get(&39.into()).unwrap().needed.ceil(),       41749f32);
+        assert_eq!(calculation_result.tree.get(&40.into()).unwrap().needed.ceil(),       20884f32);
+
+        // Fuel Blocks
+        assert_eq!(calculation_result.tree.get(&4051.into()).unwrap().needed.ceil(),       539f32);
+        assert_eq!(calculation_result.tree.get(&4246.into()).unwrap().needed.ceil(),       866f32);
+        assert_eq!(calculation_result.tree.get(&4247.into()).unwrap().needed.ceil(),       514f32);
+        assert_eq!(calculation_result.tree.get(&4312.into()).unwrap().needed.ceil(),       787f32);
+
+        // PI
+        assert_eq!(calculation_result.tree.get(&2312.into()).unwrap().needed.ceil(),       390f32);
+        assert_eq!(calculation_result.tree.get(&2319.into()).unwrap().needed.ceil(),       390f32);
+        assert_eq!(calculation_result.tree.get(&2401.into()).unwrap().needed.ceil(),      3671f32);
+        assert_eq!(calculation_result.tree.get(&2463.into()).unwrap().needed.ceil(),       390f32);
+        assert_eq!(calculation_result.tree.get(&2867.into()).unwrap().needed.ceil(),         6f32);
+        assert_eq!(calculation_result.tree.get(&2868.into()).unwrap().needed.ceil(),        27f32);
+        assert_eq!(calculation_result.tree.get(&2870.into()).unwrap().needed.ceil(),        13f32);
+        assert_eq!(calculation_result.tree.get(&2871.into()).unwrap().needed.ceil(),         8f32);
+        assert_eq!(calculation_result.tree.get(&2872.into()).unwrap().needed.ceil(),        33f32);
+        assert_eq!(calculation_result.tree.get(&2876.into()).unwrap().needed.ceil(),        40f32);
+        assert_eq!(calculation_result.tree.get(&3645.into()).unwrap().needed.ceil(),      3671f32);
+        assert_eq!(calculation_result.tree.get(&3775.into()).unwrap().needed.ceil(),       390f32);
+
+        // Commodities
+        assert_eq!(calculation_result.tree.get(&57448.into()).unwrap().needed.ceil(),       26f32);
     }
 }

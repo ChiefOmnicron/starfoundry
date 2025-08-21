@@ -9,6 +9,7 @@ use crate::{BlueprintBonus, StructureMapping};
 /// Configration for a new project.
 /// Must be created with [ProjectConfigBuilder].
 /// 
+/// TODO: rename
 #[derive(Debug, Serialize)]
 pub struct ProjectConfig {
     pub(crate) blueprint_overwrite: HashMap<TypeId, BlueprintBonus>,

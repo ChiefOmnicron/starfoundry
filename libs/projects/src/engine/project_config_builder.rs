@@ -6,6 +6,7 @@ use crate::{BlueprintBonus, StructureMapping};
 use super::Dependency;
 use super::project_config::ProjectConfig;
 
+// TODO: rename
 #[derive(Debug)]
 pub struct ProjectConfigBuilder {
     bluprint_overwrite: HashMap<TypeId, BlueprintBonus>,

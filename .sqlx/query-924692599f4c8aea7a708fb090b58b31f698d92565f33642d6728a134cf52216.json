@@ -1,0 +1,34 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                    SELECT\n                        system_id,\n                        manufacturing,\n                        reaction\n                    FROM industry_index\n                    WHERE timestamp = (\n                        SELECT timestamp\n                        FROM industry_index\n                        WHERE system_id = ANY($1)\n                        GROUP BY system_id, timestamp\n                        ORDER BY timestamp DESC\n                        LIMIT 1\n                    )\n                    AND system_id = ANY($1)\n                ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "system_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "manufacturing",
+        "type_info": "Float4"
+      },
+      {
+        "ordinal": 2,
+        "name": "reaction",
+        "type_info": "Float4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4Array"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "924692599f4c8aea7a708fb090b58b31f698d92565f33642d6728a134cf52216"
+}
