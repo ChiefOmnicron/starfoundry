@@ -95,7 +95,18 @@ impl CalculationEngine {
 
                     if x.is_product {
                         x.needed = (x.needed as u32).saturating_sub(stock.quantity as u32) as f32;
-                        x.runs = vec![x.needed as u32];
+
+                        let mut quantity = stock.quantity as u32;
+                        for run in x.runs.iter_mut() {
+                            if quantity == 0 {
+                                break;
+                            }
+
+                            let runs = *run;
+                            *run = run.saturating_sub(quantity);
+                            quantity = quantity.saturating_sub(runs);
+                        }
+
                         self.stocks.insert(x.product_type_id, stock.clone());
                     }
                 });
@@ -1154,16 +1165,17 @@ mod calculation_tests {
             .apply_bonus()
             .finalize();
 
-        for (_, entry) in calculation_result.tree {
+        for (_, entry) in calculation_result.tree.iter() {
             assert_eq!(entry.needed, 0f32);
         }
 
         assert_eq!(calculation_result.stocks.len(), 1);
         assert_eq!(calculation_result.stocks[0].type_id, TypeId(621));
+        assert_eq!(calculation_result.tree.get(&621.into()).unwrap().runs, vec![0]);
     }
 
     #[tokio::test]
-    async fn product_is_in_stock_multiple() {
+    async fn product_is_in_stock_multiple1() {
         // Caracal
         let stocks = vec![
             StockMinimal {
@@ -1190,6 +1202,40 @@ mod calculation_tests {
 
         assert_eq!(calculation_result.stocks.len(), 1);
         assert_eq!(calculation_result.stocks[0].type_id, TypeId(621));
+        assert_eq!(calculation_result.tree.get(&621.into()).unwrap().runs, vec![1]);
+    }
+
+    #[tokio::test]
+    async fn product_is_in_stock_multiple2() {
+        // Caracal
+        let stocks = vec![
+            StockMinimal {
+                type_id:  TypeId(621),
+                quantity: 1,
+            }
+        ];
+
+        let caracal = load_dependency(1, TypeId(621)).await;
+        let calculation_result = calculation_engine()
+            .await
+            .add(caracal.clone())
+            .add(caracal.clone())
+            .add(caracal)
+            .add_stocks(&stocks)
+            .apply_bonus()
+            .finalize();
+
+        assert_eq!(calculation_result.tree.get(&34.into()).unwrap().needed.ceil(), 921866f32);
+        assert_eq!(calculation_result.tree.get(&35.into()).unwrap().needed.ceil(), 307290f32);
+        assert_eq!(calculation_result.tree.get(&36.into()).unwrap().needed.ceil(),  61458f32);
+        assert_eq!(calculation_result.tree.get(&37.into()).unwrap().needed.ceil(),  17072f32);
+        assert_eq!(calculation_result.tree.get(&38.into()).unwrap().needed.ceil(),   2562f32);
+        assert_eq!(calculation_result.tree.get(&39.into()).unwrap().needed.ceil(),    598f32);
+        assert_eq!(calculation_result.tree.get(&40.into()).unwrap().needed.ceil(),    240f32);
+
+        assert_eq!(calculation_result.stocks.len(), 1);
+        assert_eq!(calculation_result.stocks[0].type_id, TypeId(621));
+        assert_eq!(calculation_result.tree.get(&621.into()).unwrap().runs, vec![0, 1, 1]);
     }
 
     // Regression test - Adding T1 and T2 of the same product, the T1 is ignored
