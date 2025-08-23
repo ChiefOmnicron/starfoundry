@@ -103,15 +103,9 @@ pub enum Error {
     FetchMarketStationsPlayer(sqlx::Error),
     #[error("error while inserting market prices, error: '{0}'")]
     InsertMarketPrices(sqlx::Error),
-    #[error("error while updating touched for station id '{1}', error: '{0}'")]
-    UpdateTouchedStructure(sqlx::Error, StationId),
-    #[error("error while updating touched for region id '{1}', error: '{0}'")]
-    UpdateTouchedRegion(sqlx::Error, RegionId),
 
     #[error("sde error {0}")]
     SdeError(starfoundry_libs_eve_sde_parser::Error),
-    #[error("general sqlx error: {0}")]
-    GenericSqlxError(sqlx::Error),
 
     // stock
     #[error("error whilw fetching blueprint stocks, error: '{0}'")]

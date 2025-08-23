@@ -69,7 +69,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     });
 
     loop {
-        match fetch_task(&pool, &worker_id).await {
+        match fetch_task(&pool, &worker_id, &metrics).await {
             Err(e) => {
                 tracing::error!("error while fetching task, {}", e);
             },

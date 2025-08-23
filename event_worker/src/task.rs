@@ -5,6 +5,7 @@ use std::time::Duration;
 use uuid::Uuid;
 
 use crate::error::{Error, Result};
+use crate::metric::Metric;
 use serde::Serialize;
 use prometheus_client::encoding::EncodeLabelValue;
 
@@ -14,6 +15,7 @@ use prometheus_client::encoding::EncodeLabelValue;
 pub async fn fetch_task(
     pool:      &PgPool,
     worker_id: &Uuid,
+    metric:    &Metric,
 ) -> Result<Option<Task>> {
     sqlx::query!(r#"
             UPDATE event_queue
@@ -43,6 +45,7 @@ pub async fn fetch_task(
             x.map(|x| Task {
                 task:            x.task,
                 id:              x.id,
+                metrics:         metric.clone(),
                 additional_data: x.additional_data,
                 error:           None,
                 logs:            None,
@@ -216,6 +219,7 @@ pub enum TaskStatus {
 pub struct Task {
     pub task:            WorkerTask,
     pub id:              Uuid,
+    pub metrics:         Metric,
     pub additional_data: Option<serde_json::Value>,
     pub error:           Option<String>,
     pub logs:            Option<String>,
