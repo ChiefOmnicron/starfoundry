@@ -35,9 +35,7 @@ CREATE TABLE IF NOT EXISTS market_order_latest (
     -- Price of the item
     price      FLOAT     NOT NULL,
     -- Date the order expires naturally
-    expires    TIMESTAMP NOT NULL,
-
-    touched    BOOLEAN   NOT NULL DEFAULT FALSE
+    expires    TIMESTAMP NOT NULL
 );
 CREATE UNIQUE INDEX IF NOT EXISTS market_order_latest_orderid ON market_order_latest(order_id);
 CREATE INDEX IF NOT EXISTS market_order_latest_structureid_typeid_isbuy ON market_order_latest(structure_id, type_id, is_buy);

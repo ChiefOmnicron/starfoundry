@@ -82,17 +82,6 @@ pub async fn task(
         .map_err(Error::BeginTransaction)?;
 
     sqlx::query!("
-            UPDATE market_order_latest
-            SET touched = FALSE
-            WHERE region_id = $1
-        ",
-            *additional_data.region_id
-        )
-        .execute(&mut *transaction)
-        .await
-        .map_err(|e| Error::UpdateTouchedRegion(e, additional_data.region_id))?;
-
-    sqlx::query!("
             INSERT INTO market_order_latest AS mol
             (
                 structure_id,

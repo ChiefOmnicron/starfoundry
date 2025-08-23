@@ -45,17 +45,6 @@ pub async fn insert_structure_market(
         .map_err(Error::BeginTransaction)?;
 
     sqlx::query!("
-            UPDATE market_order_latest
-            SET touched = FALSE
-            WHERE structure_id = $1
-        ",
-            *structure_id
-        )
-        .execute(&mut *transaction)
-        .await
-        .map_err(|e| Error::UpdateTouchedStructure(e, structure_id))?;
-
-    sqlx::query!("
             INSERT INTO market_order_latest AS mol
             (
                 structure_id,
