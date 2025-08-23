@@ -56,9 +56,8 @@ pub async fn insert_structure_market(
         .map_err(|e| Error::UpdateTouchedStructure(e, structure_id))?;
 
     sqlx::query!("
-            INSERT INTO market_order_latest
+            INSERT INTO market_order_latest AS mol
             (
-                touched,
                 structure_id,
                 region_id,
                 order_id,
@@ -69,7 +68,7 @@ pub async fn insert_structure_market(
                 expires,
                 is_buy
             )
-            SELECT TRUE, $1, $2, * FROM UNNEST(
+            SELECT $1, $2, * FROM UNNEST(
                 $3::BIGINT[],
                 $4::INTEGER[],
                 $5::INTEGER[],
@@ -81,8 +80,10 @@ pub async fn insert_structure_market(
             DO UPDATE SET
                 remaining = EXCLUDED.remaining,
                 expires = EXCLUDED.expires,
-                price = EXCLUDED.price,
-                touched = TRUE
+                price = EXCLUDED.price
+            WHERE mol.remaining != EXCLUDED.remaining
+            OR mol.expires != EXCLUDED.expires
+            OR mol.price != EXCLUDED.price
         ",
             *structure_id,
             *region_id,
@@ -102,12 +103,13 @@ pub async fn insert_structure_market(
             DELETE FROM market_order_latest
             WHERE structure_id = $1
             AND (
-                touched   = FALSE OR
+                order_id != ANY($2) OR
                 remaining = 0 OR
                 expires   < NOW()
             )
         ",
-            *structure_id
+            *structure_id,
+            &order_ids,
         )
         .execute(&mut *transaction)
         .await

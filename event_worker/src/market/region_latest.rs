@@ -93,9 +93,8 @@ pub async fn task(
         .map_err(|e| Error::UpdateTouchedRegion(e, additional_data.region_id))?;
 
     sqlx::query!("
-            INSERT INTO market_order_latest
+            INSERT INTO market_order_latest AS mol
             (
-                touched,
                 structure_id,
                 region_id,
                 order_id,
@@ -106,7 +105,7 @@ pub async fn task(
                 expires,
                 is_buy
             )
-            SELECT TRUE, 0, $1, * FROM UNNEST(
+            SELECT 0, $1, * FROM UNNEST(
                 $2::BIGINT[],
                 $3::INTEGER[],
                 $4::INTEGER[],
@@ -118,8 +117,10 @@ pub async fn task(
             DO UPDATE SET
                 remaining = EXCLUDED.remaining,
                 expires = EXCLUDED.expires,
-                price = EXCLUDED.price,
-                touched = TRUE
+                price = EXCLUDED.price
+            WHERE mol.remaining != EXCLUDED.remaining
+            OR mol.expires != EXCLUDED.expires
+            OR mol.price != EXCLUDED.price
         ",
             *additional_data.region_id,
             &order_ids,
@@ -139,12 +140,13 @@ pub async fn task(
             WHERE region_id = $1
             AND structure_id = 0
             AND (
-                touched   = FALSE OR
+                order_id != ANY($2) OR
                 remaining = 0 OR
                 expires   < NOW()
             )
         ",
-            *additional_data.region_id
+            *additional_data.region_id,
+            &order_ids,
         )
         .execute(&mut *transaction)
         .await
