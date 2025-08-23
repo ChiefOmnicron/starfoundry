@@ -82,21 +82,20 @@ pub async fn task(
         .map_err(Error::BeginTransaction)?;
 
     sqlx::query!("
-            DELETE FROM market_order_latest
+            UPDATE market_order_latest
+            SET touched = FALSE
             WHERE region_id = $1
-            AND structure_id = 0
-            AND expires < NOW()
         ",
             *additional_data.region_id
         )
         .execute(&mut *transaction)
         .await
-        // proper error
-        .map_err(|e| Error::DeleteLatestOrders(e, StationId(*additional_data.region_id as i64)))?;
+        .map_err(|e| Error::UpdateTouchedRegion(e, additional_data.region_id))?;
 
     sqlx::query!("
             INSERT INTO market_order_latest
             (
+                touched,
                 structure_id,
                 region_id,
                 order_id,
@@ -107,7 +106,7 @@ pub async fn task(
                 expires,
                 is_buy
             )
-            SELECT 0, $1, * FROM UNNEST(
+            SELECT TRUE, 0, $1, * FROM UNNEST(
                 $2::BIGINT[],
                 $3::INTEGER[],
                 $4::INTEGER[],
@@ -119,7 +118,8 @@ pub async fn task(
             DO UPDATE SET
                 remaining = EXCLUDED.remaining,
                 expires = EXCLUDED.expires,
-                price = EXCLUDED.price
+                price = EXCLUDED.price,
+                touched = TRUE
         ",
             *additional_data.region_id,
             &order_ids,
@@ -132,7 +132,24 @@ pub async fn task(
         )
         .execute(&mut *transaction)
         .await
-        .map_err(|e| Error::InsertLatestOrders(e, StationId(*additional_data.region_id as i64)))?;
+        .map_err(|e| Error::InsertLatestOrdersRegion(e, additional_data.region_id))?;
+
+    sqlx::query!("
+            DELETE FROM market_order_latest
+            WHERE region_id = $1
+            AND structure_id = 0
+            AND (
+                touched   = FALSE OR
+                remaining = 0 OR
+                expires   < NOW()
+            )
+        ",
+            *additional_data.region_id
+        )
+        .execute(&mut *transaction)
+        .await
+        // proper error
+        .map_err(|e| Error::DeleteLatestOrders(e, StationId(*additional_data.region_id as i64)))?;
 
     transaction
         .commit()

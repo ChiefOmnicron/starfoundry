@@ -1,4 +1,4 @@
-use starfoundry_libs_types::{CharacterId, CorporationId, StationId};
+use starfoundry_libs_types::{CharacterId, CorporationId, RegionId, StationId};
 use thiserror::Error;
 use uuid::Uuid;
 
@@ -92,15 +92,21 @@ pub enum Error {
     #[error("error while deleting latest orders for station '{1}', error: '{0}'")]
     DeleteLatestOrders(sqlx::Error, StationId),
     #[error("error while inserting latest orders for station '{1}', error: '{0}'")]
-    InsertLatestOrders(sqlx::Error, StationId),
+    InsertLatestOrdersStation(sqlx::Error, StationId),
+    #[error("error while inserting latest orders for station '{1}', error: '{0}'")]
+    InsertLatestOrdersRegion(sqlx::Error, RegionId),
     #[error("error while fetching npc market queue, error: '{0}'")]
     FetchMarketNpcQueue(sqlx::Error),
     #[error("error while fetching player market queue, error: '{0}'")]
     FetchMarketPlayerQueue(sqlx::Error),
     #[error("error while fetching player markets, error: '{0}'")]
-    FetchMarketstationsPlayer(sqlx::Error),
+    FetchMarketStationsPlayer(sqlx::Error),
     #[error("error while inserting market prices, error: '{0}'")]
     InsertMarketPrices(sqlx::Error),
+    #[error("error while updating touched for station id '{1}', error: '{0}'")]
+    UpdateTouchedStructure(sqlx::Error, StationId),
+    #[error("error while updating touched for region id '{1}', error: '{0}'")]
+    UpdateTouchedRegion(sqlx::Error, RegionId),
 
     #[error("sde error {0}")]
     SdeError(starfoundry_libs_eve_sde_parser::Error),

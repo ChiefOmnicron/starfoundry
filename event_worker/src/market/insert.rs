@@ -45,18 +45,20 @@ pub async fn insert_structure_market(
         .map_err(Error::BeginTransaction)?;
 
     sqlx::query!("
-            DELETE FROM market_order_latest
+            UPDATE market_order_latest
+            SET touched = FALSE
             WHERE structure_id = $1
         ",
             *structure_id
         )
         .execute(&mut *transaction)
         .await
-        .map_err(|e| Error::DeleteLatestOrders(e, structure_id))?;
+        .map_err(|e| Error::UpdateTouchedStructure(e, structure_id))?;
 
     sqlx::query!("
             INSERT INTO market_order_latest
             (
+                touched,
                 structure_id,
                 region_id,
                 order_id,
@@ -67,7 +69,7 @@ pub async fn insert_structure_market(
                 expires,
                 is_buy
             )
-            SELECT $1, $2, * FROM UNNEST(
+            SELECT TRUE, $1, $2, * FROM UNNEST(
                 $3::BIGINT[],
                 $4::INTEGER[],
                 $5::INTEGER[],
@@ -79,7 +81,8 @@ pub async fn insert_structure_market(
             DO UPDATE SET
                 remaining = EXCLUDED.remaining,
                 expires = EXCLUDED.expires,
-                price = EXCLUDED.price
+                price = EXCLUDED.price,
+                touched = TRUE
         ",
             *structure_id,
             *region_id,
@@ -93,18 +96,27 @@ pub async fn insert_structure_market(
         )
         .execute(&mut *transaction)
         .await
-        .map_err(|e| Error::InsertLatestOrders(e, structure_id))?;
+        .map_err(|e| Error::InsertLatestOrdersStation(e, structure_id))?;
+
+    sqlx::query!("
+            DELETE FROM market_order_latest
+            WHERE structure_id = $1
+            AND (
+                touched   = FALSE OR
+                remaining = 0 OR
+                expires   < NOW()
+            )
+        ",
+            *structure_id
+        )
+        .execute(&mut *transaction)
+        .await
+        .map_err(|e| Error::DeleteLatestOrders(e, structure_id))?;
 
     transaction
         .commit()
         .await
         .map_err(Error::CommitTransaction)?;
-
-    // run the analyzer to optimize queries
-    sqlx::query!("ANALYZE market_order_latest")
-        .execute(pool)
-        .await
-        .map_err(Error::GenericSqlxError)?;
 
     Ok(())
 }

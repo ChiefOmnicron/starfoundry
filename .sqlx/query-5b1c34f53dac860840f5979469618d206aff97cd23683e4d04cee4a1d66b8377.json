@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM market_order_latest\n            WHERE region_id = $1\n            AND structure_id = 0\n            AND (\n                touched   = FALSE OR\n                remaining = 0 OR\n                expires   < NOW()\n            )\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "5b1c34f53dac860840f5979469618d206aff97cd23683e4d04cee4a1d66b8377"
+}

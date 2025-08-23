@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE market_order_latest\n            SET touched = FALSE\n            WHERE structure_id = $1\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "38222fa6cd801fa2f146a1a99d1a5856cdb880140a46a70b606f8e9ebda6fde5"
+}

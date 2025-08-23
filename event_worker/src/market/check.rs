@@ -182,7 +182,7 @@ async fn validate_market_player(
         ")
         .fetch_all(pool)
         .await
-        .map_err(Error::FetchMarketstationsPlayer)?
+        .map_err(Error::FetchMarketStationsPlayer)?
         .into_iter()
         .map(|x| {
             MarketStation {
