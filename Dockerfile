@@ -109,7 +109,7 @@ FROM        ubuntu:24.04 AS api
 COPY        --from=builder-all /usr/src/starfoundry/target/x86_64-unknown-linux-gnu/release/starfoundry_bin-api /usr/local/bin/api
 
 RUN         apt-get update && \
-            apt-get install -y coinor-libcbc3.1 ca-certificates && \
+            apt-get install -y coinor-libcbc3.1 ca-certificates curl && \
             ln -s /usr/lib/x86_64-linux-gnu/libCbcSolver.so.3.10.11 /usr/lib/x86_64-linux-gnu/libCbcSolver.so.3
 RUN         apt-get clean && \
             rm -rf /var/lib/apt/lists/*
@@ -125,7 +125,7 @@ FROM        ubuntu:24.04 AS api-appraisal
 COPY        --from=builder-appraisal /usr/src/starfoundry/target/x86_64-unknown-linux-gnu/release/starfoundry_bin-api /usr/local/bin/api
 
 RUN         apt-get update && \
-            apt-get install -y coinor-libcbc3.1 ca-certificates && \
+            apt-get install -y coinor-libcbc3.1 ca-certificates curl && \
             ln -s /usr/lib/x86_64-linux-gnu/libCbcSolver.so.3.10.11 /usr/lib/x86_64-linux-gnu/libCbcSolver.so.3
 RUN         apt-get clean && \
             rm -rf /var/lib/apt/lists/*
@@ -139,7 +139,7 @@ CMD         ["/usr/local/bin/api"]
 FROM        ubuntu:24.04 AS collector
 
 RUN         apt-get update && \
-            apt-get install -y ca-certificates
+            apt-get install -y ca-certificates curl
 RUN         apt-get clean && \
             rm -rf /var/lib/apt/lists/*
 
@@ -154,7 +154,7 @@ CMD         ["/usr/local/bin/collector"]
 FROM        ubuntu:24.04 AS database-upgrade
 
 RUN         apt-get update && \
-            apt-get install -y ca-certificates
+            apt-get install -y ca-certificates curl
 RUN         apt-get clean && \
             rm -rf /var/lib/apt/lists/*
 
@@ -168,7 +168,7 @@ CMD         ["/usr/local/bin/database_upgrade"]
 FROM        ubuntu:24.04 AS event-worker
 
 RUN         apt-get update && \
-            apt-get install -y ca-certificates unzip
+            apt-get install -y ca-certificates unzip curl
 
 RUN         apt-get clean && \
             rm -rf /var/lib/apt/lists/*
@@ -183,7 +183,7 @@ CMD         ["/usr/local/bin/event_worker"]
 FROM        ubuntu:24.04 AS event-worker-appraisal
 
 RUN         apt-get update && \
-            apt-get install -y ca-certificates unzip
+            apt-get install -y ca-certificates unzip curl
 
 RUN         apt-get clean && \
             rm -rf /var/lib/apt/lists/*
