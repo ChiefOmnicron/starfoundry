@@ -162,7 +162,7 @@ impl Metric {
         station_id: StationId,
         amount:     u64,
     ) {
-        self.market_station_rows_changed.get_or_create(
+        self.market_station_rows_deleted.get_or_create(
             &&MarketOrderLabel {
                 station_id: *station_id,
             }
