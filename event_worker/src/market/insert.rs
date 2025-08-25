@@ -4,15 +4,19 @@ use starfoundry_libs_eve_api::Market;
 use starfoundry_libs_types::{RegionId, StationId};
 
 use crate::error::{Error, Result};
-use crate::metric::Metric;
+use crate::task::Task;
 
 pub async fn insert_structure_market(
     pool:         &PgPool,
-    metric:       &Metric,
+    task:         &mut Task,
     structure_id: StationId,
     region_id:    RegionId,
     entries:      Vec<Market>,
 ) -> Result<()> {
+    if entries.is_empty() {
+        return Ok(());
+    }
+
     let mut entries = entries;
     entries.sort_by(|a, b| a.order_id.cmp(&b.order_id));
     entries.dedup_by_key(|x| x.order_id);
@@ -92,23 +96,24 @@ pub async fn insert_structure_market(
         .map_err(|e| Error::InsertLatestOrdersStation(e, structure_id))?;
     // TODO: refactor to `as_millis_f64()` when https://github.com/rust-lang/rust/issues/122451 is stable
     let update_time = update_start.elapsed().as_millis();
-    metric.increase_market_order_rows_changed(
+    task.metrics.increase_market_order_rows_changed(
         structure_id,
         result.rows_affected(),
     );
-    metric.add_market_order_latest_update_duration(
+    task.metrics.add_market_order_latest_update_duration(
         structure_id,
         update_time,
     );
+    task.add_log(format!("Updates: {}", result.rows_affected()));
 
     let delete_start = std::time::Instant::now();
     let result = sqlx::query!("
             DELETE FROM market_order_latest
             WHERE structure_id = $1
             AND (
-                order_id != ANY($2) OR
+                NOT order_id = ANY($2) OR
                 remaining = 0 OR
-                expires   < NOW()
+                expires < NOW()
             )
         ",
             *structure_id,
@@ -119,14 +124,15 @@ pub async fn insert_structure_market(
         .map_err(|e| Error::DeleteLatestOrders(e, structure_id))?;
     // TODO: refactor to `as_millis_f64()` when https://github.com/rust-lang/rust/issues/122451 is stable
     let delete_time = delete_start.elapsed().as_millis();
-    metric.increase_market_order_rows_deleted(
+    task.metrics.increase_market_order_rows_deleted(
         structure_id,
         result.rows_affected(),
     );
-    metric.add_market_order_latest_delete_duration(
+    task.metrics.add_market_order_latest_delete_duration(
         structure_id,
         delete_time,
     );
+    task.add_log(format!("Deletes: {}", result.rows_affected()));
 
     transaction
         .commit()

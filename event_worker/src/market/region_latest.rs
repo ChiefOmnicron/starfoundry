@@ -129,7 +129,7 @@ pub async fn task(
             WHERE region_id = $1
             AND structure_id = 0
             AND (
-                order_id != ANY($2) OR
+                NOT order_id = ANY($2) OR
                 remaining = 0 OR
                 expires   < NOW()
             )

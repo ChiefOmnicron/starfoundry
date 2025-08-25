@@ -48,7 +48,7 @@ pub async fn task(
 
     insert_structure_market(
         pool,
-        &task.metrics,
+        task,
         additional_data.structure_id,
         additional_data.region_id,
         entries
