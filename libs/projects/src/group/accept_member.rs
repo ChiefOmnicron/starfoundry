@@ -1,8 +1,9 @@
 use sqlx::PgPool;
-use starfoundry_libs_types::CharacterId;
+use starfoundry_lib_types::CharacterId;
 
 use crate::{Error, ProjectGroupUuid, Result};
 
+#[deprecated]
 pub async fn accept_member(
     pool:         &PgPool,
     character_id: CharacterId,
@@ -12,8 +13,7 @@ pub async fn accept_member(
             UPDATE project_group_member
             SET
                 accepted = TRUE,
-                projects = 'READ',
-                structures = 'READ'
+                permission = 2
             WHERE group_id = $1
             AND character_id = $2
         ",

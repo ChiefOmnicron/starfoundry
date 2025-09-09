@@ -1,0 +1,192 @@
+[info]
+name = "RCI's One Stop Capital Shop"
+
+[restriction]
+blacklist = []
+region_ids = [
+    10000005, # Detorid,
+    10000006, # Wicked Creek,
+    10000007, # Cache
+    10000008, # Scalding Pass,
+    10000009, # Insmother
+    10000014, # Catch,
+    10000025, # Immensea,
+    10000031, # Impass,
+    10000039, # Esoteria,
+    10000056, # Feythabolis,
+    10000059, # Paragon Soul
+    10000061, # Tenerifis,
+]
+whitelist = [
+    99003214, # Brave Collective
+    99003995, # Invidia Gloriae Comes
+    99009163, # Dracarys.
+    99010079, # Brave United (alt corp Brave)
+    99010877, # Out of the Blue
+    99011162, # Shadow Ultimatum
+    99011223, # Sigma Grindset
+    99011239, # Ligma Grindset (alt corp sigma)
+    99012042, # Fanatic Legion
+    99008165, # Young Miners Christian Association (alt corp goons)
+    1354830081, # Goonswarm Federation
+]
+
+[[category]]
+id = "FACTION_DREAD"
+name = "Faction Dreads"
+
+# Revelation Navy Issue
+[[products]]
+uuid = "c43270ae-1339-4ad5-86e5-f52b377d84f9"
+name = "Revelation Navy Issue"
+price = 4_500_000_000
+category = "FACTION_DREAD"
+options = [
+    { option_type = "OFFER", uuid = "a793fa29-6ac1-4b0f-9abb-4f375283f22b" }
+]
+allowed_stations = [
+    35833, 47512, 47513, 47514, 47515, 47516, # Fortizar + Faction
+    35834, # Keepstar
+]
+tags = [
+    "Dread",
+    "Faction Dread",
+    "Revelation",
+    "Amarr"
+]
+whitelist = []
+image_type = "render"
+image_type_id = 73790
+
+# Phoenix Navy Issue
+[[products]]
+uuid = "44515e99-833b-4ee1-b13e-e7b514cedf8c"
+name = "Phoenix Navy Issue"
+price = 4_500_000_000
+category = "FACTION_DREAD"
+options = [
+    { option_type = "OFFER", uuid = "eb9cec4a-e709-477d-b30e-e2fbf2a82f4a" }
+]
+allowed_stations = [
+    35833, 47512, 47513, 47514, 47515, 47516, # Fortizar + Faction
+    35834, # Keepstar
+]
+tags = [
+    "Dread",
+    "Faction Dread",
+    "Phoenix",
+    "Caldari"
+]
+whitelist = []
+image_type = "render"
+image_type_id = 73793
+
+# Moros Navy Issue
+[[products]]
+uuid = "cd9b6b41-13da-4f1e-a670-55eafe93d1ed"
+name = "Moros Navy Issue"
+price = 4_500_000_000
+category = "FACTION_DREAD"
+options = []
+allowed_stations = [
+    35833, 47512, 47513, 47514, 47515, 47516, # Fortizar + Faction
+    35834, # Keepstar
+]
+tags = [
+    "Dread",
+    "Faction Dread",
+    "Moros",
+    "Gallente"
+]
+whitelist = []
+image_type = "render"
+image_type_id = 73792
+
+# Naglfar Fleet Issue
+[[products]]
+uuid = "c815a8f8-e860-4e92-ab7a-24cc36dc2689"
+name = "Naglfar Fleet Issue"
+price = 4_500_000_000
+category = "FACTION_DREAD"
+options = []
+allowed_stations = [
+    35833, 47512, 47513, 47514, 47515, 47516, # Fortizar + Faction
+    35834, # Keepstar
+]
+tags = [
+    "Dread",
+    "Faction Dread",
+    "Naglfar",
+    "Minmatar"
+]
+whitelist = []
+image_type = "render"
+image_type_id = 73787
+
+# Zirnitra
+[[products]]
+uuid = "3d06a461-791d-4772-aedc-839ef211ed99"
+name = "Zirnitra"
+price = 4_500_000_000
+category = "FACTION_DREAD"
+options = []
+allowed_stations = [
+    35833, 47512, 47513, 47514, 47515, 47516, # Fortizar + Faction
+    35834, # Keepstar
+]
+tags = [
+    "Dread",
+    "Faction Dread",
+    "Trigalavian"
+]
+whitelist = []
+image_type = "render"
+image_type_id = 52907
+
+[[category]]
+id = "FIT"
+name = "Fits"
+
+[[products]]
+uuid = "a793fa29-6ac1-4b0f-9abb-4f375283f22b"
+name = "RNI BeeHive fit"
+price = 1_000_000
+category = "FIT"
+options = [
+    { option_type = "OPTION", name = "Without Consumables", deduction = 100_000_000},
+    { option_type = "OPTION", name = "Without Implants", deduction = 100_000_000}
+]
+allowed_stations = [
+    35833, 47512, 47513, 47514, 47515, 47516, # Fortizar + Faction
+    35834, # Keepstar
+]
+tags = [
+    "Fit",
+    "Revelation",
+    "Beehive"
+]
+whitelist = []
+image_type = "icon"
+image_type_id = 37296
+
+[[products]]
+uuid = "eb9cec4a-e709-477d-b30e-e2fbf2a82f4a"
+name = "PNI BeeHive fit"
+price = 1_000_000
+category = "FIT"
+options = [
+    { option_type = "OPTION", name = "Without Consumables", deduction = 100_000_000},
+    { option_type = "OPTION", name = "Without Implants", deduction = 100_000_000}
+]
+allowed_stations = [
+    35833, 47512, 47513, 47514, 47515, 47516, # Fortizar + Faction
+    35834, # Keepstar
+]
+tags = [
+    "Fit",
+    "Phoenix",
+    "Beehive"
+]
+whitelist = []
+image_type = "icon"
+image_type_id = 37292

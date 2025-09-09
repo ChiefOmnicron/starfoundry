@@ -1,0 +1,35 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT\n                    type_id,\n                    remaining,\n                    price\n                FROM market_order_latest\n                WHERE type_id = $1\n                AND structure_id = ANY($2)\n                AND is_buy = false\n                ORDER BY price ASC\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "type_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "remaining",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "price",
+        "type_info": "Float8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int8Array"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "1ae4e6eb2cd4e1afbb5b231bda7ce96455a18e72c4cb898a043f313bc3a0d17a"
+}

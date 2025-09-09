@@ -1,14 +1,10 @@
 use thiserror::Error;
-use uuid::Uuid;
 
 #[derive(Debug, Error)]
 #[non_exhaustive]
 pub enum Error {
-    #[error("error while fetching notifications for blueprint stock '{1}', error '{0}'")]
-    FetchStockBlueprintNotifications(sqlx::Error, Uuid),
-
     #[error("error from api, '{0}'")]
-    ConnectError(starfoundry_libs_eve_api::Error),
+    ConnectError(starfoundry_lib_eve_api::Error),
     #[error("invalid target expected '{0}'. url: '{1}'")]
     InvalidTarget(String, String),
     #[error("error while sending notification, error: '{0}', body: '{1}'")]

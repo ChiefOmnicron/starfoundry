@@ -1,0 +1,50 @@
+name: eve-gateway-api
+
+on:
+  push:
+    branches:
+      - main
+      - rewrite
+    #paths:
+      #- 'eve-gateway/**'
+      #- '.github/workflows/trigger_eve-gateway-api.yml'
+  pull_request:
+    paths:
+      - 'eve-gateway/**'
+      - '.github/workflows/trigger_eve-gateway-api.yml'
+
+concurrency:
+  # Make sure every job on main has unique group id (run_id), so cancel-in-progress only affects PR's
+  # https://stackoverflow.com/questions/74117321/if-condition-in-concurrency-in-gha
+  group: ${{ github.workflow }}-${{ github.head_ref && github.ref || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  test:
+    uses: ./.github/workflows/common_rust_test.yml
+    secrets: inherit
+    with:
+      folder: eve-gateway
+
+  build-image:
+    uses: ./.github/workflows/common_build_docker.yml
+    needs:
+      - test
+    secrets: inherit
+    with:
+      name: eve-gateway/api
+      image: eve-gateway-api
+
+  ship-id:
+    uses: ./.github/workflows/common_deploy.yml
+    needs:
+      - build-image
+    secrets: inherit
+    with:
+      image: ${{ needs.build-image.outputs.IMAGE }}
+      image-name: eve-gateway-api
+      folder: eve-gateway

@@ -1,6 +1,6 @@
 use base64::{Engine as _, engine::general_purpose};
 use serde::Deserialize;
-use starfoundry_libs_types::CharacterId;
+use starfoundry_lib_types::CharacterId;
 
 use crate::Error;
 
@@ -112,4 +112,3 @@ impl EveOAuthToken {
         Ok(character_id.into())
     }
 }
-

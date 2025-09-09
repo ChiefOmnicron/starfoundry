@@ -1,5 +1,5 @@
 use sqlx::PgPool;
-use starfoundry_libs_types::TypeId;
+use starfoundry_lib_types::TypeId;
 use std::collections::HashMap;
 
 use crate::{ExternalAppraisal, AppraisalEntry, Persistance, Result};
@@ -21,8 +21,8 @@ pub struct InternalAppraisal(PgPool);
 impl InternalAppraisal {
     pub fn new(
         pool: PgPool,
-    ) -> Result<Self> {
-        Ok(Self(pool))
+    ) -> Self {
+        Self(pool)
     }
 }
 

@@ -11,12 +11,12 @@
       {
         "ordinal": 1,
         "name": "runs",
-        "type_info": "Int4"
+        "type_info": "Float8"
       },
       {
         "ordinal": 2,
         "name": "cost",
-        "type_info": "Float8"
+        "type_info": "Float4"
       }
     ],
     "parameters": {

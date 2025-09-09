@@ -1,5 +1,5 @@
 use serde::Serialize;
-use starfoundry_libs_types::TypeId;
+use starfoundry_lib_types::TypeId;
 
 #[derive(Copy, Clone, Debug, Serialize)]
 pub struct BlueprintBonus {

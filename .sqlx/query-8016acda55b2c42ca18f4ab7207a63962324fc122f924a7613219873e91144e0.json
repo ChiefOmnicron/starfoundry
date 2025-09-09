@@ -16,7 +16,7 @@
       {
         "ordinal": 2,
         "name": "runs",
-        "type_info": "Int4"
+        "type_info": "Float8"
       },
       {
         "ordinal": 3,

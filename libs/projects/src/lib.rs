@@ -35,11 +35,16 @@ pub use self::service::*;
 pub use self::stock::*;
 pub use self::utils::*;
 
-use starfoundry_libs_types::starfoundry_uuid;
-starfoundry_uuid!(ProjectUuid);
-starfoundry_uuid!(ProjectGroupUuid);
-starfoundry_uuid!(ProjectJobAssignmentUuid);
-starfoundry_uuid!(ProjectJobUuid);
-starfoundry_uuid!(ProjectMarketUuid);
-starfoundry_uuid!(ProjectMiscUuid);
-starfoundry_uuid!(ProjectProductUuid);
+#[cfg(test)]
+mod test_util;
+#[cfg(test)]
+pub use self::test_util::*;
+
+use starfoundry_lib_types::starfoundry_uuid;
+starfoundry_uuid!(ProjectUuid, "ProjectUuid");
+starfoundry_uuid!(ProjectGroupUuid, "ProjectGroupUuid");
+starfoundry_uuid!(ProjectJobAssignmentUuid, "ProjectJobAssignmentUuid");
+starfoundry_uuid!(ProjectJobUuid, "ProjectJobUuid");
+starfoundry_uuid!(ProjectMarketUuid, "ProjectMarketUuid");
+starfoundry_uuid!(ProjectMiscUuid, "ProjectMiscUuid");
+starfoundry_uuid!(ProjectProductUuid, "ProjectProductUuid");

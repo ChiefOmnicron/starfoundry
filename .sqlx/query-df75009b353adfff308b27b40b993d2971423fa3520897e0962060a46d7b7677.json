@@ -1,0 +1,63 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                    SELECT\n                        name,\n                        security AS \"security: String\",\n                        type_id,\n                        rigs,\n                        services,\n                        structure_id\n                    FROM structure WHERE id = $1\n                ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 1,
+        "name": "security: String",
+        "type_info": {
+          "Custom": {
+            "name": "system_security",
+            "kind": {
+              "Enum": [
+                "NULLSEC",
+                "LOWSEC",
+                "HIGHSEC"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "type_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "rigs",
+        "type_info": "Int4Array"
+      },
+      {
+        "ordinal": 4,
+        "name": "services",
+        "type_info": "Int4Array"
+      },
+      {
+        "ordinal": 5,
+        "name": "structure_id",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "df75009b353adfff308b27b40b993d2971423fa3520897e0962060a46d7b7677"
+}

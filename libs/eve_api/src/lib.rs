@@ -50,7 +50,7 @@ pub use self::oauth_token::*;
 pub use self::universe::*;
 
 use serde::{Deserialize, Deserializer, Serialize};
-use starfoundry_libs_types::{CharacterId, ItemId, LocationId, TypeId, CorporationId, JobId};
+use starfoundry_lib_types::{CharacterId, ItemId, LocationId, TypeId, CorporationId, JobId};
 
 /// Represents an asset
 #[derive(Debug, Deserialize)]

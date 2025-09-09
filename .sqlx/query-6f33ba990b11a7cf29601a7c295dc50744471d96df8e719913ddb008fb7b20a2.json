@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM buildcost_history\n            WHERE date = NOW()\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "6f33ba990b11a7cf29601a7c295dc50744471d96df8e719913ddb008fb7b20a2"
+}
