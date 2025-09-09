@@ -1,5 +1,5 @@
-use starfoundry_libs_structures::StructureUuid;
-use starfoundry_libs_types::{CharacterId, JobId, TypeId};
+use starfoundry_lib_structures::StructureUuid;
+use starfoundry_lib_types::{CharacterId, JobId, TypeId};
 use thiserror::Error;
 use uuid::Uuid;
 
@@ -12,9 +12,11 @@ pub type Result<T, E = Error> = std::result::Result<T, E>;
 pub enum Error {
     #[error("Not eistonen")]
     NotEistonen,
+    #[error("Validating the input data failed, '{0}'")]
+    ValidationError(String),
 
     #[error("general appraisal error, error: '{0}'")]
-    AppraisalError(starfoundry_libs_appraisal::Error),
+    AppraisalError(starfoundry_lib_appraisal::Error),
     #[error("no project with id '{0}'")]
     ProjectNotFound(ProjectUuid),
     #[error("no project group with id '{0}'")]
@@ -164,7 +166,7 @@ pub enum Error {
 
     #[error("the structure could not be found, '{0}'")]
     StructureNotFound(StructureUuid),
-    // TODO: needs moved to starfoundry_libs_structures
+    // TODO: needs moved to starfoundry_lib_structures
     #[error("error while fetching structure ids for group, '{0}'")]
     FetchStructureGroup(sqlx::Error),
     #[error("error while fetching dynamic structure ids for group, '{0}'")]
@@ -183,7 +185,7 @@ pub enum Error {
     TransactionCommitError(sqlx::Error),
 
     #[error("generic structure lib error: '{0}'")]
-    GenericStructureError(#[from] starfoundry_libs_structures::Error),
+    GenericStructureError(#[from] starfoundry_lib_structures::Error),
     #[error("invalid typeId, '{0}'")]
     InvalidTypeId(TypeId),
 }

@@ -1,17 +1,25 @@
+<<<<<<< HEAD
 import { fileURLToPath, URL } from 'node:url';
+=======
+import { defineConfig } from "vite";
+import { tanstackRouter } from '@tanstack/router-plugin/vite';
+import react from "@vitejs/plugin-react";
+>>>>>>> ea95a81a (WIP)
 
-import { defineConfig } from 'vite';
-import vue from '@vitejs/plugin-vue';
-import vueDevTools from 'vite-plugin-vue-devtools';
-import conditionalCompile from 'vite-plugin-conditional-compiler';
+import { fileURLToPath, URL } from 'node:url';
 
 // https://vite.dev/config/
 export default defineConfig({
     plugins: [
-        vue(),
-        vueDevTools(),
-        conditionalCompile(),
+        tanstackRouter({
+            target: 'react',
+            autoCodeSplitting: true,
+        }),
+        react(),
     ],
+    define: {
+        '__APP_VERSION__': JSON.stringify(process.env.npm_package_version),
+    },
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url)),

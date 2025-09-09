@@ -1,8 +1,8 @@
 use sqlx::PgPool;
-use starfoundry_libs_types::CharacterId;
+use starfoundry_lib_types::CharacterId;
 use uuid::Uuid;
 
-use crate::{CreateJobAssignment, Error, ProjectJobAssignmentUuid, Result};
+use crate::{CreateJobAssignment, Error, ProjectGroupPermissionCode, ProjectJobAssignmentUuid, Result};
 
 pub async fn create(
     pool:           &PgPool,
@@ -16,13 +16,10 @@ pub async fn create(
             FROM project p
             JOIN project_group_member pgm ON pgm.group_id = p.project_group_id
             JOIN project_job pj ON p.id = pj.project_id
-            WHERE (
-                pgm.character_id = $1 OR
-                p.owner = $1
-            )
+            WHERE pgm.character_id = $1
             AND (
-                pgm.projects = 'WRITE' OR
-                pgm.projects = 'READ'
+                permission & $3 = $3 OR
+                permission & $4 = $4
             )
             AND pj.id = ANY($2)
         ",
@@ -31,7 +28,9 @@ pub async fn create(
                 .job_ids
                 .into_iter()
                 .map(|x| *x)
-                .collect::<Vec<_>>()
+                .collect::<Vec<_>>(),
+            *ProjectGroupPermissionCode::Owner,
+            *ProjectGroupPermissionCode::WriteProject,
         )
         .fetch_all(pool)
         .await

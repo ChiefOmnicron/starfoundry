@@ -1,12 +1,12 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use sqlx::types::Uuid;
-use starfoundry_libs_items::Item;
-use starfoundry_libs_types::TypeId;
+use starfoundry_lib_items::Item;
+use starfoundry_lib_types::TypeId;
 use utoipa::ToSchema;
 
 use super::MarketEntry;
 
-#[derive(Clone, Debug, Serialize, ToSchema)]
+#[derive(Debug, Deserialize, Serialize, ToSchema)]
 #[schema(
     example = json!({
         "code": "cidx8nzQNW",
@@ -120,7 +120,7 @@ pub struct Appraisal {
     pub total:          AppraisalTotal,
 }
 
-#[derive(Clone, Debug, Serialize, ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 #[schema(
     example = json!({
         "quantity": 100,
@@ -175,7 +175,7 @@ pub struct AppraisalItem {
     pub sell: MarketEntry,
 }
 
-#[derive(Clone, Debug, Serialize, ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 #[schema(
     example = json!({
         "total": {

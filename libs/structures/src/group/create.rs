@@ -1,7 +1,8 @@
 use sqlx::PgPool;
-use starfoundry_libs_types::CharacterId;
+use starfoundry_lib_types::CharacterId;
 
 use crate::{CreateGroup, Error, Result, StructureGroupUuid};
+use uuid::Uuid;
 
 pub async fn create(
     pool:            &PgPool,
@@ -13,17 +14,15 @@ pub async fn create(
             INSERT INTO structure_group
             (
                 owner,
-                name,
-                structure_ids
+                name
             )
             VALUES (
-                $1, $2, $3
+                $1, $2
             )
             RETURNING id
         ",
             *character_id,
             structure_group.name,
-            &structure_group.structure_ids.into_iter().map(|x| *x).collect::<Vec<_>>(),
         )
         .fetch_one(pool)
         .await
@@ -31,5 +30,16 @@ pub async fn create(
         .id
         .into();
 
-    Ok(structure_group_id)
+    sqlx::query!("
+            INSERT INTO structure_group_structure (structure_group_id, structure_id)
+            SELECT $1, * FROM UNNEST($2::UUID[])
+        ",
+            structure_group_id,
+            &structure_group.structure_ids.into_iter().map(|x| *x).collect::<Vec<_>>(),
+        )
+        .execute(pool)
+        .await
+        .unwrap();
+
+    Ok(Uuid::new_v4().into())
 }

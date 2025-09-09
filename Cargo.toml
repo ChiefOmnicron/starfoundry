@@ -5,22 +5,36 @@ lto = true
 opt-level = 3
 panic = 'abort'
 
+[profile.dev.package.sqlx-macros]
+opt-level = 3
+
 [workspace]
 members = [
-  'api',
-  'collector',
-  'database_upgrade',
-  'event_worker',
-  'meta_webserver',
+  # considered done
+  'general-purpose_lib-types',
 
+  # new
+  #'authentication',
+  #'gateway',
+
+  # refactor due to new services
+  'eve-gateway_lib',
+  'eve-gateway',
+  'industry',
+
+  # trash tier
+  'store',
+  'meta_webserver',
+  'worker-store-cost',
+  'worker-eve_sde_parser',
   'libs/appraisal',
   'libs/compression',
   'libs/eve_api',
-  'libs/eve_sde_parser',
   'libs/items',
   'libs/notification',
-  'libs/structures',
-  'libs/types',
+  'libs/structures'
+
+  #'uuidv7_migration',
 ]
 resolver = "2"
 

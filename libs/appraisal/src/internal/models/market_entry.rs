@@ -1,7 +1,7 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
-#[derive(Clone, Debug, Default, Serialize, ToSchema)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize, ToSchema)]
 pub struct MarketEntry {
     pub max:          f64,
     pub min:          f64,
@@ -11,7 +11,7 @@ pub struct MarketEntry {
     pub per_item:     MarketEntyPerItem,
 }
 
-#[derive(Clone, Debug, Default, Serialize, ToSchema)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize, ToSchema)]
 pub struct MarketEntyPerItem {
     pub avg:    f64,
     pub max:    f64,

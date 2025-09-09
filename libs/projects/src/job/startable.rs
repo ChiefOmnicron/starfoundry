@@ -16,7 +16,6 @@ pub async fn startable_jobs(
                 depends_on,
 
                 i.name,
-                i.base_price,
                 i.volume,
                 i.category_id,
                 i.group_id,

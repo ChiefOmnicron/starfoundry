@@ -1,7 +1,7 @@
 use num_format::{Locale, ToFormattedString};
 use sqlx::PgPool;
 use sqlx::postgres::PgPoolOptions;
-use starfoundry_libs_compression::*;
+use starfoundry_lib_compression::*;
 use std::collections::HashMap;
 use term_table::row::Row;
 use term_table::table_cell::{Alignment, TableCell};
@@ -17,43 +17,35 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?;
 
     let mut config = Config::default();
-    //config.want_mineral.insert(Mineral::Tritanium, 5_000_000f64);
-    //config.want_mineral.insert(Mineral::Mexallon, 5_000_000f64);
-    //config.want_mineral.insert(Mineral::Pyerite, 5_000_000f64);
-    //config.want_mineral.insert(Mineral::Isogen, 5_000_000f64);
-    //config.want_mineral.insert(Mineral::Nocxium, 5_000_000f64);
-    //config.want_mineral.insert(Mineral::Zydrine, 5_000_000f64);
-    //config.want_mineral.insert(Mineral::Megacyte, 5_000_000f64);
-    //config.want_mineral.insert(Mineral::Morphite, 1_000_000f64);
-    //config.want_mineral.insert(Mineral::AtmosphericGases, 500_000f64);
-    //config.want_mineral.insert(Mineral::EvaporiteDeposits, 500_000f64);
-    //config.want_mineral.insert(Mineral::Hydrocarbons, 500_000f64);
-    //config.want_mineral.insert(Mineral::Silicates, 500_000f64);
-    //config.want_mineral.insert(Mineral::Cobalt, 100_000f64);
-    //config.want_mineral.insert(Mineral::Scandium, 100_000f64);
-    //config.want_mineral.insert(Mineral::Titanium, 100_000f64);
-    //config.want_mineral.insert(Mineral::Tungsten, 100_000f64);
-    //config.want_mineral.insert(Mineral::Chromium, 100_000f64);
-    //config.want_mineral.insert(Mineral::Cadmium, 100_000f64);
-    //config.want_mineral.insert(Mineral::Platinum, 100_000f64);
-    //config.want_mineral.insert(Mineral::Vanadium, 100_000f64);
-    //config.want_mineral.insert(Mineral::Caesium, 1_000f64);
-    //config.want_mineral.insert(Mineral::Hafnium, 1_000f64);
-    //config.want_mineral.insert(Mineral::Mercury, 1_000f64);
-    //config.want_mineral.insert(Mineral::Technetium, 1_000f64);
-    //config.want_mineral.insert(Mineral::Promethium, 1_000f64);
-    //config.want_mineral.insert(Mineral::Neodymium, 1_000f64);
-    //config.want_mineral.insert(Mineral::Dysprosium, 1_000f64);
-    //config.want_mineral.insert(Mineral::Thulium, 1_000f64);
-    //config.want_gas.insert(Gas::FulleriteC28, 5_000f64);
-
-    config.want_mineral.insert(Mineral::StrontiumClathrates, 876f64);
-    config.want_mineral.insert(Mineral::OxygenIsotopes, 6172f64);
-    config.want_mineral.insert(Mineral::NitrogenIsotopes, 3472f64);
-    config.want_mineral.insert(Mineral::LiquidOzone, 15300f64);
-    config.want_mineral.insert(Mineral::HydrogenIsotopes, 5015f64);
-    config.want_mineral.insert(Mineral::HeliumIsotopes, 5015f64);
-    config.want_mineral.insert(Mineral::HeavyWater, 7434f64);
+    config.want_mineral.insert(Mineral::Tritanium, 5_000_000f64);
+    config.want_mineral.insert(Mineral::Mexallon, 5_000_000f64);
+    config.want_mineral.insert(Mineral::Pyerite, 5_000_000f64);
+    config.want_mineral.insert(Mineral::Isogen, 5_000_000f64);
+    config.want_mineral.insert(Mineral::Nocxium, 5_000_000f64);
+    config.want_mineral.insert(Mineral::Zydrine, 5_000_000f64);
+    config.want_mineral.insert(Mineral::Megacyte, 5_000_000f64);
+    config.want_mineral.insert(Mineral::Morphite, 1_000_000f64);
+    config.want_mineral.insert(Mineral::AtmosphericGases, 500_000f64);
+    config.want_mineral.insert(Mineral::EvaporiteDeposits, 500_000f64);
+    config.want_mineral.insert(Mineral::Hydrocarbons, 500_000f64);
+    config.want_mineral.insert(Mineral::Silicates, 500_000f64);
+    config.want_mineral.insert(Mineral::Cobalt, 100_000f64);
+    config.want_mineral.insert(Mineral::Scandium, 100_000f64);
+    config.want_mineral.insert(Mineral::Titanium, 100_000f64);
+    config.want_mineral.insert(Mineral::Tungsten, 100_000f64);
+    config.want_mineral.insert(Mineral::Chromium, 100_000f64);
+    config.want_mineral.insert(Mineral::Cadmium, 100_000f64);
+    config.want_mineral.insert(Mineral::Platinum, 100_000f64);
+    config.want_mineral.insert(Mineral::Vanadium, 100_000f64);
+    config.want_mineral.insert(Mineral::Caesium, 1_000f64);
+    config.want_mineral.insert(Mineral::Hafnium, 1_000f64);
+    config.want_mineral.insert(Mineral::Mercury, 1_000f64);
+    config.want_mineral.insert(Mineral::Technetium, 1_000f64);
+    config.want_mineral.insert(Mineral::Promethium, 1_000f64);
+    config.want_mineral.insert(Mineral::Neodymium, 1_000f64);
+    config.want_mineral.insert(Mineral::Dysprosium, 1_000f64);
+    config.want_mineral.insert(Mineral::Thulium, 1_000f64);
+    config.want_gas.insert(Gas::FulleriteC28, 5_000f64);
 
     config.prices_asteroid = fetch_asteroid_prices(&pool).await;
     config.prices_gas = fetch_gas_prices(&pool).await;
@@ -115,6 +107,7 @@ async fn debug_result_asteroid(
     println!("{}", compressed_ore_copy.join("\n"));
 }
 
+#[allow(dead_code)]
 async fn debug_result_gas(
     pool:   &PgPool,
     config: Config,

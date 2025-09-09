@@ -1,9 +1,9 @@
 use chrono::NaiveDateTime;
 use sqlx::PgPool;
-use starfoundry_libs_structures::StructureUuid;
-use starfoundry_libs_types::CharacterId;
+use starfoundry_lib_structures::StructureUuid;
+use starfoundry_lib_types::CharacterId;
 
-use crate::{ActiveJob, AddMarket, AddMisc, CheckResources, CostEstimateConfiguration, CostEstimateResponse, CreateProject, Error, Excess, FetchJobFilter, Finance, Job, Market, MarketRecommendation, Misc, Product, Project, ProjectFilter, ProjectJobUuid, ProjectMarketUuid, ProjectMiscUuid, ProjectUuid, Result, StartableJob, Stock, StockMinimal, UpdateExcessPrice, UpdateJob, UpdateMarket, UpdateMineral, UpdateMisc, UpdateProject, UpdateStockPrice};
+use crate::{ActiveJob, AddMarket, AddMisc, CheckResources, CostEstimateConfiguration, CostEstimateResponse, CreateProject, Error, Excess, FetchJobFilter, Finance, Job, Market, MarketRecommendation, Misc, Product, Project, ProjectFilter, ProjectGroupPermissionCode, ProjectJobUuid, ProjectMarketUuid, ProjectMiscUuid, ProjectUuid, Result, StartableJob, Stock, StockMinimal, UpdateExcessPrice, UpdateJob, UpdateMarket, UpdateMineral, UpdateMisc, UpdateProject, UpdateStockPrice};
 
 pub struct ProjectService(ProjectUuid);
 
@@ -49,17 +49,16 @@ impl ProjectService {
                 FROM project p
                 JOIN project_group_member pgm ON pgm.group_id = p.project_group_id
                 WHERE p.id = $1
+                AND pgm.character_id = $2
                 AND (
-                    pgm.character_id = $2 OR
-                    p.owner = $2
-                )
-                AND (
-                    pgm.projects = 'WRITE' OR
-                    pgm.projects = 'READ'
+                    permission & $3 = $3 OR
+                    permission & $4 = $4
                 )
             ",
                 *self.0,
                 *character_id,
+                *ProjectGroupPermissionCode::Owner,
+                *ProjectGroupPermissionCode::ReadGroup,
             )
             .fetch_optional(pool)
             .await
@@ -82,14 +81,16 @@ impl ProjectService {
                 FROM project p
                 JOIN project_group_member pgm ON pgm.group_id = p.project_group_id
                 WHERE p.id = $1
+                AND pgm.character_id = $2
                 AND (
-                    pgm.character_id = $2 OR
-                    p.owner = $2
+                    permission & $3 = $3 OR
+                    permission & $4 = $4
                 )
-                AND pgm.projects = 'WRITE'
             ",
                 *self.0,
                 *character_id,
+                *ProjectGroupPermissionCode::Owner,
+                *ProjectGroupPermissionCode::WriteProject,
             )
             .fetch_optional(pool)
             .await

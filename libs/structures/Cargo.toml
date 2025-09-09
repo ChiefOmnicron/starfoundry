@@ -1,16 +1,16 @@
 [package]
-name = "starfoundry_libs-structures"
+name = "starfoundry_lib-structures"
 authors.workspace = true
 edition.workspace = true
 version.workspace = true
 license.workspace = true
 
 [dependencies]
-serde = { version = "1.0.219", features = ["derive"] }
-serde_json = "1.0.140"
-sqlx = { version = "0.8.5", features = ["chrono", "runtime-tokio-rustls", "postgres", "uuid", "json"] }
-starfoundry_libs-eve_api = { path = "../eve_api" }
-starfoundry_libs-types = { path = "../types" }
-thiserror = "2.0.12"
-utoipa = "5.3.1"
-uuid = "1.16.0"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.145"
+sqlx = { version = "0.8.6", features = ["chrono", "runtime-tokio-rustls", "postgres", "uuid", "json"] }
+starfoundry_lib-eve_api = { path = "../eve_api" }
+starfoundry_lib-types = { path = "../../general-purpose_lib-types" }
+thiserror = "2.0.17"
+utoipa = "5.4.0"
+uuid = "1.18.1"

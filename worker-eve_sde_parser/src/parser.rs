@@ -1,0 +1,12 @@
+pub mod blueprints;
+pub mod dogma_effects;
+pub mod constellations;
+pub mod group_ids;
+pub mod industry_modifier_sources;
+pub mod industry_target_filters;
+pub mod regions;
+pub mod repackaged;
+pub mod systems;
+pub mod type_dogma;
+pub mod type_ids;
+pub mod type_material;

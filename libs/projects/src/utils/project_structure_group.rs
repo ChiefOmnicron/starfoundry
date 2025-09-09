@@ -1,6 +1,6 @@
 use sqlx::PgPool;
-use starfoundry_libs_structures::{StructureGroupUuid, StructureService, StructureUuid};
-use starfoundry_libs_types::CharacterId;
+use starfoundry_lib_structures::{StructureGroupUuid, StructureService, StructureUuid};
+use starfoundry_lib_types::CharacterId;
 
 use crate::{Error, ProjectStructureGroup, Result, StructureMapping};
 
@@ -30,51 +30,46 @@ async fn structure_group(
     group_id:     StructureGroupUuid,
 ) -> Result<Option<ProjectStructureGroup>> {
     let structure_uuids = sqlx::query!("
-            SELECT structure_ids
-            FROM structure_group
-            WHERE id = $1
+            SELECT structure_id
+            FROM structure_group_structure
+            WHERE structure_group_id = $1
         ",
             *group_id,
         )
-        .fetch_optional(pool)
+        .fetch_all(pool)
         .await
         .map_err(Error::FetchStructureGroup)?
-        .map(|x| {
-            x.structure_ids
-                .into_iter()
-                .map(|y| StructureUuid::new(y))
-                .collect::<Vec<_>>()
-        });
+        .into_iter()
+        .map(|x| x.structure_id)
+        .map(Into::into)
+        .collect::<Vec<_>>();
 
-    if let Some(structure_uuids) = structure_uuids {
-        let mut group = ProjectStructureGroup::default();
+    let mut group = ProjectStructureGroup::default();
+    group.id = *group_id;
 
-        for structure_uuid in structure_uuids {
-            let structure = StructureService::new(structure_uuid)
-                .fetch(pool, character_id)
-                .await?
-                .ok_or_else(|| Error::StructureNotFound(structure_uuid))?;
+    for structure_uuid in structure_uuids {
+        let structure = StructureService::new(structure_uuid)
+            .danger_no_permission_fetch(pool)
+            .await?
+            .ok_or_else(|| Error::StructureNotFound(structure_uuid))?;
 
-            group
-                .mapping
-                .push(StructureMapping {
-                    structure_uuid: structure_uuid,
-                    category_group: structure.category_groups(),
-                });
+        group
+            .mapping
+            .push(StructureMapping {
+                structure_uuid: structure_uuid,
+                category_group: structure.category_groups(),
+            });
 
-            group
-                .system_ids
-                .push(structure.system_id);
+        group
+            .system_ids
+            .push(structure.system_id);
 
-            group
-                .structures
-                .push(structure);
-        }
-
-        return Ok(Some(group));
+        group
+            .structures
+            .push(structure);
     }
 
-    Ok(None)
+    return Ok(Some(group));
 }
 
 async fn structure_dynamic_groups(

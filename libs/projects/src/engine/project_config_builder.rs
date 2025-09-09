@@ -1,5 +1,5 @@
-use starfoundry_libs_structures::Structure;
-use starfoundry_libs_types::{SystemId, TypeId};
+use starfoundry_lib_structures::Structure;
+use starfoundry_lib_types::{SystemId, TypeId};
 use std::collections::HashMap;
 
 use crate::{BlueprintBonus, StructureMapping};

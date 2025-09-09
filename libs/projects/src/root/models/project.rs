@@ -1,5 +1,5 @@
 use serde::Serialize;
-use starfoundry_libs_structures::StructureGroupUuid;
+use starfoundry_lib_structures::StructureGroupUuid;
 use utoipa::ToSchema;
 
 use crate::{Product, Finance, ProjectGroupUuid, ProjectStatus};

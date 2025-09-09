@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use starfoundry_libs_structures::StructureUuid;
+use starfoundry_lib_structures::StructureUuid;
 use utoipa::ToSchema;
 
 use crate::{ProjectJobUuid, ProjectUuid};

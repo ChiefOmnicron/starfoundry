@@ -1,5 +1,5 @@
 use sqlx::PgPool;
-use starfoundry_libs_types::{CharacterId, JobId};
+use starfoundry_lib_types::{CharacterId, JobId};
 
 use crate::{Error, ProjectService, Result, UpdateJobDetectionReplace};
 
@@ -110,8 +110,8 @@ pub async fn update_job_replace(
         ",
             *update.target_project_uuid,
             job_info.type_id,
-            job_info.runs,
-            job_info.cost,
+            job_info.runs as i32,
+            job_info.cost as f64,
             *job_id,
             *update.structure_id,
         )

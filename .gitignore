@@ -1,6 +1,5 @@
 target
 **/*.rs.bk
-Cargo.lock
 
 pkg/
 dist/
@@ -9,9 +8,8 @@ node_modules
 libs/eve_sde_parser/output
 libs/eve_sde_parser/input
 libs/eve_sde_parser/sde
-libs/eve_sde_parser_old/output
-libs/eve_sde_parser_old/input
-libs/eve_sde_parser_old/sde
+deprecated/event_worker/sde
+worker-eve_sde_parser/input
 
 .env
 config_prod.yaml
@@ -19,15 +17,16 @@ DependencyTreeDebug.json
 FlatTreeDebug.json
 FlatTreeDebug*.json
 
-# Google sheets
-service_credentials.json
-
 hidden/
 
-k8s/*/secrets.dev.yaml
-k8s/*/secrets.prod.yaml
+webapp/cypress/downloads
+webapp/cypress/screenshots
 
-web/cypress/downloads
-web/cypress/screenshots
+*.pem
 
-recovery
+worker-store-cost/fits/*
+worker-store-cost/hulls/*
+.tanstack
+prices.out
+
+authentication/certs/*.pem

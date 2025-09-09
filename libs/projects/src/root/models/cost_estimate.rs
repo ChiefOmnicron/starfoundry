@@ -1,5 +1,5 @@
 use serde::Serialize;
-use starfoundry_libs_types::TypeId;
+use starfoundry_lib_types::TypeId;
 use utoipa::ToSchema;
 
 #[derive(Clone, Debug, Serialize, ToSchema)]

@@ -1,0 +1,53 @@
+name: deployment
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        description: 'Image of the dockerfile that should be deployed'
+        required: true
+        type: string
+      image-name:
+        description: 'Name of the image that should be updated'
+        required: true
+        type:  string
+      folder:
+        description: 'Folder of the kustomization'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  k8s:
+    name: Deploy k8s
+    runs-on: [self-hosted, linux]
+    steps:
+      - name: Clone infra repository
+        uses: GuillaumeFalourd/clone-github-repo-action@v2.3
+        with:
+          depth: 1
+          branch: 'main'
+          owner: 'ChiefOmnicron'
+          repository: 'starfoundry-k8s-infra'
+          access-token: ${{ secrets.ACCESS_KEY_GITHUB_INFRA }}
+      - name: Update image
+        run: |
+          cd starfoundry-k8s-infra/apps/${{ inputs.folder }};
+          kustomize edit set image ${{ inputs.image-name }}=${{ inputs.image }}
+      - name: Commit
+        run: |
+          cd starfoundry-k8s-infra
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+      - name: Push
+        run: |
+          cd starfoundry-k8s-infra
+          git add -A
+          git commit -m "Updates docker images from ${{ inputs.folder }} to ${{ inputs.image }}"
+          git push origin main
+      - name: Cleanup
+        run: |
+          rm -rf starfoundry-k8s-infra

@@ -1,0 +1,50 @@
+name: store-worker-cost
+
+on:
+  push:
+    branches:
+      - main
+      - rewrite
+    #paths:
+    #  - 'worker-store-cost/**'
+    #  - '.github/workflows/trigger_store-worker-cost.yml'
+  pull_request:
+    paths:
+      - 'worker-store-cost/**'
+      - '.github/workflows/trigger_store-worker-cost.yml'
+
+concurrency:
+  # Make sure every job on main has unique group id (run_id), so cancel-in-progress only affects PR's
+  # https://stackoverflow.com/questions/74117321/if-condition-in-concurrency-in-gha
+  group: ${{ github.workflow }}-${{ github.head_ref && github.ref || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read # for checkout
+  packages: write # for ghcr.io
+
+jobs:
+  test:
+    uses: ./.github/workflows/common_rust_test.yml
+    secrets: inherit
+    with:
+      folder: worker-store-cost
+
+  build-image:
+    uses: ./.github/workflows/common_build_docker.yml
+    secrets: inherit
+    needs:
+      - test
+    with:
+      name: store/worker-cost
+      image: store-worker-cost
+
+  ship-it:
+    uses: ./.github/workflows/common_deploy.yml
+    needs:
+      - build-image
+    secrets: inherit
+    with:
+      image: ${{ needs.build-image.outputs.IMAGE }}
+      image-name: worker-cost
+      folder: store

@@ -24,7 +24,7 @@ pub async fn fetch(
             x.into_iter()
                 .map(|y| JobDetection {
                     project_uuid: y.project_id.map(Into::into),
-                    runs:         y.runs,
+                    runs:         y.runs as i32,
                     type_id:      y.type_id.into(),
                     end_date:     y.end_date,
                     job_id:       y.job_id.into(),
