@@ -15,7 +15,6 @@
                 "PREPARING",
                 "IN_PROGRESS",
                 "PAUSED",
-                "ABORTED",
                 "DONE"
               ]
             }

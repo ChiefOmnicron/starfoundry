@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                INSERT INTO order_product (\n                    order_id,\n                    is_additional,\n                    name,\n                    price,\n                    image_type,\n                    image_type_id,\n                    content\n                ) VALUES\n                (\n                    $1, TRUE,\n                    (SELECT name FROM product WHERE id = $2),\n                    (SELECT price FROM product WHERE id = $2),\n                    (SELECT image_type FROM product WHERE id = $2),\n                    (SELECT image_type_id FROM product WHERE id = $2),\n                    (SELECT content FROM product WHERE id = $2)\n                )\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "5ad8eda1abf5c09b298b8074be0c8bb93b483e91288c48a5f0073c4598d8313a"
+}

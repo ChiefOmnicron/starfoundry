@@ -1,0 +1,94 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                category,\n                name,\n                price,\n                image_type,\n                image_type_id,\n                description,\n                tags,\n                content,\n                message,\n                delivery_time,\n                additional_products,\n                blacklist,\n                whitelist\n            FROM product\n            WHERE id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "category",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "price",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 3,
+        "name": "image_type",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "image_type_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "description",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 6,
+        "name": "tags",
+        "type_info": "VarcharArray"
+      },
+      {
+        "ordinal": 7,
+        "name": "content",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 8,
+        "name": "message",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 9,
+        "name": "delivery_time",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 10,
+        "name": "additional_products",
+        "type_info": "UuidArray"
+      },
+      {
+        "ordinal": 11,
+        "name": "blacklist",
+        "type_info": "Int4Array"
+      },
+      {
+        "ordinal": 12,
+        "name": "whitelist",
+        "type_info": "Int4Array"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "d5950c17ee5f80c1071dc3c82cdc7e474304c3471ba6fbc0fc6bbfbb83abb341"
+}

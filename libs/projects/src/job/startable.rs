@@ -1,5 +1,5 @@
 use sqlx::PgPool;
-use starfoundry_libs_types::TypeId;
+use starfoundry_lib_types::TypeId;
 use std::collections::HashSet;
 
 use crate::{sort_by_job, Error, ProjectJobStatus, ProjectUuid, Result, StartableJob, StartableJobGroup, StartableJobEntry};
@@ -15,7 +15,6 @@ pub async fn startable_jobs(
                 depends_on,
 
                 i.name,
-                i.base_price,
                 i.volume,
                 i.category_id,
                 i.group_id,

@@ -1,6 +1,6 @@
 use sqlx::PgPool;
 use sqlx::types::chrono::NaiveDateTime;
-use starfoundry_libs_structures::StructureUuid;
+use starfoundry_lib_structures::StructureUuid;
 
 use crate::{Error, Result};
 

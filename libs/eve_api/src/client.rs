@@ -3,7 +3,7 @@ use reqwest::header::{HeaderMap, HeaderValue};
 use reqwest::{Client, Response, StatusCode};
 use serde::de::DeserializeOwned;
 use serde::Serialize;
-use starfoundry_libs_types::{CorporationId, CharacterId};
+use starfoundry_lib_types::{CorporationId, CharacterId};
 use std::collections::HashMap;
 use std::fmt::Debug;
 use std::sync::{Arc, Mutex};

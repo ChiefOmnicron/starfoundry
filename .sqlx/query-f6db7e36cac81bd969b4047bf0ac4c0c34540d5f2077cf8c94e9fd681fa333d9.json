@@ -1,0 +1,58 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                id,\n                character_id,\n                quantity,\n                status,\n                delivery_location,\n                comment,\n                created_at\n            FROM order_info\n            WHERE character_id = $1\n            AND status = ANY('{ACCEPTED, IN_PROGRESS, DONE}')\n            ORDER BY created_at\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "character_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "quantity",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "status",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "delivery_location",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "comment",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 6,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false
+    ]
+  },
+  "hash": "f6db7e36cac81bd969b4047bf0ac4c0c34540d5f2077cf8c94e9fd681fa333d9"
+}

@@ -1,23 +1,23 @@
 [package]
-name = "starfoundry_libs-projects"
+name = "starfoundry_lib-projects"
 authors.workspace = true
 edition.workspace = true
 version.workspace = true
 license.workspace = true
 
 [dependencies]
-chrono = { version = "0.4.41", features = ["serde"] }
-serde = { version = "1.0.219", features = ["derive"] }
-serde_json = "1.0.140"
-sqlx = { version = "0.8.5", features = ["chrono", "runtime-tokio-rustls", "postgres", "uuid", "json"] }
-starfoundry_libs-appraisal = { path = "../appraisal" }
-starfoundry_libs-items = { path = "../items" }
-starfoundry_libs-structures = { path = "../structures" }
-starfoundry_libs-types = { path = "../types" }
-thiserror = "2.0.12"
-utoipa = "5.3.1"
-uuid = "1.16.0"
+chrono = { version = "0.4.42", features = ["serde"] }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.145"
+sqlx = { version = "0.8.6", features = ["chrono", "runtime-tokio-rustls", "postgres", "uuid", "json"] }
+starfoundry_lib-appraisal = { path = "../appraisal" }
+starfoundry_lib-items = { path = "../items" }
+starfoundry_lib-structures = { path = "../structures" }
+starfoundry_lib-types = { path = "../../general-purpose_lib-types" }
+thiserror = "2.0.17"
+utoipa = "5.4.0"
+uuid = "1.18.1"
 
 [dev-dependencies]
 dotenvy = "0.15.7"
-tokio = { version = "1.45.0", features = ["full"] }
+tokio = { version = "1.47.1", features = ["full"] }

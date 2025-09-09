@@ -1,5 +1,5 @@
 [package]
-name = "starfoundry_libs-compression"
+name = "starfoundry_lib-compression"
 authors.workspace = true
 edition.workspace = true
 version.workspace = true
@@ -7,13 +7,14 @@ license.workspace = true
 
 [dependencies]
 dotenvy = "0.15.7"
-good_lp = "1.13.0"
+#good_lp = "1.14.0"
+good_lp = { version = "1.14.0", default-features = false, features = ["scip", "scip_bundled"] }
 num-format = "0.4.4"
-serde = { version = "1.0.219", features = ["derive"] }
-serde_json = "1.0.140"
-sqlx = { version = "0.8.5", features = ["runtime-tokio-rustls", "postgres"] }
-starfoundry_libs-types = { path = "../types" }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.145"
+sqlx = { version = "0.8.6", features = ["chrono", "runtime-tokio-rustls", "postgres", "uuid", "json"] }
+starfoundry_lib-types = { path = "../../general-purpose_lib-types" }
 term-table = "1.4.0"
-thiserror = "2.0.12"
-tokio = { version = "1.45.0", features = ["full"] }
-utoipa = "5.3.1"
+thiserror = "2.0.17"
+tokio = { version = "1.47.1", features = ["full"] }
+utoipa = "5.4.0"

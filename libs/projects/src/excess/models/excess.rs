@@ -1,5 +1,5 @@
 use serde::Serialize;
-use starfoundry_libs_types::{CategoryId, GroupId, TypeId};
+use starfoundry_lib_types::{CategoryId, GroupId, TypeId};
 use utoipa::ToSchema;
 
 #[derive(Debug, Serialize, ToSchema)]

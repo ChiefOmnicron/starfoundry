@@ -1,0 +1,32 @@
+id = "5cb136d6-7143-474e-a5cb-85d2af18f139"
+name = "[Minokawa] Buffer"
+category = "Brave Buffer Fits"
+image_type = "icon"
+image_type_id = 40356
+tags = [
+    "Buffer",
+    "Fit",
+    "Minokawa",
+    "Caldari",
+    "Brave",
+]
+delivery_location = [
+    30004807, # UALX-3,
+    30000772, # C-J6MT
+]
+whitelist = [
+    99003214, # Brave Collective
+    99010079, # Brave United
+]
+# REZ ABE
+structure_group = "4129a7e7-8c8e-4d11-a2ac-224c5bb061ac"
+
+store = """
+"""
+
+project = """
+"""
+
+market = """
+"""
+

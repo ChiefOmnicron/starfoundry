@@ -1,4 +1,5 @@
 use serde::Serialize;
+use crate::{send_json_notification, Error};
 
 #[derive(Debug, Serialize)]
 pub struct Discord {
@@ -12,6 +13,25 @@ impl Discord {
             content: "".into(),
             embeds: Vec::new(),
         }
+    }
+
+    pub fn add_embed(
+        &mut self,
+        embed: DiscordEmbed,
+    ) -> &mut Self {
+        self.embeds.push(embed);
+        self
+    }
+
+    pub async fn send<S: Into<String>>(
+        &self,
+        webhook: S,
+    ) -> Result<String, Error> {
+        let message = serde_json::to_value(&self)?;
+        send_json_notification(
+            webhook.into(),
+            message,
+        ).await
     }
 }
 
@@ -35,6 +55,19 @@ impl DiscordEmbed {
             color:       color.as_code(),
             fields:      Vec::new(),
         }
+    }
+
+    pub fn add_field<S: Into<String>>(
+        &mut self,
+        name:    S,
+        content: S,
+    ) -> &mut Self {
+        self.fields.push(DiscordField::new(
+            name.into(),
+            content.into(),
+        ));
+
+        self
     }
 }
 

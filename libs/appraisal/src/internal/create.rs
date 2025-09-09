@@ -1,8 +1,8 @@
 use sqlx::PgPool;
 use sqlx::types::chrono::Utc;
 use sqlx::types::Uuid;
-use starfoundry_libs_items::{load_items, load_type_ids, parse};
-use starfoundry_libs_types::TypeId;
+use starfoundry_lib_items::{load_items, load_type_ids, parse};
+use starfoundry_lib_types::TypeId;
 use std::collections::HashMap;
 
 use crate::{generate_code, Error, Persistance, Result};

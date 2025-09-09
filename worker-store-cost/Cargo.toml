@@ -1,0 +1,23 @@
+[package]
+name = "starfoundry_bin-worker_store-cost"
+authors.workspace = true
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+dotenvy = "0.15.7"
+futures-util = "0.3.31"
+reqwest = { version = "0.12.23", default-features = false, features = ["charset", "http2", "system-proxy", "json", "rustls-tls"] }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.145"
+sqlx = { version = "0.8.6", features = ["chrono", "runtime-tokio-rustls", "postgres", "uuid", "json"] }
+starfoundry_lib-items = { path = "../libs/items" }
+starfoundry_lib-structures = { path = "../libs/structures" }
+starfoundry_lib-types = { path = "../general-purpose_lib-types" }
+thiserror = "2.0.17"
+tokio = { version = "1.47.1", features = ["full"] }
+toml = "0.9.8"
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.20", features = ["env-filter", "json"] }
+uuid = { version = "1.18.1", features = ["v4"] }

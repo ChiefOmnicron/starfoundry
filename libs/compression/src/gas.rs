@@ -1,4 +1,4 @@
-use starfoundry_libs_types::TypeId;
+use starfoundry_lib_types::TypeId;
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Gas {

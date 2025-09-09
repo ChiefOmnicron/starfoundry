@@ -1,0 +1,37 @@
+[package]
+name = "starfoundry_bin-eve_gateway"
+authors.workspace = true
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+#axum = "0.8.4"
+# activating this will cause database problems in prod
+axum = { version = "0.8.6", features = ["macros"] }
+axum-extra = { version = "0.10.3", features = ["cookie"] }
+base64 = "0.22.1"
+chrono = { version = "0.4.42", features = ["serde"] }
+dotenvy = "0.15.7"
+jsonwebtoken = { version = "9.3.1", features = ["use_pem"] }
+jwk_kit = "0.1.2"
+metrics = "0.24.2"
+metrics-exporter-prometheus = "0.17.2"
+reqwest = { version = "0.12.23", default-features = false, features = ["charset", "http2", "system-proxy", "json", "rustls-tls"] }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.145"
+sha2 = "0.10.9"
+sqlx = { version = "0.8.6", features = ["chrono", "runtime-tokio-rustls", "postgres", "uuid", "json"] }
+starfoundry_lib-types = { path = "../general-purpose_lib-types" }
+thiserror = "2.0.17"
+tokio = { version = "1.47.1", features = ["full"] }
+toml = "0.9.8"
+tower = "0.5.2"
+tower-http = { version = "0.6.6", features = ["compression-full", "decompression-full"] }
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.20", features = ["env-filter", "json"] }
+url = "2.5.7"
+utoipa = { version = "5.4.0", features = ["uuid", "yaml"] }
+utoipa-axum = "0.2.0"
+utoipa-scalar = { version = "0.3.0", features = ["axum"] }
+uuid = { version = "1.18.1", features = ["v4"] }

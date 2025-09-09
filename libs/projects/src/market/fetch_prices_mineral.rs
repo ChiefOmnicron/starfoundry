@@ -1,5 +1,5 @@
 use sqlx::PgPool;
-use starfoundry_libs_structures::StructureUuid;
+use starfoundry_lib_structures::StructureUuid;
 use std::collections::HashMap;
 use uuid::Uuid;
 

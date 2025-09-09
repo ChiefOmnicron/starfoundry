@@ -1,0 +1,22 @@
+[package]
+name = "starfoundry_lib-eve_gateway"
+authors.workspace = true
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+axum = "0.8.6"
+chrono = "0.4.42"
+jsonwebtoken = "9.3.1"
+reqwest = { version = "0.12.23", default-features = false, features = ["charset", "http2", "system-proxy", "json", "rustls-tls"] }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.145"
+starfoundry_lib-types = { path = "../general-purpose_lib-types" }
+thiserror = "2.0.17"
+tracing = "0.1.41"
+url = "2.5.7"
+utoipa = { version = "5.4.0", features = ["uuid", "yaml"] }
+
+[features]
+overwrite_gateway_client = []

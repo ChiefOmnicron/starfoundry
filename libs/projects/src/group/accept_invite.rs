@@ -1,8 +1,9 @@
 use sqlx::PgPool;
-use starfoundry_libs_types::CharacterId;
+use starfoundry_lib_types::CharacterId;
 
 use crate::{Error, ProjectGroupUuid, Result};
 
+#[deprecated]
 pub async fn accept_invite(
     pool:         &PgPool,
     character_id: CharacterId,

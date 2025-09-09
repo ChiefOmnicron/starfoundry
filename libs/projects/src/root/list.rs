@@ -1,5 +1,5 @@
 use sqlx::PgPool;
-use starfoundry_libs_types::CharacterId;
+use starfoundry_lib_types::CharacterId;
 
 use crate::{Error, ProjectFilter, ProjectUuid, Result};
 
@@ -14,7 +14,7 @@ pub async fn list(
         crate::group::list(pool, character_id, Default::default())
             .await?
             .into_iter()
-            .map(|x| *x)
+            .map(|x| x.id)
             .collect::<Vec<_>>()
     };
 
