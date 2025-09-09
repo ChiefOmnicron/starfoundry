@@ -1,6 +1,6 @@
 use serde::Serialize;
-use starfoundry_libs_structures::{BonusVariations, StructureType};
-use starfoundry_libs_types::TypeId;
+use starfoundry_lib_structures::{BonusVariations, StructureType};
+use starfoundry_lib_types::TypeId;
 use std::collections::{VecDeque, HashMap};
 use std::fs::File;
 
@@ -951,7 +951,7 @@ impl CalculationEngine {
 mod calculation_tests {
     use sqlx::PgPool;
     use sqlx::postgres::PgPoolOptions;
-    use starfoundry_libs_structures::{Security, Structure};
+    use starfoundry_lib_structures::{Security, Structure};
     use uuid::Uuid;
     use std::str::FromStr;
 
@@ -1004,9 +1004,9 @@ mod calculation_tests {
                 TypeId(35881),
             ],
             rigs: vec![
-                starfoundry_libs_structures::rig::fetch(&pool, TypeId::from(37180)).await.unwrap(),
-                starfoundry_libs_structures::rig::fetch(&pool, TypeId::from(37178)).await.unwrap(),
-                starfoundry_libs_structures::rig::fetch(&pool, TypeId::from(43704)).await.unwrap(),
+                starfoundry_lib_structures::rig::fetch(&pool, TypeId::from(37180)).await.unwrap(),
+                starfoundry_lib_structures::rig::fetch(&pool, TypeId::from(37178)).await.unwrap(),
+                starfoundry_lib_structures::rig::fetch(&pool, TypeId::from(43704)).await.unwrap(),
             ],
         };
 
@@ -1024,7 +1024,7 @@ mod calculation_tests {
                 TypeId(45538), // Hybrid Reactor
             ],
             rigs: vec![
-                starfoundry_libs_structures::rig::fetch(&pool, TypeId::from(46497)).await.unwrap(),
+                starfoundry_lib_structures::rig::fetch(&pool, TypeId::from(46497)).await.unwrap(),
             ],
         };
 

@@ -1,6 +1,6 @@
 use sqlx::PgPool;
 use sqlx::types::Uuid;
-use starfoundry_libs_items::Item;
+use starfoundry_lib_items::Item;
 
 use crate::internal::MarketEntyPerItem;
 use crate::{Error, Result};

@@ -4,7 +4,7 @@ use std::path::Path;
 use std::time::Instant;
 
 use crate::{FOLDER_INPUT, Error};
-use starfoundry_libs_types::TypeId;
+use starfoundry_lib_types::TypeId;
 
 pub fn parse(
     directory: &str,

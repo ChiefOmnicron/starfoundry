@@ -1,0 +1,58 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT\n                    type_id,\n                    category_id,\n                    group_id,\n                    volume,\n                    name,\n                    meta_group_id,\n                    repackaged\n                FROM item\n                WHERE type_id = $1\n                ORDER BY name\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "type_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "category_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "group_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "volume",
+        "type_info": "Float4"
+      },
+      {
+        "ordinal": 4,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "meta_group_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "repackaged",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true
+    ]
+  },
+  "hash": "9092b4d56415e46487eb641105890f8e7373aa833711af70bb4864d785066c87"
+}

@@ -1,6 +1,6 @@
 use sqlx::PgPool;
-use starfoundry_libs_eve_api::EveApiClient;
-use starfoundry_libs_types::StructureId;
+use starfoundry_lib_eve_api::EveApiClient;
+use starfoundry_lib_types::StructureId;
 
 use crate::{Error, ResolvedStructure, Result, Security};
 

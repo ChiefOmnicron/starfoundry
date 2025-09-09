@@ -23,6 +23,6 @@ use serde::Serialize;
 
 #[derive(Debug, Serialize)]
 pub struct CompressionResult {
-    pub want:     HashMap<i32, f64>,
-    pub overrage: HashMap<i32, f64>,
+    pub want:    HashMap<i32, f64>,
+    pub overage: HashMap<i32, f64>,
 }

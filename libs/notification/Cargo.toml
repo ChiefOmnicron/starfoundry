@@ -1,5 +1,5 @@
 [package]
-name = "starfoundry_libs-notification"
+name = "starfoundry_lib-notification"
 authors.workspace = true
 edition.workspace = true
 version.workspace = true
@@ -7,13 +7,13 @@ license.workspace = true
 
 [dependencies]
 async-trait = "0.1.88"
-reqwest = "0.12.15"
+reqwest = "0.12.22"
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"
-sqlx = "0.8.5"
-starfoundry_libs-eve_api = { path = "../eve_api" }
-starfoundry_libs-types = { path = "../types" }
+sqlx = "0.8.6"
+starfoundry_lib-eve_api = { path = "../eve_api" }
+starfoundry_lib-types = { path = "../types" }
 thiserror = "2.0.12"
 tracing = "0.1.41"
-utoipa = { version = "5.3.1", features = ["uuid", "yaml"] }
-uuid = "1.16.0"
+utoipa = { version = "5.4.0", features = ["uuid", "yaml"] }
+uuid = "1.17.0"

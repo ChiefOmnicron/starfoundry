@@ -1,6 +1,6 @@
 use sqlx::PgPool;
-use starfoundry_libs_items::Item;
-use starfoundry_libs_types::{GroupId, TypeId};
+use starfoundry_lib_items::Item;
+use starfoundry_lib_types::{GroupId, TypeId};
 use std::collections::HashMap;
 use std::time::Instant;
 
@@ -118,10 +118,6 @@ async fn prepare_data(
     let mut items = Vec::new();
 
     for (type_id, entry) in type_ids {
-        if !entry.published {
-            continue;
-        }
-
         let type_id = *type_id;
         let group_id = entry.group_id.into();
         let category_id = group_ids

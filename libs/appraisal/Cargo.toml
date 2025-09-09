@@ -1,5 +1,5 @@
 [package]
-name = "starfoundry_libs-appraisal"
+name = "starfoundry_lib-appraisal"
 authors.workspace = true
 edition.workspace = true
 version.workspace = true
@@ -8,12 +8,12 @@ license.workspace = true
 [dependencies]
 async-trait = "0.1.88"
 rand = "0.9.1"
-reqwest = { version = "0.12.15", features = ["json", "rustls-tls"] }
+reqwest = { version = "0.12.22", features = ["json", "rustls-tls"] }
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"
-sqlx = "0.8.5"
-starfoundry_libs-compression = { path = "../compression" }
-starfoundry_libs-items = { path = "../items" }
-starfoundry_libs-types = { path = "../types" }
+sqlx = "0.8.6"
+starfoundry_lib-compression = { path = "../compression" }
+starfoundry_lib-items = { path = "../items" }
+starfoundry_lib-types = { path = "../types" }
 thiserror = "2.0.12"
-utoipa = "5.3.1"
+utoipa = "5.4.0"

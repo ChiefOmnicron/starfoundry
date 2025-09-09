@@ -1,4 +1,4 @@
-use starfoundry_libs_types::{CharacterId, StructureId, TypeId};
+use starfoundry_lib_types::{CharacterId, StructureId, TypeId};
 use thiserror::Error;
 use uuid::Uuid;
 
@@ -42,7 +42,7 @@ pub enum Error {
     FetchStructurePermission(sqlx::Error, StructureUuid, CharacterId),
 
     #[error("error fetching player structure from eve '{1}', error: {0}")]
-    FetchPlayerStructureFromEve(starfoundry_libs_eve_api::Error, StructureId),
+    FetchPlayerStructureFromEve(starfoundry_lib_eve_api::Error, StructureId),
     #[error("error fetching player structure system security '{1}', error: {0}")]
     FetchPlayerStructureSystemSecurity(sqlx::Error, StructureId),
     #[error("the strucutreId {0} is not a valid structureId")]
