@@ -1,9 +1,8 @@
 use sqlx::PgPool;
-use starfoundry_libs_eve_api::EveApiClient;
-use starfoundry_libs_types::{CharacterId, StructureId, TypeId};
-use uuid::Uuid;
+use starfoundry_lib_eve_api::EveApiClient;
+use starfoundry_lib_types::{CharacterId, StructureId, TypeId};
 
-use crate::{CreateStructure, Error, ResolvedStructure, Result, Structure, StructureRig, StructureUuid, UpdateStructure};
+use crate::{CreateStructure, Error, ResolvedStructure, Result, Structure, StructureDatabase, StructureRig, StructureUuid, UpdateStructure};
 
 pub struct StructureService(StructureUuid);
 
@@ -40,6 +39,7 @@ impl StructureService {
     }
 
     // TODO: wrong query!
+    // TODO: remove hard coded values
     pub async fn assert_read_access(
         &self,
         pool:         &PgPool,
@@ -50,13 +50,10 @@ impl StructureService {
                 FROM project p
                 JOIN project_group_member pgm ON pgm.group_id = project_group_id
                 WHERE p.id = $1
+                AND pgm.character_id = $2
                 AND (
-                    pgm.character_id = $2 OR
-                    p.owner = $2
-                )
-                AND (
-                    pgm.projects = 'WRITE' OR
-                    pgm.projects = 'READ'
+                    permission & 1 = 1 OR
+                    permission & 2 = 2
                 )
             ",
                 *self.0,
@@ -84,11 +81,12 @@ impl StructureService {
                 FROM project p
                 JOIN project_group_member pgm ON pgm.group_id = project_group_id
                 WHERE p.id = $1
+                AND pgm.character_id = $2
                 AND (
-                    pgm.character_id = $2 OR
-                    p.owner = $2
+                    -- TODO: replace with enum values
+                    permission & 1 = 1 OR
+                    permission & 8 = 8
                 )
-                AND pgm.projects = 'WRITE'
             ",
                 *self.0,
                 *character_id,
@@ -130,7 +128,7 @@ impl StructureService {
         pool:         &PgPool,
         character_id: CharacterId,
         filter:       crate::root::StructureListFilter,
-    ) -> Result<Vec<Uuid>> {
+    ) -> Result<Vec<StructureDatabase>> {
         crate::root::list(
                 pool,
                 character_id,
@@ -143,7 +141,7 @@ impl StructureService {
         &self,
         pool:         &PgPool,
         character_id: CharacterId,
-    ) -> Result<Option<Structure>> {
+    ) -> Result<Option<StructureDatabase>> {
         crate::root::fetch(
                 pool,
                 character_id,

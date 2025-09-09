@@ -1,7 +1,7 @@
 use serde::Serialize;
 use sqlx::types::Uuid;
-use starfoundry_libs_items::Item;
-use starfoundry_libs_types::TypeId;
+use starfoundry_lib_items::Item;
+use starfoundry_lib_types::TypeId;
 use utoipa::ToSchema;
 
 use super::MarketEntry;

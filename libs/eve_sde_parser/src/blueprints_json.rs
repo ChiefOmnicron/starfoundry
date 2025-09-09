@@ -1,7 +1,7 @@
 use sqlx::PgPool;
-use starfoundry_libs_items::Item;
-use starfoundry_libs_projects::{BlueprintTyp, Dependency};
-use starfoundry_libs_types::{TypeId, GroupId};
+use starfoundry_lib_items::Item;
+use starfoundry_lib_projects::{BlueprintTyp, Dependency};
+use starfoundry_lib_types::{TypeId, GroupId};
 use std::collections::{HashMap, VecDeque};
 use std::time::Instant;
 

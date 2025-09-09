@@ -1,5 +1,5 @@
 [package]
-name = "starfoundry_libs-eve_sde_parser"
+name = "starfoundry_lib-eve_sde_parser"
 authors.workspace = true
 edition.workspace = true
 version.workspace = true
@@ -7,16 +7,16 @@ license.workspace = true
 
 [dependencies]
 dotenvy = "0.15.7"
-reqwest = "0.12.15"
+reqwest = "0.12.22"
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"
 serde_yaml = "0.9.34"
-sqlx = { version = "0.8.5", features = ["chrono", "runtime-tokio-rustls", "postgres", "uuid", "json"] }
-starfoundry_libs-items = { path = "../items" }
-starfoundry_libs-projects = { path = "../projects" }
-starfoundry_libs-types = { path = "../types" }
+sqlx = { version = "0.8.6", features = ["chrono", "runtime-tokio-rustls", "postgres", "uuid", "json"] }
+starfoundry_lib-items = { path = "../items" }
+starfoundry_lib-projects = { path = "../projects" }
+starfoundry_lib-types = { path = "../types" }
 thiserror = "2.0.12"
-tokio = { version = "1.45.0", features = ["full"] }
+tokio = { version = "1.46.1", features = ["full"] }
 tracing = "0.1.41"
 tracing-subscriber =  { version = "0.3.19", features = ["env-filter"] }
-uuid = { version = "1.16.0", features = ["v4"] }
+uuid = { version = "1.17.0", features = ["v4"] }

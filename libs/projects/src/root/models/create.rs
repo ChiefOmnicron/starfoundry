@@ -1,6 +1,6 @@
 use serde::Deserialize;
-use starfoundry_libs_structures::{StructureGroupUuid, StructureUuid};
-use starfoundry_libs_types::TypeId;
+use starfoundry_lib_structures::{StructureGroupUuid, StructureUuid};
+use starfoundry_lib_types::TypeId;
 use utoipa::ToSchema;
 
 use crate::{AddProduct, ProjectGroupUuid, StockMinimal};

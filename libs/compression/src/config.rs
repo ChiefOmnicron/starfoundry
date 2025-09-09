@@ -4,7 +4,7 @@ use std::f64;
 use crate::asteroid::Asteroid;
 use crate::{GasReprocessingEfficiency, OreReprocessingEfficiency};
 use crate::gas::Gas;
-use starfoundry_libs_types::TypeId;
+use starfoundry_lib_types::TypeId;
 
 #[derive(Debug)]
 pub struct Config {

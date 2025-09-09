@@ -1,7 +1,7 @@
 use num_format::{Locale, ToFormattedString};
 use serde_json::json;
 use sqlx::PgPool;
-use starfoundry_libs_appraisal::internal::fetch;
+use starfoundry_lib_appraisal::internal::fetch;
 
 use crate::WithTemplate;
 

@@ -14,7 +14,7 @@
 ///
 #[macro_export]
 macro_rules! eve_id {
-    ($name:ident, $typ:ty, $typ2:ty) => {
+    ($name:ident, $name_str:tt, $typ:ty, $typ2:ty) => {
         /// Represents an ID-Type from EVE
         #[derive(
             Clone, Copy, Debug, Hash,
@@ -23,7 +23,8 @@ macro_rules! eve_id {
         #[derive(sqlx::Type, serde::Deserialize, serde::Serialize)]
         #[sqlx(transparent)]
         #[serde(transparent)]
-        #[derive(utoipa::ToSchema)]
+        #[derive(utoipa::ToSchema, utoipa::IntoParams)]
+        #[into_params(names($name_str))]
         pub struct $name(pub $typ);
 
         impl From<$typ> for $name {

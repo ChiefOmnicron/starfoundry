@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use starfoundry_libs_types::{CharacterId, JobId};
+use starfoundry_lib_types::{CharacterId, JobId};
 use utoipa::ToSchema;
 
 use crate::{ProjectJobStatus, ProjectUuid};

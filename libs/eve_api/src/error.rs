@@ -1,5 +1,5 @@
 use reqwest::StatusCode;
-use starfoundry_libs_types::CharacterId;
+use starfoundry_lib_types::CharacterId;
 use std::fmt;
 
 /// Holds all possible errors that can occur in this library.

@@ -1,0 +1,70 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                category,\n                name,\n                price,\n                image_type,\n                image_type_id,\n                description,\n                tags,\n                content,\n                additional_products\n            FROM product\n            WHERE uuid = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "category",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "price",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 3,
+        "name": "image_type",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "image_type_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "description",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 6,
+        "name": "tags",
+        "type_info": "VarcharArray"
+      },
+      {
+        "ordinal": 7,
+        "name": "content",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 8,
+        "name": "additional_products",
+        "type_info": "UuidArray"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      true
+    ]
+  },
+  "hash": "ed3c939cff9b5c101c2f8c0b59fe788210ed69b2646c88ac34bffc196fd0c37b"
+}

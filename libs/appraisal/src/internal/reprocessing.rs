@@ -1,6 +1,6 @@
 use serde::Deserialize;
 use sqlx::PgPool;
-use starfoundry_libs_compression::{Asteroid, Gas, GasReprocessingEfficiency, OreReprocessingEfficiency, ScrapReprocessingEfficiency};
+use starfoundry_lib_compression::{Asteroid, Gas, GasReprocessingEfficiency, OreReprocessingEfficiency, ScrapReprocessingEfficiency};
 use utoipa::ToSchema;
 
 use crate::Result;

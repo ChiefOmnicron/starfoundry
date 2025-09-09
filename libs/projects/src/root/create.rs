@@ -1,5 +1,5 @@
 use sqlx::{PgPool, PgConnection};
-use starfoundry_libs_types::{CharacterId, TypeId};
+use starfoundry_lib_types::{CharacterId, TypeId};
 use std::collections::HashMap;
 use std::str::FromStr;
 use uuid::Uuid;

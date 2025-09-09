@@ -1,0 +1,71 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT c.*\n                FROM jwt_refresh_token jrt\n                JOIN character c ON jrt.character_id = $2\n                WHERE token_hash = $1\n                AND jrt.character_id = $2\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "uuid",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "character_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "corporation_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "character_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "corporation_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "alliance_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "alliance_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 7,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 8,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "4cffd66c5396e5093772be9b5ca473d2f70baf81ed5bfeb97f2a8ad76c045cdd"
+}

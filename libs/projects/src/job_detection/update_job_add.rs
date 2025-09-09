@@ -1,5 +1,5 @@
 use sqlx::PgPool;
-use starfoundry_libs_types::{CharacterId, JobId};
+use starfoundry_lib_types::{CharacterId, JobId};
 
 use crate::{Error, ProjectService, ProjectUuid, Result, UpdateJobDetectionAdd};
 

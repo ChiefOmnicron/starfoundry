@@ -20,7 +20,7 @@ pub enum Error {
     FetchInternalMarketPrices(sqlx::Error),
 
     #[error("error while loading item cache, error: '{0}'")]
-    LoadItemCache(starfoundry_libs_items::Error),
+    LoadItemCache(starfoundry_lib_items::Error),
     #[error("general database error, error: '{0}'")]
     DatabaseError(sqlx::Error),
 

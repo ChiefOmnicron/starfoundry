@@ -27,7 +27,8 @@ hidden/
 k8s/*/secrets.dev.yaml
 k8s/*/secrets.prod.yaml
 
-web/cypress/downloads
-web/cypress/screenshots
+webapp/cypress/downloads
+webapp/cypress/screenshots
 
 recovery
+*.pem

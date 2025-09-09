@@ -1,6 +1,6 @@
 use sqlx::PgPool;
-use starfoundry_libs_structures::{StructureService, StructureUuid};
-use starfoundry_libs_types::TypeId;
+use starfoundry_lib_structures::{StructureService, StructureUuid};
+use starfoundry_lib_types::TypeId;
 use std::collections::HashMap;
 
 use crate::{CheckResources, Error, ProjectStructureGroup, Result, StockMinimal, StructureMapping};

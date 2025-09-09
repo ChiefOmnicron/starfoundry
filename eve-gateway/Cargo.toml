@@ -1,0 +1,35 @@
+[package]
+name = "starfoundry_bin-eve_gateway"
+authors.workspace = true
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+axum = "0.8.4"
+axum-extra = { version = "0.10.1", features = ["cookie"] }
+base64 = "0.22.1"
+chrono = { version = "0.4.41", features = ["serde"] }
+dotenvy = "0.15.7"
+jsonwebtoken = { version = "9.3.1", features = ["use_pem"] }
+jwk_kit = "0.1.2"
+metrics = "0.24.2"
+metrics-exporter-prometheus = "0.17.2"
+reqwest = { version = "0.12.22", features = ["json", "rustls-tls"] }
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.142"
+sha2 = "0.10.9"
+sqlx = { version = "0.8.6", features = ["chrono", "runtime-tokio-rustls", "postgres", "uuid", "json"] }
+starfoundry_lib-types = { path = "../libs/types" }
+thiserror = "2.0.12"
+tokio = { version = "1.46.1", features = ["full"] }
+toml = "0.9.5"
+tower = "0.5.2"
+tower-http = { version = "0.6.6", features = ["compression-full", "decompression-full"] }
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter", "json"] }
+url = "2.5.4"
+utoipa = { version = "5.4.0", features = ["uuid", "yaml"] }
+utoipa-axum = "0.2.0"
+utoipa-scalar = { version = "0.3.0", features = ["axum"] }
+uuid = { version = "1.17.0", features = ["v4"] }

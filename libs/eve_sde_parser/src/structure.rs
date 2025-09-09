@@ -1,6 +1,6 @@
 //! Creates the SQL-Code for blueprints
 use sqlx::PgPool;
-use starfoundry_libs_types::{GroupId, TypeId};
+use starfoundry_lib_types::{GroupId, TypeId};
 use std::collections::HashMap;
 use std::time::Instant;
 

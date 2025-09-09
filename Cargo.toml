@@ -5,13 +5,16 @@ lto = true
 opt-level = 3
 panic = 'abort'
 
+[profile.dev.package.sqlx-macros]
+opt-level = 3
+
 [workspace]
 members = [
-  'api',
-  'collector',
-  'database_upgrade',
-  'event_worker',
+  'eve-gateway_lib',
+  'eve-gateway',
+  'industry',
   'meta_webserver',
+  'store',
 
   'libs/appraisal',
   'libs/compression',

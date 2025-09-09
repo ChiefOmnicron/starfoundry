@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO login_attempt (domain, credential_type)\n            VALUES ($1, 'CHARACTER')\n            RETURNING token\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "token",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Varchar"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "cd8c04d65c3f02b6c653b874d94abf2ceb0e25d54c032b85186725e7b3ba1212"
+}
