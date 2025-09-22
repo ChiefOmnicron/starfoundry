@@ -26,8 +26,7 @@ pub fn parse(
 
         let line = sanitize_name(line.to_lowercase())
             .trim()
-            .replace("\t", " ")
-            .replace("\u{a0}", "");
+            .replace("\t", " ");
 
         // TODO: refactor
         if line.to_lowercase().contains("[empty high slot]") ||
@@ -233,6 +232,7 @@ fn sanitize_name(
         .replace("  Hauler", " Hauler")
         .replace("  skin", " skin")
         .replace("  SKIN", " SKIN")
+        .replace(" ", "") // \u{a0}
         .trim_start()
         .trim_end()
         .to_string()

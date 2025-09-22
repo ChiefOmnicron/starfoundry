@@ -14,7 +14,7 @@ pub fn parse(
     let start = Instant::now();
 
     let path = format!(
-        "{}/{}/fsd/types.yaml",
+        "{}/{}/types.yaml",
         directory,
         FOLDER_INPUT,
     );

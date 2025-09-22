@@ -13,7 +13,7 @@ pub fn parse(
     let start = Instant::now();
 
     let path = format!(
-        "{}/{}/fsd/dogmaEffects.yaml",
+        "{}/{}/dogmaEffects.yaml",
         directory,
         FOLDER_INPUT,
     );

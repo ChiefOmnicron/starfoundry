@@ -1,19 +1,27 @@
 use serde::Deserialize;
 use sqlx::PgPool;
+use starfoundry_libs_types::{RegionId, SystemId};
+use std::collections::HashMap;
 use std::fs::File;
 use std::path::Path;
-
-use crate::FOLDER_INPUT;
 use std::time::Instant;
+
+use crate::parser::regions::Region;
+use crate::parser::systems::System;
+use crate::FOLDER_INPUT;
 
 pub async fn run(
     pool: &PgPool,
+    regions: HashMap<RegionId, Region>,
+    systems: Vec<System>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     tracing::info!("Processing systems");
     let start = Instant::now();
 
     insert_into_database(
             &pool,
+            systems,
+            regions,
         )
         .await?;
 
@@ -27,17 +35,14 @@ pub async fn run(
 
 async fn insert_into_database(
     pool:       &PgPool,
+    systems:    Vec<System>,
+    regions:    HashMap<RegionId, Region>,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let path = format!("{FOLDER_INPUT}/universe/eve");
-    let base_path = Path::new(&path);
-
-    let systems = parse_folder(&base_path)?;
-
     let mut transaction = pool
         .begin()
         .await?;
 
-    tracing::debug!("Clearing blueprint_json database");
+    tracing::debug!("Clearing system database");
     sqlx::query!("
             DELETE FROM system
         ")
@@ -47,27 +52,19 @@ async fn insert_into_database(
 
     let region_ids = systems
         .iter()
-        .map(|x| x.region_id)
+        .map(|x| *x.region_id)
         .collect::<Vec<_>>();
     let region_names = systems
         .iter()
-        .map(|x| x.region_name.clone())
-        .collect::<Vec<_>>();
-    let constellation_ids = systems
-        .iter()
-        .map(|x| x.constellation_id)
-        .collect::<Vec<_>>();
-    let constellation_names = systems
-        .iter()
-        .map(|x| x.constellation_name.clone())
+        .map(|x| regions.get(&x.region_id).unwrap().name.clone())
         .collect::<Vec<_>>();
     let system_ids = systems
         .iter()
-        .map(|x| x.system_id)
+        .map(|x| *x.system_id)
         .collect::<Vec<_>>();
     let system_names = systems
         .iter()
-        .map(|x| x.system_name.clone())
+        .map(|x| x.name.clone())
         .collect::<Vec<_>>();
     let security = systems
         .iter()
@@ -80,8 +77,6 @@ async fn insert_into_database(
             (
                 region_id,
                 region_name,
-                constellation_id,
-                constellation_name,
                 system_id,
                 system_name,
                 security
@@ -91,15 +86,11 @@ async fn insert_into_database(
                 $2::VARCHAR[],
                 $3::INTEGER[],
                 $4::VARCHAR[],
-                $5::INTEGER[],
-                $6::VARCHAR[],
-                $7::REAL[]
+                $5::REAL[]
             )
         ",
             &region_ids,
             &region_names,
-            &constellation_ids,
-            &constellation_names,
             &system_ids,
             &system_names,
             &security,
@@ -111,6 +102,7 @@ async fn insert_into_database(
     Ok(())
 }
 
+/*
 fn parse_folder(path: &Path) -> Result<Vec<Solarsystem>, Box<dyn std::error::Error>> {
     let mut regions = Vec::new();
     for region in path.read_dir().unwrap() {
@@ -300,3 +292,4 @@ struct Solarsystem {
     #[serde(skip_deserializing)]
     system_name: String,
 }
+*/

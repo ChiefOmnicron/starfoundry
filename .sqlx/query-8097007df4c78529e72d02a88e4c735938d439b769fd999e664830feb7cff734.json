@@ -10,31 +10,21 @@
       },
       {
         "ordinal": 1,
-        "name": "constellation_id",
-        "type_info": "Int4"
-      },
-      {
-        "ordinal": 2,
         "name": "system_id",
         "type_info": "Int4"
       },
       {
-        "ordinal": 3,
+        "ordinal": 2,
         "name": "region_name",
         "type_info": "Varchar"
       },
       {
-        "ordinal": 4,
-        "name": "constellation_name",
-        "type_info": "Varchar"
-      },
-      {
-        "ordinal": 5,
+        "ordinal": 3,
         "name": "system_name",
         "type_info": "Varchar"
       },
       {
-        "ordinal": 6,
+        "ordinal": 4,
         "name": "security",
         "type_info": "Float4"
       }
@@ -47,8 +37,6 @@
       ]
     },
     "nullable": [
-      false,
-      false,
       false,
       false,
       false,

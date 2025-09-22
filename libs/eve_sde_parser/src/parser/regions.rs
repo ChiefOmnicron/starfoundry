@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use starfoundry_libs_types::TypeId;
+use starfoundry_libs_types::RegionId;
 use std::collections::HashMap;
 use std::fs::File;
 use std::path::Path;
@@ -9,12 +9,12 @@ use crate::{FOLDER_INPUT, Error};
 
 pub fn parse(
     directory: &str,
-) -> Result<HashMap<TypeId, Vec<TypeMaterial>>, Error> {
-    tracing::info!("Parsing typeMaterials.yaml");
+) -> Result<HashMap<RegionId, Region>, Error> {
+    tracing::info!("Parsing mapRegions.yaml");
     let start = Instant::now();
 
     let path = format!(
-        "{}/{}/typeMaterials.yaml",
+        "{}/{}/mapRegions.yaml",
         directory,
         FOLDER_INPUT,
     );
@@ -26,10 +26,10 @@ pub fn parse(
     let file = File::open(&path)
         .map_err(|x| Error::CannotOpenTypeIdsFile(x, path))?;
 
-    let parsed: HashMap<TypeId, ParseWrapper> = serde_yaml::from_reader(file)
+    let parsed: HashMap<RegionId, RegionWrapper> = serde_yaml::from_reader(file)
         .map(|x| {
             tracing::info!(
-                "Finished parsing typeMaterials.yaml, task took {:.2}s",
+                "Finished parsing mapRegions.yaml, task took {:.2}s",
                 start.elapsed().as_secs_f64()
             );
             x
@@ -37,23 +37,23 @@ pub fn parse(
         .map_err(Error::ParseTypeIds)?;
     let parsed = parsed
         .into_iter()
-        .map(|(type_id, wrapper)| (type_id, wrapper.materials))
+        .map(|(region_id, wrapper)| (region_id, Region {
+            name:      wrapper.name.get("en").cloned().unwrap_or_default(),
+            region_id: region_id,
+        }))
         .collect::<HashMap<_, _>>();
     Ok(parsed)
 }
 
 /// Represents a single entry in the yaml for a type
 #[derive(Clone, Debug, Deserialize)]
-pub struct TypeMaterial {
-    /// TypeId of the material
-    #[serde(rename = "materialTypeID")]
-    pub material_type_id: TypeId,
-    /// Quantity of the material
-    pub quantity:         i32,
+pub struct RegionWrapper {
+    /// Name of the region
+    pub name: HashMap<String, String>,
 }
 
-/// Wrapper only needed for parsing
-#[derive(Deserialize)]
-struct ParseWrapper {
-    materials: Vec<TypeMaterial>,
+#[derive(Clone, Debug)]
+pub struct Region {
+    pub region_id: RegionId,
+    pub name:      String,
 }

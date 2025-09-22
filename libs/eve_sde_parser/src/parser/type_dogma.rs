@@ -13,7 +13,7 @@ pub fn parse(
     let start = Instant::now();
 
     let path = format!(
-        "{}/{}/fsd/typeDogma.yaml",
+        "{}/{}/typeDogma.yaml",
         directory,
         FOLDER_INPUT,
     );
@@ -42,6 +42,7 @@ pub struct TypeDogma {
     #[serde(rename = "dogmaAttributes")]
     pub attributes: Vec<TypeDogmaAttribute>,
     #[serde(rename = "dogmaEffects")]
+    #[serde(default)]
     pub effects: Vec<TypeDogmaEffect>,
 }
 

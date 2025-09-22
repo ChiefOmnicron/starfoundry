@@ -39,7 +39,9 @@ pub async fn import_sde(
     let group_ids                 = parser::group_ids::parse(&directory)?;
     let industry_modifier_sources = parser::industry_modifier_sources::parse(&directory)?;
     let industry_target_filters   = parser::industry_target_filters::parse(&directory)?;
+    let regions                   = parser::regions::parse(&directory)?;
     let repackaged                = parser::repackaged::parse(&directory)?;
+    let systems                   = parser::systems::parse(&directory)?;
     let type_dogma                = parser::type_dogma::parse(&directory)?;
     let type_ids                  = parser::type_ids::parse(&directory)?;
     let type_material             = parser::type_material::parse(&directory)?;
@@ -84,6 +86,8 @@ pub async fn import_sde(
         );
     let systems = systems::run(
             &pool,
+            regions,
+            systems,
         );
 
     // Ignore errors
