@@ -97,6 +97,7 @@ async fn insert_into_database(
         )
         .execute(&mut *transaction)
         .await?;
+    transaction.commit().await?;
     tracing::debug!("Inserting data done");
 
     Ok(())
