@@ -7,6 +7,7 @@ use crate::api_docs::InternalServerError;
 use crate::auth::error::{AuthError, Result};
 use crate::eve_client::EveApiClient;
 use crate::state::AppState;
+use axum::Json;
 
 /// Login Main
 /// 
@@ -87,7 +88,11 @@ pub async fn login(
         .to_string();
 
     Ok((
-        StatusCode::TEMPORARY_REDIRECT,
-        Redirect::temporary(&url),
+        //StatusCode::TEMPORARY_REDIRECT,
+        //Redirect::temporary(&url),
+        StatusCode::OK,
+        Json(serde_json::json!({
+            "url": url,
+        }))
     ).into_response())
 }

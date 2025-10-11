@@ -11,8 +11,13 @@ use crate::eve_gateway_client::error::EveGatewayClientError;
 use reqwest::header::AUTHORIZATION;
 use axum::http::{HeaderMap, HeaderValue};
 
-pub const ENV_EVE_GATEWAY_USER_AGENT: &str = "STARFOUNDRY_EVE_GATEWAY_EVE_USER_AGENT";
-pub const ENV_EVE_GATEWAY_HOST: &str       = "STARFOUNDRY_EVE_GATEWAY_HOST";
+pub const ENV_EVE_GATEWAY_API: &str = "STARFOUNDRY_EVE_GATEWAY_API";
+pub const ENV_EVE_GATEWAY_JWT_SIGN: &str = "STARFOUNDRY_EVE_GATEWAY_JWT_SIGN";
+
+// either a full chain or the intermediate ca
+pub const ENV_MTLS_ROOT_CA: &str    = "STARFOUNDRY_MTLS_ROOT_CA";
+pub const ENV_MTLS_IDENTITY: &str   = "STARFOUNDRY_MTLS_IDENTITY";
+pub const ENV_USER_AGENT: &str      = "STARFOUNDRY_USER_AGENT";
 
 pub struct GatewayClient(Client);
 
@@ -23,6 +28,12 @@ impl GatewayClient {
         let client = Self::client(access_token)?;
 
         Ok(Self(client))
+    }
+
+    pub fn raw_unauthorized_client() -> Result<Client> {
+        let client = Self::client(None)?;
+
+        Ok(client)
     }
 
     async fn send(
@@ -164,7 +175,21 @@ impl GatewayClient {
     fn client(
         access_token: Option<String>,
     ) -> Result<Client> {
+        let root_ca = reqwest::Certificate::from_pem(
+            Self::root_ca()?.as_bytes()
+        )
+        .map_err(EveGatewayClientError::GenericReqwestError)?;
+
+        let identity = reqwest::Identity::from_pem(
+            Self::identity()?.as_bytes()
+        )
+        .map_err(EveGatewayClientError::GenericReqwestError)?;
+
         let client = Client::builder()
+            .tls_built_in_root_certs(false)
+            .add_root_certificate(root_ca)
+            .use_rustls_tls()
+            .identity(identity)
             .user_agent(Self::user_agent()?)
             .https_only(true);
 
@@ -187,10 +212,10 @@ impl GatewayClient {
     }
 
     fn api_url(&self) -> Result<Url> {
-        let env = if let Ok(x) = std::env::var(ENV_EVE_GATEWAY_HOST) {
+        let env = if let Ok(x) = std::env::var(ENV_EVE_GATEWAY_API) {
             x
         } else {
-            return Err(EveGatewayClientError::EnvNotSet(ENV_EVE_GATEWAY_HOST).into());
+            return Err(EveGatewayClientError::EnvNotSet(ENV_EVE_GATEWAY_API).into());
         };
 
         Url::parse(&env)
@@ -199,8 +224,20 @@ impl GatewayClient {
     }
 
     fn user_agent() -> Result<String> {
-        std::env::var(ENV_EVE_GATEWAY_USER_AGENT)
-            .map_err(|_| EveGatewayClientError::EnvNotSet(ENV_EVE_GATEWAY_USER_AGENT))
+        std::env::var(ENV_USER_AGENT)
+            .map_err(|_| EveGatewayClientError::EnvNotSet(ENV_USER_AGENT))
+            .map_err(Into::into)
+    }
+
+    fn root_ca() -> Result<String> {
+        std::env::var(ENV_MTLS_ROOT_CA)
+            .map_err(|_| EveGatewayClientError::EnvNotSet(ENV_MTLS_ROOT_CA))
+            .map_err(Into::into)
+    }
+
+    fn identity() -> Result<String> {
+        std::env::var(ENV_MTLS_IDENTITY)
+            .map_err(|_| EveGatewayClientError::EnvNotSet(ENV_MTLS_IDENTITY))
             .map_err(Into::into)
     }
 }

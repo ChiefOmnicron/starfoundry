@@ -4,6 +4,7 @@ mod file;
 pub use self::file::*;
 pub use self::env::ENV_REDIRECT;
 
+use reqwest::Url;
 use starfoundry_lib_types::starfoundry_uuid;
 use tokio::net::TcpListener;
 
@@ -16,7 +17,7 @@ pub struct Config {
 
     pub database_url:       String,
     pub discord_url:        String,
-    pub gateway_jwk_url:    String,
+    pub gateway_jwk_url:    Url,
 
     pub shop_config:        ShopConfig,
 }

@@ -23,8 +23,10 @@ pub enum EveGatewayClientError {
     #[error("the client is forbidden from accessing the resource, {0}")]
     Forbidden(Url),
 
-    #[error("generic reqwest error for path '{1}', error: '{0}'")]
+    #[error("url reqwest error for path '{1}', error: '{0}'")]
     ReqwestError(reqwest::Error, Url),
+    #[error("generic reqwest error, '{0}'")]
+    GenericReqwestError(reqwest::Error),
     #[error("error while constructing reqwest client, error: '{0}'")]
     CouldNotConstructClient(reqwest::Error),
     #[error("error while parsing url. Validate the environment variables, error: '{0}'")]

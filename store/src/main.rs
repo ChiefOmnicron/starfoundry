@@ -11,13 +11,10 @@ pub mod order;
 pub mod product;
 
 use axum::{middleware, Router};
-use reqwest::Url;
 use sqlx::postgres::PgPoolOptions;
 use starfoundry_lib_eve_gateway::load_signature;
 use std::sync::Arc;
 use tokio::select;
-use tower_http::compression::CompressionLayer;
-use tower_http::decompression::RequestDecompressionLayer;
 use tower::ServiceBuilder;
 use tracing_subscriber::EnvFilter;
 use utoipa_axum::router::OpenApiRouter;
@@ -53,7 +50,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let shop_config = Arc::new(config.shop_config);
     let discord_url = Arc::new(config.discord_url);
 
-    let decoding_key = load_signature(Url::parse(&config.gateway_jwk_url).unwrap()).await.unwrap();
+    let decoding_key = load_signature(config.gateway_jwk_url).await?;
     let decoding_key = Arc::new(decoding_key);
 
     let state = AppState {
@@ -93,10 +90,7 @@ fn app(
         .nest("/products", product::routes(state.clone()))
         .nest("/orders", order::routes())
         .layer(
-            ServiceBuilder::new()
-                .layer(middleware::from_fn(path_metrics))
-                .layer(RequestDecompressionLayer::new())
-                .layer(CompressionLayer::new())
+            ServiceBuilder::new().layer(middleware::from_fn(path_metrics))
         )
         .with_state(state.clone())
         .split_for_parts();

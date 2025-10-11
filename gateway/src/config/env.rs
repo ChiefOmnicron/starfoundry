@@ -1,14 +1,11 @@
 use tokio::net::TcpListener;
-use starfoundry_lib_eve_gateway::{ENV_EVE_GATEWAY_API, ENV_EVE_GATEWAY_JWK_URL, ENV_USER_AGENT};
+use crate::client::{ENV_MTLS_IDENTITY, ENV_MTLS_ROOT_CA, ENV_USER_AGENT};
 
-const ENV_DATABASE_URL: &str    = "STARFOUNDRY_INDUSTRY_DATABASE_URI";
-const ENV_APP_ADDRESS: &str     = "STARFOUNDRY_INDUSTRY_APP_ADDRESS";
-const ENV_SERVICE_ADDRESS: &str = "STARFOUNDRY_INDUSTRY_SERVICE_ADDRESS";
+const ENV_APP_ADDRESS: &str     = "STARFOUNDRY_GATEWAY_APP_ADDRESS";
+const ENV_SERVICE_ADDRESS: &str = "STARFOUNDRY_GATEWAY_SERVICE_ADDRESS";
 
 #[derive(Debug)]
 pub struct ConfigEnv {
-    pub database_uri:    String,
-
     pub app_address:     TcpListener,
     pub service_address: TcpListener,
 }
@@ -37,10 +34,7 @@ impl ConfigEnv {
             }
         };
 
-        let database_uri = std::env::var(ENV_DATABASE_URL)?;
-
         Ok(Self {
-            database_uri,
             app_address,
             service_address,
         })
@@ -48,12 +42,11 @@ impl ConfigEnv {
 
     fn validate_env() -> usize {
         vec![
-            ENV_DATABASE_URL,
             ENV_APP_ADDRESS,
             ENV_SERVICE_ADDRESS,
 
-            ENV_EVE_GATEWAY_API,
-            ENV_EVE_GATEWAY_JWK_URL,
+            ENV_MTLS_ROOT_CA,
+            ENV_MTLS_IDENTITY,
             ENV_USER_AGENT,
         ]
         .iter()

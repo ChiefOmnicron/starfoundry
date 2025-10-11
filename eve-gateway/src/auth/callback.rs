@@ -15,6 +15,8 @@ use crate::auth::error::{AuthError, Result};
 use crate::eve_client::{EveApiClient, EveJwtToken};
 use crate::character::refresh_character_in_db;
 use crate::state::AppState;
+use axum::Json;
+use tracing_subscriber::fmt::format::json;
 
 const QUERY_PARAM_CODE: &str  = "code";
 const QUERY_PARAM_STATE: &str = "state";
@@ -168,13 +170,10 @@ pub async fn callback(
         .map_err(AuthError::InsertRefreshToken)?;
 
     Ok((
-        StatusCode::FOUND,
-        [(
-            LOCATION,
-            (&format!("{}?refresh_token={}", auth_domain.redirect, refresh_token)),
-        ), (
-            CONTENT_TYPE,
-            &"application/json".to_string(),
-        )],
+        StatusCode::OK,
+        Json(serde_json::json!({
+            "url": auth_domain.redirect,
+            "refresh_token": refresh_token,
+        }))
     ).into_response())
 }

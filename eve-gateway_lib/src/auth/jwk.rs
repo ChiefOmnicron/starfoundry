@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use url::Url;
 use jsonwebtoken::DecodingKey;
-use crate::Result;
+use crate::{GatewayClient, Result};
 use crate::auth::error::AuthError;
 
 #[derive(Clone, Debug, Deserialize)]
@@ -36,7 +36,9 @@ pub async fn load_signature(
         keys: Vec<JwtKey>,
     }
 
-    let jwt_keys = reqwest::get(jwt_key_url)
+    let jwt_keys = GatewayClient::raw_unauthorized_client()?
+        .get(jwt_key_url)
+        .send()
         .await
         .map_err(AuthError::FetchJwtKey)?
         .json::<Response>()

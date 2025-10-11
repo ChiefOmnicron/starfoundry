@@ -1,3 +1,4 @@
+use axum_server::tls_rustls::RustlsConfig;
 use axum::{middleware, Router};
 use sqlx::postgres::PgPoolOptions;
 use starfoundry_bin_eve_gateway::{auth, character, healthcheck, item, universe};
@@ -7,8 +8,6 @@ use starfoundry_bin_eve_gateway::metrics::{self, path_metrics, setup_metrics_rec
 use starfoundry_bin_eve_gateway::state::AppState;
 use std::sync::Arc;
 use tokio::select;
-use tower_http::compression::CompressionLayer;
-use tower_http::decompression::RequestDecompressionLayer;
 use tower::ServiceBuilder;
 use tracing_subscriber::EnvFilter;
 use utoipa_axum::router::OpenApiRouter;
@@ -42,11 +41,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         auth_domains: Arc::new(config.domains),
     };
 
+    rustls::crypto::aws_lc_rs::default_provider().install_default().unwrap();
+
+    // configure certificate and private key used by https
+    let tls_config = RustlsConfig::from_pem(
+            config.mtls_cert.as_bytes().to_vec(),
+            config.mtls_priv.as_bytes().to_vec(),
+        )
+        .await?;
+
     tracing::info!("Starting app server on {}", config.app_address.local_addr().unwrap());
     tracing::info!("Starting service server on {}", config.service_address.local_addr().unwrap());
 
     select! {
-        r = axum::serve(config.app_address, app(shared_state.clone())) => {
+        r = axum_server::from_tcp_rustls(config.app_address, tls_config).serve(app(shared_state.clone()).into_make_service()) => {
             if r.is_err() {
                 tracing::error!("Error in app thread, error: {:?}", r);
             }
@@ -72,10 +80,7 @@ fn app(
         .nest("/items", item::routes())
         .nest("/universe", universe::routes())
         .layer(
-            ServiceBuilder::new()
-                .layer(middleware::from_fn(path_metrics))
-                .layer(RequestDecompressionLayer::new())
-                .layer(CompressionLayer::new())
+            ServiceBuilder::new().layer(middleware::from_fn(path_metrics))
         )
         .with_state(state.clone())
         .split_for_parts();
