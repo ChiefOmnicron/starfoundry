@@ -1,5 +1,6 @@
+use reqwest::Url;
+use starfoundry_lib_eve_gateway::{ENV_EVE_GATEWAY_API, ENV_EVE_GATEWAY_JWK_URL, ENV_EVE_GATEWAY_JWT_SIGN, ENV_MTLS_IDENTITY, ENV_MTLS_ROOT_CA, ENV_USER_AGENT};
 use tokio::net::TcpListener;
-use starfoundry_lib_eve_gateway::{ENV_EVE_GATEWAY_HOST, ENV_EVE_GATEWAY_JWK_URL, ENV_EVE_GATEWAY_USER_AGENT};
 
 const ENV_DATABASE_URL: &str    = "STARFOUNDRY_STORE_DATABASE_URL";
 const ENV_DISCORD_URL: &str     = "STARFOUNDRY_STORE_DISCORD_URL";
@@ -12,7 +13,7 @@ pub const ENV_REDIRECT: &str    = "STARFOUNDRY_STORE_REDIRECT";
 pub struct ConfigEnv {
     pub database_url:    String,
     pub discord_url:     String,
-    pub gateway_jwk_url: String,
+    pub gateway_jwk_url: Url,
 
     pub app_address:     TcpListener,
     pub service_address: TcpListener,
@@ -42,9 +43,18 @@ impl ConfigEnv {
             }
         };
 
+        let gateway_jwk_url = match Url::parse(
+            &std::env::var(ENV_EVE_GATEWAY_JWK_URL)?
+        ) {
+            Ok(x) => x,
+            Err(e) => {
+                tracing::error!("Error validating config {ENV_EVE_GATEWAY_JWK_URL}. Error: {}", e);
+                return Err("Error while parsing address".into());
+            }
+        };
+
         let database_url = std::env::var(ENV_DATABASE_URL)?;
         let discord_url = std::env::var(ENV_DISCORD_URL)?;
-        let gateway_jwk_url = std::env::var(ENV_EVE_GATEWAY_JWK_URL)?;
 
         Ok(Self {
             database_url,
@@ -65,9 +75,13 @@ impl ConfigEnv {
 
             ENV_REDIRECT,
 
-            ENV_EVE_GATEWAY_HOST,
+            ENV_MTLS_ROOT_CA,
+            ENV_MTLS_IDENTITY,
+            ENV_USER_AGENT,
+
+            ENV_EVE_GATEWAY_API,
             ENV_EVE_GATEWAY_JWK_URL,
-            ENV_EVE_GATEWAY_USER_AGENT,
+            ENV_EVE_GATEWAY_JWT_SIGN,
         ]
         .iter()
         .map(|x| {

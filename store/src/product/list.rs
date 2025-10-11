@@ -50,7 +50,6 @@ use crate::product::create::AdditionalOption;
         ("api_key" = [])
     ),
 )]
-#[axum::debug_handler]
 pub async fn api(
     State(state):   State<AppState>,
     identity:       ExtractIdentity,

@@ -2,7 +2,7 @@ use chrono::{Duration, Utc};
 use jsonwebtoken::{encode, DecodingKey, EncodingKey, Header};
 use serde::{Deserialize, Serialize};
 use starfoundry_lib_types::{AllianceId, CharacterId, CorporationId};
-use crate::{CharacterInfo, ENV_EVE_GATEWAY_HOST};
+use crate::{CharacterInfo, ENV_EVE_GATEWAY_API};
 
 const JWT_EC_PRIVATE: &str = "-----BEGIN PRIVATE KEY-----
 MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQg/nCaLo8n7/yQw4IZ
@@ -89,6 +89,6 @@ pub fn decoding_key() -> DecodingKey {
 
 pub fn set_jwt_test_envs() {
     unsafe {
-        std::env::set_var(ENV_EVE_GATEWAY_HOST, "https://test.starfoundry.space");
+        std::env::set_var(ENV_EVE_GATEWAY_API, "https://test.starfoundry.space");
     }
 }

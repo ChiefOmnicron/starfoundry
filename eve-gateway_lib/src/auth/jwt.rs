@@ -2,7 +2,7 @@ use jsonwebtoken::{Algorithm, DecodingKey, TokenData, Validation};
 use serde::Deserialize;
 use std::sync::Arc;
 
-use crate::{CharacterInfo, Result, ENV_EVE_GATEWAY_HOST};
+use crate::{CharacterInfo, Result, ENV_EVE_GATEWAY_JWT_SIGN};
 use crate::auth::error::AuthError;
 
 pub const ENV_EVE_GATEWAY_JWK_URL: &str = "STARFOUNDRY_EVE_GATEWAY_JWK_URL";
@@ -39,8 +39,8 @@ fn gateway_url() -> Result<String> {
         return Ok("https://test.starfoundry.space".into());
     }
 
-    std::env::var(ENV_EVE_GATEWAY_HOST)
-        .map_err(|_| AuthError::MissingEnv(ENV_EVE_GATEWAY_HOST.into()).into())
+    std::env::var(ENV_EVE_GATEWAY_JWT_SIGN)
+        .map_err(|_| AuthError::MissingEnv(ENV_EVE_GATEWAY_JWT_SIGN.into()).into())
 }
 
 /// Decoded access token

@@ -14,8 +14,7 @@ members = [
   'general-purpose_lib-types',
 
   # new
-  #'authentication',
-  #'gateway',
+  'gateway',
 
   # refactor due to new services
   'eve-gateway_lib',

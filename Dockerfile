@@ -73,6 +73,7 @@ COPY        ./Cargo.toml Cargo.toml
 COPY        ./.sqlx ./.sqlx
 COPY        ./eve-gateway ./eve-gateway
 COPY        ./eve-gateway_lib ./eve-gateway_lib
+COPY        ./gateway ./gateway
 COPY        ./general-purpose_lib-types ./general-purpose_lib-types
 COPY        ./industry ./industry
 COPY        ./libs ./libs
@@ -92,6 +93,7 @@ COPY        ./Cargo.toml Cargo.toml
 COPY        ./.sqlx ./.sqlx
 COPY        ./eve-gateway ./eve-gateway
 COPY        ./eve-gateway_lib ./eve-gateway_lib
+COPY        ./gateway ./gateway
 COPY        ./general-purpose_lib-types ./general-purpose_lib-types
 COPY        ./industry ./industry
 COPY        ./libs ./libs
@@ -109,6 +111,18 @@ RUN         cargo build --bin starfoundry_bin-eve_gateway --target x86_64-unknow
 FROM alpine:3.22 AS eve-gateway-api
 WORKDIR     /usr/local/bin
 COPY        --from=eve-gateway-api-builder /app/target/x86_64-unknown-linux-musl/release/starfoundry_bin-eve_gateway /usr/local/bin/app
+CMD         ["/usr/local/bin/app"]
+
+###############################################################################
+#           gateway_api
+###############################################################################
+FROM builder AS gateway-api-builder
+RUN         cargo build --bin starfoundry_bin-gateway --target x86_64-unknown-linux-musl --release
+
+FROM alpine:3.22 AS gateway-api
+WORKDIR     /usr/local/bin
+RUN         apk update && apk add --no-cache curl
+COPY        --from=gateway-api-builder /app/target/x86_64-unknown-linux-musl/release/starfoundry_bin-gateway /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
 ###############################################################################
