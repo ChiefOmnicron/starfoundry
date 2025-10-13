@@ -7,9 +7,7 @@ use std::fmt::Debug;
 use url::Url;
 
 use crate::Result;
-use crate::eve_gateway_client::error::EveGatewayClientError;
-use reqwest::header::AUTHORIZATION;
-use axum::http::{HeaderMap, HeaderValue};
+use crate::api_client::error::EveGatewayClientError;
 
 pub const ENV_EVE_GATEWAY_API: &str = "STARFOUNDRY_EVE_GATEWAY_API";
 pub const ENV_EVE_GATEWAY_JWT_SIGN: &str = "STARFOUNDRY_EVE_GATEWAY_JWT_SIGN";
@@ -19,21 +17,14 @@ pub const ENV_MTLS_ROOT_CA: &str    = "STARFOUNDRY_MTLS_ROOT_CA";
 pub const ENV_MTLS_IDENTITY: &str   = "STARFOUNDRY_MTLS_IDENTITY";
 pub const ENV_USER_AGENT: &str      = "STARFOUNDRY_USER_AGENT";
 
-pub struct GatewayClient(Client);
+#[derive(Clone)]
+pub struct MtlsApiClient(Client);
 
-impl GatewayClient {
-    pub fn new(
-        access_token: Option<String>,
-    ) -> Result<Self> {
-        let client = Self::client(access_token)?;
+impl MtlsApiClient {
+    pub fn new() -> Result<Self> {
+        let client = Self::client()?;
 
         Ok(Self(client))
-    }
-
-    pub fn raw_unauthorized_client() -> Result<Client> {
-        let client = Self::client(None)?;
-
-        Ok(client)
     }
 
     async fn send(
@@ -172,9 +163,7 @@ impl GatewayClient {
         }
     }
 
-    fn client(
-        access_token: Option<String>,
-    ) -> Result<Client> {
+    fn client() -> Result<Client> {
         let root_ca = reqwest::Certificate::from_pem(
             Self::root_ca()?.as_bytes()
         )
@@ -192,18 +181,6 @@ impl GatewayClient {
             .identity(identity)
             .user_agent(Self::user_agent()?)
             .https_only(true);
-
-        let client = if let Some(x) = access_token {
-            let mut headers = HeaderMap::new();
-            headers.insert(
-                AUTHORIZATION,
-                HeaderValue::from_str(&x).unwrap_or(HeaderValue::from_static("")),
-            );
-
-            client.default_headers(headers)
-        } else {
-            client
-        };
 
         client
             .build()
@@ -242,29 +219,8 @@ impl GatewayClient {
     }
 }
 
-impl EveGatewayClient for GatewayClient {
+impl ApiClient for MtlsApiClient {
     async fn fetch<T>(
-        &self,
-        path: impl Into<String>,
-    ) -> Result<T>
-    where
-        T: DeserializeOwned,
-    {
-        let mut api_url = self.api_url()?;
-        api_url.set_path(&path.into());
-
-        let response = self
-            .send(api_url.clone(), &[])
-            .await?;
-
-        let data = response
-            .json::<T>()
-            .await
-            .map_err(|x| EveGatewayClientError::ReqwestError(x, api_url))?;
-        Ok(data)
-    }
-
-    async fn fetch_auth<T>(
         &self,
         path: impl Into<String>,
     ) -> Result<T>
@@ -307,17 +263,9 @@ impl EveGatewayClient for GatewayClient {
     }
 }
 
-pub trait EveGatewayClient {
+pub trait ApiClient: Clone {
     #[allow(async_fn_in_trait)]
     async fn fetch<T>(
-        &self,
-        path: impl Into<String>,
-    ) -> Result<T>
-    where
-        T: DeserializeOwned;
-
-    #[allow(async_fn_in_trait)]
-    async fn fetch_auth<T>(
         &self,
         path: impl Into<String>,
     ) -> Result<T>

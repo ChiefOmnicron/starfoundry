@@ -114,7 +114,7 @@ async fn assert_read(
     permission::assert_read_access(
             &state.pool,
             project_group_uuid,
-            identity.character_info.character_id,
+            identity.character_id,
         )
         .await?;
 
@@ -131,7 +131,7 @@ async fn assert_write_group(
     permission::assert_write_access(
             &state.pool,
             project_group_uuid,
-            identity.character_info.character_id,
+            identity.character_id,
             permission::ProjectGroupPermissionCode::WriteGroup,
         )
         .await?;
@@ -149,7 +149,7 @@ async fn assert_owner(
     permission::assert_write_access(
             &state.pool,
             project_group_uuid,
-            identity.character_info.character_id,
+            identity.character_id,
             permission::ProjectGroupPermissionCode::Owner,
         )
         .await?;
@@ -162,14 +162,11 @@ pub async fn project_group_test_routes(
     pool: sqlx::PgPool,
     request: axum::http::Request<axum::body::Body>,
 ) -> axum::http::Response<axum::body::Body> {
-    use starfoundry_lib_eve_gateway::test::{decoding_key, set_jwt_test_envs};
-    use std::sync::Arc;
+    use starfoundry_lib_eve_gateway::test::set_jwt_test_envs;
     use tower::ServiceExt;
 
     let state = AppState {
         pool: pool.clone(),
-
-        decoding_key: Arc::new(decoding_key()),
     };
     let (app, _) = crate::project_group::routes(state.clone()).split_for_parts();
     let app = app.with_state(state.clone());

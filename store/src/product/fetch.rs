@@ -47,13 +47,13 @@ use starfoundry_lib_eve_gateway::ExtractIdentity;
     ),
 )]
 pub async fn api(
+    identity:           ExtractIdentity,
     State(state):       State<AppState>,
     Path(product_uuid): Path<ProductUuid>,
-    identity:           ExtractIdentity,
 ) -> Result<impl IntoResponse> {
-    let character_id = identity.character_info.character_id;
-    let corporation_id = identity.character_info.corporation_id;
-    let alliance_id = identity.character_info.alliance_id;
+    let character_id = identity.character_id;
+    let corporation_id = identity.corporation_id;
+    let alliance_id = identity.alliance_id;
 
     if !state
         .shop_config

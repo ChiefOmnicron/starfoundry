@@ -3098,6 +3098,7 @@ dependencies = [
  "metrics-exporter-prometheus",
  "reqwest",
  "serde",
+ "serde_json",
  "thiserror 2.0.17",
  "tokio",
  "toml",
@@ -3159,12 +3160,14 @@ name = "starfoundry_bin-store"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "axum-server",
  "chrono",
  "dotenvy",
  "jsonwebtoken",
  "metrics",
  "metrics-exporter-prometheus",
  "reqwest",
+ "rustls",
  "serde",
  "serde_json",
  "sqlx",

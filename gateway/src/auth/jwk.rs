@@ -1,8 +1,9 @@
 use serde::Deserialize;
 use url::Url;
 use jsonwebtoken::DecodingKey;
-use crate::{GatewayClient, Result};
-use crate::auth::error::AuthError;
+
+use crate::client::mtls_client;
+use crate::error::{Error, Result};
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct JwtKey {
@@ -36,24 +37,24 @@ pub async fn load_signature(
         keys: Vec<JwtKey>,
     }
 
-    let jwt_keys = GatewayClient::raw_unauthorized_client()?
+    let jwt_keys = mtls_client()?
         .get(jwt_key_url)
         .send()
         .await
-        .map_err(AuthError::FetchJwtKey)?
+        .map_err(Error::FetchJwtKey)?
         .json::<Response>()
         .await
         .map(|x| EveApiJwtKeys(x.keys))
-        .map_err(AuthError::FetchJwtKey)?;
+        .map_err(Error::FetchJwtKey)?;
 
     if let Some((x, y)) = jwt_keys.es256() {
         DecodingKey::from_ec_components(
             &x,
             &y,
         )
-        .map_err(|e| AuthError::InvalidES256Key(e).into())
+        .map_err(|e| Error::InvalidES256Key(e).into())
     } else {
         tracing::error!("no es256 key");
-        return Err(AuthError::NoEs256Key.into());
+        return Err(Error::NoEs256Key.into());
     }
 }

@@ -12,7 +12,6 @@ pub mod product;
 
 use axum::{middleware, Router};
 use sqlx::postgres::PgPoolOptions;
-use starfoundry_lib_eve_gateway::load_signature;
 use std::sync::Arc;
 use tokio::select;
 use tower::ServiceBuilder;
@@ -25,6 +24,7 @@ use crate::api_docs::ApiDoc;
 use crate::config::Config;
 use crate::metrics::{path_metrics, setup_metrics_recorder};
 use crate::state::AppState;
+use axum_server::tls_rustls::RustlsConfig;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -50,22 +50,26 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let shop_config = Arc::new(config.shop_config);
     let discord_url = Arc::new(config.discord_url);
 
-    let decoding_key = load_signature(config.gateway_jwk_url).await?;
-    let decoding_key = Arc::new(decoding_key);
-
     let state = AppState {
         postgres,
         shop_config,
         discord_url,
-
-        decoding_key,
     };
+
+    rustls::crypto::aws_lc_rs::default_provider().install_default().unwrap();
+
+    // configure certificate and private key used by https
+    let tls_config = RustlsConfig::from_pem(
+            config.mtls_cert.as_bytes().to_vec(),
+            config.mtls_priv.as_bytes().to_vec(),
+        )
+        .await?;
 
     tracing::info!("Starting app server on {}", config.app_address.local_addr().unwrap());
     tracing::info!("Starting service server on {}", config.service_address.local_addr().unwrap());
 
     select! {
-        r = axum::serve(config.app_address, app(state.clone())) => {
+        r = axum_server::from_tcp_rustls(config.app_address, tls_config).serve(app(state.clone()).into_make_service()) => {
             if r.is_err() {
                 tracing::error!("Error in app thread, error: {:?}", r);
             }

@@ -1,5 +1,5 @@
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::EveGatewayClient;
+use starfoundry_lib_eve_gateway::ApiClient;
 use starfoundry_lib_types::CharacterId;
 
 use crate::project_group::error::{ProjectGroupError, Result};
@@ -11,7 +11,7 @@ use crate::project_group::ProjectGroupUuid;
 
 pub async fn fetch(
     pool:               &PgPool,
-    gateway_client:     &impl EveGatewayClient,
+    gateway_client:     &impl ApiClient,
     character_id:       CharacterId,
     project_group_uuid: ProjectGroupUuid,
 ) -> Result<Option<ProjectGroup>> {
@@ -66,7 +66,8 @@ mod fetch_project_group_test {
     use sqlx::PgPool;
     use starfoundry_lib_types::CharacterId;
     use uuid::Uuid;
-    use starfoundry_lib_eve_gateway::test::TestEveGatewayClient;
+
+    use crate::test::TestApiClient;
 
     #[sqlx::test(
         fixtures(
@@ -78,7 +79,7 @@ mod fetch_project_group_test {
     async fn happy_path(
         pool: PgPool,
     ) {
-        let gateway_client = TestEveGatewayClient::new();
+        let gateway_client = TestApiClient::new();
 
         let response = super::fetch(
                 &pool,
@@ -105,7 +106,7 @@ mod fetch_project_group_test {
     async fn no_entry_with_default_uuid(
         pool: PgPool,
     ) {
-        let gateway_client = TestEveGatewayClient::new();
+        let gateway_client = TestApiClient::new();
 
         let response = super::fetch(
                 &pool,

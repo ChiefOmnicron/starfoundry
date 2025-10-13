@@ -18,6 +18,7 @@ IbNoeXThh8x0GXdkkaR7rLfX92g2BYThycqRdDS/7CW2FkKOsqqLHAlQWw==
 /// This is not secure in any way.
 /// 
 #[derive(Debug, Serialize, Deserialize)]
+#[deprecated]
 pub struct JwtTokenForTesting {
     iat: i64,
     exp: i64,

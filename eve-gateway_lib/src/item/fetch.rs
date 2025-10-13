@@ -1,11 +1,11 @@
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
-
-use crate::{EveGatewayClient, Result};
 use starfoundry_lib_types::{CategoryId, GroupId, TypeId};
 
+use crate::{ApiClient, Result};
+
 pub async fn fetch_item(
-    gateway_client: &impl EveGatewayClient,
+    gateway_client: &impl ApiClient,
     type_id:        TypeId,
 ) -> Result<Item> {
     gateway_client

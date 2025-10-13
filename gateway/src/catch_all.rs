@@ -1,132 +1,48 @@
-use axum::extract::{Path, Request, State};
-use axum::response::{IntoResponse, Redirect};
-use reqwest::header::{CONTENT_TYPE, LOCATION};
-use reqwest::StatusCode;
-use serde::Deserialize;
+mod auth_callback;
+mod auth_login;
+mod auth_token;
+mod generic_delete;
+mod generic_get;
+mod generic_post;
+mod generic_put;
+mod store_auth_callback;
+mod store_general_info;
+mod well_known_jwks;
 
-use crate::state::AppState;
-use crate::error::Result;
-use crate::client::mtls_client;
+pub use self::auth_callback::*;
+pub use self::auth_login::*;
+pub use self::auth_token::*;
+pub use self::generic_delete::*;
+pub use self::generic_get::*;
+pub use self::generic_post::*;
+pub use self::generic_put::*;
+pub use self::store_auth_callback::*;
+pub use self::store_general_info::*;
+pub use self::well_known_jwks::*;
 
-#[axum::debug_handler]
-pub async fn catch_all(
-    State(state): State<AppState>,
-    Path(path):   Path<String>,
-    request:      Request,
-) -> Result<impl IntoResponse> {
-    // special routes that do not need authentication, or do not follow the
-    // path syntax
-    match path.as_ref() {
-        ".well-known/jwks" |
-        "auth/token" => {
-            if let Some(x) = state.routes.get("/auth") {
-                let mut url = x.service_url.clone();
-                url.set_path(request.uri().path());
-                url.set_query(request.uri().query());
+use axum::http::HeaderMap;
 
-                let client = mtls_client()?;
-                let response = client
-                    .get(url)
-                    .headers(request.headers().clone())
-                    .send()
-                    .await?;
+// TODO: library for use in other services
+pub const HEADER_CHARACTER_ID: &str   = "X-SF-CharacterId";
+pub const HEADER_CORPORATION_ID: &str = "X-SF-CorporationId";
+pub const HEADER_ALLIANCE_ID: &str    = "X-SF-AllianceId";
+pub const HEADER_IS_ADMIN: &str       = "X-SF-IsAdmin";
 
-                if response.status().is_success() {
-                    let status = response.status();
-                    let body = response.text().await?;
+pub fn add_headers(
+    headers:        &mut HeaderMap,
+    character_id:   i32,
+    corporation_id: i32,
+    alliance_id:    Option<i32>,
+    is_admin:       bool,
+) {
+    headers.insert(HEADER_CHARACTER_ID, character_id.into());
+    headers.insert(HEADER_CORPORATION_ID, corporation_id.into());
 
-                    return Ok((
-                        status,
-                        [("Content-Type", "application/json")],
-                        body,
-                    ).into_response());
-                } else {
-                    return Ok((
-                        response.status(),
-                    ).into_response());
-                }
-            } else {
-                // TODO: better error handling
-                return Ok((
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                ).into_response());
-            }
-        },
-        "auth/login" => {
-            if let Some(x) = state.routes.get("/auth") {
-                let mut url = x.service_url.clone();
-                url.set_path(request.uri().path());
-                url.set_query(request.uri().query());
+    if let Some(x) = alliance_id {
+        headers.insert(HEADER_ALLIANCE_ID, x.into());
+    }
 
-                let client = mtls_client()?;
-                let response = client
-                    .get(url)
-                    .headers(request.headers().clone())
-                    .send()
-                    .await?;
-
-                if response.status().is_success() {
-                    let body: AuthLoginResponse = response.json().await?;
-
-                    return Ok((
-                        StatusCode::TEMPORARY_REDIRECT,
-                        Redirect::temporary(&body.url),
-                    ).into_response());
-                } else {
-                    return Ok((
-                        response.status(),
-                    ).into_response());
-                }
-            }
-        },
-        "auth/callback" => {
-            if let Some(x) = state.routes.get("/auth") {
-                let mut url = x.service_url.clone();
-                url.set_path(request.uri().path());
-                url.set_query(request.uri().query());
-
-                let client = mtls_client()?;
-                let response = client
-                    .get(url)
-                    .headers(request.headers().clone())
-                    .send()
-                    .await?;
-
-                if response.status().is_success() {
-                    let body: AuthCallbackResponse = response.json().await?;
-
-                    return Ok((
-                        StatusCode::FOUND,
-                        [(
-                            LOCATION,
-                            (&format!("{}?refresh_token={}", body.url, body.refresh_token)),
-                        ), (
-                            CONTENT_TYPE,
-                            &"application/json".to_string(),
-                        )],
-                    ).into_response())
-                } else {
-                    return Ok((
-                        response.status(),
-                    ).into_response());
-                }
-            }
-        },
-        _ => ()
-    };
-
-    return Ok((
-        StatusCode::ALREADY_REPORTED,
-    ).into_response())
-}
-
-#[derive(Debug, Deserialize)]
-struct AuthLoginResponse {
-    url: String,
-}
-
-#[derive(Debug, Deserialize)]
-struct AuthCallbackResponse {
-    url:           String,
-    refresh_token: String,
+    if is_admin {
+        headers.insert(HEADER_IS_ADMIN, (true as i32).into());
+    }
 }

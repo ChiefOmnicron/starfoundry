@@ -3,7 +3,7 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use serde::{Deserialize, Serialize};
-use starfoundry_lib_eve_gateway::ExtractIdentity;
+use starfoundry_lib_eve_gateway::{fetch_character, ExtractIdentity, MtlsApiClient};
 use starfoundry_lib_notification::{Discord, DiscordColor, DiscordEmbed};
 use utoipa::ToSchema;
 use uuid::Uuid;
@@ -62,7 +62,7 @@ pub async fn api(
             VALUES ($1, $2, $3, $4)
             RETURNING id
         ",
-            *identity.character_info.character_id,
+            *identity.character_id,
             info.quantity,
             info.delivery_location,
             info.comment,
@@ -137,12 +137,18 @@ pub async fn api(
         .await
         .map_err(OrderError::GeneralSqlxError)?;
 
+    let character_info = fetch_character(
+            &MtlsApiClient::new()?,
+            identity.character_id,
+        )
+        .await?;
+
     let new_order = DiscordEmbed::new(
             "New order",
             "",
             DiscordColor::DarkGreen,
         )
-        .add_field("Character", &identity.character_info.character_name)
+        .add_field("Character", &character_info.character_name)
         .add_field("Product", &product.name)
         .clone();
 

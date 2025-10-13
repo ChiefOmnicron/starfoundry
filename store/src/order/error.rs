@@ -38,19 +38,6 @@ impl From<crate::product::ProductError> for OrderError {
 impl IntoResponse for OrderError {
     fn into_response(self) -> Response {
         match self {
-            Self::EveGatewayError(starfoundry_lib_eve_gateway::Error::AuthError(_)) => {
-                (
-                    StatusCode::UNAUTHORIZED,
-                    Json(
-                        ErrorResponse {
-                            error: "UNAUTHORIZED".into(),
-                            description: "Login and try again".into(),
-                        }
-                    )
-                ).into_response()
-            },
-
-
             Self::JsonExtractorRejection(x) => {
                 format_json_errors(x).into_response()
             },

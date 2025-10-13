@@ -10,8 +10,9 @@ use axum::extract::{Query, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
-use starfoundry_lib_eve_gateway::ExtractIdentity;
+use starfoundry_lib_eve_gateway::{ExtractIdentity, MtlsApiClient};
 
+use crate::api_client;
 use crate::api_docs::{BadRequest, InternalServerError, Unauthorized};
 use crate::AppState;
 use crate::project_group::error::Result;
@@ -57,12 +58,12 @@ pub async fn api(
     Query(filter): Query<ProjectGroupFilter>,
     identity:      ExtractIdentity,
 ) -> Result<impl IntoResponse> {
-    let data = list(
+    let data = dbg!(list(
             &state.pool,
-            &identity.gateway_client()?,
-            identity.character_info.character_id,
+            &api_client()?,
+            identity.character_id,
             filter,
-        ).await?;
+        ).await)?;
 
     if data.is_empty() {
         Ok(
@@ -91,6 +92,7 @@ mod tests {
     use axum::http::StatusCode;
     use http_body_util::BodyExt;
     use sqlx::PgPool;
+    use starfoundry_lib_eve_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
     use starfoundry_lib_eve_gateway::test::JwtTokenForTesting;
     use starfoundry_lib_types::CharacterId;
 
@@ -110,6 +112,8 @@ mod tests {
             .method("GET")
             .header(AUTHORIZATION, token.generate())
             .header(HOST, "test.starfoundry.space")
+            .header(HEADER_CHARACTER_ID, 1)
+            .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
             .unwrap();
 
@@ -135,6 +139,8 @@ mod tests {
             .method("GET")
             .header(AUTHORIZATION, token.generate())
             .header(HOST, "test.starfoundry.space")
+            .header(HEADER_CHARACTER_ID, 1)
+            .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
             .unwrap();
 
@@ -160,6 +166,8 @@ mod tests {
             .method("GET")
             .header(AUTHORIZATION, token.generate())
             .header(HOST, "test.starfoundry.space")
+            .header(HEADER_CHARACTER_ID, 1)
+            .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
             .unwrap();
 

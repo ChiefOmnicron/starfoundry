@@ -89,6 +89,7 @@ mod tests {
     use axum::http::StatusCode;
     use http_body_util::BodyExt;
     use sqlx::PgPool;
+    use starfoundry_lib_eve_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
     use starfoundry_lib_eve_gateway::test::JwtTokenForTesting;
     use starfoundry_lib_types::CharacterId;
 
@@ -96,7 +97,7 @@ mod tests {
     use crate::structure::Structure;
 
     #[sqlx::test(
-        fixtures("base", "list_default"),
+        fixtures("DELETE_AFTER_NEW_MS", "base", "list_default"),
         migrator = "crate::test_util::MIGRATOR"
     )]
     async fn happy_path_all(
@@ -108,6 +109,8 @@ mod tests {
             .method("GET")
             .header(AUTHORIZATION, token.generate())
             .header(HOST, "test.starfoundry.space")
+            .header(HEADER_CHARACTER_ID, 1)
+            .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
             .unwrap();
         let response = project_group_test_routes(pool.clone(), request).await;
@@ -119,7 +122,7 @@ mod tests {
     }
 
     #[sqlx::test(
-        fixtures("base", "list_default"),
+        fixtures("DELETE_AFTER_NEW_MS", "base", "list_default"),
         migrator = "crate::test_util::MIGRATOR"
     )]
     async fn happy_path_no_content(
@@ -131,6 +134,8 @@ mod tests {
             .method("GET")
             .header(AUTHORIZATION, token.generate())
             .header(HOST, "test.starfoundry.space")
+            .header(HEADER_CHARACTER_ID, 2)
+            .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
             .unwrap();
         let response = project_group_test_routes(pool.clone(), request).await;
@@ -142,7 +147,7 @@ mod tests {
     }
 
     #[sqlx::test(
-        fixtures("base", "list_default"),
+        fixtures("DELETE_AFTER_NEW_MS", "base", "list_default"),
         migrator = "crate::test_util::MIGRATOR"
     )]
     async fn unauthorized(
@@ -159,7 +164,7 @@ mod tests {
     }
 
     #[sqlx::test(
-        fixtures("base", "list_default"),
+        fixtures("DELETE_AFTER_NEW_MS", "base", "list_default"),
         migrator = "crate::test_util::MIGRATOR"
     )]
     async fn forbidden(
@@ -171,6 +176,8 @@ mod tests {
             .method("GET")
             .header(AUTHORIZATION, token.generate())
             .header(HOST, "test.starfoundry.space")
+            .header(HEADER_CHARACTER_ID, 1)
+            .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
             .unwrap();
         let response = project_group_test_routes(pool.clone(), request).await;
@@ -178,7 +185,7 @@ mod tests {
     }
 
     #[sqlx::test(
-        fixtures("base", "list_default"),
+        fixtures("DELETE_AFTER_NEW_MS", "base", "list_default"),
         migrator = "crate::test_util::MIGRATOR"
     )]
     async fn not_found(
@@ -190,6 +197,8 @@ mod tests {
             .method("GET")
             .header(AUTHORIZATION, token.generate())
             .header(HOST, "test.starfoundry.space")
+            .header(HEADER_CHARACTER_ID, 1)
+            .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
             .unwrap();
         let response = project_group_test_routes(pool.clone(), request).await;

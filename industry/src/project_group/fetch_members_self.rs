@@ -6,10 +6,10 @@ use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
-use starfoundry_lib_eve_gateway::ExtractIdentity;
+use starfoundry_lib_eve_gateway::{ExtractIdentity, MtlsApiClient};
 
 use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
-use crate::AppState;
+use crate::{api_client, AppState};
 use crate::project_group::error::Result;
 use crate::project_group::list_members::ProjectGroupMember;
 use crate::project_group::ProjectGroupUuid;
@@ -53,8 +53,8 @@ pub async fn api(
 ) -> Result<impl IntoResponse> {
     let data = fetch_members_self(
             &state.pool,
-            &identity.gateway_client()?,
-            identity.character_info.character_id,
+            &api_client()?,
+            identity.character_id,
             project_group_uuid,
         )
         .await?;
@@ -76,6 +76,7 @@ mod tests {
     use axum::http::header::{AUTHORIZATION, HOST};
     use axum::http::StatusCode;
     use sqlx::PgPool;
+    use starfoundry_lib_eve_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
     use starfoundry_lib_eve_gateway::test::JwtTokenForTesting;
     use starfoundry_lib_types::CharacterId;
 
@@ -94,6 +95,8 @@ mod tests {
             .method("GET")
             .header(AUTHORIZATION, token.generate())
             .header(HOST, "test.starfoundry.space")
+            .header(HEADER_CHARACTER_ID, 1)
+            .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
             .unwrap();
         let response = project_group_test_routes(pool, request).await;
@@ -130,6 +133,8 @@ mod tests {
             .method("GET")
             .header(AUTHORIZATION, token.generate())
             .header(HOST, "test.starfoundry.space")
+            .header(HEADER_CHARACTER_ID, 1)
+            .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
             .unwrap();
         let response = project_group_test_routes(pool, request).await;
@@ -149,6 +154,8 @@ mod tests {
             .method("GET")
             .header(AUTHORIZATION, token.generate())
             .header(HOST, "test.starfoundry.space")
+            .header(HEADER_CHARACTER_ID, 1)
+            .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
             .unwrap();
         let response = project_group_test_routes(pool, request).await;

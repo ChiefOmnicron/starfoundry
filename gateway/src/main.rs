@@ -1,3 +1,4 @@
+mod auth;
 mod catch_all;
 mod client;
 mod config;
@@ -7,7 +8,7 @@ mod metrics;
 mod state;
 
 use axum::{middleware, Router};
-use axum::routing::any;
+use axum::routing::get;
 use std::sync::Arc;
 use tokio::select;
 use tower_http::compression::CompressionLayer;
@@ -15,10 +16,11 @@ use tower_http::decompression::RequestDecompressionLayer;
 use tower::ServiceBuilder;
 use tracing_subscriber::EnvFilter;
 
-use crate::state::AppState;
-use crate::metrics::{path_metrics, setup_metrics_recorder};
-use crate::catch_all::catch_all;
+use crate::auth::load_signature;
+use crate::catch_all::*;
 use crate::config::Config;
+use crate::metrics::{path_metrics, setup_metrics_recorder};
+use crate::state::AppState;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -36,8 +38,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let config = Config::load().await?;
+
+    let decoding_key = load_signature(config.eve_gateway_jwk_url).await?;
+    let decoding_key = Arc::new(decoding_key);
+
     let shared_state = AppState {
         routes: Arc::new(config.routes),
+
+        decoding_key,
     };
 
     tracing::info!("Starting app server on {}", config.app_address.local_addr().unwrap());
@@ -62,9 +70,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 fn app(
     state: AppState,
 ) -> Router {
-    // build our application with a route
     Router::new()
-        .route("/{*key}", any(catch_all))
+        .route("/.well-known/jwks", get(catch_all_well_known))
+        .route("/store/auth/callback", get(catch_all_store_auth_callback))
+        .route("/store/general/info", get(catch_all_store_general_info))
+        .route("/auth/callback", get(catch_all_auth_callback))
+        .route("/auth/login", get(catch_all_auth_login))
+        .route("/auth/token", get(catch_all_auth_token))
+        .route("/{*key}",
+            get(catch_all_generic_get)
+                .delete(catch_all_generic_delete)
+                .post(catch_all_generic_post)
+                .put(catch_all_generic_put)
+        )
         .layer(
             ServiceBuilder::new()
                 .layer(middleware::from_fn(path_metrics))

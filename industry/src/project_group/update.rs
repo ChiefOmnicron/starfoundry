@@ -80,6 +80,7 @@ mod tests {
 
     use crate::project_group::project_group_test_routes;
     use crate::project_group::update::UpdateProjectGroup;
+    use starfoundry_lib_eve_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
 
     #[sqlx::test(
         fixtures("base"),
@@ -94,6 +95,8 @@ mod tests {
             .header(AUTHORIZATION, token.generate())
             .header(HOST, "test.starfoundry.space")
             .header(CONTENT_TYPE, "application/json")
+            .header(HEADER_CHARACTER_ID, 1)
+            .header(HEADER_CORPORATION_ID, 1)
             .method("PUT")
             .body(Body::new(
                 serde_json::to_string(&UpdateProjectGroup {
@@ -130,6 +133,8 @@ mod tests {
             .header(AUTHORIZATION, token.generate())
             .header(HOST, "test.starfoundry.space")
             .header(CONTENT_TYPE, "text/plain")
+            .header(HEADER_CHARACTER_ID, 1)
+            .header(HEADER_CORPORATION_ID, 1)
             .method("PUT")
             .body(Body::new(
                 serde_json::to_string(&UpdateProjectGroup {
@@ -155,6 +160,8 @@ mod tests {
             .header(AUTHORIZATION, token.generate())
             .header(HOST, "test.starfoundry.space")
             .header(CONTENT_TYPE, "application/json")
+            .header(HEADER_CHARACTER_ID, 1)
+            .header(HEADER_CORPORATION_ID, 1)
             .method("PUT")
             .body(Body::empty())
             .unwrap();
@@ -175,6 +182,8 @@ mod tests {
             .header(AUTHORIZATION, token.generate())
             .header(HOST, "test.starfoundry.space")
             .header(CONTENT_TYPE, "application/json")
+            .header(HEADER_CHARACTER_ID, 1)
+            .header(HEADER_CORPORATION_ID, 1)
             .method("PUT")
             .body(Body::new(
                 serde_json::to_string(&serde_json::json!({
@@ -222,6 +231,8 @@ mod tests {
             .header(AUTHORIZATION, token.generate())
             .header(HOST, "test.starfoundry.space")
             .header(CONTENT_TYPE, "application/json")
+            .header(HEADER_CHARACTER_ID, 2)
+            .header(HEADER_CORPORATION_ID, 1)
             .method("PUT")
             .body(Body::new(
                 serde_json::to_string(&UpdateProjectGroup {
@@ -247,6 +258,8 @@ mod tests {
             .header(AUTHORIZATION, token.generate())
             .header(HOST, "test.starfoundry.space")
             .header(CONTENT_TYPE, "application/json")
+            .header(HEADER_CHARACTER_ID, 1)
+            .header(HEADER_CORPORATION_ID, 1)
             .method("PUT")
             .body(Body::new(
                 serde_json::to_string(&UpdateProjectGroup {

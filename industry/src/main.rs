@@ -12,14 +12,11 @@ pub use self::state::*;
 
 use axum::{middleware, Router};
 use sqlx::postgres::PgPoolOptions;
-use starfoundry_lib_eve_gateway::load_signature;
-use std::sync::Arc;
 use tokio::select;
 use tower_http::compression::CompressionLayer;
 use tower_http::decompression::RequestDecompressionLayer;
 use tower::ServiceBuilder;
 use tracing_subscriber::EnvFilter;
-use url::Url;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_scalar::{Scalar, Servable};
 use utoipa::OpenApi;
@@ -52,14 +49,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .connect(&config.database_uri)
         .await?;
 
-    // TODO: env
-    let decoding_key = load_signature(Url::parse(&std::env::var("STARFOUNDRY_EVE_GATEWAY_JWK_URL").unwrap()).unwrap()).await.unwrap();
-    let decoding_key = Arc::new(decoding_key);
-
     let state = AppState {
         pool,
-
-        decoding_key,
     };
 
     tracing::info!("Starting app server on {}", config.app_address.local_addr().unwrap());
@@ -119,4 +110,20 @@ fn service(
         .route("/metrics", axum::routing::get(|| async move {
             metrics::route(metrics)
         }))
+}
+
+#[cfg(not(test))]
+use starfoundry_lib_eve_gateway::MtlsApiClient;
+#[cfg(not(test))]
+pub fn api_client() -> Result<MtlsApiClient, starfoundry_lib_eve_gateway::Error> {
+    MtlsApiClient::new()
+}
+
+#[cfg(test)]
+pub mod test;
+#[cfg(test)]
+use crate::test::TestApiClient;
+#[cfg(test)]
+pub fn api_client() -> Result<TestApiClient, starfoundry_lib_eve_gateway::Error> {
+    Ok(TestApiClient {})
 }

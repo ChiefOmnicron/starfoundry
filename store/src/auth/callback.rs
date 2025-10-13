@@ -45,7 +45,7 @@ pub async fn callback(
 
     match std::env::var(ENV_REDIRECT) {
         Ok(x) => (
-            StatusCode::FOUND,
+            StatusCode::OK,
             [(
                 LOCATION,
                 x,
