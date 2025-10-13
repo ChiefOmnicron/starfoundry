@@ -1,3 +1,7 @@
-[routes."/auth"]
+[routes."auth"]
 # eve-gateway
 service_url = "https://localhost:9998"
+
+[routes."store"]
+# store
+service_url = "https://localhost:9996"

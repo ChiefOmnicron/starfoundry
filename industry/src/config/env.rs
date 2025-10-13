@@ -1,5 +1,5 @@
 use tokio::net::TcpListener;
-use starfoundry_lib_eve_gateway::{ENV_EVE_GATEWAY_API, ENV_EVE_GATEWAY_JWK_URL, ENV_USER_AGENT};
+use starfoundry_lib_eve_gateway::{ENV_EVE_GATEWAY_API, ENV_USER_AGENT};
 
 const ENV_DATABASE_URL: &str    = "STARFOUNDRY_INDUSTRY_DATABASE_URI";
 const ENV_APP_ADDRESS: &str     = "STARFOUNDRY_INDUSTRY_APP_ADDRESS";
@@ -53,7 +53,6 @@ impl ConfigEnv {
             ENV_SERVICE_ADDRESS,
 
             ENV_EVE_GATEWAY_API,
-            ENV_EVE_GATEWAY_JWK_URL,
             ENV_USER_AGENT,
         ]
         .iter()

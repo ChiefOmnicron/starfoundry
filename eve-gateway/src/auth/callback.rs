@@ -1,9 +1,7 @@
 use axum::extract::{Query, State};
-use axum::http::header::LOCATION;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use base64::prelude::*;
-use reqwest::header::CONTENT_TYPE;
 use sha2::{Digest, Sha256};
 use std::collections::HashMap;
 use std::str::FromStr;
@@ -16,7 +14,6 @@ use crate::eve_client::{EveApiClient, EveJwtToken};
 use crate::character::refresh_character_in_db;
 use crate::state::AppState;
 use axum::Json;
-use tracing_subscriber::fmt::format::json;
 
 const QUERY_PARAM_CODE: &str  = "code";
 const QUERY_PARAM_STATE: &str = "state";

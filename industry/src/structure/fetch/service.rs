@@ -167,7 +167,7 @@ mod tests {
     #[sqlx::test(
         fixtures(
             path = "../fixtures",
-            scripts("base"),
+            scripts("DELETE_AFTER_NEW_MS", "base"),
         ),
         migrator = "crate::test_util::MIGRATOR",
     )]
@@ -188,7 +188,7 @@ mod tests {
     #[sqlx::test(
         fixtures(
             path = "../fixtures",
-            scripts("base"),
+            scripts("DELETE_AFTER_NEW_MS", "base"),
         ),
         migrator = "crate::test_util::MIGRATOR",
     )]

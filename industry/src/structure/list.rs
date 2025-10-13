@@ -57,7 +57,7 @@ pub async fn api(
 ) -> Result<impl IntoResponse> {
     let data = list(
             &state.pool,
-            identity.character_info.character_id,
+            identity.character_id,
             filter,
         )
         .await?;
@@ -89,13 +89,14 @@ mod tests {
     use axum::http::StatusCode;
     use http_body_util::BodyExt;
     use sqlx::PgPool;
+    use starfoundry_lib_eve_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
     use starfoundry_lib_eve_gateway::test::JwtTokenForTesting;
     use starfoundry_lib_types::CharacterId;
 
     use crate::structure::{structure_test_routes, Structure};
 
     #[sqlx::test(
-        fixtures("base"),
+        fixtures("DELETE_AFTER_NEW_MS", "base"),
         migrator = "crate::test_util::MIGRATOR"
     )]
     async fn happy_path_all(
@@ -107,6 +108,8 @@ mod tests {
             .method("GET")
             .header(AUTHORIZATION, token.generate())
             .header(HOST, "test.starfoundry.space")
+            .header(HEADER_CHARACTER_ID, 1)
+            .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
             .unwrap();
         let response = structure_test_routes(pool.clone(), request).await;
@@ -118,7 +121,7 @@ mod tests {
     }
 
     #[sqlx::test(
-        fixtures("base"),
+        fixtures("DELETE_AFTER_NEW_MS", "base"),
         migrator = "crate::test_util::MIGRATOR"
     )]
     async fn happy_path_filter(
@@ -131,6 +134,8 @@ mod tests {
             .method("GET")
             .header(AUTHORIZATION, token.generate())
             .header(HOST, "test.starfoundry.space")
+            .header(HEADER_CHARACTER_ID, 1)
+            .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
             .unwrap();
         let response = structure_test_routes(pool.clone(), request).await;
@@ -142,7 +147,7 @@ mod tests {
     }
 
     #[sqlx::test(
-        fixtures("base"),
+        fixtures("DELETE_AFTER_NEW_MS", "base"),
         migrator = "crate::test_util::MIGRATOR"
     )]
     async fn happy_path_empty(
@@ -155,6 +160,8 @@ mod tests {
             .method("GET")
             .header(AUTHORIZATION, token.generate())
             .header(HOST, "test.starfoundry.space")
+            .header(HEADER_CHARACTER_ID, 1)
+            .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
             .unwrap();
         let response = structure_test_routes(pool.clone(), request).await;
@@ -166,7 +173,7 @@ mod tests {
     }
 
     #[sqlx::test(
-        fixtures("base"),
+        fixtures("DELETE_AFTER_NEW_MS", "base"),
         migrator = "crate::test_util::MIGRATOR"
     )]
     async fn unauthorized(

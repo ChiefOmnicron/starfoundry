@@ -55,9 +55,9 @@ pub async fn api(
     identity:       ExtractIdentity,
     filter:         Query<ListProductFilter>,
 ) -> Result<impl IntoResponse> {
-    let character_id = identity.character_info.character_id;
-    let corporation_id = identity.character_info.corporation_id;
-    let alliance_id = identity.character_info.alliance_id;
+    let character_id = identity.character_id;
+    let corporation_id = identity.corporation_id;
+    let alliance_id = identity.alliance_id;
 
     if !state
         .shop_config

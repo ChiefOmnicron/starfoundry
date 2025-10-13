@@ -1,6 +1,6 @@
-use reqwest::Url;
-use starfoundry_lib_eve_gateway::{ENV_EVE_GATEWAY_API, ENV_EVE_GATEWAY_JWK_URL, ENV_EVE_GATEWAY_JWT_SIGN, ENV_MTLS_IDENTITY, ENV_MTLS_ROOT_CA, ENV_USER_AGENT};
-use tokio::net::TcpListener;
+use starfoundry_lib_eve_gateway::{ENV_EVE_GATEWAY_API, ENV_MTLS_IDENTITY, ENV_MTLS_ROOT_CA, ENV_USER_AGENT};
+use std::net::TcpListener as StdTcpListener;
+use tokio::net::TcpListener as TokioTcpListener;
 
 const ENV_DATABASE_URL: &str    = "STARFOUNDRY_STORE_DATABASE_URL";
 const ENV_DISCORD_URL: &str     = "STARFOUNDRY_STORE_DISCORD_URL";
@@ -9,14 +9,19 @@ const ENV_SERVICE_ADDRESS: &str = "STARFOUNDRY_STORE_SERVICE_ADDRESS";
 
 pub const ENV_REDIRECT: &str    = "STARFOUNDRY_STORE_REDIRECT";
 
+const ENV_MTLS_CERT: &str       = "STARFOUNDRY_STORE_MTLS_CERT";
+const ENV_MTLS_PRIV: &str       = "STARFOUNDRY_STORE_MTLS_PRIV";
+
 #[derive(Debug)]
 pub struct ConfigEnv {
     pub database_url:    String,
     pub discord_url:     String,
-    pub gateway_jwk_url: Url,
 
-    pub app_address:     TcpListener,
-    pub service_address: TcpListener,
+    pub app_address:     StdTcpListener,
+    pub service_address: TokioTcpListener,
+
+    pub mtls_cert:       String,
+    pub mtls_priv:       String,
 }
 
 impl ConfigEnv {
@@ -26,7 +31,7 @@ impl ConfigEnv {
         }
 
         let app_address = std::env::var(ENV_APP_ADDRESS)?;
-        let app_address = match tokio::net::TcpListener::bind(app_address).await {
+        let app_address = match std::net::TcpListener::bind(app_address) {
             Ok(x) => x,
             Err(e) => {
                 tracing::error!("Error validating config {ENV_APP_ADDRESS}. Error: {}", e);
@@ -43,26 +48,21 @@ impl ConfigEnv {
             }
         };
 
-        let gateway_jwk_url = match Url::parse(
-            &std::env::var(ENV_EVE_GATEWAY_JWK_URL)?
-        ) {
-            Ok(x) => x,
-            Err(e) => {
-                tracing::error!("Error validating config {ENV_EVE_GATEWAY_JWK_URL}. Error: {}", e);
-                return Err("Error while parsing address".into());
-            }
-        };
-
         let database_url = std::env::var(ENV_DATABASE_URL)?;
         let discord_url = std::env::var(ENV_DISCORD_URL)?;
+
+        let mtls_cert = std::env::var(ENV_MTLS_CERT)?;
+        let mtls_priv = std::env::var(ENV_MTLS_PRIV)?;
 
         Ok(Self {
             database_url,
             discord_url,
-            gateway_jwk_url,
 
             app_address,
             service_address,
+
+            mtls_cert,
+            mtls_priv,
         })
     }
 
@@ -79,9 +79,10 @@ impl ConfigEnv {
             ENV_MTLS_IDENTITY,
             ENV_USER_AGENT,
 
+            ENV_MTLS_CERT,
+            ENV_MTLS_PRIV,
+
             ENV_EVE_GATEWAY_API,
-            ENV_EVE_GATEWAY_JWK_URL,
-            ENV_EVE_GATEWAY_JWT_SIGN,
         ]
         .iter()
         .map(|x| {

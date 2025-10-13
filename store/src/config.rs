@@ -4,22 +4,26 @@ mod file;
 pub use self::file::*;
 pub use self::env::ENV_REDIRECT;
 
-use reqwest::Url;
 use starfoundry_lib_types::starfoundry_uuid;
-use tokio::net::TcpListener;
+use std::net::TcpListener as StdTcpListener;
+use tokio::net::TcpListener as TokioTcpListener;
 
 use crate::config::env::ConfigEnv;
 
 #[derive(Debug)]
 pub struct Config {
-    pub app_address:        TcpListener,
-    pub service_address:    TcpListener,
+    /// address under which the application should be exposed
+    pub app_address:     StdTcpListener,
+    /// address under which health checks and metrics are exposed
+    pub service_address: TokioTcpListener,
 
-    pub database_url:       String,
-    pub discord_url:        String,
-    pub gateway_jwk_url:    Url,
+    pub mtls_cert:       String,
+    pub mtls_priv:       String,
 
-    pub shop_config:        ShopConfig,
+    pub database_url:    String,
+    pub discord_url:     String,
+
+    pub shop_config:     ShopConfig,
 }
 
 impl Config {
@@ -43,9 +47,11 @@ impl From<(ConfigEnv, ShopConfig)> for Config {
             app_address:        env.app_address,
             service_address:    env.service_address,
 
+            mtls_cert:          env.mtls_cert,
+            mtls_priv:          env.mtls_priv,
+
             database_url:       env.database_url,
             discord_url:        env.discord_url,
-            gateway_jwk_url:    env.gateway_jwk_url,
 
             shop_config:        shop_config,
         }

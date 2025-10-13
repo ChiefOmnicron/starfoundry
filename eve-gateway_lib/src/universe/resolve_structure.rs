@@ -2,10 +2,10 @@ use serde::{Deserialize, Serialize};
 use starfoundry_lib_types::{ConstellationId, RegionId, StructureId, SystemId};
 use utoipa::ToSchema;
 
-use crate::{EveGatewayClient, Item, Result};
+use crate::{ApiClient, Item, Result};
 
 pub async fn resolve_structure(
-    gateway_client: &impl EveGatewayClient,
+    gateway_client: &impl ApiClient,
     structure_id:   StructureId,
 ) -> Result<ResolveStructureResponse> {
     gateway_client

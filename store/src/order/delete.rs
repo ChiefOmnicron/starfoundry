@@ -2,7 +2,7 @@ use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
-use starfoundry_lib_eve_gateway::ExtractIdentity;
+use starfoundry_lib_eve_gateway::{fetch_character, ExtractIdentity, MtlsApiClient};
 use starfoundry_lib_notification::{Discord, DiscordColor, DiscordEmbed};
 
 use crate::api_docs::{BadRequest, InternalServerError, NotFound, Unauthorized, UnprocessableEntity, UnsupportedMediaType};
@@ -57,18 +57,24 @@ pub async fn api(
             AND character_id = $2
         ",
             *order_uuid,
-            *identity.character_info.character_id,
+            *identity.character_id,
         )
         .execute(&state.postgres)
         .await
         .map_err(OrderError::GeneralSqlxError)?;
+
+    let character_info = fetch_character(
+            &MtlsApiClient::new()?,
+            identity.character_id,
+        )
+        .await?;
 
     let order_canceled = DiscordEmbed::new(
             "Order canceled",
             "",
             DiscordColor::DarkRed,
         )
-        .add_field("Character", &identity.character_info.character_name)
+        .add_field("Character", &character_info.character_name)
         .clone();
 
     match Discord::new()

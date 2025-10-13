@@ -1,7 +1,7 @@
 use sqlx::PgPool;
 
 use starfoundry_lib_types::CharacterId;
-use starfoundry_lib_eve_gateway::{fetch_character, EveGatewayClient};
+use starfoundry_lib_eve_gateway::{fetch_character, ApiClient};
 
 use crate::project_group::error::{ProjectGroupError, Result};
 use crate::project_group::permission::ProjectGroupPermission;
@@ -10,7 +10,7 @@ use crate::project_group::list_members::ProjectGroupMember;
 
 pub async fn fetch_members_self(
     pool:               &PgPool,
-    gateway_client:     &impl EveGatewayClient,
+    gateway_client:     &impl ApiClient,
     character_id:       CharacterId,
     project_group_uuid: ProjectGroupUuid,
 ) -> Result<ProjectGroupMember> {
@@ -50,19 +50,20 @@ mod fetch_members_self_test {
     use starfoundry_lib_types::CharacterId;
     use std::str::FromStr;
     use uuid::Uuid;
-    use starfoundry_lib_eve_gateway::test::TestEveGatewayClient;
+
+    use crate::test::TestApiClient;
 
     #[sqlx::test(
         fixtures(
             path = "../fixtures",
-            scripts("base", "list_default"),
+            scripts("DELETE_AFTER_NEW_MS", "base", "list_default"),
         ),
         migrator = "crate::test_util::MIGRATOR",
     )]
     async fn happy_path(
         pool: PgPool,
     ) {
-        let gateway_client = TestEveGatewayClient::new();
+        let gateway_client = TestApiClient::new();
 
         let response = super::fetch_members_self(
                 &pool,
@@ -78,14 +79,14 @@ mod fetch_members_self_test {
     #[sqlx::test(
         fixtures(
             path = "../fixtures",
-            scripts("base", "list_default"),
+            scripts("DELETE_AFTER_NEW_MS", "base", "list_default"),
         ),
         migrator = "crate::test_util::MIGRATOR",
     )]
     async fn default_if_entry_does_not_exist(
         pool: PgPool,
     ) {
-        let gateway_client = TestEveGatewayClient::new();
+        let gateway_client = TestApiClient::new();
 
         let response = super::fetch_members_self(
                 &pool,

@@ -1,18 +1,19 @@
-use crate::EveGatewayClient;
+use starfoundry_lib_eve_gateway::ApiClient;
 
-pub struct TestEveGatewayClient;
+#[derive(Clone)]
+pub struct TestApiClient;
 
-impl TestEveGatewayClient {
+impl TestApiClient {
     pub fn new() -> Self {
         Self {}
     }
 }
 
-impl EveGatewayClient for TestEveGatewayClient {
+impl ApiClient for TestApiClient {
     async fn fetch<T>(
             &self,
             path: impl Into<String>,
-        ) -> crate::Result<T>
+        ) -> starfoundry_lib_eve_gateway::Result<T>
         where
             T: serde::de::DeserializeOwned {
 
@@ -36,20 +37,11 @@ impl EveGatewayClient for TestEveGatewayClient {
         )
     }
 
-    async fn fetch_auth<T>(
-            &self,
-            path: impl Into<String>,
-        ) -> crate::Result<T>
-        where
-            T: serde::de::DeserializeOwned {
-        self.fetch(path).await
-    }
-
     async fn post<D, T>(
             &self,
             _path: impl Into<String>,
             _data: D,
-        ) -> crate::Result<T>
+        ) -> starfoundry_lib_eve_gateway::Result<T>
         where
             D: std::fmt::Debug + serde::Serialize + Send + Sync,
             T: serde::de::DeserializeOwned {

@@ -6,7 +6,7 @@ use axum::response::IntoResponse;
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
 use crate::structure::error::Result;
 use crate::structure::StructureUuid;
-use starfoundry_lib_eve_gateway::{resolve_structure, ExtractIdentity, ResolveStructureResponse};
+use starfoundry_lib_eve_gateway::{resolve_structure, MtlsApiClient, ResolveStructureResponse};
 use starfoundry_lib_types::StructureId;
 
 /// Resolve Structure
@@ -51,13 +51,11 @@ use starfoundry_lib_types::StructureId;
 )]
 pub async fn api(
     Path(structure_id): Path<StructureId>,
-    identity:           ExtractIdentity,
 ) -> Result<impl IntoResponse> {
-    let gateway_client = identity.gateway_client()?;
     // TODO: proper return when this errors
     // TODO: change in the lib
     let entry = resolve_structure(
-            &gateway_client,
+            &MtlsApiClient::new()?,
             structure_id
         )
         .await?;
@@ -78,13 +76,14 @@ mod tests {
     use axum::http::header::{AUTHORIZATION, HOST};
     use axum::http::StatusCode;
     use sqlx::PgPool;
+    use starfoundry_lib_eve_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
     use starfoundry_lib_eve_gateway::test::JwtTokenForTesting;
     use starfoundry_lib_types::CharacterId;
 
     use crate::structure::structure_test_routes;
 
     #[sqlx::test(
-        fixtures("base"),
+        fixtures("DELETE_AFTER_NEW_MS", "base"),
         migrator = "crate::test_util::MIGRATOR"
     )]
     async fn happy_path(
@@ -96,6 +95,8 @@ mod tests {
             .method("GET")
             .header(AUTHORIZATION, token.generate())
             .header(HOST, "test.starfoundry.space")
+            .header(HEADER_CHARACTER_ID, 1)
+            .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
             .unwrap();
         let response = structure_test_routes(pool, request).await;
@@ -103,7 +104,7 @@ mod tests {
     }
 
     #[sqlx::test(
-        fixtures("base"),
+        fixtures("DELETE_AFTER_NEW_MS", "base"),
         migrator = "crate::test_util::MIGRATOR"
     )]
     async fn unauthorized(
@@ -120,7 +121,7 @@ mod tests {
     }
 
     #[sqlx::test(
-        fixtures("base"),
+        fixtures("DELETE_AFTER_NEW_MS", "base"),
         migrator = "crate::test_util::MIGRATOR"
     )]
     async fn forbidden(
@@ -132,6 +133,8 @@ mod tests {
             .method("GET")
             .header(AUTHORIZATION, token.generate())
             .header(HOST, "test.starfoundry.space")
+            .header(HEADER_CHARACTER_ID, 1)
+            .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
             .unwrap();
         let response = structure_test_routes(pool, request).await;
@@ -139,7 +142,7 @@ mod tests {
     }
 
     #[sqlx::test(
-        fixtures("base"),
+        fixtures("DELETE_AFTER_NEW_MS", "base"),
         migrator = "crate::test_util::MIGRATOR"
     )]
     async fn not_found(
@@ -151,6 +154,8 @@ mod tests {
             .method("GET")
             .header(AUTHORIZATION, token.generate())
             .header(HOST, "test.starfoundry.space")
+            .header(HEADER_CHARACTER_ID, 1)
+            .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
             .unwrap();
         let response = structure_test_routes(pool, request).await;

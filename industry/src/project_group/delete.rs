@@ -69,6 +69,7 @@ mod tests {
     use axum::http::header::{AUTHORIZATION, HOST};
     use axum::http::StatusCode;
     use sqlx::PgPool;
+    use starfoundry_lib_eve_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
     use starfoundry_lib_eve_gateway::test::JwtTokenForTesting;
     use starfoundry_lib_types::CharacterId;
 
@@ -87,6 +88,8 @@ mod tests {
             .method("DELETE")
             .header(AUTHORIZATION, token.generate())
             .header(HOST, "test.starfoundry.space")
+            .header(HEADER_CHARACTER_ID, 1)
+            .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
             .unwrap();
         let response = project_group_test_routes(pool, request).await;
@@ -106,6 +109,8 @@ mod tests {
             .method("DELETE")
             .header(AUTHORIZATION, token.generate())
             .header(HOST, "test.starfoundry.space")
+            .header(HEADER_CHARACTER_ID, 1)
+            .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
             .unwrap();
         let response = project_group_test_routes(pool, request).await;
@@ -143,6 +148,8 @@ mod tests {
             .method("DELETE")
             .header(AUTHORIZATION, token.generate())
             .header(HOST, "test.starfoundry.space")
+            .header(HEADER_CHARACTER_ID, 2)
+            .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
             .unwrap();
         let response = project_group_test_routes(pool.clone(), request).await;
@@ -155,6 +162,8 @@ mod tests {
             .method("DELETE")
             .header(AUTHORIZATION, token.generate())
             .header(HOST, "test.starfoundry.space")
+            .header(HEADER_CHARACTER_ID, 3)
+            .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
             .unwrap();
         let response = project_group_test_routes(pool, request).await;

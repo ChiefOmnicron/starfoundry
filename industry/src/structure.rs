@@ -75,7 +75,7 @@ async fn assert_read(
     permission::assert_read_access(
             &state.pool,
             project_group_uuid,
-            identity.character_info.character_id,
+            identity.character_id,
         )
         .await?;
 
@@ -87,14 +87,11 @@ pub async fn structure_test_routes(
     pool: sqlx::PgPool,
     request: axum::http::Request<axum::body::Body>,
 ) -> axum::http::Response<axum::body::Body> {
-    use starfoundry_lib_eve_gateway::test::{decoding_key, set_jwt_test_envs};
-    use std::sync::Arc;
+    use starfoundry_lib_eve_gateway::test::set_jwt_test_envs;
     use tower::ServiceExt;
 
-    let state = AppState {
+    let state: AppState = AppState {
         pool: pool.clone(),
-
-        decoding_key: Arc::new(decoding_key()),
     };
     let (app, _) = crate::structure::routes(state.clone()).split_for_parts();
     let app = app.with_state(state.clone());

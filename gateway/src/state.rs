@@ -1,8 +1,9 @@
 use axum::extract::{FromRef, FromRequestParts};
 use axum::http::request::Parts;
+use jsonwebtoken::DecodingKey;
+use std::collections::HashMap;
 use std::convert::Infallible;
 use std::sync::Arc;
-use std::collections::HashMap;
 
 use crate::config::ConfigFileRoute;
 
@@ -10,7 +11,9 @@ use crate::config::ConfigFileRoute;
 #[derive(Clone)]
 pub struct AppState {
     /// Valid domains read from the config file
-    pub routes: Arc<HashMap<String, ConfigFileRoute>>,
+    pub routes:       Arc<HashMap<String, ConfigFileRoute>>,
+
+    pub decoding_key: Arc<DecodingKey>,
 }
 
 impl<S> FromRequestParts<S> for AppState

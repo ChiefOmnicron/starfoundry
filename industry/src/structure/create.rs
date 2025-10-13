@@ -57,7 +57,7 @@ pub async fn api(
 ) -> Result<impl IntoResponse> {
     let id = create(
         &state.pool,
-        identity.character_info.character_id,
+        identity.character_id,
         info,
     ).await?;
 

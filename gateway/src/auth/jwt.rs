@@ -2,10 +2,11 @@ use jsonwebtoken::{Algorithm, DecodingKey, TokenData, Validation};
 use serde::Deserialize;
 use std::sync::Arc;
 
-use crate::{CharacterInfo, Result, ENV_EVE_GATEWAY_JWT_SIGN};
-use crate::auth::error::AuthError;
+use crate::error::{Error, Result};
+use crate::auth::CharacterInfo;
 
-pub const ENV_EVE_GATEWAY_JWK_URL: &str = "STARFOUNDRY_EVE_GATEWAY_JWK_URL";
+pub const ENV_EVE_GATEWAY_JWT_SIGN: &str = "STARFOUNDRY_EVE_GATEWAY_JWT_SIGN";
+pub const ENV_EVE_GATEWAY_JWK_URL: &str  = "STARFOUNDRY_EVE_GATEWAY_JWK_URL";
 
 /// Validates the token and returns the claims from the token if it is valid
 /// 
@@ -30,17 +31,12 @@ pub fn verify(
             &decoding_key,
             &validation
         )
-        .map_err(AuthError::InvalidAccessToken)
-        .map_err(Into::into)
+        .map_err(Error::InvalidAccessToken)
 }
 
 fn gateway_url() -> Result<String> {
-    if cfg!(test) {
-        return Ok("https://test.starfoundry.space".into());
-    }
-
     std::env::var(ENV_EVE_GATEWAY_JWT_SIGN)
-        .map_err(|_| AuthError::MissingEnv(ENV_EVE_GATEWAY_JWT_SIGN.into()).into())
+        .map_err(|_| Error::EnvNotSet(ENV_EVE_GATEWAY_JWT_SIGN.into()).into())
 }
 
 /// Decoded access token

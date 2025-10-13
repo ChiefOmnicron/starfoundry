@@ -537,7 +537,7 @@ async fn process_build(
         // Nomad
         "01998beb-a0c4-745f-898f-765be1cb92ca" |
         // Rhea
-        "01998beb-a0c4-7a65-8c93-3d211a265d5a" => 1.125,
+        "01998beb-a0c4-7a65-8c93-3d211a265d5a" => 1.15,
         _ => 1.1,
     };
 

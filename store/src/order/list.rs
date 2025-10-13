@@ -9,7 +9,7 @@ use crate::order::{OrderProduct, OrderResponse};
 use crate::product::error::{ProductError, Result};
 use crate::product::util::{check_blacklist, check_whitelist};
 use crate::order::create::CreateOrder;
-use starfoundry_lib_eve_gateway::{fetch_character, ExtractIdentity};
+use starfoundry_lib_eve_gateway::{fetch_character, ExtractIdentity, MtlsApiClient};
 
 /// List orders
 /// 
@@ -49,9 +49,9 @@ pub async fn api(
     State(state):   State<AppState>,
     identity:       ExtractIdentity,
 ) -> Result<impl IntoResponse> {
-    let character_id = identity.character_info.character_id;
-    let corporation_id = identity.character_info.corporation_id;
-    let alliance_id = identity.character_info.alliance_id;
+    let character_id = identity.character_id;
+    let corporation_id = identity.corporation_id;
+    let alliance_id = identity.alliance_id;
 
     if !state
         .shop_config
@@ -86,7 +86,7 @@ pub async fn api(
     }
 
     let character_info = fetch_character(
-            &identity.gateway_client()?,
+            &MtlsApiClient::new()?,
             character_id.into(),
         )
         .await?;
@@ -105,7 +105,7 @@ pub async fn api(
             AND status = ANY('{ACCEPTED, IN_PROGRESS, DONE}')
             ORDER BY created_at
         ",
-            *identity.character_info.character_id,
+            *identity.character_id,
         )
         .fetch_all(&state.postgres)
         .await

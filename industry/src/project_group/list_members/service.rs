@@ -1,5 +1,5 @@
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::{fetch_character, EveGatewayClient};
+use starfoundry_lib_eve_gateway::{fetch_character, ApiClient};
 
 use crate::project_group::error::{ProjectGroupError, Result};
 use crate::project_group::list_members::member::ProjectGroupMember;
@@ -8,7 +8,7 @@ use crate::project_group::ProjectGroupUuid;
 
 pub async fn list_members(
     pool:               &PgPool,
-    gateway_client:     &impl EveGatewayClient,
+    api_client:         &impl ApiClient,
     project_group_uuid: ProjectGroupUuid,
 ) -> Result<Vec<ProjectGroupMember>> {
     let entries = sqlx::query!(
@@ -32,7 +32,7 @@ pub async fn list_members(
     for entry in entries {
         // TODO: add bulk fetch
         let character = fetch_character(
-            gateway_client,
+            api_client,
             entry.character_id.into(),
         )
         .await?;

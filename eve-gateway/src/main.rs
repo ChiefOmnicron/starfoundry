@@ -36,7 +36,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?;
     sqlx::migrate!().run(&postgres).await?;
 
-    let shared_state = AppState {
+    let state = AppState {
         postgres,
         auth_domains: Arc::new(config.domains),
     };
@@ -54,12 +54,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing::info!("Starting service server on {}", config.service_address.local_addr().unwrap());
 
     select! {
-        r = axum_server::from_tcp_rustls(config.app_address, tls_config).serve(app(shared_state.clone()).into_make_service()) => {
+        r = axum_server::from_tcp_rustls(config.app_address, tls_config).serve(app(state.clone()).into_make_service()) => {
             if r.is_err() {
                 tracing::error!("Error in app thread, error: {:?}", r);
             }
         },
-        r = axum::serve(config.service_address, service(shared_state.clone())) => {
+        r = axum::serve(config.service_address, service(state.clone())) => {
             if r.is_err() {
                 tracing::error!("Error in service thread, error: {:?}", r);
             }

@@ -45,7 +45,7 @@ mod list_default_blacklist_project_group_test {
     #[sqlx::test(
         fixtures(
             path = "../fixtures",
-            scripts("base", "list_default"),
+            scripts("DELETE_AFTER_NEW_MS", "base", "list_default"),
         ),
         migrator = "crate::test_util::MIGRATOR",
     )]
@@ -65,7 +65,7 @@ mod list_default_blacklist_project_group_test {
     #[sqlx::test(
         fixtures(
             path = "../fixtures",
-            scripts("base", "list_default"),
+            scripts("DELETE_AFTER_NEW_MS", "base", "list_default"),
         ),
         migrator = "crate::test_util::MIGRATOR",
     )]

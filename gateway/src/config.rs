@@ -5,6 +5,7 @@ pub use self::file::*;
 
 use std::collections::HashMap;
 use tokio::net::TcpListener;
+use url::Url;
 
 use crate::config::env::ConfigEnv;
 
@@ -12,13 +13,15 @@ use crate::config::env::ConfigEnv;
 #[derive(Debug)]
 pub struct Config {
     /// address under which the application should be exposed
-    pub app_address:     TcpListener,
+    pub app_address:         TcpListener,
     /// address under which health checks and metrics are exposed
-    pub service_address: TcpListener,
+    pub service_address:     TcpListener,
+
+    pub eve_gateway_jwk_url: Url,
 
 
     /// list of domains that are allowed to use this service for authentication
-    pub routes:          HashMap<String, ConfigFileRoute>,
+    pub routes:              HashMap<String, ConfigFileRoute>,
 }
 
 impl Config {
@@ -41,10 +44,12 @@ impl From<(ConfigEnv, ConfigFile)> for Config {
         ConfigFile,
     )) -> Self {
         Self {
-            app_address:        env.app_address,
-            service_address:    env.service_address,
+            eve_gateway_jwk_url: env.eve_gateway_jwk_url,
 
-            routes:             file.routes,
+            app_address:         env.app_address,
+            service_address:     env.service_address,
+
+            routes:              file.routes,
         }
     }
 }

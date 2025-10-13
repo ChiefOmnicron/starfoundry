@@ -1,9 +1,9 @@
 use starfoundry_lib_types::CharacterId;
 
-use crate::{CharacterInfo, EveGatewayClient, Result};
+use crate::{CharacterInfo, ApiClient, Result};
 
 pub async fn fetch_character(
-    gateway_client: &impl EveGatewayClient,
+    gateway_client: &impl ApiClient,
     character_id:   CharacterId,
 ) -> Result<CharacterInfo> {
     gateway_client

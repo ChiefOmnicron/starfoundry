@@ -1,4 +1,4 @@
-import { Button, Card, Flex, Image, Pill, SimpleGrid, Stack, Text, Title } from '@mantine/core';
+import { Alert, Button, Card, Flex, Image, Pill, SimpleGrid, Stack, Text, Title } from '@mantine/core';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { formatNumber, type Uuid } from '@/services/utils';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
@@ -158,7 +158,7 @@ function StoreComponent() {
     const {
         isPending: isPendingCategory,
         isError: isErrorCategory,
-        data: categories
+        data: categories,
     } = useListCategory();
 
     const {
@@ -182,7 +182,7 @@ function StoreComponent() {
         label: 'Category',
         key: 'category',
         type: 'SELECT',
-        options: categories.map(x => {
+        options: (categories || []).map(x => {
             return {
                 label: x,
                 key: x,
@@ -224,6 +224,17 @@ function StoreComponent() {
         .map(x => CategoryView(x, products, navigateProduct));
 
     return <>
+        <Alert
+            variant='light'
+            color='blue'
+            title='Note'
+            style={{
+                marginBottom: '5px'
+            }}
+        >
+            Please note: The prices are calculated daily. The price you order at is locked in, and will not be adjusted to the latest store price when delivered.
+        </Alert>
+
         <Filter
             entries={filterOptions}
             onFilterChange={filterChange}
