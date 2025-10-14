@@ -9,7 +9,7 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use serde::Serialize;
-use starfoundry_lib_eve_gateway::ExtractIdentity;
+use starfoundry_lib_gateway::ExtractIdentity;
 use utoipa::ToSchema;
 
 use crate::api_docs::{BadRequest, InternalServerError, Unauthorized, UnprocessableEntity, UnsupportedMediaType};
@@ -85,18 +85,16 @@ pub struct CreateProjectResponse {
 mod tests {
     use axum::body::Body;
     use axum::extract::Request;
-    use axum::http::header::{AUTHORIZATION, CONTENT_TYPE, HOST};
+    use axum::http::header::CONTENT_TYPE;
     use axum::http::StatusCode;
     use http_body_util::BodyExt;
     use serde::Deserialize;
     use sqlx::PgPool;
-    use starfoundry_lib_eve_gateway::test::JwtTokenForTesting;
-    use starfoundry_lib_types::CharacterId;
+    use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
     use uuid::Uuid;
 
     use crate::project_group::create::CreateProjectGroup;
     use crate::project_group::project_group_test_routes;
-    use starfoundry_lib_eve_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
 
     #[sqlx::test(
         fixtures("base"),
@@ -110,11 +108,8 @@ mod tests {
             id: Uuid,
         }
 
-        let token = JwtTokenForTesting::new(CharacterId(1));
         let request = Request::builder()
             .uri("/")
-            .header(AUTHORIZATION, token.generate())
-            .header(HOST, "test.starfoundry.space")
             .header(CONTENT_TYPE, "application/json")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
@@ -155,11 +150,8 @@ mod tests {
     async fn unsupported_media_type(
         pool: PgPool,
     ) {
-        let token = JwtTokenForTesting::new(CharacterId(1));
         let request = Request::builder()
             .uri("/")
-            .header(AUTHORIZATION, token.generate())
-            .header(HOST, "test.starfoundry.space")
             .header(CONTENT_TYPE, "text/plain")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
@@ -182,11 +174,8 @@ mod tests {
     async fn bad_request_no_body(
         pool: PgPool,
     ) {
-        let token = JwtTokenForTesting::new(CharacterId(1));
         let request = Request::builder()
             .uri("/")
-            .header(AUTHORIZATION, token.generate())
-            .header(HOST, "test.starfoundry.space")
             .header(CONTENT_TYPE, "application/json")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
@@ -204,11 +193,8 @@ mod tests {
     async fn bad_request_no_name(
         pool: PgPool,
     ) {
-        let token = JwtTokenForTesting::new(CharacterId(1));
         let request = Request::builder()
             .uri("/")
-            .header(AUTHORIZATION, token.generate())
-            .header(HOST, "test.starfoundry.space")
             .header(CONTENT_TYPE, "application/json")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)

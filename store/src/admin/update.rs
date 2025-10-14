@@ -3,7 +3,7 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use serde::Deserialize;
-use starfoundry_lib_eve_gateway::ExtractIdentity;
+use starfoundry_lib_gateway::ExtractIdentity;
 use utoipa::ToSchema;
 
 use crate::api_docs::{ErrorResponse, Forbidden, InternalServerError, Unauthorized};

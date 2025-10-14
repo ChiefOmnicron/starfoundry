@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO blueprint_dependency\n            (\n                btype_id,\n                ptype_id,\n                time,\n                depends_on\n            )\n            VALUES\n            (\n                $1::INTEGER,\n                $2::INTEGER,\n                $3::INTEGER,\n                $4::INTEGER[]\n            )\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4",
+        "Int4",
+        "Int4Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "64be9ea8ed344083d5767c17df8e196d437a576a4eff77cde7aff3b1d0733e67"
+}

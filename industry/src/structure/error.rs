@@ -14,9 +14,6 @@ pub type Result<T, E = StructureError> = std::result::Result<T, E>;
 #[derive(Debug, Error)]
 #[non_exhaustive]
 pub enum StructureError {
-    #[error("general ItemError, error: '{0}'")]
-    ItemError(crate::item::ItemError),
-
     #[error("the character '{1}' is not allowed to access '{0}'")]
     Forbidden(StructureUuid, CharacterId),
     #[error("structure with id '{0}' not found")]
@@ -41,13 +38,9 @@ pub enum StructureError {
     #[error(transparent)]
     JsonExtractorRejection(#[from] JsonRejection),
     #[error(transparent)]
-    EveGatewayLibError(#[from] starfoundry_lib_eve_gateway::Error),
-}
-
-impl From<crate::item::ItemError> for StructureError {
-    fn from(e: crate::item::ItemError) -> Self {
-        Self::ItemError(e)
-    }
+    GatewayLibError(#[from] starfoundry_lib_gateway::error::Error),
+    #[error(transparent)]
+    EveGatewayLibError(#[from] starfoundry_lib_eve_gateway::error::Error),
 }
 
 impl IntoResponse for StructureError {

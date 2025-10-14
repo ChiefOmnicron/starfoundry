@@ -1,12 +1,14 @@
 use sqlx::PgPool;
+use starfoundry_lib_eve_gateway::EveGatewayApiClient;
 
 use crate::project_group::error::{ProjectGroupError, Result};
 use crate::project_group::ProjectGroupUuid;
 use crate::structure::Structure;
 
 pub async fn list_default_market(
-    pool:               &PgPool,
-    project_group_uuid: ProjectGroupUuid,
+    pool:                   &PgPool,
+    eve_gateway_api_client: &impl EveGatewayApiClient,
+    project_group_uuid:     ProjectGroupUuid,
 ) -> Result<Vec<Structure>> {
     let markets = sqlx::query!("
             SELECT structure_id
@@ -24,7 +26,7 @@ pub async fn list_default_market(
 
     let mut structures = Vec::new();
     for market in markets {
-        if let Some(x) = Structure::new(pool, market).await? {
+        if let Some(x) = Structure::new(pool, eve_gateway_api_client, market).await? {
             structures.push(x);
         } else {
             // silently ignore errors
@@ -43,6 +45,8 @@ mod list_default_market_project_group_test {
     use sqlx::PgPool;
     use uuid::Uuid;
 
+    use crate::eve_gateway_api_client;
+
     #[sqlx::test(
         fixtures(
             path = "../fixtures",
@@ -55,6 +59,7 @@ mod list_default_market_project_group_test {
     ) {
         let response = super::list_default_market(
                 &pool,
+                &eve_gateway_api_client().unwrap(),
                 Uuid::from_str("00000000-0000-0000-0000-000000000001").unwrap().into(),
             )
             .await
@@ -75,6 +80,7 @@ mod list_default_market_project_group_test {
     ) {
         let response = super::list_default_market(
                 &pool,
+                &eve_gateway_api_client().unwrap(),
                 Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap().into(),
             )
             .await

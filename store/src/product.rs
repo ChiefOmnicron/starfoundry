@@ -10,7 +10,7 @@ pub use self::error::*;
 
 use axum::middleware;
 use serde::Serialize;
-use starfoundry_lib_eve_gateway::{assert_admin, assert_login};
+use starfoundry_lib_gateway::assert_admin;
 use starfoundry_lib_types::TypeId;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
@@ -24,26 +24,21 @@ pub fn routes(
     state: AppState,
 ) -> OpenApiRouter<AppState> {
     let fetch = OpenApiRouter::new()
-        .routes(routes!(fetch::api))
-        .route_layer(middleware::from_fn(assert_login));
+        .routes(routes!(fetch::api));
 
     let list = OpenApiRouter::new()
-        .routes(routes!(list::api))
-        .route_layer(middleware::from_fn(assert_login));
+        .routes(routes!(list::api));
 
     let create = OpenApiRouter::new()
         .routes(routes!(create::api))
-        .route_layer(middleware::from_fn_with_state(state.clone(), assert_admin))
-        .route_layer(middleware::from_fn(assert_login));
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_admin));
 
     let update = OpenApiRouter::new()
         .routes(routes!(update::api))
-        .route_layer(middleware::from_fn_with_state(state.clone(), assert_admin))
-        .route_layer(middleware::from_fn(assert_login));
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_admin));
 
     let category_list = OpenApiRouter::new()
-        .routes(routes!(category_list::api))
-        .route_layer(middleware::from_fn(assert_login));
+        .routes(routes!(category_list::api));
 
     OpenApiRouter::new()
         .merge(fetch)

@@ -2,12 +2,13 @@ use axum::extract::Path;
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
+use starfoundry_lib_eve_gateway::{EveGatewayApiClient, ResolveStructureResponse};
+use starfoundry_lib_types::StructureId;
 
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
+use crate::eve_gateway_api_client;
 use crate::structure::error::Result;
 use crate::structure::StructureUuid;
-use starfoundry_lib_eve_gateway::{resolve_structure, MtlsApiClient, ResolveStructureResponse};
-use starfoundry_lib_types::StructureId;
 
 /// Resolve Structure
 /// 
@@ -53,11 +54,8 @@ pub async fn api(
     Path(structure_id): Path<StructureId>,
 ) -> Result<impl IntoResponse> {
     // TODO: proper return when this errors
-    // TODO: change in the lib
-    let entry = resolve_structure(
-            &MtlsApiClient::new()?,
-            structure_id
-        )
+    let entry = eve_gateway_api_client()?
+        .resolve_structure(structure_id)
         .await?;
 
     Ok(
@@ -73,12 +71,9 @@ pub async fn api(
 mod tests {
     use axum::body::Body;
     use axum::extract::Request;
-    use axum::http::header::{AUTHORIZATION, HOST};
     use axum::http::StatusCode;
     use sqlx::PgPool;
-    use starfoundry_lib_eve_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
-    use starfoundry_lib_eve_gateway::test::JwtTokenForTesting;
-    use starfoundry_lib_types::CharacterId;
+    use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
 
     use crate::structure::structure_test_routes;
 
@@ -89,12 +84,9 @@ mod tests {
     async fn happy_path(
         pool: PgPool,
     ) {
-        let token = JwtTokenForTesting::new(CharacterId(1));
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000001")
             .method("GET")
-            .header(AUTHORIZATION, token.generate())
-            .header(HOST, "test.starfoundry.space")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
@@ -113,7 +105,6 @@ mod tests {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000001")
             .method("GET")
-            .header(HOST, "test.starfoundry.space")
             .body(Body::empty())
             .unwrap();
         let response = structure_test_routes(pool, request).await;
@@ -127,12 +118,9 @@ mod tests {
     async fn forbidden(
         pool: PgPool,
     ) {
-        let token = JwtTokenForTesting::new(CharacterId(1));
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000002")
             .method("GET")
-            .header(AUTHORIZATION, token.generate())
-            .header(HOST, "test.starfoundry.space")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
@@ -148,12 +136,9 @@ mod tests {
     async fn not_found(
         pool: PgPool,
     ) {
-        let token = JwtTokenForTesting::new(CharacterId(1));
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000000")
             .method("GET")
-            .header(AUTHORIZATION, token.generate())
-            .header(HOST, "test.starfoundry.space")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())

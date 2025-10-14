@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO structure_rig\n            (\n                type_id,\n                structures\n            )\n            VALUES (\n                $1, $2\n            )\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "759e7c8d68f4316a3b9406b06031fec902eed4605eca8981045bcaee3cdb8ea0"
+}

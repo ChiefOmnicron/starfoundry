@@ -1,10 +1,10 @@
 use serde::Serialize;
+use starfoundry_lib_eve_gateway::Item;
 use utoipa::ToSchema;
 
 use crate::project_group::list_members::ProjectGroupMember;
 use crate::project_group::ProjectGroupUuid;
 use crate::structure::Structure;
-use crate::item::Item;
 
 #[derive(Debug, Serialize, ToSchema)]
 #[cfg_attr(test, derive(serde::Deserialize))]

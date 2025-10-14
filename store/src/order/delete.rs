@@ -2,7 +2,8 @@ use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
-use starfoundry_lib_eve_gateway::{fetch_character, ExtractIdentity, MtlsApiClient};
+use starfoundry_lib_eve_gateway::{EveGatewayApiClient, EveGatewayClient};
+use starfoundry_lib_gateway::ExtractIdentity;
 use starfoundry_lib_notification::{Discord, DiscordColor, DiscordEmbed};
 
 use crate::api_docs::{BadRequest, InternalServerError, NotFound, Unauthorized, UnprocessableEntity, UnsupportedMediaType};
@@ -63,8 +64,8 @@ pub async fn api(
         .await
         .map_err(OrderError::GeneralSqlxError)?;
 
-    let character_info = fetch_character(
-            &MtlsApiClient::new()?,
+    let character_info = EveGatewayClient::new()?
+        .fetch_character(
             identity.character_id,
         )
         .await?;

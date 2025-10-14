@@ -12,9 +12,6 @@ pub type Result<T, E = ProductError> = std::result::Result<T, E>;
 #[derive(Debug, Error)]
 #[non_exhaustive]
 pub enum ProductError {
-    #[error("general AuthError, error: '{0}'")]
-    AuthError(starfoundry_lib_eve_gateway::Error),
-
     #[error("the character '{0}' is not allowed to access the resource")]
     Forbidden(CharacterId),
 
@@ -27,14 +24,24 @@ pub enum ProductError {
     GeneralSerdeError(serde_json::Error),
     #[error("general reqwest error, '{0}'")]
     GeneralReqwestError(reqwest::Error),
+    #[error("general GatewayError, error: '{0}'")]
+    GatewayError(starfoundry_lib_gateway::error::Error),
+    #[error("general EveGatewayError, error: '{0}'")]
+    EveGatewayError(starfoundry_lib_eve_gateway::error::Error),
 
     #[error(transparent)]
     JsonExtractorRejection(#[from] JsonRejection),
 }
 
-impl From<starfoundry_lib_eve_gateway::Error> for ProductError {
-    fn from(e: starfoundry_lib_eve_gateway::Error) -> Self {
-        Self::AuthError(e)
+impl From<starfoundry_lib_gateway::error::Error> for ProductError {
+    fn from(e: starfoundry_lib_gateway::error::Error) -> Self {
+        Self::GatewayError(e)
+    }
+}
+
+impl From<starfoundry_lib_eve_gateway::error::Error> for ProductError {
+    fn from(e: starfoundry_lib_eve_gateway::error::Error) -> Self {
+        Self::EveGatewayError(e)
     }
 }
 
@@ -53,7 +60,7 @@ impl IntoResponse for ProductError {
                 ).into_response()
             }
 
-            Self::AuthError(_) => {
+            Self::GatewayError(_) => {
                 (
                     StatusCode::UNAUTHORIZED,
                     Json(

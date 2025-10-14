@@ -1,6 +1,5 @@
 mod admin;
 mod api_docs;
-mod auth;
 mod config;
 mod general;
 mod healthcheck;
@@ -89,7 +88,6 @@ fn app(
 ) -> Router {
     let (router, api) = OpenApiRouter::with_openapi(ApiDoc::openapi())
         .nest("/admin", admin::routes())
-        .nest("/auth", auth::routes())
         .nest("/general", general::routes())
         .nest("/products", product::routes(state.clone()))
         .nest("/orders", order::routes())

@@ -1,5 +1,5 @@
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::ApiClient;
+use starfoundry_lib_eve_gateway::EveGatewayApiClient;
 use starfoundry_lib_types::CharacterId;
 
 use crate::project_group::error::{ProjectGroupError, Result};
@@ -9,10 +9,10 @@ use crate::project_group::list_default_blacklist::list_default_blacklist;
 use crate::project_group::list_default_market::list_default_market;
 
 pub async fn list(
-    pool:           &PgPool,
-    gateway_client: &impl ApiClient,
-    character_id:   CharacterId,
-    filter:         ProjectGroupFilter,
+    pool:                   &PgPool,
+    eve_gateway_api_client: &impl EveGatewayApiClient,
+    character_id:           CharacterId,
+    filter:                 ProjectGroupFilter,
 ) -> Result<Vec<ProjectGroup>> {
     let owner_filter = match filter.owner {
         Some(true)  => false,
@@ -59,11 +59,19 @@ pub async fn list(
             is_owner:       entry.is_owner.unwrap_or_default(),
             description:    entry.description,
 
-            default_blacklist: list_default_blacklist(pool, entry.id.into()).await?,
-            default_market:    list_default_market(pool, entry.id.into()).await?,
+            default_blacklist: list_default_blacklist(
+                pool,
+                eve_gateway_api_client,
+                entry.id.into()
+            ).await?,
+            default_market:    list_default_market(
+                pool,
+                eve_gateway_api_client,
+                entry.id.into()
+            ).await?,
             members:           list_members(
                 pool,
-                gateway_client,
+                eve_gateway_api_client,
                 entry.id.into()
             ).await?,
         };
@@ -79,7 +87,7 @@ mod list_project_group_test {
     use starfoundry_lib_types::CharacterId;
 
     use crate::project_group::list::filter::ProjectGroupFilter;
-    use crate::test::TestApiClient;
+    use crate::test_util::EveGatewayTestApiClient;
 
     #[sqlx::test(
         fixtures(
@@ -91,7 +99,7 @@ mod list_project_group_test {
     async fn happy_path(
         pool: PgPool,
     ) {
-        let gateway_client = TestApiClient::new();
+        let gateway_client = EveGatewayTestApiClient::new();
         let result = super::list(
                 &pool,
                 &gateway_client,

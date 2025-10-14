@@ -1,5 +1,5 @@
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::ApiClient;
+use starfoundry_lib_eve_gateway::EveGatewayApiClient;
 use starfoundry_lib_types::CharacterId;
 
 use crate::project_group::error::{ProjectGroupError, Result};
@@ -10,10 +10,10 @@ use crate::project_group::list::ProjectGroup;
 use crate::project_group::ProjectGroupUuid;
 
 pub async fn fetch(
-    pool:               &PgPool,
-    gateway_client:     &impl ApiClient,
-    character_id:       CharacterId,
-    project_group_uuid: ProjectGroupUuid,
+    pool:                   &PgPool,
+    eve_gateway_api_client: &impl EveGatewayApiClient,
+    character_id:           CharacterId,
+    project_group_uuid:     ProjectGroupUuid,
 ) -> Result<Option<ProjectGroup>> {
     let entry = sqlx::query!(
         "
@@ -45,11 +45,19 @@ pub async fn fetch(
             is_owner:          x.is_owner.unwrap_or_default(),
             description:       x.description,
 
-            default_blacklist: list_default_blacklist(pool, project_group_uuid).await?,
-            default_market:    list_default_market(pool, project_group_uuid).await?,
+            default_blacklist: list_default_blacklist(
+                pool,
+                eve_gateway_api_client,
+                project_group_uuid
+            ).await?,
+            default_market:    list_default_market(
+                pool,
+                eve_gateway_api_client,
+                project_group_uuid
+            ).await?,
             members:           list_members(
                 pool,
-                gateway_client,
+                eve_gateway_api_client,
                 project_group_uuid
             ).await?,
         };
@@ -67,7 +75,7 @@ mod fetch_project_group_test {
     use starfoundry_lib_types::CharacterId;
     use uuid::Uuid;
 
-    use crate::test::TestApiClient;
+    use crate::test_util::EveGatewayTestApiClient;
 
     #[sqlx::test(
         fixtures(
@@ -79,7 +87,7 @@ mod fetch_project_group_test {
     async fn happy_path(
         pool: PgPool,
     ) {
-        let gateway_client = TestApiClient::new();
+        let gateway_client = EveGatewayTestApiClient::new();
 
         let response = super::fetch(
                 &pool,
@@ -106,7 +114,7 @@ mod fetch_project_group_test {
     async fn no_entry_with_default_uuid(
         pool: PgPool,
     ) {
-        let gateway_client = TestApiClient::new();
+        let gateway_client = EveGatewayTestApiClient::new();
 
         let response = super::fetch(
                 &pool,

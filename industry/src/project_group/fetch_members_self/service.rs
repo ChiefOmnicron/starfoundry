@@ -1,7 +1,7 @@
 use sqlx::PgPool;
 
+use starfoundry_lib_eve_gateway::EveGatewayApiClient;
 use starfoundry_lib_types::CharacterId;
-use starfoundry_lib_eve_gateway::{fetch_character, ApiClient};
 
 use crate::project_group::error::{ProjectGroupError, Result};
 use crate::project_group::permission::ProjectGroupPermission;
@@ -9,10 +9,10 @@ use crate::project_group::ProjectGroupUuid;
 use crate::project_group::list_members::ProjectGroupMember;
 
 pub async fn fetch_members_self(
-    pool:               &PgPool,
-    gateway_client:     &impl ApiClient,
-    character_id:       CharacterId,
-    project_group_uuid: ProjectGroupUuid,
+    pool:                   &PgPool,
+    eve_gateway_api_client: &impl EveGatewayApiClient,
+    character_id:           CharacterId,
+    project_group_uuid:     ProjectGroupUuid,
 ) -> Result<ProjectGroupMember> {
     let entry = sqlx::query!(
         "
@@ -31,8 +31,8 @@ pub async fn fetch_members_self(
         .await
         .map_err(|e| ProjectGroupError::FetchGroupMembersSelf(e, project_group_uuid))?;
 
-    let character = fetch_character(
-            gateway_client,
+    let character = eve_gateway_api_client
+        .fetch_character(
             character_id,
         )
         .await?;
@@ -51,7 +51,7 @@ mod fetch_members_self_test {
     use std::str::FromStr;
     use uuid::Uuid;
 
-    use crate::test::TestApiClient;
+    use crate::test_util::EveGatewayTestApiClient;
 
     #[sqlx::test(
         fixtures(
@@ -63,7 +63,7 @@ mod fetch_members_self_test {
     async fn happy_path(
         pool: PgPool,
     ) {
-        let gateway_client = TestApiClient::new();
+        let gateway_client = EveGatewayTestApiClient::new();
 
         let response = super::fetch_members_self(
                 &pool,
@@ -86,7 +86,7 @@ mod fetch_members_self_test {
     async fn default_if_entry_does_not_exist(
         pool: PgPool,
     ) {
-        let gateway_client = TestApiClient::new();
+        let gateway_client = EveGatewayTestApiClient::new();
 
         let response = super::fetch_members_self(
                 &pool,

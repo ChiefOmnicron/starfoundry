@@ -10,7 +10,6 @@ use crate::client::mtls_client;
 use crate::error::Result;
 use crate::state::AppState;
 
-#[axum::debug_handler]
 pub async fn catch_all_generic_delete(
     identity:     ExtractIdentity,
     headers:      HeaderMap,
