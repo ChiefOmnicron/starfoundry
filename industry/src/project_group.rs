@@ -14,66 +14,57 @@ use axum::extract::{Path, Request, State};
 use axum::middleware;
 use axum::middleware::Next;
 use axum::response::IntoResponse;
+use starfoundry_lib_gateway::ExtractIdentity;
 use starfoundry_lib_types::starfoundry_uuid;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
 
 use crate::AppState;
 use crate::project_group::error::Result;
-use starfoundry_lib_eve_gateway::{assert_login, ExtractIdentity};
 
 pub fn routes(
     state: AppState,
 ) -> OpenApiRouter<AppState> {
     let create = OpenApiRouter::new()
-        .routes(routes!(create::api))
-        .route_layer(middleware::from_fn(assert_login));
+        .routes(routes!(create::api));
 
     let list = OpenApiRouter::new()
-        .routes(routes!(list::api))
-        .route_layer(middleware::from_fn(assert_login));
+        .routes(routes!(list::api));
 
     let update = OpenApiRouter::new()
         .routes(routes!(update::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_write_group))
-        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists))
-        .route_layer(middleware::from_fn(assert_login));
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
 
     let delete = OpenApiRouter::new()
         .routes(routes!(delete::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_owner))
-        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists))
-        .route_layer(middleware::from_fn(assert_login));
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
 
     let fetch = OpenApiRouter::new()
         .routes(routes!(fetch::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
-        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists))
-        .route_layer(middleware::from_fn(assert_login));
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
 
     let list_members = OpenApiRouter::new()
         .routes(routes!(list_members::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
-        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists))
-        .route_layer(middleware::from_fn(assert_login));
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
 
     let fetch_members_self = OpenApiRouter::new()
         .routes(routes!(fetch_members_self::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
-        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists))
-        .route_layer(middleware::from_fn(assert_login));
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
 
     let list_default_blacklist = OpenApiRouter::new()
         .routes(routes!(list_default_blacklist::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
-        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists))
-        .route_layer(middleware::from_fn(assert_login));
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
 
     let list_default_market = OpenApiRouter::new()
         .routes(routes!(list_default_market::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
-        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists))
-        .route_layer(middleware::from_fn(assert_login));
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
 
     OpenApiRouter::new()
         .merge(create)
@@ -162,7 +153,6 @@ pub async fn project_group_test_routes(
     pool: sqlx::PgPool,
     request: axum::http::Request<axum::body::Body>,
 ) -> axum::http::Response<axum::body::Body> {
-    use starfoundry_lib_eve_gateway::test::set_jwt_test_envs;
     use tower::ServiceExt;
 
     let state = AppState {
@@ -170,8 +160,6 @@ pub async fn project_group_test_routes(
     };
     let (app, _) = crate::project_group::routes(state.clone()).split_for_parts();
     let app = app.with_state(state.clone());
-
-    set_jwt_test_envs();
 
     app
         .clone()

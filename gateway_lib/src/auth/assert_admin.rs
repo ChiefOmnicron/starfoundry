@@ -15,7 +15,7 @@ pub async fn assert_admin(
     let is_admin = if let Some(x) = request
         .headers()
         .get(HEADER_IS_ADMIN) {
-        x.to_str().unwrap_or_default().parse::<bool>().unwrap_or(false)
+        x.to_str().unwrap_or_default().parse::<i32>().unwrap_or(0i32)
     } else {
         tracing::error!("could not `assert_admin`, reason: 'no {HEADER_IS_ADMIN} header'");
         return (
@@ -23,9 +23,10 @@ pub async fn assert_admin(
         ).into_response();
     };
 
-    if is_admin {
+    if is_admin == 1 {
         next.run(request).await
     } else {
+        tracing::error!("could not `assert_admin`, reason: 'not an admin'");
         return (
             StatusCode::FORBIDDEN,
         ).into_response();

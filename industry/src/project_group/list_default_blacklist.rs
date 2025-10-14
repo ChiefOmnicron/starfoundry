@@ -6,10 +6,10 @@ use axum::response::IntoResponse;
 use axum::http::StatusCode;
 use axum::Json;
 use axum::extract::{Path, State};
+use starfoundry_lib_eve_gateway::Item;
 
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
-use crate::AppState;
-use crate::item::Item;
+use crate::{eve_gateway_api_client, AppState};
 use crate::project_group::error::Result;
 use crate::project_group::ProjectGroupUuid;
 
@@ -58,6 +58,7 @@ pub async fn api(
 ) -> Result<impl IntoResponse> {
     let data = dbg!(list_default_blacklist(
             &state.pool,
+            &eve_gateway_api_client()?,
             project_group_uuid,
         )
         .await)?;
@@ -85,15 +86,13 @@ pub async fn api(
 mod tests {
     use axum::body::Body;
     use axum::extract::Request;
-    use axum::http::header::{AUTHORIZATION, HOST};
+    use axum::http::header::HOST;
     use axum::http::StatusCode;
     use http_body_util::BodyExt;
     use sqlx::PgPool;
-    use starfoundry_lib_eve_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
-    use starfoundry_lib_eve_gateway::test::JwtTokenForTesting;
-    use starfoundry_lib_types::CharacterId;
+    use starfoundry_lib_eve_gateway::Item;
+    use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
 
-    use crate::item::Item;
     use crate::project_group::project_group_test_routes;
 
     #[sqlx::test(
@@ -103,12 +102,9 @@ mod tests {
     async fn happy_path_all(
         pool: PgPool,
     ) {
-        let token = JwtTokenForTesting::new(CharacterId(1));
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000001/defaults/blacklist")
             .method("GET")
-            .header(AUTHORIZATION, token.generate())
-            .header(HOST, "test.starfoundry.space")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
@@ -129,12 +125,9 @@ mod tests {
     async fn happy_path_no_content(
         pool: PgPool,
     ) {
-        let token = JwtTokenForTesting::new(CharacterId(2));
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000005/defaults/blacklist")
             .method("GET")
-            .header(AUTHORIZATION, token.generate())
-            .header(HOST, "test.starfoundry.space")
             .header(HEADER_CHARACTER_ID, 2)
             .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
@@ -173,12 +166,9 @@ mod tests {
     async fn forbidden(
         pool: PgPool,
     ) {
-        let token = JwtTokenForTesting::new(CharacterId(1));
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000005/defaults/blacklist")
             .method("GET")
-            .header(AUTHORIZATION, token.generate())
-            .header(HOST, "test.starfoundry.space")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
@@ -195,12 +185,9 @@ mod tests {
     async fn not_found(
         pool: PgPool,
     ) {
-        let token = JwtTokenForTesting::new(CharacterId(1));
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000000/defaults/blacklist")
             .method("GET")
-            .header(AUTHORIZATION, token.generate())
-            .header(HOST, "test.starfoundry.space")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())

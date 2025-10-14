@@ -1,5 +1,5 @@
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::{fetch_character, ApiClient};
+use starfoundry_lib_eve_gateway::EveGatewayApiClient;
 use starfoundry_lib_types::CharacterId;
 
 use crate::config::OrderUuid;
@@ -8,7 +8,7 @@ use crate::product::{ProductError, Result};
 
 pub async fn fetch(
     pool:           &PgPool,
-    gateway_client: &impl ApiClient,
+    api_client:     &impl EveGatewayApiClient,
     character_id:   CharacterId,
     order_uuid:     OrderUuid,
 ) -> Result<Option<OrderResponse>> {
@@ -40,11 +40,11 @@ pub async fn fetch(
         return Ok(None);
     };
 
-    let character_info = fetch_character(
-        gateway_client,
-        order_info.character_id.into(),
-    )
-    .await?;
+    let character_info = api_client
+        .fetch_character(
+            order_info.character_id.into(),
+        )
+        .await?;
 
     let products = sqlx::query!("
             SELECT

@@ -1,9 +1,9 @@
 use serde::Serialize;
 use sqlx::PgPool;
+use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item};
 use starfoundry_lib_types::TypeId;
 use utoipa::ToSchema;
 
-use crate::item::Item;
 use crate::structure::fetch::BonusModifier;
 use crate::structure::error::{Result, StructureError};
 
@@ -21,14 +21,15 @@ pub struct StructureRig {
 
 impl StructureRig {
     pub async fn new(
-        pool:    &PgPool,
-        type_id: TypeId,
+        pool:                   &PgPool,
+        eve_gateway_api_client: &impl EveGatewayApiClient,
+        type_id:                TypeId,
     ) -> Result<Option<Self>> {
         let mut material        = None;
         let mut time            = None;
         let mut category_groups = Vec::new();
 
-        let item = if let Ok(Some(x)) = Item::new(pool, type_id).await {
+        let item = if let Some(x) = eve_gateway_api_client.fetch_item(type_id).await? {
             x
         } else {
             return Ok(None);

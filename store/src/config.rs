@@ -2,7 +2,6 @@ mod env;
 mod file;
 
 pub use self::file::*;
-pub use self::env::ENV_REDIRECT;
 
 use starfoundry_lib_types::starfoundry_uuid;
 use std::net::TcpListener as StdTcpListener;

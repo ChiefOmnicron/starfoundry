@@ -2,6 +2,8 @@ use axum::extract::State;
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
+use starfoundry_lib_eve_gateway::{EveGatewayApiClient, EveGatewayClient};
+use starfoundry_lib_gateway::ExtractIdentity;
 
 use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 use crate::AppState;
@@ -9,7 +11,6 @@ use crate::order::{OrderProduct, OrderResponse};
 use crate::product::error::{ProductError, Result};
 use crate::product::util::{check_blacklist, check_whitelist};
 use crate::order::create::CreateOrder;
-use starfoundry_lib_eve_gateway::{fetch_character, ExtractIdentity, MtlsApiClient};
 
 /// List orders
 /// 
@@ -85,8 +86,8 @@ pub async fn api(
         }
     }
 
-    let character_info = fetch_character(
-            &MtlsApiClient::new()?,
+    let character_info = EveGatewayClient::new()?
+        .fetch_character(
             character_id.into(),
         )
         .await?;

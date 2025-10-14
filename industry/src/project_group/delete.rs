@@ -66,12 +66,10 @@ pub async fn api(
 mod tests {
     use axum::body::Body;
     use axum::extract::Request;
-    use axum::http::header::{AUTHORIZATION, HOST};
+    use axum::http::header::HOST;
     use axum::http::StatusCode;
     use sqlx::PgPool;
-    use starfoundry_lib_eve_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
-    use starfoundry_lib_eve_gateway::test::JwtTokenForTesting;
-    use starfoundry_lib_types::CharacterId;
+    use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
 
     use crate::project_group::project_group_test_routes;
 
@@ -82,12 +80,9 @@ mod tests {
     async fn happy_path(
         pool: PgPool,
     ) {
-        let token = JwtTokenForTesting::new(CharacterId(1));
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000010")
             .method("DELETE")
-            .header(AUTHORIZATION, token.generate())
-            .header(HOST, "test.starfoundry.space")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
@@ -103,12 +98,9 @@ mod tests {
     async fn dont_delete_if_a_project_is_connected(
         pool: PgPool,
     ) {
-        let token = JwtTokenForTesting::new(CharacterId(1));
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000001")
             .method("DELETE")
-            .header(AUTHORIZATION, token.generate())
-            .header(HOST, "test.starfoundry.space")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
@@ -141,13 +133,11 @@ mod tests {
     async fn forbidden(
         pool: PgPool,
     ) {
-        // in the group, but only read permission
-        let token = JwtTokenForTesting::new(CharacterId(2));
+        
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000001")
             .method("DELETE")
-            .header(AUTHORIZATION, token.generate())
-            .header(HOST, "test.starfoundry.space")
+            // in the group, but only read permission
             .header(HEADER_CHARACTER_ID, 2)
             .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
@@ -155,13 +145,10 @@ mod tests {
         let response = project_group_test_routes(pool.clone(), request).await;
         assert_eq!(response.status(), StatusCode::FORBIDDEN);
 
-        // has the permission to write but isn't an owner
-        let token = JwtTokenForTesting::new(CharacterId(3));
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000001")
             .method("DELETE")
-            .header(AUTHORIZATION, token.generate())
-            .header(HOST, "test.starfoundry.space")
+            // has the permission to write but isn't an owner
             .header(HEADER_CHARACTER_ID, 3)
             .header(HEADER_CORPORATION_ID, 1)
             .body(Body::empty())
@@ -177,12 +164,9 @@ mod tests {
     async fn not_found(
         pool: PgPool,
     ) {
-        let token = JwtTokenForTesting::new(CharacterId(1));
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000010")
             .method("DELETE")
-            .header(AUTHORIZATION, token.generate())
-            .header(HOST, "test.starfoundry.space")
             .body(Body::empty())
             .unwrap();
         let response = project_group_test_routes(pool, request).await;

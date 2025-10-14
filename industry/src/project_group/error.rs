@@ -58,7 +58,9 @@ pub enum ProjectGroupError {
     #[error(transparent)]
     JsonExtractorRejection(#[from] JsonRejection),
     #[error(transparent)]
-    EveGatewayLibError(#[from] starfoundry_lib_eve_gateway::Error),
+    GatewayLibError(#[from] starfoundry_lib_gateway::error::Error),
+    #[error(transparent)]
+    EveGatewayLibError(#[from] starfoundry_lib_eve_gateway::error::Error),
 }
 
 impl From<crate::structure::StructureError> for ProjectGroupError {

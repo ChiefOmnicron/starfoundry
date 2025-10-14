@@ -6,6 +6,7 @@ use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
+use starfoundry_lib_gateway::ExtractIdentity;
 
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
 use crate::AppState;
@@ -13,7 +14,6 @@ use crate::config::ProductUuid;
 use crate::product::error::{ProductError, Result};
 use crate::product::Product;
 use crate::product::util::{check_blacklist, check_whitelist};
-use starfoundry_lib_eve_gateway::ExtractIdentity;
 
 /// Fetch Product
 /// 

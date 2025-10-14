@@ -2,7 +2,8 @@ use axum::extract::State;
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
-use starfoundry_lib_eve_gateway::{fetch_bulk_character, ExtractIdentity, MtlsApiClient};
+use starfoundry_lib_eve_gateway::{EveGatewayClient, EveGatewayApiClient};
+use starfoundry_lib_gateway::ExtractIdentity;
 use std::collections::HashMap;
 
 use crate::api_docs::{ErrorResponse, Forbidden, InternalServerError, Unauthorized};
@@ -98,10 +99,10 @@ pub async fn api(
         .collect::<Vec<_>>();
     character_ids.sort();
     character_ids.dedup();
-    let character_ids = fetch_bulk_character(
-            &MtlsApiClient::new()?,
-            character_ids,
-        )
+
+    let eve_gateway_client = EveGatewayClient::new()?;
+    let character_ids = eve_gateway_client
+        .fetch_character_bulk(character_ids)
         .await?
         .into_iter()
         .map(|x| (x.character_id, x))

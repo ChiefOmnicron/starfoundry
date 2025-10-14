@@ -12,7 +12,7 @@ pub use self::fetch::Structure;
 use axum::extract::{Path, Request, State};
 use axum::middleware::{self, Next};
 use axum::response::IntoResponse;
-use starfoundry_lib_eve_gateway::{assert_login, ExtractIdentity};
+use starfoundry_lib_gateway::ExtractIdentity;
 use starfoundry_lib_types::starfoundry_uuid;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
@@ -24,22 +24,18 @@ pub fn routes(
     state: AppState,
 ) -> OpenApiRouter<AppState> {
     let list = OpenApiRouter::new()
-        .routes(routes!(list::api))
-        .route_layer(middleware::from_fn(assert_login));
+        .routes(routes!(list::api));
 
     let fetch = OpenApiRouter::new()
         .routes(routes!(fetch::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
-        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists))
-        .route_layer(middleware::from_fn(assert_login));
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
 
     let create = OpenApiRouter::new()
-        .routes(routes!(create::api))
-        .route_layer(middleware::from_fn(assert_login));
+        .routes(routes!(create::api));
 
     let resolve = OpenApiRouter::new()
-        .routes(routes!(resolve::api))
-        .route_layer(middleware::from_fn(assert_login));
+        .routes(routes!(resolve::api));
 
     OpenApiRouter::new()
         .merge(list)
@@ -87,7 +83,6 @@ pub async fn structure_test_routes(
     pool: sqlx::PgPool,
     request: axum::http::Request<axum::body::Body>,
 ) -> axum::http::Response<axum::body::Body> {
-    use starfoundry_lib_eve_gateway::test::set_jwt_test_envs;
     use tower::ServiceExt;
 
     let state: AppState = AppState {
@@ -95,8 +90,6 @@ pub async fn structure_test_routes(
     };
     let (app, _) = crate::structure::routes(state.clone()).split_for_parts();
     let app = app.with_state(state.clone());
-
-    set_jwt_test_envs();
 
     app
         .clone()

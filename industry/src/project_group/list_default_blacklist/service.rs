@@ -1,12 +1,13 @@
 use sqlx::PgPool;
+use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item};
 
-use crate::item::Item;
 use crate::project_group::error::{ProjectGroupError, Result};
 use crate::project_group::ProjectGroupUuid;
 
 pub async fn list_default_blacklist(
-    pool:               &PgPool,
-    project_group_uuid: ProjectGroupUuid,
+    pool:                   &PgPool,
+    eve_gateway_api_client: &impl EveGatewayApiClient,
+    project_group_uuid:     ProjectGroupUuid,
 ) -> Result<Vec<Item>> {
     let type_ids = sqlx::query!("
             SELECT type_id
@@ -22,15 +23,9 @@ pub async fn list_default_blacklist(
         .map(|x| x.type_id.into())
         .collect::<Vec<_>>();
 
-    let mut items = Vec::new();
-    for type_id in type_ids {
-        // silently ignore errors
-        if let Ok(Some(x)) = Item::new(&pool, type_id).await {
-            items.push(x);
-        } else {
-            tracing::debug!("Didn't found an item for {}", type_id);
-        }
-    }
+    let items = eve_gateway_api_client
+        .fetch_item_bulk(type_ids)
+        .await?;
 
     Ok(items)
 }
@@ -41,6 +36,8 @@ mod list_default_blacklist_project_group_test {
 
     use sqlx::PgPool;
     use uuid::Uuid;
+
+    use crate::eve_gateway_api_client;
 
     #[sqlx::test(
         fixtures(
@@ -54,6 +51,7 @@ mod list_default_blacklist_project_group_test {
     ) {
         let response = super::list_default_blacklist(
                 &pool,
+                &eve_gateway_api_client().unwrap(),
                 Uuid::from_str("00000000-0000-0000-0000-000000000001").unwrap().into(),
             )
             .await
@@ -74,6 +72,7 @@ mod list_default_blacklist_project_group_test {
     ) {
         let response = super::list_default_blacklist(
                 &pool,
+                &eve_gateway_api_client().unwrap(),
                 Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap().into(),
             )
             .await

@@ -12,7 +12,9 @@ pub type Result<T, E = OrderError> = std::result::Result<T, E>;
 #[non_exhaustive]
 pub enum OrderError {
     #[error("general EveGatewayError, error: '{0}'")]
-    EveGatewayError(starfoundry_lib_eve_gateway::Error),
+    EveGatewayError(starfoundry_lib_eve_gateway::error::Error),
+    #[error("general GatewayError, error: '{0}'")]
+    GatewayError(starfoundry_lib_gateway::error::Error),
     #[error("general ProductError, error: '{0}'")]
     ProductError(crate::product::ProductError),
 
@@ -23,8 +25,14 @@ pub enum OrderError {
     JsonExtractorRejection(#[from] JsonRejection),
 }
 
-impl From<starfoundry_lib_eve_gateway::Error> for OrderError {
-    fn from(e: starfoundry_lib_eve_gateway::Error) -> Self {
+impl From<starfoundry_lib_gateway::error::Error> for OrderError {
+    fn from(e: starfoundry_lib_gateway::error::Error) -> Self {
+        Self::GatewayError(e)
+    }
+}
+
+impl From<starfoundry_lib_eve_gateway::error::Error> for OrderError {
+    fn from(e: starfoundry_lib_eve_gateway::error::Error) -> Self {
         Self::EveGatewayError(e)
     }
 }

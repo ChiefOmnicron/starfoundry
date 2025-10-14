@@ -4,10 +4,9 @@ mod error;
 mod fetch;
 mod list;
 
-use axum::middleware;
 use chrono::{DateTime, Utc};
 use serde::Serialize;
-use starfoundry_lib_eve_gateway::{assert_login, CharacterInfo};
+use starfoundry_lib_eve_gateway::CharacterInfo;
 use starfoundry_lib_types::{CharacterId, TypeId};
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
@@ -18,24 +17,19 @@ use crate::config::OrderUuid;
 
 pub fn routes() -> OpenApiRouter<AppState> {
     let fetch = OpenApiRouter::new()
-        .routes(routes!(fetch::api))
-        .route_layer(middleware::from_fn(assert_login));
+        .routes(routes!(fetch::api));
 
     let list = OpenApiRouter::new()
-        .routes(routes!(list::api))
-        .route_layer(middleware::from_fn(assert_login));
+        .routes(routes!(list::api));
 
     let create = OpenApiRouter::new()
-        .routes(routes!(create::api))
-        .route_layer(middleware::from_fn(assert_login));
+        .routes(routes!(create::api));
 
     //let update = OpenApiRouter::new()
-    //    .routes(routes!(update::api))
-    //    .route_layer(middleware::from_fn(assert_login));
+    //    .routes(routes!(update::api);
 
     let delete = OpenApiRouter::new()
-        .routes(routes!(delete::api))
-        .route_layer(middleware::from_fn(assert_login));
+        .routes(routes!(delete::api));
 
     OpenApiRouter::new()
         .merge(fetch)

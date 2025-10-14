@@ -1,13 +1,15 @@
 use sqlx::PgPool;
+use starfoundry_lib_eve_gateway::EveGatewayApiClient;
 use starfoundry_lib_types::CharacterId;
 use crate::structure::list::filter::StructureFilter;
 use crate::structure::{Structure, StructureError};
 use crate::structure::error::Result;
 
 pub async fn list(
-    pool:         &PgPool,
-    character_id: CharacterId,
-    filter:       StructureFilter,
+    pool:                   &PgPool,
+    eve_gateway_api_client: &impl EveGatewayApiClient,
+    character_id:           CharacterId,
+    filter:                 StructureFilter,
 ) -> Result<Vec<Structure>> {
     let entries = sqlx::query!(r#"
             SELECT structure.id
@@ -34,7 +36,7 @@ pub async fn list(
     let mut structures = Vec::new();
     for entry in entries {
         let structure_uuid = entry.id.into();
-        let structure = if let Ok(Some(x)) = Structure::new(pool, structure_uuid).await {
+        let structure = if let Ok(Some(x)) = Structure::new(pool, eve_gateway_api_client, structure_uuid).await {
             x
         } else {
             continue

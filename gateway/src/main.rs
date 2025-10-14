@@ -72,10 +72,10 @@ fn app(
 ) -> Router {
     Router::new()
         .route("/.well-known/jwks", get(catch_all_well_known))
-        .route("/store/auth/callback", get(catch_all_store_auth_callback))
         .route("/store/general/info", get(catch_all_store_general_info))
         .route("/auth/callback", get(catch_all_auth_callback))
         .route("/auth/login", get(catch_all_auth_login))
+        .route("/auth/login/callback", get(catch_all_auth_login_callback))
         .route("/auth/token", get(catch_all_auth_token))
         .route("/{*key}",
             get(catch_all_generic_get)

@@ -33,10 +33,7 @@ pub async fn resolve_structure(
         .fetch_auth(&path)
         .await?;
 
-    let item = crate::item::fetch(
-            pool,
-            response.type_id,
-        )
+    let item = crate::item::fetch::fetch(pool, response.type_id)
         .await?
         .ok_or(UniverseError::ItemNotFound)?;
     let system = crate::universe::fetch_system::fetch(

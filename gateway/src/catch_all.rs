@@ -1,22 +1,22 @@
 mod auth_callback;
+mod auth_login_callback;
 mod auth_login;
 mod auth_token;
 mod generic_delete;
 mod generic_get;
 mod generic_post;
 mod generic_put;
-mod store_auth_callback;
 mod store_general_info;
 mod well_known_jwks;
 
 pub use self::auth_callback::*;
 pub use self::auth_login::*;
+pub use self::auth_login_callback::*;
 pub use self::auth_token::*;
 pub use self::generic_delete::*;
 pub use self::generic_get::*;
 pub use self::generic_post::*;
 pub use self::generic_put::*;
-pub use self::store_auth_callback::*;
 pub use self::store_general_info::*;
 pub use self::well_known_jwks::*;
 

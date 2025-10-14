@@ -1,12 +1,6 @@
-mod fetch;
-mod fetch_bulk;
-
 use serde::{Deserialize, Serialize};
 use starfoundry_lib_types::{AllianceId, CharacterId, CorporationId};
 use utoipa::ToSchema;
-
-pub use self::fetch::*;
-pub use self::fetch_bulk::*;
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 pub struct CharacterInfo {

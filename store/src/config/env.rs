@@ -1,4 +1,4 @@
-use starfoundry_lib_eve_gateway::{ENV_EVE_GATEWAY_API, ENV_MTLS_IDENTITY, ENV_MTLS_ROOT_CA, ENV_USER_AGENT};
+use starfoundry_lib_gateway::{ENV_EVE_GATEWAY_API, ENV_MTLS_IDENTITY, ENV_MTLS_ROOT_CA, ENV_USER_AGENT};
 use std::net::TcpListener as StdTcpListener;
 use tokio::net::TcpListener as TokioTcpListener;
 
@@ -6,8 +6,6 @@ const ENV_DATABASE_URL: &str    = "STARFOUNDRY_STORE_DATABASE_URL";
 const ENV_DISCORD_URL: &str     = "STARFOUNDRY_STORE_DISCORD_URL";
 const ENV_APP_ADDRESS: &str     = "STARFOUNDRY_STORE_APP_ADDRESS";
 const ENV_SERVICE_ADDRESS: &str = "STARFOUNDRY_STORE_SERVICE_ADDRESS";
-
-pub const ENV_REDIRECT: &str    = "STARFOUNDRY_STORE_REDIRECT";
 
 const ENV_MTLS_CERT: &str       = "STARFOUNDRY_STORE_MTLS_CERT";
 const ENV_MTLS_PRIV: &str       = "STARFOUNDRY_STORE_MTLS_PRIV";
@@ -72,8 +70,6 @@ impl ConfigEnv {
             ENV_DISCORD_URL,
             ENV_APP_ADDRESS,
             ENV_SERVICE_ADDRESS,
-
-            ENV_REDIRECT,
 
             ENV_MTLS_ROOT_CA,
             ENV_MTLS_IDENTITY,

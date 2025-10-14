@@ -11,10 +11,11 @@ opt-level = 3
 [workspace]
 members = [
   # considered done
-  'general-purpose_lib-types',
+  'gp_lib-types',
 
-  # new
+  # new, could use some cleanup
   'gateway',
+  'gateway_lib',
 
   # refactor due to new services
   'eve-gateway_lib',

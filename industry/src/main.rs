@@ -1,8 +1,6 @@
 mod api_docs;
-mod auth;
 mod config;
 mod healthcheck;
-mod item;
 mod metrics;
 mod project_group;
 mod state;
@@ -24,9 +22,6 @@ use utoipa::OpenApi;
 use crate::config::Config;
 use crate::api_docs::ApiDoc;
 use crate::metrics::{setup_metrics_recorder, path_metrics};
-
-#[cfg(test)]
-mod test_util;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -77,7 +72,6 @@ fn app(
 ) -> Router {
     // build our application with a route
     let (router, api) = OpenApiRouter::with_openapi(ApiDoc::openapi())
-        .nest("/auth", auth::routes())
         .nest("/project-groups", project_group::routes(state.clone()))
         .nest("/structures", structure::routes(state.clone()))
         .layer(
@@ -113,17 +107,17 @@ fn service(
 }
 
 #[cfg(not(test))]
-use starfoundry_lib_eve_gateway::MtlsApiClient;
+use starfoundry_lib_eve_gateway::EveGatewayClient;
 #[cfg(not(test))]
-pub fn api_client() -> Result<MtlsApiClient, starfoundry_lib_eve_gateway::Error> {
-    MtlsApiClient::new()
+pub fn eve_gateway_api_client() -> Result<EveGatewayClient, starfoundry_lib_eve_gateway::error::Error> {
+    EveGatewayClient::new()
 }
 
 #[cfg(test)]
-pub mod test;
+mod test_util;
 #[cfg(test)]
-use crate::test::TestApiClient;
+use crate::test_util::EveGatewayTestApiClient;
 #[cfg(test)]
-pub fn api_client() -> Result<TestApiClient, starfoundry_lib_eve_gateway::Error> {
-    Ok(TestApiClient {})
+pub fn eve_gateway_api_client() -> Result<EveGatewayTestApiClient, starfoundry_lib_eve_gateway::error::Error> {
+    Ok(EveGatewayTestApiClient {})
 }

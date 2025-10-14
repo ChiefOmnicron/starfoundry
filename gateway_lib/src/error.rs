@@ -2,9 +2,11 @@ use reqwest::StatusCode;
 use thiserror::Error;
 use url::Url;
 
+pub type Result<T, E = Error> = std::result::Result<T, E>;
+
 #[derive(Error, Debug)]
 #[non_exhaustive]
-pub enum EveGatewayClientError {
+pub enum Error {
     #[error("the env {0} is not set")]
     EnvNotSet(&'static str),
 
@@ -31,4 +33,6 @@ pub enum EveGatewayClientError {
     CouldNotConstructClient(reqwest::Error),
     #[error("error while parsing url. Validate the environment variables, error: '{0}'")]
     UrlParseError(url::ParseError),
+    #[error("error while parsing serde, error: '{0}'")]
+    SerdeParseError(#[from] serde_json::Error),
 }

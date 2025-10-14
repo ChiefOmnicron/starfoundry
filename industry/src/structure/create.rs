@@ -9,7 +9,7 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use serde::Serialize;
-use starfoundry_lib_eve_gateway::ExtractIdentity;
+use starfoundry_lib_gateway::ExtractIdentity;
 use utoipa::ToSchema;
 
 use crate::AppState;

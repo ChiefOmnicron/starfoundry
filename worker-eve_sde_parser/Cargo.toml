@@ -14,7 +14,7 @@ serde_yaml = "0.9.34"
 sqlx = { version = "0.8.6", features = ["chrono", "runtime-tokio-rustls", "postgres", "uuid", "json"] }
 starfoundry_lib-items = { path = "../libs/items" }
 starfoundry_lib-projects = { path = "../libs/projects" }
-starfoundry_lib-types = { path = "../general-purpose_lib-types" }
+starfoundry_lib-types = { path = "../gp_lib-types" }
 thiserror = "2.0.17"
 tokio = { version = "1.47.1", features = ["full"] }
 tracing = "0.1.41"

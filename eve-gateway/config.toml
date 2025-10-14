@@ -19,7 +19,7 @@ corporation_scopes = [
     "esi-assets.read_corporation_assets.v1",
     "esi-industry.read_corporation_jobs.v1",
 ]
-redirect = "https://industry.dev.starfoundry.space/api/auth/callback"
+redirect = "https://industry.dev.starfoundry.space/api/auth/login/callback"
 
 [domains."store.dev.starfoundry.space"]
 admins = [
@@ -32,4 +32,4 @@ character_scopes = [
     "publicData",
 ]
 corporation_scopes = []
-redirect = "https://store.dev.starfoundry.space/api/auth/callback"
+redirect = "https://store.dev.starfoundry.space/api/auth/login/callback"

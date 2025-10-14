@@ -74,7 +74,8 @@ COPY        ./.sqlx ./.sqlx
 COPY        ./eve-gateway ./eve-gateway
 COPY        ./eve-gateway_lib ./eve-gateway_lib
 COPY        ./gateway ./gateway
-COPY        ./general-purpose_lib-types ./general-purpose_lib-types
+COPY        ./gateway_lib ./gateway_lib
+COPY        ./gp_lib-types ./gp_lib-types
 COPY        ./industry ./industry
 COPY        ./libs ./libs
 COPY        ./meta_webserver ./meta_webserver
@@ -94,7 +95,8 @@ COPY        ./.sqlx ./.sqlx
 COPY        ./eve-gateway ./eve-gateway
 COPY        ./eve-gateway_lib ./eve-gateway_lib
 COPY        ./gateway ./gateway
-COPY        ./general-purpose_lib-types ./general-purpose_lib-types
+COPY        ./gateway_lib ./gateway_lib
+COPY        ./gp_lib-types ./gp_lib-types
 COPY        ./industry ./industry
 COPY        ./libs ./libs
 COPY        ./meta_webserver ./meta_webserver

@@ -6,13 +6,9 @@ version.workspace = true
 license.workspace = true
 
 [dependencies]
-axum = { version = "0.8.6", features = ["macros"] }
-#axum = "0.8.6"
-axum-extra = { version = "0.10.3", features = ["cookie"] }
-axum-server = { version = "0.7.2", features = ["tls-rustls-no-provider"] }
+axum = "0.8.6"
 dotenvy = "0.15.7"
 jsonwebtoken = { version = "9.3.1", features = ["use_pem"] }
-jwk_kit = "0.1.2"
 metrics = "0.24.2"
 metrics-exporter-prometheus = "0.17.2"
 reqwest = { version = "0.12.23", default-features = false, features = ["charset", "http2", "system-proxy", "json", "rustls-tls"] }

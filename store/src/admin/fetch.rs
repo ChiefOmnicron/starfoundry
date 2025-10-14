@@ -6,7 +6,8 @@ use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
-use starfoundry_lib_eve_gateway::{ExtractIdentity, MtlsApiClient};
+use starfoundry_lib_eve_gateway::EveGatewayClient;
+use starfoundry_lib_gateway::ExtractIdentity;
 
 use crate::api_docs::{ErrorResponse, Forbidden, InternalServerError, NotFound, Unauthorized};
 use crate::AppState;
@@ -68,7 +69,7 @@ pub async fn api(
 
     if let Some(x) = self::fetch(
         &state.postgres,
-        &MtlsApiClient::new()?,
+        &EveGatewayClient::new()?,
         order_uuid,
     ).await? {
         Ok(

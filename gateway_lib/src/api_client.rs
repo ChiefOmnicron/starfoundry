@@ -1,0 +1,231 @@
+use axum::http::HeaderMap;
+use reqwest::{Client, Method, Response, StatusCode};
+use serde::de::DeserializeOwned;
+use serde::Serialize;
+use std::fmt::Debug;
+use url::Url;
+
+use crate::error::{Error, Result};
+
+pub const ENV_EVE_GATEWAY_API: &str      = "STARFOUNDRY_EVE_GATEWAY_API_URL";
+pub const ENV_EVE_GATEWAY_JWT_SIGN: &str = "STARFOUNDRY_EVE_GATEWAY_JWT_SIGN";
+
+// either a full chain or the intermediate ca
+pub const ENV_MTLS_ROOT_CA: &str    = "STARFOUNDRY_MTLS_ROOT_CA";
+pub const ENV_MTLS_IDENTITY: &str   = "STARFOUNDRY_MTLS_IDENTITY";
+pub const ENV_USER_AGENT: &str      = "STARFOUNDRY_USER_AGENT";
+
+#[derive(Clone)]
+pub struct MtlsApiClient {
+    address: Url,
+    client:  Client,
+}
+
+impl MtlsApiClient {
+    pub fn new(
+        address: Url,
+    ) -> Result<Self> {
+        let root_ca = reqwest::Certificate::from_pem(
+            Self::root_ca()?.as_bytes()
+        )
+        .map_err(Error::GenericReqwestError)?;
+
+        let identity = reqwest::Identity::from_pem(
+            Self::identity()?.as_bytes()
+        )
+        .map_err(Error::GenericReqwestError)?;
+
+        Client::builder()
+            .tls_built_in_root_certs(false)
+            .add_root_certificate(root_ca)
+            .use_rustls_tls()
+            .identity(identity)
+            .user_agent(Self::user_agent()?)
+            .https_only(true)
+            .build()
+            .map_err(Error::CouldNotConstructClient)
+            .map_err(Into::into)
+            .map(|x| Self {
+                address: address,
+                client:  x,
+            })
+    }
+
+    pub async fn fetch<T>(
+        &self,
+        path: impl Into<String>,
+    ) -> Result<T>
+    where
+        T: DeserializeOwned,
+    {
+        let mut api_url = self.address.clone();
+        api_url.set_path(&path.into());
+
+        let response = self
+            .send(
+                Method::GET,
+                api_url.clone(),
+                serde_json::Value::Null,
+                None,
+            )
+            .await?;
+
+        let data = response
+            .json::<T>()
+            .await
+            .map_err(|x| Error::ReqwestError(x, api_url))?;
+        Ok(data)
+    }
+
+    pub async fn post<D, T>(
+        &self,
+        path: impl Into<String>,
+        data: D,
+    ) -> Result<T>
+    where
+        D: Debug + Serialize + Send + Sync,
+        T: DeserializeOwned,
+    {
+        let mut api_url = self.address.clone();
+        api_url.set_path(&path.into());
+
+        let json = self
+            .send(
+                Method::POST,
+                api_url.clone(),
+                serde_json::to_value(&data)?,
+                None,
+            )
+            .await?
+            .json::<T>()
+            .await
+            .map_err(|x| Error::ReqwestError(x, api_url))?;
+        Ok(json)
+    }
+
+    fn user_agent() -> Result<String> {
+        std::env::var(ENV_USER_AGENT)
+            .map_err(|_| Error::EnvNotSet(ENV_USER_AGENT))
+            .map_err(Into::into)
+    }
+
+    fn root_ca() -> Result<String> {
+        std::env::var(ENV_MTLS_ROOT_CA)
+            .map_err(|_| Error::EnvNotSet(ENV_MTLS_ROOT_CA))
+            .map_err(Into::into)
+    }
+
+    fn identity() -> Result<String> {
+        std::env::var(ENV_MTLS_IDENTITY)
+            .map_err(|_| Error::EnvNotSet(ENV_MTLS_IDENTITY))
+            .map_err(Into::into)
+    }
+
+    async fn send(
+        &self,
+        method:  Method,
+        url:     Url,
+        body:    serde_json::Value,
+        headers: Option<HeaderMap>,
+    ) -> Result<Response> {
+        let mut retry_counter = 0usize;
+        let mut last_status   = StatusCode::OK;
+        let mut last_text     = String::new();
+
+        loop {
+            if retry_counter == 3 {
+                tracing::error!("Too many retries requesting {}.", url);
+                return Err(Error::TooManyRetries(
+                    url,
+                    last_status,
+                    last_text,
+                ).into());
+            }
+
+            let client = self.client
+                .request(method.clone(), url.clone());
+
+            let client = if body != serde_json::Value::Null {
+                client.json(&body)
+            } else {
+                client
+            };
+
+            let client = if let Some(ref x) = headers {
+                client.headers(x.clone())
+            } else {
+                client
+            };
+
+            let response = client
+                .send()
+                .await
+                .map_err(|x| Error::ReqwestError(x, url.clone()))?;
+
+            match response.status() {
+                StatusCode::NOT_FOUND => {
+                    return Err(Error::NotFound(url).into());
+                },
+                StatusCode::FORBIDDEN => {
+                    return Err(Error::Forbidden(url).into());
+                },
+                StatusCode::UNAUTHORIZED => {
+                    return Err(Error::Unauthorized.into());
+                },
+                StatusCode::BAD_GATEWAY => {
+                    return Err(Error::BadGateway.into());
+                },
+                StatusCode::SERVICE_UNAVAILABLE => {
+                    return Err(Error::ServiceUnavailable.into());
+                },
+                _ => ()
+            };
+
+            let response_status = response.status();
+            if !response_status.is_success() {
+                last_status = response_status;
+                last_text   = response
+                    .text()
+                    .await
+                    .unwrap_or_default();
+
+                retry_counter += 1;
+                tracing::error!(
+                    {
+                        retry = retry_counter,
+                        status = response_status.as_u16(),
+                        uri = url.as_str(),
+                        last_text = last_text,
+                    },
+                    "Fetch resulted in non successful status code.",
+                );
+
+                // Wait a second before trying again
+                std::thread::sleep(std::time::Duration::from_secs(1));
+                continue;
+            }
+
+            return Ok(response);
+        }
+    }
+}
+
+pub trait ApiClient {
+    #[allow(async_fn_in_trait)]
+    async fn fetch<T>(
+        &self,
+        path: impl Into<String>,
+    ) -> Result<T>
+    where
+        T: DeserializeOwned;
+
+    #[allow(async_fn_in_trait)]
+    async fn post<D, T>(
+        &self,
+        path: impl Into<String>,
+        data: D,
+    ) -> Result<T>
+    where
+        D: Debug + Serialize + Send + Sync,
+        T: DeserializeOwned;
+}
