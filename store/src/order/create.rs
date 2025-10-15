@@ -99,8 +99,9 @@ pub async fn api(
         .await
         .map_err(OrderError::GeneralSqlxError)?;
 
+    let mut discord_string_additional_options = Vec::new();
     if let Some(x) = info.additional_option {
-        sqlx::query!("
+        let result = sqlx::query!("
                 INSERT INTO order_product (
                     order_id,
                     is_additional,
@@ -118,13 +119,15 @@ pub async fn api(
                     (SELECT image_type_id FROM product WHERE id = $2),
                     (SELECT content FROM product WHERE id = $2)
                 )
+                RETURNING name
             ",
                 order_uuid,
                 *x,
             )
-            .execute(&state.postgres)
+            .fetch_one(&state.postgres)
             .await
             .map_err(OrderError::GeneralSqlxError)?;
+        discord_string_additional_options.push(result.name);
     }
 
     let product = sqlx::query!("
@@ -150,7 +153,15 @@ pub async fn api(
             DiscordColor::DarkGreen,
         )
         .add_field("Character", &character_info.character_name)
+        .add_field("Corporation", &character_info.corporation_name)
+        .add_field("Alliance", &character_info.alliance_name.unwrap_or("No Alliance".into()))
+
+        .add_field("Delivery Location", &info.delivery_location)
+        .add_field("Quantity", &info.quantity.to_string())
+        .add_field("Comment", &info.comment.unwrap_or_default())
+
         .add_field("Product", &product.name)
+        .add_field("Additional", &discord_string_additional_options.join("\n"))
         .clone();
 
     match Discord::new()

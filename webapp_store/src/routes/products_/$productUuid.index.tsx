@@ -107,14 +107,30 @@ function RouteComponent() {
         return data;
     }
 
-    const systemData = [{
-            value: 'UALX-3',
-            label: 'UALX-3 - Mothership Bellicose (Keepstar)',
-        }, {
-            value: 'C-J6MT',
-            label: 'C-J6MT - 1st Taj Mahgoon (Keepstar)',
-        }
-    ];
+    const deliveryLocations = () => {
+        return product
+            .delivery_location
+            .map(x=> {
+                switch (x) {
+                    case 30001159:
+                        return {
+                            value: 'HY-RWO',
+                            label: 'HY-RWO - Time is a Flat Circle (Keepstar)',
+                        }
+                    case 30000772:
+                        return {
+                            value: 'C-J6MT',
+                            label: 'C-J6MT - 1st Taj Mahgoon (Keepstar)',
+                        }
+                    // 30004807
+                    default:
+                        return {
+                            value: 'UALX-3',
+                            label: 'UALX-3 - Mothership Bellicose (Keepstar)',
+                        }
+                }
+            })
+    }
 
     const tableWidth = useMatches({
         base: '100%',
@@ -255,7 +271,7 @@ function RouteComponent() {
                                 children={(field) => {
                                     return <>
                                         <Select
-                                            data={systemData}
+                                            data={deliveryLocations()}
                                             label="Delivery location"
                                             description="Select a system the order should be delivered to"
                                             id={field.name}

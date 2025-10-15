@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                id,\n                category,\n                name,\n                price,\n                image_type,\n                image_type_id,\n                description,\n                tags,\n                content,\n                message,\n                delivery_time,\n                additional_products,\n                blacklist,\n                whitelist\n            FROM product\n            WHERE\n                NOT (LOWER(name) LIKE '%' || LOWER($1) || '%') IS FALSE AND\n                NOT (LOWER(category) LIKE '%' || LOWER($2) || '%') IS FALSE AND\n                (\n                    NOT (tags @> $3::VARCHAR[]) IS FALSE\n                )\n            ORDER BY name\n        ",
+  "query": "\n            SELECT\n                id,\n                category,\n                name,\n                price,\n                image_type,\n                image_type_id,\n                description,\n                tags,\n                content,\n                message,\n                delivery_time,\n                additional_products,\n                blacklist,\n                whitelist,\n                delivery_location\n            FROM product\n            WHERE\n                NOT (LOWER(name) LIKE '%' || LOWER($1) || '%') IS FALSE AND\n                NOT (LOWER(category) LIKE '%' || LOWER($2) || '%') IS FALSE AND\n                (\n                    NOT (tags @> $3::VARCHAR[]) IS FALSE\n                )\n            ORDER BY name\n        ",
   "describe": {
     "columns": [
       {
@@ -72,6 +72,11 @@
         "ordinal": 13,
         "name": "whitelist",
         "type_info": "Int4Array"
+      },
+      {
+        "ordinal": 14,
+        "name": "delivery_location",
+        "type_info": "Int4Array"
       }
     ],
     "parameters": {
@@ -95,8 +100,9 @@
       false,
       true,
       false,
+      false,
       false
     ]
   },
-  "hash": "750ffae658b43489e2f8c72c5eb9e9e8dbcd431ffca5e29f1898b6f0525e08d5"
+  "hash": "0ca0f30c9555cadb1bbc65789e3bc02e480daaca11bda2687354e92cce384cb4"
 }

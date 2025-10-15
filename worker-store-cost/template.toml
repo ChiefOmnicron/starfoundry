@@ -11,7 +11,7 @@ tags = [
     "Brave",
 ]
 delivery_location = [
-    30004807, # UALX-3,
+    30004807, # UALX-3
     30000772, # C-J6MT
 ]
 whitelist = [

@@ -26,7 +26,8 @@ pub async fn fetch(
                 delivery_time,
                 additional_products,
                 blacklist,
-                whitelist
+                whitelist,
+                delivery_location
             FROM product
             WHERE id = $1
         ",
@@ -70,6 +71,7 @@ pub async fn fetch(
             content: x.content,
             message: x.message,
             delivery_time: x.delivery_time,
+            delivery_location: x.delivery_location,
             additional_options: x.additional_products
                 .unwrap_or_default()
                 .into_iter()

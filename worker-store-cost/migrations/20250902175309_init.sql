@@ -26,6 +26,8 @@ CREATE TABLE IF NOT EXISTS product (
     whitelist               INTEGER[]       NOT NULL    DEFAULT ARRAY[]::INTEGER[],
     blacklist               INTEGER[]       NOT NULL    DEFAULT ARRAY[]::INTEGER[],
 
+    delivery_location       INTEGER[]       NOT NULL    DEFAULT ARRAY[]::INTEGER[],
+
     created_at              TIMESTAMPTZ     NOT NULL    DEFAULT NOW(),
     updated_at              TIMESTAMPTZ     NOT NULL    DEFAULT NOW(),
 

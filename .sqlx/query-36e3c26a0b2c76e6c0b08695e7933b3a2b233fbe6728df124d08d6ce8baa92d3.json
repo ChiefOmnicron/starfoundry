@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                category,\n                name,\n                price,\n                image_type,\n                image_type_id,\n                description,\n                tags,\n                content,\n                message,\n                delivery_time,\n                additional_products,\n                blacklist,\n                whitelist\n            FROM product\n            WHERE id = $1\n        ",
+  "query": "\n            SELECT\n                category,\n                name,\n                price,\n                image_type,\n                image_type_id,\n                description,\n                tags,\n                content,\n                message,\n                delivery_time,\n                additional_products,\n                blacklist,\n                whitelist,\n                delivery_location\n            FROM product\n            WHERE id = $1\n        ",
   "describe": {
     "columns": [
       {
@@ -67,6 +67,11 @@
         "ordinal": 12,
         "name": "whitelist",
         "type_info": "Int4Array"
+      },
+      {
+        "ordinal": 13,
+        "name": "delivery_location",
+        "type_info": "Int4Array"
       }
     ],
     "parameters": {
@@ -87,8 +92,9 @@
       false,
       true,
       false,
+      false,
       false
     ]
   },
-  "hash": "d5950c17ee5f80c1071dc3c82cdc7e474304c3471ba6fbc0fc6bbfbb83abb341"
+  "hash": "36e3c26a0b2c76e6c0b08695e7933b3a2b233fbe6728df124d08d6ce8baa92d3"
 }
