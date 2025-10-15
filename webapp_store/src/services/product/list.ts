@@ -69,6 +69,7 @@ export type Product = {
     delivery_time:      string,
     message?:           string,
     additional_options: AdditionalOption[],
+    delivery_location:  number[],
 }
 
 export type Item = {

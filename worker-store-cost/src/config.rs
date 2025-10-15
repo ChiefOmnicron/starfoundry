@@ -81,6 +81,7 @@ pub struct Build {
     pub project:                String,
     pub market:                 String,
     pub delivery_time:          String,
+    pub delivery_location:      Vec<i32>,
 
     pub message:                Option<String>,
     /// Can be a CharacterId, CorporationId or AllianceId

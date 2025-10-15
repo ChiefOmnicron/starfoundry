@@ -45,6 +45,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let postgres = PgPoolOptions::new()
         .connect(&config.database_url)
         .await?;
+    sqlx::migrate!().run(&postgres).await?;
 
     let shop_config = Arc::new(config.shop_config);
     let discord_url = Arc::new(config.discord_url);

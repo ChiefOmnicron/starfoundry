@@ -462,9 +462,10 @@ async fn process_build(
                 delivery_time,
                 blacklist,
                 whitelist,
-                additional_products
+                additional_products,
+                delivery_location
             )
-            VALUES (1, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+            VALUES (1, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
             ON CONFLICT (id)
             DO UPDATE SET
                 category = EXCLUDED.category,
@@ -477,7 +478,8 @@ async fn process_build(
                 delivery_time = EXCLUDED.delivery_time,
                 blacklist = EXCLUDED.blacklist,
                 whitelist = EXCLUDED.whitelist,
-                additional_products = EXCLUDED.additional_products
+                additional_products = EXCLUDED.additional_products,
+                delivery_location = EXCLUDED.delivery_location
         ",
             build.id,
             build.category,
@@ -491,6 +493,7 @@ async fn process_build(
             &build.blacklist.unwrap_or_default().iter().map(|x| **x).collect::<Vec<_>>(),
             &build.whitelist.unwrap_or_default().iter().map(|x| **x).collect::<Vec<_>>(),
             &additional_products,
+            &build.delivery_location,
         )
         .execute(&mut *transaction)
         .await?;

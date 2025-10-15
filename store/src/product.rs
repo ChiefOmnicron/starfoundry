@@ -76,6 +76,7 @@ pub struct Product {
     pub additional_options:     Vec<AdditionalOption>,
     /// Estimate when the product is delivered
     pub delivery_time:          String,
+    pub delivery_location:      Vec<i32>,
 
     /// Optional description of the product
     pub description:            Option<String>,
