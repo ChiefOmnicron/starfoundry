@@ -153,6 +153,8 @@ CMD         ["/usr/local/bin/app"]
 #           store_webapp
 ###############################################################################
 FROM node AS store-webapp-builder
+ARG         VITE_SENTRY_STORE_DSN
+ARG         SENTRY_AUTH_TOKEN
 WORKDIR     /app
 COPY        webapp_store/package*.json ./
 COPY        webapp_store/tsconfig*.json ./

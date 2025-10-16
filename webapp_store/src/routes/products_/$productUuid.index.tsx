@@ -12,6 +12,7 @@ import { useListProducts, type Product } from '@/services/product/list';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import type { Uuid } from '@/services/utils';
+import { DELIVERY_SYSTEMS } from '@/services/deliverySystem';
 
 export type OrderProduct = {
     additionalOptions?: Uuid,
@@ -110,25 +111,15 @@ function RouteComponent() {
     const deliveryLocations = () => {
         return product
             .delivery_location
-            .map(x=> {
-                switch (x) {
-                    case 30001159:
-                        return {
-                            value: 'HY-RWO',
-                            label: 'HY-RWO - Time is a Flat Circle (Keepstar)',
-                        }
-                    case 30000772:
-                        return {
-                            value: 'C-J6MT',
-                            label: 'C-J6MT - 1st Taj Mahgoon (Keepstar)',
-                        }
-                    // 30004807
-                    default:
-                        return {
-                            value: 'UALX-3',
-                            label: 'UALX-3 - Mothership Bellicose (Keepstar)',
-                        }
+            .map(x => {
+                let info = DELIVERY_SYSTEMS.find(y => y.structureId === x);
+                if (!info) {
+                    return {
+                        value: 'UNKNOWN',
+                        label: 'Unknown delivery system'
+                    }
                 }
+                return info;
             })
     }
 

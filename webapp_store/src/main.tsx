@@ -7,7 +7,10 @@ import { RouterProvider, createRouter } from '@tanstack/react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth, type AuthContext } from './auth';
 
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
+
+import * as Sentry from "@sentry/react";
+
 
 // Create a new router instance
 const router = createRouter({
@@ -17,6 +20,19 @@ const router = createRouter({
         queryClient: undefined!,
     },
 });
+
+if (import.meta.env.PROD) {
+    console.log('Initializing Sentry');
+    Sentry.init({
+        dsn: import.meta.env.SENTRY_STORE_DSN,
+        sendDefaultPii: true,
+        integrations: [
+            Sentry.tanstackRouterBrowserTracingIntegration(router),
+        ],
+        tracesSampleRate: 0.1,
+        tracePropagationTargets: [/^\//, /^https:\/\/store\.rcimade\.space\/api/],
+    });
+}
 
 // Register the router instance for type safety
 declare module '@tanstack/react-router' {
@@ -48,7 +64,19 @@ function App() {
 const rootElement = document.getElementById('root')!
 
 if (!rootElement.innerHTML) {
-    const root = ReactDOM.createRoot(rootElement)
+    const root = createRoot(
+        rootElement,
+        {
+            // Callback called when an error is thrown and not caught by an ErrorBoundary.
+            onUncaughtError: Sentry.reactErrorHandler((error, errorInfo) => {
+                console.warn('Uncaught error', error, errorInfo.componentStack);
+            }),
+            // Callback called when React catches an error in an ErrorBoundary.
+            onCaughtError: Sentry.reactErrorHandler(),
+            // Callback called when React automatically recovers from errors.
+            onRecoverableError: Sentry.reactErrorHandler(),
+        }
+    )
     root.render(
         <StrictMode>
             <App />

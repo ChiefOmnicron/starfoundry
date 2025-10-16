@@ -24,6 +24,6 @@ export const useFetchOrder = (
 export const fetchOrderQuery = (
     orderUuid: Uuid,
 ) => ({
-    queryKey: [FETCH_ORDER],
+    queryKey: [FETCH_ORDER, orderUuid],
     queryFn: async () => fetchOrder(orderUuid),
 });

@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE order_info\n            SET comment = $3\n            WHERE id = $1\n            AND character_id = $2\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4",
+        "Varchar"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "a28b3574e0774da6e6fed2b95a13814b744b72e26db3329734268356d8b372ac"
+}

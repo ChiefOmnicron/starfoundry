@@ -41,6 +41,8 @@ jobs:
         run: |
           docker build \
             -t ${DOCKER_REPO}/${{ inputs.name }} \
+            --build-arg SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }} \
+            --build-arg VITE_SENTRY_STORE_DSN=${{ vars.SENTRY_STORE_DSN }} \
             --target ${{ inputs.image }} \
             .
           docker tag ${DOCKER_REPO}/${{ inputs.name }}:latest ${DOCKER_REPO}/${{ inputs.name }}:${{ env.SHA_SHORT }}

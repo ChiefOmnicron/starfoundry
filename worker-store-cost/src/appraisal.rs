@@ -3,7 +3,7 @@ use starfoundry_lib_items::Item;
 use starfoundry_lib_types::TypeId;
 use uuid::Uuid;
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct Appraisal {
     #[serde(skip)]
     pub id:             Uuid,
@@ -30,7 +30,7 @@ pub struct Appraisal {
     pub total:          AppraisalTotal,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct AppraisalItem {
     pub quantity: i64,
     pub type_id:  TypeId,
@@ -48,14 +48,14 @@ pub struct AppraisalItem {
     pub sell: MarketEntry,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct AppraisalTotal {
     pub buy:    f64,
     pub sell:   f64,
     pub volume: f32
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct MarketEntry {
     pub max:          f64,
     pub min:          f64,
@@ -65,7 +65,7 @@ pub struct MarketEntry {
     pub per_item:     MarketEntyPerItem,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct MarketEntyPerItem {
     pub avg:    f64,
     pub max:    f64,

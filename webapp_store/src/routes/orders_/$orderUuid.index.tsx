@@ -1,23 +1,43 @@
-import { Avatar, Grid, List, NumberFormatter, ScrollArea, Stack, Table, Textarea, TextInput, Title } from '@mantine/core'
+import { Alert, Avatar, Button, Flex, Grid, List, NumberFormatter, ScrollArea, Stack, Table, Textarea, TextInput, Title } from '@mantine/core'
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { DELIVERY_SYSTEMS } from '@/services/deliverySystem';
+import { FETCH_ORDER, useFetchOrder } from '@/services/order/fetch';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { LoadingError } from '@/components/LoadingError';
+import { Route as OrderRoute } from '@/routes/orders/index';
 import { type OrderProduct } from '@/services/order/list';
-import { useFetchOrder } from '@/services/order/fetch';
+import { updateOrderComment, type UpdateOrder } from '@/services/order/update';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useForm } from '@tanstack/react-form';
+import { useState } from 'react';
 
 export const Route = createFileRoute('/orders_/$orderUuid/')({
     component: RouteComponent,
 })
 
 function RouteComponent() {
+    const navigation = useNavigate({ from: Route.fullPath });
     const { orderUuid } = Route.useParams();
+
+    const [errorUpdate, setErrorUpdate] = useState<boolean>(false);
+    const [updateSuccess, setUpdateSuccess] = useState<boolean>(false);
 
     const {
         isPending,
         isError,
         data: order
     } = useFetchOrder(orderUuid);
+
+    const queryClient = useQueryClient();
+    const update = useMutation({
+        mutationFn: async (data: UpdateOrder) => {
+            return await updateOrderComment(orderUuid, data);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [FETCH_ORDER, orderUuid] })
+        },
+    });
 
     if (isPending) {
         return LoadingAnimation();
@@ -56,6 +76,46 @@ function RouteComponent() {
         getCoreRowModel: getCoreRowModel(),
     });
 
+    const form = useForm({
+        defaultValues: {
+            comment: order.comment,
+        },
+        onSubmit: async ({ value }) => await update
+            .mutateAsync(value)
+            .then(_ => {
+                setUpdateSuccess(true)
+            })
+            .catch(_ => {
+                setErrorUpdate(true);
+            }),
+    });
+
+    const notification = () => {
+        if (errorUpdate) {
+            return <Alert
+                variant='light'
+                color='red'
+                title='Update error'
+                onClose={ () => setErrorUpdate(false) }
+                withCloseButton
+                closeButtonLabel="Dismiss"
+            >
+                There was an error while updating the order. Please try again later.
+            </Alert>;
+        } else if (updateSuccess) {
+            return <Alert
+                variant='light'
+                color='green'
+                title='Update success'
+                onClose={ () => setUpdateSuccess(false) }
+                withCloseButton
+                closeButtonLabel="Dismiss"
+            >
+                The order was successfully updated.
+            </Alert>;
+        }
+    };
+
     const additionalOption = () => {
         return <>
             <Table.ScrollContainer minWidth={500}>
@@ -91,24 +151,11 @@ function RouteComponent() {
     }
 
     const deliverySystem = () => {
-        if (order.delivery_location === 'UALX-3') {
-            return 'UALX-3 - Mothership Bellicose (Keepstar)';
-        } else if (order.delivery_location === 'C-J6MT') {
-            return 'C-J6MT - 1st Taj Mahgoon (Keepstar)';
+        let info = DELIVERY_SYSTEMS.find(x => x.value === order.delivery_location);
+        if (!info) {
+            return 'Unknown delivery system';
         } else {
-            return 'Unknown';
-        }
-    }
-
-    const comment = () => {
-        if (order.comment) {
-            return <Textarea
-                label="Delivery Location"
-                value={order.comment}
-                disabled
-                autosize
-                minRows={3}
-            />
+            return info.label;
         }
     }
 
@@ -153,46 +200,104 @@ function RouteComponent() {
     }
 
     return <>
-        <Stack style={{ width: '100%' }}>
-            <Grid>
-                <Grid.Col span={{ base: 12, sm: 8}}>
-                    <Stack>
-                        <Title order={2}>Configuration</Title>
+        { notification() }
 
-                        <div>
-                            <label style={{
-                                fontSize: 'var(--mantine-font-size-sm)',
-                                fontWeight: '500',
-                                display: 'inline-block'
-                            }}
-                            >
-                                Products
-                            </label>
-                            { additionalOption() }
-                        </div>
+        <form
+            onSubmit={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                form.handleSubmit();
+            }}
+        >
+            <Stack style={{ width: '100%' }}>
+                <Grid>
+                    <Grid.Col span={{ base: 12, sm: 8}}>
+                        <Stack>
+                            <Title order={2}>Configuration</Title>
 
-                        <TextInput
-                            label="Delivery Location"
-                            value={deliverySystem()}
-                            disabled
-                        />
+                            <TextInput
+                                label="Delivery Location"
+                                value={deliverySystem()}
+                                disabled
+                            />
 
-                        { comment() }
-                    </Stack>
-                </Grid.Col>
+                            <div>
+                                <label style={{
+                                    fontSize: 'var(--mantine-font-size-sm)',
+                                    fontWeight: '500',
+                                    display: 'inline-block'
+                                }}
+                                >
+                                    Products
+                                </label>
+                                { additionalOption() }
+                            </div>
 
-                <Grid.Col span={{ base: 12, sm: 4}}>
-                    <Title order={2}>Content</Title>
+                            <form.Field
+                                name="comment"
+                                children={(field) => {
+                                    return <>
+                                        <Textarea
+                                            label="Comment"
+                                            id={field.name}
+                                            name={field.name}
+                                            value={field.state.value}
+                                            onBlur={field.handleBlur}
+                                            onChange={(e) => field.handleChange(e.target.value)}
+                                            autosize
+                                            minRows={3}
+                                        />
+                                    </>
+                                }}
+                            />
+                        </Stack>
+                    </Grid.Col>
 
-                    <List>
-                        <ScrollArea.Autosize mah={400} type='always'>
-                            { contentPrimary() }
+                    <Grid.Col span={{ base: 12, sm: 4}}>
+                        <Title order={2}>Content</Title>
 
-                            { contentAddition() }
-                        </ScrollArea.Autosize>
-                    </List>
-                </Grid.Col>
-            </Grid>
-        </Stack>
+                        <List>
+                            <ScrollArea.Autosize mah={400} type='always'>
+                                { contentPrimary() }
+
+                                { contentAddition() }
+                            </ScrollArea.Autosize>
+                        </List>
+                    </Grid.Col>
+                </Grid>
+
+                <form.Subscribe
+                    selector={(state) => [state.canSubmit, state.isSubmitting]}
+                    children={([canSubmit, isSubmitting]) => (
+                        <Grid>
+                            <Grid.Col span={{ base: 12, sm: 8}}>
+                                <Flex
+                                    justify="flex-end"
+                                    gap="sm"
+                                >
+                                    <Button
+                                        mt="sm"
+                                        variant="subtle"
+                                        color="gray"
+                                        onClick={() => navigation({ to: OrderRoute.to })}
+                                    >
+                                        Back
+                                    </Button>
+                                    <Button
+                                        data-cy="create"
+                                        mt="sm"
+                                        type="submit"
+                                        disabled={!canSubmit || isSubmitting}
+                                        loading={isSubmitting}
+                                    >
+                                        Save
+                                    </Button>
+                                </Flex>
+                            </Grid.Col>
+                        </Grid>
+                    )}
+                />
+            </Stack>
+        </form>
     </>
 }
