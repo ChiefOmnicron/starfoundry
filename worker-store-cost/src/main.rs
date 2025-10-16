@@ -353,7 +353,14 @@ async fn process_build(
         .send()
         .await?
         .json::<Appraisal>()
-        .await?;
+        .await;
+    let market_data_response = match market_data_response {
+        Ok(x) => x,
+        Err(e) => {
+            dbg!(&e);
+            return Err(e.into());
+        }
+    };
     tracing::info!("[{}] Fetched market data", build.name);
 
     let store_content_response = reqwest::Client::new()
@@ -369,7 +376,15 @@ async fn process_build(
         .send()
         .await?
         .json::<Appraisal>()
-        .await?;
+        .await;
+    let store_content_response = match store_content_response {
+        Ok(x) => x,
+        Err(e) => {
+            dbg!(&e);
+            return Err(e.into());
+        }
+    };
+
     let store_content_response = store_content_response
         .items
         .into_iter()

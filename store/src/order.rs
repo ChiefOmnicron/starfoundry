@@ -3,6 +3,7 @@ mod delete;
 mod error;
 mod fetch;
 mod list;
+mod update;
 
 use chrono::{DateTime, Utc};
 use serde::Serialize;
@@ -25,18 +26,18 @@ pub fn routes() -> OpenApiRouter<AppState> {
     let create = OpenApiRouter::new()
         .routes(routes!(create::api));
 
-    //let update = OpenApiRouter::new()
-    //    .routes(routes!(update::api);
-
     let delete = OpenApiRouter::new()
         .routes(routes!(delete::api));
+
+    let update = OpenApiRouter::new()
+        .routes(routes!(update::api));
 
     OpenApiRouter::new()
         .merge(fetch)
         .merge(list)
         .merge(create)
         .merge(delete)
-        //.merge(update)
+        .merge(update)
 }
 
 #[derive(Clone, Debug, Serialize, ToSchema)]

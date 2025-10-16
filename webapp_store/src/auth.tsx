@@ -19,7 +19,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
     }, []);
 
-    const isAuthenticated = React.useCallback(async () => {
+    const isAuthenticated = React.useCallback(() => {
         return axiosClient()
             .then(_ => {
                 return true;
