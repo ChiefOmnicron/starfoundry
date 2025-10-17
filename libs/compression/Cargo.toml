@@ -16,5 +16,5 @@ sqlx = { version = "0.8.6", features = ["chrono", "runtime-tokio-rustls", "postg
 starfoundry_lib-types = { path = "../../gp_lib-types" }
 term-table = "1.4.0"
 thiserror = "2.0.17"
-tokio = { version = "1.47.1", features = ["full"] }
+tokio = { version = "1.48.0", features = ["full"] }
 utoipa = "5.4.0"
