@@ -48,11 +48,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         pool,
     };
 
+    rustls::crypto::aws_lc_rs::default_provider().install_default().unwrap();
+
+    // configure certificate and private key used by https
+    let tls_config = RustlsConfig::from_pem(
+            config.mtls_cert.as_bytes().to_vec(),
+            config.mtls_priv.as_bytes().to_vec(),
+        )
+        .await?;
+
     tracing::info!("Starting app server on {}", config.app_address.local_addr().unwrap());
     tracing::info!("Starting service server on {}", config.service_address.local_addr().unwrap());
 
     select! {
-        r = axum::serve(config.app_address, app(state.clone())) => {
+        r = axum_server::from_tcp_rustls(config.app_address, tls_config).serve(app(state.clone()).into_make_service()) => {
             if r.is_err() {
                 tracing::error!("Error in app thread, error: {:?}", r);
             }
@@ -117,6 +126,7 @@ pub fn eve_gateway_api_client() -> Result<EveGatewayClient, starfoundry_lib_eve_
 mod test_util;
 #[cfg(test)]
 use crate::test_util::EveGatewayTestApiClient;
+use axum_server::tls_rustls::RustlsConfig;
 #[cfg(test)]
 pub fn eve_gateway_api_client() -> Result<EveGatewayTestApiClient, starfoundry_lib_eve_gateway::error::Error> {
     Ok(EveGatewayTestApiClient {})

@@ -13,7 +13,7 @@ function About() {
         </span>
 
         <ol>
-            <ul>- Join RCI's <a href='https://discord.gg/yFxsjw9' target='_blank'>Discord</a> and send you question in the general channel</ul>
+            <ul>- Join RCI's <a href='https://discord.gg/yFxsjw9' target='_blank'>Discord</a> and send your question in the general channel</ul>
             <ul>- Contact 'chiefomnicron' on Discord</ul>
             <ul>- Send 'Eistonen Kodan Sasen' a Slack message (for BRAVE)</ul>
             <ul>- Send 'Eistonen Kodan Sasen' an GSF forum message</ul>

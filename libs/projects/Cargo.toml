@@ -20,4 +20,4 @@ uuid = "1.18.1"
 
 [dev-dependencies]
 dotenvy = "0.15.7"
-tokio = { version = "1.47.1", features = ["full"] }
+tokio = { version = "1.48.0", features = ["full"] }
