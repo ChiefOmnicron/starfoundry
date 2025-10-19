@@ -22,15 +22,16 @@ const router = createRouter({
 });
 
 if (import.meta.env.PROD) {
-    console.log('Initializing Sentry');
     Sentry.init({
-        dsn: import.meta.env.SENTRY_STORE_DSN,
+        dsn: import.meta.env.VITE_SENTRY_STORE_DSN,
+        debug: true,
         sendDefaultPii: true,
         integrations: [
             Sentry.tanstackRouterBrowserTracingIntegration(router),
         ],
         tracesSampleRate: 0.1,
         tracePropagationTargets: [/^\//, /^https:\/\/store\.rcimade\.space\/api/],
+        release: 'beta',
     });
 }
 
