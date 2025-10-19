@@ -14,8 +14,8 @@ async fn main() -> Result<(), Error> {
         .with_env_filter(EnvFilter::from_default_env())
         .init();
 
-    let pg_addr = std::env::var("DATABASE_URL")
-        .expect("Expected that a DATABASE_URL ENV is set");
+    let pg_addr = std::env::var("STARFOUNDRY_EVE_GATEWAY_DATABASE_URL")
+        .expect("Expected that a STARFOUNDRY_EVE_GATEWAY_DATABASE_URL ENV is set");
     let pool = PgPoolOptions::new()
         .min_connections(20)
         .connect(&pg_addr)

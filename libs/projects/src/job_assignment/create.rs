@@ -17,10 +17,10 @@ pub async fn create(
             JOIN project_group_member pgm ON pgm.group_id = p.project_group_id
             JOIN project_job pj ON p.id = pj.project_id
             WHERE pgm.character_id = $1
-            AND (
-                permission & $3 = $3 OR
-                permission & $4 = $4
-            )
+            --AND (
+            --    permission & $3 = $3 OR
+            --    permission & $4 = $4
+            --)
             AND pj.id = ANY($2)
         ",
             *character_id,
@@ -29,8 +29,8 @@ pub async fn create(
                 .into_iter()
                 .map(|x| *x)
                 .collect::<Vec<_>>(),
-            *ProjectGroupPermissionCode::Owner,
-            *ProjectGroupPermissionCode::WriteProject,
+            //*ProjectGroupPermissionCode::Owner,
+            //*ProjectGroupPermissionCode::WriteProject,
         )
         .fetch_all(pool)
         .await

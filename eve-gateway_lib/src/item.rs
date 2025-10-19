@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use starfoundry_lib_types::{CategoryId, GroupId, TypeId};
 use utoipa::ToSchema;
 
-#[derive(Debug, Deserialize, Serialize, ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 #[schema(
     example = json!({
         "base_price": null,

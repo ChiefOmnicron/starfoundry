@@ -81,8 +81,8 @@ pub async fn fetch(
             name:                   entry.structure_name,
             structure_id:           entry.structure_id,
             system: StructureDatabaseSystem {
-                constellation_id:   entry.constellation_id.into(),
-                constellation_name: entry.constellation_name,
+                constellation_id:   0.into(),
+                constellation_name: "Unknown Constellation".into(),
                 region_id:          entry.region_id.into(),
                 region_name:        entry.region_name,
                 system_id:          entry.system_id.into(),

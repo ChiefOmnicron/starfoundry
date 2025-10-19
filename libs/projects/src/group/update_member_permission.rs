@@ -10,7 +10,8 @@ pub async fn update_member_permission(
     member_id:   CharacterId,
     permissions: ProjectGroupPermission,
 ) -> Result<()> {
-    sqlx::query!("
+    unimplemented!()
+    /*sqlx::query!("
             UPDATE project_group_member
             SET permission = $3
             WHERE group_id = $1
@@ -23,5 +24,5 @@ pub async fn update_member_permission(
         .execute(pool)
         .await
         .map(drop)
-        .map_err(|e| Error::UpdateGroupMember(e, group_id, member_id).into())
+        .map_err(|e| Error::UpdateGroupMember(e, group_id, member_id).into())*/
 }

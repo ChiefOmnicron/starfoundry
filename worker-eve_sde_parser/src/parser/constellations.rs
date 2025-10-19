@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use starfoundry_lib_types::{ConstellationId, RegionId};
+use starfoundry_lib_types::ConstellationId;
 use std::collections::HashMap;
 use std::fs::File;
 use std::path::Path;

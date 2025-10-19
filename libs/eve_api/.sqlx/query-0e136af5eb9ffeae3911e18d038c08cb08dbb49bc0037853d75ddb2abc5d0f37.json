@@ -1,0 +1,52 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT\n                    modifier AS \"modifier!: StructureBonusModifier\",\n                    amount,\n                    categories,\n                    groups\n                FROM structure_dogma\n                WHERE ptype_id = $1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "modifier!: StructureBonusModifier",
+        "type_info": {
+          "Custom": {
+            "name": "bonus_modifier",
+            "kind": {
+              "Enum": [
+                "MANUFACTURE_MATERIAL",
+                "MANUFACTURE_TIME",
+                "REACTION_MATERIAL",
+                "REACTION_TIME"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "amount",
+        "type_info": "Float8"
+      },
+      {
+        "ordinal": 2,
+        "name": "categories",
+        "type_info": "Int4Array"
+      },
+      {
+        "ordinal": 3,
+        "name": "groups",
+        "type_info": "Int4Array"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "0e136af5eb9ffeae3911e18d038c08cb08dbb49bc0037853d75ddb2abc5d0f37"
+}

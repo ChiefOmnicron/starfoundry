@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS product (
 
     message                 VARCHAR,
     delivery_time           VARCHAR         NOT NULL,
+    delivery_location       INTEGER[]       NOT NULL,
     whitelist               INTEGER[]       NOT NULL    DEFAULT ARRAY[]::INTEGER[],
     blacklist               INTEGER[]       NOT NULL    DEFAULT ARRAY[]::INTEGER[],
 

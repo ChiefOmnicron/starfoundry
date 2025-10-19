@@ -78,6 +78,19 @@ async fn insert_into_database(
         .iter()
         .map(|x| x.security)
         .collect::<Vec<_>>();
+    let security_str = systems
+        .iter()
+        .map(|x| x.security)
+        .map(|x| {
+            if x >= 0f32 && x <= 0.5f32 {
+                "LOWSEC".into()
+            } else if x > 0.5f32 {
+                "HIGHSEC".into()
+            } else {
+                "NULLSEC".into()
+            }
+        })
+        .collect::<Vec<_>>();
 
     tracing::debug!("Inserting data");
     sqlx::query!("
@@ -89,7 +102,8 @@ async fn insert_into_database(
                 constellation_name,
                 system_id,
                 system_name,
-                security
+                security,
+                security_str
             )
             SELECT * FROM UNNEST(
                 $1::INTEGER[],
@@ -98,7 +112,8 @@ async fn insert_into_database(
                 $4::VARCHAR[],
                 $5::INTEGER[],
                 $6::VARCHAR[],
-                $7::REAL[]
+                $7::REAL[],
+                $8::VARCHAR[]
             )
         ",
             &region_ids,
@@ -108,6 +123,7 @@ async fn insert_into_database(
             &system_ids,
             &system_names,
             &security,
+            &security_str,
         )
         .execute(&mut *transaction)
         .await?;

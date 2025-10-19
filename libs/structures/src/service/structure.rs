@@ -51,10 +51,10 @@ impl StructureService {
                 JOIN project_group_member pgm ON pgm.group_id = p.project_group_id
                 WHERE p.id = $1
                 AND pgm.character_id = $2
-                AND (
-                    permission & 1 = 1 OR
-                    permission & 2 = 2
-                )
+                --AND (
+                --    permission & 1 = 1 OR
+                --    permission & 2 = 2
+                --)
             ",
                 *self.0,
                 *character_id,
@@ -82,11 +82,11 @@ impl StructureService {
                 JOIN project_group_member pgm ON pgm.group_id = p.project_group_id
                 WHERE p.id = $1
                 AND pgm.character_id = $2
-                AND (
-                    -- TODO: replace with enum values
-                    permission & 1 = 1 OR
-                    permission & 8 = 8
-                )
+                --AND (
+                --    -- TODO: replace with enum values
+                --    permission & 1 = 1 OR
+                --    permission & 8 = 8
+                --)
             ",
                 *self.0,
                 *character_id,

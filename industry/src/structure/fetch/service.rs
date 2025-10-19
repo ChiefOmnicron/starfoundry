@@ -1,12 +1,10 @@
 use serde::Serialize;
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item};
+use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item, StructureRigResponse, System};
 use utoipa::ToSchema;
 
 use crate::structure::{StructureError, StructureUuid};
 use crate::structure::error::Result;
-use crate::structure::fetch::{StructureRig, StructureSystem};
-use crate::structure::models::Security;
 
 #[derive(Debug, Serialize, ToSchema)]
 #[cfg_attr(test, derive(serde::Deserialize))]
@@ -56,11 +54,11 @@ pub struct Structure {
     /// Name of the structure
     pub name:              String,
     /// Location of the structure
-    pub system:            StructureSystem,
+    pub system:            System,
     /// Type information
     pub structure:         Item,
     /// List of all rigs that are in the structure
-    pub rigs:              Vec<StructureRig>,
+    pub rigs:              Vec<StructureRigResponse>,
     /// Id of the structure in-game
     pub services:          Vec<Item>,
 }
@@ -83,16 +81,14 @@ pub async fn fetch(
 ) -> Result<Option<Structure>> {
     let structure = sqlx::query!(r#"
             SELECT
-                structure.id,
-                structure.type_id,
-                structure.structure_id,
-                structure.name AS "structure_name",
-                structure.security AS "security_group!: Security",
-                structure.services,
-                structure.rigs,
-                system.*
+                id,
+                type_id,
+                structure_id,
+                name            AS "structure_name",
+                services,
+                rigs,
+                system_id
             FROM structure
-            JOIN system ON system.system_id = structure.system_id
             WHERE
                 structure.id = $1
                 ORDER BY structure.name
@@ -115,13 +111,19 @@ pub async fn fetch(
         tracing::debug!("Couldn't find structure type {}", structure.type_id);
         return Ok(None);
     };
+    let system = if let Some(x) = eve_gateway_api_client.fetch_system(structure.system_id.into()).await? {
+        x
+    } else {
+        tracing::debug!("Couldn't find system {}", structure.system_id);
+        return Ok(None);
+    };
 
     let mut rigs = Vec::new();
     for rig in structure.rigs {
-        if let Some(x) = StructureRig::new(pool, eve_gateway_api_client, rig.into()).await? {
+        if let Ok(Some(x)) = eve_gateway_api_client.fetch_rig(rig.into()).await {
             rigs.push(x);
         } else {
-            // silently ignore rigs that weren't found
+            // silently ignore services that weren't found
             tracing::debug!("Couldn't find rig {}", rig);
             continue;
         }
@@ -139,22 +141,13 @@ pub async fn fetch(
     }
 
     let structure = Structure {
-        id:                     structure.id.into(),
-        name:                   structure.structure_name,
-        structure_id:           structure.structure_id,
-        system: StructureSystem {
-            constellation_id:   structure.constellation_id.into(),
-            constellation_name: structure.constellation_name,
-            region_id:          structure.region_id.into(),
-            region_name:        structure.region_name,
-            system_id:          structure.system_id.into(),
-            system_name:        structure.system_name,
-            security:           structure.security,
-            security_group:     structure.security_group,
-        },
-        structure:              structure_item,
-        rigs:                   rigs,
-        services:               services,
+        id:           structure.id.into(),
+        name:         structure.structure_name,
+        structure_id: structure.structure_id,
+        system:       system,
+        structure:    structure_item,
+        rigs:         rigs,
+        services:     services,
     };
 
     Ok(Some(structure))

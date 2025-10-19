@@ -58,7 +58,7 @@ mod fetch_project_group_test {
 
     #[sqlx::test(
         fixtures("fetch"),
-        migrator = "crate::test_util::MIGRATOR",
+        //migrator = "crate::test_util::MIGRATOR",
     )]
     async fn happy_path(
         pool: PgPool,
@@ -78,7 +78,7 @@ mod fetch_project_group_test {
 
     #[sqlx::test(
         fixtures("fetch"),
-        migrator = "crate::test_util::MIGRATOR",
+        //migrator = "crate::test_util::MIGRATOR",
     )]
     async fn no_entry_with_default_uuid(
         pool: PgPool,

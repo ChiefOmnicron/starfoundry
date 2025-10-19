@@ -14,13 +14,6 @@ pub struct StructureFilter {
 
     #[serde(default)]
     #[param(
-        example = json!("30004759"),
-        required = false,
-    )]
-    pub system_id:         Option<i32>,
-
-    #[serde(default)]
-    #[param(
         example = json!("35827"),
         required = false,
     )]

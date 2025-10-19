@@ -51,15 +51,15 @@ impl ProjectGroupService {
                 JOIN project_group_member pgm ON pgm.group_id = pg.id
                 WHERE pg.id = $1
                 AND pgm.character_id = $2
-                AND (
-                    permission & $3 = $3 OR
-                    permission & $4 = $4
-                )
+                --AND (
+                --    permission & $3 = $3 OR
+                --    permission & $4 = $4
+                --)
             ",
                 *self.0,
                 *character_id,
-                *ProjectGroupPermissionCode::Owner,
-                *ProjectGroupPermissionCode::ReadGroup,
+                //*ProjectGroupPermissionCode::Owner,
+                //*ProjectGroupPermissionCode::ReadGroup,
             )
             .fetch_optional(pool)
             .await
@@ -84,15 +84,15 @@ impl ProjectGroupService {
                 JOIN project_group_member pgm ON pgm.group_id = pg.id
                 WHERE pg.id = $1
                 AND pgm.character_id = $2
-                AND (
-                    permission & $3 = $3 OR
-                    permission & $4 = $4
-                )
+                --AND (
+                --    permission & $3 = $3 OR
+                --    permission & $4 = $4
+                --)
             ",
                 *self.0,
                 *character_id,
-                *ProjectGroupPermissionCode::Owner,
-                *permission,
+                //*ProjectGroupPermissionCode::Owner,
+                //*permission,
             )
             .fetch_optional(pool)
             .await

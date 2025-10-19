@@ -2,7 +2,7 @@ mod api_docs;
 mod config;
 mod healthcheck;
 mod metrics;
-mod project_group;
+//mod project_group;
 mod state;
 mod structure;
 
@@ -11,8 +11,6 @@ pub use self::state::*;
 use axum::{middleware, Router};
 use sqlx::postgres::PgPoolOptions;
 use tokio::select;
-use tower_http::compression::CompressionLayer;
-use tower_http::decompression::RequestDecompressionLayer;
 use tower::ServiceBuilder;
 use tracing_subscriber::EnvFilter;
 use utoipa_axum::router::OpenApiRouter;
@@ -41,7 +39,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config = Config::load().await?;
 
     let pool = PgPoolOptions::new()
-        .connect(&config.database_uri)
+        .connect(&config.database_url)
         .await?;
 
     let state = AppState {
@@ -81,13 +79,11 @@ fn app(
 ) -> Router {
     // build our application with a route
     let (router, api) = OpenApiRouter::with_openapi(ApiDoc::openapi())
-        .nest("/project-groups", project_group::routes(state.clone()))
+        //.nest("/project-groups", project_group::routes(state.clone()))
         .nest("/structures", structure::routes(state.clone()))
         .layer(
             ServiceBuilder::new()
                 .layer(middleware::from_fn(path_metrics))
-                .layer(RequestDecompressionLayer::new())
-                .layer(CompressionLayer::new())
         )
         .with_state(state.clone())
         .split_for_parts();

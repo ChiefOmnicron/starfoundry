@@ -41,7 +41,7 @@ pub async fn api(
     State(state):  State<AppState>,
     Path(type_id): Path<TypeId>,
 ) -> Result<impl IntoResponse> {
-    let entry = fetch(
+    let entry = fetch_item(
         &state.postgres,
         type_id,
     ).await?;
@@ -55,7 +55,7 @@ pub async fn api(
     )
 }
 
-pub async fn fetch(
+pub async fn fetch_item(
     pool:    &PgPool,
     type_id: TypeId,
 ) -> Result<Option<Item>> {

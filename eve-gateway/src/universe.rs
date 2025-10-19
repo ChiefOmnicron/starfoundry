@@ -1,6 +1,5 @@
-mod error;
-mod fetch_system;
-mod resolve_structure;
+pub mod error;
+pub mod fetch_system;
 
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
@@ -12,10 +11,6 @@ pub fn routes() -> OpenApiRouter<AppState> {
     let fetch_system = OpenApiRouter::new()
         .routes(routes!(fetch_system::api));
 
-    let resolve_structure = OpenApiRouter::new()
-        .routes(routes!(resolve_structure::api));
-
     OpenApiRouter::new()
         .merge(fetch_system)
-        .merge(resolve_structure)
 }

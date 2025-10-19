@@ -4,6 +4,7 @@ use starfoundry_lib_types::CharacterId;
 use crate::structure::list::filter::StructureFilter;
 use crate::structure::{Structure, StructureError};
 use crate::structure::error::Result;
+use futures::future::try_join_all;
 
 pub async fn list(
     pool:                   &PgPool,
@@ -14,18 +15,15 @@ pub async fn list(
     let entries = sqlx::query!(r#"
             SELECT structure.id
             FROM structure
-            JOIN system ON system.system_id = structure.system_id
             WHERE
                 NOT (LOWER(structure.name) LIKE '%' || LOWER($2) || '%') IS FALSE AND
-                NOT (structure.system_id = $3) IS FALSE AND
-                NOT (structure.type_id = $4) IS FALSE AND
-                NOT ($5::INTEGER IS NULL OR $5::INTEGER = ANY(services)) IS FALSE AND
-                (owner = $1 OR owner = 0)
-                ORDER BY structure.name
+                NOT (structure.type_id = $3) IS FALSE AND
+                NOT ($4::INTEGER IS NULL OR $4::INTEGER = ANY(services)) IS FALSE AND
+                owner = $1
+            ORDER BY structure.name
         "#,
             *character_id,
             filter.name,
-            filter.system_id,
             filter.structure_type_id,
             filter.service_id,
         )
@@ -34,9 +32,14 @@ pub async fn list(
         .map_err(|e| StructureError::ListStructures(e))?;
 
     let mut structures = Vec::new();
+    let mut requests = Vec::new();
     for entry in entries {
         let structure_uuid = entry.id.into();
-        let structure = if let Ok(Some(x)) = Structure::new(pool, eve_gateway_api_client, structure_uuid).await {
+        requests.push(Structure::new(pool, eve_gateway_api_client, structure_uuid));
+    }
+
+    for request in try_join_all(requests).await.unwrap_or_default() {
+        let structure = if let Some(x) = request {
             x
         } else {
             continue

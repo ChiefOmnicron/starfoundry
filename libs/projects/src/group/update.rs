@@ -38,7 +38,7 @@ mod update_project_group_test {
 
     #[sqlx::test(
         fixtures("update"),
-        migrator = "crate::test_util::MIGRATOR"
+        //migrator = "crate::test_util::MIGRATOR"
     )]
     async fn no_body(
         pool: PgPool,
@@ -58,7 +58,7 @@ mod update_project_group_test {
 
     #[sqlx::test(
         fixtures("update"),
-        migrator = "crate::test_util::MIGRATOR"
+        //migrator = "crate::test_util::MIGRATOR"
     )]
     async fn missing_name(
         pool: PgPool,
@@ -78,7 +78,7 @@ mod update_project_group_test {
 
     #[sqlx::test(
         fixtures("update"),
-        migrator = "crate::test_util::MIGRATOR"
+        //migrator = "crate::test_util::MIGRATOR"
     )]
     async fn happy_path(
         pool: PgPool,

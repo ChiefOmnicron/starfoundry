@@ -1,2 +1,0 @@
-ALTER TABLE product ADD COLUMN delivery_location INTEGER[] NOT NULL DEFAULT ARRAY[]::INTEGER[];
-ALTER TABLE product ALTER COLUMN delivery_location DROP DEFAULT;

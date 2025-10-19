@@ -43,8 +43,8 @@ impl StructureRig {
                     groups,
                     i.name
                 FROM structure_dogma
-                JOIN item i ON i.type_id = ptype_id
-                WHERE ptype_id = $1
+                JOIN item i ON i.type_id = structure_dogma.type_id
+                WHERE structure_dogma.type_id = $1
             "#,
                 *type_id,
             )

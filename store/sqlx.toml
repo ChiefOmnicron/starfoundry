@@ -1,0 +1,5 @@
+[common]
+database-url-var = "STARFOUNDRY_STORE_DATABASE_URL"
+
+[migrate]
+table-name = "_sqlx_migrations_store_api"
