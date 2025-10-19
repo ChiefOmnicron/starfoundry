@@ -11,7 +11,8 @@ use utoipa::ToSchema;
         "region_name": "Derelik",
         "constellation_name": "San Matar",
         "system_name": "Tanoo",
-        "security": 0.858324
+        "security": 0.858324,
+        "security_str": "HIGHSEC"
     })
 )]
 pub struct System {
@@ -22,4 +23,5 @@ pub struct System {
     pub system_id:          SystemId,
     pub system_name:        String,
     pub security:           f32,
+    pub security_str:       String,
 }

@@ -6,32 +6,68 @@
       {
         "ordinal": 0,
         "name": "character_id",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "\"character\"",
+            "name": "character_id"
+          }
+        }
       },
       {
         "ordinal": 1,
         "name": "character_name",
-        "type_info": "Varchar"
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "\"character\"",
+            "name": "character_name"
+          }
+        }
       },
       {
         "ordinal": 2,
         "name": "corporation_id",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "\"character\"",
+            "name": "corporation_id"
+          }
+        }
       },
       {
         "ordinal": 3,
         "name": "corporation_name",
-        "type_info": "Varchar"
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "\"character\"",
+            "name": "corporation_name"
+          }
+        }
       },
       {
         "ordinal": 4,
         "name": "alliance_id",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "\"character\"",
+            "name": "alliance_id"
+          }
+        }
       },
       {
         "ordinal": 5,
         "name": "alliance_name",
-        "type_info": "Varchar"
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "\"character\"",
+            "name": "alliance_name"
+          }
+        }
       }
     ],
     "parameters": {

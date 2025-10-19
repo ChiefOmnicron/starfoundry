@@ -6,7 +6,13 @@
       {
         "ordinal": 0,
         "name": "finished_at",
-        "type_info": "Timestamp"
+        "type_info": "Timestamp",
+        "origin": {
+          "Table": {
+            "table": "event_queue",
+            "name": "finished_at"
+          }
+        }
       }
     ],
     "parameters": {

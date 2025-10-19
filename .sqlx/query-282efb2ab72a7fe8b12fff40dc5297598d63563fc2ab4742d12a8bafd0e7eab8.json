@@ -6,12 +6,19 @@
       {
         "ordinal": 0,
         "name": "price!",
-        "type_info": "Float8"
+        "type_info": "Float8",
+        "origin": "Expression"
       },
       {
         "ordinal": 1,
         "name": "type_id",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "market_order_latest",
+            "name": "type_id"
+          }
+        }
       }
     ],
     "parameters": {

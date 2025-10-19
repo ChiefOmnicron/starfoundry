@@ -51,7 +51,7 @@ mod fetch_defaults_project_group_test {
 
     #[sqlx::test(
         fixtures("fetch", "fetch_default"),
-        migrator = "crate::test_util::MIGRATOR",
+        //migrator = "crate::test_util::MIGRATOR",
     )]
     async fn happy_path(
         pool: PgPool,
@@ -69,7 +69,7 @@ mod fetch_defaults_project_group_test {
 
     #[sqlx::test(
         fixtures("fetch", "fetch_default"),
-        migrator = "crate::test_util::MIGRATOR",
+        //migrator = "crate::test_util::MIGRATOR",
     )]
     async fn default_if_entry_does_not_exist(
         pool: PgPool,

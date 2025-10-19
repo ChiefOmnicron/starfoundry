@@ -16,7 +16,8 @@ pub async fn fetch(
                 constellation_name,
                 system_id,
                 system_name,
-                security
+                security,
+                security_str
             FROM system
             WHERE system_id = $1
         ",
@@ -35,6 +36,7 @@ pub async fn fetch(
             system_id:          x.system_id.into(),
             system_name:        x.system_name,
             security:           x.security,
+            security_str:       x.security_str,
         }))
     } else {
         Ok(None)

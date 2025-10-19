@@ -2,7 +2,6 @@ use serde::Deserialize;
 use starfoundry_lib_types::{SystemId, TypeId};
 use utoipa::ToSchema;
 
-use crate::structure::models::{Security, StructureType};
 use crate::structure::StructureError;
 use crate::structure::error::Result;
 
@@ -27,18 +26,9 @@ pub struct CreateStructure {
     pub name:              String,
     /// Location of the structure
     pub system_id:         SystemId,
-    /// Security of the location the structure is in
-    pub security:          Security,
 
     /// Type of structure
-    #[serde(deserialize_with = "StructureType::deserialize")]
-    #[serde(serialize_with = "StructureType::serialize")]
-    #[serde(rename = "structure_type_id")]
-    #[schema(
-        value_type = TypeId,
-        example = "565692"
-    )]
-    pub structure_type:    StructureType,
+    pub structure_type_id: TypeId,
     /// List of all rigs that are in the structure
     pub rigs:              Vec<TypeId>,
     /// Id of the structure in-game

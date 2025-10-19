@@ -1,0 +1,76 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                    SELECT\n                        name,\n                        type_id,\n                        rigs,\n                        services,\n                        structure_id\n                    FROM structure WHERE id = $1\n                ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "type_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "type_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "rigs",
+        "type_info": "Int4Array",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "rigs"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "services",
+        "type_info": "Int4Array",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "services"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "structure_id",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "structure_id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "69f40846545f7542afa76822d67ff8bfa2e68289a547fdfd8c47b74456a5fe69"
+}

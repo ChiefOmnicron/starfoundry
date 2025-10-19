@@ -6,17 +6,35 @@
       {
         "ordinal": 0,
         "name": "job_id",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "job_id"
+          }
+        }
       },
       {
         "ordinal": 1,
         "name": "id",
-        "type_info": "Uuid"
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "id"
+          }
+        }
       },
       {
         "ordinal": 2,
         "name": "runs",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "runs"
+          }
+        }
       },
       {
         "ordinal": 3,
@@ -32,32 +50,68 @@
               ]
             }
           }
+        },
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "status"
+          }
         }
       },
       {
         "ordinal": 4,
         "name": "cost",
-        "type_info": "Float8"
+        "type_info": "Float8",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "cost"
+          }
+        }
       },
       {
         "ordinal": 5,
         "name": "structure_id",
-        "type_info": "Uuid"
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "structure_id"
+          }
+        }
       },
       {
         "ordinal": 6,
         "name": "type_id",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "type_id"
+          }
+        }
       },
       {
         "ordinal": 7,
         "name": "is_delivered",
-        "type_info": "Bool"
+        "type_info": "Bool",
+        "origin": {
+          "Table": {
+            "table": "industry_job",
+            "name": "is_delivered"
+          }
+        }
       },
       {
         "ordinal": 8,
         "name": "end_date",
-        "type_info": "Varchar"
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "industry_job",
+            "name": "end_date"
+          }
+        }
       },
       {
         "ordinal": 9,
@@ -77,12 +131,24 @@
               ]
             }
           }
+        },
+        "origin": {
+          "Table": {
+            "table": "industry_job",
+            "name": "activity"
+          }
         }
       },
       {
         "ordinal": 10,
         "name": "structure_name",
-        "type_info": "Varchar"
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "name"
+          }
+        }
       }
     ],
     "parameters": {

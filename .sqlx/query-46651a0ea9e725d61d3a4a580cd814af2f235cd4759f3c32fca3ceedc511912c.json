@@ -1,0 +1,88 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                modifier AS \"modifier!: BonusModifier\",\n                amount,\n                categories,\n                groups,\n                i.name\n            FROM structure_dogma\n            JOIN item i ON i.type_id = structure_dogma.type_id\n            WHERE structure_dogma.type_id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "modifier!: BonusModifier",
+        "type_info": {
+          "Custom": {
+            "name": "bonus_modifier",
+            "kind": {
+              "Enum": [
+                "MANUFACTURE_MATERIAL",
+                "MANUFACTURE_TIME",
+                "REACTION_MATERIAL",
+                "REACTION_TIME"
+              ]
+            }
+          }
+        },
+        "origin": {
+          "Table": {
+            "table": "structure_dogma",
+            "name": "modifier"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "amount",
+        "type_info": "Float8",
+        "origin": {
+          "Table": {
+            "table": "structure_dogma",
+            "name": "amount"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "categories",
+        "type_info": "Int4Array",
+        "origin": {
+          "Table": {
+            "table": "structure_dogma",
+            "name": "categories"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "groups",
+        "type_info": "Int4Array",
+        "origin": {
+          "Table": {
+            "table": "structure_dogma",
+            "name": "groups"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "name"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "46651a0ea9e725d61d3a4a580cd814af2f235cd4759f3c32fca3ceedc511912c"
+}

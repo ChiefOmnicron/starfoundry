@@ -2,7 +2,7 @@ use starfoundry_lib_gateway::{ENV_EVE_GATEWAY_API, ENV_MTLS_IDENTITY, ENV_MTLS_R
 use std::net::TcpListener as StdTcpListener;
 use tokio::net::TcpListener as TokioTcpListener;
 
-const ENV_DATABASE_URL: &str    = "STARFOUNDRY_INDUSTRY_DATABASE_URI";
+const ENV_DATABASE_URL: &str    = "STARFOUNDRY_INDUSTRY_DATABASE_URL";
 const ENV_APP_ADDRESS: &str     = "STARFOUNDRY_INDUSTRY_APP_ADDRESS";
 const ENV_SERVICE_ADDRESS: &str = "STARFOUNDRY_INDUSTRY_SERVICE_ADDRESS";
 
@@ -11,7 +11,7 @@ const ENV_MTLS_PRIV: &str       = "STARFOUNDRY_INDUSTRY_MTLS_PRIV";
 
 #[derive(Debug)]
 pub struct ConfigEnv {
-    pub database_uri:    String,
+    pub database_url:    String,
 
     pub app_address:     StdTcpListener,
     pub service_address: TokioTcpListener,
@@ -44,12 +44,12 @@ impl ConfigEnv {
             }
         };
 
-        let database_uri = std::env::var(ENV_DATABASE_URL)?;
+        let database_url = std::env::var(ENV_DATABASE_URL)?;
         let mtls_cert = std::env::var(ENV_MTLS_CERT)?;
         let mtls_priv = std::env::var(ENV_MTLS_PRIV)?;
 
         Ok(Self {
-            database_uri,
+            database_url,
             app_address,
             service_address,
 

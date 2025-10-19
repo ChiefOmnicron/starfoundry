@@ -21,7 +21,7 @@ pub fn routes() -> OpenApiRouter<AppState> {
         .merge(fetch)
 }
 
-#[derive(Debug, Deserialize, Serialize, ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 #[schema(
     example = json!({
         "base_price": null,

@@ -12,8 +12,6 @@ pub async fn create(
 ) -> Result<StructureUuid> {
     info.valid()?;
 
-    let structure_id: i32 = info.structure_type.into();
-
     sqlx::query!("
             INSERT INTO structure
             (
@@ -21,19 +19,17 @@ pub async fn create(
                 type_id,
                 rigs,
                 services,
-                security,
                 name,
                 system_id,
                 structure_id
             )
-            VALUES($1, $2, $3, $4, $5, $6, $7, $8)
+            VALUES($1, $2, $3, $4, $5, $6, $7)
             RETURNING id
         ",
             *character_id,
-            structure_id,
+            *info.structure_type_id,
             &info.rigs as _,
             &info.services as _,
-            info.security as _,
             info.name,
             *info.system_id,
             info.structure_id,
@@ -48,11 +44,11 @@ pub async fn create(
 #[cfg(test)]
 mod create_project_group_test {
     use sqlx::PgPool;
+    use starfoundry_lib_eve_gateway::StructureType;
     use starfoundry_lib_types::CharacterId;
 
     use crate::structure::create::CreateStructure;
     use crate::structure::error::StructureError;
-    use crate::structure::models::{Security, StructureType};
 
     #[sqlx::test(migrator = "crate::test_util::MIGRATOR")]
     async fn no_name(
@@ -64,8 +60,7 @@ mod create_project_group_test {
                 CreateStructure {
                     name:              String::new(),
                     system_id:         1337.into(),
-                    security:          Security::Nullsec,
-                    structure_type:    StructureType::Tatara,
+                    structure_type_id: StructureType::Tatara.into(),
                     rigs:              Vec::new(),
                     services:          Vec::new(),
                     structure_id:      1_000_000_000_000,
@@ -86,8 +81,7 @@ mod create_project_group_test {
                 CreateStructure {
                     name:              String::from("My cool structure"),
                     system_id:         1337.into(),
-                    security:          Security::Nullsec,
-                    structure_type:    StructureType::Tatara,
+                    structure_type_id: StructureType::Tatara.into(),
                     rigs:              Vec::new(),
                     services:          Vec::new(),
                     structure_id:      100_000_000_000,
@@ -108,8 +102,7 @@ mod create_project_group_test {
                 CreateStructure {
                     name:              String::from("My cool structure"),
                     system_id:         1337.into(),
-                    security:          Security::Nullsec,
-                    structure_type:    StructureType::Tatara,
+                    structure_type_id: StructureType::Tatara.into(),
                     rigs:              Vec::new(),
                     services:          Vec::new(),
                     structure_id:      1_100_000_000_000,
@@ -121,7 +114,6 @@ mod create_project_group_test {
         let entry = sqlx::query!(r#"
                     SELECT
                         name,
-                        security AS "security: String",
                         type_id,
                         rigs,
                         services,

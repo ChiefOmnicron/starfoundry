@@ -12,8 +12,8 @@ pub async fn accept_member(
     sqlx::query!("
             UPDATE project_group_member
             SET
-                accepted = TRUE,
-                permission = 2
+                accepted = TRUE
+                --permission = 2
             WHERE group_id = $1
             AND character_id = $2
         ",

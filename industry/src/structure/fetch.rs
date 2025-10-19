@@ -1,10 +1,7 @@
 mod service;
-mod structure;
-mod structure_rig;
+//mod structure_rig;
 
 pub use self::service::*;
-pub use self::structure::*;
-pub use self::structure_rig::*;
 
 use axum::extract::{Path, State};
 use axum::http::StatusCode;

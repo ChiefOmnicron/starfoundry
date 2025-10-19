@@ -6,107 +6,233 @@
       {
         "ordinal": 0,
         "name": "id",
-        "type_info": "Uuid"
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "appraisal_item",
+            "name": "id"
+          }
+        }
       },
       {
         "ordinal": 1,
         "name": "appraisal_id",
-        "type_info": "Uuid"
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "appraisal_item",
+            "name": "appraisal_id"
+          }
+        }
       },
       {
         "ordinal": 2,
         "name": "type_id",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "appraisal_item",
+            "name": "type_id"
+          }
+        }
       },
       {
         "ordinal": 3,
         "name": "quantity",
-        "type_info": "Int8"
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "appraisal_item",
+            "name": "quantity"
+          }
+        }
       },
       {
         "ordinal": 4,
         "name": "buy",
-        "type_info": "Uuid"
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "appraisal_item",
+            "name": "buy"
+          }
+        }
       },
       {
         "ordinal": 5,
         "name": "sell",
-        "type_info": "Uuid"
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "appraisal_item",
+            "name": "sell"
+          }
+        }
       },
       {
         "ordinal": 6,
         "name": "low_data",
-        "type_info": "Bool"
+        "type_info": "Bool",
+        "origin": {
+          "Table": {
+            "table": "appraisal_item",
+            "name": "low_data"
+          }
+        }
       },
       {
         "ordinal": 7,
         "name": "name",
-        "type_info": "Varchar"
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "name"
+          }
+        }
       },
       {
         "ordinal": 8,
         "name": "volume",
-        "type_info": "Float4"
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "volume"
+          }
+        }
       },
       {
         "ordinal": 9,
         "name": "category_id",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "category_id"
+          }
+        }
       },
       {
         "ordinal": 10,
         "name": "group_id",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "group_id"
+          }
+        }
       },
       {
         "ordinal": 11,
         "name": "meta_group_id",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "meta_group_id"
+          }
+        }
       },
       {
         "ordinal": 12,
         "name": "repackaged",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "repackaged"
+          }
+        }
       },
       {
         "ordinal": 13,
         "name": "buy_min",
-        "type_info": "Float8"
+        "type_info": "Float8",
+        "origin": {
+          "Table": {
+            "table": "appraisal_market_price",
+            "name": "min"
+          }
+        }
       },
       {
         "ordinal": 14,
         "name": "buy_max",
-        "type_info": "Float8"
+        "type_info": "Float8",
+        "origin": {
+          "Table": {
+            "table": "appraisal_market_price",
+            "name": "max"
+          }
+        }
       },
       {
         "ordinal": 15,
         "name": "buy_avg",
-        "type_info": "Float8"
+        "type_info": "Float8",
+        "origin": {
+          "Table": {
+            "table": "appraisal_market_price",
+            "name": "avg"
+          }
+        }
       },
       {
         "ordinal": 16,
         "name": "buy_total_orders",
-        "type_info": "Int8"
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "appraisal_market_price",
+            "name": "total_orders"
+          }
+        }
       },
       {
         "ordinal": 17,
         "name": "sell_min",
-        "type_info": "Float8"
+        "type_info": "Float8",
+        "origin": {
+          "Table": {
+            "table": "appraisal_market_price",
+            "name": "min"
+          }
+        }
       },
       {
         "ordinal": 18,
         "name": "sell_max",
-        "type_info": "Float8"
+        "type_info": "Float8",
+        "origin": {
+          "Table": {
+            "table": "appraisal_market_price",
+            "name": "max"
+          }
+        }
       },
       {
         "ordinal": 19,
         "name": "sell_avg",
-        "type_info": "Float8"
+        "type_info": "Float8",
+        "origin": {
+          "Table": {
+            "table": "appraisal_market_price",
+            "name": "avg"
+          }
+        }
       },
       {
         "ordinal": 20,
         "name": "sell_total_orders",
-        "type_info": "Int8"
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "appraisal_market_price",
+            "name": "total_orders"
+          }
+        }
       }
     ],
     "parameters": {

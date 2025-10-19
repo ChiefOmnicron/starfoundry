@@ -1,8 +1,8 @@
 use starfoundry_lib_gateway::ApiClient;
-use starfoundry_lib_types::{CharacterId, StructureId, TypeId};
+use starfoundry_lib_types::{CharacterId, StructureId, SystemId, TypeId};
 
 use crate::error::Result;
-use crate::{CharacterInfo, Item, ResolveStructureResponse};
+use crate::{CharacterInfo, Item, ResolveStructureResponse, StructureRigResponse, System};
 
 pub trait EveGatewayApiClient: ApiClient {
     #[allow(async_fn_in_trait)]
@@ -53,9 +53,42 @@ pub trait EveGatewayApiClient: ApiClient {
     async fn resolve_structure(
         &self,
         structure_id: StructureId,
-    ) -> Result<Vec<ResolveStructureResponse>> {
+    ) -> Result<ResolveStructureResponse> {
         self
-            .fetch(&format!("universe/structures/{}", *structure_id))
+            .fetch(&format!("structures/{}", *structure_id))
+            .await
+            .map_err(Into::into)
+    }
+
+    #[allow(async_fn_in_trait)]
+    async fn fetch_rig(
+        &self,
+        rig_type_id: TypeId,
+    ) -> Result<Option<StructureRigResponse>> {
+        self
+            .fetch(&format!("structures/rigs/{}", *rig_type_id))
+            .await
+            .map_err(Into::into)
+    }
+
+    #[allow(async_fn_in_trait)]
+    async fn list_structure_rigs(
+        &self,
+        structure_type_id: TypeId,
+    ) -> Result<Vec<StructureRigResponse>> {
+        self
+            .fetch(&format!("structures/{}/rigs", *structure_type_id))
+            .await
+            .map_err(Into::into)
+    }
+
+    #[allow(async_fn_in_trait)]
+    async fn fetch_system(
+        &self,
+        system_id: SystemId,
+    ) -> Result<Option<System>> {
+        self
+            .fetch(&format!("universe/systems/{}", *system_id))
             .await
             .map_err(Into::into)
     }

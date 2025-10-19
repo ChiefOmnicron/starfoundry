@@ -6,6 +6,7 @@ sqlx-prepare:
 sqlx-check:
 	cargo sqlx prepare --check --workspace -- --all-targets --all-features
 
+.PHONY: web-store-test-chrome
 web-store-test-chrome:
 	docker run \
 		-v ${PWD}/webapp_store:/webapp \

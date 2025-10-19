@@ -6,17 +6,35 @@
       {
         "ordinal": 0,
         "name": "system_id",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "industry_index",
+            "name": "system_id"
+          }
+        }
       },
       {
         "ordinal": 1,
         "name": "manufacturing",
-        "type_info": "Float4"
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "industry_index",
+            "name": "manufacturing"
+          }
+        }
       },
       {
         "ordinal": 2,
         "name": "reaction",
-        "type_info": "Float4"
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "industry_index",
+            "name": "reaction"
+          }
+        }
       }
     ],
     "parameters": {

@@ -1,7 +1,7 @@
 use axum_server::tls_rustls::RustlsConfig;
 use axum::{middleware, Router};
 use sqlx::postgres::PgPoolOptions;
-use starfoundry_bin_eve_gateway::{auth, character, healthcheck, item, universe};
+use starfoundry_bin_eve_gateway::{auth, character, healthcheck, item, structure, universe};
 use starfoundry_bin_eve_gateway::api_docs::ApiDoc;
 use starfoundry_bin_eve_gateway::config::Config;
 use starfoundry_bin_eve_gateway::metrics::{self, path_metrics, setup_metrics_recorder};
@@ -78,6 +78,7 @@ fn app(
         .nest("/auth", auth::routes())
         .nest("/characters", character::routes())
         .nest("/items", item::routes())
+        .nest("/structures", structure::routes())
         .nest("/universe", universe::routes())
         .layer(
             ServiceBuilder::new().layer(middleware::from_fn(path_metrics))

@@ -6,12 +6,24 @@
       {
         "ordinal": 0,
         "name": "manufacturing",
-        "type_info": "Float4"
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "industry_index",
+            "name": "manufacturing"
+          }
+        }
       },
       {
         "ordinal": 1,
         "name": "reaction",
-        "type_info": "Float4"
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "industry_index",
+            "name": "reaction"
+          }
+        }
       }
     ],
     "parameters": {

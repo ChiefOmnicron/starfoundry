@@ -6,17 +6,35 @@
       {
         "ordinal": 0,
         "name": "domain",
-        "type_info": "Varchar"
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "login_attempt",
+            "name": "domain"
+          }
+        }
       },
       {
         "ordinal": 1,
         "name": "credential_type",
-        "type_info": "Varchar"
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "login_attempt",
+            "name": "credential_type"
+          }
+        }
       },
       {
         "ordinal": 2,
         "name": "character_id",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "login_attempt",
+            "name": "character_id"
+          }
+        }
       }
     ],
     "parameters": {

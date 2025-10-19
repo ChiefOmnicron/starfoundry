@@ -15,7 +15,7 @@ pub mod auth;
 pub mod config;
 /// wrapper client for the eve api
 pub mod eve_client;
-/// application healthchecks
+/// application health checks
 pub mod healthcheck;
 /// application metrics
 pub mod metrics;
@@ -26,5 +26,7 @@ pub mod state;
 pub mod character;
 /// public eve route for items
 pub mod item;
+/// routes for structure information
+pub mod structure;
 /// public eve route for universe
 pub mod universe;

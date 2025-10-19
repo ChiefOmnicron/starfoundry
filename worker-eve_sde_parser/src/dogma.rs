@@ -42,7 +42,7 @@ async fn insert_into_database(
         sqlx::query!("
             INSERT INTO structure_dogma
             (
-                ptype_id,
+                type_id,
                 modifier,
                 amount,
                 categories,
@@ -68,6 +68,10 @@ async fn insert_into_database(
         .map_err(Error::InsertStructureDogma)?;
     }
     tracing::debug!("Inserting data done");
+    transaction
+        .commit()
+        .await
+        .map_err(Error::TransactionError)?;
 
     Ok(())
 }

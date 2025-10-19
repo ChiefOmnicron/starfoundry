@@ -6,37 +6,79 @@
       {
         "ordinal": 0,
         "name": "id",
-        "type_info": "Uuid"
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "order_info",
+            "name": "id"
+          }
+        }
       },
       {
         "ordinal": 1,
         "name": "character_id",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "order_info",
+            "name": "character_id"
+          }
+        }
       },
       {
         "ordinal": 2,
         "name": "quantity",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "order_info",
+            "name": "quantity"
+          }
+        }
       },
       {
         "ordinal": 3,
         "name": "status",
-        "type_info": "Varchar"
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "order_info",
+            "name": "status"
+          }
+        }
       },
       {
         "ordinal": 4,
         "name": "delivery_location",
-        "type_info": "Varchar"
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "order_info",
+            "name": "delivery_location"
+          }
+        }
       },
       {
         "ordinal": 5,
         "name": "comment",
-        "type_info": "Varchar"
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "order_info",
+            "name": "comment"
+          }
+        }
       },
       {
         "ordinal": 6,
         "name": "created_at",
-        "type_info": "Timestamptz"
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "order_info",
+            "name": "created_at"
+          }
+        }
       }
     ],
     "parameters": {

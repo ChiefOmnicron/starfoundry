@@ -42,16 +42,16 @@ pub async fn create(
             INSERT INTO project_group_member(
                 accepted,
                 group_id,
-                character_id,
-                permission
+                character_id
+                --permission
             )
             VALUES (
-                TRUE, $1, $2, $3
+                TRUE, $1, $2--, $3
             )
         ",
             *group_id,
             *character_id,
-            *ProjectGroupPermissionCode::Owner,
+            //*ProjectGroupPermissionCode::Owner,
         )
         .execute(&mut *transaction)
         .await
@@ -81,7 +81,6 @@ pub async fn create(
     Ok(group_id)
 }
 
-
 #[cfg(test)]
 mod create_project_group_test {
     use sqlx::PgPool;
@@ -89,7 +88,8 @@ mod create_project_group_test {
 
     use crate::{CreateProjectGroup, Error};
 
-    #[sqlx::test(migrator = "crate::test_util::MIGRATOR")]
+    #[sqlx::test]
+    //#[sqlx::test(migrator = "crate::test_util::MIGRATOR")]
     async fn no_body(
         pool: PgPool,
     ) {
@@ -106,7 +106,8 @@ mod create_project_group_test {
         assert!(matches!(result, Err(Error::ValidationError(_))));
     }
 
-    #[sqlx::test(migrator = "crate::test_util::MIGRATOR")]
+    #[sqlx::test]
+    //#[sqlx::test(migrator = "crate::test_util::MIGRATOR")]
     async fn missing_name(
         pool: PgPool,
     ) {
@@ -123,7 +124,8 @@ mod create_project_group_test {
         assert!(matches!(result, Err(Error::ValidationError(_))));
     }
 
-    #[sqlx::test(migrator = "crate::test_util::MIGRATOR")]
+    #[sqlx::test]
+    //#[sqlx::test(migrator = "crate::test_util::MIGRATOR")]
     async fn happy_path(
         pool: PgPool,
     ) {

@@ -18,27 +18,57 @@
               ]
             }
           }
+        },
+        "origin": {
+          "Table": {
+            "table": "structure_dogma",
+            "name": "modifier"
+          }
         }
       },
       {
         "ordinal": 1,
         "name": "amount",
-        "type_info": "Float8"
+        "type_info": "Float8",
+        "origin": {
+          "Table": {
+            "table": "structure_dogma",
+            "name": "amount"
+          }
+        }
       },
       {
         "ordinal": 2,
         "name": "categories",
-        "type_info": "Int4Array"
+        "type_info": "Int4Array",
+        "origin": {
+          "Table": {
+            "table": "structure_dogma",
+            "name": "categories"
+          }
+        }
       },
       {
         "ordinal": 3,
         "name": "groups",
-        "type_info": "Int4Array"
+        "type_info": "Int4Array",
+        "origin": {
+          "Table": {
+            "table": "structure_dogma",
+            "name": "groups"
+          }
+        }
       },
       {
         "ordinal": 4,
         "name": "name",
-        "type_info": "Varchar"
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "name"
+          }
+        }
       }
     ],
     "parameters": {

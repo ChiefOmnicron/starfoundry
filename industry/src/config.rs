@@ -7,7 +7,7 @@ use crate::config::env::ConfigEnv;
 
 #[derive(Debug)]
 pub struct Config {
-    pub database_uri:    String,
+    pub database_url:    String,
 
     pub app_address:     StdTcpListener,
     pub service_address: TokioTcpListener,
@@ -27,7 +27,7 @@ impl Config {
 impl From<ConfigEnv> for Config {
     fn from(env: ConfigEnv) -> Self {
         Self {
-            database_uri:       env.database_uri,
+            database_url:       env.database_url,
 
             app_address:        env.app_address,
             service_address:    env.service_address,

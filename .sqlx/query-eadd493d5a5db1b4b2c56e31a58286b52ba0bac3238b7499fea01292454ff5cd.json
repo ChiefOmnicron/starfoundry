@@ -6,12 +6,24 @@
       {
         "ordinal": 0,
         "name": "type_id",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "market_price",
+            "name": "type_id"
+          }
+        }
       },
       {
         "ordinal": 1,
         "name": "adjusted_price",
-        "type_info": "Float8"
+        "type_info": "Float8",
+        "origin": {
+          "Table": {
+            "table": "market_price",
+            "name": "adjusted_price"
+          }
+        }
       }
     ],
     "parameters": {

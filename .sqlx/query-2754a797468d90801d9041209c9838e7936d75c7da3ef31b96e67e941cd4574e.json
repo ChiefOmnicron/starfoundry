@@ -6,12 +6,24 @@
       {
         "ordinal": 0,
         "name": "material_type_id",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item_reprocessing",
+            "name": "material_type_id"
+          }
+        }
       },
       {
         "ordinal": 1,
         "name": "quantity",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item_reprocessing",
+            "name": "quantity"
+          }
+        }
       }
     ],
     "parameters": {

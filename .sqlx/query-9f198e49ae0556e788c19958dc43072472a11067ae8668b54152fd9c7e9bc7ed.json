@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                INSERT INTO structure_service\n                (\n                    structure_type_id,\n                    service_type_ids,\n                    service_slots\n                )\n                VALUES ($1, $2, $3)\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4Array",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "9f198e49ae0556e788c19958dc43072472a11067ae8668b54152fd9c7e9bc7ed"
+}

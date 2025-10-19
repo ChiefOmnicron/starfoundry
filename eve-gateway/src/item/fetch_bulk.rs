@@ -42,7 +42,7 @@ pub async fn api(
     State(state):   State<AppState>,
     Json(type_ids): Json<Vec<TypeId>>,
 ) -> Result<impl IntoResponse> {
-    let entry = fetch_bulk(
+    let entry = fetch_item_bulk(
         &state.postgres,
         type_ids,
     ).await?;
@@ -59,10 +59,14 @@ pub async fn api(
 /// Fetches the character information for the given ids from the database.
 /// If the character does not exist yet, it will be fetched using the EVE-API.
 /// 
-pub async fn fetch_bulk(
+pub async fn fetch_item_bulk(
     pool:     &PgPool,
     type_ids: Vec<TypeId>,
 ) -> Result<Vec<Item>> {
+    if type_ids.is_empty() {
+        return Ok(Vec::new());
+    }
+
     let type_ids = sqlx::query!("
             SELECT
                 type_id,

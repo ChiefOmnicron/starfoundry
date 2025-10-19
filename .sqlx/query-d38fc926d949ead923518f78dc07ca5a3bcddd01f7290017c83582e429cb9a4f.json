@@ -6,32 +6,68 @@
       {
         "ordinal": 0,
         "name": "type_id",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "type_id"
+          }
+        }
       },
       {
         "ordinal": 1,
         "name": "item_name",
-        "type_info": "Varchar"
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "name"
+          }
+        }
       },
       {
         "ordinal": 2,
         "name": "category_id",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "category_id"
+          }
+        }
       },
       {
         "ordinal": 3,
         "name": "group_id",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "group_id"
+          }
+        }
       },
       {
         "ordinal": 4,
         "name": "quantity",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_excess",
+            "name": "quantity"
+          }
+        }
       },
       {
         "ordinal": 5,
         "name": "cost",
-        "type_info": "Float8"
+        "type_info": "Float8",
+        "origin": {
+          "Table": {
+            "table": "project_excess",
+            "name": "cost"
+          }
+        }
       }
     ],
     "parameters": {

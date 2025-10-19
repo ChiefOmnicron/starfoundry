@@ -2,7 +2,6 @@ mod create;
 mod error;
 mod fetch;
 mod list;
-mod models;
 mod permission;
 mod resolve;
 

@@ -6,32 +6,68 @@
       {
         "ordinal": 0,
         "name": "name",
-        "type_info": "Varchar"
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "order_product",
+            "name": "name"
+          }
+        }
       },
       {
         "ordinal": 1,
         "name": "price",
-        "type_info": "Int8"
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "order_product",
+            "name": "price"
+          }
+        }
       },
       {
         "ordinal": 2,
         "name": "image_type",
-        "type_info": "Varchar"
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "order_product",
+            "name": "image_type"
+          }
+        }
       },
       {
         "ordinal": 3,
         "name": "image_type_id",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "order_product",
+            "name": "image_type_id"
+          }
+        }
       },
       {
         "ordinal": 4,
         "name": "content",
-        "type_info": "Jsonb"
+        "type_info": "Jsonb",
+        "origin": {
+          "Table": {
+            "table": "order_product",
+            "name": "content"
+          }
+        }
       },
       {
         "ordinal": 5,
         "name": "is_additional",
-        "type_info": "Bool"
+        "type_info": "Bool",
+        "origin": {
+          "Table": {
+            "table": "order_product",
+            "name": "is_additional"
+          }
+        }
       }
     ],
     "parameters": {

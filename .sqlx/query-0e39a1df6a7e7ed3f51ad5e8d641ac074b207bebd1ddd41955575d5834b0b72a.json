@@ -6,17 +6,35 @@
       {
         "ordinal": 0,
         "name": "id",
-        "type_info": "Uuid"
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "id"
+          }
+        }
       },
       {
         "ordinal": 1,
         "name": "structure_id",
-        "type_info": "Int8"
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "structure_id"
+          }
+        }
       },
       {
         "ordinal": 2,
         "name": "structure_name",
-        "type_info": "Varchar"
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "name"
+          }
+        }
       },
       {
         "ordinal": 3,
@@ -32,87 +50,178 @@
               ]
             }
           }
+        },
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "security"
+          }
         }
       },
       {
         "ordinal": 4,
         "name": "services",
-        "type_info": "Int4Array"
+        "type_info": "Int4Array",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "services"
+          }
+        }
       },
       {
         "ordinal": 5,
         "name": "rigs",
-        "type_info": "Int4Array"
+        "type_info": "Int4Array",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "rigs"
+          }
+        }
       },
       {
         "ordinal": 6,
         "name": "region_id",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "system",
+            "name": "region_id"
+          }
+        }
       },
       {
         "ordinal": 7,
-        "name": "constellation_id",
-        "type_info": "Int4"
+        "name": "system_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "system",
+            "name": "system_id"
+          }
+        }
       },
       {
         "ordinal": 8,
-        "name": "system_id",
-        "type_info": "Int4"
+        "name": "region_name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "system",
+            "name": "region_name"
+          }
+        }
       },
       {
         "ordinal": 9,
-        "name": "region_name",
-        "type_info": "Varchar"
+        "name": "system_name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "system",
+            "name": "system_name"
+          }
+        }
       },
       {
         "ordinal": 10,
-        "name": "constellation_name",
-        "type_info": "Varchar"
+        "name": "security",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "system",
+            "name": "security"
+          }
+        }
       },
       {
         "ordinal": 11,
-        "name": "system_name",
-        "type_info": "Varchar"
+        "name": "type_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "type_id"
+          }
+        }
       },
       {
         "ordinal": 12,
-        "name": "security",
-        "type_info": "Float4"
+        "name": "category_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "category_id"
+          }
+        }
       },
       {
         "ordinal": 13,
-        "name": "type_id",
-        "type_info": "Int4"
+        "name": "group_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "group_id"
+          }
+        }
       },
       {
         "ordinal": 14,
-        "name": "category_id",
-        "type_info": "Int4"
+        "name": "meta_group_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "meta_group_id"
+          }
+        }
       },
       {
         "ordinal": 15,
-        "name": "group_id",
-        "type_info": "Int4"
+        "name": "base_price",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "base_price"
+          }
+        }
       },
       {
         "ordinal": 16,
-        "name": "meta_group_id",
-        "type_info": "Int4"
+        "name": "volume",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "volume"
+          }
+        }
       },
       {
         "ordinal": 17,
-        "name": "volume",
-        "type_info": "Float4"
+        "name": "name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "name"
+          }
+        }
       },
       {
         "ordinal": 18,
-        "name": "name",
-        "type_info": "Varchar"
-      },
-      {
-        "ordinal": 19,
         "name": "repackaged",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "repackaged"
+          }
+        }
       }
     ],
     "parameters": {
@@ -136,8 +245,7 @@
       false,
       false,
       false,
-      false,
-      false,
+      true,
       true,
       false,
       false,

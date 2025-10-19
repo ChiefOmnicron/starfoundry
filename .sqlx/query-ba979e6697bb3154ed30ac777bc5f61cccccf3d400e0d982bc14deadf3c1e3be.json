@@ -6,17 +6,35 @@
       {
         "ordinal": 0,
         "name": "type_id",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "job_detection_log",
+            "name": "type_id"
+          }
+        }
       },
       {
         "ordinal": 1,
         "name": "runs",
-        "type_info": "Float8"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "industry_job",
+            "name": "runs"
+          }
+        }
       },
       {
         "ordinal": 2,
         "name": "cost",
-        "type_info": "Float4"
+        "type_info": "Float8",
+        "origin": {
+          "Table": {
+            "table": "industry_job",
+            "name": "cost"
+          }
+        }
       }
     ],
     "parameters": {

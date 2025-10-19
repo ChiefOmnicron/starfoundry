@@ -6,17 +6,35 @@
       {
         "ordinal": 0,
         "name": "quantity",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_product",
+            "name": "quantity"
+          }
+        }
       },
       {
         "ordinal": 1,
         "name": "material_efficiency",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_product",
+            "name": "material_efficiency"
+          }
+        }
       },
       {
         "ordinal": 2,
         "name": "type_id: _",
-        "type_info": "Int4"
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_product",
+            "name": "type_id"
+          }
+        }
       }
     ],
     "parameters": {
