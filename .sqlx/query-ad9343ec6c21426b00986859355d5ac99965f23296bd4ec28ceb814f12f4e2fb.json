@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                id,\n                character_id,\n                quantity,\n                status,\n                delivery_location,\n                comment,\n                created_at\n            FROM order_info\n            WHERE character_id = $1\n            AND status = ANY('{ACCEPTED, IN_PROGRESS, DONE}')\n            ORDER BY created_at\n        ",
+  "query": "\n            SELECT\n                id,\n                character_id,\n                quantity,\n                status,\n                delivery_location,\n                comment,\n                expected_delivery_date,\n                created_at\n            FROM order_info\n            WHERE id = $1\n            AND character_id = $2\n            AND status = ANY('{ACCEPTED, IN_PROGRESS, DONE}')\n            ORDER BY created_at\n        ",
   "describe": {
     "columns": [
       {
@@ -71,6 +71,17 @@
       },
       {
         "ordinal": 6,
+        "name": "expected_delivery_date",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "order_info",
+            "name": "expected_delivery_date"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
         "name": "created_at",
         "type_info": "Timestamptz",
         "origin": {
@@ -83,6 +94,7 @@
     ],
     "parameters": {
       "Left": [
+        "Uuid",
         "Int4"
       ]
     },
@@ -93,8 +105,9 @@
       false,
       false,
       true,
+      true,
       false
     ]
   },
-  "hash": "f6db7e36cac81bd969b4047bf0ac4c0c34540d5f2077cf8c94e9fd681fa333d9"
+  "hash": "ad9343ec6c21426b00986859355d5ac99965f23296bd4ec28ceb814f12f4e2fb"
 }

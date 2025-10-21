@@ -1,15 +1,16 @@
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::EveGatewayApiClient;
 
+use crate::admin::fetch::model::AdminOrderResponse;
 use crate::config::OrderUuid;
-use crate::order::{OrderProduct, OrderResponse};
+use crate::order::OrderProduct;
 use crate::product::{ProductError, Result};
 
 pub async fn fetch(
     pool:           &PgPool,
     api_client:     &impl EveGatewayApiClient,
     order_uuid:     OrderUuid,
-) -> Result<Option<OrderResponse>> {
+) -> Result<Option<AdminOrderResponse>> {
     let order = sqlx::query!("
             SELECT
                 id,
@@ -18,6 +19,8 @@ pub async fn fetch(
                 status,
                 delivery_location,
                 comment,
+                expected_delivery_date,
+                sf_industry_link,
                 created_at
             FROM order_info
             WHERE id = $1
@@ -70,14 +73,16 @@ pub async fn fetch(
         })
         .collect::<Vec<_>>();
 
-    let order_info = OrderResponse {
-        id:                 order_info.id.into(),
-        character:          character_info,
-        quantity:           order_info.quantity,
-        status:             order_info.status,
-        delivery_location:  order_info.delivery_location,
-        comment:            order_info.comment,
-        ordered_at:         order_info.created_at,
+    let order_info = AdminOrderResponse {
+        id:                     order_info.id.into(),
+        character:              character_info,
+        quantity:               order_info.quantity,
+        status:                 order_info.status,
+        delivery_location:      order_info.delivery_location,
+        comment:                order_info.comment,
+        ordered_at:             order_info.created_at,
+        sf_industry_link:       order_info.sf_industry_link,
+        expected_delivery_date: order_info.expected_delivery_date,
 
         products,
     };

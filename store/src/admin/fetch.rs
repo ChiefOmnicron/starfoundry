@@ -1,5 +1,7 @@
+mod model;
 mod service;
 
+pub use self::model::*;
 pub use self::service::*;
 
 use axum::extract::{Path, State};
@@ -13,7 +15,6 @@ use crate::api_docs::{ErrorResponse, Forbidden, InternalServerError, NotFound, U
 use crate::AppState;
 use crate::config::OrderUuid;
 use crate::product::error::Result;
-use crate::order::OrderResponse;
 
 /// Fetch Product
 /// 
@@ -37,7 +38,7 @@ use crate::order::OrderResponse;
     ),
     responses(
         (
-            body = OrderResponse,
+            body = AdminOrderResponse,
             description = "Requested order",
             status = OK,
         ),

@@ -65,13 +65,14 @@ pub struct OrderProduct {
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct OrderResponse {
-    pub id:                 OrderUuid,
-    pub character:          CharacterInfo,
-    pub quantity:           i32,
-    pub status:             String,
-    pub delivery_location:  String,
-    pub comment:            Option<String>,
-    pub ordered_at:         DateTime<Utc>,
+    pub id:                     OrderUuid,
+    pub character:              CharacterInfo,
+    pub quantity:               i32,
+    pub status:                 String,
+    pub delivery_location:      String,
+    pub comment:                Option<String>,
+    pub ordered_at:             DateTime<Utc>,
+    pub expected_delivery_date: Option<DateTime<Utc>>,
 
-    pub products:           Vec<OrderProduct>,
+    pub products:               Vec<OrderProduct>,
 }

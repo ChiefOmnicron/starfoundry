@@ -13,8 +13,8 @@ import type { ReactElement } from 'react';
 import type { RouterContext } from '@/main';
 
 const themeOverride = createTheme({
-    fontFamily: '"Roboto Mono", monospace',
-    fontFamilyMonospace: '"Roboto Mono", monospace',
+    fontFamily: '"Geist Mono", monospace',
+    fontFamilyMonospace: '"Geist Mono", monospace',
     radius: {
         lg: '0',
         md: '0',

@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                id,\n                character_id,\n                quantity,\n                status,\n                delivery_location,\n                comment,\n                created_at\n            FROM order_info\n            ORDER BY created_at\n        ",
+  "query": "\n            SELECT\n                id,\n                character_id,\n                quantity,\n                status,\n                delivery_location,\n                comment,\n                sf_industry_link,\n                expected_delivery_date,\n                created_at\n            FROM order_info\n            ORDER BY created_at\n        ",
   "describe": {
     "columns": [
       {
@@ -71,6 +71,28 @@
       },
       {
         "ordinal": 6,
+        "name": "sf_industry_link",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "order_info",
+            "name": "sf_industry_link"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "expected_delivery_date",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "order_info",
+            "name": "expected_delivery_date"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
         "name": "created_at",
         "type_info": "Timestamptz",
         "origin": {
@@ -91,8 +113,10 @@
       false,
       false,
       true,
+      true,
+      true,
       false
     ]
   },
-  "hash": "20e57ac34a58e2789b31c57135b603d8e41299c25bed0812e9cf9292b29a3059"
+  "hash": "dd772b978215cf90b5212b7a7ef4983764ac6650817f1ec4453c085792026b02"
 }

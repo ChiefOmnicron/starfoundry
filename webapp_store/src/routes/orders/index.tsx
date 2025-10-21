@@ -105,6 +105,17 @@ function OrderListComponent() {
             cell: info => new Date(info.getValue()).toLocaleDateString(),
             header: () => 'Order Date',
         }),
+        columnHelper.accessor('expected_delivery_date', {
+            id: 'expected_delivery_date',
+            cell: info => {
+                if (!info.getValue()) {
+                    return 'TBD';
+                } else {
+                    return new Date(info.getValue() || '').toLocaleDateString()
+                }
+            },
+            header: () => 'Expected delivery',
+        }),
         columnHelper.display({
             id: 'cancel',
             cell: info => info.row.original.status === 'ACCEPTED' ? <Button

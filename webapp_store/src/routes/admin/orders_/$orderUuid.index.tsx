@@ -1,13 +1,15 @@
-import { Avatar, Button, Grid, List, NumberFormatter, ScrollArea, Stack, Table, Textarea, TextInput, Title } from '@mantine/core'
+import { Avatar, Button, Grid, List, NumberFormatter, ScrollArea, Select, Stack, Table, Textarea, TextInput, Title } from '@mantine/core'
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { createFileRoute } from '@tanstack/react-router'
+import { DatePickerInput } from '@mantine/dates';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { LoadingError } from '@/components/LoadingError';
 import { type OrderProduct } from '@/services/order/list';
+import { updateOrderAdmin } from '@/services/order/update_admin';
+import { useEffect, useState } from 'react';
 import { useFetchOrderAdmin } from '@/services/order/fetch_admin';
 import { useMutation } from '@tanstack/react-query';
-import { updateOrderStatusAdmin } from '@/services/order/update_status_admin';
-import type { Uuid } from '@/services/utils';
+import type { OrderStatusType } from '@/components/OrderStatus';
 
 export const Route = createFileRoute('/admin/orders_/$orderUuid/')({
     component: RouteComponent,
@@ -16,17 +18,24 @@ export const Route = createFileRoute('/admin/orders_/$orderUuid/')({
 function RouteComponent() {
     const { orderUuid } = Route.useParams();
 
+    const [orderStatus, setOrderStatus] = useState<OrderStatusType>('ACCEPTED');
+    const [expectedDeliveryDate, setExpectedDeliveryDate] = useState<string | null>('');
+    const [sfIndustryLink, setSfIndustryLink] = useState<string | undefined>('');
+
     const {
         isPending,
         isError,
+        isSuccess,
         data: order
     } = useFetchOrderAdmin(orderUuid);
 
-    const updateStatus = useMutation({
-        mutationFn: (
-            {orderId, status}: { orderId: Uuid, status: 'IN_PROGRESS' | 'DELIVERED' }
-        ) => {
-            return updateOrderStatusAdmin(orderId, status);
+    const updateOrder = useMutation({
+        mutationFn: () => {
+            return updateOrderAdmin(orderUuid, {
+                status: orderStatus,
+                expected_delivery_date: new Date(expectedDeliveryDate || ''),
+                sf_industry_link: sfIndustryLink,
+            });
         },
     });
 
@@ -37,6 +46,14 @@ function RouteComponent() {
     if (isError) {
         return LoadingError();
     }
+
+    useEffect(() => {
+        if (isSuccess) {
+            setOrderStatus(order.status);
+            setExpectedDeliveryDate(order.expected_delivery_date || '');
+            setSfIndustryLink(order.sf_industry_link || '');
+        }
+    }, [order]);
 
     const additionalOptionsColumnHelper = createColumnHelper<OrderProduct>();
     const columns = [
@@ -164,41 +181,30 @@ function RouteComponent() {
     }
 
     const changeStatusView = () => {
-        return <div>
-            <Stack gap="xs">
-                <label style={{
-                    fontSize: 'var(--mantine-font-size-sm)',
-                    fontWeight: '500',
-                }}
-                >
-                    Change Status
-                </label>
-
-                <div>
-                    <Button
-                        color="blue"
-                        onClick={ () => changeStatus('IN_PROGRESS') }
-                        size='xs'
-                    >
-                        In Progress
-                    </Button>
-                    <Button
-                        color="green"
-                        onClick={ () => changeStatus('DELIVERED') }
-                        size='xs'
-                    >
-                        Delivered
-                    </Button>
-                </div>
-            </Stack>
-        </div>
+        return <Select
+            label="Select current status"
+            placeholder="Select status"
+            data={['ACCEPTED', 'IN_PROGRESS', 'DELIVERED']}
+            value={orderStatus}
+            onChange={(status: string | null) => setOrderStatus(status as OrderStatusType)}
+        />
     }
 
-    const changeStatus = (status: 'IN_PROGRESS' | 'DELIVERED') => {
-        updateStatus.mutate({
-            orderId: order.id,
-            status:  status
-        });
+    const expectedDeliveryDateView = () => {
+        return <DatePickerInput
+            label="Expected delivery date"
+            placeholder="Pick date"
+            value={ expectedDeliveryDate }
+            onChange={ (x) => setExpectedDeliveryDate(x)}
+        />
+    }
+
+    const sfIndustryUrlView = () => {
+        return <TextInput
+            label="StarFoundry Industry Url"
+            value={ sfIndustryLink }
+            onChange={(x) => setSfIndustryLink(x.currentTarget.value)}
+        />
     }
 
     return <>
@@ -235,6 +241,10 @@ function RouteComponent() {
                         { comment() }
 
                         { changeStatusView() }
+
+                        { expectedDeliveryDateView() }
+
+                        { sfIndustryUrlView() }
                     </Stack>
                 </Grid.Col>
 
@@ -250,6 +260,10 @@ function RouteComponent() {
                     </List>
                 </Grid.Col>
             </Grid>
+            
+            <Button onClick={() => updateOrder.mutate() }>
+                Save
+            </Button>
         </Stack>
     </>
 }

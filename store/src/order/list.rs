@@ -100,6 +100,7 @@ pub async fn api(
                 status,
                 delivery_location,
                 comment,
+                expected_delivery_date,
                 created_at
             FROM order_info
             WHERE character_id = $1
@@ -114,13 +115,14 @@ pub async fn api(
         .into_iter()
         .map(|x| {
             OrderResponse {
-                id:                 x.id.into(),
-                character:          character_info.clone(),
-                quantity:           x.quantity,
-                status:             x.status,
-                delivery_location:  x.delivery_location,
-                comment:            x.comment,
-                ordered_at:         x.created_at,
+                id:                     x.id.into(),
+                character:              character_info.clone(),
+                quantity:               x.quantity,
+                status:                 x.status,
+                delivery_location:      x.delivery_location,
+                comment:                x.comment,
+                ordered_at:             x.created_at,
+                expected_delivery_date: x.expected_delivery_date,
 
                 products: Vec::new(),
             }
