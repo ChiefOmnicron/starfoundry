@@ -1,5 +1,7 @@
-import axios from "axios";
 import { jwtDecode } from 'jwt-decode';
+import { redirect } from '@tanstack/react-router';
+import { Route as LoginRoute } from "@/routes/auth/login";
+import axios from "axios";
 import type { CharacterInfo } from "@/services/character";
 
 let jwtToken: string | null = null;
@@ -24,12 +26,26 @@ export const axiosClient = async () => {
         }
     }
 
-    return axios
+    const instance = axios
         .create({
             headers: {
                 'authorization': jwtToken,
             }
-        })
+        });
+
+    instance.interceptors.response.use(
+        undefined,
+        async (error) => {
+            if (error.response?.status === 401) {
+                console.log('in axios 401')
+                return redirect({
+                    to: LoginRoute.fullPath,
+                });
+            }
+        }
+    )
+
+    return instance;
 }
 
 export const refreshToken = async () => {

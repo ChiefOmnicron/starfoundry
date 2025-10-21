@@ -9,7 +9,7 @@ export const listStructure = async (
     filter: StructureFilter,
 ): Promise<Structure[]> => (await axiosClient())
     .get(
-        `/api/industry/structures`,
+        `/api/structure/structures`,
         {
             params: filter,
         }

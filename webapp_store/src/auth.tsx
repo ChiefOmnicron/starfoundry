@@ -1,7 +1,7 @@
-import { axiosClient } from "./services/client";
+import { axiosClient } from "@/services/client";
 import { isAdmin as isAdminJwt } from '@/services/client';
 import { redirect } from '@tanstack/react-router';
-import { Route as LoginRoute } from "./routes/auth/login";
+import { Route as LoginRoute } from "@/routes/auth/login";
 import * as React from "react";
 
 export interface AuthContext {
