@@ -26,15 +26,16 @@ export const listOrderQuery = () => ({
 });
 
 export type Order = {
-    id:                 Uuid,
-    character:          CharacterInfo,
-    quantity:           number,
-    delivery_location:  string,
-    status:             OrderStatusType,
-    ordered_at:         string,
-    comment:            string,
+    id:                      Uuid,
+    character:               CharacterInfo,
+    quantity:                number,
+    delivery_location:       string,
+    status:                  OrderStatusType,
+    ordered_at:              string,
+    comment:                 string,
+    expected_delivery_date?: string,
 
-    products:           OrderProduct[],
+    products:                OrderProduct[],
 }
 
 export type OrderProduct = {

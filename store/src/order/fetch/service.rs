@@ -20,6 +20,7 @@ pub async fn fetch(
                 status,
                 delivery_location,
                 comment,
+                expected_delivery_date,
                 created_at
             FROM order_info
             WHERE id = $1
@@ -76,13 +77,14 @@ pub async fn fetch(
         .collect::<Vec<_>>();
 
     let order_info = OrderResponse {
-        id:                 order_info.id.into(),
-        character:          character_info,
-        quantity:           order_info.quantity,
-        status:             order_info.status,
-        delivery_location:  order_info.delivery_location,
-        comment:            order_info.comment,
-        ordered_at:         order_info.created_at,
+        id:                     order_info.id.into(),
+        character:              character_info,
+        quantity:               order_info.quantity,
+        status:                 order_info.status,
+        delivery_location:      order_info.delivery_location,
+        comment:                order_info.comment,
+        ordered_at:             order_info.created_at,
+        expected_delivery_date: order_info.expected_delivery_date,
 
         products,
     };

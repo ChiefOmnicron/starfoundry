@@ -1,4 +1,5 @@
 import '@mantine/core/styles.css';
+import '@mantine/dates/styles.css';
 import '@/style.css';
 
 import { StrictMode } from 'react';
@@ -10,7 +11,6 @@ import { AuthProvider, useAuth, type AuthContext } from './auth';
 import { createRoot } from 'react-dom/client';
 
 import * as Sentry from "@sentry/react";
-
 
 // Create a new router instance
 const router = createRouter({
@@ -62,8 +62,7 @@ function App() {
 }
 
 // Render the app
-const rootElement = document.getElementById('root')!
-
+const rootElement = document.getElementById('root')!;
 if (!rootElement.innerHTML) {
     const root = createRoot(
         rootElement,

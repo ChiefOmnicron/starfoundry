@@ -2,6 +2,7 @@ use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
+use chrono::{DateTime, Utc};
 use serde::Deserialize;
 use starfoundry_lib_gateway::ExtractIdentity;
 use utoipa::ToSchema;
@@ -13,12 +14,12 @@ use crate::product::error::{ProductError, Result};
 
 /// List orders
 /// 
-/// - Alternative route: `/latest/admin/orders/{OrderUuid}/status`
-/// - Alternative route: `/v1/admin/orders/{OrderUuid}/status`
+/// - Alternative route: `/latest/admin/orders/{OrderUuid}`
+/// - Alternative route: `/v1/admin/orders/{OrderUuid}`
 /// 
 /// ---
 /// 
-/// Updates the status of an order
+/// Updates an order
 /// 
 /// ## Security
 /// - authenticated
@@ -26,9 +27,9 @@ use crate::product::error::{ProductError, Result};
 /// 
 #[utoipa::path(
     put,
-    path = "/orders/{OrderUuid}/status",
+    path = "/orders/{OrderUuid}",
     tag = "admin",
-    request_body = Status,
+    request_body = AdminUpdateOrder,
     responses(
         (
             description = "The update was successful",
@@ -46,7 +47,7 @@ pub async fn api(
     identity:         ExtractIdentity,
     State(state):     State<AppState>,
     Path(order_uuid): Path<OrderUuid>,
-    Json(status):     Json<Status>,
+    Json(data):       Json<AdminUpdateOrder>,
 ) -> Result<impl IntoResponse> {
     if !identity.is_admin {
         return Ok((
@@ -62,11 +63,16 @@ pub async fn api(
 
     sqlx::query!("
             UPDATE order_info
-            SET status = $2
+            SET
+                status = $2,
+                expected_delivery_date = $3,
+                sf_industry_link = $4
             WHERE id = $1
         ",
             *order_uuid,
-            status.status,
+            data.status,
+            data.expected_delivery_date,
+            data.sf_industry_link,
         )
         .execute(&state.postgres)
         .await
@@ -83,6 +89,8 @@ pub async fn api(
 
 // TODO: document possible options
 #[derive(Debug, Deserialize, ToSchema)]
-pub struct Status {
-    status: String,
+pub struct AdminUpdateOrder {
+    status:                 String,
+    sf_industry_link:       Option<String>,
+    expected_delivery_date: Option<DateTime<Utc>>,
 }

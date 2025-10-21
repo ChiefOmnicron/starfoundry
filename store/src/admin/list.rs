@@ -6,9 +6,10 @@ use starfoundry_lib_eve_gateway::{EveGatewayClient, EveGatewayApiClient};
 use starfoundry_lib_gateway::ExtractIdentity;
 use std::collections::HashMap;
 
+use crate::admin::fetch::AdminOrderResponse;
 use crate::api_docs::{ErrorResponse, Forbidden, InternalServerError, Unauthorized};
 use crate::AppState;
-use crate::order::{Order, OrderProduct, OrderResponse};
+use crate::order::OrderProduct;
 use crate::product::error::{ProductError, Result};
 
 /// List orders
@@ -30,7 +31,7 @@ use crate::product::error::{ProductError, Result};
     tag = "admin",
     responses(
         (
-            body = Vec<OrderResponse>,
+            body = Vec<AdminOrderResponse>,
             description = "All orders",
             status = OK,
         ),
@@ -70,32 +71,20 @@ pub async fn api(
                 status,
                 delivery_location,
                 comment,
+                sf_industry_link,
+                expected_delivery_date,
                 created_at
             FROM order_info
             ORDER BY created_at
         ")
         .fetch_all(&state.postgres)
         .await
-        .map_err(ProductError::GeneralSqlxError)?
-        .into_iter()
-        .map(|x| {
-            Order {
-                id:                 x.id.into(),
-                character_id:       x.character_id.into(),
-                quantity:           x.quantity,
-                status:             x.status,
-                delivery_location:  x.delivery_location,
-                comment:            x.comment,
-                ordered_at:         x.created_at,
-
-                products: Vec::new(),
-            }
-        })
-        .collect::<Vec<_>>();
+        .map_err(ProductError::GeneralSqlxError)?;
 
     let mut character_ids = orders
         .iter()
         .map(|x| x.character_id)
+        .map(Into::into)
         .collect::<Vec<_>>();
     character_ids.sort();
     character_ids.dedup();
@@ -110,22 +99,24 @@ pub async fn api(
 
     let mut order_response = Vec::new();
     for order in orders {
-        let character_info = if let Some(x) = character_ids.get(&order.character_id) {
+        let character_info = if let Some(x) = character_ids.get(&order.character_id.into()) {
             x
         } else {
             continue;
         };
 
-        order_response.push(OrderResponse {
-            character:          character_info.clone(),
-            id:                 order.id.into(),
-            quantity:           order.quantity,
-            status:             order.status,
-            delivery_location:  order.delivery_location,
-            comment:            order.comment,
-            ordered_at:         order.ordered_at,
+        order_response.push(AdminOrderResponse {
+            character:              character_info.clone(),
+            id:                     order.id.into(),
+            quantity:               order.quantity,
+            status:                 order.status,
+            delivery_location:      order.delivery_location,
+            comment:                order.comment,
+            ordered_at:             order.created_at,
+            sf_industry_link:       order.sf_industry_link,
+            expected_delivery_date: order.expected_delivery_date,
 
-            products:           Vec::new(),
+            products:               Vec::new(),
         });
     }
 

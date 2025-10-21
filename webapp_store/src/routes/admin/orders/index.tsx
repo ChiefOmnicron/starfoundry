@@ -7,7 +7,7 @@ import { type Order } from '@/services/order/list';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Uuid } from '@/services/utils';
 import { deleteOrder } from '@/services/order/delete';
-import { LIST_ORDER_ADMIN, useListOrdersAdmin } from '@/services/order/list_admin';
+import { LIST_ORDER_ADMIN, useListOrdersAdmin, type AdminOrder } from '@/services/order/list_admin';
 import { OrderStatus } from '@/components/OrderStatus';
 
 interface QueryParams {
@@ -111,6 +111,17 @@ function OrderListComponent() {
             cell: info => new Date(info.getValue()).toLocaleDateString(),
             header: () => 'Order Date',
         }),
+        columnHelper.accessor('expected_delivery_date', {
+            id: 'expected_delivery_date',
+            cell: info => {
+                if (!info.getValue()) {
+                    return 'TBD';
+                } else {
+                    return new Date(info.getValue() || '').toLocaleDateString()
+                }
+            },
+            header: () => 'Expected delivery',
+        }),
         columnHelper.display({
             id: 'cancel',
             cell: info => info.row.original.status === 'ACCEPTED' ? <Button
@@ -128,7 +139,7 @@ function OrderListComponent() {
         data: orders,
     } = useListOrdersAdmin();
 
-    const table = useReactTable<Order>({
+    const table = useReactTable<AdminOrder>({
         columns: columns,
         data: orders,
         autoResetPageIndex: false,

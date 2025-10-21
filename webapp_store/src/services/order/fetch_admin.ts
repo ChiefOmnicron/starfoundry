@@ -1,13 +1,13 @@
 import { axiosClient } from "@/services/client";
 import { useQuery } from "@tanstack/react-query";
-import type { Order } from "@/services/order/list";
+import type { AdminOrder } from "@/services/order/list_admin";
 import type { Uuid } from "@/services/utils";
 
 export const FETCH_ORDER_ADMIN = 'fetchOrderAdmin';
 
 export const fetchOrderAdmin = async (
     orderUuid: Uuid,
-): Promise<Order> => (await axiosClient())
+): Promise<AdminOrder> => (await axiosClient())
     .get(
         `/api/admin/orders/${orderUuid}`,
     )
