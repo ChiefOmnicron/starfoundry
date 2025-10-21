@@ -85,6 +85,20 @@ impl IntoResponse for AuthError {
                 ).into_response()
             }
 
+            Self::JsonWebTokenDecode(_) |
+            Self::JsonWebTokenEncode(_) => {
+                tracing::warn!("{}", self.to_string());
+                (
+                    StatusCode::UNAUTHORIZED,
+                    Json(
+                        ErrorResponse {
+                            error: "UNAUTHORIZED".into(),
+                            description: "login and try again.".into(),
+                        }
+                    )
+                ).into_response()
+            }
+
             _ => {
                 tracing::error!("{}", self.to_string());
                 (

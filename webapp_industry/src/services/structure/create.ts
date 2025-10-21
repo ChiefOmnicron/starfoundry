@@ -7,7 +7,7 @@ export const createStructure = async (
     data: CreateStructure,
 ): Promise<CreateStructureResponse> => (await axiosClient())
     .post(
-        '/api/industry/structures',
+        '/api/structure/structures',
         data,
     )
     .then(x => x.data);

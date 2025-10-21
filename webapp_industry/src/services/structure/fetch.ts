@@ -9,7 +9,7 @@ export const fetchStructure = async (
     id: Uuid,
 ): Promise<Structure> => (await axiosClient())
     .get(
-        `/api/industry/structures/${id}`,
+        `/api/structure/structures/${id}`,
     )
     .then(x => x.data);
 
