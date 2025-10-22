@@ -7,8 +7,6 @@ license.workspace = true
 
 [dependencies]
 axum = "0.8.6"
-# activating this will cause database problems in prod
-#axum = { version = "0.8.6", features = ["macros"] }
 axum-server = { version = "0.7.2", features = ["tls-rustls-no-provider"] }
 chrono = { version = "0.4.42", features = ["serde"] }
 dotenvy = "0.15.7"

@@ -3,7 +3,7 @@ use starfoundry_lib_types::{StructureId, SystemId, TypeId};
 use utoipa::ToSchema;
 
 use crate::item::Item;
-use crate::universe::fetch_system::System;
+use crate::universe::fetch::System;
 use crate::structure::list_structure_rigs::StructureRigResponse;
 use crate::structure::fetch_services::StructureServiceResponse;
 

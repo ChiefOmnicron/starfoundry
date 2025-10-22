@@ -1,20 +1,20 @@
-[routes."auth"]
 # eve-gateway
+[routes."auth"]
 service_url = "https://localhost:9998"
 
+# industry
 [routes."eve-gateway"]
-# industry
 service_url = "https://localhost:9998"
 
+# industry
 [routes."industry"]
-# industry
 service_url = "https://localhost:9994"
 
+# industry
 [routes."structure"]
-# industry
 service_url = "https://localhost:9994"
 
-[routes."store"]
 # store
+[routes."store"]
 service_url = "https://localhost:9996"
 

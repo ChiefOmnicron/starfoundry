@@ -11,8 +11,9 @@ use crate::config::ConfigFileRoute;
 #[derive(Clone)]
 pub struct AppState {
     /// Valid domains read from the config file
-    pub routes:       Arc<HashMap<String, ConfigFileRoute>>,
+    pub routes: Arc<HashMap<String, ConfigFileRoute>>,
 
+    /// JWT Decoding key loaded from the eve-gateway
     pub decoding_key: Arc<DecodingKey>,
 }
 

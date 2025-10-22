@@ -92,4 +92,15 @@ pub trait EveGatewayApiClient: ApiClient {
             .await
             .map_err(Into::into)
     }
+
+    #[allow(async_fn_in_trait)]
+    async fn fetch_system_bulk(
+        &self,
+        system_ids: Vec<SystemId>,
+    ) -> Result<Vec<System>> {
+        self
+            .post("universe/systems", system_ids)
+            .await
+            .map_err(Into::into)
+    }
 }

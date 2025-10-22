@@ -3,10 +3,10 @@ mod error;
 mod fetch;
 mod list;
 mod permission;
-mod resolve;
+
+pub mod service;
 
 pub use self::error::StructureError;
-pub use self::fetch::Structure;
 
 use axum::extract::{Path, Request, State};
 use axum::middleware::{self, Next};
@@ -33,14 +33,10 @@ pub fn routes(
     let create = OpenApiRouter::new()
         .routes(routes!(create::api));
 
-    let resolve = OpenApiRouter::new()
-        .routes(routes!(resolve::api));
-
     OpenApiRouter::new()
         .merge(list)
         .merge(fetch)
         .merge(create)
-        .merge(resolve)
 }
 
 starfoundry_uuid!(StructureUuid, "StructureUuid");

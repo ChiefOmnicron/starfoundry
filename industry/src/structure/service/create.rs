@@ -1,7 +1,9 @@
+use serde::Deserialize;
 use sqlx::PgPool;
+use starfoundry_lib_types::{SystemId, TypeId};
 use starfoundry_lib_types::CharacterId;
+use utoipa::ToSchema;
 
-use crate::structure::create::CreateStructure;
 use crate::structure::{StructureError, StructureUuid};
 use crate::structure::error::Result;
 
@@ -40,15 +42,14 @@ pub async fn create(
         .map_err(|e| StructureError::Create(e))
 }
 
-
 #[cfg(test)]
 mod create_project_group_test {
     use sqlx::PgPool;
     use starfoundry_lib_eve_gateway::StructureType;
     use starfoundry_lib_types::CharacterId;
 
-    use crate::structure::create::CreateStructure;
     use crate::structure::error::StructureError;
+    use super::CreateStructure;
 
     #[sqlx::test(migrator = "crate::test_util::MIGRATOR")]
     async fn no_name(
@@ -127,5 +128,56 @@ mod create_project_group_test {
             .unwrap();
         assert_eq!(entry.name, "My cool structure");
         assert_eq!(entry.structure_id, 1_100_000_000_000);
+    }
+}
+
+#[derive(Debug, Deserialize, ToSchema)]
+#[schema(
+    example = json!({
+        "name": "1DQ1-A - 1-st Imperial Palace",
+        "rigs": [
+            37275
+        ],
+        "security": "NULLSEC",
+        "services": [
+            35894
+        ],
+        "structure_id": 1003520240,
+        "structure_type_id": 35834,
+        "system_id": 30004759
+    })
+)]
+pub struct CreateStructure {
+    /// Name of the structure
+    pub name:              String,
+    /// Location of the structure
+    pub system_id:         SystemId,
+
+    /// Type of structure
+    pub structure_type_id: TypeId,
+    /// List of all rigs that are in the structure
+    pub rigs:              Vec<TypeId>,
+    /// Id of the structure in-game
+    pub services:          Vec<TypeId>,
+
+    /// EVE Id of the structure
+    pub structure_id:      i64,
+}
+
+impl CreateStructure {
+    pub fn valid(&self) -> Result<bool> {
+        if self.name.len() <= 100 {
+            if self.name.trim().is_empty() {
+                return Err(StructureError::ValidationError("Field 'name' must be set".into()));
+            }
+        } else {
+            return Err(StructureError::ValidationError("Field 'name' is too long, max length: 100".into()));
+        };
+
+        if self.structure_id < 1000000000000 {
+            return Err(StructureError::ValidationError("Field 'structure_id' must be equal or larger than 1_000_000_000_000".into()));
+        };
+
+        Ok(true)
     }
 }

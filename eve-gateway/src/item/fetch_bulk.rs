@@ -25,9 +25,6 @@ use crate::item::error::Result;
     path = "/bulk",
     tag = "Items",
     request_body = Vec<TypeId>,
-    params(
-        TypeId,
-    ),
     responses(
         (
             body = Vec<Item>,

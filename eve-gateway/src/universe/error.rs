@@ -25,8 +25,10 @@ pub enum UniverseError {
     #[error("the item information are not available")]
     ItemNotFound,
 
-    #[error("error while resolving system {1}, error: '{1}'")]
+    #[error("error while resolving system {1}, error: '{0}'")]
     FetchSystem(sqlx::Error, SystemId),
+    #[error("error while resolving systems, error: '{0}'")]
+    FetchSystemBulk(sqlx::Error),
 }
 
 impl IntoResponse for UniverseError {

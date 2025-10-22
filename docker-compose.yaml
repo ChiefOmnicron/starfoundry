@@ -2,6 +2,7 @@ services:
   eve-gateway:
     build:
       context: .
+      dockerfile: Dockerfile.dev
       target: eve-gateway-api
     ports:
       - "9998:9998"
@@ -13,9 +14,7 @@ services:
     develop:
       watch:
         - action: rebuild
-          path: ./.sqlx
-        - action: rebuild
-          path: ./eve-gateway/src
+          path: ./target/debug/starfoundry_bin-eve_gateway
         - action: restart
           path: ./eve-gateway/.env
         - action: sync+restart
@@ -26,6 +25,7 @@ services:
   gateway:
     build:
       context: .
+      dockerfile: Dockerfile.dev
       target: gateway-api
     ports:
       - "9990:9990"
@@ -39,9 +39,7 @@ services:
     develop:
       watch:
         - action: rebuild
-          path: ./.sqlx
-        - action: rebuild
-          path: ./gateway/src
+          path: ./target/debug/starfoundry_bin-gateway
         - action: restart
           path: ./gateway/.env
         - action: sync+restart

@@ -3,7 +3,7 @@ use starfoundry_lib_types::{ConstellationId, RegionId, SystemId};
 use utoipa::ToSchema;
 
 // TODO: move me when a better location is found
-#[derive(Debug, Deserialize, Serialize, ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 #[schema(
     example = json!({
         "region_id": 10000001,

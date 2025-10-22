@@ -1,9 +1,3 @@
-mod create_structure;
-mod service;
-
-pub use self::create_structure::*;
-pub use self::service::*;
-
 use axum::extract::State;
 use axum::http::StatusCode;
 use axum::Json;
@@ -12,6 +6,7 @@ use serde::Serialize;
 use starfoundry_lib_gateway::ExtractIdentity;
 use utoipa::ToSchema;
 
+use crate::structure::service::{create, CreateStructure};
 use crate::AppState;
 use crate::structure::StructureUuid;
 use crate::structure::error::Result;
