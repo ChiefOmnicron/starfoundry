@@ -1,8 +1,3 @@
-mod filter;
-mod service;
-
-pub use self::service::*;
-
 use axum::extract::{Query, State};
 use axum::http::StatusCode;
 use axum::Json;
@@ -10,10 +5,9 @@ use axum::response::IntoResponse;
 use starfoundry_lib_gateway::ExtractIdentity;
 
 use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
+use crate::structure::service::{list, Structure, StructureFilter};
 use crate::{eve_gateway_api_client, AppState};
 use crate::structure::error::Result;
-use crate::structure::Structure;
-use crate::structure::list::filter::StructureFilter;
 
 /// List Structures
 /// 
@@ -51,9 +45,9 @@ use crate::structure::list::filter::StructureFilter;
     ),
 )]
 pub async fn api(
+    identity:      ExtractIdentity,
     State(state):  State<AppState>,
     Query(filter): Query<StructureFilter>,
-    identity:      ExtractIdentity,
 ) -> Result<impl IntoResponse> {
     let data = list(
             &state.pool,
@@ -92,7 +86,8 @@ mod tests {
     use sqlx::PgPool;
     use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
 
-    use crate::structure::{structure_test_routes, Structure};
+    use crate::structure::service::Structure;
+    use crate::structure::structure_test_routes;
 
     #[sqlx::test(
         fixtures("DELETE_AFTER_NEW_MS", "base"),

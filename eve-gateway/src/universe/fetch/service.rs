@@ -1,7 +1,7 @@
 use sqlx::PgPool;
 use starfoundry_lib_types::SystemId;
 
-use crate::universe::fetch_system::model::System;
+use crate::universe::fetch::model::System;
 use crate::universe::error::{Result, UniverseError};
 
 pub async fn fetch(

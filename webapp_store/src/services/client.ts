@@ -37,7 +37,6 @@ export const axiosClient = async () => {
         undefined,
         async (error) => {
             if (error.response?.status === 401) {
-                console.log('in axios 401')
                 return redirect({
                     to: LoginRoute.fullPath,
                 });
@@ -55,6 +54,12 @@ export const refreshToken = async () => {
             jwtToken = x.data.access_token;
         })
         .catch(e => {
+            if (e.response?.status === 401) {
+                return redirect({
+                    to: LoginRoute.fullPath,
+                });
+            }
+
             throw e;
         });
 }

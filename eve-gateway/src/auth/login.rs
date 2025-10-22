@@ -1,7 +1,7 @@
 use axum::extract::State;
 use axum::http::{HeaderMap, StatusCode};
 use axum::http::header::HOST;
-use axum::response::{IntoResponse, Redirect};
+use axum::response::IntoResponse;
 
 use crate::api_docs::InternalServerError;
 use crate::auth::error::{AuthError, Result};
@@ -88,8 +88,6 @@ pub async fn login(
         .to_string();
 
     Ok((
-        //StatusCode::TEMPORARY_REDIRECT,
-        //Redirect::temporary(&url),
         StatusCode::OK,
         Json(serde_json::json!({
             "url": url,

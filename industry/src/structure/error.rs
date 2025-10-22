@@ -1,4 +1,4 @@
-use starfoundry_lib_types::{CharacterId, TypeId};
+use starfoundry_lib_types::CharacterId;
 use thiserror::Error;
 
 use axum::extract::rejection::JsonRejection;
@@ -31,9 +31,6 @@ pub enum StructureError {
 
     #[error("error while fetching permissions for structure '{1}', error: '{0}'")]
     FetchStructurePermission(sqlx::Error, StructureUuid),
-
-    #[error("error fetching rigs bonuses for TypeId '{1}', error: {0}")]
-    FetchRigBonusByTypeId(sqlx::Error, TypeId),
 
     #[error(transparent)]
     JsonExtractorRejection(#[from] JsonRejection),

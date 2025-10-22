@@ -24,7 +24,6 @@ const router = createRouter({
 if (import.meta.env.PROD) {
     Sentry.init({
         dsn: import.meta.env.VITE_SENTRY_STORE_DSN,
-        debug: true,
         sendDefaultPii: true,
         integrations: [
             Sentry.tanstackRouterBrowserTracingIntegration(router),
