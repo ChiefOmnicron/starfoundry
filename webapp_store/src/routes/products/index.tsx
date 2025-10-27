@@ -10,11 +10,6 @@ import { Route as ProductOrderRoute } from '@/routes/products_/$productUuid.inde
 import { useState, type ReactElement } from 'react';
 
 export const Route = createFileRoute('/products/')({
-    beforeLoad: async ({ context }) => {
-        if (!await context.auth.isAuthenticated()) {
-            throw context.auth.login();
-        }
-    },
     component: StoreComponent,
 });
 
