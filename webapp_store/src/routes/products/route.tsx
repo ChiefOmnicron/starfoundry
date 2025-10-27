@@ -2,6 +2,11 @@ import { Text, Title } from '@mantine/core'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/products')({
+    beforeLoad: async ({ context }) => {
+        if (!await context.auth.isAuthenticated()) {
+            throw context.auth.login();
+        }
+    },
     component: StoreHeaderComponent,
 })
 

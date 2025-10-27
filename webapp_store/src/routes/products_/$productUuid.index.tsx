@@ -22,6 +22,11 @@ export type OrderProduct = {
 }
 
 export const Route = createFileRoute('/products_/$productUuid/')({
+    beforeLoad: async ({ context }) => {
+        if (!await context.auth.isAuthenticated()) {
+            throw context.auth.login();
+        }
+    },
     component: RouteComponent,
 })
 
