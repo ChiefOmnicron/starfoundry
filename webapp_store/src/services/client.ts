@@ -1,4 +1,5 @@
 import { jwtDecode } from 'jwt-decode';
+import { redirect } from '@tanstack/react-router';
 import { Route as LoginRoute } from "@/routes/auth/login";
 import axios from "axios";
 import type { CharacterInfo } from "@/services/character";
@@ -36,7 +37,9 @@ export const axiosClient = async () => {
         undefined,
         async (error) => {
             if (error.response?.status === 401) {
-                window.location.href = LoginRoute.to;
+                return redirect({
+                    to: LoginRoute.fullPath,
+                });
             }
         }
     )
@@ -52,7 +55,9 @@ export const refreshToken = async () => {
         })
         .catch(e => {
             if (e.response?.status === 401) {
-                window.location.href = LoginRoute.to;
+                return redirect({
+                    to: LoginRoute.fullPath,
+                });
             }
 
             throw e;
