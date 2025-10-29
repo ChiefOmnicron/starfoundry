@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO category\n            (\n                category_id,\n                name\n            )\n            SELECT * FROM UNNEST(\n                $1::INTEGER[],\n                $2::VARCHAR[]\n            )\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4Array",
+        "VarcharArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "afed530d87fe5188e2e0f6a625761d119644e78e7a2697f2758ee6fc667f684b"
+}
