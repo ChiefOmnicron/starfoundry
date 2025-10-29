@@ -587,7 +587,7 @@ async fn process_build(
             market_result.manufacturing,
             market_result.manufacturing_market,
             market_result.market + market_result.manufacturing + market_result.manufacturing_market + market_result.bpc,
-            sell_price as i32,
+            sell_price as i64,
         )
         .execute(&mut *transaction)
         .await?;
