@@ -42,7 +42,6 @@ pub async fn catch_all_generic_get(
 
     if let Some(x) = state.routes.get(path_front) {
         let mut headers = headers;
-
         if x.require_auth {
             if let Some(identity) = identity {
                 add_headers(
