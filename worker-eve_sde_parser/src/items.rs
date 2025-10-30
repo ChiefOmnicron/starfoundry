@@ -1,18 +1,20 @@
 use sqlx::PgPool;
 use starfoundry_lib_items::Item;
-use starfoundry_lib_types::{GroupId, TypeId};
+use starfoundry_lib_types::{CategoryId, GroupId, TypeId};
 use std::collections::HashMap;
 use std::time::Instant;
 
 use crate::Error;
-use crate::parser::group_ids::GroupIdEntry;
+use crate::parser::groups::GroupIdEntry;
 use crate::parser::type_ids::TypeIdEntry;
+use crate::parser::categories::CategoryIdEntry;
 
 pub async fn run(
-    pool:       &PgPool,
-    group_ids:  &HashMap<GroupId, GroupIdEntry>,
-    type_ids:   &HashMap<TypeId, TypeIdEntry>,
-    repackaged: &HashMap<TypeId, i32>,
+    pool:         &PgPool,
+    category_ids: &HashMap<CategoryId, CategoryIdEntry>,
+    group_ids:    &HashMap<GroupId, GroupIdEntry>,
+    type_ids:     &HashMap<TypeId, TypeIdEntry>,
+    repackaged:   &HashMap<TypeId, i32>,
 ) -> Result<(), Error> {
     tracing::info!("Processing items");
     let start = Instant::now();
@@ -94,6 +96,46 @@ pub async fn run(
         .execute(&mut *transaction)
         .await
         .map_err(Error::InsertItems)?;
+
+    sqlx::query!("
+            INSERT INTO category
+            (
+                category_id,
+                name
+            )
+            SELECT * FROM UNNEST(
+                $1::INTEGER[],
+                $2::VARCHAR[]
+            )
+        ",
+            &category_ids.into_iter().map(|(x, _)| **x).collect::<Vec<_>>(),
+            &category_ids.into_iter().map(|(_, entry)| entry.name().unwrap_or_default()).collect::<Vec<_>>(),
+        )
+        .execute(&mut *transaction)
+        .await
+        .map_err(Error::InsertItems)?;
+
+    sqlx::query!("
+            INSERT INTO groups
+            (
+                group_id,
+                category_id,
+                name
+            )
+            SELECT * FROM UNNEST(
+                $1::INTEGER[],
+                $2::INTEGER[],
+                $3::VARCHAR[]
+            )
+        ",
+            &group_ids.into_iter().map(|(x, _)| **x).collect::<Vec<_>>(),
+            &group_ids.into_iter().map(|(_, entry)| *entry.category_id).collect::<Vec<_>>(),
+            &group_ids.into_iter().map(|(_, entry)| entry.name().unwrap_or_default()).collect::<Vec<_>>(),
+        )
+        .execute(&mut *transaction)
+        .await
+        .map_err(Error::InsertItems)?;
+
     tracing::debug!("Inserting data done");
 
     transaction

@@ -1,18 +1,14 @@
-mod model;
-mod service;
-
-pub use self::model::System;
-pub use self::service::fetch;
-
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
+use starfoundry_lib_eve_gateway::System;
 use starfoundry_lib_types::{SystemId, TypeId};
 
 use crate::api_docs::{InternalServerError, NotFound};
 use crate::state::AppState;
 use crate::universe::error::Result;
+use crate::universe::services::fetch_system;
 
 /// Fetch System
 /// 
@@ -44,7 +40,7 @@ pub async fn api(
     State(state):    State<AppState>,
     Path(system_id): Path<SystemId>,
 ) -> Result<impl IntoResponse> {
-    let entry = fetch(
+    let entry = fetch_system(
         &state.postgres,
         system_id,
     ).await?;

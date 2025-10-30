@@ -48,3 +48,13 @@ jobs:
       image: ${{ needs.build-image.outputs.IMAGE }}
       image-name: gateway
       folder: gateway
+
+  ship-it-store:
+    uses: ./.github/workflows/common_deploy.yml
+    needs:
+      - build-image
+    secrets: inherit
+    with:
+      image: ${{ needs.build-image.outputs.IMAGE }}
+      image-name: gateway
+      folder: store

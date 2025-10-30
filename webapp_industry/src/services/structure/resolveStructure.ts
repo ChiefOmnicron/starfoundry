@@ -1,6 +1,6 @@
 import { axiosClient } from "@/services/client";
 import type { Item } from "@/services/item/model";
-import type { TypeId } from "../utils";
+import type { StructureRig, StructureService, StructureSystem } from "./list";
 
 export const RESOLVE_STRUCTURE = "resolveStructure";
 
@@ -8,7 +8,7 @@ export const resolveStructure = async (
     structureId: number,
 ): Promise<ResolveStructureResponse> =>
     (await axiosClient())
-        .get(`/api/eve-gateway/structures/${structureId}`)
+        .get(`/api/eve/structures/${structureId}`)
         .then((x) => x.data);
 
 export type ResolveStructureResponse = {
@@ -19,27 +19,8 @@ export type ResolveStructureResponse = {
         z: number;
     };
     structure_id: number;
-    system: {
-        constellation_id: number;
-        constellation_name: string;
-        region_id: number;
-        region_name: string;
-        security: number;
-        system_id: number;
-        system_name: string;
-        security_str: 'HIGHSEC' | 'LOWSEC' | 'NULLSEC';
-    };
+    system: StructureSystem;
     item: Item;
-    rigs: StructureRig[];
-    services: StructureService;
+    installable_rigs: StructureRig[];
+    installable_services: StructureService;
 };
-
-export type StructureRig = {
-    item:     Item,
-    excludes: TypeId[],
-}
-
-export type StructureService = {
-    services: Item[],
-    slots:    number,
-}

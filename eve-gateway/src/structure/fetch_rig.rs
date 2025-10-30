@@ -1,17 +1,14 @@
-mod service;
-
-pub use self::service::*;
-
 use axum::extract::{Path, State};
 use axum::Json;
 use axum::response::IntoResponse;
 use reqwest::StatusCode;
+use starfoundry_lib_eve_gateway::StructureRigResponse;
 use starfoundry_lib_types::TypeId;
 
 use crate::api_docs::{InternalServerError, NotFound};
 use crate::state::AppState;
 use crate::structure::error::Result;
-use crate::structure::list_structure_rigs::StructureRigResponse;
+use crate::structure::services::fetch_rig;
 
 /// Fetch structure rigs
 /// 

@@ -16,10 +16,11 @@ import { Route as StructuresIndexRouteImport } from './routes/structures/index'
 import { Route as ProjectGroupsIndexRouteImport } from './routes/project-groups/index'
 import { Route as LegalIndexRouteImport } from './routes/legal/index'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
-import { Route as StructuresAddRouteImport } from './routes/structures/add'
 import { Route as ProjectGroupsCreateRouteImport } from './routes/project-groups/create'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as StructuresStructureIdRouteRouteImport } from './routes/structures_/$structureId.route'
 import { Route as ProjectGroupsProjectGroupIdRouteRouteImport } from './routes/project-groups_/$projectGroupId.route'
+import { Route as StructuresStructureIdIndexRouteImport } from './routes/structures_/$structureId.index'
 import { Route as ProjectGroupsProjectGroupIdIndexRouteImport } from './routes/project-groups_/$projectGroupId.index'
 import { Route as ProjectGroupsProjectGroupIdMembersRouteImport } from './routes/project-groups_/$projectGroupId.members'
 import { Route as ProjectGroupsProjectGroupIdDefaultsRouteImport } from './routes/project-groups_/$projectGroupId.defaults'
@@ -59,11 +60,6 @@ const AboutIndexRoute = AboutIndexRouteImport.update({
   path: '/about/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const StructuresAddRoute = StructuresAddRouteImport.update({
-  id: '/add',
-  path: '/add',
-  getParentRoute: () => StructuresRouteRoute,
-} as any)
 const ProjectGroupsCreateRoute = ProjectGroupsCreateRouteImport.update({
   id: '/create',
   path: '/create',
@@ -74,11 +70,23 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StructuresStructureIdRouteRoute =
+  StructuresStructureIdRouteRouteImport.update({
+    id: '/structures_/$structureId',
+    path: '/structures/$structureId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ProjectGroupsProjectGroupIdRouteRoute =
   ProjectGroupsProjectGroupIdRouteRouteImport.update({
     id: '/project-groups_/$projectGroupId',
     path: '/project-groups/$projectGroupId',
     getParentRoute: () => rootRouteImport,
+  } as any)
+const StructuresStructureIdIndexRoute =
+  StructuresStructureIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => StructuresStructureIdRouteRoute,
   } as any)
 const ProjectGroupsProjectGroupIdIndexRoute =
   ProjectGroupsProjectGroupIdIndexRouteImport.update({
@@ -104,9 +112,9 @@ export interface FileRoutesByFullPath {
   '/project-groups': typeof ProjectGroupsRouteRouteWithChildren
   '/structures': typeof StructuresRouteRouteWithChildren
   '/project-groups/$projectGroupId': typeof ProjectGroupsProjectGroupIdRouteRouteWithChildren
+  '/structures/$structureId': typeof StructuresStructureIdRouteRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/project-groups/create': typeof ProjectGroupsCreateRoute
-  '/structures/add': typeof StructuresAddRoute
   '/about': typeof AboutIndexRoute
   '/legal': typeof LegalIndexRoute
   '/project-groups/': typeof ProjectGroupsIndexRoute
@@ -114,12 +122,12 @@ export interface FileRoutesByFullPath {
   '/project-groups/$projectGroupId/defaults': typeof ProjectGroupsProjectGroupIdDefaultsRoute
   '/project-groups/$projectGroupId/members': typeof ProjectGroupsProjectGroupIdMembersRoute
   '/project-groups/$projectGroupId/': typeof ProjectGroupsProjectGroupIdIndexRoute
+  '/structures/$structureId/': typeof StructuresStructureIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/project-groups/create': typeof ProjectGroupsCreateRoute
-  '/structures/add': typeof StructuresAddRoute
   '/about': typeof AboutIndexRoute
   '/legal': typeof LegalIndexRoute
   '/project-groups': typeof ProjectGroupsIndexRoute
@@ -127,6 +135,7 @@ export interface FileRoutesByTo {
   '/project-groups/$projectGroupId/defaults': typeof ProjectGroupsProjectGroupIdDefaultsRoute
   '/project-groups/$projectGroupId/members': typeof ProjectGroupsProjectGroupIdMembersRoute
   '/project-groups/$projectGroupId': typeof ProjectGroupsProjectGroupIdIndexRoute
+  '/structures/$structureId': typeof StructuresStructureIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -134,9 +143,9 @@ export interface FileRoutesById {
   '/project-groups': typeof ProjectGroupsRouteRouteWithChildren
   '/structures': typeof StructuresRouteRouteWithChildren
   '/project-groups_/$projectGroupId': typeof ProjectGroupsProjectGroupIdRouteRouteWithChildren
+  '/structures_/$structureId': typeof StructuresStructureIdRouteRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/project-groups/create': typeof ProjectGroupsCreateRoute
-  '/structures/add': typeof StructuresAddRoute
   '/about/': typeof AboutIndexRoute
   '/legal/': typeof LegalIndexRoute
   '/project-groups/': typeof ProjectGroupsIndexRoute
@@ -144,6 +153,7 @@ export interface FileRoutesById {
   '/project-groups_/$projectGroupId/defaults': typeof ProjectGroupsProjectGroupIdDefaultsRoute
   '/project-groups_/$projectGroupId/members': typeof ProjectGroupsProjectGroupIdMembersRoute
   '/project-groups_/$projectGroupId/': typeof ProjectGroupsProjectGroupIdIndexRoute
+  '/structures_/$structureId/': typeof StructuresStructureIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -152,9 +162,9 @@ export interface FileRouteTypes {
     | '/project-groups'
     | '/structures'
     | '/project-groups/$projectGroupId'
+    | '/structures/$structureId'
     | '/auth/login'
     | '/project-groups/create'
-    | '/structures/add'
     | '/about'
     | '/legal'
     | '/project-groups/'
@@ -162,12 +172,12 @@ export interface FileRouteTypes {
     | '/project-groups/$projectGroupId/defaults'
     | '/project-groups/$projectGroupId/members'
     | '/project-groups/$projectGroupId/'
+    | '/structures/$structureId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth/login'
     | '/project-groups/create'
-    | '/structures/add'
     | '/about'
     | '/legal'
     | '/project-groups'
@@ -175,15 +185,16 @@ export interface FileRouteTypes {
     | '/project-groups/$projectGroupId/defaults'
     | '/project-groups/$projectGroupId/members'
     | '/project-groups/$projectGroupId'
+    | '/structures/$structureId'
   id:
     | '__root__'
     | '/'
     | '/project-groups'
     | '/structures'
     | '/project-groups_/$projectGroupId'
+    | '/structures_/$structureId'
     | '/auth/login'
     | '/project-groups/create'
-    | '/structures/add'
     | '/about/'
     | '/legal/'
     | '/project-groups/'
@@ -191,6 +202,7 @@ export interface FileRouteTypes {
     | '/project-groups_/$projectGroupId/defaults'
     | '/project-groups_/$projectGroupId/members'
     | '/project-groups_/$projectGroupId/'
+    | '/structures_/$structureId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -198,6 +210,7 @@ export interface RootRouteChildren {
   ProjectGroupsRouteRoute: typeof ProjectGroupsRouteRouteWithChildren
   StructuresRouteRoute: typeof StructuresRouteRouteWithChildren
   ProjectGroupsProjectGroupIdRouteRoute: typeof ProjectGroupsProjectGroupIdRouteRouteWithChildren
+  StructuresStructureIdRouteRoute: typeof StructuresStructureIdRouteRouteWithChildren
   AuthLoginRoute: typeof AuthLoginRoute
   AboutIndexRoute: typeof AboutIndexRoute
   LegalIndexRoute: typeof LegalIndexRoute
@@ -254,13 +267,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/structures/add': {
-      id: '/structures/add'
-      path: '/add'
-      fullPath: '/structures/add'
-      preLoaderRoute: typeof StructuresAddRouteImport
-      parentRoute: typeof StructuresRouteRoute
-    }
     '/project-groups/create': {
       id: '/project-groups/create'
       path: '/create'
@@ -275,12 +281,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/structures_/$structureId': {
+      id: '/structures_/$structureId'
+      path: '/structures/$structureId'
+      fullPath: '/structures/$structureId'
+      preLoaderRoute: typeof StructuresStructureIdRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/project-groups_/$projectGroupId': {
       id: '/project-groups_/$projectGroupId'
       path: '/project-groups/$projectGroupId'
       fullPath: '/project-groups/$projectGroupId'
       preLoaderRoute: typeof ProjectGroupsProjectGroupIdRouteRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/structures_/$structureId/': {
+      id: '/structures_/$structureId/'
+      path: '/'
+      fullPath: '/structures/$structureId/'
+      preLoaderRoute: typeof StructuresStructureIdIndexRouteImport
+      parentRoute: typeof StructuresStructureIdRouteRoute
     }
     '/project-groups_/$projectGroupId/': {
       id: '/project-groups_/$projectGroupId/'
@@ -320,12 +340,10 @@ const ProjectGroupsRouteRouteWithChildren =
   ProjectGroupsRouteRoute._addFileChildren(ProjectGroupsRouteRouteChildren)
 
 interface StructuresRouteRouteChildren {
-  StructuresAddRoute: typeof StructuresAddRoute
   StructuresIndexRoute: typeof StructuresIndexRoute
 }
 
 const StructuresRouteRouteChildren: StructuresRouteRouteChildren = {
-  StructuresAddRoute: StructuresAddRoute,
   StructuresIndexRoute: StructuresIndexRoute,
 }
 
@@ -354,12 +372,27 @@ const ProjectGroupsProjectGroupIdRouteRouteWithChildren =
     ProjectGroupsProjectGroupIdRouteRouteChildren,
   )
 
+interface StructuresStructureIdRouteRouteChildren {
+  StructuresStructureIdIndexRoute: typeof StructuresStructureIdIndexRoute
+}
+
+const StructuresStructureIdRouteRouteChildren: StructuresStructureIdRouteRouteChildren =
+  {
+    StructuresStructureIdIndexRoute: StructuresStructureIdIndexRoute,
+  }
+
+const StructuresStructureIdRouteRouteWithChildren =
+  StructuresStructureIdRouteRoute._addFileChildren(
+    StructuresStructureIdRouteRouteChildren,
+  )
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ProjectGroupsRouteRoute: ProjectGroupsRouteRouteWithChildren,
   StructuresRouteRoute: StructuresRouteRouteWithChildren,
   ProjectGroupsProjectGroupIdRouteRoute:
     ProjectGroupsProjectGroupIdRouteRouteWithChildren,
+  StructuresStructureIdRouteRoute: StructuresStructureIdRouteRouteWithChildren,
   AuthLoginRoute: AuthLoginRoute,
   AboutIndexRoute: AboutIndexRoute,
   LegalIndexRoute: LegalIndexRoute,

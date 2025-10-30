@@ -32,7 +32,7 @@ members = [
   'libs/eve_api',
   'libs/items',
   'libs/notification',
-  'libs/structures'
+  'libs/structures',
 
   #'uuidv7_migration',
 ]

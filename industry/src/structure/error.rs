@@ -22,12 +22,15 @@ pub enum StructureError {
     ValidationError(String),
 
     #[error("error while creating structure, error: '{0}'")]
-    Create(sqlx::Error),
-
+    CreateStructure(sqlx::Error),
     #[error("error while fetching structure '{1}', error: '{0}'")]
     FetchStructure(sqlx::Error, StructureUuid),
     #[error("error while listing structures, error: '{0}'")]
     ListStructures(sqlx::Error),
+    #[error("error while deleting structure '{1}', error: '{0}'")]
+    DeleteStructure(sqlx::Error, StructureUuid),
+    #[error("error while updating structure '{1}', error: '{0}'")]
+    UpdateStructure(sqlx::Error, StructureUuid),
 
     #[error("error while fetching permissions for structure '{1}', error: '{0}'")]
     FetchStructurePermission(sqlx::Error, StructureUuid),
@@ -64,6 +67,19 @@ impl IntoResponse for StructureError {
                     Json(
                         ErrorResponse {
                             error: "NOT_FOUND".into(),
+                            description: self.to_string(),
+                        }
+                    )
+                ).into_response()
+            },
+
+            Self::ValidationError(_) => {
+                tracing::info!("{}", self.to_string());
+                (
+                    StatusCode::UNPROCESSABLE_ENTITY,
+                    Json(
+                        ErrorResponse {
+                            error: "UNPROCESSABLE_ENTITY".into(),
                             description: self.to_string(),
                         }
                     )

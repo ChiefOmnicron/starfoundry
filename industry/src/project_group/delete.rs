@@ -55,10 +55,9 @@ pub async fn api(
         project_group_uuid,
     ).await?;
 
-    let response: Vec<String> = Vec::new();
     Ok((
         StatusCode::NO_CONTENT,
-        Json(response)
+        ()
     ))
 }
 

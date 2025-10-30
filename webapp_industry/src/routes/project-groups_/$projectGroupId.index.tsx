@@ -1,7 +1,7 @@
 import { Alert, Button, Card, Flex, Grid, Text, Textarea, TextInput, Title } from '@mantine/core';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { deleteProjectGroup } from '@/services/project-group/delete';
-import { DeleteResourceButton } from '@/components/DeleteResourceButton';
+import { DeleteResourceButton } from '@/components/DeleteResource';
 import { FETCH_PROJECT_GROUP, useFetchProjectGroup } from '@/services/project-group/fetch';
 import { LIST_PROJECT_GROUPS } from '@/services/project-group/list';
 import { LoadingError } from '@/components/LoadingError';

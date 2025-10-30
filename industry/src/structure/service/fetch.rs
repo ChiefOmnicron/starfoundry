@@ -1,8 +1,8 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item, StructureRigResponse, System};
+use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item, StructureRigResponse, StructureServiceResponse, System};
 use starfoundry_lib_types::CharacterId;
-use utoipa::ToSchema;
+use utoipa::{IntoParams, ToSchema};
 
 use crate::structure::{StructureError, StructureUuid};
 use crate::structure::error::Result;
@@ -13,6 +13,7 @@ pub async fn fetch(
     eve_gateway_api_client: &impl EveGatewayApiClient,
     character_id:           CharacterId,
     structure_uuid:         StructureUuid,
+    options:                FetchStructureQuery,
 ) -> Result<Option<Structure>> {
     let structure = sqlx::query!(r#"
             SELECT
@@ -78,14 +79,35 @@ pub async fn fetch(
         }
     }
 
+    let mut installable_rigs = None;
+    let mut installable_services = None;
+    if let Some(true) = options.include_installable {
+        if let Ok(x) = eve_gateway_api_client.list_structure_rigs(structure.type_id.into()).await {
+            installable_rigs = Some(x);
+        } else {
+            // silently ignore services that weren't found
+            tracing::debug!("Couldn't list rigs for type_id {}", structure.type_id);
+        }
+
+        if let Ok(x) = eve_gateway_api_client.list_structure_services(structure.type_id.into()).await {
+            installable_services = Some(x);
+        } else {
+            // silently ignore services that weren't found
+            tracing::debug!("Couldn't list services for type_id {}", structure.type_id);
+        }
+    }
+
     let structure = Structure {
-        id:           structure.id.into(),
-        name:         structure.structure_name,
-        structure_id: structure.structure_id,
-        system:       system,
-        structure:    structure_item,
-        rigs:         rigs,
-        services:     services,
+        id:                   structure.id.into(),
+        name:                 structure.structure_name,
+        structure_id:         structure.structure_id,
+        system:               system,
+        item:                 structure_item,
+        rigs:                 rigs,
+        services:             services,
+
+        installable_rigs:     installable_rigs,
+        installable_services: installable_services,
     };
 
     Ok(Some(structure))
@@ -99,13 +121,13 @@ mod tests {
     use uuid::Uuid;
 
     use crate::eve_gateway_api_client;
+    use crate::structure::service::FetchStructureQuery;
 
     #[sqlx::test(
         fixtures(
             path = "../fixtures",
-            scripts("DELETE_AFTER_NEW_MS", "base"),
+            scripts("base"),
         ),
-        migrator = "crate::test_util::MIGRATOR",
     )]
     async fn happy_path(
         pool: PgPool,
@@ -115,6 +137,9 @@ mod tests {
                 &eve_gateway_api_client().unwrap(),
                 CharacterId(1),
                 Uuid::from_str("00000000-0000-0000-0000-000000000001").unwrap().into(),
+                FetchStructureQuery {
+                    include_installable: None,
+                },
             )
             .await
             .unwrap();
@@ -126,9 +151,8 @@ mod tests {
     #[sqlx::test(
         fixtures(
             path = "../fixtures",
-            scripts("DELETE_AFTER_NEW_MS", "base"),
+            scripts("base"),
         ),
-        migrator = "crate::test_util::MIGRATOR",
     )]
     async fn no_entry_with_default_uuid(
         pool: PgPool,
@@ -138,11 +162,20 @@ mod tests {
                 &eve_gateway_api_client().unwrap(),
                 CharacterId(1),
                 Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap().into(),
+                FetchStructureQuery {
+                    include_installable: None,
+                },
             )
             .await;
 
         assert!(response.unwrap().is_none());
     }
+}
+
+#[derive(Debug, Deserialize, Serialize, IntoParams)]
+pub struct FetchStructureQuery {
+    #[serde(default)]
+    pub include_installable: Option<bool>,
 }
 
 #[derive(Debug, Deserialize, Serialize, ToSchema)]
@@ -161,7 +194,7 @@ mod tests {
             "security": -0.38578233,
             "security_group": "NULLSEC",
         },
-        "structure_type": {
+        "item": {
             "base_price": null,
             "category_id": 65,
             "group_id": 1657,
@@ -186,17 +219,24 @@ mod tests {
 )]
 pub struct Structure {
     /// Internal id of the structure
-    pub id:                StructureUuid,
+    pub id:                   StructureUuid,
     /// EVE Id of the structure
-    pub structure_id:      i64,
+    pub structure_id:         i64,
     /// Name of the structure
-    pub name:              String,
+    pub name:                 String,
     /// Location of the structure
-    pub system:            System,
+    pub system:               System,
     /// Type information
-    pub structure:         Item,
+    pub item:                 Item,
     /// List of all rigs that are in the structure
-    pub rigs:              Vec<StructureRigResponse>,
+    pub rigs:                 Vec<StructureRigResponse>,
     /// Id of the structure in-game
-    pub services:          Vec<Item>,
+    pub services:             Vec<Item>,
+
+    #[serde(skip_deserializing)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub installable_rigs:     Option<Vec<StructureRigResponse>>,
+    #[serde(skip_deserializing)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub installable_services: Option<StructureServiceResponse>,
 }

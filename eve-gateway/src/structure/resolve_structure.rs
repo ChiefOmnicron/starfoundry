@@ -1,10 +1,8 @@
-mod model;
-mod service;
-
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
+use starfoundry_lib_eve_gateway::ResolveStructureResponse;
 use starfoundry_lib_types::StructureId;
 
 use crate::api_docs::{InternalServerError, NotFound};
@@ -13,8 +11,7 @@ use crate::state::AppState;
 use crate::auth::ExtractIdentity;
 use crate::eve_client::error::EveApiError;
 use crate::structure::error::Result;
-use crate::structure::resolve_structure::model::ResolveStructureResponse;
-use crate::structure::resolve_structure::service::resolve_structure;
+use crate::structure::services::resolve_structure;
 
 /// Resolve Structure
 /// 

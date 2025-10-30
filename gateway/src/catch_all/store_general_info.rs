@@ -8,6 +8,7 @@ use crate::client::mtls_client;
 use crate::state::AppState;
 use crate::error::Result;
 
+#[deprecated]
 pub async fn catch_all_store_general_info(
     headers:      HeaderMap,
     State(state): State<AppState>,

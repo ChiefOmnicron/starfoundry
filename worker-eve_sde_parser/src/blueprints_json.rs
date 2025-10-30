@@ -1,4 +1,5 @@
 use sqlx::PgPool;
+use starfoundry_lib_items::Item;
 use starfoundry_lib_projects::{BlueprintTyp, Dependency};
 use starfoundry_lib_types::{TypeId, GroupId};
 use std::collections::{HashMap, VecDeque};
@@ -6,9 +7,8 @@ use std::time::Instant;
 
 use crate::Error;
 use crate::parser::blueprints::BlueprintEntry;
-use crate::parser::group_ids::GroupIdEntry;
+use crate::parser::groups::GroupIdEntry;
 use crate::parser::type_ids::TypeIdEntry;
-use starfoundry_lib_items::Item;
 
 pub async fn run(
     pool:       &PgPool,

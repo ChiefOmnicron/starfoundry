@@ -1,7 +1,8 @@
 pub mod blueprints;
 pub mod dogma_effects;
+pub mod categories;
 pub mod constellations;
-pub mod group_ids;
+pub mod groups;
 pub mod industry_modifier_sources;
 pub mod industry_target_filters;
 pub mod regions;

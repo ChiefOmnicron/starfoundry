@@ -80,7 +80,6 @@ pub async fn api(
 mod tests {
     use axum::body::Body;
     use axum::extract::Request;
-    use axum::http::header::HOST;
     use axum::http::StatusCode;
     use http_body_util::BodyExt;
     use sqlx::PgPool;
@@ -90,8 +89,7 @@ mod tests {
     use crate::structure::structure_test_routes;
 
     #[sqlx::test(
-        fixtures("DELETE_AFTER_NEW_MS", "base"),
-        migrator = "crate::test_util::MIGRATOR"
+        fixtures("base"),
     )]
     async fn happy_path_all(
         pool: PgPool,
@@ -112,8 +110,7 @@ mod tests {
     }
 
     #[sqlx::test(
-        fixtures("DELETE_AFTER_NEW_MS", "base"),
-        migrator = "crate::test_util::MIGRATOR"
+        fixtures("base"),
     )]
     async fn happy_path_filter(
         pool: PgPool,
@@ -135,8 +132,7 @@ mod tests {
     }
 
     #[sqlx::test(
-        fixtures("DELETE_AFTER_NEW_MS", "base"),
-        migrator = "crate::test_util::MIGRATOR"
+        fixtures("base"),
     )]
     async fn happy_path_empty(
         pool: PgPool,
@@ -158,8 +154,7 @@ mod tests {
     }
 
     #[sqlx::test(
-        fixtures("DELETE_AFTER_NEW_MS", "base"),
-        migrator = "crate::test_util::MIGRATOR"
+        fixtures("base"),
     )]
     async fn unauthorized(
         pool: PgPool,
@@ -167,7 +162,6 @@ mod tests {
         let request = Request::builder()
             .uri("/")
             .method("GET")
-            .header(HOST, "test.starfoundry.space")
             .body(Body::empty())
             .unwrap();
         let response = structure_test_routes(pool.clone(), request).await;

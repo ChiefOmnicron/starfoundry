@@ -16,7 +16,13 @@ pub struct ConfigFile {
 #[derive(Debug, Deserialize)]
 pub struct ConfigFileRoute {
     /// service the request gets routed to
-    pub service_url: Url,
+    pub service_url:  Url,
+    /// drops the first prefix instead of redirecting it to the target
+    #[serde(default)]
+    pub drop_prefix:  bool,
+    /// if the route requires the user to be authenticated or not, per default true
+    #[serde(default = "require_auth_default")]
+    pub require_auth: bool,
 }
 
 impl ConfigFile {
@@ -41,4 +47,8 @@ impl ConfigFile {
 
         Ok(config_file)
     }
+}
+
+fn require_auth_default() -> bool {
+    true
 }

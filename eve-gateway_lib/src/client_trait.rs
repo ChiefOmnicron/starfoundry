@@ -1,8 +1,8 @@
 use starfoundry_lib_gateway::ApiClient;
-use starfoundry_lib_types::{CharacterId, StructureId, SystemId, TypeId};
+use starfoundry_lib_types::{CategoryId, CharacterId, GroupId, StructureId, SystemId, TypeId};
 
 use crate::error::Result;
-use crate::{CharacterInfo, Item, ResolveStructureResponse, StructureRigResponse, System};
+use crate::{Category, CharacterInfo, Group, Item, ResolveStructureResponse, StructureRigResponse, StructureServiceResponse, System};
 
 pub trait EveGatewayApiClient: ApiClient {
     #[allow(async_fn_in_trait)]
@@ -44,7 +44,29 @@ pub trait EveGatewayApiClient: ApiClient {
         type_ids: Vec<TypeId>,
     ) -> Result<Vec<Item>> {
         self
-            .post("items/bulk", type_ids)
+            .post("items", type_ids)
+            .await
+            .map_err(Into::into)
+    }
+
+    #[allow(async_fn_in_trait)]
+    async fn fetch_category(
+        &self,
+        category_id: CategoryId,
+    ) -> Result<Option<Category>> {
+        self
+            .fetch(&format!("items/category/{}", *category_id))
+            .await
+            .map_err(Into::into)
+    }
+
+    #[allow(async_fn_in_trait)]
+    async fn fetch_group(
+        &self,
+        group_id: GroupId,
+    ) -> Result<Option<Group>> {
+        self
+            .fetch(&format!("items/group/{}", *group_id))
             .await
             .map_err(Into::into)
     }
@@ -72,12 +94,34 @@ pub trait EveGatewayApiClient: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
+    async fn fetch_service(
+        &self,
+        service_type_id: TypeId,
+    ) -> Result<Option<StructureServiceResponse>> {
+        self
+            .fetch(&format!("structures/services/{}", *service_type_id))
+            .await
+            .map_err(Into::into)
+    }
+
+    #[allow(async_fn_in_trait)]
     async fn list_structure_rigs(
         &self,
         structure_type_id: TypeId,
     ) -> Result<Vec<StructureRigResponse>> {
         self
             .fetch(&format!("structures/{}/rigs", *structure_type_id))
+            .await
+            .map_err(Into::into)
+    }
+
+    #[allow(async_fn_in_trait)]
+    async fn list_structure_services(
+        &self,
+        structure_type_id: TypeId,
+    ) -> Result<StructureServiceResponse> {
+        self
+            .fetch(&format!("structures/{}/services", *structure_type_id))
             .await
             .map_err(Into::into)
     }

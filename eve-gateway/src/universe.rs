@@ -1,6 +1,8 @@
+mod fetch;
+mod fetch_bulk;
+
 pub mod error;
-pub mod fetch;
-pub mod fetch_bulk;
+pub mod services;
 
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;

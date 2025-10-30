@@ -1,13 +1,13 @@
 mod callback;
-mod error;
 mod extractor;
 mod jwks;
 mod jwt;
 mod login;
 mod token;
 
+pub mod error;
+
 pub use self::callback::*;
-pub use self::error::*;
 pub use self::extractor::*;
 pub use self::jwks::*;
 pub use self::jwt::*;

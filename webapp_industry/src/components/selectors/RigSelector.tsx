@@ -1,41 +1,47 @@
-import { Select } from "@mantine/core";
+import { MultiSelect } from "@mantine/core";
 import { useState } from "react";
 
 import type { TypeId } from "@/services/utils";
-import type { StructureRig } from "@/services/structure/resolveStructure";
+import type { StructureRig } from "@/services/structure/list";
 
 export function RigSelector({
     rigs,
-    label,
-    filter = [],
-    selected = null,
+    selected = [],
     onSelect,
 }: Props) {
-    const [value, setValue] = useState<string | null>(selected ? selected.toString() : null);
+    const [value, setValue] = useState<string[]>(
+        () => {
+            onSelect(selected);
+            return selected
+                ? selected.map(x => x.toString())
+                : []
+        }
+    );
 
     let rigsSorted = rigs
         .sort((a, b) => a.item.name.localeCompare(b.item.name));
 
     const options = rigsSorted
         .map((rig) => {
-            let selected = filter.includes(rig.item.type_id);
-            let excluded = rig.excludes.some(x => filter.includes(x));
+            let excluded = rig.excludes.some(x => value.includes(x.toString()));
 
             return {
                 value: rig.item.type_id.toString(),
                 label: rig.item.name,
-                disabled: selected || excluded,
+                disabled: excluded,
             }
         });
 
     return <>
-        <Select
+        <MultiSelect
+            data-cy="rigSelector"
             data={options}
-            label={label}
+            label={"Rigs"}
             value={value}
+            maxValues={3}
             onChange={(value) => {
-                setValue(value)
-                onSelect(value as any as TypeId);
+                setValue(value);
+                onSelect(value.map(x => parseInt(x)));
             }}
             placeholder="Select Rig"
             nothingFoundMessage="No Rig found"
@@ -48,12 +54,8 @@ export function RigSelector({
 export type Props = {
     // list of all rigs
     rigs:      StructureRig[];
-    // label that should be shown
-    label:     string,
     // selected value
-    selected?: TypeId | null;
-    // list of rigs that are already selected
-    filter?:   (TypeId | null)[];
+    selected?: TypeId[];
     // event that fires when an element was selected
-    onSelect:  (selected: null | TypeId) => void
+    onSelect:  (selected: TypeId[]) => void
 }

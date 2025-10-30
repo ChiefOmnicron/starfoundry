@@ -1,17 +1,22 @@
-import { Select } from "@mantine/core";
+import { MultiSelect } from "@mantine/core";
 import { useState } from "react";
 
 import type { TypeId } from "@/services/utils";
-import type { StructureService } from "@/services/structure/resolveStructure";
+import type { StructureService } from "@/services/structure/list";
 
 export function ServiceSelector({
     services,
-    label,
-    filter = [],
-    selected = null,
+    selected = [],
     onSelect,
 }: Props) {
-    const [value, setValue] = useState<string | null>(selected ? selected.toString() : null);
+    const [value, setValue] = useState<string[]>(
+        () => {
+            onSelect(selected);
+            return selected
+                ? selected.map(x => x.toString())
+                : []
+        }
+    );
 
     let servicesSorted = services
         .services
@@ -19,23 +24,22 @@ export function ServiceSelector({
 
     const options = servicesSorted
         .map((service) => {
-            let selected = filter.includes(service.type_id);
-
             return {
                 value: service.type_id.toString(),
                 label: service.name,
-                disabled: selected,
             }
         });
 
     return <>
-        <Select
+        <MultiSelect
+            data-cy="serviceSelector"
             data={options}
-            label={label}
+            label={"Services"}
             value={value}
+            maxValues={services.slots}
             onChange={(value) => {
                 setValue(value)
-                onSelect(value as any as TypeId);
+                onSelect(value.map(x => parseInt(x)));
             }}
             placeholder="Select Service"
             nothingFoundMessage="No Service found"
@@ -48,12 +52,8 @@ export function ServiceSelector({
 export type Props = {
     // list of all rigs
     services:  StructureService;
-    // label that should be shown
-    label:     string,
     // selected value
-    selected?: TypeId | null;
-    // list of rigs that are already selected
-    filter?:   (TypeId | null)[];
+    selected?: TypeId[];
     // event that fires when an element was selected
-    onSelect:  (selected: null | TypeId) => void
+    onSelect:  (selected: TypeId[]) => void
 }
