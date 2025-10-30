@@ -47,7 +47,11 @@ pub async fn catch_all_generic_post(
 
     if let Some(x) = state.routes.get(path_front) {
         let mut url = x.service_url.clone();
-        url.set_path(path_end);
+        if x.drop_prefix {
+            url.set_path(path_end);
+        } else {
+            url.set_path(&path);
+        }
 
         let client = mtls_client()?;
         let response = client

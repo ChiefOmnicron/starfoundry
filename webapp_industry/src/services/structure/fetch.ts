@@ -6,26 +6,36 @@ import type { Uuid } from "@/services/utils";
 export const FETCH_STRUCTURE = 'fetchStructure';
 
 export const fetchStructure = async (
-    id: Uuid,
+    id:      Uuid,
+    filter?: FetchStructureQuery,
 ): Promise<Structure> => (await axiosClient())
     .get(
-        `/api/structure/structures/${id}`,
+        `/api/structures/${id}`,
+        {
+            params: filter,
+        }
     )
     .then(x => x.data);
 
 // For general use
 export const useFetchStructure = (
-    id: Uuid,
+    id:      Uuid,
+    filter?: FetchStructureQuery,
 ) => {
-    return useQuery(fetchStructureQuery(id));
+    return useQuery(fetchStructureQuery(id, filter));
 }
 
 // For pre-listing
 export const fetchStructureQuery = (
-    id: Uuid,
+    id:      Uuid,
+    filter?: FetchStructureQuery,
 ) => ({
-    queryKey: [FETCH_STRUCTURE, id],
-    queryFn: async () => fetchStructure(id),
+    queryKey: [FETCH_STRUCTURE, id, filter],
+    queryFn: async () => fetchStructure(id, filter),
     // ms * s * m
     staleTime: 1000 * 60 * 5,
 });
+
+export type FetchStructureQuery = {
+    include_installable: boolean;
+};

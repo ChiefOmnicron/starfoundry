@@ -1,4 +1,4 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use starfoundry_lib_types::{SystemId, TypeId};
 use starfoundry_lib_types::CharacterId;
@@ -39,7 +39,7 @@ pub async fn create(
         .fetch_one(pool)
         .await
         .map(|x| StructureUuid::new(x.id))
-        .map_err(|e| StructureError::Create(e))
+        .map_err(|e| StructureError::CreateStructure(e))
 }
 
 #[cfg(test)]
@@ -51,7 +51,7 @@ mod create_project_group_test {
     use crate::structure::error::StructureError;
     use super::CreateStructure;
 
-    #[sqlx::test(migrator = "crate::test_util::MIGRATOR")]
+    #[sqlx::test()]
     async fn no_name(
         pool: PgPool,
     ) {
@@ -72,7 +72,7 @@ mod create_project_group_test {
         assert!(matches!(result, Err(StructureError::ValidationError(_))));
     }
 
-    #[sqlx::test(migrator = "crate::test_util::MIGRATOR")]
+    #[sqlx::test()]
     async fn structure_id_too_low(
         pool: PgPool,
     ) {
@@ -93,7 +93,7 @@ mod create_project_group_test {
         assert!(matches!(result, Err(StructureError::ValidationError(_))));
     }
 
-    #[sqlx::test(migrator = "crate::test_util::MIGRATOR")]
+    #[sqlx::test()]
     async fn happy_path(
         pool: PgPool,
     ) {
@@ -131,7 +131,7 @@ mod create_project_group_test {
     }
 }
 
-#[derive(Debug, Deserialize, ToSchema)]
+#[derive(Debug, Deserialize, Serialize, ToSchema)]
 #[schema(
     example = json!({
         "name": "1DQ1-A - 1-st Imperial Palace",

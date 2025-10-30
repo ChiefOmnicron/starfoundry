@@ -35,9 +35,10 @@ pub async fn import_sde(
     downloads::download_assets(directory).await?;
 
     let blueprints                = parser::blueprints::parse(&directory)?;
+    let categories                = parser::categories::parse(&directory)?;
     let constellations            = parser::constellations::parse(&directory)?;
     let dogma_effects             = parser::dogma_effects::parse(&directory)?;
-    let group_ids                 = parser::group_ids::parse(&directory)?;
+    let group_ids                 = parser::groups::parse(&directory)?;
     let industry_modifier_sources = parser::industry_modifier_sources::parse(&directory)?;
     let industry_target_filters   = parser::industry_target_filters::parse(&directory)?;
     let regions                   = parser::regions::parse(&directory)?;
@@ -72,6 +73,7 @@ pub async fn import_sde(
         );
     let items = items::run(
             &pool,
+            &categories,
             &group_ids,
             &type_ids,
             &repackaged,

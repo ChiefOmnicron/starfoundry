@@ -1,8 +1,10 @@
 mod create;
+mod delete;
 mod error;
 mod fetch;
 mod list;
 mod permission;
+mod update;
 
 pub mod service;
 
@@ -33,23 +35,35 @@ pub fn routes(
     let create = OpenApiRouter::new()
         .routes(routes!(create::api));
 
+    let update = OpenApiRouter::new()
+        .routes(routes!(update::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_write))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+
+    let delete = OpenApiRouter::new()
+        .routes(routes!(delete::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_write))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+
     OpenApiRouter::new()
         .merge(list)
         .merge(fetch)
         .merge(create)
+        .merge(update)
+        .merge(delete)
 }
 
 starfoundry_uuid!(StructureUuid, "StructureUuid");
 
 async fn assert_exists(
-    State(state):             State<AppState>,
-    Path(project_group_uuid): Path<StructureUuid>,
-    request:                  Request,
-    next:                     Next,
+    State(state):       State<AppState>,
+    Path(structure_id): Path<StructureUuid>,
+    request:            Request,
+    next:               Next,
 ) -> Result<impl IntoResponse> {
     permission::assert_exists(
             &state.pool,
-            project_group_uuid,
+            structure_id,
         )
         .await?;
 
@@ -57,15 +71,32 @@ async fn assert_exists(
 }
 
 async fn assert_read(
-    State(state):             State<AppState>,
-    Path(project_group_uuid): Path<StructureUuid>,
-    identity:                 ExtractIdentity,
-    request:                  Request,
-    next:                     Next,
+    State(state):       State<AppState>,
+    Path(structure_id): Path<StructureUuid>,
+    identity:           ExtractIdentity,
+    request:            Request,
+    next:               Next,
 ) -> Result<impl IntoResponse> {
     permission::assert_read_access(
             &state.pool,
-            project_group_uuid,
+            structure_id,
+            identity.character_id,
+        )
+        .await?;
+
+    Ok(next.run(request).await)
+}
+
+async fn assert_write(
+    State(state):       State<AppState>,
+    Path(structure_id): Path<StructureUuid>,
+    identity:           ExtractIdentity,
+    request:            Request,
+    next:               Next,
+) -> Result<impl IntoResponse> {
+    permission::assert_write_access(
+            &state.pool,
+            structure_id,
             identity.character_id,
         )
         .await?;

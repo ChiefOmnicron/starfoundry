@@ -1,20 +1,16 @@
-mod model;
-mod service;
-
-pub use self::model::*;
-pub use self::service::*;
-
 use axum::extract::{Path, State};
 use axum::Json;
 use axum::response::IntoResponse;
 use reqwest::StatusCode;
+use starfoundry_lib_eve_gateway::StructureRigResponse;
 use starfoundry_lib_types::TypeId;
 
 use crate::api_docs::{InternalServerError, NotFound};
 use crate::state::AppState;
 use crate::structure::error::Result;
+use crate::structure::services::list_structure_rigs;
 
-/// Fetch structure rigs
+/// List structure rigs
 /// 
 /// - Alternative route: `/latest/structures/{TypeId}/rigs`
 /// - Alternative route: `/v1/structures/{TypeId}/rigs`
@@ -32,7 +28,7 @@ use crate::structure::error::Result;
     ),
     responses(
         (
-            body = StructureRigResponse,
+            body = Vec<StructureRigResponse>,
             description = "General information about a rig",
             status = OK,
         ),

@@ -6,8 +6,8 @@ use thiserror::Error;
 
 use crate::api_docs::ErrorResponse;
 use crate::eve_client::error::EveApiError;
-use crate::auth::AuthError;
-use crate::item::ItemError;
+use crate::auth::error::AuthError;
+use crate::item::error::ItemError;
 
 pub type Result<T, E = UniverseError> = std::result::Result<T, E>;
 

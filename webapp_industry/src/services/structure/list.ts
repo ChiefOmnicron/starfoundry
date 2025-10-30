@@ -1,7 +1,7 @@
 import { axiosClient } from "@/services/client";
 import { useQuery } from "@tanstack/react-query";
-import type { TypeId, Uuid } from "@/services/utils";
-import type { Item } from "@/services/item/model";
+import type { Uuid } from "@/services/utils";
+import type { Category, Group, Item } from "@/services/item/model";
 
 export const LIST_STRUCTURE = 'listStructure';
 
@@ -9,7 +9,7 @@ export const listStructure = async (
     filter: StructureFilter,
 ): Promise<Structure[]> => (await axiosClient())
     .get(
-        `/api/structure/structures`,
+        `/api/structures`,
         {
             params: filter,
         }
@@ -17,13 +17,21 @@ export const listStructure = async (
     .then(x => x.data);
 
 export type Structure = {
-    id:           Uuid;
-    structure_id: number;
-    name:         string;
-    system:       StructureSystem;
-    structure:    Item;
-    rigs:         StructureRig[];
-    services:     Item[];
+    id:                     Uuid;
+    structure_id:           number;
+    name:                   string;
+    system:                 StructureSystem;
+    item:                   Item;
+    rigs:                   StructureRig[];
+    services:               Item[];
+
+    installable_rigs?:      StructureRig[];
+    installable_services?:  StructureService;
+}
+
+export type StructureService = {
+    services: Item[],
+    slots:    number,
 }
 
 export type StructureSystem = {
@@ -34,16 +42,17 @@ export type StructureSystem = {
     system_id:          number;
     system_name:        string;
     security:           string;
-    security_group:     'HIGHSEC' | 'LOWSEC' | 'NULLSEC';
+    security_str:       'HIGHSEC' | 'LOWSEC' | 'NULLSEC';
 }
 
 export type StructureRig = {
-    type_id:         TypeId;
-    item:            Item;
+    item:       Item;
+    excludes:   number[];
+    categories: Category[];
+    groups:     Group[];
 
-    material?:       number;
-    time?:           number;
-    category_groups: number[];
+    material?:  number;
+    time?:      number;
 }
 
 export type StructureFilter = {

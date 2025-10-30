@@ -1,14 +1,16 @@
-import { Alert, Button, Card, Center, Flex, Stack, Table, Title, UnstyledButton } from '@mantine/core';
+import { Alert, Button, Card, Center, Flex, Modal, Stack, Table, Title } from '@mantine/core';
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import { Filter, type FilterPropEntry, type SelectedFilter } from '@/components/Filter';
 import { LoadingError } from '@/components/LoadingError';
-import { Route as addStructureRoute } from '@/routes/structures/add';
-import { type ProjectGroupFilter } from '@/services/project-group/list';
 import { useState } from 'react';
 import LoadingAnimation from '@/components/LoadingAnimation';
-import { useListStructure, type Structure } from '@/services/structure/list';
+import { useListStructure, type Structure, type StructureFilter } from '@/services/structure/list';
 import { Dotlan } from '@/components/Dotlan';
+import { AddStructure } from './-modal/add';
+import { useDisclosure } from '@mantine/hooks';
+import { Route as StructureRoute } from '@/routes/structures_/$structureId.index';
+import { InternalLink } from '@/components/InternalLink';
 
 interface QueryParams {
     deleted?: boolean;
@@ -30,26 +32,17 @@ export const Route = createFileRoute('/structures/')({
     }
 });
 
-const filters: FilterPropEntry[] = [{
-    label: 'Name',
-    key: 'name',
-    type: 'STRING',
-}];
-
 const columnHelper = createColumnHelper<Structure>();
 const columns = [
     columnHelper.accessor('name', {
         id: 'name',
-        cell: info => <UnstyledButton
-            component={Link}
-            to={`/structures/${info.row.original.id}/overview`}
-            style={{
-                color: 'var(--mantine-color-blue-4)',
-                fontSize: 'var(--mantine-font-size-sm)'
-            }}
-        >
-            { info.getValue() }
-        </UnstyledButton>,
+        cell: info => <InternalLink
+                to={ StructureRoute.to }
+                params={{
+                    structureId: info.row.original.id,
+                }}
+                content={ info.getValue() }
+            />,
         header: () => 'Name',
     }),
     columnHelper.accessor('system', {
@@ -57,7 +50,7 @@ const columns = [
         cell: info => <Dotlan system={info.getValue()} />,
         header: () => 'System',
     }),
-    columnHelper.accessor('structure', {
+    columnHelper.accessor('item', {
         id: 'structure',
         cell: info => { return info.getValue().name },
         header: () => 'Type',
@@ -86,7 +79,7 @@ const columns = [
                         .replace('Standup L-Set ', '')
                         .replace('Standup XL-Set ', '');
 
-                    return <label key={x.type_id}>{ name }</label>
+                    return <label key={x.item.type_id}>{ name }</label>
                 })
                 .map(x => <>{x} <br /></>)
         }</> },
@@ -95,10 +88,15 @@ const columns = [
 ];
 
 function ProjectGroups() {
-    const navigation = useNavigate({ from: Route.fullPath });
+    const [opened, { open, close }] = useDisclosure(false);
     const { deleted: deletedResource } = Route.useSearch();
 
-    const [filterParams, setFilterParams] = useState<ProjectGroupFilter>({});
+    const [filterParams, setFilterParams] = useState<StructureFilter | undefined>();
+    const filterOptions: FilterPropEntry[] = [{
+        label: 'Name',
+        key: 'name',
+        type: 'STRING',
+    }];
     const filterChange = (filters: SelectedFilter[]) => {
         setFilterParams({
             name: filters.find(x => x.key === 'name')?.value as string,
@@ -108,9 +106,9 @@ function ProjectGroups() {
     const {
         isPending,
         isError,
-        isFetching,
+        isSuccess,
         data: structures,
-    } = useListStructure(filterParams);
+    } = useListStructure(filterParams || {});
 
     const table = useReactTable<Structure>({
         columns: columns,
@@ -119,8 +117,24 @@ function ProjectGroups() {
         getCoreRowModel: getCoreRowModel(),
     });
 
-    const addStructure = () => {
-        navigation({ to: addStructureRoute.to });
+    const addStructureModal = () => {
+        return <Modal
+            opened={ opened }
+            onClose={ close }
+            title="Add structure"
+            overlayProps={{
+                backgroundOpacity: 0.55,
+                blur: 3,
+            }}
+            size="70%"
+            centered
+            closeOnEscape
+            closeOnClickOutside
+        >
+            <AddStructure
+                close={close}
+            />
+        </Modal>
     }
 
     const notification = () => {
@@ -137,7 +151,7 @@ function ProjectGroups() {
         }
     }
 
-    const dataTable = () => {
+    const filter = () => {
         return <>
             <Flex
                 align='center'
@@ -147,16 +161,24 @@ function ProjectGroups() {
             >
                 <Button
                     variant='filled'
-                    onClick={ () => addStructure() }
+                    onClick={open}
                 >
                     Add Structure
                 </Button>
             </Flex>
 
             <Filter
-                entries={filters}
+                entries={filterOptions}
                 onFilterChange={filterChange}
             />
+        </>
+    }
+
+    const dataTable = () => {
+        return <>
+            { addStructureModal() }
+
+            { filter() }
 
             <Card p="0">
                 <Table striped data-cy="data">
@@ -174,29 +196,37 @@ function ProjectGroups() {
                         </Table.Tr>
                     ))}
                     </Table.Thead>
-                        <Table.Tbody>
-                            {table.getRowModel().rows.map(row => (
-                                <Table.Tr key={row.id}>
-                                    {row.getVisibleCells().map(cell => (
-                                        <Table.Td key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </Table.Td>
-                                    ))}
-                                </Table.Tr>
-                            ))}
-                        </Table.Tbody>
+                    <Table.Tbody>
+                        {table.getRowModel().rows.map(row => (
+                            <Table.Tr key={row.id}>
+                                {row.getVisibleCells().map(cell => (
+                                    <Table.Td key={cell.id}>
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    </Table.Td>
+                                ))}
+                            </Table.Tr>
+                        ))}
+                    </Table.Tbody>
                 </Table>
             </Card>
         </>
     }
 
     const content = () => {
-        if (isPending || isFetching) {
+        if (isPending && !filterParams) {
             return LoadingAnimation();
         } else if (isError) {
             return LoadingError();
-        } else if (structures.length > 0) {
+        } else if (isSuccess && structures.length > 0) {
             return dataTable();
+        } else if (filterParams && isSuccess && structures.length === 0) {
+            return <>
+                { filter() }
+
+                <Center mt={50} data-cy="noData">
+                    <Title order={4}>No structure matching</Title>
+                </Center>
+            </>
         } else {
             return <>
                 <Center mt={50} data-cy="noData">
@@ -205,7 +235,7 @@ function ProjectGroups() {
 
                         <Button
                             variant='filled'
-                            onClick={ () => addStructure() }
+                            onClick={open}
                         >
                             Add Structure
                         </Button>

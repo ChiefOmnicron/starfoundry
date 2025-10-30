@@ -1,7 +1,7 @@
 import { Button, Table } from "@mantine/core";
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import type { ReactElement } from "react";
-import { StructureSelector } from "@/components/StructureSelector";
+import { StructureSelector } from "@/components/selectors/StructureSelector";
 import { EveIcon } from "@/components/EveIcon";
 import type { Structure } from "@/services/structure/list";
 

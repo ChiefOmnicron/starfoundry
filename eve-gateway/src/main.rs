@@ -88,12 +88,12 @@ fn app(
 
     let router = router.merge(Scalar::with_url("/", api));
 
-    let router_v1 = Router::new().nest("/v1", router.clone());
-    let router_latest = Router::new().nest("/latest", router.clone());
+    //let router_v1 = Router::new().nest("/v1", router.clone());
+    //let router_latest = Router::new().nest("/latest", router.clone());
 
     router
-        .merge(router_v1)
-        .merge(router_latest)
+        //.merge(router_v1)
+        //.merge(router_latest)
 }
 
 /// General service routes that do not need to be publicly accessible

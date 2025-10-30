@@ -3248,6 +3248,7 @@ dependencies = [
  "serde_json",
  "sha2",
  "sqlx 0.9.0-alpha.1",
+ "starfoundry_lib-eve_gateway",
  "starfoundry_lib-types",
  "thiserror 2.0.17",
  "tokio",

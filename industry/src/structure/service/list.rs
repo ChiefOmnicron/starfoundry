@@ -30,6 +30,7 @@ pub async fn list(
                 NOT (LOWER(structure.name) LIKE '%' || LOWER($2) || '%') IS FALSE AND
                 NOT (structure.type_id = $3) IS FALSE AND
                 NOT ($4::INTEGER IS NULL OR $4::INTEGER = ANY(services)) IS FALSE AND
+                NOT ($5::INTEGER IS NULL OR $5::INTEGER = ANY(rigs)) IS FALSE AND
                 owner = $1
             ORDER BY structure.name
         "#,
@@ -37,6 +38,7 @@ pub async fn list(
             filter.name,
             filter.structure_type_id,
             filter.service_id,
+            filter.rig_id,
         )
         .fetch_all(pool)
         .await
@@ -119,18 +121,116 @@ pub async fn list(
         };
 
         let structure = Structure {
-            id:           structure.id.into(),
-            name:         structure.structure_name,
-            structure_id: structure.structure_id,
-            system:       system.clone(),
-            structure:    structure_item.clone(),
-            rigs:         rigs,
-            services:     services,
+            id:                   structure.id.into(),
+            name:                 structure.structure_name,
+            structure_id:         structure.structure_id,
+            system:               system.clone(),
+            item:                 structure_item.clone(),
+            rigs:                 rigs,
+            services:             services,
+
+            installable_rigs:     None,
+            installable_services: None,
         };
         structure_result.push(structure);
     }
 
     Ok(structure_result)
+}
+
+#[cfg(test)]
+mod list_structure_test {
+    use sqlx::PgPool;
+    use starfoundry_lib_types::CharacterId;
+
+    use crate::test_util::EveGatewayTestApiClient;
+    use crate::structure::service::StructureFilter;
+
+    #[sqlx::test(
+        fixtures(
+            path = "../fixtures",
+            scripts("base")
+        ),
+    )]
+    async fn happy_path(
+        pool: PgPool,
+    ) {
+        let gateway_client = EveGatewayTestApiClient::new();
+        let result = super::list(
+                &pool,
+                &gateway_client,
+                CharacterId(1),
+                StructureFilter::default(),
+            )
+            .await;
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap().len(), 2);
+
+        let result = super::list(
+                &pool,
+                &gateway_client,
+                CharacterId(1),
+                StructureFilter {
+                    name:  Some(String::from("Filter")),
+                    ..Default::default()
+                }
+            )
+            .await;
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap().len(), 1);
+
+        let result = super::list(
+                &pool,
+                &gateway_client,
+                CharacterId(1),
+                StructureFilter {
+                    name: Some(String::from("SomeGibberish")),
+                    ..Default::default()
+                }
+            )
+            .await;
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap().len(), 0);
+
+        let result = super::list(
+                &pool,
+                &gateway_client,
+                CharacterId(2),
+                StructureFilter {
+                    service_id: Some(35892),
+                    ..Default::default()
+                }
+            )
+            .await;
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap().len(), 1);
+
+        let result = super::list(
+                &pool,
+                &gateway_client,
+                CharacterId(1),
+                StructureFilter {
+                    rig_id: Some(46497),
+                    ..Default::default()
+                }
+            )
+            .await;
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap().len(), 1);
+
+        let result = super::list(
+                &pool,
+                &gateway_client,
+                CharacterId(1),
+                StructureFilter {
+                    structure_type_id: Some(35892),
+                    ..Default::default()
+                }
+            )
+            .await;
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap().len(), 2);
+    }
 }
 
 #[derive(Debug, Default, Deserialize, IntoParams)]
@@ -157,6 +257,14 @@ pub struct StructureFilter {
         required = false,
     )]
     pub service_id:        Option<i32>,
+
+    /// [TypeId] of a structure rig
+    #[serde(default)]
+    #[param(
+        example = json!("46497"),
+        required = false,
+    )]
+    pub rig_id:           Option<i32>,
 }
 
 impl fmt::Display for StructureFilter {

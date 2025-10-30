@@ -12,7 +12,8 @@ use utoipa::ToSchema;
         "region_name": "Derelik",
         "constellation_name": "San Matar",
         "system_name": "Tanoo",
-        "security": 0.858324
+        "security": 0.858324,
+        "security_str": "HIGHSEC"
     })
 )]
 pub struct System {

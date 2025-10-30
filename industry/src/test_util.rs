@@ -1,8 +1,6 @@
 use starfoundry_lib_eve_gateway::EveGatewayApiClient;
 use starfoundry_lib_gateway::ApiClient;
-use starfoundry_lib_types::TypeId;
-
-pub static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
+use starfoundry_lib_types::{SystemId, TypeId};
 
 #[derive(Clone)]
 pub struct EveGatewayTestApiClient;
@@ -23,7 +21,8 @@ impl ApiClient for EveGatewayTestApiClient {
         where
             T: serde::de::DeserializeOwned {
 
-        let response = match dbg!(path.into()).as_ref() {
+        let path = path.into();
+        let response = match path.as_ref() {
             "characters/1" |
             "characters/2" => {
                 serde_json::json!({
@@ -46,8 +45,46 @@ impl ApiClient for EveGatewayTestApiClient {
                     "type_id": 35892,
                     "volume": 100000000
                 })
+            },
+            "structures/rigs/46497" => {
+                serde_json::json!({
+                    "item": {
+                        "base_price": null,
+                        "category_id": 6,
+                        "group_id": 30,
+                        "meta_group_id": null,
+                        "name": "Standup L-Set Reactor Efficiency II",
+                        "repackaged": 10000000,
+                        "type_id": 46497,
+                        "volume": 100000000
+                    },
+                    "excludes": [
+                        46496
+                    ],
+                    "material": 2.4,
+                    "time": 24,
+                    "category_groups": [
+                        // TODO: insert categories
+                        0
+                    ]
+                })
+            },
+            "universe/systems/30004759" => {
+                serde_json::json!({
+                    "region_id": 10000060,
+                    "constellation_id": 20000696,
+                    "system_id": 30004759,
+                    "region_name": "Delve",
+                    "constellation_name": "O-EIMK",
+                    "system_name": "1DQ1-A",
+                    "security": -0.385782,
+                    "security_str": "NULLSEC"
+                })
+            },
+            _ => {
+                dbg!(path);
+                serde_json::json!({})
             }
-            _ => serde_json::json!({})
         };
 
         Ok(
@@ -63,12 +100,15 @@ impl ApiClient for EveGatewayTestApiClient {
         where
             D: std::fmt::Debug + serde::Serialize + Send + Sync,
             T: serde::de::DeserializeOwned {
-        let response = match dbg!(path.into()).as_ref() {
+
+        let path = path.into();
+        let response = match path.as_ref() {
             "items/bulk" => {
                 let data: Vec<TypeId> = serde_json::from_value(serde_json::to_value(&data).unwrap()).unwrap();
                 if data.is_empty() {
                     serde_json::json!([])
                 } else {
+                    dbg!(&data);
                     serde_json::json!([{
                         "base_price": null,
                         "category_id": 6,
@@ -105,10 +145,39 @@ impl ApiClient for EveGatewayTestApiClient {
                         "repackaged": 10000000,
                         "type_id": 4312,
                         "volume": 100000000
+                    }, {
+                        "base_price": null,
+                        "category_id": 6,
+                        "group_id": 1321,
+                        "meta_group_id": null,
+                        "name": "Standup Market Hub I",
+                        "repackaged": 10000000,
+                        "type_id": 35892,
+                        "volume": 100000000
                     }])
                 }
+            },
+            "universe/systems" => {
+                let data: Vec<SystemId> = serde_json::from_value(serde_json::to_value(&data).unwrap()).unwrap();
+                if data.is_empty() {
+                    serde_json::json!([])
+                } else {
+                    serde_json::json!([{
+                        "region_id": 10000060,
+                        "constellation_id": 20000696,
+                        "system_id": 30004759,
+                        "region_name": "Delve",
+                        "constellation_name": "O-EIMK",
+                        "system_name": "1DQ1-A",
+                        "security": -0.385782,
+                        "security_str": "NULLSEC"
+                    }])
+                }
+            },
+            _ => {
+                dbg!(path, data);
+                serde_json::json!({})
             }
-            _ => serde_json::json!({})
         };
 
         Ok(

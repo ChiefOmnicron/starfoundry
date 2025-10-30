@@ -1,8 +1,6 @@
 import { axiosClient } from "@/services/client";
-import type { ProjectGroup } from "./fetch";
+import type { ProjectGroup } from "@/services/project-group/fetch";
 import type { Uuid } from "@/services/utils";
-
-export const CREATE_PROJECT_GROUPS = 'updateProjectGroup';
 
 export const deleteProjectGroup = async (
     projectGroupUuid: Uuid,

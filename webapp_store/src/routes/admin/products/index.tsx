@@ -180,7 +180,5 @@ function AdminProductsComponent() {
         { notification() }
 
         { content() }
-
-        <Button onClick={() => {throw new Error('test error')}}>No touchy</Button>
     </>
 }

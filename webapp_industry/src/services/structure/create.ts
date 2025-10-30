@@ -1,13 +1,11 @@
 import { axiosClient } from "@/services/client";
 import type { Uuid } from "@/services/utils";
 
-export const CREATE_STRUCTURE = 'createStructure';
-
 export const createStructure = async (
     data: CreateStructure,
 ): Promise<CreateStructureResponse> => (await axiosClient())
     .post(
-        '/api/structure/structures',
+        '/api/structures',
         data,
     )
     .then(x => x.data);

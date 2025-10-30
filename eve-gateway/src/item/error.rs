@@ -1,11 +1,11 @@
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::{IntoResponse, Response};
-use starfoundry_lib_types::TypeId;
+use starfoundry_lib_types::{CategoryId, GroupId, TypeId};
 use thiserror::Error;
 
 use crate::api_docs::ErrorResponse;
-use crate::auth::AuthError;
+use crate::auth::error::AuthError;
 
 pub type Result<T, E = ItemError> = std::result::Result<T, E>;
 
@@ -19,6 +19,10 @@ pub enum ItemError {
     FetchItem(sqlx::Error, TypeId),
     #[error("error while fetching bulk items, error: '{0}'")]
     FetchItemBulk(sqlx::Error),
+    #[error("error while fetching category '{1}', error: '{0}'")]
+    FetchCategory(sqlx::Error, CategoryId),
+    #[error("error while fetching group '{1}', error: '{0}'")]
+    FetchGroup(sqlx::Error, GroupId),
 }
 
 impl IntoResponse for ItemError {
