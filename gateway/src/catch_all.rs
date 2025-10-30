@@ -6,7 +6,6 @@ mod generic_delete;
 mod generic_get;
 mod generic_post;
 mod generic_put;
-mod store_general_info;
 mod well_known_jwks;
 
 pub use self::auth_callback::*;
@@ -17,7 +16,6 @@ pub use self::generic_delete::*;
 pub use self::generic_get::*;
 pub use self::generic_post::*;
 pub use self::generic_put::*;
-pub use self::store_general_info::*;
 pub use self::well_known_jwks::*;
 
 use axum::http::HeaderMap;
