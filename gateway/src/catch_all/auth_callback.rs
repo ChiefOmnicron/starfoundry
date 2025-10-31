@@ -34,15 +34,21 @@ pub async fn catch_all_auth_callback(
                 StatusCode::FOUND,
                 [(
                     LOCATION,
-                    (&format!("{}?refresh_token={}", body.url, body.refresh_token)),
+                    (&format!("{}?refresh_token={}", body.url, body.refresh_token.unwrap_or_default())),
                 ), (
                     CONTENT_TYPE,
                     &"application/json".to_string(),
                 )],
             ).into_response())
         } else {
+            let body: AuthCallbackResponse = response.json().await?;
+
             return Ok((
-                response.status(),
+                StatusCode::FOUND,
+                [(
+                    LOCATION,
+                    format!("{}?success=false", body.url),
+                )]
             ).into_response());
         }
     } else {
@@ -56,5 +62,5 @@ pub async fn catch_all_auth_callback(
 #[derive(Debug, Deserialize)]
 struct AuthCallbackResponse {
     url:           String,
-    refresh_token: String,
+    refresh_token: Option<String>,
 }
