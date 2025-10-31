@@ -239,13 +239,14 @@ function StoreComponent() {
     </>
 }
 
-function CategoryView(
+function CategoryView (
     category: string,
     products: Product[],
     openProduct: (id: Uuid) => void,
 ) {
     let elements = (products || [])
         .filter(x => x.category === category)
+        .filter(x => !x.hidden)
         .map(x => ProductCard(x, openProduct))
 
     if (elements.length === 0) {
@@ -269,7 +270,7 @@ function CategoryView(
     </div>
 }
 
-function ProductCard(
+function ProductCard (
     product: Product,
     openProduct: (uuid: Uuid) => void,
 ): ReactElement {

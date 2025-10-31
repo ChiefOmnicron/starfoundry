@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS product (
     image_type              VARCHAR         NOT NULL,
     image_type_id           INTEGER         NOT NULL,
     content                 JSONB           NOT NULL,
+    hidden                  BOOLEAN         NOT NULL    DEFAULT FALSE,
     description             VARCHAR(10000),
     tags                    VARCHAR[],
     additional_products     UUID[],
