@@ -19,6 +19,7 @@ import { Route as LegalIndexRouteImport } from './routes/legal/index'
 import { Route as ContactIndexRouteImport } from './routes/contact/index'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as AuthForbiddenRouteImport } from './routes/auth/forbidden'
 import { Route as ProductsProductUuidRouteRouteImport } from './routes/products_/$productUuid.route'
 import { Route as OrdersOrderUuidRouteRouteImport } from './routes/orders_/$orderUuid.route'
 import { Route as AdminProductsRouteRouteImport } from './routes/admin/products/route'
@@ -81,6 +82,11 @@ const AboutIndexRoute = AboutIndexRouteImport.update({
 const AuthLoginRoute = AuthLoginRouteImport.update({
   id: '/auth/login',
   path: '/auth/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthForbiddenRoute = AuthForbiddenRouteImport.update({
+  id: '/auth/forbidden',
+  path: '/auth/forbidden',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProductsProductUuidRouteRoute =
@@ -164,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/admin/products': typeof AdminProductsRouteRouteWithChildren
   '/orders/$orderUuid': typeof OrdersOrderUuidRouteRouteWithChildren
   '/products/$productUuid': typeof ProductsProductUuidRouteRouteWithChildren
+  '/auth/forbidden': typeof AuthForbiddenRoute
   '/auth/login': typeof AuthLoginRoute
   '/about': typeof AboutIndexRoute
   '/contact': typeof ContactIndexRoute
@@ -183,6 +190,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
+  '/auth/forbidden': typeof AuthForbiddenRoute
   '/auth/login': typeof AuthLoginRoute
   '/about': typeof AboutIndexRoute
   '/contact': typeof ContactIndexRoute
@@ -207,6 +215,7 @@ export interface FileRoutesById {
   '/admin/products': typeof AdminProductsRouteRouteWithChildren
   '/orders_/$orderUuid': typeof OrdersOrderUuidRouteRouteWithChildren
   '/products_/$productUuid': typeof ProductsProductUuidRouteRouteWithChildren
+  '/auth/forbidden': typeof AuthForbiddenRoute
   '/auth/login': typeof AuthLoginRoute
   '/about/': typeof AboutIndexRoute
   '/contact/': typeof ContactIndexRoute
@@ -234,6 +243,7 @@ export interface FileRouteTypes {
     | '/admin/products'
     | '/orders/$orderUuid'
     | '/products/$productUuid'
+    | '/auth/forbidden'
     | '/auth/login'
     | '/about'
     | '/contact'
@@ -253,6 +263,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/auth/forbidden'
     | '/auth/login'
     | '/about'
     | '/contact'
@@ -276,6 +287,7 @@ export interface FileRouteTypes {
     | '/admin/products'
     | '/orders_/$orderUuid'
     | '/products_/$productUuid'
+    | '/auth/forbidden'
     | '/auth/login'
     | '/about/'
     | '/contact/'
@@ -300,6 +312,7 @@ export interface RootRouteChildren {
   ProductsRouteRoute: typeof ProductsRouteRouteWithChildren
   OrdersOrderUuidRouteRoute: typeof OrdersOrderUuidRouteRouteWithChildren
   ProductsProductUuidRouteRoute: typeof ProductsProductUuidRouteRouteWithChildren
+  AuthForbiddenRoute: typeof AuthForbiddenRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AboutIndexRoute: typeof AboutIndexRoute
   ContactIndexRoute: typeof ContactIndexRoute
@@ -376,6 +389,13 @@ declare module '@tanstack/react-router' {
       path: '/auth/login'
       fullPath: '/auth/login'
       preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/forbidden': {
+      id: '/auth/forbidden'
+      path: '/auth/forbidden'
+      fullPath: '/auth/forbidden'
+      preLoaderRoute: typeof AuthForbiddenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/products_/$productUuid': {
@@ -599,6 +619,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProductsRouteRoute: ProductsRouteRouteWithChildren,
   OrdersOrderUuidRouteRoute: OrdersOrderUuidRouteRouteWithChildren,
   ProductsProductUuidRouteRoute: ProductsProductUuidRouteRouteWithChildren,
+  AuthForbiddenRoute: AuthForbiddenRoute,
   AuthLoginRoute: AuthLoginRoute,
   AboutIndexRoute: AboutIndexRoute,
   ContactIndexRoute: ContactIndexRoute,

@@ -9,6 +9,7 @@ pub async fn catch_all_auth_login_callback(
     Query(params): Query<HashMap<String, String>>,
     headers:       HeaderMap,
 ) -> impl IntoResponse {
+    dbg!("asdasd");
     let host = if let Some(x) = headers.get(HOST) {
         x.to_str().unwrap_or_default()
     } else {
@@ -21,7 +22,11 @@ pub async fn catch_all_auth_login_callback(
         x.clone()
     } else {
         return (
-            StatusCode::BAD_REQUEST,
+            StatusCode::FOUND,
+            [(
+                LOCATION,
+                format!("https://{host}/auth/forbidden"),
+            )]
         ).into_response()
     };
 

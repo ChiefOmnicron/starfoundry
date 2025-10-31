@@ -146,7 +146,19 @@ pub async fn callback(
         .map_err(AuthError::InsertEveCredential)?;
     }
 
-    refresh_character_in_db(&state.postgres, character_id).await?;
+    let character_info = refresh_character_in_db(&state.postgres, character_id).await?;
+
+    if auth_domain.whitelist.contains(&(*character_id as i64)) ||
+        auth_domain.whitelist.contains(&(*character_info.corporation_id as i64)) ||
+        auth_domain.whitelist.contains(&(*character_info.alliance_id.unwrap_or(0i32.into()) as i64)) {
+    } else {
+        return Ok((
+            StatusCode::FORBIDDEN,
+            Json(serde_json::json!({
+                "url": auth_domain.redirect,
+            }))
+        ).into_response());
+    }
 
     let refresh_token = RefreshTokenClaims::new(
         character_id,
