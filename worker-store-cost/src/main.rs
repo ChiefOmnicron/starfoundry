@@ -380,8 +380,9 @@ async fn process_build(
     let store_content_response = match store_content_response {
         Ok(x) => x,
         Err(e) => {
-            dbg!(&e);
-            return Err(e.into());
+            dbg!(&e, build.store);
+            //return Err(e.into());
+            panic!("")
         }
     };
 

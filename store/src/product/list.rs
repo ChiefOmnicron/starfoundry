@@ -144,8 +144,10 @@ pub async fn api(
             )
         })
         .filter(|x| {
-            if !x.whitelist.is_empty() {
-                return x.whitelist.contains(&*character_id) ||
+            if identity.is_admin {
+                true
+            } else if !x.whitelist.is_empty() {
+                x.whitelist.contains(&*character_id) ||
                     x.whitelist.contains(&*corporation_id) ||
                     x.whitelist.contains(&*alliance_id.unwrap_or(0.into()))
             } else {
