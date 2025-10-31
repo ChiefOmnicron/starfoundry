@@ -85,7 +85,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     if found_duplicate {
-        tracing::warn!("Duplicates");
+        panic!("Duplicates");
     }
 
     let structure_group_ids_hulls: Vec<StructureGroupUuid> = hulls
@@ -357,8 +357,8 @@ async fn process_build(
     let market_data_response = match market_data_response {
         Ok(x) => x,
         Err(e) => {
-            dbg!(&e);
-            return Err(e.into());
+            dbg!(&e, build.store);
+            panic!("Appraisal Market response")
         }
     };
     tracing::info!("[{}] Fetched market data", build.name);
@@ -381,8 +381,7 @@ async fn process_build(
         Ok(x) => x,
         Err(e) => {
             dbg!(&e, build.store);
-            //return Err(e.into());
-            panic!("")
+            panic!("Appraisal Store response")
         }
     };
 
@@ -479,9 +478,10 @@ async fn process_build(
                 blacklist,
                 whitelist,
                 additional_products,
-                delivery_location
+                delivery_location,
+                hidden
             )
-            VALUES (1, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+            VALUES (1, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
             ON CONFLICT (id)
             DO UPDATE SET
                 category = EXCLUDED.category,
@@ -495,7 +495,8 @@ async fn process_build(
                 blacklist = EXCLUDED.blacklist,
                 whitelist = EXCLUDED.whitelist,
                 additional_products = EXCLUDED.additional_products,
-                delivery_location = EXCLUDED.delivery_location
+                delivery_location = EXCLUDED.delivery_location,
+                hidden = EXCLUDED.hidden
         ",
             build.id,
             build.category,
@@ -510,6 +511,7 @@ async fn process_build(
             &build.whitelist.unwrap_or_default().iter().map(|x| **x).collect::<Vec<_>>(),
             &additional_products,
             &build.delivery_location,
+            &build.hidden.unwrap_or_default(),
         )
         .execute(&mut *transaction)
         .await?;

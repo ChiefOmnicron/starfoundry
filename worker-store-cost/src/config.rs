@@ -82,6 +82,8 @@ pub struct Build {
     pub market:                 String,
     pub delivery_time:          String,
     pub delivery_location:      Vec<i32>,
+    #[serde(default)]
+    pub hidden:                 Option<bool>,
 
     pub message:                Option<String>,
     /// Can be a CharacterId, CorporationId or AllianceId

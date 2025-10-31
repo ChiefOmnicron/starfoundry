@@ -70,6 +70,7 @@ export type Product = {
     message?:           string,
     additional_options: AdditionalOption[],
     delivery_location:  number[],
+    hidden:             boolean,
 }
 
 export type Item = {
