@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                id,\n                type_id,\n                structure_id,\n                name            AS \"structure_name\",\n                services,\n                rigs,\n                system_id\n            FROM structure\n            WHERE\n                owner = $1 AND\n                structure.id = $2\n            ORDER BY structure.name\n        ",
+  "query": "\n            SELECT\n                id,\n                type_id,\n                structure_id,\n                name            AS \"structure_name\",\n                services,\n                rigs,\n                system_id\n            FROM structure\n            WHERE\n                owner = $1 AND\n                structure.id = $2\n        ",
   "describe": {
     "columns": [
       {
@@ -97,5 +97,5 @@
       false
     ]
   },
-  "hash": "adbd413464dc335319ef1c92f9674a325a8c1be84ed5b07f6d581f3812fd7745"
+  "hash": "ca4d00d5ff3b78587df1067eb1fbe20f85a13fbcdd89fed440999199885d9319"
 }

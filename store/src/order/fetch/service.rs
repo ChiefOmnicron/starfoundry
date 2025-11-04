@@ -25,7 +25,7 @@ pub async fn fetch(
             FROM order_info
             WHERE id = $1
             AND character_id = $2
-            AND status = ANY('{ACCEPTED, IN_PROGRESS, DONE}')
+            AND status = ANY('{ACCEPTED, IN_PROGRESS, DELIVERED}')
             ORDER BY created_at
         ",
             *order_uuid,

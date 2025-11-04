@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                id,\n                character_id,\n                quantity,\n                status,\n                delivery_location,\n                comment,\n                expected_delivery_date,\n                created_at\n            FROM order_info\n            WHERE character_id = $1\n            AND status = ANY('{ACCEPTED, IN_PROGRESS, DONE}')\n            ORDER BY created_at\n        ",
+  "query": "\n            SELECT\n                id,\n                character_id,\n                quantity,\n                status,\n                delivery_location,\n                comment,\n                expected_delivery_date,\n                created_at\n            FROM order_info\n            WHERE id = $1\n            AND character_id = $2\n            AND status = ANY('{ACCEPTED, IN_PROGRESS, DELIVERED}')\n            ORDER BY created_at\n        ",
   "describe": {
     "columns": [
       {
@@ -94,6 +94,7 @@
     ],
     "parameters": {
       "Left": [
+        "Uuid",
         "Int4"
       ]
     },
@@ -108,5 +109,5 @@
       false
     ]
   },
-  "hash": "8ff9236d6c1ea9761afadeb1a608eb95966ac94f51e69e1d906ab32acd076cb5"
+  "hash": "f980059737270e52e9834d7616f8db2242a4fbc5922f0323f655ba75b7126ed0"
 }

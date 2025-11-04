@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                id,\n                type_id,\n                structure_id,\n                name            AS \"structure_name\",\n                services,\n                rigs,\n                system_id\n            FROM structure\n            WHERE\n                NOT (LOWER(structure.name) LIKE '%' || LOWER($2) || '%') IS FALSE AND\n                NOT (structure.type_id = $3) IS FALSE AND\n                NOT (structure.system_id = $4) IS FALSE AND\n                NOT ($5::INTEGER IS NULL OR $5::INTEGER = ANY(services)) IS FALSE AND\n                NOT ($6::INTEGER IS NULL OR $6::INTEGER = ANY(rigs)) IS FALSE AND\n                owner = $1\n            ORDER BY structure.name\n        ",
+  "query": "\n            SELECT\n                id,\n                type_id,\n                structure_id,\n                name AS \"structure_name\",\n                services,\n                rigs,\n                system_id\n            FROM structure\n            WHERE\n                NOT (LOWER(structure.name) LIKE '%' || LOWER($2) || '%') IS FALSE AND\n                NOT (structure.type_id = $3) IS FALSE AND\n                NOT (structure.system_id = $4) IS FALSE AND\n                NOT ($5::INTEGER IS NULL OR $5::INTEGER = ANY(services)) IS FALSE AND\n                NOT ($6::INTEGER IS NULL OR $6::INTEGER = ANY(rigs)) IS FALSE AND\n                NOT ($7::UUID[] IS NULL OR id = ANY($7)) IS FALSE AND\n                owner = $1\n            ORDER BY structure.name\n        ",
   "describe": {
     "columns": [
       {
@@ -88,7 +88,8 @@
         "Int4",
         "Int4",
         "Int4",
-        "Int4"
+        "Int4",
+        "UuidArray"
       ]
     },
     "nullable": [
@@ -101,5 +102,5 @@
       false
     ]
   },
-  "hash": "71bed975b5d63b3a1ca02db8298a2856976d6ca5b3d6b020f59b9a3055c86b00"
+  "hash": "4831acf54d47b853ecd6927a2f4867e69f92879ba85b9479e072ab2585d43d45"
 }

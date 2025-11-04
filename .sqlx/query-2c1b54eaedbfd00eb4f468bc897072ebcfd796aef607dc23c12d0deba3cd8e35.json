@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT id\n            FROM structure pg\n            WHERE id = $1\n            AND owner = $2\n        ",
+  "query": "\n        DELETE FROM structure\n        WHERE owner = $1\n            AND id = $2\n        RETURNING id\n    ",
   "describe": {
     "columns": [
       {
@@ -17,13 +17,13 @@
     ],
     "parameters": {
       "Left": [
-        "Uuid",
-        "Int4"
+        "Int4",
+        "Uuid"
       ]
     },
     "nullable": [
       false
     ]
   },
-  "hash": "5edf4f98d187e8885a747f01201694b50ee8824258e611272940385573469eb7"
+  "hash": "2c1b54eaedbfd00eb4f468bc897072ebcfd796aef607dc23c12d0deba3cd8e35"
 }

@@ -112,6 +112,39 @@
             "name": "updated_at"
           }
         }
+      },
+      {
+        "ordinal": 10,
+        "name": "x",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "x"
+          }
+        }
+      },
+      {
+        "ordinal": 11,
+        "name": "y",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "y"
+          }
+        }
+      },
+      {
+        "ordinal": 12,
+        "name": "z",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "z"
+          }
+        }
       }
     ],
     "parameters": {
@@ -120,6 +153,9 @@
       ]
     },
     "nullable": [
+      false,
+      false,
+      false,
       false,
       false,
       false,
