@@ -104,7 +104,7 @@ pub async fn api(
                 created_at
             FROM order_info
             WHERE character_id = $1
-            AND status = ANY('{ACCEPTED, IN_PROGRESS, DONE}')
+            AND status = ANY('{ACCEPTED, IN_PROGRESS, DELIVERED}')
             ORDER BY created_at
         ",
             *identity.character_id,
