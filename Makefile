@@ -126,8 +126,6 @@ docker-build:
 		.
 	docker build \
 		-t ${DOCKER_REPO}/starfoundry/web \
-		--build-arg VITE_SENTRY=${VITE_SENTRY} \
-		--build-arg SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN} \
 		--target webapp \
 		.
 	docker build \

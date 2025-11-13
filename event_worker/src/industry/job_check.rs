@@ -40,12 +40,11 @@ pub async fn task(
 async fn character_jobs(
     pool: &PgPool
 ) -> Result<usize> {
-    let mut character_ids_target = sqlx::query!("
-            SELECT c.character_id
-            FROM character c
-            JOIN credential cc ON cc.character_id = c.character_id
-            WHERE c.character_id != 0
-        ")
+    let mut character_ids_target = sqlx::query!(r#"
+            SELECT character_id AS "character_id!"
+            FROM credential
+            WHERE credential_type = 'CORPORATION'
+        "#)
         .fetch_all(pool)
         .await
         .map_err(Error::FetchCharacterIds)

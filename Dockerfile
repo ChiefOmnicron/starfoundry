@@ -1,7 +1,7 @@
 ################################################################################
 # ALL
 ################################################################################
-FROM        rust:1.87.0 AS builder-all
+FROM        rust:1.91.1 AS builder-all
 
 ENV         SQLX_OFFLINE=true
 
@@ -31,7 +31,7 @@ RUN         cargo build --release --target x86_64-unknown-linux-gnu && \
 ################################################################################
 # APPRAISAL only
 ################################################################################
-FROM        rust:1.87.0 AS builder-appraisal
+FROM        rust:1.91.1 AS builder-appraisal
 
 ENV         SQLX_OFFLINE=true
 
@@ -61,7 +61,7 @@ RUN         cd api; cargo build --release --target x86_64-unknown-linux-gnu --fe
 ################################################################################
 # webapp
 ################################################################################
-FROM        node AS builder-webapp
+FROM        node:24 AS builder-webapp
 
 ARG         VITE_SENTRY
 ARG         SENTRY_AUTH_TOKEN
@@ -82,7 +82,7 @@ RUN         npm run build
 ################################################################################
 # webapp-appraisal
 ################################################################################
-FROM        node AS builder-webapp-appraisal
+FROM        node:24 AS builder-webapp-appraisal
 
 ARG         VITE_APPRAISAL=true
 ARG         VITE_SENTRY
