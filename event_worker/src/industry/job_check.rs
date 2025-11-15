@@ -110,19 +110,18 @@ async fn character_jobs(
 async fn corporation_jobs(
     pool: &PgPool
 ) -> Result<usize> {
-    let mut corporation_target = sqlx::query!("
-            SELECT c.corporation_id
-            FROM character c
-            JOIN credential cc ON cc.character_id = c.character_id
-            WHERE c.corporation_id != 0
-        ")
+    let mut corporation_target = sqlx::query!(r#"
+            SELECT character_id AS "character_id!"
+            FROM credential
+            WHERE credential_type = 'CORPORATION'
+        "#)
         .fetch_all(pool)
         .await
         .map_err(Error::FetchCharacterIds)
         .map(|x| {
             x
                 .iter()
-                .map(|y| y.corporation_id)
+                .map(|y| y.character_id)
                 .collect::<Vec<_>>()
         })?;
 

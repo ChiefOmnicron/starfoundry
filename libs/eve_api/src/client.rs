@@ -123,6 +123,7 @@ impl EveApiClient {
             .user_agent(user_agent)
             .default_headers(headers)
             .pool_idle_timeout(None)
+            .timeout(std::time::Duration::from_secs(30))
             .build()
             .map_err(Error::CouldNotConstructClient)?;
 
@@ -174,6 +175,7 @@ impl EveApiClient {
             .user_agent(user_agent)
             .default_headers(headers)
             .pool_idle_timeout(None)
+            .timeout(std::time::Duration::from_secs(30))
             .build()
             .map_err(Error::CouldNotConstructClient)?;
 
