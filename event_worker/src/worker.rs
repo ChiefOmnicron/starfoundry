@@ -85,6 +85,27 @@ pub async fn remove_dead_workers(
     Ok(())
 }
 
+async fn remove_stalled_jobs(
+    pool: &PgPool,
+) -> Result<()> {
+    sqlx::query!("
+            DELETE FROM event_queue
+            WHERE id IN (
+                SELECT id
+                FROM event_queue
+                WHERE started_at < NOW() - INTERVAL '15 minutes'
+                AND status = 'IN_PROGRESS'
+                LIMIT 1
+            )
+            RETURNING id
+        ")
+        .fetch_optional(pool)
+        .await
+        .map_err(Error::DeleteDeadWorker)?;
+
+    Ok(())
+}
+
 /// Registers itself, removes dead workers and refreshing it's last seen timer
 /// 
 pub async fn background_task(
@@ -93,6 +114,7 @@ pub async fn background_task(
 ) -> Result<()> {
     loop {
         remove_dead_workers(&pool).await?;
+        remove_stalled_jobs(&pool).await?;
         refresh_last_seen(&pool, worker_id).await?;
 
         // sleep for 30 seconds until the next refresh
