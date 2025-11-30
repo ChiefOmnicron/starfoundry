@@ -1,8 +1,8 @@
-import LoadingAnimation from '@/components/LoadingAnimation';
-import { LoadingError } from '@/components/LoadingError';
-import { fetchStructureQuery, useFetchStructure } from '@/services/structure/fetch';
-import { Title } from '@mantine/core'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { fetchStructureQuery, useFetchStructure } from '@/services/structure/fetch';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
+import { LoadingError } from '@/components/LoadingError';
+import { Title } from '@mantine/core'
 
 export const Route = createFileRoute('/structures_/$structureId')({
     beforeLoad: async ({ context }) => {

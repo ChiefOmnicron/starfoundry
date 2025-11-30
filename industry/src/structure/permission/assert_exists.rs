@@ -1,9 +1,28 @@
+use axum::extract::{Path, Request, State};
+use axum::middleware::Next;
+use axum::response::IntoResponse;
 use sqlx::PgPool;
 
-use crate::structure::StructureUuid;
+use crate::AppState;
 use crate::structure::error::{StructureError, Result};
+use crate::structure::StructureUuid;
 
 pub async fn assert_exists(
+    State(state):       State<AppState>,
+    Path(structure_id): Path<StructureUuid>,
+    request:            Request,
+    next:               Next,
+) -> Result<impl IntoResponse> {
+    assert_exists_check(
+            &state.pool,
+            structure_id,
+        )
+        .await?;
+
+    Ok(next.run(request).await)
+}
+
+async fn assert_exists_check(
     pool:           &PgPool,
     structure_uuid: StructureUuid,
 ) -> Result<()> {
@@ -16,7 +35,7 @@ pub async fn assert_exists(
         )
         .fetch_optional(pool)
         .await
-        .map_err(|e| StructureError::FetchStructurePermission(e, structure_uuid))?;
+        .map_err(|e| StructureError::FetchPermission(e, structure_uuid))?;
 
     if result.is_some() {
         Ok(())

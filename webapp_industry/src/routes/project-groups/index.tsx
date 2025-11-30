@@ -2,12 +2,13 @@ import { Alert, Button, Card, Center, Flex, Pill, Stack, Table, Title, UnstyledB
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { Filter, type FilterPropEntry, type SelectedFilter } from '@/components/Filter';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { LoadingError } from '@/components/LoadingError';
 import { Route as createProjectGroupRoute } from '@/routes/project-groups/create';
+import { Route as ProjectGroupRoute } from '@/routes/project-groups_/$projectGroupId.overview';
 import { type ProjectGroup } from '@/services/project-group/fetch';
 import { useListProjectGroup, type ProjectGroupFilter } from '@/services/project-group/list';
 import { useState } from 'react';
-import LoadingAnimation from '@/components/LoadingAnimation';
 
 interface QueryParams {
     deleted?: boolean;
@@ -41,7 +42,10 @@ const columns = [
         id: 'name',
         cell: info => <UnstyledButton
             component={Link}
-            to={`/project-groups/${info.row.original.id}/overview`}
+            to={ProjectGroupRoute.to}
+            params={{
+                projectGroupId: info.row.original.id,
+            } as any}
             style={{
                 color: 'var(--mantine-color-blue-4)',
                 fontSize: 'var(--mantine-font-size-sm)'

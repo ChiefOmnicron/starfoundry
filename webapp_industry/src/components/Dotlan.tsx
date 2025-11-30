@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { UnstyledButton } from "@mantine/core";
-import type { StructureSystem } from "@/services/structure/list";
+import type { System } from "@/services/structure/list";
 
 export function Dotlan({
     system,
@@ -17,11 +17,11 @@ export function Dotlan({
                 fontSize: 'var(--mantine-font-size-sm)'
             }}
         >
-            { system.system_name }
+            { system.system_name } ({ system.region_name })
         </UnstyledButton>
     </>
 }
 
 export type Props = {
-    system: StructureSystem,
+    system: System,
 }

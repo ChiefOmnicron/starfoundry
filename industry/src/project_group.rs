@@ -1,4 +1,4 @@
-mod create;
+//mod create;
 mod delete;
 mod error;
 mod fetch_members_self;
@@ -7,34 +7,33 @@ mod list_default_blacklist;
 mod list_default_market;
 mod list_members;
 mod list;
-mod permission;
-mod update;
+//mod update;
+mod service;
 
-use axum::extract::{Path, Request, State};
+pub mod permission;
+
 use axum::middleware;
-use axum::middleware::Next;
-use axum::response::IntoResponse;
-use starfoundry_lib_gateway::ExtractIdentity;
 use starfoundry_lib_types::starfoundry_uuid;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
 
 use crate::AppState;
 use crate::project_group::error::Result;
+use crate::project_group::permission::{assert_exists, assert_read, assert_owner};
 
 pub fn routes(
     state: AppState,
 ) -> OpenApiRouter<AppState> {
-    let create = OpenApiRouter::new()
-        .routes(routes!(create::api));
+    //let create = OpenApiRouter::new()
+    //    .routes(routes!(create::api));
 
     let list = OpenApiRouter::new()
         .routes(routes!(list::api));
 
-    let update = OpenApiRouter::new()
+    /*let update = OpenApiRouter::new()
         .routes(routes!(update::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_write_group))
-        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));*/
 
     let delete = OpenApiRouter::new()
         .routes(routes!(delete::api))
@@ -67,9 +66,9 @@ pub fn routes(
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
 
     OpenApiRouter::new()
-        .merge(create)
+        //.merge(create)
         .merge(list)
-        .merge(update)
+        //.merge(update)
         .merge(delete)
         .merge(fetch)
         .merge(list_members)
@@ -79,74 +78,6 @@ pub fn routes(
 }
 
 starfoundry_uuid!(ProjectGroupUuid, "ProjectGroupUuid");
-
-async fn assert_exists(
-    State(state):             State<AppState>,
-    Path(project_group_uuid): Path<ProjectGroupUuid>,
-    request:                  Request,
-    next:                     Next,
-) -> Result<impl IntoResponse> {
-    permission::assert_exists(
-            &state.pool,
-            project_group_uuid,
-        )
-        .await?;
-
-    Ok(next.run(request).await)
-}
-
-async fn assert_read(
-    State(state):             State<AppState>,
-    Path(project_group_uuid): Path<ProjectGroupUuid>,
-    identity:                 ExtractIdentity,
-    request:                  Request,
-    next:                     Next,
-) -> Result<impl IntoResponse> {
-    permission::assert_read_access(
-            &state.pool,
-            project_group_uuid,
-            identity.character_id,
-        )
-        .await?;
-
-    Ok(next.run(request).await)
-}
-
-async fn assert_write_group(
-    State(state):             State<AppState>,
-    Path(project_group_uuid): Path<ProjectGroupUuid>,
-    identity:                 ExtractIdentity,
-    request:                  Request,
-    next:                     Next,
-) -> Result<impl IntoResponse> {
-    permission::assert_write_access(
-            &state.pool,
-            project_group_uuid,
-            identity.character_id,
-            permission::ProjectGroupPermissionCode::WriteGroup,
-        )
-        .await?;
-
-    Ok(next.run(request).await)
-}
-
-async fn assert_owner(
-    State(state):             State<AppState>,
-    Path(project_group_uuid): Path<ProjectGroupUuid>,
-    identity:                 ExtractIdentity,
-    request:                  Request,
-    next:                     Next,
-) -> Result<impl IntoResponse> {
-    permission::assert_write_access(
-            &state.pool,
-            project_group_uuid,
-            identity.character_id,
-            permission::ProjectGroupPermissionCode::Owner,
-        )
-        .await?;
-
-    Ok(next.run(request).await)
-}
 
 #[cfg(test)]
 pub async fn project_group_test_routes(

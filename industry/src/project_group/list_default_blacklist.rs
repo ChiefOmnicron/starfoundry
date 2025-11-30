@@ -1,17 +1,14 @@
-mod service;
-
-pub use self::service::*;
-
 use axum::response::IntoResponse;
 use axum::http::StatusCode;
 use axum::Json;
 use axum::extract::{Path, State};
 use starfoundry_lib_eve_gateway::Item;
 
-use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
 use crate::{eve_gateway_api_client, AppState};
+use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
 use crate::project_group::error::Result;
 use crate::project_group::ProjectGroupUuid;
+use crate::project_group::service::list_default_blacklist;
 
 /// List Blacklist
 /// 
@@ -56,12 +53,12 @@ pub async fn api(
     State(state):             State<AppState>,
     Path(project_group_uuid): Path<ProjectGroupUuid>,
 ) -> Result<impl IntoResponse> {
-    let data = dbg!(list_default_blacklist(
+    let data = list_default_blacklist(
             &state.pool,
             &eve_gateway_api_client()?,
             project_group_uuid,
         )
-        .await)?;
+        .await?;
 
     if data.is_empty() {
         Ok(
@@ -86,7 +83,6 @@ pub async fn api(
 mod tests {
     use axum::body::Body;
     use axum::extract::Request;
-    use axum::http::header::HOST;
     use axum::http::StatusCode;
     use http_body_util::BodyExt;
     use sqlx::PgPool;
@@ -96,8 +92,7 @@ mod tests {
     use crate::project_group::project_group_test_routes;
 
     #[sqlx::test(
-        fixtures("DELETE_AFTER_NEW_MS", "base", "list_default"),
-        migrator = "crate::test_util::MIGRATOR"
+        fixtures("base", "list_default"),
     )]
     async fn happy_path_all(
         pool: PgPool,
@@ -119,8 +114,7 @@ mod tests {
     }
 
     #[sqlx::test(
-        fixtures("DELETE_AFTER_NEW_MS", "base", "list_default"),
-        migrator = "crate::test_util::MIGRATOR"
+        fixtures("base", "list_default"),
     )]
     async fn happy_path_no_content(
         pool: PgPool,
@@ -142,8 +136,7 @@ mod tests {
     }
 
     #[sqlx::test(
-        fixtures("DELETE_AFTER_NEW_MS", "base", "list_default"),
-        migrator = "crate::test_util::MIGRATOR"
+        fixtures("base", "list_default"),
     )]
     async fn unauthorized(
         pool: PgPool,
@@ -151,7 +144,6 @@ mod tests {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000001/defaults/blacklist")
             .method("GET")
-            .header(HOST, "test.starfoundry.space")
             .body(Body::empty())
             .unwrap();
 
@@ -160,8 +152,7 @@ mod tests {
     }
 
     #[sqlx::test(
-        fixtures("DELETE_AFTER_NEW_MS", "base", "list_default"),
-        migrator = "crate::test_util::MIGRATOR"
+        fixtures("base", "list_default"),
     )]
     async fn forbidden(
         pool: PgPool,
@@ -179,8 +170,7 @@ mod tests {
     }
 
     #[sqlx::test(
-        fixtures("DELETE_AFTER_NEW_MS", "base", "list_default"),
-        migrator = "crate::test_util::MIGRATOR"
+        fixtures("base", "list_default"),
     )]
     async fn not_found(
         pool: PgPool,

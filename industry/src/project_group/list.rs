@@ -1,21 +1,14 @@
-mod project_group;
-mod filter;
-mod service;
-
-pub use self::filter::*;
-pub use self::project_group::*;
-pub use self::service::*;
-
 use axum::extract::{Query, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_gateway::ExtractIdentity;
 
-use crate::eve_gateway_api_client;
 use crate::api_docs::{BadRequest, InternalServerError, Unauthorized};
 use crate::AppState;
+use crate::eve_gateway_api_client;
 use crate::project_group::error::Result;
+use crate::project_group::service::{ProjectGroup, ProjectGroupFilter, list};
 
 /// List Groups
 /// 
@@ -58,12 +51,12 @@ pub async fn api(
     Query(filter): Query<ProjectGroupFilter>,
     identity:      ExtractIdentity,
 ) -> Result<impl IntoResponse> {
-    let data = dbg!(list(
+    let data = list(
             &state.pool,
-            &eve_gateway_api_client()?,
             identity.character_id,
+            &eve_gateway_api_client()?,
             filter,
-        ).await)?;
+        ).await?;
 
     if data.is_empty() {
         Ok(
@@ -99,7 +92,6 @@ mod tests {
 
     #[sqlx::test(
         fixtures("base"),
-        migrator = "crate::test_util::MIGRATOR"
     )]
     async fn happy_path_all(
         pool: PgPool,
@@ -122,7 +114,6 @@ mod tests {
 
     #[sqlx::test(
         fixtures("base"),
-        migrator = "crate::test_util::MIGRATOR"
     )]
     async fn happy_path_filter(
         pool: PgPool,
@@ -146,7 +137,6 @@ mod tests {
 
     #[sqlx::test(
         fixtures("base"),
-        migrator = "crate::test_util::MIGRATOR"
     )]
     async fn happy_path_empty(
         pool: PgPool,
@@ -170,7 +160,6 @@ mod tests {
 
     #[sqlx::test(
         fixtures("base"),
-        migrator = "crate::test_util::MIGRATOR"
     )]
     async fn unauthorized(
         pool: PgPool,

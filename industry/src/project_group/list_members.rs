@@ -1,9 +1,3 @@
-mod member;
-mod service;
-
-pub use self::member::*;
-pub use self::service::*;
-
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
@@ -14,6 +8,7 @@ use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 use crate::AppState;
 use crate::project_group::error::Result;
 use crate::project_group::ProjectGroupUuid;
+use crate::project_group::service::{ProjectGroupMember, list_members};
 
 /// List Group Members
 /// 
@@ -55,12 +50,12 @@ pub async fn api(
     State(state):             State<AppState>,
     Path(project_group_uuid): Path<ProjectGroupUuid>,
 ) -> Result<impl IntoResponse> {
-    let data = dbg!(list_members(
+    let data = list_members(
             &state.pool,
             &eve_gateway_api_client()?,
             project_group_uuid,
         )
-        .await)?;
+        .await?;
 
     if data.is_empty() {
         Ok(
@@ -96,7 +91,6 @@ mod tests {
 
     #[sqlx::test(
         fixtures("base"),
-        migrator = "crate::test_util::MIGRATOR"
     )]
     async fn happy_path(
         pool: PgPool,
@@ -118,7 +112,6 @@ mod tests {
 
     #[sqlx::test(
         fixtures("base"),
-        migrator = "crate::test_util::MIGRATOR"
     )]
     async fn unauthorized(
         pool: PgPool,
@@ -135,7 +128,6 @@ mod tests {
 
     #[sqlx::test(
         fixtures("base"),
-        migrator = "crate::test_util::MIGRATOR"
     )]
     async fn forbidden(
         pool: PgPool,
@@ -153,7 +145,6 @@ mod tests {
 
     #[sqlx::test(
         fixtures("base"),
-        migrator = "crate::test_util::MIGRATOR"
     )]
     async fn not_found(
         pool: PgPool,

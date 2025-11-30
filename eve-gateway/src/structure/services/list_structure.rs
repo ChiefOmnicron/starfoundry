@@ -2,13 +2,32 @@ use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::StructureServiceResponse;
 use starfoundry_lib_types::TypeId;
 
-use crate::item::services::fetch_item_bulk;
+use crate::item::services::{fetch_item, fetch_item_bulk};
 use crate::structure::error::{Result, StructureError};
 
 pub async fn list_structure_services(
     pool:              &PgPool,
     structure_type_id: TypeId,
 ) -> Result<Option<StructureServiceResponse>> {
+    // Amarr and Jita
+    if structure_type_id == TypeId(46767) || structure_type_id == TypeId(52678) {
+        return fetch_item(pool, 35892.into())
+            .await
+            .map(|x| {
+                let services = if let Some(y) = x {
+                    vec![y]
+                } else {
+                    Vec::new()
+                };
+
+                Some(StructureServiceResponse {
+                    services: services,
+                    slots:    1,
+                })
+            })
+            .map_err(Into::into)
+    }
+
     let services = sqlx::query!(r#"
             SELECT
                 service_type_ids,

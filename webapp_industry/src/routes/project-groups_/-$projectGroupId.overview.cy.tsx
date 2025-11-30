@@ -1,7 +1,7 @@
 import { createRootRoute, createRouter, RouterProvider } from "@tanstack/react-router";
 import { MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ProjectGroupOverview } from './$projectGroupId.index';
+import { ProjectGroupOverview } from './$projectGroupId.overview';
 
 import '@mantine/core/styles.css';
 

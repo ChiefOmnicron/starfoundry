@@ -1,17 +1,21 @@
 use sqlx::PgPool;
+use starfoundry_lib_types::CharacterId;
 
 use crate::structure::{StructureError, StructureUuid};
 use crate::structure::error::Result;
 
 pub async fn delete(
     pool:         &PgPool,
+    character_id: CharacterId,
     structure_id: StructureUuid,
 ) -> Result<StructureUuid> {
     sqlx::query!("
         DELETE FROM structure
-        WHERE id = $1
+        WHERE owner = $1
+            AND id = $2
         RETURNING id
     ",
+        *character_id,
         *structure_id,
     )
     .fetch_one(pool)
@@ -23,6 +27,7 @@ pub async fn delete(
 #[cfg(test)]
 mod delete_project_group_test {
     use sqlx::PgPool;
+    use starfoundry_lib_types::CharacterId;
     use std::str::FromStr;
     use uuid::Uuid;
 
@@ -37,6 +42,7 @@ mod delete_project_group_test {
     ) {
         let result = super::delete(
                 &pool,
+                CharacterId(1),
                 Uuid::from_str("00000000-0000-0000-0000-000000000003").unwrap().into(),
             )
             .await;

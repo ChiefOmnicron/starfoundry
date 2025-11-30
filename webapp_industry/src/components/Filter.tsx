@@ -44,7 +44,6 @@ import { useEffect, useState, type ReactElement } from "react";
 //    }];
 //
 //    const filterChange = (filters: SelectedFilter[]) => {
-//        console.log(filters)
 //    }
 //
 //    <Filter
@@ -81,7 +80,7 @@ export function Filter(
     const [selectedFilters, setSelectFilters] = useState<SelectedFilter[]>([]);
 
     const [options, setOptions] = useState(entries);
-    const [originalOptions] = useState(entries);
+    const [originalOptions, setOriginalOptions] = useState(entries);
 
     const combobox = useCombobox({
         onDropdownClose: () => combobox.resetSelectedOption(),
@@ -95,17 +94,29 @@ export function Filter(
         onFilterChange(selectedFilters);
     }, [selectedFilters]);
 
+    useEffect(() => {
+        setOptions(entries);
+        setOriginalOptions(entries);
+    }, [entries]);
+
     /// adds an entry to the list of selected filters
     const addToValues = (
-        label: string,
-        key: string,
-        value: string,
+        filterLabel: string,
+        filterKey:   string,
+        // for STRING, if will contain the actual string that was searched for
+        // for SELECT it will contain the key
+        value:       string,
     ) => {
+        const filterValue = currentSelected?.type === 'SELECT'
+            ? currentSelected?.options?.find(x => x.key === value as any)?.label || ''
+            : value;
+
         // add the entry to our array of selected filters
         setSelectFilters(filters => [...filters, {
-            key,
-            label,
-            value,
+            filterLabel,
+            filterKey,
+            value: filterValue,
+            key:   value,
         }]);
     }
 
@@ -114,7 +125,7 @@ export function Filter(
     const resetOptions = () => {
         setOptions(
             originalOptions.filter(x => {
-                const findFilter = selectedFilters.filter(y => y.key === x.key);
+                const findFilter = selectedFilters.filter(y => y.filterKey === x.key);
                 if (findFilter.length > 0) {
                     return x.type === 'MULTISELECT' && findFilter.length < (x.options || []).length;
                 }
@@ -147,10 +158,10 @@ export function Filter(
         } else {
             // store the label for later use
             // it is pretty sure that the value is set, just making sure
-            const label = (currentSelected || { label: ''}).label;
-            const key = (currentSelected || { key: ''}).key;
+            const filterLabel = (currentSelected || { label: ''}).label;
+            const filterKey = (currentSelected || { key: ''}).key;
             // add the entries to the input
-            addToValues(label, key, value);
+            addToValues(filterLabel, filterKey, value);
 
             // reset search, current selected, and the options
             setSearch('');
@@ -178,7 +189,7 @@ export function Filter(
     const optionsSecondLevel = currentSelectedOptions
         .map((item: FilterPropOption) => (
             <Combobox.Option
-                value={item.label}
+                value={item.key as string}
                 key={item.key}
             >
                 <span>{item.label}</span>
@@ -198,7 +209,7 @@ export function Filter(
                 }
             }}
         >
-            <strong>{item.label}</strong>: {item.value}
+            <strong>{item.filterLabel}</strong>: {item.value}
         </Pill>
     ));
 
@@ -306,7 +317,7 @@ export function Filter(
             </Combobox.DropdownTarget>
 
             <Combobox.Dropdown>
-                <Combobox.Options data-cy="filterDropdownOption">
+                <Combobox.Options data-cy="filterDropdownOption" mah={300} style={{ overflowY: 'auto' }}>
                     { showDropdownEntries() }
                 </Combobox.Options>
             </Combobox.Dropdown>
@@ -333,11 +344,12 @@ export type FilterPropEntry = {
 
 export type FilterPropOption = {
     label: string;
-    key: string;
+    key:   string | number;
 };
 
 export type SelectedFilter = {
-    value: number | string | Array<string>;
-    label: string;
-    key: string;
+    filterLabel: string;
+    filterKey:   string;
+    value:       number | string | Array<string>;
+    key:         number | string;
 };

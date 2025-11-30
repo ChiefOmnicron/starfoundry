@@ -1,16 +1,12 @@
-mod service;
-
-pub use self::service::*;
-
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
-use axum::Json;
 use axum::response::IntoResponse;
 
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
 use crate::AppState;
 use crate::project_group::error::Result;
 use crate::project_group::ProjectGroupUuid;
+use crate::project_group::service::delete;
 
 /// Delete Group
 /// 
@@ -74,7 +70,6 @@ mod tests {
 
     #[sqlx::test(
         fixtures("base", "delete"),
-        migrator = "crate::test_util::MIGRATOR"
     )]
     async fn happy_path(
         pool: PgPool,
@@ -92,7 +87,6 @@ mod tests {
 
     #[sqlx::test(
         fixtures("base"),
-        migrator = "crate::test_util::MIGRATOR"
     )]
     async fn dont_delete_if_a_project_is_connected(
         pool: PgPool,
@@ -110,7 +104,6 @@ mod tests {
 
     #[sqlx::test(
         fixtures("base"),
-        migrator = "crate::test_util::MIGRATOR"
     )]
     async fn unauthorized(
         pool: PgPool,
@@ -127,7 +120,6 @@ mod tests {
 
     #[sqlx::test(
         fixtures("base"),
-        migrator = "crate::test_util::MIGRATOR"
     )]
     async fn forbidden(
         pool: PgPool,
@@ -158,7 +150,6 @@ mod tests {
 
     #[sqlx::test(
         fixtures("base"),
-        migrator = "crate::test_util::MIGRATOR"
     )]
     async fn not_found(
         pool: PgPool,

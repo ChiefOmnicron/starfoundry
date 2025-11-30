@@ -92,7 +92,7 @@ mod tests {
             ))
             .unwrap();
         let response = structure_test_routes(pool.clone(), request).await;
-        assert_eq!(response.status(), StatusCode::CREATED);
+        assert_eq!(response.status(), StatusCode::NO_CONTENT);
 
         let entry = sqlx::query!("
                 SELECT pg.*

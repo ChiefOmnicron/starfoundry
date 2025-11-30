@@ -2,7 +2,7 @@ import { Button, Card, Flex, Grid, Modal, Stack, Text, TextInput } from "@mantin
 import { useDisclosure } from "@mantine/hooks";
 import { useState, type ReactElement } from "react";
 
-export function DeleteResourceButton({
+export function DeleteResource({
         resource,
         onConfirm,
     }: FilterProp,

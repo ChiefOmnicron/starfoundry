@@ -18,7 +18,7 @@ export const useFetchStructureRigs = (
     return useQuery(fetchStructureRigsQuery(structureTypeId));
 }
 
-// For pre-listing
+// For pre-fetching
 export const fetchStructureRigsQuery = (
     structureTypeId: number,
 ) => ({

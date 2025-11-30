@@ -4219,6 +4219,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "uuidv7_migration"
+version = "0.1.0"
+dependencies = [
+ "dotenvy",
+ "sqlx 0.9.0-alpha.1",
+ "tokio",
+ "uuid",
+]
+
+[[package]]
 name = "valuable"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"

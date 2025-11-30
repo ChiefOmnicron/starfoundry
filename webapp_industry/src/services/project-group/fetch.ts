@@ -40,4 +40,6 @@ export const fetchProjectGroupQuery = (
 ) => ({
     queryKey: [FETCH_PROJECT_GROUP, projectGroupUuid],
     queryFn: async () => fetchProjectGroup(projectGroupUuid),
+    // ms * s * m
+    staleTime: 1000 * 60 * 5,
 });

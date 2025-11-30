@@ -20,10 +20,11 @@ export type Structure = {
     id:                     Uuid;
     structure_id:           number;
     name:                   string;
-    system:                 StructureSystem;
+    system:                 System;
     item:                   Item;
     rigs:                   StructureRig[];
     services:               Item[];
+    position:               StructurePosition;
 
     installable_rigs?:      StructureRig[];
     installable_services?:  StructureService;
@@ -34,7 +35,13 @@ export type StructureService = {
     slots:    number,
 }
 
-export type StructureSystem = {
+export type StructurePosition = {
+    x: number;
+    y: number;
+    z: number;
+};
+
+export type System = {
     region_id:          number;
     region_name:        string;
     constellation_id:   number;
@@ -56,10 +63,12 @@ export type StructureRig = {
 }
 
 export type StructureFilter = {
-    name?: string;
-    system_id?: number;
+    name?:              string;
+    system_id?:         number;
     structure_type_id?: number;
-    service_id?: number;
+    service_id?:        number;
+    rig_id?:            number;
+    include_npc?:       boolean;
 }
 
 // For general use
@@ -69,7 +78,7 @@ export const useListStructure = (
     return useQuery(listStructureQuery(filter));
 }
 
-// For pre-listing
+// For pre-fetching
 export const listStructureQuery = (
     filter: StructureFilter,
 ) => ({

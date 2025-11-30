@@ -12,7 +12,7 @@ pub struct ConfigFile {
     pub domains: HashMap<String, ConfigFileDomain>,
 }
 
-/// Represents a domain configration
+/// Represents a domain configuration
 #[derive(Debug, Deserialize)]
 pub struct ConfigFileDomain {
     /// List of [CharacterId]s that are admins in the domain

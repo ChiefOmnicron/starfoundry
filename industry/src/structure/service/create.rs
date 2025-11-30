@@ -6,6 +6,7 @@ use utoipa::ToSchema;
 
 use crate::structure::{StructureError, StructureUuid};
 use crate::structure::error::Result;
+use starfoundry_lib_eve_gateway::StructurePosition;
 
 pub async fn create(
     pool:         &PgPool,
@@ -23,9 +24,12 @@ pub async fn create(
                 services,
                 name,
                 system_id,
-                structure_id
+                structure_id,
+                x,
+                y,
+                z
             )
-            VALUES($1, $2, $3, $4, $5, $6, $7)
+            VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
             RETURNING id
         ",
             *character_id,
@@ -35,6 +39,9 @@ pub async fn create(
             info.name,
             *info.system_id,
             info.structure_id,
+            info.position.x,
+            info.position.y,
+            info.position.z,
         )
         .fetch_one(pool)
         .await
@@ -45,7 +52,7 @@ pub async fn create(
 #[cfg(test)]
 mod create_project_group_test {
     use sqlx::PgPool;
-    use starfoundry_lib_eve_gateway::StructureType;
+    use starfoundry_lib_eve_gateway::{StructurePosition, StructureType};
     use starfoundry_lib_types::CharacterId;
 
     use crate::structure::error::StructureError;
@@ -65,6 +72,7 @@ mod create_project_group_test {
                     rigs:              Vec::new(),
                     services:          Vec::new(),
                     structure_id:      1_000_000_000_000,
+                    position:          StructurePosition { x: 0f32, y: 0f32, z: 0f32 },
                 }
             )
             .await;
@@ -86,6 +94,7 @@ mod create_project_group_test {
                     rigs:              Vec::new(),
                     services:          Vec::new(),
                     structure_id:      100_000_000_000,
+                    position:          StructurePosition { x: 0f32, y: 0f32, z: 0f32 },
                 }
             )
             .await;
@@ -107,6 +116,7 @@ mod create_project_group_test {
                     rigs:              Vec::new(),
                     services:          Vec::new(),
                     structure_id:      1_100_000_000_000,
+                    position:          StructurePosition { x: 0f32, y: 0f32, z: 0f32 },
                 }
             )
             .await;
@@ -159,6 +169,8 @@ pub struct CreateStructure {
     pub rigs:              Vec<TypeId>,
     /// Id of the structure in-game
     pub services:          Vec<TypeId>,
+    /// Position of the structure in the galaxy
+    pub position:          StructurePosition,
 
     /// EVE Id of the structure
     pub structure_id:      i64,

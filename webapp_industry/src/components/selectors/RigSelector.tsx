@@ -8,6 +8,7 @@ export function RigSelector({
     rigs,
     selected = [],
     onSelect,
+    readonly = false,
 }: Props) {
     const [value, setValue] = useState<string[]>(
         () => {
@@ -34,6 +35,7 @@ export function RigSelector({
 
     return <>
         <MultiSelect
+            data-1p-ignore
             data-cy="rigSelector"
             data={options}
             label={"Rigs"}
@@ -45,6 +47,7 @@ export function RigSelector({
             }}
             placeholder="Select Rig"
             nothingFoundMessage="No Rig found"
+            disabled={readonly}
             clearable
             searchable
         />
@@ -57,5 +60,7 @@ export type Props = {
     // selected value
     selected?: TypeId[];
     // event that fires when an element was selected
-    onSelect:  (selected: TypeId[]) => void
+    onSelect:  (selected: TypeId[]) => void,
+    // will make all inputs readonly
+    readonly?: boolean;
 }

@@ -2,8 +2,9 @@ mod api_docs;
 mod config;
 mod healthcheck;
 mod metrics;
-//mod project_group;
+mod project_group;
 mod state;
+mod structure_group;
 mod structure;
 
 pub use self::state::*;
@@ -79,8 +80,9 @@ fn app(
 ) -> Router {
     // build our application with a route
     let (router, api) = OpenApiRouter::with_openapi(ApiDoc::openapi())
-        //.nest("/project-groups", project_group::routes(state.clone()))
+        .nest("/project-groups", project_group::routes(state.clone()))
         .nest("/structures", structure::routes(state.clone()))
+        .nest("/structure-groups", structure_group::routes(state.clone()))
         .layer(
             ServiceBuilder::new()
                 .layer(middleware::from_fn(path_metrics))

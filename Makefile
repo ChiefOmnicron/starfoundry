@@ -6,6 +6,17 @@ sqlx-prepare:
 sqlx-check:
 	cargo sqlx prepare --check --workspace -- --all-targets --all-features
 
+.PHONY: web-component-test-chrome
+web-component-test-chrome:
+	docker run \
+		-v ${PWD}/webapp_components:/webapp \
+		-w /webapp \
+		--user ${shell id -u} \
+		--rm \
+		--entrypoint cypress \
+		cypress/included:15.1.0 \
+		run --component --browser chrome
+
 .PHONY: web-industry-test-chrome
 web-industry-test-chrome:
 	docker run \
@@ -15,7 +26,7 @@ web-industry-test-chrome:
 		--rm \
 		--entrypoint cypress \
 		cypress/included:15.1.0 \
-		run --component --browser chrome --spec "src/routes/structures/_modal/-add.cy.tsx"
+		run --component --browser chrome
 
 .PHONY: web-store-test-chrome
 web-store-test-chrome:

@@ -26,6 +26,7 @@ use crate::structure::error::Result;
     get,
     path = "/",
     tag = "Structures",
+    params(StructureFilter),
     responses(
         (
             body = Vec<Structure>,

@@ -90,6 +90,7 @@ mod tests {
 
     use crate::structure::service::CreateStructure;
     use crate::structure::structure_test_routes;
+    use starfoundry_lib_eve_gateway::StructurePosition;
 
     #[sqlx::test(
         fixtures("base"),
@@ -110,12 +111,13 @@ mod tests {
             .method("POST")
             .body(Body::new(
                 serde_json::to_string(&CreateStructure {
-                    name: "My test structure".into(),
-                    system_id: 30004759.into(),
-                    structure_type_id: 35834.into(),
-                    rigs: vec![46497.into()],
-                    services: vec![35892.into()],
-                    structure_id: 1_000_000_000_000,
+                    name:               "My test structure".into(),
+                    system_id:          30004759.into(),
+                    structure_type_id:  35834.into(),
+                    rigs:               vec![46497.into()],
+                    services:           vec![35892.into()],
+                    structure_id:       1_000_000_000_000,
+                    position:           StructurePosition { x: 0f32, y: 0f32, z: 0f32 },
                 }).unwrap()
             ))
             .unwrap();
@@ -154,12 +156,13 @@ mod tests {
             .method("POST")
             .body(Body::new(
                 serde_json::to_string(&CreateStructure {
-                    name: "My test structure".into(),
-                    system_id: 30004759.into(),
-                    structure_type_id: 35834.into(),
-                    rigs: vec![46497.into()],
-                    services: vec![35892.into()],
-                    structure_id: 1_000_000_000_000,
+                    name:               "My test structure".into(),
+                    system_id:          30004759.into(),
+                    structure_type_id:  35834.into(),
+                    rigs:               vec![46497.into()],
+                    services:           vec![35892.into()],
+                    structure_id:       1_000_000_000_000,
+                    position:           StructurePosition { x: 0f32, y: 0f32, z: 0f32 },
                 }).unwrap()
             ))
             .unwrap();
@@ -199,11 +202,11 @@ mod tests {
             .method("POST")
             .body(Body::new(
                 serde_json::to_string(&serde_json::json!({
-                    "system_id": 30004759,
+                    "system_id":         30004759,
                     "structure_type_id": 35834,
-                    "rigs": vec![46497],
-                    "services": vec![35892],
-                    "structure_id": 1000000000000 as i64,
+                    "rigs":              vec![46497],
+                    "services":          vec![35892],
+                    "structure_id":      1000000000000 as i64,
                 })).unwrap()
             ))
             .unwrap();
@@ -225,11 +228,11 @@ mod tests {
             .method("POST")
             .body(Body::new(
                 serde_json::to_string(&serde_json::json!({
-                    "name": "My test structure",
-                    "system_id": 30004759,
+                    "name":              "My test structure",
+                    "system_id":         30004759,
                     "structure_type_id": 35834,
-                    "rigs": vec![46497],
-                    "services": vec![35892],
+                    "rigs":              vec![46497],
+                    "services":          vec![35892],
                 })).unwrap()
             ))
             .unwrap();
@@ -251,12 +254,12 @@ mod tests {
             .method("POST")
             .body(Body::new(
                 serde_json::to_string(&serde_json::json!({
-                    "name": "My test structure",
-                    "system_id": 30004759,
+                    "name":              "My test structure",
+                    "system_id":         30004759,
                     "structure_type_id": 35834,
-                    "rigs": vec![46497],
-                    "services": vec![35892],
-                    "structure_id": 1337 as i64,
+                    "rigs":              vec![46497],
+                    "services":          vec![35892],
+                    "structure_id":      1337 as i64,
                 })).unwrap()
             ))
             .unwrap();

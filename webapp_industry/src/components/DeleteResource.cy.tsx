@@ -1,11 +1,11 @@
 import { MantineProvider } from "@mantine/core";
-import { DeleteResourceButton } from "./DeleteResource";
+import { DeleteResource } from "./DeleteResource";
 
 describe('Delete Resource Button General', () => {
     it('should show everything correctly', () => {
         cy.mount(
             <MantineProvider>
-                <DeleteResourceButton
+                <DeleteResource
                     resource={"Test"}
                     onConfirm={() => {}}
                 />
@@ -25,7 +25,7 @@ describe('Delete Resource Button General', () => {
     it('should accept lowercase', () => {
         cy.mount(
             <MantineProvider>
-                <DeleteResourceButton
+                <DeleteResource
                     resource={"TEST"}
                     onConfirm={() => {}}
                 />
@@ -42,7 +42,7 @@ describe('Delete Resource Button General', () => {
     it('should not accept a wrong name', () => {
         cy.mount(
             <MantineProvider>
-                <DeleteResourceButton
+                <DeleteResource
                     resource={"Test"}
                     onConfirm={() => {}}
                 />

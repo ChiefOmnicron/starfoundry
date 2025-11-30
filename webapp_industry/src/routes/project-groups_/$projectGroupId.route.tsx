@@ -1,9 +1,9 @@
-import LoadingAnimation from '@/components/LoadingAnimation';
-import { LoadingError } from '@/components/LoadingError';
-import { fetchProjectGroupQuery, useFetchProjectGroup } from '@/services/project-group/fetch';
-import { fetchProjectGroupMemberSelfQuery } from '@/services/project-group/fetch_members_self';
-import { Title } from '@mantine/core'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { fetchProjectGroupMemberSelfQuery } from '@/services/project-group/fetch_members_self';
+import { fetchProjectGroupQuery, useFetchProjectGroup } from '@/services/project-group/fetch';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
+import { LoadingError } from '@/components/LoadingError';
+import { Title } from '@mantine/core'
 
 export const Route = createFileRoute('/project-groups_/$projectGroupId')({
     beforeLoad: async ({ context }) => {
