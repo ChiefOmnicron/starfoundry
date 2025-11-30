@@ -44,6 +44,7 @@ pub async fn task(
                 return Err(Error::NoOp);
             }
         };
+    tracing::info!("Done market_region");
 
     insert_structure_market(
         pool,

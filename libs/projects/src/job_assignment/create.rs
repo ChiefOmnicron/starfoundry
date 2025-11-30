@@ -14,7 +14,7 @@ pub async fn create(
     let job_ids = sqlx::query!("
             SELECT DISTINCT(pj.id) AS job_id
             FROM project p
-            JOIN project_group_member pgm ON pgm.group_id = project_group_id
+            JOIN project_group_member pgm ON pgm.group_id = p.project_group_id
             JOIN project_job pj ON p.id = pj.project_id
             WHERE (
                 pgm.character_id = $1 OR

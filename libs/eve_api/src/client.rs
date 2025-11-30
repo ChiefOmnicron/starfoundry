@@ -419,6 +419,7 @@ impl EveApiClient {
         T: DeserializeOwned + Send,
     {
         let path = format!("{}/{}", Self::EVE_API_URL, path);
+        tracing::info!("[market_region] path: {}", path);
         let response = self.send(
             &path,
             &[],
@@ -426,6 +427,7 @@ impl EveApiClient {
         ).await?;
 
         let pages = self.page_count(&response);
+        tracing::info!("[market_region] pages: {}", pages);
 
         if !self.has_content(&response) {
             return Ok(Vec::new());
@@ -437,8 +439,10 @@ impl EveApiClient {
             .await
             .map_err(|x| Error::ReqwestError(x, path.clone()))?;
         data.extend(fetched_data);
+        tracing::info!("[market_region] data: {}", data.len());
 
         for page in 2..=pages {
+            tracing::info!("[market_region] page {}", page);
             let next_page = self
                 .send(
                     &format!("{}", &path),
@@ -448,6 +452,7 @@ impl EveApiClient {
                 .await?;
 
             if !self.has_content(&next_page) {
+                tracing::info!("[market_region] page has no content");
                 continue;
             }
 
@@ -456,6 +461,7 @@ impl EveApiClient {
                 .await
                 .map_err(|x| Error::ReqwestError(x, path.clone()))?;
             data.extend(next_page);
+            tracing::info!("[market_region] page added");
         }
 
         Ok(data)
@@ -668,6 +674,7 @@ impl EveApiClient {
                     );
             }
 
+            tracing::info!("Response.status {}", response.status());
             if response.status() == StatusCode::NOT_FOUND {
                 return Err(Error::NotFound(path.into()));
             } else if response.status().as_u16() == 420u16 {
@@ -958,7 +965,9 @@ impl EveApiClient {
                 .await
                 .map_err(|x| Error::ReqwestError(x, path.into()))?;
 
-            if response.status() == StatusCode::FORBIDDEN ||
+            if response.status() == StatusCode::NOT_FOUND {
+                return Err(Error::NotFound(path.into()))
+            } else if response.status() == StatusCode::FORBIDDEN ||
                response.status() == StatusCode::UNAUTHORIZED {
 
                 last_status = response.status();

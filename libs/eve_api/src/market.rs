@@ -22,9 +22,10 @@ impl EveApiClient {
         &self,
         region_id: &RegionId,
     ) -> Result<Vec<Market>, Error> {
+        tracing::info!("Start market_region for {}", region_id);
         let path = format!("latest/markets/{region_id}/orders");
         self
-            .fetch_page::<Market>(&path, Cache::Follow)
+            .fetch_page::<Market>(&path, Cache::Ignore)
             .await
             .map_err(Into::into)
     }

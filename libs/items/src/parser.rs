@@ -232,6 +232,9 @@ fn sanitize_name(
         .replace("  Hauler", " Hauler")
         .replace("  skin", " skin")
         .replace("  SKIN", " SKIN")
+        // WTF
+        .replace("compressed  crokite iv-grade", "compressed crokite iv-grade")
+        .replace("compressed  mordunium iv-grade", "compressed mordunium iv-grade")
         .replace(" ", "") // \u{a0}
         .trim_start()
         .trim_end()

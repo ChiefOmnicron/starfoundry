@@ -47,7 +47,7 @@ impl ProjectService {
         let result = sqlx::query!("
                 SELECT p.id
                 FROM project p
-                JOIN project_group_member pgm ON pgm.group_id = project_group_id
+                JOIN project_group_member pgm ON pgm.group_id = p.project_group_id
                 WHERE p.id = $1
                 AND (
                     pgm.character_id = $2 OR
@@ -80,7 +80,7 @@ impl ProjectService {
         let result = sqlx::query!("
                 SELECT p.id
                 FROM project p
-                JOIN project_group_member pgm ON pgm.group_id = project_group_id
+                JOIN project_group_member pgm ON pgm.group_id = p.project_group_id
                 WHERE p.id = $1
                 AND (
                     pgm.character_id = $2 OR
