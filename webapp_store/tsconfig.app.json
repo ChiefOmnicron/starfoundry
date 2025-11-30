@@ -5,7 +5,6 @@
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "skipLibCheck": true,
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -26,10 +25,18 @@
 
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "incremental": true,
+    "skipLibCheck": true,
+    "noEmitOnError": true
   },
   "include": [
     "src",
     "cypress/support/cypress.d.ts"
-  ]
+  ],
+  "files": []
 }
