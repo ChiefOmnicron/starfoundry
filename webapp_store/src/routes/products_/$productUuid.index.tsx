@@ -202,15 +202,36 @@ function RouteComponent() {
     };
 
     const message = () => {
+        let messages = [];
+
         if (product.message) {
-            return <Alert
-                variant='light'
-                color='orange'
-                title='Important Message'
-            >
-                <div dangerouslySetInnerHTML={{ __html: product.message.replace(/\n/g, '<br>') }} />
-            </Alert>;
+            messages.push(
+                <Alert
+                    variant='light'
+                    color='orange'
+                    title='Important Message'
+                >
+                    <div dangerouslySetInnerHTML={{ __html: product.message.replace(/\n/g, '<br>') }} />
+                </Alert>
+            );
         }
+
+        if (selectedAddition) {
+            let selectedProduct: Product | undefined = products.find(x => x.id === selectedAddition);
+            if (selectedProduct && selectedProduct.message) {
+                messages.push(
+                    <Alert
+                        variant='light'
+                        color='orange'
+                        title='Important Message'
+                    >
+                        <div dangerouslySetInnerHTML={{ __html: selectedProduct.message.replace(/\n/g, '<br>') }} />
+                    </Alert>
+                );
+            }
+        }
+
+        return messages;
     };
 
     const additionalOptions = () => {
