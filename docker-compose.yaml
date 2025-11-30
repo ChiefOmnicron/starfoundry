@@ -8,19 +8,13 @@ services:
       - "9998:9998"
       - "9999:9999"
     env_file: eve-gateway/.env
+    network_mode: "host"
     volumes:
       - ./eve-gateway/config.toml:/usr/local/bin/config.toml
-    network_mode: "host"
     develop:
       watch:
-        - action: rebuild
-          path: ./target/debug/starfoundry_bin-eve_gateway
         - action: restart
-          path: ./eve-gateway/.env
-        - action: sync+restart
-          path: ./eve-gateway/config.toml
-          target: ./usr/local/bin/config.toml
-          initial_sync: true
+          path: ./target/debug/starfoundry_bin-eve_gateway
 
   gateway:
     build:
@@ -31,18 +25,13 @@ services:
       - "9990:9990"
       - "9991:9991"
     env_file: gateway/.env
-    volumes:
-      - ./gateway/config.toml:/usr/local/bin/config.toml
     network_mode: "host"
     depends_on:
       - eve-gateway
+    volumes:
+      - ./gateway/config.toml:/usr/local/bin/config.toml
     develop:
       watch:
         - action: rebuild
           path: ./target/debug/starfoundry_bin-gateway
-        - action: restart
-          path: ./gateway/.env
-        - action: sync+restart
-          path: ./gateway/config.toml
-          target: ./usr/local/bin/config.toml
-          initial_sync: true
+

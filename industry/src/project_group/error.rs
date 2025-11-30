@@ -99,14 +99,26 @@ impl IntoResponse for ProjectGroupError {
                 ).into_response()
             },
 
-            Self::ValidationError(_) |
-            Self::ProjectIsAssignedToGroup => {
+            Self::ValidationError(_) => {
                 tracing::warn!("{}", self.to_string());
                 (
                     StatusCode::BAD_REQUEST,
                     Json(
                         ErrorResponse {
                             error: "INVALID_RESPONSE".into(),
+                            description: self.to_string(),
+                        }
+                    )
+                ).into_response()
+            },
+
+            Self::ProjectIsAssignedToGroup => {
+                tracing::warn!("{}", self.to_string());
+                (
+                    StatusCode::BAD_REQUEST,
+                    Json(
+                        ErrorResponse {
+                            error: "PROJECT_ASSIGNED".into(),
                             description: self.to_string(),
                         }
                     )

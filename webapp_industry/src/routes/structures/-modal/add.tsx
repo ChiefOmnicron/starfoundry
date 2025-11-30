@@ -1,6 +1,7 @@
 import { Alert, Button, Flex, Stack, Table } from '@mantine/core';
 import { createStructure, type CreateStructure } from '@/services/structure/create';
-import { useNavigate } from '@tanstack/react-router';
+import { Dotlan } from '@/components/Dotlan';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { ResolveStructure } from '@/routes/structures/-components/ResolveStructure';
 import { RigSelector } from '@/components/selectors/RigSelector';
 import { Route as StructureRoute } from '@/routes/structures_/$structureId.index';
@@ -9,9 +10,8 @@ import { type CreateProjectGroup as AddStructure } from '@/services/project-grou
 import { type ResolveStructureResponse } from '@/services/structure/resolveStructure';
 import { type TypeId, type Uuid } from '@/services/utils';
 import { useMutation } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
-import LoadingAnimation from '@/components/LoadingAnimation';
-import { Dotlan } from '@/components/Dotlan';
 
 export function AddStructure({
     close
@@ -126,7 +126,7 @@ export function AddStructure({
                 gap="sm"
             >
                 <Button
-                    data-cy="backStructure"
+                    data-cy="closeStructure"
                     mt="sm"
                     variant="subtle"
                     color="gray"
@@ -150,6 +150,7 @@ export function AddStructure({
                                         structure_id:       resolvedStructure.structure_id,
                                         structure_type_id:  resolvedStructure.item.type_id,
                                         system_id:          resolvedStructure.system.system_id,
+                                        position:           resolvedStructure.position,
                                     });
                                 }}
                             >

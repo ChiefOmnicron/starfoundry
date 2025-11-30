@@ -6,7 +6,7 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { Route as RouteCreateProductRoute } from '@/routes/admin/products/create';
 
-interface QueryParams {
+type QueryParams = {
     deleted?: boolean;
 }
 

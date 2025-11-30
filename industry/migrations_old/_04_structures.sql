@@ -80,27 +80,27 @@ CREATE TABLE IF NOT EXISTS structure_project_group (
         ON DELETE NO ACTION
 );
 
-CREATE TABLE IF NOT EXISTS structure_group (
-    id            UUID        NOT NULL DEFAULT uuidv7(),
-    owner         INTEGER     NOT NULL,
-
-    name          VARCHAR     NOT NULL,
-
-    created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-
-    PRIMARY KEY (id)
-);
+--CREATE TABLE IF NOT EXISTS structure_group (
+--    id            UUID        NOT NULL DEFAULT uuidv7(),
+--    owner         INTEGER     NOT NULL,
+--
+--    name          VARCHAR     NOT NULL,
+--
+--    created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+--    updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+--
+--    PRIMARY KEY (id)
+--);
 
 -- maps structure_group and structure together
-CREATE TABLE IF NOT EXISTS structure_group_structure (
-    structure_group_id UUID NOT NULL,
-    structure_id       UUID NOT NULL,
-
-    FOREIGN KEY (structure_id)
-        REFERENCES structure (id)
-        ON DELETE NO ACTION
-);
+--CREATE TABLE IF NOT EXISTS structure_group_structure (
+--    structure_group_id UUID NOT NULL,
+--    structure_id       UUID NOT NULL,
+--
+--    FOREIGN KEY (structure_id)
+--        REFERENCES structure (id)
+--        ON DELETE NO ACTION
+--);
 
 CREATE TABLE IF NOT EXISTS structure_dynamic_group (
     id         UUID        NOT NULL DEFAULT uuidv7(),

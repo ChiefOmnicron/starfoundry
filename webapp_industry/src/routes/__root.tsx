@@ -6,10 +6,10 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Route as AboutRoute } from '@/routes/about';
 import { Route as IndexRoute } from '@/routes';
 import { Route as LegalRoute } from '@/routes/legal';
+import { UnauthorizedShell } from './auth/login';
 import { useDisclosure } from '@mantine/hooks';
 import type { ReactElement } from 'react';
 import type { RouterContext } from '@/main';
-import { UnauthorizedShell } from './auth/login';
 
 const routes = [
     {
@@ -38,6 +38,11 @@ const routes = [
     {
         link: '/structures',
         label: 'Structures',
+        paths: [],
+    },
+    {
+        link: '/structure-groups',
+        label: 'Structure Groups',
         paths: [],
     }
 ];
@@ -120,7 +125,7 @@ function Shell() {
                             key={ route.label.toLowerCase() }
                             to={ route.link }
                             label={ route.label }
-                            rightSection={ <></> }
+                            rightSection={<></> }
                             opened
                         >
                             { subRoutes }

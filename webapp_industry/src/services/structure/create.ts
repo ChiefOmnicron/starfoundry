@@ -1,4 +1,5 @@
 import { axiosClient } from "@/services/client";
+import type { StructurePosition } from "./list";
 import type { Uuid } from "@/services/utils";
 
 export const createStructure = async (
@@ -17,6 +18,7 @@ export type CreateStructure = {
     structure_id:       number;
     structure_type_id:  number;
     system_id:          number;
+    position:           StructurePosition;
 }
 
 export type CreateStructureResponse = {

@@ -7,6 +7,7 @@ use crate::AppState;
 use crate::structure::error::Result;
 use crate::structure::service::delete;
 use crate::structure::StructureUuid;
+use starfoundry_lib_gateway::ExtractIdentity;
 
 /// Delete Structure
 /// 
@@ -19,7 +20,7 @@ use crate::structure::StructureUuid;
 /// 
 /// ## Security
 /// - authenticated
-/// - structure:read
+/// - structure:write
 /// 
 #[utoipa::path(
     delete,
@@ -42,13 +43,14 @@ use crate::structure::StructureUuid;
         ("api_key" = [])
     ),
 )]
-// TODO: check that the user can access the structure
 pub async fn api(
+    identity:             ExtractIdentity,
     State(state):         State<AppState>,
     Path(structure_uuid): Path<StructureUuid>,
 ) -> Result<impl IntoResponse> {
     delete(
         &state.pool,
+        identity.character_id,
         structure_uuid,
     )
     .await?;
@@ -62,12 +64,10 @@ pub async fn api(
     )
 }
 
-// TODO: add test for query param `include_installable`
 #[cfg(test)]
 mod tests {
     use axum::body::Body;
     use axum::extract::Request;
-    use axum::http::header::HOST;
     use axum::http::StatusCode;
     use sqlx::PgPool;
     use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
@@ -100,7 +100,6 @@ mod tests {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000001")
             .method("GET")
-            .header(HOST, "test.starfoundry.space")
             .body(Body::empty())
             .unwrap();
         let response = structure_test_routes(pool, request).await;

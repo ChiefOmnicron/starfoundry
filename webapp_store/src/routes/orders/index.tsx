@@ -9,7 +9,7 @@ import type { Uuid } from '@/services/utils';
 import { deleteOrder } from '@/services/order/delete';
 import { OrderStatus } from '@/components/OrderStatus';
 
-interface QueryParams {
+type QueryParams = {
     created?: boolean;
 }
 

@@ -8,6 +8,7 @@ export function ServiceSelector({
     services,
     selected = [],
     onSelect,
+    readonly = false,
 }: Props) {
     const [value, setValue] = useState<string[]>(
         () => {
@@ -32,6 +33,7 @@ export function ServiceSelector({
 
     return <>
         <MultiSelect
+            data-1p-ignore
             data-cy="serviceSelector"
             data={options}
             label={"Services"}
@@ -43,6 +45,7 @@ export function ServiceSelector({
             }}
             placeholder="Select Service"
             nothingFoundMessage="No Service found"
+            disabled={readonly}
             clearable
             searchable
         />
@@ -55,5 +58,7 @@ export type Props = {
     // selected value
     selected?: TypeId[];
     // event that fires when an element was selected
-    onSelect:  (selected: TypeId[]) => void
+    onSelect:  (selected: TypeId[]) => void,
+    // will make all inputs readonly
+    readonly?: boolean;
 }

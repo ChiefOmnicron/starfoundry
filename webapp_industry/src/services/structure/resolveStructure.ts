@@ -1,6 +1,6 @@
 import { axiosClient } from "@/services/client";
 import type { Item } from "@/services/item/model";
-import type { StructureRig, StructureService, StructureSystem } from "./list";
+import type { StructureRig, StructureService, System } from "./list";
 
 export const RESOLVE_STRUCTURE = "resolveStructure";
 
@@ -19,7 +19,7 @@ export type ResolveStructureResponse = {
         z: number;
     };
     structure_id: number;
-    system: StructureSystem;
+    system: System;
     item: Item;
     installable_rigs: StructureRig[];
     installable_services: StructureService;

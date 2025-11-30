@@ -9,7 +9,7 @@ import { updateProduct } from '@/services/product/update';
 import { LIST_PRODUCT } from '@/services/product/list';
 import { useState } from 'react';
 
-interface QueryParams {
+type QueryParams = {
     created?: boolean;
 }
 

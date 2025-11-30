@@ -256,7 +256,7 @@ impl EveApiClient {
     /// # Usage
     ///
     /// ``` rust
-    /// use starfoundry_libs_eve_api::*;
+    /// use starfoundry_lib_eve_api::*;
     /// # unsafe {
     /// # std::env::set_var("EVE_CALLBACK", "");
     /// # std::env::set_var("EVE_CLIENT_ID", "");

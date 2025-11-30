@@ -34,7 +34,7 @@ members = [
   'libs/notification',
   'libs/structures',
 
-  #'uuidv7_migration',
+  'uuidv7_migration',
 ]
 resolver = "2"
 

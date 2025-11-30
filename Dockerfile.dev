@@ -1,11 +1,9 @@
 FROM ubuntu:latest AS eve-gateway-api
-
 WORKDIR     /usr/local/bin
 COPY        ./target/debug/starfoundry_bin-eve_gateway /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
 FROM ubuntu:latest AS gateway-api
-
 WORKDIR     /usr/local/bin
 COPY        ./target/debug/starfoundry_bin-gateway /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]

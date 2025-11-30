@@ -39,7 +39,7 @@ pub async fn download_assets(
         "sde.zip",
     )
     .await?;
-
+/*
     download_file(
         directory,
         "https://sde.hoboleaks.space/tq/industrymodifiersources.json",
@@ -60,7 +60,7 @@ pub async fn download_assets(
         "repackagedvolumes.json",
     )
     .await?;
-
+ */
     unzip(
         directory,
         "sde.zip",

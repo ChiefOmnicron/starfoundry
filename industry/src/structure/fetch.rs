@@ -47,7 +47,6 @@ use crate::structure::StructureUuid;
         ("api_key" = [])
     ),
 )]
-// TODO: check that the user can access the structure
 pub async fn api(
     identity:             ExtractIdentity,
     State(state):         State<AppState>,
@@ -82,7 +81,6 @@ pub async fn api(
     }
 }
 
-// TODO: add test for query param `include_installable`
 #[cfg(test)]
 mod tests {
     use axum::body::Body;

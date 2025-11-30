@@ -3,14 +3,15 @@ import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '
 import { createFileRoute } from '@tanstack/react-router';
 import { Filter, type FilterPropEntry, type SelectedFilter } from '@/components/Filter';
 import { LoadingError } from '@/components/LoadingError';
-import { useState } from 'react';
-import LoadingAnimation from '@/components/LoadingAnimation';
+import { useEffect, useState } from 'react';
 import { useListStructure, type Structure, type StructureFilter } from '@/services/structure/list';
 import { Dotlan } from '@/components/Dotlan';
 import { AddStructure } from './-modal/add';
 import { useDisclosure } from '@mantine/hooks';
 import { Route as StructureRoute } from '@/routes/structures_/$structureId.index';
 import { InternalLink } from '@/components/InternalLink';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
+import { normalizeRigServiceName } from '@/services/structure/utils';
 
 interface QueryParams {
     deleted?: boolean;
@@ -22,7 +23,7 @@ export const Route = createFileRoute('/structures/')({
             throw context.auth.login();
         }
     },
-    component: ProjectGroups,
+    component: Structures,
     validateSearch: (params: {
         deleted: boolean,
     }): QueryParams => {
@@ -61,7 +62,7 @@ const columns = [
             info
                 .getValue()
                 .map(x => {
-                    let name = x.name.replace('Standup ', '');
+                    let name = normalizeRigServiceName(x.name);
                     return <label key={x.type_id}>{ name }</label>
                 })
                 .map(x => <>{x} <br /></>)
@@ -74,11 +75,7 @@ const columns = [
             info
                 .getValue()
                 .map(x => {
-                    let name = x.item.name
-                        .replace('Standup M-Set ', '')
-                        .replace('Standup L-Set ', '')
-                        .replace('Standup XL-Set ', '');
-
+                    let name = normalizeRigServiceName(x.item.name);
                     return <label key={x.item.type_id}>{ name }</label>
                 })
                 .map(x => <>{x} <br /></>)
@@ -87,21 +84,12 @@ const columns = [
     }),
 ];
 
-function ProjectGroups() {
+function Structures() {
     const [opened, { open, close }] = useDisclosure(false);
     const { deleted: deletedResource } = Route.useSearch();
 
     const [filterParams, setFilterParams] = useState<StructureFilter | undefined>();
-    const filterOptions: FilterPropEntry[] = [{
-        label: 'Name',
-        key: 'name',
-        type: 'STRING',
-    }];
-    const filterChange = (filters: SelectedFilter[]) => {
-        setFilterParams({
-            name: filters.find(x => x.key === 'name')?.value as string,
-        });
-    };
+    const [filterOptions, setFilterOptions] = useState<FilterPropEntry[]>([]);
 
     const {
         isPending,
@@ -110,12 +98,109 @@ function ProjectGroups() {
         data: structures,
     } = useListStructure(filterParams || {});
 
+    useEffect(() => {
+        if (!isSuccess) {
+            return;
+        }
+
+        if (filterParams) {
+            return;
+        }
+
+        const uniqueStructures = new Map();
+        (structures || [])
+            .map(x => {
+                return {
+                    label: x.item.name,
+                    key:   x.item.type_id,
+                };
+            })
+            .map(x => uniqueStructures.set(x.key, x));
+
+        const uniqueSystems = new Map();
+        (structures || [])
+            .map(x => {
+                return {
+                    label: x.system.system_name,
+                    key:   x.system.system_id,
+                };
+            })
+            .map(x => uniqueSystems.set(x.key, x));
+
+        const uniqueServices = new Map();
+        (structures || [])
+            .map(x => x.services)
+            .flatMap(x => {
+                return x.map(y => {
+                    return {
+                        label: normalizeRigServiceName(y.name),
+                        key:   y.type_id,
+                    }
+                });
+            })
+            .map(x => uniqueServices.set(x.key, x));
+
+        const uniqueRigs = new Map();
+        (structures || [])
+            .map(x => x.rigs)
+            .flatMap(x => {
+                return x.map(y => {
+                    return {
+                        label: normalizeRigServiceName(y.item.name),
+                        key:   y.item.type_id,
+                    }
+                });
+            })
+            .map(x => uniqueRigs.set(x.key, x));
+
+        setFilterOptions([{
+            label: 'Name',
+            key: 'name',
+            type: 'STRING',
+        }, {
+            label: 'Structure Type',
+            key: 'structure_type_id',
+            type: 'SELECT',
+            options: [...uniqueStructures.values()].sort((a, b) => a.label.localeCompare(b.label)),
+        }, {
+            label: 'System',
+            key: 'system_id',
+            type: 'SELECT',
+            options: [...uniqueSystems.values()].sort((a, b) => a.label.localeCompare(b.label)),
+        }, {
+            label: 'Service',
+            key: 'service_id',
+            type: 'SELECT',
+            options: [...uniqueServices.values()].sort((a, b) => a.label.localeCompare(b.label)),
+        }, {
+            label: 'Rig',
+            key: 'rig_id',
+            type: 'SELECT',
+            options: [...uniqueRigs.values()].sort((a, b) => a.label.localeCompare(b.label)),
+        }]);
+    }, [structures]);
+
+    const filterChange = (filters: SelectedFilter[]) => {
+        setFilterParams({
+            name: filters.find(x => x.filterKey === 'name')?.value as string,
+            structure_type_id: filters.find(x => x.filterKey === 'structure_type_id')?.key as number,
+            system_id: filters.find(x => x.filterKey === 'system_id')?.key as number,
+            service_id: filters.find(x => x.filterKey === 'service_id')?.key as number,
+            rig_id: filters.find(x => x.filterKey === 'rig_id')?.key as number,
+        });
+    };
+
     const table = useReactTable<Structure>({
         columns: columns,
         data: structures || [],
         autoResetPageIndex: false,
         getCoreRowModel: getCoreRowModel(),
     });
+
+    const filter = <Filter
+        entries={filterOptions}
+        onFilterChange={filterChange}
+    />;
 
     const addStructureModal = () => {
         return <Modal
@@ -151,7 +236,7 @@ function ProjectGroups() {
         }
     }
 
-    const filter = () => {
+    const actionBar = () => {
         return <>
             <Flex
                 align='center'
@@ -166,19 +251,12 @@ function ProjectGroups() {
                     Add Structure
                 </Button>
             </Flex>
-
-            <Filter
-                entries={filterOptions}
-                onFilterChange={filterChange}
-            />
         </>
     }
 
     const dataTable = () => {
         return <>
             { addStructureModal() }
-
-            { filter() }
 
             <Card p="0">
                 <Table striped data-cy="data">
@@ -218,10 +296,26 @@ function ProjectGroups() {
         } else if (isError) {
             return LoadingError();
         } else if (isSuccess && structures.length > 0) {
-            return dataTable();
+            return <>
+                { actionBar() }
+
+                { filter }
+
+                { dataTable() }
+            </>
+        } else if (filterParams && isPending) {
+            return <>
+                { actionBar() }
+
+                { filter }
+
+                { LoadingAnimation() }
+            </>
         } else if (filterParams && isSuccess && structures.length === 0) {
             return <>
-                { filter() }
+                { actionBar() }
+
+                { filter }
 
                 <Center mt={50} data-cy="noData">
                     <Title order={4}>No structure matching</Title>

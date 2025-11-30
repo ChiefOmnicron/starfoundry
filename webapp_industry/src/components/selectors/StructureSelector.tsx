@@ -1,6 +1,6 @@
-import { useListStructure, type Structure, type StructureFilter } from "@/services/structure/list";
+import { type Structure } from "@/services/structure/list";
 import type { Uuid } from "@/services/utils";
-import { Button, Combobox, Group, Input, InputBase, Text, TextInput, useCombobox } from "@mantine/core";
+import { Combobox, Group, Input, InputBase, Text, useCombobox } from "@mantine/core";
 import { useState, type ReactElement } from "react";
 import { EveIcon } from "../EveIcon";
 
@@ -8,7 +8,7 @@ function SelectOption(structure: Structure) {
   return (
     <Group key={structure.id}>
         <EveIcon
-            id={structure.structure.type_id}
+            id={structure.item.type_id}
         />
 
         <div>
@@ -25,15 +25,14 @@ function SelectOption(structure: Structure) {
 
 export function StructureSelector({
     onSelect,
+    structures,
     selected = [],
-    filters = {},
+    ref = {
+        current: {
+            reset: () => {}
+        }
+    },
 }: StructureSelectorProp): ReactElement {
-    const {
-        isError,
-        isPending,
-        data: structures,
-    } = useListStructure(filters);
-
     const combobox = useCombobox({
         onDropdownClose: () => {
             combobox.resetSelectedOption();
@@ -46,26 +45,13 @@ export function StructureSelector({
         },
     });
 
-    if (isPending) {
-        return <TextInput
-            label="Select Structure"
-            disabled
-            rightSection={
-                <Button
-                    data-cy="loadingStructures"
-                    loaderProps={{ type: 'oval' }}
-                    loading
-                    style={{
-                        border: 'none',
-                        backgroundColor: 'transparent'
-                    }}
-                />
-            }
-        />
-    }
-
     const [value, setValue] = useState<string | null>(null);
     const [search, setSearch] = useState('');
+
+    const resetValue = () => {
+        setValue(null)
+    };
+    ref.current.reset = resetValue;
 
     const structureById = (
         id: string | null
@@ -101,7 +87,7 @@ export function StructureSelector({
             withinPortal={false}
             onOptionSubmit={(val) => {
                 setValue(val);
-                onSelect(val);
+                onSelect(structures.find(x => x.id === val) as any);
                 combobox.closeDropdown();
             }}
             styles={{
@@ -112,17 +98,16 @@ export function StructureSelector({
                     backgroundColor: 'var(--mantine-color-dark-7)'
                 }
             }}
+            position="bottom"
         >
             <Combobox.Target>
                 <InputBase
                     component="button"
                     type="button"
-                    error={isError ? 'Error while loading structures' : ''}
                     withErrorStyles={false}
                     rightSection={<Combobox.Chevron />}
                     onClick={() => combobox.toggleDropdown()}
                     rightSectionPointerEvents="none"
-                    disabled={isError}
                     pointer
                 >
                     {
@@ -154,10 +139,16 @@ export function StructureSelector({
 }
 
 export type StructureSelectorProp = {
-    onSelect: (entry: Uuid) => void;
+    onSelect: (entry: Structure) => void;
 
-    selected?: Uuid[],
+    // list of values that are already selected, and filtered out
+    selected?:      Uuid[],
 
-    // filters that are directly given to the structure request
-    filters?: StructureFilter,
+    structures:     Structure[],
+
+    ref:            { current: StructureSelectorRef },
+}
+
+export type StructureSelectorRef = {
+    reset: () => void,
 }

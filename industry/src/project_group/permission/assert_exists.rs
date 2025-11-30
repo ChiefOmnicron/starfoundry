@@ -1,9 +1,28 @@
+use axum::extract::{Path, Request, State};
+use axum::middleware::Next;
+use axum::response::IntoResponse;
 use sqlx::PgPool;
 
-use crate::project_group::ProjectGroupUuid;
+use crate::AppState;
 use crate::project_group::error::{ProjectGroupError, Result};
+use crate::project_group::ProjectGroupUuid;
 
 pub async fn assert_exists(
+    State(state):             State<AppState>,
+    Path(project_group_uuid): Path<ProjectGroupUuid>,
+    request:                  Request,
+    next:                     Next,
+) -> Result<impl IntoResponse> {
+    assert_exists_check(
+            &state.pool,
+            project_group_uuid,
+        )
+        .await?;
+
+    Ok(next.run(request).await)
+}
+
+async fn assert_exists_check(
     pool:               &PgPool,
     project_group_uuid: ProjectGroupUuid,
 ) -> Result<()> {

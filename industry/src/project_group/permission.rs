@@ -1,8 +1,10 @@
 mod assert_exists;
+mod assert_owner;
 mod assert_read;
 mod assert_write;
 
 pub use self::assert_exists::*;
+pub use self::assert_owner::*;
 pub use self::assert_read::*;
 pub use self::assert_write::*;
 
@@ -12,13 +14,13 @@ use std::ops::Deref;
 use serde::ser::SerializeSeq;
 use serde::de::Visitor;
 
-const BIT_OWNER: i32 = 1i32;
-const BIT_READ: i32 = 2i32;
-const BIT_WRITE_PROJECT: i32 = 4i32;
-const BIT_WRITE_STRUCTURE: i32 = 8i32;
-const BIT_WRITE_DEFAULT: i32 = 16i32;
-const BIT_WRITE_MEMBER: i32 = 32i32;
-const BIT_WRITE_GROUP: i32 = 64i32;
+const BIT_OWNER:            i32 = 1i32;
+const BIT_READ:             i32 = 2i32;
+const BIT_WRITE_PROJECT:    i32 = 4i32;
+const BIT_WRITE_STRUCTURE:  i32 = 8i32;
+const BIT_WRITE_DEFAULT:    i32 = 16i32;
+const BIT_WRITE_MEMBER:     i32 = 32i32;
+const BIT_WRITE_GROUP:      i32 = 64i32;
 
 #[derive(Debug, ToSchema)]
 pub struct ProjectGroupPermission(i32);

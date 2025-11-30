@@ -6,11 +6,11 @@ import type { Uuid } from "@/services/utils";
 export const FETCH_STRUCTURE = 'fetchStructure';
 
 export const fetchStructure = async (
-    id:      Uuid,
-    filter?: FetchStructureQuery,
+    structureId: Uuid,
+    filter?:     FetchStructureQuery,
 ): Promise<Structure> => (await axiosClient())
     .get(
-        `/api/structures/${id}`,
+        `/api/structures/${structureId}`,
         {
             params: filter,
         }
@@ -25,7 +25,7 @@ export const useFetchStructure = (
     return useQuery(fetchStructureQuery(id, filter));
 }
 
-// For pre-listing
+// For pre-fetching
 export const fetchStructureQuery = (
     id:      Uuid,
     filter?: FetchStructureQuery,

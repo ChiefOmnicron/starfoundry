@@ -1,6 +1,6 @@
 use serde::Deserialize;
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::EveGatewayApiClient;
+use starfoundry_lib_eve_gateway::{EveGatewayApiClient, StructurePosition};
 use starfoundry_lib_types::CharacterId;
 use std::collections::HashMap;
 use std::fmt;
@@ -8,7 +8,7 @@ use utoipa::IntoParams;
 
 use crate::structure::error::Result;
 use crate::structure::service::Structure;
-use crate::structure::StructureError;
+use crate::structure::{StructureError, StructureUuid};
 
 pub async fn list(
     pool:                   &PgPool,
@@ -21,28 +21,48 @@ pub async fn list(
                 id,
                 type_id,
                 structure_id,
-                name            AS "structure_name",
+                name AS "structure_name",
                 services,
                 rigs,
-                system_id
+                system_id,
+                x,
+                y,
+                z
             FROM structure
             WHERE
                 NOT (LOWER(structure.name) LIKE '%' || LOWER($2) || '%') IS FALSE AND
                 NOT (structure.type_id = $3) IS FALSE AND
-                NOT ($4::INTEGER IS NULL OR $4::INTEGER = ANY(services)) IS FALSE AND
-                NOT ($5::INTEGER IS NULL OR $5::INTEGER = ANY(rigs)) IS FALSE AND
-                owner = $1
+                NOT (structure.system_id = $4) IS FALSE AND
+                NOT ($5::INTEGER IS NULL OR $5::INTEGER = ANY(services)) IS FALSE AND
+                NOT ($6::INTEGER IS NULL OR $6::INTEGER = ANY(rigs)) IS FALSE AND
+                NOT ($7::UUID[] IS NULL OR id = ANY($7)) IS FALSE AND
+                (owner = $1 OR owner = 0) -- owner = 0 is for NPC stations
             ORDER BY structure.name
         "#,
             *character_id,
             filter.name,
             filter.structure_type_id,
+            filter.system_id,
             filter.service_id,
             filter.rig_id,
+            &filter.structure_ids as _,
         )
         .fetch_all(pool)
         .await
-        .map_err(|e| StructureError::ListStructures(e))?;
+        .map_err(|e| StructureError::ListStructures(e))?
+        .into_iter()
+        .filter(|x| {
+            if let Some(true) = filter.include_npc {
+                true
+            } else {
+                if x.type_id == 46767 || x.type_id == 52678 {
+                    false
+                } else {
+                    true
+                }
+            }
+        })
+        .collect::<Vec<_>>();
 
     let mut type_ids = structures
         .iter()
@@ -121,16 +141,21 @@ pub async fn list(
         };
 
         let structure = Structure {
-            id:                   structure.id.into(),
-            name:                 structure.structure_name,
-            structure_id:         structure.structure_id,
-            system:               system.clone(),
-            item:                 structure_item.clone(),
-            rigs:                 rigs,
-            services:             services,
+            id:                     structure.id.into(),
+            name:                   structure.structure_name,
+            structure_id:           structure.structure_id,
+            system:                 system.clone(),
+            item:                   structure_item.clone(),
+            rigs:                   rigs,
+            services:               services,
+            position:               StructurePosition {
+                                        x: structure.x,
+                                        y: structure.y,
+                                        z: structure.z
+                                    },
 
-            installable_rigs:     None,
-            installable_services: None,
+            installable_rigs:       None,
+            installable_services:   None,
         };
         structure_result.push(structure);
     }
@@ -250,6 +275,13 @@ pub struct StructureFilter {
     )]
     pub structure_type_id: Option<i32>,
 
+    #[serde(default)]
+    #[param(
+        example = json!("30004759"),
+        required = false,
+    )]
+    pub system_id:         Option<i32>,
+
     /// [TypeId] of a structure service
     #[serde(default)]
     #[param(
@@ -265,6 +297,22 @@ pub struct StructureFilter {
         required = false,
     )]
     pub rig_id:           Option<i32>,
+
+    /// List of StructureUuids that should be fetched
+    #[serde(default)]
+    #[param(
+        example = json!(["019a4147-4f81-7478-9598-71223d284470"]),
+        required = false,
+    )]
+    pub structure_ids:    Option<Vec<StructureUuid>>,
+
+    /// Includes NPC stations
+    #[serde(default)]
+    #[param(
+        example = json!(true),
+        required = false,
+    )]
+    pub include_npc:      Option<bool>,
 }
 
 impl fmt::Display for StructureFilter {

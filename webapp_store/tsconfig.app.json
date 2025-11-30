@@ -37,6 +37,5 @@
   "include": [
     "src",
     "cypress/support/cypress.d.ts"
-  ],
-  "files": []
+  ]
 }

@@ -3,7 +3,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { createProjectGroup, type CreateProjectGroup } from '@/services/project-group/create';
 import { LIST_PROJECT_GROUPS } from '@/services/project-group/list';
 import { Route as ListProjectGroupRoute } from '@/routes/project-groups/index';
-import { Route as ProjectGroupOverviewRoute } from '@/routes/project-groups_/$projectGroupId.index';
+import { Route as ProjectGroupOverviewRoute } from '@/routes/project-groups_/$projectGroupId.overview';
 import { useForm } from '@tanstack/react-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';

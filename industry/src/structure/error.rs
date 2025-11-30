@@ -20,6 +20,8 @@ pub enum StructureError {
     NotFound(StructureUuid),
     #[error("Validating the input data failed, '{0}'")]
     ValidationError(String),
+    #[error("error while fetching permissions for structure '{1}', error: '{0}'")]
+    FetchPermission(sqlx::Error, StructureUuid),
 
     #[error("error while creating structure, error: '{0}'")]
     CreateStructure(sqlx::Error),
@@ -31,9 +33,6 @@ pub enum StructureError {
     DeleteStructure(sqlx::Error, StructureUuid),
     #[error("error while updating structure '{1}', error: '{0}'")]
     UpdateStructure(sqlx::Error, StructureUuid),
-
-    #[error("error while fetching permissions for structure '{1}', error: '{0}'")]
-    FetchStructurePermission(sqlx::Error, StructureUuid),
 
     #[error(transparent)]
     JsonExtractorRejection(#[from] JsonRejection),
@@ -47,7 +46,7 @@ impl IntoResponse for StructureError {
     fn into_response(self) -> Response {
         match self {
             Self::Forbidden(_, _) |
-            Self::FetchStructurePermission(_, _) => {
+            Self::FetchPermission(_, _) => {
                 tracing::info!("{}", self.to_string());
                 (
                     StatusCode::FORBIDDEN,

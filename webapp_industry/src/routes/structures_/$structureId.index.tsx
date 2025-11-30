@@ -1,19 +1,19 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Dotlan } from '@/components/Dotlan';
 import { Alert, Button, Flex, Grid, Stack, Table, Title } from '@mantine/core';
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { DeleteResource } from '@/components/DeleteResource';
+import { deleteStructure } from '@/services/structure/delete';
+import { Dotlan } from '@/components/Dotlan';
+import { FETCH_STRUCTURE, useFetchStructure } from '@/services/structure/fetch';
+import { LIST_STRUCTURE } from '@/services/structure/list';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { LoadingError } from '@/components/LoadingError';
 import { RigSelector } from '@/components/selectors/RigSelector';
-import { ServiceSelector } from '@/components/selectors/ServiceSelector';
-import { useState } from 'react';
-import { FETCH_STRUCTURE, useFetchStructure } from '@/services/structure/fetch';
-import LoadingAnimation from '@/components/LoadingAnimation';
-import type { TypeId } from '@/services/utils';
-import { DeleteResourceButton } from '@/components/DeleteResource';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { LIST_STRUCTURE } from '@/services/structure/list';
 import { Route as StructureListRoute } from '@/routes/structures/index';
-import { deleteStructure } from '@/services/structure/delete';
+import { ServiceSelector } from '@/components/selectors/ServiceSelector';
 import { updateStructure, type UpdateStructure } from '@/services/structure/update';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import type { TypeId } from '@/services/utils';
 
 interface QueryParams {
     created?: boolean;
@@ -55,7 +55,8 @@ function StructureComponent() {
         mutationFn: (data: UpdateStructure) => updateStructure(structureId, data),
         onSuccess: () => {
             setSuccessfulUpdated(true);
-            queryClient.invalidateQueries({ queryKey: [FETCH_STRUCTURE, LIST_STRUCTURE] });
+            queryClient.invalidateQueries({ queryKey: [FETCH_STRUCTURE, structureId] });
+            queryClient.invalidateQueries({ queryKey: [LIST_STRUCTURE] });
         },
     });
 
@@ -79,6 +80,13 @@ function StructureComponent() {
 
     if (isError) {
         return LoadingError();
+    }
+
+    const isReadonly = () => {
+        // Jita
+        return structure.structure_id === 60003760 ||
+        // Amarr
+            structure.structure_id === 60008494
     }
 
     const deleteResource = async () => {
@@ -113,16 +121,16 @@ function StructureComponent() {
 
                 if (x.material && x.time) {
                     return <>
-                        <label>-{ (x.material * systemModifier).toFixed(2) }% material for { bonus }</label><br />
-                        <label>-{ (x.time * systemModifier).toFixed(2) }% time for { bonus }</label><br />
+                        <label>-{ (x.material * systemModifier).toFixed(2) }% ME bonus for '{ bonus }'</label><br />
+                        <label>-{ (x.time * systemModifier).toFixed(2) }% TE bonus for '{ bonus }'</label><br />
                     </>
                 } else if (x.material) {
                     return <>
-                        <label>-{ (x.material * systemModifier).toFixed(2) }% material for { bonus }</label><br />
+                        <label>-{ (x.material * systemModifier).toFixed(2) }% ME bonus for '{ bonus }'</label><br />
                     </>
                 } else if (x.time) {
                     return <>
-                        <label>-{ (x.time * systemModifier).toFixed(2) }% time for { bonus }</label><br />
+                        <label>-{ (x.time * systemModifier).toFixed(2) }% TE bonus for '{ bonus }'</label><br />
                     </>
                 }
             })
@@ -179,6 +187,10 @@ function StructureComponent() {
     };
 
     const dangerZone = () => {
+        if (isReadonly()) {
+            return <></>
+        }
+
         return <>
             <Title
                 data-cy="danger-zone-header"
@@ -188,7 +200,7 @@ function StructureComponent() {
                 Danger Zone
             </Title>
 
-            <DeleteResourceButton
+            <DeleteResource
                 resource={ structure.name }
                 onConfirm={ () => deleteResource() }
             />
@@ -231,6 +243,7 @@ function StructureComponent() {
                             onSelect={(selected: TypeId[]) => {
                                 setSelectedRigs(selected);
                             }}
+                            readonly={isReadonly()}
                         />
 
                         <ServiceSelector
@@ -239,6 +252,7 @@ function StructureComponent() {
                             onSelect={(selected: TypeId[]) => {
                                 setSelectedServices(selected);
                             }}
+                            readonly={isReadonly()}
                         />
                     </Stack>
 
@@ -246,19 +260,23 @@ function StructureComponent() {
                         justify="flex-end"
                         gap="sm"
                     >
-                        <Button
-                            data-cy="saveStructure"
-                            mt="sm"
-                            type="submit"
-                            onClick={() => {
-                                mutationUpdate.mutate({
-                                    rigs:     selectedRigs,
-                                    services: selectedServices,
-                                });
-                            }}
-                        >
-                            Save
-                        </Button>
+                        {
+                            isReadonly()
+                            ? <></>
+                            : <Button
+                                    data-cy="saveStructure"
+                                    mt="sm"
+                                    type="submit"
+                                    onClick={() => {
+                                        mutationUpdate.mutate({
+                                            rigs:     selectedRigs,
+                                            services: selectedServices,
+                                        });
+                                    }}
+                                >
+                                    Save
+                                </Button>
+                        }
                     </Flex>
 
                     { dangerZone() }

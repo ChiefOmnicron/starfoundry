@@ -1,17 +1,15 @@
-mod service;
-
-pub use self::service::*;
-
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
+use starfoundry_lib_gateway::ExtractIdentity;
 
-use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
 use crate::{eve_gateway_api_client, AppState};
+use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
 use crate::project_group::error::Result;
 use crate::project_group::ProjectGroupUuid;
-use crate::structure::Structure;
+use crate::structure::service::Structure;
+use crate::project_group::service::list_default_market;
 
 /// List Markets
 /// 
@@ -53,11 +51,13 @@ use crate::structure::Structure;
     ),
 )]
 pub async fn api(
+    identity:                 ExtractIdentity,
     State(state):             State<AppState>,
     Path(project_group_uuid): Path<ProjectGroupUuid>,
 ) -> Result<impl IntoResponse> {
     let data = list_default_market(
             &state.pool,
+            identity.character_id,
             &eve_gateway_api_client()?,
             project_group_uuid,
         )
@@ -93,11 +93,10 @@ mod tests {
     use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
 
     use crate::project_group::project_group_test_routes;
-    use crate::structure::Structure;
+    use crate::structure::service::Structure;
 
     #[sqlx::test(
-        fixtures("DELETE_AFTER_NEW_MS", "base", "list_default"),
-        migrator = "crate::test_util::MIGRATOR"
+        fixtures("base", "list_default"),
     )]
     async fn happy_path_all(
         pool: PgPool,
@@ -118,8 +117,7 @@ mod tests {
     }
 
     #[sqlx::test(
-        fixtures("DELETE_AFTER_NEW_MS", "base", "list_default"),
-        migrator = "crate::test_util::MIGRATOR"
+        fixtures("base", "list_default"),
     )]
     async fn happy_path_no_content(
         pool: PgPool,
@@ -140,8 +138,7 @@ mod tests {
     }
 
     #[sqlx::test(
-        fixtures("DELETE_AFTER_NEW_MS", "base", "list_default"),
-        migrator = "crate::test_util::MIGRATOR"
+        fixtures("base", "list_default"),
     )]
     async fn unauthorized(
         pool: PgPool,
@@ -157,8 +154,7 @@ mod tests {
     }
 
     #[sqlx::test(
-        fixtures("DELETE_AFTER_NEW_MS", "base", "list_default"),
-        migrator = "crate::test_util::MIGRATOR"
+        fixtures("base", "list_default"),
     )]
     async fn forbidden(
         pool: PgPool,
@@ -175,8 +171,7 @@ mod tests {
     }
 
     #[sqlx::test(
-        fixtures("DELETE_AFTER_NEW_MS", "base", "list_default"),
-        migrator = "crate::test_util::MIGRATOR"
+        fixtures("base", "list_default"),
     )]
     async fn not_found(
         pool: PgPool,

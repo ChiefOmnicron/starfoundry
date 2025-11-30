@@ -35,7 +35,6 @@ export const refreshToken = async () => {
     return await axios
         .get('/api/auth/token')
         .then(x => {
-            console.log(x)
             jwtToken = x.data.access_token;
         })
         .catch(e => {

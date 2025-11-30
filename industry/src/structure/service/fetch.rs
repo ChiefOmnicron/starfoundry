@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item, StructureRigResponse, StructureServiceResponse, System};
+use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item, StructurePosition, StructureRigResponse, StructureServiceResponse, System};
 use starfoundry_lib_types::CharacterId;
 use utoipa::{IntoParams, ToSchema};
 
@@ -23,12 +23,14 @@ pub async fn fetch(
                 name            AS "structure_name",
                 services,
                 rigs,
-                system_id
+                system_id,
+                x,
+                y,
+                z
             FROM structure
             WHERE
-                owner = $1 AND
+                (owner = $1 OR owner = 0) AND
                 structure.id = $2
-            ORDER BY structure.name
         "#,
             *character_id,
             *structure_uuid,
@@ -99,15 +101,20 @@ pub async fn fetch(
 
     let structure = Structure {
         id:                   structure.id.into(),
-        name:                 structure.structure_name,
-        structure_id:         structure.structure_id,
-        system:               system,
-        item:                 structure_item,
-        rigs:                 rigs,
-        services:             services,
+        name:                   structure.structure_name,
+        structure_id:           structure.structure_id,
+        system:                 system,
+        item:                   structure_item,
+        rigs:                   rigs,
+        services:               services,
+        position:               StructurePosition {
+                                    x: structure.x,
+                                    y: structure.y,
+                                    z: structure.z
+                                },
 
-        installable_rigs:     installable_rigs,
-        installable_services: installable_services,
+        installable_rigs:       installable_rigs,
+        installable_services:   installable_services,
     };
 
     Ok(Some(structure))
@@ -172,7 +179,7 @@ mod tests {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, IntoParams)]
+#[derive(Debug, Default, Deserialize, Serialize, IntoParams)]
 pub struct FetchStructureQuery {
     #[serde(default)]
     pub include_installable: Option<bool>,
@@ -232,6 +239,8 @@ pub struct Structure {
     pub rigs:                 Vec<StructureRigResponse>,
     /// Id of the structure in-game
     pub services:             Vec<Item>,
+    /// Position of the structure in the system
+    pub position:             StructurePosition,
 
     #[serde(skip_deserializing)]
     #[serde(skip_serializing_if = "Option::is_none")]

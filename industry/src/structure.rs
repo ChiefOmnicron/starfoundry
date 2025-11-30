@@ -10,16 +10,14 @@ pub mod service;
 
 pub use self::error::StructureError;
 
-use axum::extract::{Path, Request, State};
-use axum::middleware::{self, Next};
-use axum::response::IntoResponse;
-use starfoundry_lib_gateway::ExtractIdentity;
+use axum::middleware;
 use starfoundry_lib_types::starfoundry_uuid;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
 
 use crate::AppState;
 use crate::structure::error::Result;
+use crate::structure::permission::{assert_exists, assert_read, assert_write};
 
 pub fn routes(
     state: AppState,
@@ -54,55 +52,6 @@ pub fn routes(
 }
 
 starfoundry_uuid!(StructureUuid, "StructureUuid");
-
-async fn assert_exists(
-    State(state):       State<AppState>,
-    Path(structure_id): Path<StructureUuid>,
-    request:            Request,
-    next:               Next,
-) -> Result<impl IntoResponse> {
-    permission::assert_exists(
-            &state.pool,
-            structure_id,
-        )
-        .await?;
-
-    Ok(next.run(request).await)
-}
-
-async fn assert_read(
-    State(state):       State<AppState>,
-    Path(structure_id): Path<StructureUuid>,
-    identity:           ExtractIdentity,
-    request:            Request,
-    next:               Next,
-) -> Result<impl IntoResponse> {
-    permission::assert_read_access(
-            &state.pool,
-            structure_id,
-            identity.character_id,
-        )
-        .await?;
-
-    Ok(next.run(request).await)
-}
-
-async fn assert_write(
-    State(state):       State<AppState>,
-    Path(structure_id): Path<StructureUuid>,
-    identity:           ExtractIdentity,
-    request:            Request,
-    next:               Next,
-) -> Result<impl IntoResponse> {
-    permission::assert_write_access(
-            &state.pool,
-            structure_id,
-            identity.character_id,
-        )
-        .await?;
-
-    Ok(next.run(request).await)
-}
 
 #[cfg(test)]
 pub async fn structure_test_routes(

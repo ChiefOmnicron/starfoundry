@@ -10,7 +10,7 @@ import { deleteOrder } from '@/services/order/delete';
 import { LIST_ORDER_ADMIN, useListOrdersAdmin, type AdminOrder } from '@/services/order/list_admin';
 import { OrderStatus } from '@/components/OrderStatus';
 
-interface QueryParams {
+type QueryParams = {
     created?: boolean;
 }
 
