@@ -1,3 +1,9 @@
+// Avoid musl's default allocator due to lackluster performance
+// https://nickb.dev/blog/default-musl-allocator-considered-harmful-to-performance
+#[cfg(target_env = "musl")]
+#[global_allocator]
+static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
+
 mod appraisal;
 mod config;
 mod engine;
@@ -524,41 +530,41 @@ async fn process_build(
         .execute(&mut *transaction)
         .await?;
 
-    let multiplier = match build.id.to_string().as_ref() {
+    let multiplier = match build.image_type_id {
         // Avatar
-        "01998beb-a0c4-74f9-bd20-78d5011e49a7" |
+        11567 |
         // Azariel
-        "01998beb-a0c4-76da-8c73-df9cda4a3b92" |
+        78576 |
         // Erebus
-        "01998beb-a0c4-77d0-ba11-ab19f914087c" |
+        671 |
         // Ragnarok
-        "01998beb-a0c4-7343-ac64-551690aa9af3" |
+        23773 |
         // Leviathan
-        "01998beb-a0c4-7185-9bd1-7fd4729366d5" |
+        3764 |
         // Aeon
-        "01998beb-a0c4-7017-96ac-e397f3c9497b" |
+        23919 |
         // Hel
-        "01998beb-a0c4-70cf-a05d-79dd219dcc8a" |
+        22852 |
         // Nyx
-        "01998beb-a0c4-7839-bf7e-64293132e9b6" |
+        23913 |
         // Komodo
-        "01998beb-a0c4-7245-8f99-7ce193221404" |
+        45649 |
         // Molok
-        "01998beb-a0c4-7cea-b898-13c528e26c93" |
+        42241 |
         // Revenant
-        "01998beb-a0c4-7942-8de0-b2ec624230e7" |
+        3514 |
         // Vendetta
-        "01998beb-a0c4-7b82-9459-c212737cc7f2" |
+        42125 |
         // Wyvern
-        "01998beb-a0c4-7ed2-99aa-b5764f4f1353" |
+        23917 |
         // Ark
-        "01998beb-a0c4-7447-aeef-00a918c97371" |
+        28850 |
         // Anshar
-        "01998beb-a0c4-7854-8ee3-beaad6deb957" |
+        28848 |
         // Nomad
-        "01998beb-a0c4-745f-898f-765be1cb92ca" |
+        28846 |
         // Rhea
-        "01998beb-a0c4-7a65-8c93-3d211a265d5a" => 1.15,
+        28844 => 1.15,
         _ => 1.1,
     };
 

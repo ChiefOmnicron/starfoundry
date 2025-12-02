@@ -35,3 +35,6 @@ utoipa = { version = "5.4.0", features = ["uuid", "yaml"] }
 utoipa-axum = "0.2.0"
 utoipa-scalar = { version = "0.3.0", features = ["axum"] }
 uuid = { version = "1.18.1", features = ["v7"] }
+
+[target.'cfg(target_env = "musl")'.dependencies]
+mimalloc = "0.1.43"
