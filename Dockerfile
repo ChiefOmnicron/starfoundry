@@ -82,6 +82,8 @@ COPY        ./meta_webserver ./meta_webserver
 COPY        ./store ./store
 COPY        ./worker-eve_sde_parser ./worker-eve_sde_parser
 COPY        ./worker-store-cost ./worker-store-cost
+# tmp
+COPY        ./uuidv7_migration ./uuidv7_migration
 RUN         cargo chef prepare --recipe-path recipe.json
 
 FROM chef AS builder
