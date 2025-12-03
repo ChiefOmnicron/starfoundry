@@ -25,6 +25,8 @@ pub enum AuthError {
     InsertEveCredential(sqlx::Error),
     #[error("error while inserting login attempt, error: '{0}'")]
     InsertLoginAttempt(sqlx::Error),
+    #[error("error while inserting login history, error: '{0}'")]
+    InsertLoginHistory(sqlx::Error),
 
     #[error("error while updating login, error: '{0}'")]
     UpdateLogin(sqlx::Error),
