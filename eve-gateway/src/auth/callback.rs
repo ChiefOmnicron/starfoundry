@@ -10,6 +10,7 @@ use uuid::Uuid;
 use crate::api_docs::{BadRequest, InternalServerError};
 use crate::auth::RefreshTokenClaims;
 use crate::auth::error::{AuthError, Result};
+use crate::auth::history::insert_into_history;
 use crate::eve_client::{EveApiClient, EveJwtToken};
 use crate::character::refresh_character_in_db;
 use crate::state::AppState;
@@ -177,6 +178,14 @@ pub async fn callback(
         .execute(&state.postgres)
         .await
         .map_err(AuthError::InsertRefreshToken)?;
+
+    if let Err(e) = insert_into_history(
+        &state.postgres,
+        character_id,
+        domain,
+    ).await {
+        tracing::error!("{}", e);
+    }
 
     Ok((
         StatusCode::OK,

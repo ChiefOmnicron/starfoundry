@@ -1,5 +1,6 @@
 mod callback;
 mod extractor;
+mod history;
 mod jwks;
 mod jwt;
 mod login;

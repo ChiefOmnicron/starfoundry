@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO login_history\n            (\n                character_id,\n                source\n            )\n            VALUES ($1, $2)\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Varchar"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "6e694692e6880198d8e998936abaf1128eb4ca6a3da57dd87fac7863028f21db"
+}

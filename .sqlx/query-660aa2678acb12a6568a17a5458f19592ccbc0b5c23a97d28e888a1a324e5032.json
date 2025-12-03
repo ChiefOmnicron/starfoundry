@@ -1,0 +1,30 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT pg.id\n            FROM project_group pg\n            JOIN project_group_member pgm ON pgm.project_group_id = pg.id\n            WHERE pg.id = $1\n                AND pgm.character_id = $2\n                AND permission & $3 = $3\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "project_group",
+            "name": "id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "660aa2678acb12a6568a17a5458f19592ccbc0b5c23a97d28e888a1a324e5032"
+}

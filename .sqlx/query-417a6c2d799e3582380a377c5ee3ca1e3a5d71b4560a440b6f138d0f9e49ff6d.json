@@ -1,0 +1,64 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT\n                    project_group_id,\n                    structure_id,\n                    created_at,\n                    updated_at\n                FROM project_group_default_market\n                WHERE project_group_id = $1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "project_group_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "project_group_default_market",
+            "name": "project_group_id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "structure_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "project_group_default_market",
+            "name": "structure_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "created_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "project_group_default_market",
+            "name": "created_at"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "updated_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "project_group_default_market",
+            "name": "updated_at"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "417a6c2d799e3582380a377c5ee3ca1e3a5d71b4560a440b6f138d0f9e49ff6d"
+}

@@ -1,0 +1,19 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                INSERT INTO project_group\n                (\n                    id,\n                    name,\n                    owner,\n                    description,\n                    created_at,\n                    updated_at\n                )\n                VALUES ($1, $2, $3, $4, $5, $6)\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Varchar",
+        "Int4",
+        "Varchar",
+        "Timestamptz",
+        "Timestamptz"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "36605367ba3129c0c3e0f8c4c828e6f0772f74974a18c9565caeb38a905f3c73"
+}

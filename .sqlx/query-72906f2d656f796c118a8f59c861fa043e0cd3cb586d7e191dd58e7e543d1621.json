@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                id,\n                type_id,\n                structure_id,\n                name            AS \"structure_name\",\n                services,\n                rigs,\n                system_id\n            FROM structure\n            WHERE\n                owner = $1 AND\n                structure.id = $2\n        ",
+  "query": "\n            SELECT\n                id,\n                type_id,\n                structure_id,\n                name            AS \"structure_name\",\n                services,\n                rigs,\n                system_id,\n                x,\n                y,\n                z\n            FROM structure\n            WHERE\n                (owner = $1 OR owner = 0) AND\n                structure.id = $2\n        ",
   "describe": {
     "columns": [
       {
@@ -79,6 +79,39 @@
             "name": "system_id"
           }
         }
+      },
+      {
+        "ordinal": 7,
+        "name": "x",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "x"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "y",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "y"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "z",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "z"
+          }
+        }
       }
     ],
     "parameters": {
@@ -94,8 +127,11 @@
       false,
       false,
       false,
+      false,
+      false,
+      false,
       false
     ]
   },
-  "hash": "ca4d00d5ff3b78587df1067eb1fbe20f85a13fbcdd89fed440999199885d9319"
+  "hash": "72906f2d656f796c118a8f59c861fa043e0cd3cb586d7e191dd58e7e543d1621"
 }
