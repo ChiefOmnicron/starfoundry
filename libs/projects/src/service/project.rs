@@ -254,6 +254,7 @@ impl ProjectService {
 
         crate::job::active_jobs(
                 pool,
+                character_id,
                 self.0,
             )
             .await
@@ -269,6 +270,7 @@ impl ProjectService {
 
         crate::job::startable_jobs(
                 pool,
+                character_id,
                 self.0,
             )
             .await

@@ -1,11 +1,12 @@
 use sqlx::PgPool;
-use starfoundry_libs_types::TypeId;
+use starfoundry_libs_types::{CharacterId, TypeId};
 use std::collections::HashSet;
 
 use crate::{sort_by_job, Error, ProjectJobStatus, ProjectUuid, Result, StartableJob, StartableJobGroup, StartableJobEntry};
 
 pub async fn startable_jobs(
     pool:         &PgPool,
+    character_id: CharacterId,
     project_uuid: ProjectUuid,
 ) -> Result<StartableJob> {
     let mut jobs = sqlx::query!(
@@ -21,17 +22,21 @@ pub async fn startable_jobs(
                 i.group_id,
                 i.meta_group_id,
 
-                id,
-                runs,
-                status AS "status: ProjectJobStatus",
-                cost,
-                job_id,
-                structure_id
+                pj.id,
+                pj.runs,
+                pj.status AS "status: ProjectJobStatus",
+                pj.cost,
+                pj.job_id,
+                pj.structure_id
             FROM project_job pj
             JOIN blueprint_dependency bd ON pj.type_id = bd.ptype_id
+            JOIN project p ON p.id = pj.project_id
             JOIN item i ON i.type_id = pj.type_id
-            WHERE project_id = $1
+            WHERE
+                p.owner = $1 AND
+                project_id = $2
         "#,
+            *character_id,
             *project_uuid,
         )
         .fetch_all(pool)

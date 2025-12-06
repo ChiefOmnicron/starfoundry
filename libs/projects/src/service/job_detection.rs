@@ -1,14 +1,19 @@
 use sqlx::PgPool;
 use starfoundry_libs_types::{CharacterId, JobId};
 
-use crate::{JobDetection, Result, UpdateJobDetectionAdd, UpdateJobDetectionDelete, UpdateJobDetectionReplace};
+use crate::{Error, JobDetection, Result, UpdateJobDetectionAdd, UpdateJobDetectionDelete, UpdateJobDetectionReplace};
 
 pub struct JobDetectionService;
 
 impl JobDetectionService {
     pub async fn fetch(
-        pool: &PgPool,
+        pool:         &PgPool,
+        character_id: CharacterId,
     ) -> Result<Vec<JobDetection>> {
+        if character_id != CharacterId(2117441999) {
+            return Err(Error::NotEistonen);
+        }
+
         crate::job_detection::fetch(
                 pool,
             )
@@ -21,6 +26,10 @@ impl JobDetectionService {
         job_id:       JobId,
         update:       UpdateJobDetectionAdd,
     ) -> Result<()> {
+        if character_id != CharacterId(2117441999) {
+            return Err(Error::NotEistonen);
+        }
+
         crate::job_detection::update_job_add(
                 pool,
                 character_id,
@@ -36,6 +45,10 @@ impl JobDetectionService {
         job_id:       JobId,
         update:       UpdateJobDetectionDelete,
     ) -> Result<()> {
+        if character_id != CharacterId(2117441999) {
+            return Err(Error::NotEistonen);
+        }
+
         crate::job_detection::update_job_delete(
                 pool,
                 character_id,
@@ -51,6 +64,10 @@ impl JobDetectionService {
         job_id:       JobId,
         update:       UpdateJobDetectionReplace,
     ) -> Result<()> {
+        if character_id != CharacterId(2117441999) {
+            return Err(Error::NotEistonen);
+        }
+
         crate::job_detection::update_job_replace(
                 pool,
                 character_id,

@@ -34,11 +34,12 @@ use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
     ),
 )]
 pub async fn fetch(
-    pool:      PgPool,
-    _identity: Identity,
+    pool:     PgPool,
+    identity: Identity,
 ) -> Result<impl Reply, Rejection> {
     match JobDetectionService::fetch(
         &pool,
+        identity.character_id(),
     ).await {
         Ok(x) => Ok(warp::reply::json(&x)),
         Err(starfoundry_libs_projects::Error::ProjectNotFound(_)) => {

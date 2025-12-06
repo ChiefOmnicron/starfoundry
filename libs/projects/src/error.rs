@@ -10,6 +10,9 @@ pub type Result<T, E = Error> = std::result::Result<T, E>;
 #[derive(Debug, Error)]
 #[non_exhaustive]
 pub enum Error {
+    #[error("Not eistonen")]
+    NotEistonen,
+
     #[error("general appraisal error, error: '{0}'")]
     AppraisalError(starfoundry_libs_appraisal::Error),
     #[error("no project with id '{0}'")]

@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                DISTINCT(pj.job_id),\n\n                pj.id,\n                pj.runs,\n                status AS \"status: ProjectJobStatus\",\n                pj.cost,\n                pj.structure_id,\n                pj.type_id,\n                ij.is_delivered,\n                ij.end_date,\n                ij.activity AS \"activity: IndustryActivity\",\n                s.name AS structure_name\n            FROM project_job pj\n            JOIN industry_job ij ON ij.job_id = pj.job_id\n            JOIN structure s ON (s.structure_id = ij.facility_id AND s.id = pj.structure_id)\n            WHERE\n                pj.project_id = $1 AND\n                (pj.status = 'BUILDING' OR ij.is_delivered = false)\n            ORDER BY end_date ASC\n        ",
+  "query": "\n            SELECT\n                DISTINCT(pj.job_id),\n\n                pj.id,\n                pj.runs,\n                pj.status AS \"status: ProjectJobStatus\",\n                pj.cost,\n                pj.structure_id,\n                pj.type_id,\n                ij.is_delivered,\n                ij.end_date,\n                ij.activity AS \"activity: IndustryActivity\",\n                s.name AS structure_name\n            FROM project_job pj\n            JOIN industry_job ij ON ij.job_id = pj.job_id\n            JOIN structure s ON (s.structure_id = ij.facility_id AND s.id = pj.structure_id)\n            JOIN project p ON p.id = pj.project_id\n            WHERE\n                p.owner = $1 AND\n                pj.project_id = $2 AND\n                (pj.status = 'BUILDING' OR ij.is_delivered = false)\n            ORDER BY end_date ASC\n        ",
   "describe": {
     "columns": [
       {
@@ -87,6 +87,7 @@
     ],
     "parameters": {
       "Left": [
+        "Int4",
         "Uuid"
       ]
     },
@@ -104,5 +105,5 @@
       false
     ]
   },
-  "hash": "4e6113af44519b13980758328805a62c6b187438eef498d36190adc3529b29e6"
+  "hash": "f5ef4c31d79ab6aac2586a4b89fcb837e39e32b36b793df28095f801a0251b49"
 }

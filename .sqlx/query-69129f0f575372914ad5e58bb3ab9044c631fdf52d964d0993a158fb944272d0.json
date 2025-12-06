@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                DISTINCT(pj.type_id) AS \"type_id: TypeId\",\n                depends_on,\n\n                i.name,\n                i.base_price,\n                i.volume,\n                i.category_id,\n                i.group_id,\n                i.meta_group_id,\n\n                id,\n                runs,\n                status AS \"status: ProjectJobStatus\",\n                cost,\n                job_id,\n                structure_id\n            FROM project_job pj\n            JOIN blueprint_dependency bd ON pj.type_id = bd.ptype_id\n            JOIN item i ON i.type_id = pj.type_id\n            WHERE project_id = $1\n        ",
+  "query": "\n            SELECT\n                DISTINCT(pj.type_id) AS \"type_id: TypeId\",\n                depends_on,\n\n                i.name,\n                i.base_price,\n                i.volume,\n                i.category_id,\n                i.group_id,\n                i.meta_group_id,\n\n                pj.id,\n                pj.runs,\n                pj.status AS \"status: ProjectJobStatus\",\n                pj.cost,\n                pj.job_id,\n                pj.structure_id\n            FROM project_job pj\n            JOIN blueprint_dependency bd ON pj.type_id = bd.ptype_id\n            JOIN project p ON p.id = pj.project_id\n            JOIN item i ON i.type_id = pj.type_id\n            WHERE\n                p.owner = $1 AND\n                project_id = $2\n        ",
   "describe": {
     "columns": [
       {
@@ -87,6 +87,7 @@
     ],
     "parameters": {
       "Left": [
+        "Int4",
         "Uuid"
       ]
     },
@@ -107,5 +108,5 @@
       false
     ]
   },
-  "hash": "9fa434d665ebbd3d66349b504bfc5b4da80ee1a5e85d4da6997689934130a863"
+  "hash": "69129f0f575372914ad5e58bb3ab9044c631fdf52d964d0993a158fb944272d0"
 }

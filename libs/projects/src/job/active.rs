@@ -1,9 +1,11 @@
 use sqlx::PgPool;
+use starfoundry_libs_types::CharacterId;
 
-use crate::{ActiveJob, Error, ProjectUuid, ProjectJobStatus, IndustryActivity, Result};
+use crate::{ActiveJob, Error, ProjectUuid, Result, ProjectJobStatus, IndustryActivity};
 
 pub async fn active_jobs(
     pool:         &PgPool,
+    character_id: CharacterId,
     project_uuid: ProjectUuid,
 ) -> Result<Vec<ActiveJob>> {
     sqlx::query!(
@@ -13,7 +15,7 @@ pub async fn active_jobs(
 
                 pj.id,
                 pj.runs,
-                status AS "status: ProjectJobStatus",
+                pj.status AS "status: ProjectJobStatus",
                 pj.cost,
                 pj.structure_id,
                 pj.type_id,
@@ -24,11 +26,14 @@ pub async fn active_jobs(
             FROM project_job pj
             JOIN industry_job ij ON ij.job_id = pj.job_id
             JOIN structure s ON (s.structure_id = ij.facility_id AND s.id = pj.structure_id)
+            JOIN project p ON p.id = pj.project_id
             WHERE
-                pj.project_id = $1 AND
+                p.owner = $1 AND
+                pj.project_id = $2 AND
                 (pj.status = 'BUILDING' OR ij.is_delivered = false)
             ORDER BY end_date ASC
         "#,
+            *character_id,
             *project_uuid,
         )
         .fetch_all(pool)
