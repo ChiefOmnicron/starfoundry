@@ -803,7 +803,7 @@ class AppraisalShow extends Vue {
                 align: 'right',
                 title: 'Quantity',
                 key: 'quantity',
-                width: '15%',
+                width: '10%',
                 sorter: (row1: IAppraisalItem, row2: IAppraisalItem) =>
                     row1.quantity - row2.quantity,
                 render: (row: IAppraisalItem) => {
@@ -900,7 +900,7 @@ class AppraisalShow extends Vue {
                         align: 'right',
                         title: 'Buy (ISK)',
                         key: 'buy',
-                        width: '25%',
+                        width: '17.5%',
                         sorter: (row1: IAppraisalItem, row2: IAppraisalItem) =>
                             row1.buy.max - row2.buy.max,
                         render: (row: IAppraisalItem) => {
@@ -919,9 +919,36 @@ class AppraisalShow extends Vue {
                     },
                     {
                         align: 'right',
+                        title: 'Split (ISK)',
+                        key: 'split',
+                        width: '17.5%',
+                        sorter: (row1: IAppraisalItem, row2: IAppraisalItem) =>
+                            row1.buy.max - row2.buy.max,
+                        render: (row: IAppraisalItem) => {
+                            let value = (
+                                row.buy.max +
+                                row.sell.min
+                            ) / 2;
+
+                            if (this.single) {
+                                value = (
+                                    row.buy.per_item.max +
+                                    row.sell.per_item.min
+                                ) / 2;
+                            }
+
+                            return h(CopyText, {
+                                value: value,
+                                number: true,
+                                withComma: true,
+                            });
+                        },
+                    },
+                    {
+                        align: 'right',
                         title: 'Sell (ISK)',
                         key: 'sell',
-                        width: '25%',
+                        width: '17.5%',
                         sorter: (row1: IAppraisalItem, row2: IAppraisalItem) =>
                             row1.sell.min - row2.sell.min,
                         render: (row: IAppraisalItem) => {
