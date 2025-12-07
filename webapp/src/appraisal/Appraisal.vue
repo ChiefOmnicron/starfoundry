@@ -466,7 +466,6 @@ class AppraisalShow extends Vue {
     public viewMode: boolean = false;
 
     public async created() {
-        console.log('asdasd');
         if (!this.code) {
             return;
         }
@@ -651,6 +650,7 @@ class AppraisalShow extends Vue {
 
                         let buy = item.buy.max;
                         let sell = item.sell.min;
+                        let split = 0;
 
                         if (this.single) {
                             buy = item.buy.per_item.max;
@@ -658,10 +658,11 @@ class AppraisalShow extends Vue {
                         }
 
                         buy = Math.floor(buy * 100) / 100;
+                        split = Math.floor((((Math.floor(buy * 100) / 100) + Math.floor(sell * 100) / 100) / 2) * 100) / 100;
                         sell = Math.floor(sell * 100) / 100;
 
                         content.push(
-                            `${item.meta.name}\t${item.quantity}\t${volume}\t${buy}\t${sell}`,
+                            `${item.meta.name}\t${item.quantity}\t${volume}\t${buy}\t${split}\t${sell}`,
                         );
                     }
                 }
@@ -683,6 +684,7 @@ class AppraisalShow extends Vue {
 
                         let buy = item.buy.max;
                         let sell = item.sell.min;
+                        let split = 0;
 
                         if (this.single) {
                             buy = item.buy.per_item.max;
@@ -690,10 +692,11 @@ class AppraisalShow extends Vue {
                         }
 
                         buy = Math.floor(buy * 100) / 100;
+                        split = Math.floor((((Math.floor(buy * 100) / 100) + Math.floor(sell * 100) / 100) / 2) * 100) / 100;
                         sell = Math.floor(sell * 100) / 100;
 
                         content.push(
-                            `${item.meta.name}\t${item.quantity}\t${volume}\t${buy}\t${sell}`,
+                            `${item.meta.name}\t${item.quantity}\t${volume}\t${buy}\t${split}\t${sell}`,
                         );
                     }
                 }
@@ -718,6 +721,7 @@ class AppraisalShow extends Vue {
 
                         let buy = item.buy.max;
                         let sell = item.sell.min;
+                        let split = 0;
 
                         if (this.single) {
                             buy = item.buy.per_item.max;
@@ -725,10 +729,11 @@ class AppraisalShow extends Vue {
                         }
 
                         buy = Math.floor(buy * 100) / 100;
+                        split = Math.floor((((Math.floor(buy * 100) / 100) + Math.floor(sell * 100) / 100) / 2) * 100) / 100;
                         sell = Math.floor(sell * 100) / 100;
 
                         content.push(
-                            `${item.meta.name}\t${item.quantity}\t${volume}\t${buy}\t${sell}`,
+                            `${item.meta.name}\t${item.quantity}\t${volume}\t${buy}\t${split}\t${sell}`,
                         );
                     }
                 }
@@ -749,6 +754,7 @@ class AppraisalShow extends Vue {
 
                         let buy = item.buy.max;
                         let sell = item.sell.min;
+                        let split = 0;
 
                         if (this.single) {
                             buy = item.buy.per_item.max;
@@ -756,10 +762,11 @@ class AppraisalShow extends Vue {
                         }
 
                         buy = Math.floor(buy * 100) / 100;
+                        split = Math.floor((((Math.floor(buy * 100) / 100) + Math.floor(sell * 100) / 100) / 2) * 100) / 100;
                         sell = Math.floor(sell * 100) / 100;
 
                         content.push(
-                            `${item.meta.name}\t${item.quantity}\t${volume}\t${buy}\t${sell}`,
+                            `${item.meta.name}\t${item.quantity}\t${volume}\t${buy}\t${split}\t${sell}`,
                         );
                     }
                 }
@@ -803,7 +810,7 @@ class AppraisalShow extends Vue {
                 align: 'right',
                 title: 'Quantity',
                 key: 'quantity',
-                width: '15%',
+                width: '10%',
                 sorter: (row1: IAppraisalItem, row2: IAppraisalItem) =>
                     row1.quantity - row2.quantity,
                 render: (row: IAppraisalItem) => {
@@ -900,7 +907,7 @@ class AppraisalShow extends Vue {
                         align: 'right',
                         title: 'Buy (ISK)',
                         key: 'buy',
-                        width: '25%',
+                        width: '17.5%',
                         sorter: (row1: IAppraisalItem, row2: IAppraisalItem) =>
                             row1.buy.max - row2.buy.max,
                         render: (row: IAppraisalItem) => {
@@ -919,9 +926,36 @@ class AppraisalShow extends Vue {
                     },
                     {
                         align: 'right',
+                        title: 'Split (ISK)',
+                        key: 'split',
+                        width: '17.5%',
+                        sorter: (row1: IAppraisalItem, row2: IAppraisalItem) =>
+                            row1.buy.max - row2.buy.max,
+                        render: (row: IAppraisalItem) => {
+                            let value = (
+                                row.buy.max +
+                                row.sell.min
+                            ) / 2;
+
+                            if (this.single) {
+                                value = (
+                                    row.buy.per_item.max +
+                                    row.sell.per_item.min
+                                ) / 2;
+                            }
+
+                            return h(CopyText, {
+                                value: value,
+                                number: true,
+                                withComma: true,
+                            });
+                        },
+                    },
+                    {
+                        align: 'right',
                         title: 'Sell (ISK)',
                         key: 'sell',
-                        width: '25%',
+                        width: '17.5%',
                         sorter: (row1: IAppraisalItem, row2: IAppraisalItem) =>
                             row1.sell.min - row2.sell.min,
                         render: (row: IAppraisalItem) => {
