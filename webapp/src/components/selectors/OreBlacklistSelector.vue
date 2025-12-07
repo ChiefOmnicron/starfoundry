@@ -60,15 +60,15 @@ class OreBlacklistSelector extends Vue {
                                 key: 62528,
                             },
                             {
-                                label: 'Azure Plagioclase',
+                                label: 'Plagioclase II-Grade',
                                 key: 62529,
                             },
                             {
-                                label: 'Rich Plagioclase',
+                                label: 'Plagioclase III-Grade',
                                 key: 62530,
                             },
                             {
-                                label: 'Sparkling Plagioclase',
+                                label: 'Plagioclase IV-Grade',
                                 key: 62531,
                             },
                         ],
@@ -82,15 +82,15 @@ class OreBlacklistSelector extends Vue {
                                 key: 62524,
                             },
                             {
-                                label: 'Solid Pyroxeres',
+                                label: 'Pyroxeres II-Grade',
                                 key: 62525,
                             },
                             {
-                                label: 'Viscous Pyroxeres',
+                                label: 'Pyroxeres III-Grade',
                                 key: 62526,
                             },
                             {
-                                label: 'Opulent Pyroxeres',
+                                label: 'Pyroxeres IV-Grade',
                                 key: 62527,
                             },
                         ],
@@ -104,15 +104,15 @@ class OreBlacklistSelector extends Vue {
                                 key: 62520,
                             },
                             {
-                                label: 'Condensed Scordite',
+                                label: 'Scordite II-Grade',
                                 key: 62521,
                             },
                             {
-                                label: 'Massive Scordite',
+                                label: 'Scordite III-Grade',
                                 key: 62522,
                             },
                             {
-                                label: 'Glossy Scordite',
+                                label: 'Scordite IV-Grade',
                                 key: 62523,
                             },
                         ],
@@ -126,15 +126,15 @@ class OreBlacklistSelector extends Vue {
                                 key: 62516,
                             },
                             {
-                                label: 'Concentrated Veldspar',
+                                label: 'Veldspar II-Grade',
                                 key: 62517,
                             },
                             {
-                                label: 'Dense Veldspar',
+                                label: 'Veldspar III-Grade',
                                 key: 62518,
                             },
                             {
-                                label: 'Stable Veldspar',
+                                label: 'Veldspar IV-Grade',
                                 key: 62519,
                             },
                         ],
@@ -154,15 +154,15 @@ class OreBlacklistSelector extends Vue {
                                 key: 75287,
                             },
                             {
-                                label: 'Noble Ducinium',
+                                label: 'Ducinium II-Grade',
                                 key: 75288,
                             },
                             {
-                                label: 'Royal Ducinium',
+                                label: 'Ducinium III-Grade',
                                 key: 75289,
                             },
                             {
-                                label: 'Imperial Ducinium',
+                                label: 'Ducinium IV-Grade',
                                 key: 75290,
                             },
                         ],
@@ -176,15 +176,15 @@ class OreBlacklistSelector extends Vue {
                                 key: 75283,
                             },
                             {
-                                label: 'Doped Eifyrium',
+                                label: 'Eifyrium II-Grade',
                                 key: 75284,
                             },
                             {
-                                label: 'Boosted Eifyrium',
+                                label: 'Eifyrium III-Grade',
                                 key: 75285,
                             },
                             {
-                                label: 'Augmented Eifyrium',
+                                label: 'Eifyrium IV-Grade',
                                 key: 75286,
                             },
                         ],
@@ -198,15 +198,15 @@ class OreBlacklistSelector extends Vue {
                                 key: 75275,
                             },
                             {
-                                label: 'Plum Mordunium',
+                                label: 'Mordunium II-Grade',
                                 key: 75276,
                             },
                             {
-                                label: 'Prize Mordunium',
+                                label: 'Mordunium III-Grade',
                                 key: 75277,
                             },
                             {
-                                label: 'Plunder Mordunium',
+                                label: 'Mordunium IV-Grade',
                                 key: 75278,
                             },
                         ],
@@ -220,15 +220,15 @@ class OreBlacklistSelector extends Vue {
                                 key: 75279,
                             },
                             {
-                                label: 'Bootleg Ytirium',
+                                label: 'Ytirium II-Grade',
                                 key: 75280,
                             },
                             {
-                                label: 'Firewater Ytirium',
+                                label: 'Ytirium III-Grade',
                                 key: 75281,
                             },
                             {
-                                label: 'Moonshine Ytirium',
+                                label: 'Ytirium IV-Grade',
                                 key: 75282,
                             },
                         ],
@@ -248,15 +248,15 @@ class OreBlacklistSelector extends Vue {
                                 key: 62560,
                             },
                             {
-                                label: 'Sharp Crokite',
+                                label: 'Crokite II-Grade',
                                 key: 62561,
                             },
                             {
-                                label: 'Crystalline Crokite',
+                                label: 'Crokite III-Grade',
                                 key: 62562,
                             },
                             {
-                                label: 'Pellucid Crokite',
+                                label: 'Crokite IV-Grade',
                                 key: 62563,
                             },
                         ],
@@ -270,15 +270,15 @@ class OreBlacklistSelector extends Vue {
                                 key: 62556,
                             },
                             {
-                                label: 'Onyx Ochre',
+                                label: 'Ochre II-Grade',
                                 key: 62557,
                             },
                             {
-                                label: 'Obsidian Ochre',
+                                label: 'Ochre III-Grade',
                                 key: 62558,
                             },
                             {
-                                label: 'Jet Ochre',
+                                label: 'Ochre IV-Grade',
                                 key: 62559,
                             },
                         ],
@@ -292,15 +292,15 @@ class OreBlacklistSelector extends Vue {
                                 key: 62552,
                             },
                             {
-                                label: 'Iridescent Gneiss',
+                                label: 'Gneiss II-Grade',
                                 key: 62553,
                             },
                             {
-                                label: 'Prismatic Gneiss',
+                                label: 'Gneiss III-Grade',
                                 key: 62554,
                             },
                             {
-                                label: 'Brilliant Gneiss',
+                                label: 'Gneiss IV-Grade',
                                 key: 62555,
                             },
                         ],
@@ -314,15 +314,15 @@ class OreBlacklistSelector extends Vue {
                                 key: 62548,
                             },
                             {
-                                label: 'Vitric Hedbergite',
+                                label: 'Hedbergite II-Grade',
                                 key: 62549,
                             },
                             {
-                                label: 'Glazed Hedbergite',
+                                label: 'Hedbergite III-Grade',
                                 key: 62550,
                             },
                             {
-                                label: 'Lustrous Hedbergite',
+                                label: 'Hedbergite IV-Grade',
                                 key: 62551,
                             },
                         ],
@@ -336,15 +336,15 @@ class OreBlacklistSelector extends Vue {
                                 key: 62544,
                             },
                             {
-                                label: 'Vivid Hemorphite',
+                                label: 'Hemorphite II-Grade',
                                 key: 62545,
                             },
                             {
-                                label: 'Radiant Hemorphite',
+                                label: 'Hemorphite III-Grade',
                                 key: 62546,
                             },
                             {
-                                label: 'Scintillating Hemorphite',
+                                label: 'Hemorphite IV-Grade',
                                 key: 62547,
                             },
                         ],
@@ -358,15 +358,15 @@ class OreBlacklistSelector extends Vue {
                                 key: 62540,
                             },
                             {
-                                label: 'Pure Jaspet',
+                                label: 'Jaspet II-Grade',
                                 key: 62541,
                             },
                             {
-                                label: 'Pristine Jaspet',
+                                label: 'Jaspet III-Grade',
                                 key: 62542,
                             },
                             {
-                                label: 'Immaculate Jaspet',
+                                label: 'Jaspet IV-Grade',
                                 key: 62543,
                             },
                         ],
@@ -380,15 +380,15 @@ class OreBlacklistSelector extends Vue {
                                 key: 62536,
                             },
                             {
-                                label: 'Luminous Kernite',
+                                label: 'Kernite II-Grade',
                                 key: 62537,
                             },
                             {
-                                label: 'Fiery Kernite',
+                                label: 'Kernite III-Grade',
                                 key: 62538,
                             },
                             {
-                                label: 'Resplendant Kernite',
+                                label: 'Kernite IV-Grade',
                                 key: 62539,
                             },
                         ],
@@ -402,15 +402,15 @@ class OreBlacklistSelector extends Vue {
                                 key: 62532,
                             },
                             {
-                                label: 'Silvery Omber',
+                                label: 'Omber II-Grade',
                                 key: 62533,
                             },
                             {
-                                label: 'Golden Omber',
+                                label: 'Omber III-Grade',
                                 key: 62534,
                             },
                             {
-                                label: 'Platinoid Omber',
+                                label: 'Omber IV-Grade',
                                 key: 62535,
                             },
                         ],
@@ -430,15 +430,15 @@ class OreBlacklistSelector extends Vue {
                                 key: 62568,
                             },
                             {
-                                label: 'Crimson Arkonor',
+                                label: 'Arkonor II-Grade',
                                 key: 62569,
                             },
                             {
-                                label: 'Prime Arkonor',
+                                label: 'Arkonor III-Grade',
                                 key: 62570,
                             },
                             {
-                                label: 'Flawless Arkonor',
+                                label: 'Arkonor IV-Grade',
                                 key: 62571,
                             },
                         ],
@@ -452,15 +452,15 @@ class OreBlacklistSelector extends Vue {
                                 key: 62564,
                             },
                             {
-                                label: 'Triclinic Bistot',
+                                label: 'Bistot II-Grade',
                                 key: 62565,
                             },
                             {
-                                label: 'Monoclinic Bistot',
+                                label: 'Bistot III-Grade',
                                 key: 62566,
                             },
                             {
-                                label: 'Cubic Bistot',
+                                label: 'Bistot IV-Grade',
                                 key: 62567,
                             },
                         ],
@@ -474,11 +474,11 @@ class OreBlacklistSelector extends Vue {
                                 key: 62586,
                             },
                             {
-                                label: 'Magma Mercoxit',
+                                label: 'Mercoxit II-Grade',
                                 key: 62587,
                             },
                             {
-                                label: 'Vitreous Mercoxit',
+                                label: 'Mercoxit III-Grade',
                                 key: 62588,
                             },
                         ],
@@ -498,15 +498,15 @@ class OreBlacklistSelector extends Vue {
                                 key: 82316,
                             },
                             {
-                                label: 'Clear Griemeer',
+                                label: 'Griemeer II-Grade',
                                 key: 82317,
                             },
                             {
-                                label: 'Inky Griemeer',
+                                label: 'Griemeer III-Grade',
                                 key: 82318,
                             },
                             {
-                                label: 'Opaque Griemeer',
+                                label: 'Griemeer IV-Grade',
                                 key: 82319,
                             },
                         ],
@@ -520,15 +520,15 @@ class OreBlacklistSelector extends Vue {
                                 key: 82312,
                             },
                             {
-                                label: 'Dull Hezorime',
+                                label: 'Hezorime II-Grade',
                                 key: 82313,
                             },
                             {
-                                label: 'Serrated Hezorime',
+                                label: 'Hezorime III-Grade',
                                 key: 82314,
                             },
                             {
-                                label: 'Sharp Hezorime',
+                                label: 'Hezorime IV-Grade',
                                 key: 82315,
                             },
                         ],
@@ -542,15 +542,15 @@ class OreBlacklistSelector extends Vue {
                                 key: 82300,
                             },
                             {
-                                label: 'Kaolin Kylixium',
+                                label: 'Kylixium II-Grade',
                                 key: 82301,
                             },
                             {
-                                label: 'Argil Kylixium',
+                                label: 'Kylixium III-Grade',
                                 key: 82302,
                             },
                             {
-                                label: 'Adobe Kylixium',
+                                label: 'Kylixium IV-Grade',
                                 key: 82303,
                             },
                         ],
@@ -564,15 +564,15 @@ class OreBlacklistSelector extends Vue {
                                 key: 82304,
                             },
                             {
-                                label: 'Fragrant Nocxite',
+                                label: 'Nocxite II-Grade',
                                 key: 82305,
                             },
                             {
-                                label: 'Intoxicating Nocxite',
+                                label: 'Nocxite III-Grade',
                                 key: 82306,
                             },
                             {
-                                label: 'Ambrosial Nocxite',
+                                label: 'Nocxite IV-Grade',
                                 key: 82307,
                             },
                         ],
@@ -586,15 +586,15 @@ class OreBlacklistSelector extends Vue {
                                 key: 82308,
                             },
                             {
-                                label: 'Foggy Ueganite',
+                                label: 'Ueganite II-Grade',
                                 key: 82309,
                             },
                             {
-                                label: 'Overcast Ueganite',
+                                label: 'Ueganite III-Grade',
                                 key: 82310,
                             },
                             {
-                                label: 'Stormy Ueganite',
+                                label: 'Ueganite IV-Grade',
                                 key: 82311,
                             },
                         ],
@@ -614,11 +614,11 @@ class OreBlacklistSelector extends Vue {
                                 key: 62576,
                             },
                             {
-                                label: 'Abyssal Bezdnacine',
+                                label: 'Bezdnacine II-Grade',
                                 key: 62577,
                             },
                             {
-                                label: 'Hadal Bezdnacine',
+                                label: 'Bezdnacine III-Grade',
                                 key: 62578,
                             },
                         ],
@@ -632,11 +632,11 @@ class OreBlacklistSelector extends Vue {
                                 key: 62579,
                             },
                             {
-                                label: 'Abyssal Rakovene',
+                                label: 'Rakovene II-Grade',
                                 key: 62580,
                             },
                             {
-                                label: 'Hadal Rakovene',
+                                label: 'Rakovene III-Grade',
                                 key: 62581,
                             },
                         ],
@@ -650,15 +650,15 @@ class OreBlacklistSelector extends Vue {
                                 key: 62572,
                             },
                             {
-                                label: 'Bright Spodumain',
+                                label: 'Spodumain II-Grade',
                                 key: 62573,
                             },
                             {
-                                label: 'Gleaming Spodumain',
+                                label: 'Spodumain III-Grade',
                                 key: 62574,
                             },
                             {
-                                label: 'Dazzling Spodumain',
+                                label: 'Spodumain IV-Grade',
                                 key: 62575,
                             },
                         ],
@@ -672,11 +672,11 @@ class OreBlacklistSelector extends Vue {
                                 key: 62582,
                             },
                             {
-                                label: 'Abyssal Talassonite',
+                                label: 'Talassonite II-Grade',
                                 key: 62583,
                             },
                             {
-                                label: 'Hadal Talassonite',
+                                label: 'Talassonite III-Grade',
                                 key: 62584,
                             },
                         ],
