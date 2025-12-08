@@ -1,6 +1,5 @@
 const fs = require('node:fs');
 const map_data = require('./map.json');
-const { start } = require('node:repl');
 
 let xMin = 0;
 let xMax = 0;
@@ -10,8 +9,7 @@ let zMax = 0;
 const timings = {};
 map_data
     .forEach(x => {
-        //const start = Math.floor(Math.random() * 4);
-        const start = Math.random() * 4;
+        const start = Math.random() * 3;
         timings[x.region_id] = start;
     });
 
@@ -31,10 +29,8 @@ const animation = (region_id) => {
         attributeType="xml"
         attributeName="fill-opacity"
         begin="${timings[region_id]}s"
-        from="1"
-        to="0.25"
         values="1;0.75;0.5;0.25;0.5;0.75"
-        dur="3s"
+        dur="6s"
         repeatCount="indefinite"
     />`
 }
