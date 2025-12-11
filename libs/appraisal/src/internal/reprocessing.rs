@@ -29,8 +29,10 @@ pub async fn reprocessing(
                 .minerals()
                 .into_iter()
                 .for_each(|(mineral, quantity)| {
-                    // make sure that there is always at least 100
-                    let quantity = (((item.quantity as f64) / 100f64).floor()) * quantity;
+                    let quantity = match *item.meta.group_id {
+                        465 => item.quantity as f64 * quantity,
+                        _   => (((item.quantity as f64) / 100f64).floor()) * quantity
+                    };
 
                     let reprocessed = (
                         (

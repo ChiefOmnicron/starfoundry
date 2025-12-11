@@ -1,5 +1,6 @@
-use crate::Mineral;
 use std::collections::HashMap;
+
+use crate::Mineral;
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Asteroid {
@@ -496,37 +497,29 @@ pub enum Asteroid {
     Thulium,
 
     // Ice
-    // oxygen
     BlueIce,
-    ThickBlueIce,
+    BlueIceIVGrade,
     CompressedBlueIce,
-    CompressedThickBlueIce,
-
-    // helium
+    CompressedBlueIceIVGrade,
     ClearIcicle,
-    EnrichedClearIcicle,
+    ClearIcicleIVGrade,
     CompressedClearIcicle,
-    CompressedEnrichedClearIcicle,
-
-    // hydrogen
+    CompressedClearIcicleIVGrade,
     GlacialMass,
-    SmoothGlacialMass,
+    GlacialMassIVGrade,
     CompressedGlacialMass,
-    CompressedSmoothGlacialMass,
-
-    // nitrogen
+    CompressedGlacialMassIVGrade,
     WhiteGlaze,
-    PristineWhiteGlaze,
+    WhiteGlazeIVGrade,
     CompressedWhiteGlaze,
-    CompressedPristineWhiteGlaze,
-
+    CompressedWhiteGlazeIVGrade,
     DarkGlitter,
-    Gelidus,
-    GlareCrust,
-    Krystallos,
     CompressedDarkGlitter,
+    Gelidus,
     CompressedGelidus,
+    GlareCrust,
     CompressedGlareCrust,
+    Krystallos,
     CompressedKrystallos,
 }
 
@@ -946,6 +939,31 @@ impl Asteroid {
             Self::Neodymium.to_type_id(),
             Self::Dysprosium.to_type_id(),
             Self::Thulium.to_type_id(),
+
+            Self::BlueIce.to_type_id(),
+            Self::BlueIceIVGrade.to_type_id(),
+            Self::CompressedBlueIce.to_type_id(),
+            Self::CompressedBlueIceIVGrade.to_type_id(),
+            Self::ClearIcicle.to_type_id(),
+            Self::ClearIcicleIVGrade.to_type_id(),
+            Self::CompressedClearIcicle.to_type_id(),
+            Self::CompressedClearIcicleIVGrade.to_type_id(),
+            Self::GlacialMass.to_type_id(),
+            Self::GlacialMassIVGrade.to_type_id(),
+            Self::CompressedGlacialMass.to_type_id(),
+            Self::CompressedGlacialMassIVGrade.to_type_id(),
+            Self::WhiteGlaze.to_type_id(),
+            Self::WhiteGlazeIVGrade.to_type_id(),
+            Self::CompressedWhiteGlaze.to_type_id(),
+            Self::CompressedWhiteGlazeIVGrade.to_type_id(),
+            Self::DarkGlitter.to_type_id(),
+            Self::CompressedDarkGlitter.to_type_id(),
+            Self::Gelidus.to_type_id(),
+            Self::CompressedGelidus.to_type_id(),
+            Self::GlareCrust.to_type_id(),
+            Self::CompressedGlareCrust.to_type_id(),
+            Self::Krystallos.to_type_id(),
+            Self::CompressedKrystallos.to_type_id(),
         ]
     }
 
@@ -1429,34 +1447,29 @@ impl Asteroid {
             Self::Dysprosium                                => 16650,
             Self::Thulium                                   => 16653,
 
-            // Ice
             Self::BlueIce                                   => 16264,
-            Self::ThickBlueIce                              => 17975,
+            Self::BlueIceIVGrade                            => 17975,
             Self::CompressedBlueIce                         => 28433,
-            Self::CompressedThickBlueIce                    => 28443,
-
+            Self::CompressedBlueIceIVGrade                  => 28443,
             Self::ClearIcicle                               => 16262,
-            Self::EnrichedClearIcicle                       => 17978,
+            Self::ClearIcicleIVGrade                        => 17978,
             Self::CompressedClearIcicle                     => 28434,
-            Self::CompressedEnrichedClearIcicle             => 28436,
-
+            Self::CompressedClearIcicleIVGrade              => 28436,
             Self::GlacialMass                               => 16263,
-            Self::SmoothGlacialMass                         => 17977,
+            Self::GlacialMassIVGrade                        => 17977,
             Self::CompressedGlacialMass                     => 28438,
-            Self::CompressedSmoothGlacialMass               => 28442,
-
+            Self::CompressedGlacialMassIVGrade              => 28442,
             Self::WhiteGlaze                                => 16265,
-            Self::PristineWhiteGlaze                        => 17976,
+            Self::WhiteGlazeIVGrade                         => 17976,
             Self::CompressedWhiteGlaze                      => 28444,
-            Self::CompressedPristineWhiteGlaze              => 28441,
-
+            Self::CompressedWhiteGlazeIVGrade               => 28441,
             Self::DarkGlitter                               => 16267,
-            Self::Gelidus                                   => 16268,
-            Self::GlareCrust                                => 16266,
-            Self::Krystallos                                => 16269,
             Self::CompressedDarkGlitter                     => 28435,
+            Self::Gelidus                                   => 16268,
             Self::CompressedGelidus                         => 28437,
+            Self::GlareCrust                                => 16266,
             Self::CompressedGlareCrust                      => 28439,
+            Self::Krystallos                                => 16269,
             Self::CompressedKrystallos                      => 28440,
         }
     }
@@ -1949,32 +1962,28 @@ impl Asteroid {
 
             // ice
             16264 => Self::BlueIce,
-            17975 => Self::ThickBlueIce,
+            17975 => Self::BlueIceIVGrade,
             28433 => Self::CompressedBlueIce,
-            28443 => Self::CompressedThickBlueIce,
-
+            28443 => Self::CompressedBlueIceIVGrade,
             16262 => Self::ClearIcicle,
-            17978 => Self::EnrichedClearIcicle,
+            17978 => Self::ClearIcicleIVGrade,
             28434 => Self::CompressedClearIcicle,
-            28436 => Self::CompressedEnrichedClearIcicle,
-
+            28436 => Self::CompressedClearIcicleIVGrade,
             16263 => Self::GlacialMass,
-            17977 => Self::SmoothGlacialMass,
+            17977 => Self::GlacialMassIVGrade,
             28438 => Self::CompressedGlacialMass,
-            28442 => Self::CompressedSmoothGlacialMass,
-
+            28442 => Self::CompressedGlacialMassIVGrade,
             16265 => Self::WhiteGlaze,
-            17976 => Self::PristineWhiteGlaze,
+            17976 => Self::WhiteGlazeIVGrade,
             28444 => Self::CompressedWhiteGlaze,
-            28441 => Self::CompressedPristineWhiteGlaze,
-
+            28441 => Self::CompressedWhiteGlazeIVGrade,
             16267 => Self::DarkGlitter,
-            16268 => Self::Gelidus,
-            16266 => Self::GlareCrust,
-            16269 => Self::Krystallos,
             28435 => Self::CompressedDarkGlitter,
+            16268 => Self::Gelidus,
             28437 => Self::CompressedGelidus,
+            16266 => Self::GlareCrust,
             28439 => Self::CompressedGlareCrust,
+            16269 => Self::Krystallos,
             28440 => Self::CompressedKrystallos,
 
             _ => unimplemented!()
@@ -3048,7 +3057,6 @@ impl Asteroid {
             Self::Dysprosium                            => mineral_init(vec![Mineral::Dysprosium], vec![1f64]),
             Self::Thulium                               => mineral_init(vec![Mineral::Thulium], vec![1f64]),
 
-            // Ice
             Self::BlueIce                                   |
             Self::CompressedBlueIce                         => {
                 mineral_init(
@@ -3059,16 +3067,16 @@ impl Asteroid {
                         Mineral::OxygenIsotopes,
                     ],
                     vec![
-                        69f64  * self.ore_modifier(),
-                        35f64  * self.ore_modifier(),
-                        1f64   * self.ore_modifier(),
-                        414f64 * self.ore_modifier(),
+                        69f64,
+                        35f64,
+                        1f64,
+                        414f64,
                     ],
                 )
             },
 
-            Self::ThickBlueIce                              |
-            Self::CompressedThickBlueIce                    => {
+            Self::BlueIceIVGrade                            |
+            Self::CompressedBlueIceIVGrade                  => {
                 mineral_init(
                     vec![
                         Mineral::HeavyWater,
@@ -3077,10 +3085,10 @@ impl Asteroid {
                         Mineral::OxygenIsotopes,
                     ],
                     vec![
-                        104f64 * self.ore_modifier(),
-                        55f64  * self.ore_modifier(),
-                        1f64   * self.ore_modifier(),
-                        483f64 * self.ore_modifier(),
+                        104f64,
+                        55f64,
+                        1f64,
+                        483f64,
                     ],
                 )
             },
@@ -3095,16 +3103,16 @@ impl Asteroid {
                         Mineral::HeliumIsotopes,
                     ],
                     vec![
-                        69f64  * self.ore_modifier(),
-                        35f64  * self.ore_modifier(),
-                        1f64   * self.ore_modifier(),
-                        414f64 * self.ore_modifier(),
+                        69f64,
+                        35f64,
+                        1f64,
+                        414f64,
                     ],
                 )
             },
 
-            Self::EnrichedClearIcicle                       |
-            Self::CompressedEnrichedClearIcicle             => {
+            Self::ClearIcicleIVGrade                        |
+            Self::CompressedClearIcicleIVGrade              => {
                 mineral_init(
                     vec![
                         Mineral::HeavyWater,
@@ -3113,10 +3121,10 @@ impl Asteroid {
                         Mineral::HeliumIsotopes,
                     ],
                     vec![
-                        104f64 * self.ore_modifier(),
-                        55f64  * self.ore_modifier(),
-                        1f64   * self.ore_modifier(),
-                        483f64 * self.ore_modifier(),
+                        104f64,
+                        55f64,
+                        1f64,
+                        483f64,
                     ],
                 )
             },
@@ -3131,16 +3139,16 @@ impl Asteroid {
                         Mineral::HydrogenIsotopes,
                     ],
                     vec![
-                        69f64  * self.ore_modifier(),
-                        35f64  * self.ore_modifier(),
-                        1f64   * self.ore_modifier(),
-                        414f64 * self.ore_modifier(),
+                        69f64,
+                        35f64,
+                        1f64,
+                        414f64,
                     ],
                 )
             },
 
-            Self::SmoothGlacialMass                         |
-            Self::CompressedSmoothGlacialMass               => {
+            Self::GlacialMassIVGrade                        |
+            Self::CompressedGlacialMassIVGrade              => {
                 mineral_init(
                     vec![
                         Mineral::HeavyWater,
@@ -3149,10 +3157,10 @@ impl Asteroid {
                         Mineral::HydrogenIsotopes,
                     ],
                     vec![
-                        104f64 * self.ore_modifier(),
-                        55f64  * self.ore_modifier(),
-                        1f64   * self.ore_modifier(),
-                        483f64 * self.ore_modifier(),
+                        104f64,
+                        55f64,
+                        1f64,
+                        483f64,
                     ],
                 )
             },
@@ -3167,16 +3175,16 @@ impl Asteroid {
                         Mineral::NitrogenIsotopes,
                     ],
                     vec![
-                        104f64 * self.ore_modifier(),
-                        55f64  * self.ore_modifier(),
-                        1f64   * self.ore_modifier(),
-                        483f64 * self.ore_modifier(),
+                        69f64,
+                        35f64,
+                        1f64,
+                        414f64,
                     ],
                 )
             },
 
-            Self::PristineWhiteGlaze                        |
-            Self::CompressedPristineWhiteGlaze              => {
+            Self::WhiteGlazeIVGrade                         |
+            Self::CompressedWhiteGlazeIVGrade               => {
                 mineral_init(
                     vec![
                         Mineral::HeavyWater,
@@ -3185,10 +3193,10 @@ impl Asteroid {
                         Mineral::NitrogenIsotopes,
                     ],
                     vec![
-                        69f64  * self.ore_modifier(),
-                        35f64  * self.ore_modifier(),
-                        1f64   * self.ore_modifier(),
-                        414f64 * self.ore_modifier(),
+                        104f64,
+                        55f64,
+                        1f64,
+                        483f64,
                     ],
                 )
             },
@@ -3202,9 +3210,9 @@ impl Asteroid {
                         Mineral::StrontiumClathrates,
                     ],
                     vec![
-                        691f64  * self.ore_modifier(),
-                        1381f64 * self.ore_modifier(),
-                        69f64   * self.ore_modifier(),
+                        691f64,
+                        1381f64,
+                        69f64,
                     ],
                 )
             },
@@ -3218,9 +3226,9 @@ impl Asteroid {
                         Mineral::StrontiumClathrates,
                     ],
                     vec![
-                        345f64 * self.ore_modifier(),
-                        691f64 * self.ore_modifier(),
-                        104f64 * self.ore_modifier(),
+                        345f64,
+                        691f64,
+                        104f64,
                     ],
                 )
             },
@@ -3234,9 +3242,9 @@ impl Asteroid {
                         Mineral::StrontiumClathrates,
                     ],
                     vec![
-                        1381f64 * self.ore_modifier(),
-                        691f64  * self.ore_modifier(),
-                        345f64  * self.ore_modifier(),
+                        1381f64,
+                        691f64,
+                        35f64,
                     ],
                 )
             },
@@ -3250,9 +3258,9 @@ impl Asteroid {
                         Mineral::StrontiumClathrates,
                     ],
                     vec![
-                        173f64 * self.ore_modifier(),
-                        691f64 * self.ore_modifier(),
-                        173f64 * self.ore_modifier(),
+                        173f64,
+                        691f64,
+                        173f64,
                     ],
                 )
             },
@@ -3702,21 +3710,21 @@ impl Asteroid {
             Self::BatchCompressedStableVeldspar             => 115.00,
 
             Self::BlueIce                                   |
+            Self::BlueIceIVGrade                            |
             Self::CompressedBlueIce                         |
-            Self::ThickBlueIce                              |
-            Self::CompressedThickBlueIce                    |
+            Self::CompressedBlueIceIVGrade                  |
             Self::ClearIcicle                               |
+            Self::ClearIcicleIVGrade                        |
             Self::CompressedClearIcicle                     |
-            Self::EnrichedClearIcicle                       |
-            Self::CompressedEnrichedClearIcicle             |
+            Self::CompressedClearIcicleIVGrade              |
             Self::GlacialMass                               |
+            Self::GlacialMassIVGrade                        |
             Self::CompressedGlacialMass                     |
-            Self::SmoothGlacialMass                         |
-            Self::CompressedSmoothGlacialMass               |
+            Self::CompressedGlacialMassIVGrade              |
             Self::WhiteGlaze                                |
+            Self::WhiteGlazeIVGrade                         |
             Self::CompressedWhiteGlaze                      |
-            Self::PristineWhiteGlaze                        |
-            Self::CompressedPristineWhiteGlaze              |
+            Self::CompressedWhiteGlazeIVGrade               |
             Self::DarkGlitter                               |
             Self::CompressedDarkGlitter                     |
             Self::Gelidus                                   |

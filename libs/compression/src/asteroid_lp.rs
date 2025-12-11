@@ -437,6 +437,32 @@ pub fn calculate_ore(
             neodymium;
             dysprosium;
             thulium;
+
+            // ice
+            blue_ice;
+            blue_ice_iv_grade;
+            compressed_blue_ice;
+            compressed_blue_ice_iv_grade;
+            clear_icicle;
+            clear_icicle_iv_grade;
+            compressed_clear_icicle;
+            compressed_clear_icicle_iv_grade;
+            glacial_mass;
+            glacial_mass_iv_grade;
+            compressed_glacial_mass;
+            compressed_glacial_mass_iv_grade;
+            white_glaze;
+            white_glaze_iv_grade;
+            compressed_white_glaze;
+            compressed_white_glaze_iv_grade;
+            dark_glitter;
+            compressed_dark_glitter;
+            gelidus;
+            compressed_gelidus;
+            glare_crust;
+            compressed_glare_crust;
+            krystallos;
+            compressed_krystallos;
     }
 
     // create the problem, find the lowest possible price while still fulfulling
@@ -863,7 +889,32 @@ pub fn calculate_ore(
             (promethium         * config.asteroid_price(&Asteroid::Promethium)) +
             (neodymium          * config.asteroid_price(&Asteroid::Neodymium)) +
             (dysprosium         * config.asteroid_price(&Asteroid::Dysprosium)) +
-            (thulium            * config.asteroid_price(&Asteroid::Thulium))
+            (thulium            * config.asteroid_price(&Asteroid::Thulium)) +
+
+            (blue_ice                           * config.asteroid_price(&Asteroid::BlueIce)) +
+            (blue_ice_iv_grade                  * config.asteroid_price(&Asteroid::BlueIceIVGrade)) +
+            (compressed_blue_ice                * config.asteroid_price(&Asteroid::CompressedBlueIce)) +
+            (compressed_blue_ice_iv_grade       * config.asteroid_price(&Asteroid::CompressedBlueIceIVGrade)) +
+            (clear_icicle                       * config.asteroid_price(&Asteroid::ClearIcicle)) +
+            (clear_icicle_iv_grade              * config.asteroid_price(&Asteroid::ClearIcicleIVGrade)) +
+            (compressed_clear_icicle            * config.asteroid_price(&Asteroid::CompressedClearIcicle)) +
+            (compressed_clear_icicle_iv_grade   * config.asteroid_price(&Asteroid::CompressedClearIcicleIVGrade)) +
+            (glacial_mass                       * config.asteroid_price(&Asteroid::GlacialMass)) +
+            (glacial_mass_iv_grade              * config.asteroid_price(&Asteroid::GlacialMassIVGrade)) +
+            (compressed_glacial_mass            * config.asteroid_price(&Asteroid::CompressedGlacialMass)) +
+            (compressed_glacial_mass_iv_grade   * config.asteroid_price(&Asteroid::CompressedGlacialMassIVGrade)) +
+            (white_glaze                        * config.asteroid_price(&Asteroid::WhiteGlaze)) +
+            (white_glaze_iv_grade               * config.asteroid_price(&Asteroid::WhiteGlazeIVGrade)) +
+            (compressed_white_glaze             * config.asteroid_price(&Asteroid::CompressedWhiteGlaze)) +
+            (compressed_white_glaze_iv_grade    * config.asteroid_price(&Asteroid::CompressedWhiteGlazeIVGrade)) +
+            (dark_glitter                       * config.asteroid_price(&Asteroid::DarkGlitter)) +
+            (compressed_dark_glitter            * config.asteroid_price(&Asteroid::CompressedDarkGlitter)) +
+            (gelidus                            * config.asteroid_price(&Asteroid::Gelidus)) +
+            (compressed_gelidus                 * config.asteroid_price(&Asteroid::CompressedGelidus)) +
+            (glare_crust                        * config.asteroid_price(&Asteroid::GlareCrust)) +
+            (compressed_glare_crust             * config.asteroid_price(&Asteroid::CompressedGlareCrust)) +
+            (krystallos                         * config.asteroid_price(&Asteroid::Krystallos)) +
+            (compressed_krystallos              * config.asteroid_price(&Asteroid::CompressedKrystallos))
         )
         .using(default_solver);
 
@@ -1281,6 +1332,31 @@ pub fn calculate_ore(
         (Asteroid::CompressedYtterbite, compressed_ytterbite),
         (Asteroid::CompressedBountifulYtterbite, compressed_bountiful_ytterbite),
         (Asteroid::CompressedShiningYtterbite, compressed_shining_ytterbite),
+
+        (Asteroid::BlueIce, blue_ice),
+        (Asteroid::BlueIceIVGrade, blue_ice_iv_grade),
+        (Asteroid::CompressedBlueIce, compressed_blue_ice),
+        (Asteroid::CompressedBlueIceIVGrade, compressed_blue_ice_iv_grade),
+        (Asteroid::ClearIcicle, clear_icicle),
+        (Asteroid::ClearIcicleIVGrade, clear_icicle_iv_grade),
+        (Asteroid::CompressedClearIcicle, compressed_clear_icicle),
+        (Asteroid::CompressedClearIcicleIVGrade, compressed_clear_icicle_iv_grade),
+        (Asteroid::GlacialMass, glacial_mass),
+        (Asteroid::GlacialMassIVGrade, glacial_mass_iv_grade),
+        (Asteroid::CompressedGlacialMass, compressed_glacial_mass),
+        (Asteroid::CompressedGlacialMassIVGrade, compressed_glacial_mass_iv_grade),
+        (Asteroid::WhiteGlaze, white_glaze),
+        (Asteroid::WhiteGlazeIVGrade, white_glaze_iv_grade),
+        (Asteroid::CompressedWhiteGlaze, compressed_white_glaze),
+        (Asteroid::CompressedWhiteGlazeIVGrade, compressed_white_glaze_iv_grade),
+        (Asteroid::DarkGlitter, dark_glitter),
+        (Asteroid::CompressedDarkGlitter, compressed_dark_glitter),
+        (Asteroid::Gelidus, gelidus),
+        (Asteroid::CompressedGelidus, compressed_gelidus),
+        (Asteroid::GlareCrust, glare_crust),
+        (Asteroid::CompressedGlareCrust, compressed_glare_crust),
+        (Asteroid::Krystallos, krystallos),
+        (Asteroid::CompressedKrystallos, compressed_krystallos),
     ];
 
     for (asteroid, var) in entries.iter() {
@@ -2302,6 +2378,136 @@ pub fn calculate_ore(
 
             thulium >= config.want_mineral(Mineral::Thulium)
         ).set_name("Thulium".into()))
+        .with(constraint!(
+            (blue_ice                           * (69f64   * config.reprocessing_asteroid())) +
+            (compressed_blue_ice                * (69f64   * config.reprocessing_asteroid())) +
+            (blue_ice_iv_grade                  * (104f64  * config.reprocessing_asteroid())) +
+            (compressed_blue_ice_iv_grade       * (104f64  * config.reprocessing_asteroid())) +
+
+            (clear_icicle                       * (69f64   * config.reprocessing_asteroid())) +
+            (compressed_clear_icicle            * (69f64   * config.reprocessing_asteroid())) +
+            (clear_icicle_iv_grade              * (104f64  * config.reprocessing_asteroid())) +
+            (compressed_clear_icicle_iv_grade   * (104f64  * config.reprocessing_asteroid())) +
+
+            (glacial_mass                       * (69f64   * config.reprocessing_asteroid())) +
+            (compressed_glacial_mass            * (69f64   * config.reprocessing_asteroid())) +
+            (glacial_mass_iv_grade              * (104f64  * config.reprocessing_asteroid())) +
+            (compressed_glacial_mass_iv_grade   * (104f64  * config.reprocessing_asteroid())) +
+
+            (white_glaze                        * (69f64   * config.reprocessing_asteroid())) +
+            (compressed_white_glaze             * (69f64   * config.reprocessing_asteroid())) +
+            (white_glaze_iv_grade               * (104f64  * config.reprocessing_asteroid())) +
+            (compressed_white_glaze_iv_grade    * (104f64  * config.reprocessing_asteroid())) +
+
+            (dark_glitter                       * (681f64  * config.reprocessing_asteroid())) +
+            (compressed_dark_glitter            * (681f64  * config.reprocessing_asteroid())) +
+
+            (gelidus                            * (345f64  * config.reprocessing_asteroid())) +
+            (compressed_gelidus                 * (345f64  * config.reprocessing_asteroid())) +
+
+            (glare_crust                        * (1381f64 * config.reprocessing_asteroid())) +
+            (compressed_glare_crust             * (1381f64 * config.reprocessing_asteroid())) +
+
+            (krystallos                         * (173f64  * config.reprocessing_asteroid())) +
+            (compressed_krystallos              * (173f64  * config.reprocessing_asteroid()))
+            >= config.want_mineral(Mineral::HeavyWater)
+        ).set_name("HeavyWater".into()))
+        .with(constraint!(
+            (blue_ice                           * (35f64   * config.reprocessing_asteroid())) +
+            (compressed_blue_ice                * (35f64   * config.reprocessing_asteroid())) +
+            (blue_ice_iv_grade                  * (55f64   * config.reprocessing_asteroid())) +
+            (compressed_blue_ice_iv_grade       * (55f64   * config.reprocessing_asteroid())) +
+
+            (clear_icicle                       * (35f64   * config.reprocessing_asteroid())) +
+            (compressed_clear_icicle            * (35f64   * config.reprocessing_asteroid())) +
+            (clear_icicle_iv_grade              * (55f64   * config.reprocessing_asteroid())) +
+            (compressed_clear_icicle_iv_grade   * (55f64   * config.reprocessing_asteroid())) +
+
+            (glacial_mass                       * (35f64   * config.reprocessing_asteroid())) +
+            (compressed_glacial_mass            * (35f64   * config.reprocessing_asteroid())) +
+            (glacial_mass_iv_grade              * (55f64   * config.reprocessing_asteroid())) +
+            (compressed_glacial_mass_iv_grade   * (55f64   * config.reprocessing_asteroid())) +
+
+            (white_glaze                        * (35f64   * config.reprocessing_asteroid())) +
+            (compressed_white_glaze             * (35f64   * config.reprocessing_asteroid())) +
+            (white_glaze_iv_grade               * (55f64   * config.reprocessing_asteroid())) +
+            (compressed_white_glaze_iv_grade    * (55f64   * config.reprocessing_asteroid())) +
+
+            (dark_glitter                       * (1381f64 * config.reprocessing_asteroid())) +
+            (compressed_dark_glitter            * (1381f64 * config.reprocessing_asteroid())) +
+
+            (gelidus                            * (691f64  * config.reprocessing_asteroid())) +
+            (compressed_gelidus                 * (691f64  * config.reprocessing_asteroid())) +
+
+            (glare_crust                        * (691f64  * config.reprocessing_asteroid())) +
+            (compressed_glare_crust             * (691f64  * config.reprocessing_asteroid())) +
+
+            (krystallos                         * (691f64  * config.reprocessing_asteroid())) +
+            (compressed_krystallos              * (691f64  * config.reprocessing_asteroid()))
+            >= config.want_mineral(Mineral::LiquidOzone)
+        ).set_name("LiquidOzone".into()))
+        .with(constraint!(
+            (blue_ice                           * (1f64    * config.reprocessing_asteroid())) +
+            (compressed_blue_ice                * (1f64    * config.reprocessing_asteroid())) +
+            (blue_ice_iv_grade                  * (1f64    * config.reprocessing_asteroid())) +
+            (compressed_blue_ice_iv_grade       * (1f64    * config.reprocessing_asteroid())) +
+
+            (clear_icicle                       * (1f64    * config.reprocessing_asteroid())) +
+            (compressed_clear_icicle            * (1f64    * config.reprocessing_asteroid())) +
+            (clear_icicle_iv_grade              * (1f64    * config.reprocessing_asteroid())) +
+            (compressed_clear_icicle_iv_grade   * (1f64    * config.reprocessing_asteroid())) +
+
+            (glacial_mass                       * (1f64    * config.reprocessing_asteroid())) +
+            (compressed_glacial_mass            * (1f64    * config.reprocessing_asteroid())) +
+            (glacial_mass_iv_grade              * (1f64    * config.reprocessing_asteroid())) +
+            (compressed_glacial_mass_iv_grade   * (1f64    * config.reprocessing_asteroid())) +
+
+            (white_glaze                        * (1f64    * config.reprocessing_asteroid())) +
+            (compressed_white_glaze             * (1f64    * config.reprocessing_asteroid())) +
+            (white_glaze_iv_grade               * (1f64    * config.reprocessing_asteroid())) +
+            (compressed_white_glaze_iv_grade    * (1f64    * config.reprocessing_asteroid())) +
+
+            (dark_glitter                       * (69f64   * config.reprocessing_asteroid())) +
+            (compressed_dark_glitter            * (69f64   * config.reprocessing_asteroid())) +
+
+            (gelidus                            * (104f64  * config.reprocessing_asteroid())) +
+            (compressed_gelidus                 * (104f64  * config.reprocessing_asteroid())) +
+
+            (glare_crust                        * (35f64   * config.reprocessing_asteroid())) +
+            (compressed_glare_crust             * (35f64   * config.reprocessing_asteroid())) +
+
+            (krystallos                         * (173f64  * config.reprocessing_asteroid())) +
+            (compressed_krystallos              * (173f64  * config.reprocessing_asteroid()))
+            >= config.want_mineral(Mineral::StrontiumClathrates)
+        ).set_name("StrontiumClathrates".into()))
+        .with(constraint!(
+            (clear_icicle                       * (414f64  * config.reprocessing_asteroid())) +
+            (compressed_clear_icicle            * (414f64  * config.reprocessing_asteroid())) +
+            (clear_icicle_iv_grade              * (483f64  * config.reprocessing_asteroid())) +
+            (compressed_clear_icicle_iv_grade   * (483f64  * config.reprocessing_asteroid()))
+            >= config.want_mineral(Mineral::HeliumIsotopes)
+        ).set_name("HeliumIsotopes".into()))
+        .with(constraint!(
+            (white_glaze                        * (414f64  * config.reprocessing_asteroid())) +
+            (compressed_white_glaze             * (414f64  * config.reprocessing_asteroid())) +
+            (white_glaze_iv_grade               * (483f64  * config.reprocessing_asteroid())) +
+            (compressed_white_glaze_iv_grade    * (483f64  * config.reprocessing_asteroid()))
+            >= config.want_mineral(Mineral::NitrogenIsotopes)
+        ).set_name("NitrogenIsotopes".into()))
+        .with(constraint!(
+            (glacial_mass                       * (414f64  * config.reprocessing_asteroid())) +
+            (compressed_glacial_mass            * (414f64  * config.reprocessing_asteroid())) +
+            (glacial_mass_iv_grade              * (483f64  * config.reprocessing_asteroid())) +
+            (compressed_glacial_mass_iv_grade   * (483f64  * config.reprocessing_asteroid()))
+            >= config.want_mineral(Mineral::HydrogenIsotopes)
+        ).set_name("HydrogenIsotopes".into()))
+        .with(constraint!(
+            (blue_ice                           * (414f64  * config.reprocessing_asteroid())) +
+            (compressed_blue_ice                * (414f64  * config.reprocessing_asteroid())) +
+            (blue_ice_iv_grade                  * (483f64  * config.reprocessing_asteroid())) +
+            (compressed_blue_ice_iv_grade       * (483f64  * config.reprocessing_asteroid()))
+            >= config.want_mineral(Mineral::OxygenIsotopes)
+        ).set_name("OxygenIsotopes".into()))
         .solve()
         .map_err(|_| Error::NoSolution)?;
 
@@ -2338,7 +2544,32 @@ pub fn calculate_ore(
                 Asteroid::Promethium        |
                 Asteroid::Neodymium         |
                 Asteroid::Dysprosium        |
-                Asteroid::Thulium => result.insert(asteroid.to_type_id(), entry.ceil()),
+                Asteroid::Thulium           |
+
+                Asteroid::BlueIce                       |
+                Asteroid::BlueIceIVGrade                |
+                Asteroid::CompressedBlueIce             |
+                Asteroid::CompressedBlueIceIVGrade      |
+                Asteroid::ClearIcicle                   |
+                Asteroid::ClearIcicleIVGrade            |
+                Asteroid::CompressedClearIcicle         |
+                Asteroid::CompressedClearIcicleIVGrade  |
+                Asteroid::GlacialMass                   |
+                Asteroid::GlacialMassIVGrade            |
+                Asteroid::CompressedGlacialMass         |
+                Asteroid::CompressedGlacialMassIVGrade  |
+                Asteroid::WhiteGlaze                    |
+                Asteroid::WhiteGlazeIVGrade             |
+                Asteroid::CompressedWhiteGlaze          |
+                Asteroid::CompressedWhiteGlazeIVGrade   |
+                Asteroid::DarkGlitter                   |
+                Asteroid::CompressedDarkGlitter         |
+                Asteroid::Gelidus                       |
+                Asteroid::CompressedGelidus             |
+                Asteroid::GlareCrust                    |
+                Asteroid::CompressedGlareCrust          |
+                Asteroid::Krystallos                    |
+                Asteroid::CompressedKrystallos          => result.insert(asteroid.to_type_id(), entry.ceil()),
                 _ => result.insert(asteroid.to_type_id(), entry.ceil() * 100f64)
             };
         }

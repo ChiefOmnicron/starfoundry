@@ -7,7 +7,7 @@ use utoipa::ToSchema;
 /// When the projects switches into `InProgress` the job detection gets active
 /// for that project.
 /// Afterwards the project is either `Done` or `Closed`. Job detection then gets
-/// deaktivated again.
+/// deactivated again.
 /// 
 #[derive(
     Clone, Debug, Copy, Hash,

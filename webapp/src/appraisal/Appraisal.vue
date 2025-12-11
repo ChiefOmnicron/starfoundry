@@ -189,7 +189,7 @@
                                 minerals.
                             </n-alert>
 
-                            <n-tabs type="line" @update:value="tabSwitch">
+                            <n-tabs type="line">
                                 <n-tab-pane name="compressed" tab="Compressed">
                                     <appraisal-header
                                         :appraisal="
@@ -442,7 +442,6 @@ class AppraisalShow extends Vue {
     public currentTab:
         | 'appraisal'
         | 'compression'
-        | 'compressionOverage'
         | 'reprocessing' = 'appraisal';
 
     public notFound: boolean = false;
@@ -552,14 +551,13 @@ class AppraisalShow extends Vue {
     }
 
     public tabSwitch(tab: string) {
+        console.log('asdasd', tab)
         if (this.selectedTab !== tab) {
             let route = `${window.location.origin}/appraisal/${this.code}`;
 
             if (tab === 'compression') {
-                console.log('a');
                 route = `${window.location.origin}/appraisal/${this.code}/compression`;
             } else if (tab === 'reprocessing') {
-                console.log('b');
                 route = `${window.location.origin}/appraisal/${this.code}/reprocessing`;
             }
 
@@ -572,9 +570,9 @@ class AppraisalShow extends Vue {
 
             this.loadingAppraisalCompression = true;
             this.fetchCompression();
-        } else if (tab === 'compressedOverage') {
-            this.currentTab = 'compressionOverage';
-        } else if (tab === 'reprocessing') {
+        } /*else if (tab === 'compressedOverage') {
+            this.currentTab = 'compressedOverage';
+        } */else if (tab === 'reprocessing') {
             this.currentTab = 'reprocessing';
 
             this.loadingAppraisalReprocessing = true;
@@ -701,7 +699,7 @@ class AppraisalShow extends Vue {
                     }
                 }
                 return content.join('\n');
-            case 'compressionOverage':
+            /*case 'compressionOverage':
                 if (
                     this.appraisalCompression &&
                     this.appraisalCompression.overage_appraisal
@@ -737,7 +735,7 @@ class AppraisalShow extends Vue {
                         );
                     }
                 }
-                return content.join('\n');
+                return content.join('\n');*/
             case 'reprocessing':
                 if (this.appraisalReprocessing) {
                     for (let item of this.appraisalReprocessing.items) {

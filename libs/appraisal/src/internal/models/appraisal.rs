@@ -6,7 +6,7 @@ use utoipa::ToSchema;
 
 use super::MarketEntry;
 
-#[derive(Debug, Serialize, ToSchema)]
+#[derive(Clone, Debug, Serialize, ToSchema)]
 #[schema(
     example = json!({
         "code": "cidx8nzQNW",

@@ -12,6 +12,7 @@ pub struct Config {
     pub want_gas:          HashMap<Gas, f64>,
     pub ore_reprocessing:  OreReprocessingEfficiency,
     pub gas_decompression: GasReprocessingEfficiency,
+    pub ice_reprocessing:  OreReprocessingEfficiency,
 
     pub blacklist:         HashSet<Asteroid>,
 
@@ -175,8 +176,9 @@ impl Default for Config {
         Self {
             want_mineral:      HashMap::new(),
             want_gas:          HashMap::new(),
-            ore_reprocessing:      OreReprocessingEfficiency::default(),
+            ore_reprocessing:  OreReprocessingEfficiency::default(),
             gas_decompression: GasReprocessingEfficiency::default(),
+            ice_reprocessing:  OreReprocessingEfficiency::default(),
 
             blacklist:       HashSet::new(),
 
@@ -194,7 +196,7 @@ impl Default for Config {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Mineral {
     Tritanium,
     Pyerite,

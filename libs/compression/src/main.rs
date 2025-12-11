@@ -45,19 +45,26 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     //config.want_mineral.insert(Mineral::Neodymium, 1_000f64);
     //config.want_mineral.insert(Mineral::Dysprosium, 1_000f64);
     //config.want_mineral.insert(Mineral::Thulium, 1_000f64);
-    config.want_gas.insert(Gas::FulleriteC28, 5_000f64);
+    //config.want_gas.insert(Gas::FulleriteC28, 5_000f64);
+
+    config.want_mineral.insert(Mineral::StrontiumClathrates, 876f64);
+    config.want_mineral.insert(Mineral::OxygenIsotopes, 6172f64);
+    config.want_mineral.insert(Mineral::NitrogenIsotopes, 3472f64);
+    config.want_mineral.insert(Mineral::LiquidOzone, 15300f64);
+    config.want_mineral.insert(Mineral::HydrogenIsotopes, 5015f64);
+    config.want_mineral.insert(Mineral::HeliumIsotopes, 5015f64);
+    config.want_mineral.insert(Mineral::HeavyWater, 7434f64);
 
     config.prices_asteroid = fetch_asteroid_prices(&pool).await;
     config.prices_gas = fetch_gas_prices(&pool).await;
     config.limit_asteroid = fetch_astoid_limits(&pool).await;
     config.limit_gas = fetch_gas_limits(&pool).await;
-    config.allow_minerals = true;
 
-    //let result = calculate_ore(&config);
-    let result = calculate_gas(&config).unwrap();
+    let result = calculate_ore(&config).unwrap();
+    //let result = calculate_gas(&config).unwrap();
 
-    //debug_result_asteroid(&pool, config, result).await;
-    debug_result_gas(&pool, config, result).await;
+    debug_result_asteroid(&pool, config, result).await;
+    //debug_result_gas(&pool, config, result).await;
 
     Ok(())
 }

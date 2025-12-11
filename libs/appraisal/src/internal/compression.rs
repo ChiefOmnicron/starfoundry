@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-use starfoundry_libs_compression::{calculate_gas, calculate_ore, overage, Asteroid, Config, Gas, GasReprocessingEfficiency, OreReprocessingEfficiency};
+use starfoundry_libs_compression::{Asteroid, Config, Gas, GasReprocessingEfficiency, OreReprocessingEfficiency, calculate_gas, calculate_ore, overage};
 use starfoundry_libs_types::TypeId;
 use std::collections::{HashMap, HashSet};
 use utoipa::ToSchema;
@@ -24,6 +24,7 @@ pub async fn compression(
     let mut non_minerals_gas = HashMap::new();
     let mut compression_config = Config::default();
     compression_config.ore_reprocessing        = options.ore_reprocessing;
+    compression_config.ice_reprocessing        = options.ore_reprocessing;
     compression_config.gas_decompression       = options.gas_decompression;
     compression_config.allow_minerals          = options.allow_minerals;
     compression_config.allow_uncompressed_gas  = options.allow_uncompressed_gas;
@@ -44,7 +45,7 @@ pub async fn compression(
 
     appraisal
         .items
-        .into_iter()
+        .iter()
         .for_each(|x| {
             if
                 // minerals
@@ -61,6 +62,13 @@ pub async fn compression(
                 // gas
                 compression_config
                     .want_gas
+                    .entry(x.type_id.into())
+                    .and_modify(|value: &mut f64| *value += x.quantity as f64)
+                    .or_insert(x.quantity as f64);
+            } else if x.meta.group_id == 423.into() {
+                // ice
+                compression_config
+                    .want_mineral
                     .entry(x.type_id.into())
                     .and_modify(|value: &mut f64| *value += x.quantity as f64)
                     .or_insert(x.quantity as f64);
@@ -96,8 +104,14 @@ pub async fn compression(
     appraisal_options.set_market_id(Some(appraisal.market_id));
     appraisal_options.set_persist(Some(crate::Persistance::NonPersist));
 
+    /*let items = appraisal
+        .items
+        .into_iter()
+        .map(|x| (x.type_id, x.meta.group_id))
+        .collect::<HashMap<_, _>>();*/
     let appraisal_overage = if !compressed_minerals.is_empty() {
         let overage = overage(
+                //items,
                 options.ore_reprocessing,
                 compressed_minerals.clone(),
                 compression_config.want_mineral,
