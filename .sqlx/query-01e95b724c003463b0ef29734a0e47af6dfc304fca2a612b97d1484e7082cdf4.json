@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                    INSERT INTO project_group_default_blueprint_overwrite\n                    (\n                        project_group_id,\n                        type_id,\n                        material_efficiency\n                    )\n                    VALUES\n                    -- Providence Blueprint\n                    ($1, 20184, 8),\n                    -- Charon Blueprint\n                    ($1, 20186, 8),\n                    -- Obelisk Blueprint\n                    ($1, 20188, 8),\n                    -- Fenrir Blueprint\n                    ($1, 20190, 8),\n                    -- Capital Ultratidal Entropic Unit Blueprint\n                    ($1, 53032, 0),\n                    -- Capital Radiation Conversion Unit Blueprint\n                    ($1, 53033, 0),\n                    -- Capital Absorption Thruster Array Blueprint\n                    ($1, 53034, 0)\n                ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "01e95b724c003463b0ef29734a0e47af6dfc304fca2a612b97d1484e7082cdf4"
+}

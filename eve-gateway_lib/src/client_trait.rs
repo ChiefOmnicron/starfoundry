@@ -2,7 +2,7 @@ use starfoundry_lib_gateway::ApiClient;
 use starfoundry_lib_types::{CategoryId, CharacterId, GroupId, StructureId, SystemId, TypeId};
 
 use crate::error::Result;
-use crate::{Category, CharacterInfo, Group, Item, ResolveStructureResponse, StructureRigResponse, StructureServiceResponse, System};
+use crate::{Category, CharacterInfo, Group, Item, ListItemFilter, ResolveStructureResponse, StructureRigResponse, StructureServiceResponse, System};
 
 pub trait EveGatewayApiClient: ApiClient {
     #[allow(async_fn_in_trait)]
@@ -69,6 +69,14 @@ pub trait EveGatewayApiClient: ApiClient {
             .fetch(&format!("items/group/{}", *group_id))
             .await
             .map_err(Into::into)
+    }
+
+    #[allow(async_fn_in_trait)]
+    async fn list_items(
+        &self,
+        _filter: ListItemFilter,
+    ) -> Result<Vec<Item>> {
+        unimplemented!()
     }
 
     #[allow(async_fn_in_trait)]

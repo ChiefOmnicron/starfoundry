@@ -1,0 +1,40 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                type_id,\n                material_efficiency\n            FROM project_group_default_blueprint_overwrite\n            WHERE project_group_id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "type_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_group_default_blueprint_overwrite",
+            "name": "type_id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "material_efficiency",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_group_default_blueprint_overwrite",
+            "name": "material_efficiency"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "bb130d359955b870d473467149f38bc96d11135262628770cfcc8f51d94b6a91"
+}

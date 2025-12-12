@@ -99,10 +99,11 @@ pub async fn callback(
     };
 
     // TODO: is the character_id in there even if a corporation was logged in
-    let character_id = EveJwtToken::extract_character_id(token_claims.claims)?;
+    let character_id = EveJwtToken::extract_character_id(&token_claims.claims)?;
 
     if credential_type == "CORPORATION" {
-        let corporation_id = sqlx::query!("
+        unimplemented!()
+        /*let corporation_id = sqlx::query!("
                 SELECT corporation_id
                 FROM character
                 WHERE character_id = $1
@@ -118,29 +119,37 @@ pub async fn callback(
                 INSERT INTO eve_credential (
                     character_id,
                     refresh_token,
-                    character_main
-                ) VALUES ($1, $2, $3)
+                    character_main,
+                    scopes
+                ) VALUES ($1, $2, $3, $4)
             ",
                 corporation_id,
                 &token.refresh_token,
                 main_character_id,
+                &EveJwtToken::extract_scopes(&token_claims.claims),
             )
             .execute(&state.postgres)
             .await
-            .map_err(AuthError::InsertEveCredential)?;
+            .map_err(AuthError::InsertEveCredential)?;*/
     } else {
         sqlx::query!("
             INSERT INTO eve_credential (
                 character_id,
+                domain,
                 refresh_token,
-                character_main
-            ) VALUES ($1, $2, $3)
-            ON CONFLICT (character_id) DO UPDATE
-            SET refresh_token = EXCLUDED.refresh_token
+                character_main,
+                scopes
+            ) VALUES ($1, $2, $3, $4, $5)
+            ON CONFLICT (character_id, domain) DO UPDATE
+            SET
+                refresh_token = EXCLUDED.refresh_token,
+                scopes        = EXCLUDED.scopes
         ",
             *character_id,
+            domain,
             &token.refresh_token,
             main_character_id,
+            &EveJwtToken::extract_scopes(&token_claims.claims),
         )
         .execute(&state.postgres)
         .await

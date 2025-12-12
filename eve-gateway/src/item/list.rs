@@ -1,36 +1,36 @@
-use axum::extract::{Path, State};
+use axum::extract::{Query, State};
 use axum::http::StatusCode;
-use axum::{Extension, Json};
+use axum::Json;
 use axum::response::IntoResponse;
-use starfoundry_lib_eve_gateway::Item;
-use starfoundry_lib_types::TypeId;
+use starfoundry_lib_eve_gateway::{Item, ListItemFilter};
 
 use crate::api_docs::{InternalServerError, NotFound};
-use crate::item::services::fetch_item;
+use crate::item::services::list_items;
 use crate::state::AppState;
 
 use crate::item::error::Result;
 
 /// Fetch an item
 /// 
-/// - Alternative route: `/latest/items/{TypeId}`
-/// - Alternative route: `/v1/items/{TypeId}`
+/// - Alternative route: `/latest/items`
+/// - Alternative route: `/v1/items`
 /// 
 /// ---
 /// 
-/// Resolves all information about an item
+/// Resolves all information about all items
 /// 
 #[utoipa::path(
     get,
-    path = "/{TypeId}",
+    path = "/",
     tag = "Items",
     params(
         TypeId,
     ),
+    params(ListItemFilter),
     responses(
         (
-            body = Item,
-            description = "Information about an item",
+            body = Vec<Item>,
+            description = "Information about all items",
             status = OK,
         ),
         NotFound,
@@ -39,11 +39,11 @@ use crate::item::error::Result;
 )]
 pub async fn api(
     State(state):  State<AppState>,
-    Path(type_id): Path<TypeId>,
+    Query(filter): Query<ListItemFilter>,
 ) -> Result<impl IntoResponse> {
-    let entry = fetch_item(
+    let entry = list_items(
         &state.postgres,
-        type_id,
+        filter,
     ).await?;
 
     Ok(

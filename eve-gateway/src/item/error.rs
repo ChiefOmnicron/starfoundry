@@ -23,6 +23,8 @@ pub enum ItemError {
     FetchCategory(sqlx::Error, CategoryId),
     #[error("error while fetching group '{1}', error: '{0}'")]
     FetchGroup(sqlx::Error, GroupId),
+    #[error("error while listing items, error: '{0}'")]
+    ListItem(sqlx::Error),
 }
 
 impl IntoResponse for ItemError {

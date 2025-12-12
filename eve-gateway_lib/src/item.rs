@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use starfoundry_lib_types::{CategoryId, GroupId, TypeId};
-use utoipa::ToSchema;
+use utoipa::{IntoParams, ToSchema};
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 #[schema(
@@ -57,4 +57,21 @@ pub struct Group {
     pub group_id:    GroupId,
     pub category_id: CategoryId,
     pub name:        String,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema, IntoParams)]
+#[schema(
+    example = json!({
+        "name": "Pyerite"
+    })
+)]
+pub struct ListItemFilter {
+    pub name: String,
+
+    /// Only searches for items that are buildable
+    #[serde(default)]
+    pub buildable: Option<bool>,
+    /// Only searches for blueprints
+    #[serde(default)]
+    pub blueprint: Option<bool>,
 }

@@ -29,4 +29,4 @@ worker-store-cost/hulls/*
 .tanstack
 prices.out
 
-authentication/certs/*.pem
+experimental

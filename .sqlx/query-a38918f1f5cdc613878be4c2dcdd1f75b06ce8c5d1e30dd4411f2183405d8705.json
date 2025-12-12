@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO project_group_default_blacklist\n            (\n                project_group_id,\n                type_id\n            )\n            SELECT $1, * FROM UNNEST(\n                $2::INTEGER[]\n            )\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "a38918f1f5cdc613878be4c2dcdd1f75b06ce8c5d1e30dd4411f2183405d8705"
+}

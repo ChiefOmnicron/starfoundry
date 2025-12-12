@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                    INSERT INTO project_group_default_job_splitting_general\n                    (\n                        project_group_id\n                    )\n                    VALUES ($1)\n                ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "efa5a500e9a6197e69334336d07173ab0c67711b58802b5862ba0f9ec2274bc8"
+}

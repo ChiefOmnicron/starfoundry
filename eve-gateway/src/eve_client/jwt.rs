@@ -4,6 +4,7 @@ use jsonwebtoken::{Algorithm, DecodingKey, TokenData, Validation};
 use url::Url;
 
 use crate::eve_client::error::{EveApiError, Result};
+use crate::eve_client::utils::single_or_vec;
 use crate::eve_client::{EveApiClient, EveClientId};
 
 /// Parsed version of the response from EVE after a successful login.
@@ -68,7 +69,7 @@ impl EveJwtToken {
     /// The character id
     ///
     pub fn extract_character_id(
-        claim: Claims,
+        claim: &Claims,
     ) -> Result<CharacterId, EveApiError> {
         let character_id = claim
             .sub
@@ -77,6 +78,18 @@ impl EveJwtToken {
             .map_err(EveApiError::OAuthParseCharacterId)?;
         Ok(character_id.into())
     }
+
+    /// Gets all granted scopes
+    ///
+    /// # Returns
+    ///
+    /// The character id
+    ///
+    pub fn extract_scopes(
+        claim: &Claims,
+    ) -> Vec<String> {
+        claim.scp.clone()
+    }
 }
 
 /// Decoded access token
@@ -84,4 +97,7 @@ impl EveJwtToken {
 pub struct Claims {
     /// User identification
     pub sub: String,
+    /// User scope
+    #[serde(deserialize_with = "single_or_vec")]
+    pub scp: Vec<String>,
 }
