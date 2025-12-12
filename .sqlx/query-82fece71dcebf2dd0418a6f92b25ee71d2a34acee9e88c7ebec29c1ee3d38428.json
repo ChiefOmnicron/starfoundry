@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE worker_registry\n            SET last_seen = NOW()\n            WHERE id = $1\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "82fece71dcebf2dd0418a6f92b25ee71d2a34acee9e88c7ebec29c1ee3d38428"
+}

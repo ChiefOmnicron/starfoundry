@@ -1,0 +1,40 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                type_id,\n                max_runs\n            FROM project_group_default_job_splitting_run\n            WHERE project_group_id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "type_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_group_default_job_splitting_run",
+            "name": "type_id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "max_runs",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_group_default_job_splitting_run",
+            "name": "max_runs"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "df64dfb0c106d7cb4c9ae322ac2dce75bdfa6b84c4c4a5f5c70637f964a58a08"
+}

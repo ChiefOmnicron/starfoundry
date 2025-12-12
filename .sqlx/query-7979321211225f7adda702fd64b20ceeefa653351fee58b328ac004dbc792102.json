@@ -1,0 +1,29 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                UPDATE worker_queue\n                SET\n                    status = $2,\n                    logs = $3,\n                    error = $4,\n                    finished_at = NOW()\n                WHERE id = $1\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        {
+          "Custom": {
+            "name": "worker_task_status",
+            "kind": {
+              "Enum": [
+                "WAITING",
+                "IN_PROGRESS",
+                "DONE",
+                "ERROR"
+              ]
+            }
+          }
+        },
+        "Varchar",
+        "Varchar"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "7979321211225f7adda702fd64b20ceeefa653351fee58b328ac004dbc792102"
+}

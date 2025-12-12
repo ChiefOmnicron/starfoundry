@@ -6,18 +6,18 @@ version.workspace = true
 license.workspace = true
 
 [dependencies]
-axum = { version = "0.8.6", features = ["macros"] }
-axum-extra = { version = "0.10.3", features = ["cookie"] }
-axum-server = { version = "0.7.2", features = ["tls-rustls-no-provider"] }
+axum = { version = "0.8.7", features = ["macros"] }
+axum-extra = { version = "0.12.2", features = ["cookie"] }
+axum-server = { version = "0.7.3", features = ["tls-rustls-no-provider"] }
 base64 = "0.22.1"
 chrono = { version = "0.4.42", features = ["serde"] }
 dotenvy = "0.15.7"
 jsonwebtoken = { version = "9.3.1", features = ["use_pem"] }
 jwk_kit = "0.1.2"
-metrics = "0.24.2"
-metrics-exporter-prometheus = "0.17.2"
-reqwest = { version = "0.12.24", default-features = false, features = ["charset", "http2", "system-proxy", "json", "rustls-tls"] }
-rustls = "0.23.33"
+metrics = "0.24.3"
+metrics-exporter-prometheus = "0.18.1"
+reqwest = { version = "0.12.25", default-features = false, features = ["charset", "http2", "system-proxy", "json", "rustls-tls"] }
+rustls = "0.23.35"
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.145"
 sha2 = "0.10.9"
@@ -28,13 +28,13 @@ thiserror = "2.0.17"
 tokio = { version = "1.48.0", features = ["full"] }
 toml = "0.9.8"
 tower = "0.5.2"
-tracing = "0.1.41"
-tracing-subscriber = { version = "0.3.20", features = ["env-filter", "json"] }
+tracing = "0.1.43"
+tracing-subscriber = { version = "0.3.22", features = ["env-filter", "json"] }
 url = "2.5.7"
 utoipa = { version = "5.4.0", features = ["uuid", "yaml"] }
 utoipa-axum = "0.2.0"
 utoipa-scalar = { version = "0.3.0", features = ["axum"] }
-uuid = { version = "1.18.1", features = ["v7"] }
+uuid = { version = "1.19.0", features = ["v7"] }
 
 [target.'cfg(target_env = "musl")'.dependencies]
-mimalloc = "0.1.43"
+mimalloc = "0.1.48"

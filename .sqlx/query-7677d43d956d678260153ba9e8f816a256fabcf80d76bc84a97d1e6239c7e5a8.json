@@ -1,0 +1,40 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                manufacturing,\n                reaction\n            FROM project_group_default_job_splitting_general\n            WHERE project_group_id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "manufacturing",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_group_default_job_splitting_general",
+            "name": "manufacturing"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "reaction",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_group_default_job_splitting_general",
+            "name": "reaction"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "7677d43d956d678260153ba9e8f816a256fabcf80d76bc84a97d1e6239c7e5a8"
+}

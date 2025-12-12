@@ -1,4 +1,4 @@
-CREATE TABLE login_history (
+CREATE TABLE IF NOT EXISTS login_history (
     id               UUID        NOT NULL DEFAULT uuidv7(),
 
     character_id     INTEGER     NOT NULL,

@@ -6,14 +6,14 @@ version.workspace = true
 license.workspace = true
 
 [dependencies]
-axum = "0.8.6"
+axum = "0.8.7"
 chrono = "0.4.42"
-reqwest = { version = "0.12.24", default-features = false, features = ["charset", "http2", "system-proxy", "json", "rustls-tls"] }
+reqwest = { version = "0.12.25", default-features = false, features = ["charset", "http2", "system-proxy", "json", "rustls-tls"] }
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.145"
 starfoundry_lib-gateway = { path = "../gateway_lib" }
 starfoundry_lib-types = { path = "../gp_lib-types" }
 thiserror = "2.0.17"
-tracing = "0.1.41"
+tracing = "0.1.43"
 url = "2.5.7"
 utoipa = { version = "5.4.0", features = ["uuid", "yaml"] }

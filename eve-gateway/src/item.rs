@@ -2,6 +2,7 @@ mod fetch;
 mod fetch_bulk;
 mod fetch_category;
 mod fetch_group;
+mod list;
 
 pub mod services;
 pub mod error;
@@ -25,9 +26,13 @@ pub fn routes() -> OpenApiRouter<AppState> {
     let fetch_group = OpenApiRouter::new()
         .routes(routes!(fetch_group::api));
 
+    let list = OpenApiRouter::new()
+        .routes(routes!(list::api));
+
     OpenApiRouter::new()
         .merge(fetch)
         .merge(fetch_bulk)
         .merge(fetch_category)
         .merge(fetch_group)
+        .merge(list)
 }

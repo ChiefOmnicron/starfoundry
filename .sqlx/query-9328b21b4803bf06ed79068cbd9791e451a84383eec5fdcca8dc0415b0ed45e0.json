@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE worker_queue\n            SET\n                worker_id = NULL,\n                status = 'WAITING'\n            WHERE worker_id = $1\n            AND status = 'IN_PROGRESS'\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "9328b21b4803bf06ed79068cbd9791e451a84383eec5fdcca8dc0415b0ed45e0"
+}
