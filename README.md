@@ -1,5 +1,8 @@
 # StarFoundry
 
+> [!WARNING]
+> The project is currently being rewritten, see the `rewrite` branch for the latest information
+
 StarFoundry contains multiple projects.
 
 Core of it all is an industry tool, that I am developing for some time.
