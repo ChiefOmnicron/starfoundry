@@ -178,11 +178,17 @@ pub async fn create(
         max_runs.insert(24558.into(), 40);
         max_runs.insert(24560.into(), 40);
         max_runs.insert(57474.into(), 40);
+        max_runs.insert(57475.into(), 40);
+        max_runs.insert(57476.into(), 40);
+        max_runs.insert(57477.into(), 40);
         max_runs.insert(57479.into(), 40);
         max_runs.insert(57487.into(), 40);
         max_runs.insert(57486.into(), 200);
         max_runs.insert(57478.into(), 200);
         max_runs.insert(57470.into(), 200);
+        max_runs.insert(57471.into(), 200);
+        max_runs.insert(57472.into(), 200);
+        max_runs.insert(57473.into(), 200);
     }
 
     for structure_group in structure_groups {
