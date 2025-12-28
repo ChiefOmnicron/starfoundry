@@ -70,7 +70,7 @@ pub async fn api(
 mod tests {
     use axum::body::Body;
     use axum::extract::Request;
-    use axum::http::header::CONTENT_TYPE;
+    use axum::http::header::{CONTENT_TYPE, HOST};
     use axum::http::StatusCode;
     use sqlx::PgPool;
     use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
@@ -90,6 +90,7 @@ mod tests {
             .method("PUT")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .body(Body::new(
                 serde_json::to_string(&UpdateStructureGroup {
                     name: "My cool structure group".into(),
@@ -128,6 +129,7 @@ mod tests {
             .method("PUT")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .body(Body::new(
                 serde_json::to_string(&UpdateStructureGroup {
                     name: "My cool structure group".into(),

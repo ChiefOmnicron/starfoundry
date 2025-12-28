@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { type GenericAbortSignal } from "axios";
 import { jwtDecode } from 'jwt-decode';
 
 let jwtToken: string | null = null;
@@ -78,3 +78,7 @@ export type CharacterInfo = {
     corporation_id: number,
     corporation_name: string,
 };
+
+export type AbortSignal = {
+    signal: GenericAbortSignal;
+}

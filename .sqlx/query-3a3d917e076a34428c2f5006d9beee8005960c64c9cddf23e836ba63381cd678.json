@@ -1,0 +1,29 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                INSERT INTO order_product (\n                    order_id,\n                    is_additional,\n                    name,\n                    price,\n                    image_type,\n                    image_type_id,\n                    content\n                ) VALUES\n                (\n                    $1, TRUE,\n                    (SELECT name FROM product WHERE id = $2),\n                    (SELECT price FROM product WHERE id = $2),\n                    (SELECT image_type FROM product WHERE id = $2),\n                    (SELECT image_type_id FROM product WHERE id = $2),\n                    (SELECT content FROM product WHERE id = $2)\n                )\n                RETURNING name\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "order_product",
+            "name": "name"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "3a3d917e076a34428c2f5006d9beee8005960c64c9cddf23e836ba63381cd678"
+}

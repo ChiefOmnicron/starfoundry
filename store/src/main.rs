@@ -15,6 +15,7 @@ mod state;
 pub mod order;
 pub mod product;
 
+use axum_server::tls_rustls::RustlsConfig;
 use axum::{middleware, Router};
 use sqlx::postgres::PgPoolOptions;
 use std::sync::Arc;
@@ -29,7 +30,8 @@ use crate::api_docs::ApiDoc;
 use crate::config::Config;
 use crate::metrics::{path_metrics, setup_metrics_recorder};
 use crate::state::AppState;
-use axum_server::tls_rustls::RustlsConfig;
+
+pub const SERVICE_NAME: &str = "STARFOUNDRY_STORE";
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {

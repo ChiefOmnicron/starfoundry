@@ -4,11 +4,12 @@ use axum::response::IntoResponse;
 use reqwest::header::{CONTENT_TYPE, LOCATION};
 use reqwest::StatusCode;
 use serde::Deserialize;
+use starfoundry_lib_gateway::MtlsApiClient;
 use std::collections::HashMap;
 
-use crate::client::mtls_client;
-use crate::state::AppState;
 use crate::error::Result;
+use crate::SERVICE_NAME;
+use crate::state::AppState;
 
 pub async fn catch_all_auth_callback(
     headers:      HeaderMap,
@@ -19,8 +20,9 @@ pub async fn catch_all_auth_callback(
         let mut url = x.service_url.clone();
         url.set_path("/auth/callback");
 
-        let client = mtls_client()?;
-        let response = client
+        let response = MtlsApiClient::new_raw(
+                SERVICE_NAME,
+            )?
             .get(url)
             .headers(headers)
             .query(&query)

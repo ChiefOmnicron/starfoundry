@@ -27,7 +27,7 @@ pub enum ProductError {
     #[error("general GatewayError, error: '{0}'")]
     GatewayError(starfoundry_lib_gateway::error::Error),
     #[error("general EveGatewayError, error: '{0}'")]
-    EveGatewayError(starfoundry_lib_eve_gateway::error::Error),
+    EveGatewayError(starfoundry_lib_eve_gateway::Error),
 
     #[error(transparent)]
     JsonExtractorRejection(#[from] JsonRejection),
@@ -39,8 +39,8 @@ impl From<starfoundry_lib_gateway::error::Error> for ProductError {
     }
 }
 
-impl From<starfoundry_lib_eve_gateway::error::Error> for ProductError {
-    fn from(e: starfoundry_lib_eve_gateway::error::Error) -> Self {
+impl From<starfoundry_lib_eve_gateway::Error> for ProductError {
+    fn from(e: starfoundry_lib_eve_gateway::Error) -> Self {
         Self::EveGatewayError(e)
     }
 }

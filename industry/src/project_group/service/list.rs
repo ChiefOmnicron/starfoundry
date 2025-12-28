@@ -26,12 +26,12 @@ pub async fn list(
                 pg.id,
                 pg.name,
                 pg.description,
-                pg.owner = $1 AS is_owner
-                --(
-                --    SELECT COUNT(*)
-                --    FROM project
-                --    WHERE project_group_id = pg.id
-                --) AS projects
+                pg.owner = $1 AS is_owner,
+                (
+                    SELECT COUNT(*)
+                    FROM project
+                    WHERE project_group_id = pg.id
+                ) AS projects
             FROM project_group pg
             JOIN project_group_member pgm ON pg.id = pgm.project_group_id
             -- fetch all projects where the user is a member
@@ -55,8 +55,7 @@ pub async fn list(
         let project_group = ProjectGroup {
             id:             entry.id.into(),
             name:           entry.name,
-            //project_count:  entry.projects.unwrap_or(0),
-            project_count:  0,
+            project_count:  entry.projects.unwrap_or(0),
             is_owner:       entry.is_owner.unwrap_or_default(),
             description:    entry.description,
 

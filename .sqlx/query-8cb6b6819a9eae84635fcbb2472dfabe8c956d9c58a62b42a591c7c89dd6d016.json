@@ -1,0 +1,37 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO structure\n            (\n                owner,\n                type_id,\n                rigs,\n                services,\n                name,\n                system_id,\n                structure_id,\n                x,\n                y,\n                z\n            )\n            VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)\n            RETURNING id\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4",
+        "Int4Array",
+        "Int4Array",
+        "Varchar",
+        "Int4",
+        "Int8",
+        "Float4",
+        "Float4",
+        "Float4"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "8cb6b6819a9eae84635fcbb2472dfabe8c956d9c58a62b42a591c7c89dd6d016"
+}

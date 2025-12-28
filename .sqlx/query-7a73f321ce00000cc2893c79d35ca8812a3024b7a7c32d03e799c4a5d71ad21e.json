@@ -1,0 +1,19 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                INSERT INTO project_group_member\n                (\n                    project_group_id,\n                    character_id,\n                    accepted,\n                    permission,\n                    created_at,\n                    updated_at\n                )\n                SELECT $1, * FROM UNNEST(\n                    $2::INTEGER[],\n                    $3::BOOLEAN[],\n                    $4::INTEGER[],\n                    $5::TIMESTAMPTZ[],\n                    $6::TIMESTAMPTZ[]\n                )\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4Array",
+        "BoolArray",
+        "Int4Array",
+        "TimestamptzArray",
+        "TimestamptzArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "7a73f321ce00000cc2893c79d35ca8812a3024b7a7c32d03e799c4a5d71ad21e"
+}

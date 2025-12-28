@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
-import { fetchProjectGroupMemberSelfQuery } from '@/services/project-group/fetch_members_self';
+import { fetchProjectGroupMemberSelfQuery } from '@/services/project-group/fetchMemberSelf';
 import { fetchProjectGroupQuery, useFetchProjectGroup } from '@/services/project-group/fetch';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { LoadingError } from '@/components/LoadingError';

@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT refresh_token\n                FROM eve_credential\n                WHERE character_id = $1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "refresh_token",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "eve_credential",
+            "name": "refresh_token"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "65cb383c8ff18b003086140a4bd8e3a8952cff48f9a42ce3a985488ec79dac5d"
+}

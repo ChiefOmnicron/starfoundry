@@ -64,7 +64,7 @@ pub async fn api(
 mod tests {
     use axum::body::Body;
     use axum::extract::Request;
-    use axum::http::header::CONTENT_TYPE;
+    use axum::http::header::{CONTENT_TYPE, HOST};
     use axum::http::StatusCode;
     use sqlx::PgPool;
     use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
@@ -83,6 +83,7 @@ mod tests {
             .header(CONTENT_TYPE, "application/json")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .method("PUT")
             .body(Body::new(
                 serde_json::to_string(&UpdateStructure {
@@ -119,6 +120,7 @@ mod tests {
             .header(CONTENT_TYPE, "text/plain")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .method("PUT")
             .body(Body::new(
                 serde_json::to_string(&UpdateStructure {
@@ -142,6 +144,7 @@ mod tests {
             .header(CONTENT_TYPE, "application/json")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .method("PUT")
             .body(Body::empty())
             .unwrap();

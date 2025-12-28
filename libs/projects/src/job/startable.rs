@@ -1,5 +1,5 @@
 use sqlx::PgPool;
-use starfoundry_libs_types::{CharacterId, TypeId};
+use starfoundry_lib_types::{CharacterId, TypeId};
 use std::collections::HashSet;
 
 use crate::{sort_by_job, Error, ProjectJobStatus, ProjectUuid, Result, StartableJob, StartableJobGroup, StartableJobEntry};

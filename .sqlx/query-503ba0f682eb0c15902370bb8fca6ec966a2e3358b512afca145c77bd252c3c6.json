@@ -1,0 +1,26 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                    SELECT structure_id\n                    FROM structure_group_structure\n                    WHERE structure_group_id = '00000000-0000-0000-0000-100000000001'\n                ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "structure_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "structure_group_structure",
+            "name": "structure_id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "503ba0f682eb0c15902370bb8fca6ec966a2e3358b512afca145c77bd252c3c6"
+}

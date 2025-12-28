@@ -49,7 +49,7 @@ pub enum StructureGroupError {
     #[error(transparent)]
     GatewayLibError(#[from] starfoundry_lib_gateway::error::Error),
     #[error(transparent)]
-    EveGatewayLibError(#[from] starfoundry_lib_eve_gateway::error::Error),
+    EveGatewayLibError(#[from] starfoundry_lib_eve_gateway::Error),
 }
 
 impl IntoResponse for StructureGroupError {

@@ -1,0 +1,175 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                DISTINCT(pj.job_id),\n\n                pj.id,\n                pj.runs,\n                pj.status AS \"status: ProjectJobStatus\",\n                pj.cost,\n                pj.structure_id,\n                pj.type_id,\n                ij.is_delivered,\n                ij.end_date,\n                ij.activity AS \"activity: IndustryActivity\",\n                s.name AS structure_name\n            FROM project_job pj\n            JOIN industry_job ij ON ij.job_id = pj.job_id\n            JOIN structure s ON (s.structure_id = ij.facility_id AND s.id = pj.structure_id)\n            JOIN project p ON p.id = pj.project_id\n            WHERE\n                p.owner = $1 AND\n                pj.project_id = $2 AND\n                (pj.status = 'BUILDING' OR ij.is_delivered = false)\n            ORDER BY end_date ASC\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "job_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "job_id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "runs",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "runs"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "status: ProjectJobStatus",
+        "type_info": {
+          "Custom": {
+            "name": "project_job_status",
+            "kind": {
+              "Enum": [
+                "WAITING_FOR_MATERIALS",
+                "BUILDING",
+                "DONE"
+              ]
+            }
+          }
+        },
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "status"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "cost",
+        "type_info": "Float8",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "cost"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "structure_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "structure_id"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "type_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "type_id"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "is_delivered",
+        "type_info": "Bool",
+        "origin": {
+          "Table": {
+            "table": "industry_job",
+            "name": "is_delivered"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "end_date",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "industry_job",
+            "name": "end_date"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "activity: IndustryActivity",
+        "type_info": {
+          "Custom": {
+            "name": "industry_activity",
+            "kind": {
+              "Enum": [
+                "MANUFACTURING",
+                "TIME_EFFICIENCY_RESEARCH",
+                "MATERIAL_EFFICIENCY_RESEARCH",
+                "COPYING",
+                "INVENTION",
+                "REACTIONS",
+                "UNKNOWN"
+              ]
+            }
+          }
+        },
+        "origin": {
+          "Table": {
+            "table": "industry_job",
+            "name": "activity"
+          }
+        }
+      },
+      {
+        "ordinal": 10,
+        "name": "structure_name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "name"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "f5ef4c31d79ab6aac2586a4b89fcb837e39e32b36b793df28095f801a0251b49"
+}

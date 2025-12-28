@@ -1,0 +1,29 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE project_job\n            SET cost = $3,\n                status = $4,\n                job_id = $5\n            WHERE project_id = $1\n             AND id = $2\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Float8",
+        {
+          "Custom": {
+            "name": "project_job_status",
+            "kind": {
+              "Enum": [
+                "WAITING_FOR_MATERIALS",
+                "BUILDING",
+                "DONE"
+              ]
+            }
+          }
+        },
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "496e17e57042c937f74f5531c880756a6675b4792a50ccd0f2645c4a3b4f41a1"
+}

@@ -1,0 +1,29 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT p.id\n                FROM project p\n                JOIN project_group_member pgm ON pgm.group_id = p.project_group_id\n                WHERE p.id = $1\n                AND pgm.character_id = $2\n                --AND (\n                --    -- TODO: replace with enum values\n                --    permission & 1 = 1 OR\n                --    permission & 8 = 8\n                --)\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "project",
+            "name": "id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "245365102ad3d3be04844fc4fc0248c70f9b83d18773cac80ff443d6faf0ccb1"
+}

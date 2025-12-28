@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        INSERT INTO project_excess\n        (\n            project_id,\n            type_id,\n            quantity\n        )\n        SELECT $1, * FROM UNNEST(\n            $2::INTEGER[],\n            $3::INTEGER[]\n        )\n    ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4Array",
+        "Int4Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "a4d54ccd1022ac1eff7799ea0bd4145649d059bbe48daf7759dae7c73c91437c"
+}

@@ -1,4 +1,4 @@
-use axum::http::HeaderMap;
+use axum::http::{HeaderMap, HeaderValue};
 use reqwest::{Client, Method, Response, StatusCode};
 use serde::de::DeserializeOwned;
 use serde::Serialize;
@@ -15,6 +15,9 @@ pub const ENV_MTLS_ROOT_CA: &str    = "STARFOUNDRY_MTLS_ROOT_CA";
 pub const ENV_MTLS_IDENTITY: &str   = "STARFOUNDRY_MTLS_IDENTITY";
 pub const ENV_USER_AGENT: &str      = "STARFOUNDRY_USER_AGENT";
 
+const HEADER_SERVICE: &str         = "STARFOUNDRY_SERVICE";
+const HEADER_SERVICE_UNKNOWN: &str = "Unknown";
+
 #[derive(Clone)]
 pub struct MtlsApiClient {
     address: Url,
@@ -22,9 +25,20 @@ pub struct MtlsApiClient {
 }
 
 impl MtlsApiClient {
-    pub fn new(
+    pub fn new<S: Into<String>>(
         address: Url,
+        service: S,
     ) -> Result<Self> {
+        let client = Self::new_raw(service)?;
+        Ok(Self {
+            address,
+            client,
+        })
+    }
+
+    pub fn new_raw<S: Into<String>>(
+        service: S,
+    ) -> Result<Client> {
         let root_ca = reqwest::Certificate::from_pem(
             Self::root_ca()?.as_bytes()
         )
@@ -35,6 +49,16 @@ impl MtlsApiClient {
         )
         .map_err(Error::GenericReqwestError)?;
 
+        let mut headers = HeaderMap::new();
+        headers.insert(
+            HEADER_SERVICE,
+            HeaderValue::from_str(
+                &service.into()
+            ).unwrap_or(
+                HeaderValue::from_static(HEADER_SERVICE_UNKNOWN)
+            )
+        );
+
         Client::builder()
             .tls_built_in_root_certs(false)
             .add_root_certificate(root_ca)
@@ -42,18 +66,33 @@ impl MtlsApiClient {
             .identity(identity)
             .user_agent(Self::user_agent()?)
             .https_only(true)
+            .default_headers(headers)
             .build()
             .map_err(Error::CouldNotConstructClient)
             .map_err(Into::into)
-            .map(|x| Self {
-                address: address,
-                client:  x,
-            })
     }
 
     pub async fn fetch<T>(
         &self,
-        path: impl Into<String>,
+        path:  impl Into<String>,
+        query: &[(&str, &str)],
+    ) -> Result<T>
+    where
+        T: DeserializeOwned,
+    {
+        self.fetch_auth(
+                path,
+                query,
+                HeaderMap::new(),
+            )
+            .await
+    }
+
+    pub async fn fetch_auth<T>(
+        &self,
+        path:    impl Into<String>,
+        query:   &[(&str, &str)],
+        headers: HeaderMap,
     ) -> Result<T>
     where
         T: DeserializeOwned,
@@ -66,7 +105,8 @@ impl MtlsApiClient {
                 Method::GET,
                 api_url.clone(),
                 serde_json::Value::Null,
-                None,
+                query,
+                Some(headers),
             )
             .await?;
 
@@ -94,6 +134,7 @@ impl MtlsApiClient {
                 Method::POST,
                 api_url.clone(),
                 serde_json::to_value(&data)?,
+                &[],
                 None,
             )
             .await?
@@ -126,6 +167,7 @@ impl MtlsApiClient {
         method:  Method,
         url:     Url,
         body:    serde_json::Value,
+        query:   &[(&str, &str)],
         headers: Option<HeaderMap>,
     ) -> Result<Response> {
         let mut retry_counter = 0usize;
@@ -143,7 +185,8 @@ impl MtlsApiClient {
             }
 
             let client = self.client
-                .request(method.clone(), url.clone());
+                .request(method.clone(), url.clone())
+                .query(query);
 
             let client = if body != serde_json::Value::Null {
                 client.json(&body)
@@ -214,7 +257,18 @@ pub trait ApiClient {
     #[allow(async_fn_in_trait)]
     async fn fetch<T>(
         &self,
-        path: impl Into<String>,
+        path:  impl Into<String>,
+        query: &[(&str, &str)],
+    ) -> Result<T>
+    where
+        T: DeserializeOwned;
+
+    #[allow(async_fn_in_trait)]
+    async fn fetch_auth<T>(
+        &self,
+        path:    impl Into<String>,
+        query:   &[(&str, &str)],
+        headers: HeaderMap,
     ) -> Result<T>
     where
         T: DeserializeOwned;

@@ -1,6 +1,5 @@
-import { Link } from "@tanstack/react-router";
-import { UnstyledButton } from "@mantine/core";
 import type { System } from "@/services/structure/list";
+import { InternalLink } from "./InternalLink";
 
 export function Dotlan({
     system,
@@ -8,17 +7,11 @@ export function Dotlan({
     let dotlanLink = `https://evemaps.dotlan.net/map/${system.region_name}/${system.system_name}`;
 
     return <>
-        <UnstyledButton
-            component={Link}
+        <InternalLink
             to={dotlanLink}
             target="_blank"
-            style={{
-                color: 'var(--mantine-color-blue-4)',
-                fontSize: 'var(--mantine-font-size-sm)'
-            }}
-        >
-            { system.system_name } ({ system.region_name })
-        </UnstyledButton>
+            content={ `${system.system_name} (${system.region_name})` }
+        />
     </>
 }
 

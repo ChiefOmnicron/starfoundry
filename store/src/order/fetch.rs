@@ -10,7 +10,7 @@ use starfoundry_lib_eve_gateway::EveGatewayClient;
 use starfoundry_lib_gateway::ExtractIdentity;
 
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
-use crate::AppState;
+use crate::{AppState, SERVICE_NAME};
 use crate::config::OrderUuid;
 use crate::product::error::Result;
 use crate::product::Product;
@@ -53,7 +53,7 @@ pub async fn api(
 ) -> Result<impl IntoResponse> {
     if let Some(x) = self::fetch(
         &state.postgres,
-        &EveGatewayClient::new()?,
+        &EveGatewayClient::new(SERVICE_NAME.into())?,
         identity.character_id,
         order_uuid,
     ).await? {

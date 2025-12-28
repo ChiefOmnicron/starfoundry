@@ -1,0 +1,65 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT\n                    s.name AS \"source\",\n                    mol.type_id,\n                    remaining,\n                    price\n                FROM market_order_latest mol\n                JOIN structure s ON s.structure_id = mol.structure_id\n                WHERE mol.type_id = $1\n                AND mol.structure_id = ANY($2)\n                AND is_buy = false\n                ORDER BY price ASC\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "source",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "type_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "market_order_latest",
+            "name": "type_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "remaining",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "market_order_latest",
+            "name": "remaining"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "price",
+        "type_info": "Float8",
+        "origin": {
+          "Table": {
+            "table": "market_order_latest",
+            "name": "price"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int8Array"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "ce5a8e4a0a5c5983743d8d70c37c1fb906116dd8e39c666441f20708ebfd40e7"
+}

@@ -1,0 +1,40 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                service_type_ids,\n                service_slots\n            FROM structure_service\n            WHERE structure_type_id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "service_type_ids",
+        "type_info": "Int4Array",
+        "origin": {
+          "Table": {
+            "table": "structure_service",
+            "name": "service_type_ids"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "service_slots",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "structure_service",
+            "name": "service_slots"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "b2fee99fefdc0edc4991a3e56b041343108fe8ee11aec7cc11190cafaee3f13f"
+}

@@ -267,7 +267,7 @@ function ProjectGroups() {
         onFilterChange={filterChange}
     />;
 
-    const addStructureModal = () => {
+    const addStructureGroupModal = () => {
         return <Modal
             opened={ opened }
             onClose={ close }
@@ -321,7 +321,7 @@ function ProjectGroups() {
 
     const dataTable = () => {
         return <>
-            { addStructureModal() }
+            { addStructureGroupModal() }
 
             <Card p="0">
                 <Table striped data-cy="data">

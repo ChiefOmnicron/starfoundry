@@ -6,11 +6,11 @@ use crate::product::{Product, ProductError, Result};
 use crate::product::create::AdditionalOption;
 
 pub async fn fetch(
-    pool: &PgPool,
-    product_uuid: ProductUuid,
-    character_id: CharacterId,
-    corporation_id: CorporationId,
-    alliance_id: Option<AllianceId>,
+    pool:           &PgPool,
+    product_uuid:   ProductUuid,
+    character_id:   CharacterId,
+    corporation_id: Option<CorporationId>,
+    alliance_id:    Option<AllianceId>,
 ) -> Result<Option<Product>> {
     let product = sqlx::query!("
             SELECT
@@ -43,7 +43,7 @@ pub async fn fetch(
         #[allow(unused_parens)]
         if (
             x.blacklist.contains(&*character_id) ||
-            x.blacklist.contains(&*corporation_id) ||
+            x.blacklist.contains(&*corporation_id.unwrap_or(0.into())) ||
             x.blacklist.contains(&*alliance_id.unwrap_or(0.into()))
         ) {
             return Ok(None)
@@ -52,7 +52,7 @@ pub async fn fetch(
         if !x.whitelist.is_empty() {
             if !(
                 x.whitelist.contains(&*character_id) ||
-                x.whitelist.contains(&*corporation_id) ||
+                x.whitelist.contains(&*corporation_id.unwrap_or(0.into())) ||
                 x.whitelist.contains(&*alliance_id.unwrap_or(0.into()))
             ) {
                 return Ok(None)

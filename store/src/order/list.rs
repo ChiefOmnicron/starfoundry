@@ -6,7 +6,7 @@ use starfoundry_lib_eve_gateway::{EveGatewayApiClient, EveGatewayClient};
 use starfoundry_lib_gateway::ExtractIdentity;
 
 use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
-use crate::AppState;
+use crate::{AppState, SERVICE_NAME};
 use crate::order::{OrderProduct, OrderResponse};
 use crate::product::error::{ProductError, Result};
 use crate::product::util::{check_blacklist, check_whitelist};
@@ -86,7 +86,7 @@ pub async fn api(
         }
     }
 
-    let character_info = EveGatewayClient::new()?
+    let character_info = EveGatewayClient::new(SERVICE_NAME.into())?
         .fetch_character(
             character_id.into(),
         )

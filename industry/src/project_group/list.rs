@@ -101,6 +101,7 @@ mod tests {
             .method("GET")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .body(Body::empty())
             .unwrap();
 
@@ -124,6 +125,7 @@ mod tests {
             .method("GET")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .body(Body::empty())
             .unwrap();
 
@@ -147,6 +149,7 @@ mod tests {
             .method("GET")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .body(Body::empty())
             .unwrap();
 

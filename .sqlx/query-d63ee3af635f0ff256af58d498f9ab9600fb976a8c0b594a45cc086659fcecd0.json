@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT structure_id\n            FROM structure_group_structure\n            WHERE structure_group_id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "structure_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "structure_group_structure",
+            "name": "structure_id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "d63ee3af635f0ff256af58d498f9ab9600fb976a8c0b594a45cc086659fcecd0"
+}

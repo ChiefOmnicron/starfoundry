@@ -1,16 +1,22 @@
-//mod create;
+mod create;
 mod delete;
-mod error;
 mod fetch_members_self;
 mod fetch;
 mod list_default_blacklist;
+mod list_default_blueprint_overwrites;
+mod list_default_job_splitting;
 mod list_default_market;
 mod list_members;
 mod list;
-//mod update;
-mod service;
+mod update;
+mod update_default_blacklist;
+mod update_default_blueprint_overwrite;
+mod update_default_job_splitting;
+mod update_default_market;
 
+pub mod error;
 pub mod permission;
+pub mod service;
 
 use axum::middleware;
 use starfoundry_lib_types::starfoundry_uuid;
@@ -19,21 +25,21 @@ use utoipa_axum::routes;
 
 use crate::AppState;
 use crate::project_group::error::Result;
-use crate::project_group::permission::{assert_exists, assert_read, assert_owner};
+use crate::project_group::permission::{assert_exists, assert_read, assert_owner, assert_write};
 
 pub fn routes(
     state: AppState,
 ) -> OpenApiRouter<AppState> {
-    //let create = OpenApiRouter::new()
-    //    .routes(routes!(create::api));
+    let create = OpenApiRouter::new()
+        .routes(routes!(create::api));
 
     let list = OpenApiRouter::new()
         .routes(routes!(list::api));
 
-    /*let update = OpenApiRouter::new()
+    let update = OpenApiRouter::new()
         .routes(routes!(update::api))
-        .route_layer(middleware::from_fn_with_state(state.clone(), assert_write_group))
-        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));*/
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_write))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
 
     let delete = OpenApiRouter::new()
         .routes(routes!(delete::api))
@@ -60,21 +66,57 @@ pub fn routes(
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
 
+    let list_default_blueprint_overwrites = OpenApiRouter::new()
+        .routes(routes!(list_default_blueprint_overwrites::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+
+    let list_default_job_splitting = OpenApiRouter::new()
+        .routes(routes!(list_default_job_splitting::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+
     let list_default_market = OpenApiRouter::new()
         .routes(routes!(list_default_market::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
 
+    let update_default_blacklist = OpenApiRouter::new()
+        .routes(routes!(update_default_blacklist::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_write))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+
+    let update_default_blueprint_overwrite = OpenApiRouter::new()
+        .routes(routes!(update_default_blueprint_overwrite::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_write))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+
+    let update_default_job_splitting = OpenApiRouter::new()
+        .routes(routes!(update_default_job_splitting::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_write))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+
+    let update_default_market = OpenApiRouter::new()
+        .routes(routes!(update_default_market::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_write))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+
     OpenApiRouter::new()
-        //.merge(create)
+        .merge(create)
         .merge(list)
-        //.merge(update)
+        .merge(update)
         .merge(delete)
         .merge(fetch)
         .merge(list_members)
         .merge(fetch_members_self)
         .merge(list_default_blacklist)
+        .merge(list_default_blueprint_overwrites)
+        .merge(list_default_job_splitting)
         .merge(list_default_market)
+        .merge(update_default_blacklist)
+        .merge(update_default_blueprint_overwrite)
+        .merge(update_default_job_splitting)
+        .merge(update_default_market)
 }
 
 starfoundry_uuid!(ProjectGroupUuid, "ProjectGroupUuid");

@@ -1,0 +1,89 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT\n                    c.character_id,\n                    c.character_name,\n                    c.corporation_id,\n                    c.corporation_name,\n                    c.alliance_id,\n                    c.alliance_name\n                FROM jwt_refresh_token jrt\n                JOIN character c ON jrt.character_id = c.character_id\n                WHERE token_hash = $1\n                AND jrt.character_id = $2\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "character_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "\"character\"",
+            "name": "character_id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "character_name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "\"character\"",
+            "name": "character_name"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "corporation_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "\"character\"",
+            "name": "corporation_id"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "corporation_name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "\"character\"",
+            "name": "corporation_name"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "alliance_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "\"character\"",
+            "name": "alliance_id"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "alliance_name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "\"character\"",
+            "name": "alliance_name"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      true
+    ]
+  },
+  "hash": "e82686eb5c125973857ebd72f7a0328dc0940085c48f2f08d4f6a778a7072095"
+}

@@ -1,0 +1,137 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                id,\n                type_id,\n                structure_id,\n                name            AS \"structure_name\",\n                services,\n                rigs,\n                system_id,\n                x,\n                y,\n                z\n            FROM structure\n            WHERE\n                (owner = $1 OR owner = 0) AND\n                id = ANY($2)\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "type_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "type_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "structure_id",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "structure_id"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "structure_name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "services",
+        "type_info": "Int4Array",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "services"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "rigs",
+        "type_info": "Int4Array",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "rigs"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "system_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "system_id"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "x",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "x"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "y",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "y"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "z",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "z"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "UuidArray"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "5e25f6b5c78ca33f040bf02ee4a65cb0fd76a278b3951f5b89b74e97e465668e"
+}

@@ -1,0 +1,52 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT domain, credential_type, character_id\n            FROM   login_attempt\n            WHERE  token = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "domain",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "login_attempt",
+            "name": "domain"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "credential_type",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "login_attempt",
+            "name": "credential_type"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "character_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "login_attempt",
+            "name": "character_id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "c83908d070374d90aa03bcb10bb78829d43a875b16d729a33938508a28022863"
+}

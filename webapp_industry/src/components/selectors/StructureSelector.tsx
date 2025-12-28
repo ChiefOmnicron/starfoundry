@@ -1,26 +1,29 @@
-import { type Structure } from "@/services/structure/list";
+import { LIST_STRUCTURE, type Structure } from "@/services/structure/list";
 import type { Uuid } from "@/services/utils";
-import { Combobox, Group, Input, InputBase, Text, useCombobox } from "@mantine/core";
+import { ActionIcon, Combobox, Flex, Group, Input, InputBase, Text, useCombobox } from "@mantine/core";
 import { useState, type ReactElement } from "react";
 import { EveIcon } from "../EveIcon";
+import { faArrowsRotate } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useQueryClient } from "@tanstack/react-query";
 
 function SelectOption(structure: Structure) {
-  return (
-    <Group key={structure.id}>
-        <EveIcon
-            id={structure.item.type_id}
-        />
+    return (
+        <Group key={structure.id}>
+            <EveIcon
+                id={structure.item.type_id}
+            />
 
-        <div>
-            <Text fz="sm" fw={500}>
-                {structure.name}
-            </Text>
-            <Text fz="xs" opacity={0.6}>
-                {structure.system.region_name} - {structure.system.system_name}
-            </Text>
-        </div>
-    </Group>
-  );
+            <div>
+                <Text fz="sm" fw={500}>
+                    {structure.name}
+                </Text>
+                <Text fz="xs" opacity={0.6}>
+                    {structure.system.region_name} - {structure.system.system_name}
+                </Text>
+            </div>
+        </Group>
+    );
 }
 
 export function StructureSelector({
@@ -33,6 +36,8 @@ export function StructureSelector({
         }
     },
 }: StructureSelectorProp): ReactElement {
+    const queryClient = useQueryClient();
+
     const combobox = useCombobox({
         onDropdownClose: () => {
             combobox.resetSelectedOption();
@@ -81,60 +86,82 @@ export function StructureSelector({
             </Combobox.Option>
         ));
 
-    return (
-        <Combobox
-            store={combobox}
-            withinPortal={false}
-            onOptionSubmit={(val) => {
-                setValue(val);
-                onSelect(structures.find(x => x.id === val) as any);
-                combobox.closeDropdown();
-            }}
-            styles={{
-                dropdown: {
-                    backgroundColor: 'var(--mantine-color-dark-7)'
-                },
-                search: {
-                    backgroundColor: 'var(--mantine-color-dark-7)'
-                }
-            }}
-            position="bottom"
-        >
-            <Combobox.Target>
-                <InputBase
-                    component="button"
-                    type="button"
-                    withErrorStyles={false}
-                    rightSection={<Combobox.Chevron />}
-                    onClick={() => combobox.toggleDropdown()}
-                    rightSectionPointerEvents="none"
-                    pointer
-                >
-                    {
-                        structureById(value)?.name ||
-                        <Input.Placeholder>Select a structure</Input.Placeholder>
-                    }
-                </InputBase>
-            </Combobox.Target>
+    const refresh = () => {
+        queryClient.invalidateQueries({
+            queryKey: [LIST_STRUCTURE]
+        })
+    }
 
-            <Combobox.Dropdown>
-                <Combobox.Search
-                    value={search}
-                    onChange={(event) => setSearch(event.currentTarget.value)}
-                    placeholder="Search structures"
-                />
-                <Combobox.Options
-                    mah={300}
-                    style={{ overflowY: 'auto' }}
-                >
-                    {
-                        options.length > 0
-                            ? options
-                            : <Combobox.Empty>Nothing found</Combobox.Empty>
-                    }
-                </Combobox.Options>
-            </Combobox.Dropdown>
-        </Combobox>
+    return (
+        <Flex
+            direction="row"
+            wrap="nowrap"
+        >
+            <Combobox
+                store={combobox}
+                withinPortal={false}
+                onOptionSubmit={(val) => {
+                    setValue(val);
+                    onSelect(structures.find(x => x.id === val) as any);
+                    combobox.closeDropdown();
+                }}
+                styles={{
+                    dropdown: {
+                        backgroundColor: 'var(--mantine-color-dark-7)'
+                    },
+                    search: {
+                        backgroundColor: 'var(--mantine-color-dark-7)'
+                    },
+                }}
+                position="bottom"
+            >
+                <Combobox.Target>
+                    <InputBase
+                        component="button"
+                        type="button"
+                        withErrorStyles={false}
+                        rightSection={<Combobox.Chevron />}
+                        onClick={() => combobox.toggleDropdown()}
+                        rightSectionPointerEvents="none"
+                        pointer
+                        style={{
+                            width: '100%'
+                        }}
+                    >
+                        {
+                            structureById(value)?.name ||
+                            <Input.Placeholder>Select a structure</Input.Placeholder>
+                        }
+                    </InputBase>
+                </Combobox.Target>
+
+                <Combobox.Dropdown>
+                    <Combobox.Search
+                        value={search}
+                        onChange={(event) => setSearch(event.currentTarget.value)}
+                        placeholder="Search structures"
+                    />
+                    <Combobox.Options
+                        mah={300}
+                        style={{ overflowY: 'auto' }}
+                    >
+                        {
+                            options.length > 0
+                                ? options
+                                : <Combobox.Empty>Nothing found</Combobox.Empty>
+                        }
+                    </Combobox.Options>
+                </Combobox.Dropdown>
+            </Combobox>
+
+            <ActionIcon
+                size="input-sm"
+                color="gray"
+                onClick={refresh}
+            >
+                <FontAwesomeIcon icon={faArrowsRotate} />
+            </ActionIcon>
+        </Flex>
     )
 }
 

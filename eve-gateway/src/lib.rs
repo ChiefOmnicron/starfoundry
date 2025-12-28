@@ -21,11 +21,17 @@ pub mod healthcheck;
 pub mod metrics;
 /// state for the web application
 pub mod state;
+/// useful utility functions
+pub mod utils;
 
 /// public eve route for characters
 pub mod character;
 /// public eve route for items
 pub mod item;
+/// public eve route for market
+pub mod market;
+/// routes for searching
+pub mod search;
 /// routes for structure information
 pub mod structure;
 /// public eve route for universe

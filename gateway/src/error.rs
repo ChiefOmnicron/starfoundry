@@ -22,6 +22,9 @@ pub enum Error {
     InvalidAccessToken(jsonwebtoken::errors::Error),
     #[error("no es256 key")]
     NoEs256Key,
+
+    #[error(transparent)]
+    StarFoundryGatewayError(#[from] starfoundry_lib_gateway::Error),
 }
 
 impl From<reqwest::Error> for Error {

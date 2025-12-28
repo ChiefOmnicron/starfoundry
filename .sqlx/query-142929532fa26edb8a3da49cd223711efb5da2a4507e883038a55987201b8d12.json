@@ -1,0 +1,35 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                INSERT INTO project_job (\n                    project_id,\n                    type_id,\n                    runs,\n                    status,\n                    cost,\n                    id,\n                    job_id,\n                    structure_id,\n                    started_by,\n                    created_at,\n                    updated_at\n                )\n                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4",
+        "Int4",
+        {
+          "Custom": {
+            "name": "project_job_status",
+            "kind": {
+              "Enum": [
+                "WAITING_FOR_MATERIALS",
+                "BUILDING",
+                "DONE"
+              ]
+            }
+          }
+        },
+        "Float8",
+        "Uuid",
+        "Int4",
+        "Uuid",
+        "Int4",
+        "Timestamptz",
+        "Timestamptz"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "142929532fa26edb8a3da49cd223711efb5da2a4507e883038a55987201b8d12"
+}

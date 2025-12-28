@@ -1,5 +1,5 @@
 import { MultiSelect } from "@mantine/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import type { TypeId } from "@/services/utils";
 import type { StructureService } from "@/services/structure/list";
@@ -10,14 +10,10 @@ export function ServiceSelector({
     onSelect,
     readonly = false,
 }: Props) {
-    const [value, setValue] = useState<string[]>(
-        () => {
-            onSelect(selected);
-            return selected
-                ? selected.map(x => x.toString())
-                : []
-        }
-    );
+    const [value, setValue] = useState<string[]>([]);
+    useEffect(() => {
+        setValue(selected.map(x => x.toString()));
+    }, [selected]);
 
     let servicesSorted = services
         .services

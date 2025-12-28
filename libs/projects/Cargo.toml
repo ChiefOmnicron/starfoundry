@@ -16,7 +16,7 @@ starfoundry_lib-structures = { path = "../structures" }
 starfoundry_lib-types = { path = "../../gp_lib-types" }
 thiserror = "2.0.17"
 utoipa = "5.4.0"
-uuid = "1.18.1"
+uuid = "1.19.0"
 
 [dev-dependencies]
 dotenvy = "0.15.7"

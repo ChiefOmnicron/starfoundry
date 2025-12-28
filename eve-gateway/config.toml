@@ -13,6 +13,7 @@ character_scopes = [
     "esi-characters.read_blueprints.v1",
     "esi-assets.read_assets.v1",
     "esi-industry.read_character_jobs.v1",
+    "esi-search.search_structures.v1",
 ]
 corporation_scopes = [
     "esi-corporations.read_blueprints.v1",

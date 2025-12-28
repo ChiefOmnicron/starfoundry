@@ -1,21 +1,24 @@
 use std::fmt::Debug;
 
+use axum::http::HeaderMap;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 use starfoundry_lib_gateway::{ApiClient, MtlsApiClient, Result as GatewayResult};
 use url::Url;
 
 use crate::error::{Error, Result};
-use crate::EveGatewayApiClient;
+use crate::{EveGatewayApiClient, EveGatewayApiClientMarket};
 
 pub const ENV_EVE_GATEWAY_API: &str = "STARFOUNDRY_EVE_GATEWAY_API_URL";
 
 pub struct EveGatewayClient(MtlsApiClient);
 
 impl EveGatewayClient {
-    pub fn new() -> Result<Self> {
+    pub fn new(
+        service: String,
+    ) -> Result<Self> {
         let api_url = Self::api_url()?;
-        let mtls_client = MtlsApiClient::new(api_url)?;
+        let mtls_client = MtlsApiClient::new(api_url, service)?;
         Ok(Self(mtls_client))
     }
 
@@ -35,13 +38,29 @@ impl EveGatewayClient {
 impl ApiClient for EveGatewayClient {
     async fn fetch<T>(
         &self,
-        path: impl Into<String>,
+        path:  impl Into<String>,
+        query: &[(&str, &str)],
     ) -> GatewayResult<T>
     where
         T: DeserializeOwned {
 
         self.0
-            .fetch(path)
+            .fetch(path, query)
+            .await
+            .map_err(Into::into)
+    }
+
+    async fn fetch_auth<T>(
+        &self,
+        path:       impl Into<String>,
+        query:      &[(&str, &str)],
+        header_map: HeaderMap,
+    ) -> GatewayResult<T>
+    where
+        T: DeserializeOwned {
+
+        self.0
+            .fetch_auth(path, query, header_map)
             .await
             .map_err(Into::into)
     }
@@ -63,3 +82,5 @@ impl ApiClient for EveGatewayClient {
 }
 
 impl EveGatewayApiClient for EveGatewayClient {}
+
+impl EveGatewayApiClientMarket for EveGatewayClient {}

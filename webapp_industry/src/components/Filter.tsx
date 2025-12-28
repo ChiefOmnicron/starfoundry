@@ -4,7 +4,7 @@ import {
     PillsInput,
     useCombobox,
 } from "@mantine/core";
-import { useEffect, useState, type ReactElement } from "react";
+import { useCallback, useEffect, useState, type ReactElement } from "react";
 
 //     const exampleData: FilterPropEntry[] = [{
 //        label: 'Single Select',
@@ -71,13 +71,15 @@ export function Filter(
     {
         entries,
         onFilterChange,
+
+        selectedFilter = [],
     }: FilterProp,
 ): ReactElement {
     const [search, setSearch] = useState('');
 
     const [currentSelected, setCurrentSelected] = useState<FilterPropEntry | undefined>(undefined);
     const [currentSelectedOptions, setCurrentSelectedOptions] = useState<FilterPropOption[]>([]);
-    const [selectedFilters, setSelectFilters] = useState<SelectedFilter[]>([]);
+    const [selectedFilters, setSelectFilters] = useState<SelectedFilter[]>(selectedFilter);
 
     const [options, setOptions] = useState(entries);
     const [originalOptions, setOriginalOptions] = useState(entries);
@@ -89,7 +91,6 @@ export function Filter(
 
     useEffect(() => {
         resetOptions();
-
         // TODO: add mutliselect into an array
         onFilterChange(selectedFilters);
     }, [selectedFilters]);
@@ -123,16 +124,17 @@ export function Filter(
     // check for options that no longer can be selected, or that were removed
     // and therefor can be added again
     const resetOptions = () => {
-        setOptions(
-            originalOptions.filter(x => {
+        const options = originalOptions
+            .filter(x => {
                 const findFilter = selectedFilters.filter(y => y.filterKey === x.key);
                 if (findFilter.length > 0) {
                     return x.type === 'MULTISELECT' && findFilter.length < (x.options || []).length;
                 }
 
                 return true;
-            })
-        );
+            });
+
+        setOptions(options);
     }
 
     const handleValueSelect = (value: string) => {
@@ -175,7 +177,15 @@ export function Filter(
     };
 
     // show the primary entries
-    const optionsFirstLevel = options
+    const optionsFirstLevel = originalOptions
+        .filter(x => {
+            const findFilter = selectedFilters.filter(y => y.filterKey === x.key);
+            if (findFilter.length > 0) {
+                return x.type === 'MULTISELECT' && findFilter.length < (x.options || []).length;
+            }
+
+            return true;
+        })
         .map((item) => (
             <Combobox.Option
                 value={item.key}
@@ -327,7 +337,9 @@ export function Filter(
 
 export type FilterProp = {
     entries: FilterPropEntry[];
-    onFilterChange: (filters: SelectedFilter[]) => void,
+    onFilterChange: (filters: SelectedFilter[]) => void;
+
+    selectedFilter?: SelectedFilter[];
 }
 
 export type FilterPropEntry = {

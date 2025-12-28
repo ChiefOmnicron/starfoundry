@@ -1,22 +1,35 @@
 use axum::extract::{Path, Query, State};
 use axum::http::HeaderMap;
 use axum::response::IntoResponse;
+use reqwest::header::HOST;
 use reqwest::StatusCode;
+use starfoundry_lib_gateway::MtlsApiClient;
 use std::collections::HashMap;
 
 use crate::auth::ExtractIdentity;
 use crate::catch_all::add_headers;
-use crate::client::mtls_client;
 use crate::error::Result;
+use crate::SERVICE_NAME;
 use crate::state::AppState;
 
 pub async fn catch_all_generic_delete(
     identity:     Option<ExtractIdentity>,
-    headers:      HeaderMap,
+    header_map:   HeaderMap,
     State(state): State<AppState>,
     Query(query): Query<HashMap<String, String>>,
     Path(path):   Path<String>,
 ) -> Result<impl IntoResponse> {
+    let host = if let Some(x) = header_map.get(HOST) {
+        x
+    } else {
+        return Ok(
+            (
+                StatusCode::BAD_REQUEST
+            )
+            .into_response()
+        )
+    };
+
     let path = {
         if path.starts_with("/") {
             path.replacen("/", "", 1)
@@ -40,11 +53,12 @@ pub async fn catch_all_generic_delete(
     };
 
     if let Some(x) = state.routes.get(path_front) {
-        let mut headers = headers;
+        let mut headers = HeaderMap::new();
         if x.require_auth {
             if let Some(identity) = identity {
                 add_headers(
                     &mut headers,
+                    host.clone(),
                     identity.character_info.character_id,
                     identity.character_info.corporation_id,
                     identity.character_info.alliance_id,
@@ -64,8 +78,9 @@ pub async fn catch_all_generic_delete(
             url.set_path(&path);
         }
 
-        let client = mtls_client()?;
-        let response = client
+        let response = MtlsApiClient::new_raw(
+                SERVICE_NAME,
+            )?
             .delete(url)
             .headers(headers)
             .query(&query)

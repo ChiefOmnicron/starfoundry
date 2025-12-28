@@ -1,6 +1,3 @@
-INSERT INTO structure_group (id, owner, name) VALUES
-('00000000-0000-0000-0000-000000000000', 1, 'Test');
-
 INSERT INTO project_group (id, owner, name, description) VALUES
 ('00000000-0000-0000-0000-000000000001', 1, 'First', 'Description'),
 ('00000000-0000-0000-0000-000000000002', 1, 'Second', 'Description'),
@@ -8,7 +5,7 @@ INSERT INTO project_group (id, owner, name, description) VALUES
 ('00000000-0000-0000-0000-000000000004', 1, 'Filter B', NULL),
 ('00000000-0000-0000-0000-000000000005', 2, 'Other Owner', NULL);
 
-INSERT INTO project_group_member (group_id, character_id, accepted, permission) VALUES
+INSERT INTO project_group_member (project_group_id, character_id, accepted, permission) VALUES
 ('00000000-0000-0000-0000-000000000001', 1, TRUE, 1),
 ('00000000-0000-0000-0000-000000000002', 1, TRUE, 1),
 ('00000000-0000-0000-0000-000000000003', 1, TRUE, 1),
@@ -19,9 +16,30 @@ INSERT INTO project_group_member (group_id, character_id, accepted, permission) 
 ('00000000-0000-0000-0000-000000000004', 2, TRUE, 2),
 ('00000000-0000-0000-0000-000000000005', 2, TRUE, 1);
 
-INSERT INTO project (owner, name, orderer, project_group_id, structure_group_id) VALUES
-(1, 'Test', 'Test', '00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000000'),
-(1, 'Test', 'Test', '00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000000'),
-(1, 'Test', 'Test', '00000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000000'),
-(1, 'Test', 'Test', '00000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000000'),
-(2, 'Test', 'Test', '00000000-0000-0000-0000-000000000005', '00000000-0000-0000-0000-000000000000');
+INSERT INTO project (owner, name, orderer, project_group_id) VALUES
+(1, 'Test', 'Test', '00000000-0000-0000-0000-000000000001'),
+(1, 'Test', 'Test', '00000000-0000-0000-0000-000000000002'),
+(1, 'Test', 'Test', '00000000-0000-0000-0000-000000000003'),
+(1, 'Test', 'Test', '00000000-0000-0000-0000-000000000004'),
+(2, 'Test', 'Test', '00000000-0000-0000-0000-000000000005');
+
+-- defaults
+INSERT INTO project_group_default_blacklist (project_group_id, type_id) VALUES
+('00000000-0000-0000-0000-000000000001', 4051),
+('00000000-0000-0000-0000-000000000001', 4246),
+('00000000-0000-0000-0000-000000000001', 4247),
+('00000000-0000-0000-0000-000000000001', 4312);
+
+INSERT INTO project_group_default_market (project_group_id, structure_id) VALUES
+('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001');
+
+INSERT INTO project_group_default_blueprint_overwrite (project_group_id, type_id, material_efficiency) VALUES
+('00000000-0000-0000-0000-000000000001', 20185, 8);
+
+INSERT INTO project_group_default_job_splitting_run (project_group_id, type_id, max_runs) VALUES
+('00000000-0000-0000-0000-000000000001', 21027, 10);
+
+INSERT INTO structure (id, structure_id, system_id, type_id, name, owner, rigs, services, x, y, z) VALUES
+('00000000-0000-0000-0000-000000000001', 1337, 30004759, 35892, 'Some Test Structure', 1, '{46497}'::INTEGER[], '{35892}'::INTEGER[], 0, 0, 0),
+('00000000-0000-0000-0000-000000000002', 1337, 30004759, 35892, 'Another Test Structure', 2, ARRAY[]::INTEGER[], '{35892}'::INTEGER[], 0, 0, 0),
+('00000000-0000-0000-0000-000000000003', 1337, 30004759, 35892, 'Filter', 1, ARRAY[]::INTEGER[], '{35892}'::INTEGER[], 0, 0, 0);

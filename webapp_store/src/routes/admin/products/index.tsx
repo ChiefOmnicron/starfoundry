@@ -1,10 +1,11 @@
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { LoadingError } from '@/components/LoadingError';
 import { useListProducts, type Product } from '@/services/product/list';
-import { Alert, Button, Center, Flex, NumberFormatter, Pill, Stack, Table, Title, UnstyledButton } from '@mantine/core';
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { Alert, Button, Center, Flex, NumberFormatter, Pill, Stack, Table, Title } from '@mantine/core';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { Route as RouteCreateProductRoute } from '@/routes/admin/products/create';
+import { InternalLink } from '@/components/InternalLink';
 
 type QueryParams = {
     deleted?: boolean;
@@ -25,18 +26,12 @@ const columnHelper = createColumnHelper<Product>();
 const columns = [
     columnHelper.accessor('name', {
         id: 'name',
-        cell: info => <UnstyledButton
-            component={Link}
-            to={
-                `/admin/products/${info.row.original.id}`
-            }
-            style={{
-                color: 'var(--mantine-color-blue-4)',
-                fontSize: 'var(--mantine-font-size-sm)'
-            }}
-        >
-            { info.getValue() }
-        </UnstyledButton>,
+        cell: info => <InternalLink
+                to={
+                    `/admin/products/${info.row.original.id}`
+                }
+                content={ info.getValue() }
+            />,
         header: () => 'Name',
     }),
     columnHelper.accessor('price', {

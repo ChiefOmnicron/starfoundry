@@ -7,22 +7,20 @@ use serde_json::{json, Value};
 /// Returns false if they are not on the blacklist
 pub fn check_blacklist(
     character_id:   CharacterId,
-    corporation_id: CorporationId,
+    corporation_id: Option<CorporationId>,
     alliance_id:    Option<AllianceId>,
     blacklist:      Vec<u64>,
 ) -> bool {
-    let character_id = *character_id as u64;
-    let corporation_id = *corporation_id as u64;
-
-    let blacklist_character_id = blacklist.contains(&character_id);
+    let blacklist_character_id = blacklist.contains(&(*character_id as u64));
     if blacklist_character_id {
         return true;
     }
 
-    let blacklist_corporation_id = blacklist.contains(&corporation_id);
-    if blacklist_corporation_id {
-        return true
-    }
+    if let Some(x) = corporation_id {
+        if blacklist.contains(&(*x as u64)) {
+            return true;
+        }
+    };
 
     if let Some(x) = alliance_id {
         if blacklist.contains(&(*x as u64)) {
@@ -37,26 +35,28 @@ pub fn check_blacklist(
 /// Returns false if they are not on the whitelist
 pub fn check_whitelist(
     character_id:   CharacterId,
-    corporation_id: CorporationId,
+    corporation_id: Option<CorporationId>,
     alliance_id:    Option<AllianceId>,
     whitelist:      Vec<u64>,
 ) -> bool {
-    let character_id = *character_id as u64;
-    let corporation_id = *corporation_id as u64;
+    let whitelist_character_id = whitelist.contains(&(*character_id as u64));
+    if whitelist_character_id {
+        return true;
+    }
 
-    let whitelist_character_id = whitelist.contains(&character_id);
-    let whitelist_corporation_id = whitelist.contains(&corporation_id);
-    let whitelist_alliance_id = if let Some(x) = alliance_id {
+    if let Some(x) = corporation_id {
         if whitelist.contains(&(*x as u64)) {
-            true
-        } else {
-            false
+            return true;
         }
-    } else {
-        false
     };
 
-    whitelist_character_id || whitelist_corporation_id || whitelist_alliance_id
+    if let Some(x) = alliance_id {
+        if whitelist.contains(&(*x as u64)) {
+            return true;
+        }
+    };
+
+    false
 }
 
 pub async fn resolve_items(content: Value) -> Result<Value> {

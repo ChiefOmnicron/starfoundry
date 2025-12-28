@@ -1,0 +1,74 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                jdl.type_id,\n                jdl.project_id,\n                ij.runs,\n                ij.end_date,\n                ij.job_id\n            FROM job_detection_log jdl\n            JOIN industry_job ij ON ij.job_id = jdl.job_id\n            WHERE is_delivered = false\n            ORDER BY end_date ASC\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "type_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "job_detection_log",
+            "name": "type_id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "project_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "job_detection_log",
+            "name": "project_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "runs",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "industry_job",
+            "name": "runs"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "end_date",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "industry_job",
+            "name": "end_date"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "job_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "industry_job",
+            "name": "job_id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      true,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "8016acda55b2c42ca18f4ab7207a63962324fc122f924a7613219873e91144e0"
+}

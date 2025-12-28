@@ -10,7 +10,7 @@ use utoipa::ToSchema;
 use uuid::Uuid;
 
 use crate::api_docs::{BadRequest, InternalServerError, NotFound, Unauthorized, UnprocessableEntity, UnsupportedMediaType};
-use crate::AppState;
+use crate::{AppState, SERVICE_NAME};
 use crate::config::{OrderUuid, ProductUuid};
 use crate::order::error::{OrderError, Result};
 
@@ -141,7 +141,7 @@ pub async fn api(
         .await
         .map_err(OrderError::GeneralSqlxError)?;
 
-    let character_info = EveGatewayClient::new()?
+    let character_info = EveGatewayClient::new(SERVICE_NAME.into())?
         .fetch_character(
             identity.character_id,
         )

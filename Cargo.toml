@@ -22,6 +22,10 @@ members = [
   'eve-gateway',
   'industry',
 
+  # new workers
+  'market-worker',
+  'worker_lib',
+
   # trash tier
   'store',
   'meta_webserver',

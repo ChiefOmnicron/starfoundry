@@ -1,6 +1,6 @@
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
-use axum::{Extension, Json};
+use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_eve_gateway::Item;
 use starfoundry_lib_types::TypeId;

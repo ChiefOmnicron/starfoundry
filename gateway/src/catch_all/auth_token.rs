@@ -2,11 +2,12 @@ use axum::extract::{Query, State};
 use axum::http::HeaderMap;
 use axum::response::IntoResponse;
 use reqwest::StatusCode;
+use starfoundry_lib_gateway::MtlsApiClient;
 use std::collections::HashMap;
 
-use crate::client::mtls_client;
-use crate::state::AppState;
 use crate::error::Result;
+use crate::SERVICE_NAME;
+use crate::state::AppState;
 
 pub async fn catch_all_auth_token(
     headers:      HeaderMap,
@@ -17,8 +18,9 @@ pub async fn catch_all_auth_token(
         let mut url = x.service_url.clone();
         url.set_path("/auth/token");
 
-        let client = mtls_client()?;
-        let response = client
+        let response = MtlsApiClient::new_raw(
+                SERVICE_NAME,
+            )?
             .get(url)
             .headers(headers)
             .query(&query)

@@ -1,0 +1,27 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO product (\n                price,\n                id,\n                category,\n                name,\n                image_type,\n                image_type_id,\n                content,\n                tags,\n                message,\n                delivery_time,\n                blacklist,\n                whitelist,\n                additional_products,\n                delivery_location,\n                hidden\n            )\n            VALUES (1, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)\n            ON CONFLICT (id)\n            DO UPDATE SET\n                category = EXCLUDED.category,\n                name = EXCLUDED.name,\n                image_type = EXCLUDED.image_type,\n                image_type_id = EXCLUDED.image_type_id,\n                content = EXCLUDED.content,\n                tags = EXCLUDED.tags,\n                message = EXCLUDED.message,\n                delivery_time = EXCLUDED.delivery_time,\n                blacklist = EXCLUDED.blacklist,\n                whitelist = EXCLUDED.whitelist,\n                additional_products = EXCLUDED.additional_products,\n                delivery_location = EXCLUDED.delivery_location,\n                hidden = EXCLUDED.hidden\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Varchar",
+        "Varchar",
+        "Varchar",
+        "Int4",
+        "Jsonb",
+        "VarcharArray",
+        "Varchar",
+        "Varchar",
+        "Int4Array",
+        "Int4Array",
+        "UuidArray",
+        "Int4Array",
+        "Bool"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "094736e60c34365b2c39c14d72217f612ea2249e442da9ddea861b342346890c"
+}

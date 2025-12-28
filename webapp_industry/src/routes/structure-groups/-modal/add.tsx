@@ -1,14 +1,13 @@
 import { Alert, Button, Flex, TextInput } from '@mantine/core';
-import { Route as StructureRoute } from '@/routes/structures_/$structureId.index';
-import { type Uuid } from '@/services/utils';
+import { createStructureGroup, type CreateStructureGroup } from '@/services/structure-group/create';
+import { Route as ProjectGroupRoute } from '@/routes/structure-groups_/$structureGroupId.index';
+import { useForm } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
-import { useForm } from '@tanstack/react-form';
-import { createStructureGroup, type CreateStructureGroup } from '@/services/structure-group/create';
 
 export function AddStructureGroup({
-    close
+    close,
 }: Props) {
     const navigation = useNavigate();
 
@@ -18,20 +17,6 @@ export function AddStructureGroup({
         mutationFn: async (value: CreateStructureGroup) => {
             return await createStructureGroup(value)
         },
-        onSuccess: (data: { id: Uuid }) => {
-            return navigation({
-                to: StructureRoute.to,
-                params: {
-                    structureId: data.id,
-                },
-                search: {
-                    created: true,
-                },
-            });
-        },
-        onError: (error) => {
-            setErrorCreate(error.message);
-        }
     });
 
     const form = useForm({
@@ -41,15 +26,15 @@ export function AddStructureGroup({
         onSubmit: async ({ value }) => await mutation
             .mutateAsync(value)
             .then(x => {
-                /*navigation({
-                    to: StructureGroup.to,
+                navigation({
+                    to: ProjectGroupRoute.to,
                     params: {
-                        projectGroupId: x.id,
+                        structureGroupId: x.id,
                     },
                     search: {
                         created: true,
                     }
-                });*/
+                });
             })
             .catch(error => {
                 setErrorCreate(error);

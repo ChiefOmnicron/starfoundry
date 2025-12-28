@@ -1,15 +1,20 @@
-import { axiosClient } from "@/services/client";
+import { axiosClient, type AbortSignal } from "@/services/client";
 import { useQuery } from "@tanstack/react-query";
-import type { ProjectGroup } from "@/services/project-group/fetch";
+import type { Item } from "../item/model";
 import type { Uuid } from "@/services/utils";
+import type { GenericAbortSignal } from "axios";
 
 export const LIST_PROJECT_GROUP_DEFAULT_BLACKLIST = 'listProjectGroupsDefaultBlacklist';
 
 export const listProjectGroupDefaultBlacklist = async (
     projectGroupUuid: Uuid,
-): Promise<ProjectGroup[]> => (await axiosClient())
+    signal?:          GenericAbortSignal,
+): Promise<Item[]> => (await axiosClient())
     .get(
-        `/api/project-groups/${projectGroupUuid}/defaults/blacklist`
+        `/api/project-groups/${projectGroupUuid}/defaults/blacklist`,
+        {
+            signal,
+        }
     )
     .then(x => x.data);
 
@@ -25,5 +30,7 @@ export const listProjectGroupDefaultBlacklistQuery = (
     projectGroupUuid: Uuid,
 ) => ({
     queryKey: [LIST_PROJECT_GROUP_DEFAULT_BLACKLIST, projectGroupUuid],
-    queryFn: async () => listProjectGroupDefaultBlacklist(projectGroupUuid),
+    queryFn: async ({
+        signal
+    }: AbortSignal) => listProjectGroupDefaultBlacklist(projectGroupUuid, signal),
 });

@@ -7,6 +7,7 @@ pub mod industry_modifier_sources;
 pub mod industry_target_filters;
 pub mod regions;
 pub mod repackaged;
+pub mod stars;
 pub mod systems;
 pub mod type_dogma;
 pub mod type_ids;

@@ -1,15 +1,20 @@
-import { axiosClient } from "@/services/client";
+import { axiosClient, type AbortSignal } from "@/services/client";
 import { useQuery } from "@tanstack/react-query";
 import type { Structure } from "@/services/structure/list";
 import type { Uuid } from "@/services/utils";
+import type { GenericAbortSignal } from "axios";
 
 export const LIST_PROJECT_GROUP_DEFAULT_MARKETS = 'listProjectGroupDefaultMarkets';
 
 export const listProjectGroupDefaultMarkets = async (
     projectGroupUuid: Uuid,
+    signal?:          GenericAbortSignal,
 ): Promise<Structure[]> => (await axiosClient())
     .get(
-        `/api/project-groups/${projectGroupUuid}/defaults/markets`
+        `/api/project-groups/${projectGroupUuid}/defaults/markets`,
+        {
+            signal,
+        }
     )
     .then(x => x.data);
 
@@ -25,5 +30,7 @@ export const listProjectGroupDefaultMarketsQuery = (
     projectGroupUuid: Uuid,
 ) => ({
     queryKey: [LIST_PROJECT_GROUP_DEFAULT_MARKETS, projectGroupUuid],
-    queryFn: async () => listProjectGroupDefaultMarkets(projectGroupUuid),
+    queryFn: async ({
+        signal
+    }: AbortSignal) => listProjectGroupDefaultMarkets(projectGroupUuid, signal),
 });

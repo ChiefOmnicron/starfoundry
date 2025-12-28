@@ -1,5 +1,5 @@
-use serde::Deserialize;
-use starfoundry_lib_types::{ConstellationId, RegionId, SystemId};
+use serde::{Deserialize, Serialize};
+use starfoundry_lib_types::{ConstellationId, RegionId, StarId, SystemId};
 use std::collections::HashMap;
 use std::fs::File;
 use std::path::Path;
@@ -42,7 +42,10 @@ pub fn parse(
             region_id:        wrapper.region_id,
             constellation_id: wrapper.constellation_id,
             security:         wrapper.security,
+            position:         wrapper.position,
             system_id:        system_id,
+
+            star_id:          wrapper.star_id,
         })
         .collect::<Vec<_>>();
     Ok(parsed)
@@ -59,6 +62,10 @@ pub struct SystemWrapper {
     pub constellation_id: ConstellationId,
     #[serde(rename = "securityStatus")]
     pub security:         f32,
+    pub position:         Position,
+
+    #[serde(rename = "starID")]
+    pub star_id:          Option<StarId>,
 }
 
 #[derive(Clone, Debug)]
@@ -68,4 +75,15 @@ pub struct System {
     pub system_id:        SystemId,
     pub name:             String,
     pub security:         f32,
+    pub position:         Position,
+
+    pub star_id:          Option<StarId>,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Position {
+    pub y: f64,
+    pub x: f64,
+    pub z: f64,
+}
+

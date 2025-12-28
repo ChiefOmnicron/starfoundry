@@ -1,9 +1,3 @@
-mod project_group;
-mod service;
-
-pub use self::project_group::*;
-pub use self::service::*;
-
 use axum::extract::State;
 use axum::http::StatusCode;
 use axum::Json;
@@ -16,6 +10,7 @@ use crate::api_docs::{BadRequest, InternalServerError, Unauthorized, Unprocessab
 use crate::AppState;
 use crate::project_group::error::Result;
 use crate::project_group::ProjectGroupUuid;
+use crate::project_group::service::{CreateProjectGroup, create};
 
 /// Create Group
 /// 
@@ -36,7 +31,7 @@ use crate::project_group::ProjectGroupUuid;
     request_body = CreateProjectGroup,
     responses(
         (
-            body = CreateProjectResponse,
+            body = CreateProjectGroupResponse,
             description = "Id of the new project group",
             status = CREATED,
         ),
@@ -55,6 +50,7 @@ pub async fn api(
     identity:     ExtractIdentity,
     Json(info):   Json<CreateProjectGroup>,
 ) -> Result<impl IntoResponse> {
+    // TODO: add initial time_split table
     let id = create(
         &state.pool,
         identity.character_id,
@@ -64,7 +60,7 @@ pub async fn api(
     Ok(
         (
             StatusCode::CREATED,
-            Json(CreateProjectResponse {
+            Json(CreateProjectGroupResponse {
                 id: id.into(),
             })
         )
@@ -77,7 +73,7 @@ pub async fn api(
         "id": "fd324c9f-ecda-49c8-948e-18f4b4b23bff"
     })
 )]
-pub struct CreateProjectResponse {
+pub struct CreateProjectGroupResponse {
     id: ProjectGroupUuid,
 }
 
@@ -85,7 +81,7 @@ pub struct CreateProjectResponse {
 mod tests {
     use axum::body::Body;
     use axum::extract::Request;
-    use axum::http::header::CONTENT_TYPE;
+    use axum::http::header::{CONTENT_TYPE, HOST};
     use axum::http::StatusCode;
     use http_body_util::BodyExt;
     use serde::Deserialize;
@@ -98,7 +94,6 @@ mod tests {
 
     #[sqlx::test(
         fixtures("base"),
-        migrator = "crate::test_util::MIGRATOR"
     )]
     async fn happy_path(
         pool: PgPool,
@@ -113,10 +108,10 @@ mod tests {
             .header(CONTENT_TYPE, "application/json")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .method("POST")
             .body(Body::new(
                 serde_json::to_string(&CreateProjectGroup {
-                    description: Some("My cool description".into()),
                     name: "My shared projects".into(),
                 }).unwrap()
             ))
@@ -130,7 +125,7 @@ mod tests {
         let entry = sqlx::query!("
                 SELECT pg.*
                 FROM project_group pg
-                JOIN project_group_member pgm ON pgm.group_id = pg.id
+                JOIN project_group_member pgm ON pgm.project_group_id = pg.id
                 JOIN project_group_default_market pgdm ON pgdm.project_group_id = pg.id
                 WHERE pg.id = $1
             ",
@@ -140,12 +135,10 @@ mod tests {
             .await
             .unwrap();
         assert_eq!(entry.name, "My shared projects");
-        assert_eq!(entry.description.unwrap(), "My cool description");
     }
 
     #[sqlx::test(
         fixtures("base"),
-        migrator = "crate::test_util::MIGRATOR"
     )]
     async fn unsupported_media_type(
         pool: PgPool,
@@ -155,10 +148,10 @@ mod tests {
             .header(CONTENT_TYPE, "text/plain")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .method("POST")
             .body(Body::new(
                 serde_json::to_string(&CreateProjectGroup {
-                    description: Some("My cool description".into()),
                     name: "My shared projects".into(),
                 }).unwrap()
             ))
@@ -169,7 +162,6 @@ mod tests {
 
     #[sqlx::test(
         fixtures("base"),
-        migrator = "crate::test_util::MIGRATOR"
     )]
     async fn bad_request_no_body(
         pool: PgPool,
@@ -179,33 +171,11 @@ mod tests {
             .header(CONTENT_TYPE, "application/json")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .method("POST")
             .body(Body::empty())
             .unwrap();
         let response = project_group_test_routes(pool.clone(), request).await;
         assert_eq!(response.status(), StatusCode::BAD_REQUEST);
-    }
-
-    #[sqlx::test(
-        fixtures("base"),
-        migrator = "crate::test_util::MIGRATOR"
-    )]
-    async fn bad_request_no_name(
-        pool: PgPool,
-    ) {
-        let request = Request::builder()
-            .uri("/")
-            .header(CONTENT_TYPE, "application/json")
-            .header(HEADER_CHARACTER_ID, 1)
-            .header(HEADER_CORPORATION_ID, 1)
-            .method("POST")
-            .body(Body::new(
-                serde_json::to_string(&serde_json::json!({
-                    "description": "My cool description",
-                })).unwrap()
-            ))
-            .unwrap();
-        let response = project_group_test_routes(pool.clone(), request).await;
-        assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
     }
 }

@@ -1,4 +1,4 @@
-use starfoundry_lib_types::CharacterId;
+use starfoundry_lib_types::{CharacterId, StructureId};
 use thiserror::Error;
 
 use axum::extract::rejection::JsonRejection;
@@ -25,8 +25,10 @@ pub enum StructureError {
 
     #[error("error while creating structure, error: '{0}'")]
     CreateStructure(sqlx::Error),
-    #[error("error while fetching structure '{1}', error: '{0}'")]
-    FetchStructure(sqlx::Error, StructureUuid),
+    #[error("error while fetching structure '{1:?}', error: '{0}'")]
+    FetchStructures(sqlx::Error, Vec<StructureUuid>),
+    #[error("error while fetching structure by eve id '{1:?}', error: '{0}'")]
+    FetchStructuresByEveId(sqlx::Error, Vec<StructureId>),
     #[error("error while listing structures, error: '{0}'")]
     ListStructures(sqlx::Error),
     #[error("error while deleting structure '{1}', error: '{0}'")]
@@ -39,7 +41,7 @@ pub enum StructureError {
     #[error(transparent)]
     GatewayLibError(#[from] starfoundry_lib_gateway::error::Error),
     #[error(transparent)]
-    EveGatewayLibError(#[from] starfoundry_lib_eve_gateway::error::Error),
+    EveGatewayLibError(#[from] starfoundry_lib_eve_gateway::Error),
 }
 
 impl IntoResponse for StructureError {

@@ -81,6 +81,7 @@ pub async fn api(
 mod tests {
     use axum::body::Body;
     use axum::extract::Request;
+    use axum::http::header::HOST;
     use axum::http::StatusCode;
     use sqlx::PgPool;
     use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
@@ -98,6 +99,7 @@ mod tests {
             .method("GET")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .body(Body::empty())
             .unwrap();
         let response = project_group_test_routes(pool, request).await;
@@ -130,6 +132,7 @@ mod tests {
             .method("GET")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .body(Body::empty())
             .unwrap();
         let response = project_group_test_routes(pool, request).await;
@@ -147,6 +150,7 @@ mod tests {
             .method("GET")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .body(Body::empty())
             .unwrap();
         let response = project_group_test_routes(pool, request).await;

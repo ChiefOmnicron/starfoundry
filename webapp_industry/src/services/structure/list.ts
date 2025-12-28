@@ -1,17 +1,20 @@
-import { axiosClient } from "@/services/client";
+import { axiosClient, type AbortSignal } from "@/services/client";
 import { useQuery } from "@tanstack/react-query";
 import type { Uuid } from "@/services/utils";
 import type { Category, Group, Item } from "@/services/item/model";
+import type { GenericAbortSignal } from "axios";
 
 export const LIST_STRUCTURE = 'listStructure';
 
 export const listStructure = async (
-    filter: StructureFilter,
+    filter:  StructureFilter,
+    signal?: GenericAbortSignal,
 ): Promise<Structure[]> => (await axiosClient())
     .get(
         `/api/structures`,
         {
             params: filter,
+            signal,
         }
     )
     .then(x => x.data);
@@ -83,7 +86,9 @@ export const listStructureQuery = (
     filter: StructureFilter,
 ) => ({
     queryKey: [LIST_STRUCTURE, filter],
-    queryFn: async () => listStructure(filter),
+    queryFn: async ({
+        signal
+    }: AbortSignal) => listStructure(filter, signal),
     // ms * s * m
     staleTime: 1000 * 60 * 5,
 });

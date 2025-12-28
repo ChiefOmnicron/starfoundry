@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT group_ids\n            FROM structure_dynamic_group\n            WHERE id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "group_ids",
+        "type_info": "UuidArray",
+        "origin": {
+          "Table": {
+            "table": "structure_dynamic_group",
+            "name": "group_ids"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "c81ceb54ccd16a5f6d9fee616b3fe0bbf0335f889d24c9a4b6502b517757f50e"
+}

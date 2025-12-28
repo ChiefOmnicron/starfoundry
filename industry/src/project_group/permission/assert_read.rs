@@ -27,7 +27,7 @@ pub async fn assert_read(
     Ok(next.run(request).await)
 }
 
-async fn assert_read_access_check(
+pub async fn assert_read_access_check(
     pool:               &PgPool,
     project_group_uuid: ProjectGroupUuid,
     character_id:       CharacterId,

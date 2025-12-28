@@ -12,7 +12,6 @@ pub use self::jwt::*;
 pub use self::character::*;
 pub use self::corporation::*;
 
-use chrono::NaiveDateTime;
 use reqwest::{Client, Response, StatusCode};
 use reqwest::header::{HeaderMap, HeaderValue};
 use serde::de::DeserializeOwned;
@@ -105,9 +104,7 @@ impl EveApiClient {
     /// - If the reqwest client cannot be constructed
     /// 
     pub fn new_with_refresh_token(
-        // TODO: validate
         character_id:   CharacterId,
-        // TODO: validate
         corporation_id: CorporationId,
         refresh_token:  impl Into<String>,
     ) -> Result<Self> {
@@ -190,8 +187,9 @@ impl EveApiClient {
     /// 
     pub async fn fetch<T>(
         &self,
-        path: impl Into<String>,
-    ) -> Result<T, EveApiError>
+        path:  impl Into<String>,
+        query: &[(&str, &str)],
+    ) -> Result<T>
     where
         T: DeserializeOwned,
     {
@@ -199,7 +197,7 @@ impl EveApiClient {
         api_url.set_path(&path.into());
 
         let response = self
-            .send(api_url.clone(), &[])
+            .send(api_url.clone(), query)
             .await?;
 
         let data = response
@@ -227,8 +225,9 @@ impl EveApiClient {
     ///
     pub async fn fetch_auth<T>(
         &self,
-        path: impl Into<String>,
-    ) -> Result<T, EveApiError>
+        path:  impl Into<String>,
+        query: &[(&str, &str)],
+    ) -> Result<T>
     where
         T: DeserializeOwned,
     {
@@ -236,7 +235,7 @@ impl EveApiClient {
         api_url.set_path(&path.into());
 
         let response = self
-            .send_auth(api_url.clone(), &[])
+            .send_auth(api_url.clone(), query)
             .await?;
 
         let data = response
@@ -262,10 +261,10 @@ impl EveApiClient {
     ///
     /// Vector of parsed json
     ///
-    pub async fn fetch_page<S, T>(
+    pub async fn fetch_page<T>(
         &self,
         path: impl Into<String>,
-    ) -> Result<Vec<T>, EveApiError>
+    ) -> Result<Vec<T>>
     where
         T: DeserializeOwned + Send,
     {
@@ -330,7 +329,7 @@ impl EveApiClient {
     pub async fn fetch_page_auth<T>(
         &self,
         path: impl Into<String>,
-    ) -> Result<Vec<T>, EveApiError>
+    ) -> Result<Vec<T>>
     where
         T: std::fmt::Debug + DeserializeOwned + Send,
     {
@@ -397,7 +396,7 @@ impl EveApiClient {
         &self,
         data: D,
         path: impl Into<String>,
-    ) -> Result<T, EveApiError>
+    ) -> Result<T>
     where
         D: Debug + Serialize + Send + Sync,
         T: DeserializeOwned,
@@ -440,7 +439,7 @@ impl EveApiClient {
         &self,
         request_uri: Url,
         query:       &[(&str, &str)],
-    ) -> Result<Response, EveApiError> {
+    ) -> Result<Response> {
         let mut retry_counter = 0usize;
         let mut last_status   = StatusCode::OK;
         let mut last_text     = String::new();
@@ -572,7 +571,7 @@ impl EveApiClient {
         &self,
         request_uri: Url,
         query:       &[(&str, &str)],
-    ) -> Result<Response, EveApiError> {
+    ) -> Result<Response> {
         let access_token = {
             #[allow(clippy::unwrap_used)]
             self.access_token.lock().unwrap().clone()
@@ -610,21 +609,6 @@ impl EveApiClient {
                 .send()
                 .await
                 .map_err(|x| EveApiError::ReqwestError(x, request_uri.clone()))?;
-
-            // Extract the expires and etag
-            let expires = response
-                .headers()
-                .get("expires")
-                .map(|x|
-                    NaiveDateTime::parse_from_str(
-                        &x.to_str().unwrap_or_default(),
-                        "%a, %d %b %Y %H:%M:%S %Z"
-                    )
-                    .unwrap()
-                    .and_utc()
-                    .timestamp()
-                )
-                .unwrap_or_default();
 
             if response.status() == StatusCode::NOT_FOUND {
                 return Err(EveApiError::NotFound(request_uri))
@@ -708,7 +692,7 @@ impl EveApiClient {
         &self,
         data:        R,
         request_uri: Url,
-    ) -> Result<Response, EveApiError>
+    ) -> Result<Response>
     where
         R: Debug + Serialize + Send + Sync,
     {
@@ -810,7 +794,7 @@ impl EveApiClient {
     ///
     async fn get_token(
         form: HashMap<&str, &str>,
-    ) -> Result<EveJwtToken, EveApiError> {
+    ) -> Result<EveJwtToken> {
         let client_id = (*Self::client_id()?).clone();
         let secret_key = (*Self::secret_key()?).clone();
         let oauth_token_url = Self::oauth_token_url()?;
@@ -963,12 +947,6 @@ impl EveApiClient {
         std::env::var(ENV_CALLBACK)
             .map_err(|_| EveApiError::EnvNotSet(ENV_CALLBACK))
     }
-}
-
-#[derive(Clone, Debug, Default)]
-struct CachedRouteInfo {
-    expires: i64,
-    etag:    Option<String>,
 }
 
 /// Holds the information about an authenticated character

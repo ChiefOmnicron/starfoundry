@@ -1,7 +1,10 @@
 mod character;
 mod client;
 mod client_trait;
+mod error;
 mod item;
+mod market;
+mod search;
 mod structure;
 mod structure_type;
 mod universe;
@@ -9,9 +12,10 @@ mod universe;
 pub use self::character::*;
 pub use self::client::*;
 pub use self::client_trait::*;
+pub use self::error::*;
 pub use self::item::*;
+pub use self::market::*;
+pub use self::search::*;
 pub use self::structure::*;
 pub use self::structure_type::*;
 pub use self::universe::*;
-
-pub mod error;

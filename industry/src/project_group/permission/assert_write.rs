@@ -10,13 +10,14 @@ use crate::project_group::error::{ProjectGroupError, Result};
 use crate::project_group::ProjectGroupUuid;
 use crate::project_group::permission::ProjectGroupPermissionCode;
 
-pub async fn assert_write_access(
+pub async fn assert_write(
     State(state):             State<AppState>,
     Path(project_group_uuid): Path<ProjectGroupUuid>,
     identity:                 ExtractIdentity,
     request:                  Request,
     next:                     Next,
 ) -> Result<impl IntoResponse> {
+    dbg!("qawseasdasdasd");
     assert_write_access_check(
             &state.pool,
             project_group_uuid,

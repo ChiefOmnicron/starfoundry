@@ -41,11 +41,11 @@ pub async fn fetch_item(
                 category_id: x.category_id.into(),
                 name:        x.group_name,
             },
-            name:          x.name,
-            type_id:       x.type_id.into(),
-            volume:        x.volume,
+            name:    x.name,
+            type_id: x.type_id.into(),
+            volume:  x.volume,
 
-            meta_group_id: x.meta_group_id.map(Into::into),
+            meta_group: x.meta_group_id.map(Into::into),
             repackaged:    x.repackaged,
         }))
     } else {

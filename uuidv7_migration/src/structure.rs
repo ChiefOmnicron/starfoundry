@@ -1,6 +1,6 @@
 use sqlx::PgPool;
 use std::collections::HashMap;
-use uuid::Uuid;
+use uuid::{NoContext, Timestamp, Uuid};
 
 use crate::Mapping;
 use std::str::FromStr;
@@ -82,7 +82,8 @@ pub async fn migrate_structure(
         } else if  structure.id == Uuid::from_str("00000000-0000-0000-0000-000000000002").unwrap() {
             Uuid::from_str("00000000-0000-0000-0000-000000000002").unwrap()
         } else {
-            Uuid::now_v7()
+            let timestamp = Timestamp::from_unix(NoContext, structure.created_at.timestamp() as u64, 0);
+            Uuid::new_v7(timestamp)
         };
         mappings.insert(structure.id, structure_id);
 

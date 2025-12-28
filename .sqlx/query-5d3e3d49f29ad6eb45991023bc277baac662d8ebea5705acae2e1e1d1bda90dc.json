@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE order_info\n            SET\n                status = $2,\n                expected_delivery_date = $3,\n                sf_industry_link = $4\n            WHERE id = $1\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Varchar",
+        "Timestamptz",
+        "Varchar"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "5d3e3d49f29ad6eb45991023bc277baac662d8ebea5705acae2e1e1d1bda90dc"
+}

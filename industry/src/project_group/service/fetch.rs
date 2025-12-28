@@ -17,12 +17,12 @@ pub async fn fetch(
                 id,
                 name,
                 description,
-                owner = $1 AS is_owner
-                --(
-                --    SELECT COUNT(*)
-                --    FROM project
-                --    WHERE project_group_id = $2
-                --) AS projects
+                owner = $1 AS is_owner,
+                (
+                    SELECT COUNT(*)
+                    FROM project
+                    WHERE project_group_id = $2
+                ) AS projects
             FROM project_group pg
             WHERE pg.id = $2
         ",
@@ -37,8 +37,7 @@ pub async fn fetch(
         let project_group = ProjectGroup {
             id:                x.id.into(),
             name:              x.name,
-            //project_count:     x.projects.unwrap_or(0),
-            project_count:     0,
+            project_count:     x.projects.unwrap_or(0),
             is_owner:          x.is_owner.unwrap_or_default(),
             description:       x.description,
 
@@ -107,7 +106,7 @@ mod fetch_project_group_test {
             scripts("base"),
         ),
     )]
-    async fn no_entry_with_default_uuid(
+    async fn not_found(
         pool: PgPool,
     ) {
         let gateway_client = EveGatewayTestApiClient::new();

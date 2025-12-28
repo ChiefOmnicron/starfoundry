@@ -57,7 +57,7 @@ mod fetch_members_self_test {
     #[sqlx::test(
         fixtures(
             path = "../fixtures",
-            scripts("base", "list_default"),
+            scripts("base"),
         ),
     )]
     async fn happy_path(
@@ -79,7 +79,7 @@ mod fetch_members_self_test {
     #[sqlx::test(
         fixtures(
             path = "../fixtures",
-            scripts("base", "list_default"),
+            scripts("base"),
         ),
     )]
     async fn default_if_entry_does_not_exist(

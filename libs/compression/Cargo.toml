@@ -8,7 +8,7 @@ license.workspace = true
 [dependencies]
 dotenvy = "0.15.7"
 #good_lp = "1.14.0"
-good_lp = { version = "1.14.0", default-features = false, features = ["scip", "scip_bundled"] }
+good_lp = { version = "1.14.2", default-features = false, features = ["scip", "scip_bundled"] }
 num-format = "0.4.4"
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.145"

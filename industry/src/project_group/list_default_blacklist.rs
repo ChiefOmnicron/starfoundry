@@ -83,6 +83,7 @@ pub async fn api(
 mod tests {
     use axum::body::Body;
     use axum::extract::Request;
+    use axum::http::header::HOST;
     use axum::http::StatusCode;
     use http_body_util::BodyExt;
     use sqlx::PgPool;
@@ -92,7 +93,7 @@ mod tests {
     use crate::project_group::project_group_test_routes;
 
     #[sqlx::test(
-        fixtures("base", "list_default"),
+        fixtures("base"),
     )]
     async fn happy_path_all(
         pool: PgPool,
@@ -102,6 +103,7 @@ mod tests {
             .method("GET")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .body(Body::empty())
             .unwrap();
 
@@ -114,7 +116,7 @@ mod tests {
     }
 
     #[sqlx::test(
-        fixtures("base", "list_default"),
+        fixtures("base"),
     )]
     async fn happy_path_no_content(
         pool: PgPool,
@@ -124,6 +126,7 @@ mod tests {
             .method("GET")
             .header(HEADER_CHARACTER_ID, 2)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .body(Body::empty())
             .unwrap();
 
@@ -136,7 +139,7 @@ mod tests {
     }
 
     #[sqlx::test(
-        fixtures("base", "list_default"),
+        fixtures("base"),
     )]
     async fn unauthorized(
         pool: PgPool,
@@ -152,7 +155,7 @@ mod tests {
     }
 
     #[sqlx::test(
-        fixtures("base", "list_default"),
+        fixtures("base"),
     )]
     async fn forbidden(
         pool: PgPool,
@@ -162,6 +165,7 @@ mod tests {
             .method("GET")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .body(Body::empty())
             .unwrap();
 
@@ -170,7 +174,7 @@ mod tests {
     }
 
     #[sqlx::test(
-        fixtures("base", "list_default"),
+        fixtures("base"),
     )]
     async fn not_found(
         pool: PgPool,
@@ -180,6 +184,7 @@ mod tests {
             .method("GET")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .body(Body::empty())
             .unwrap();
 

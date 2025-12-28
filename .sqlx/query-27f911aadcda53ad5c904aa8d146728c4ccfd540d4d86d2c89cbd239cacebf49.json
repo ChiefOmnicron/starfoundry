@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM project_misc\n            WHERE project_id = $1\n              AND id = $2\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "27f911aadcda53ad5c904aa8d146728c4ccfd540d4d86d2c89cbd239cacebf49"
+}

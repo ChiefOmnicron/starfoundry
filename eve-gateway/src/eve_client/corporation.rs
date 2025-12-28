@@ -55,7 +55,7 @@ impl EveApiClient {
         );
 
         self
-            .fetch::<EveCorporationInfo>(&path)
+            .fetch::<EveCorporationInfo>(&path, &[])
             .await
             .map_err(Into::into)
     }

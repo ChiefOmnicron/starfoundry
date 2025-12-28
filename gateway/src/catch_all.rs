@@ -19,20 +19,19 @@ pub use self::generic_put::*;
 pub use self::well_known_jwks::*;
 
 use axum::http::HeaderMap;
-
-// TODO: library for use in other services
-pub const HEADER_CHARACTER_ID: &str   = "X-SF-CharacterId";
-pub const HEADER_CORPORATION_ID: &str = "X-SF-CorporationId";
-pub const HEADER_ALLIANCE_ID: &str    = "X-SF-AllianceId";
-pub const HEADER_IS_ADMIN: &str       = "X-SF-IsAdmin";
+use axum::http::HeaderValue;
+use reqwest::header::HOST;
+use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID, HEADER_ALLIANCE_ID, HEADER_IS_ADMIN};
 
 pub fn add_headers(
     headers:        &mut HeaderMap,
+    host:           HeaderValue,
     character_id:   i32,
     corporation_id: i32,
     alliance_id:    Option<i32>,
     is_admin:       bool,
 ) {
+    headers.insert(HOST, host);
     headers.insert(HEADER_CHARACTER_ID, character_id.into());
     headers.insert(HEADER_CORPORATION_ID, corporation_id.into());
 

@@ -6,7 +6,6 @@ static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 mod auth;
 mod catch_all;
-mod client;
 mod config;
 mod error;
 mod healthcheck;
@@ -27,6 +26,8 @@ use crate::catch_all::*;
 use crate::config::Config;
 use crate::metrics::{path_metrics, setup_metrics_recorder};
 use crate::state::AppState;
+
+pub(crate) const SERVICE_NAME: &str = "SF_GATEWAY";
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {

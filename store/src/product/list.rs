@@ -139,7 +139,7 @@ pub async fn api(
         .filter(|x| {
             !(
                 x.blacklist.contains(&*character_id) ||
-                x.blacklist.contains(&*corporation_id) ||
+                x.blacklist.contains(&*corporation_id.unwrap_or(0.into())) ||
                 x.blacklist.contains(&*alliance_id.unwrap_or(0.into()))
             )
         })
@@ -148,8 +148,8 @@ pub async fn api(
                 true
             } else if !x.whitelist.is_empty() {
                 x.whitelist.contains(&*character_id) ||
-                    x.whitelist.contains(&*corporation_id) ||
-                    x.whitelist.contains(&*alliance_id.unwrap_or(0.into()))
+                x.whitelist.contains(&*corporation_id.unwrap_or(0.into())) ||
+                x.whitelist.contains(&*alliance_id.unwrap_or(0.into()))
             } else {
                 true
             }

@@ -1,7 +1,7 @@
+use starfoundry_lib_gateway::{ENV_MTLS_IDENTITY, ENV_MTLS_ROOT_CA, ENV_USER_AGENT};
 use tokio::net::TcpListener;
 use url::Url;
 
-use crate::client::{ENV_MTLS_IDENTITY, ENV_MTLS_ROOT_CA, ENV_USER_AGENT};
 use crate::auth::{ENV_EVE_GATEWAY_JWK_URL, ENV_EVE_GATEWAY_JWT_SIGN};
 
 const ENV_APP_ADDRESS: &str     = "STARFOUNDRY_GATEWAY_APP_ADDRESS";

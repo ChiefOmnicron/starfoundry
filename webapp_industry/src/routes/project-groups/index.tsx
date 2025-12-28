@@ -1,12 +1,14 @@
-import { Alert, Button, Card, Center, Flex, Pill, Stack, Table, Title, UnstyledButton } from '@mantine/core';
+import { AddProjectGroup } from '@/routes/project-groups/-modal/add';
+import { Alert, Button, Card, Center, Flex, Modal, Pill, Stack, Table, Title } from '@mantine/core';
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import { Filter, type FilterPropEntry, type SelectedFilter } from '@/components/Filter';
+import { InternalLink } from '@/components/InternalLink';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { LoadingError } from '@/components/LoadingError';
-import { Route as createProjectGroupRoute } from '@/routes/project-groups/create';
 import { Route as ProjectGroupRoute } from '@/routes/project-groups_/$projectGroupId.overview';
 import { type ProjectGroup } from '@/services/project-group/fetch';
+import { useDisclosure } from '@mantine/hooks';
 import { useListProjectGroup, type ProjectGroupFilter } from '@/services/project-group/list';
 import { useState } from 'react';
 
@@ -40,19 +42,13 @@ const columnHelper = createColumnHelper<ProjectGroup>();
 const columns = [
     columnHelper.accessor('name', {
         id: 'name',
-        cell: info => <UnstyledButton
-            component={Link}
-            to={ProjectGroupRoute.to}
-            params={{
-                projectGroupId: info.row.original.id,
-            } as any}
-            style={{
-                color: 'var(--mantine-color-blue-4)',
-                fontSize: 'var(--mantine-font-size-sm)'
-            }}
-        >
-            { info.getValue() }
-        </UnstyledButton>,
+        cell: info => <InternalLink
+                to={ ProjectGroupRoute.to }
+                params={{
+                    projectGroupId: info.row.original.id,
+                } as any}
+                content={ info.getValue() }
+            />,
         header: () => 'Name',
     }),
     columnHelper.accessor('description', {
@@ -82,8 +78,8 @@ const columns = [
 ];
 
 export function ProjectGroups() {
-    const navigation = useNavigate({ from: Route.fullPath });
     const { deleted: deletedResource } = Route.useSearch();
+    const [opened, { open, close }] = useDisclosure(false);
 
     const [filterParams, setFilterParams] = useState<ProjectGroupFilter>({});
     const filterChange = (filters: SelectedFilter[]) => {
@@ -106,8 +102,24 @@ export function ProjectGroups() {
         getCoreRowModel: getCoreRowModel(),
     });
 
-    const createProjectGroup = () => {
-        navigation({ to: createProjectGroupRoute.to });
+    const addProjectGroup = () => {
+        return <Modal
+            opened={ opened }
+            onClose={ close }
+            title="Add project group"
+            overlayProps={{
+                backgroundOpacity: 0.55,
+                blur: 3,
+            }}
+            size="70%"
+            centered
+            closeOnEscape
+            closeOnClickOutside
+        >
+            <AddProjectGroup
+                close={close}
+            />
+        </Modal>
     }
 
     const notification = () => {
@@ -134,7 +146,7 @@ export function ProjectGroups() {
             >
                 <Button
                     variant='filled'
-                    onClick={ () => createProjectGroup() }
+                    onClick={ open }
                 >
                     Create Group
                 </Button>
@@ -192,7 +204,7 @@ export function ProjectGroups() {
 
                         <Button
                             variant='filled'
-                            onClick={ () => createProjectGroup() }
+                            onClick={ open }
                         >
                             Create Group
                         </Button>
@@ -204,6 +216,8 @@ export function ProjectGroups() {
 
     return <>
         { notification() }
+
+        { addProjectGroup() }
 
         { content() }
     </>

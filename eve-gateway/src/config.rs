@@ -47,15 +47,15 @@ impl From<(ConfigEnv, ConfigFile)> for Config {
         ConfigFile,
     )) -> Self {
         Self {
-            database_url:       env.database_url,
+            database_url:    env.database_url,
 
-            app_address:        env.app_address,
-            service_address:    env.service_address,
+            app_address:     env.app_address,
+            service_address: env.service_address,
 
-            mtls_cert:          env.mtls_cert,
-            mtls_priv:          env.mtls_priv,
+            mtls_cert:       env.mtls_cert,
+            mtls_priv:       env.mtls_priv,
 
-            domains:            file.domains,
+            domains:         file.domains,
         }
     }
 }

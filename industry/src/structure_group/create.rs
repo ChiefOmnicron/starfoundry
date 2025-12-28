@@ -80,7 +80,7 @@ pub struct CreateStructureGroupResponse {
 mod tests {
     use axum::body::Body;
     use axum::extract::Request;
-    use axum::http::header::CONTENT_TYPE;
+    use axum::http::header::{CONTENT_TYPE, HOST};
     use axum::http::StatusCode;
     use http_body_util::BodyExt;
     use serde::Deserialize;
@@ -107,6 +107,8 @@ mod tests {
             .header(CONTENT_TYPE, "application/json")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
+            .header(HOST, "test.starfoundry.space")
             .method("POST")
             .body(Body::new(
                 serde_json::to_string(&CreateStructureGroup {
@@ -144,6 +146,8 @@ mod tests {
             .header(CONTENT_TYPE, "text/plain")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
+            .header(HOST, "test.starfoundry.space")
             .method("POST")
             .body(Body::new(
                 serde_json::to_string(&CreateStructureGroup {
@@ -166,6 +170,8 @@ mod tests {
             .header(CONTENT_TYPE, "application/json")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
+            .header(HOST, "test.starfoundry.space")
             .method("POST")
             .body(Body::empty())
             .unwrap();

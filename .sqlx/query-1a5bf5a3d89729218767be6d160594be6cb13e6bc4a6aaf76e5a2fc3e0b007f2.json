@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM structure_rig\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "1a5bf5a3d89729218767be6d160594be6cb13e6bc4a6aaf76e5a2fc3e0b007f2"
+}

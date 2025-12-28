@@ -13,6 +13,12 @@ import type { RouterContext } from '@/main';
 
 const routes = [
     {
+        link: '/projects',
+        label: 'Projects',
+        subpath: '/projects/$projectId',
+        paths: []
+    },
+    {
         link: '/project-groups',
         label: 'Project Groups',
         subpath: '/project-groups/$projectGroupId',

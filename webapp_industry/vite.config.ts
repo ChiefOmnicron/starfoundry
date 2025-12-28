@@ -1,10 +1,6 @@
-<<<<<<< HEAD
-import { fileURLToPath, URL } from 'node:url';
-=======
 import { defineConfig } from "vite";
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import react from "@vitejs/plugin-react";
->>>>>>> ea95a81a (WIP)
 
 import { fileURLToPath, URL } from 'node:url';
 

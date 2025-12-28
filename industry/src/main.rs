@@ -8,6 +8,7 @@ mod api_docs;
 mod config;
 mod healthcheck;
 mod metrics;
+mod project;
 mod project_group;
 mod state;
 mod structure_group;
@@ -54,7 +55,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
 
     rustls::crypto::aws_lc_rs::default_provider().install_default().unwrap();
-
     // configure certificate and private key used by https
     let tls_config = RustlsConfig::from_pem(
             config.mtls_cert.as_bytes().to_vec(),
@@ -86,6 +86,7 @@ fn app(
 ) -> Router {
     // build our application with a route
     let (router, api) = OpenApiRouter::with_openapi(ApiDoc::openapi())
+        .nest("/projects", project::routes(state.clone()))
         .nest("/project-groups", project_group::routes(state.clone()))
         .nest("/structures", structure::routes(state.clone()))
         .nest("/structure-groups", structure_group::routes(state.clone()))
@@ -122,8 +123,8 @@ fn service(
 #[cfg(not(test))]
 use starfoundry_lib_eve_gateway::EveGatewayClient;
 #[cfg(not(test))]
-pub fn eve_gateway_api_client() -> Result<EveGatewayClient, starfoundry_lib_eve_gateway::error::Error> {
-    EveGatewayClient::new()
+pub fn eve_gateway_api_client() -> Result<EveGatewayClient, starfoundry_lib_eve_gateway::Error> {
+    EveGatewayClient::new("Testing".into())
 }
 
 #[cfg(test)]
@@ -132,6 +133,6 @@ mod test_util;
 use crate::test_util::EveGatewayTestApiClient;
 use axum_server::tls_rustls::RustlsConfig;
 #[cfg(test)]
-pub fn eve_gateway_api_client() -> Result<EveGatewayTestApiClient, starfoundry_lib_eve_gateway::error::Error> {
+pub fn eve_gateway_api_client() -> Result<EveGatewayTestApiClient, starfoundry_lib_eve_gateway::Error> {
     Ok(EveGatewayTestApiClient {})
 }

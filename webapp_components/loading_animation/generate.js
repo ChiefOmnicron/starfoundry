@@ -39,7 +39,7 @@ const points = map_data
     .map(x => {
         const xPos = (x.position.x - xMin) / MAP_SIZE * IMAGE_SIZE;
         const yPos = (-(x.position.z - zMax)) / MAP_SIZE * IMAGE_SIZE;
-        let color = '#9bb0ff';
+        let color;
 
         // colors taken from wikipedia
         // https://en.wikipedia.org/wiki/Stellar_classification
@@ -65,7 +65,7 @@ const points = map_data
 
 const content = `<svg
     xmlns="http://www.w3.org/2000/svg"
-    style="background-color: black"
+    style="background-color: #424242"
     viewBox="0 0 512 512"
 >
     ${points.join('\n')}

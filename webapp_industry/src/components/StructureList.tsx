@@ -1,4 +1,4 @@
-import { Table, UnstyledButton } from "@mantine/core";
+import { Button, Flex, Table, Text } from "@mantine/core";
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { Dotlan } from "./Dotlan";
 import { EveIcon } from "@/components/EveIcon";
@@ -13,11 +13,11 @@ import type { Uuid } from "@/services/utils";
 // ```
 // const [selectedStructures, setSelectedStructures] = useState<Structure[]>([]);
 //
-//  const {
-//      isError: isErrorMarket,
-//      isPending: isPendingMarket,
-//      data: defaultMarket,
-//  } = useListProjectGroupDefaultMarkets(projectGroupId);
+// const {
+//     isError: isErrorMarket,
+//     isPending: isPendingMarket,
+//     data: defaultMarket,
+// } = useListProjectGroupDefaultMarkets(projectGroupId);
 //
 //  const {
 //      isPending: isPendingStructures,
@@ -52,6 +52,7 @@ export function StructureList({
     structures: entries,
 
     // editable
+    editable = false,
     onDelete = (_) => {},
     onSelect = (_) => {},
     selectableStructures = [],
@@ -73,34 +74,51 @@ export function StructureList({
             id: 'name',
             cell: props => <StructureLink structure={props.row.original} />,
             header: () => 'Name',
-            size: 50,
+            size: 38,
         }),
         columnHelper.display({
             id: 'location',
             cell: props => <Dotlan system={props.row.original.system} />,
             header: () => 'Location',
-            size: 50,
+            size: 38,
         }),
         columnHelper.accessor('id', {
             id: 'delete',
-            cell: props => <UnstyledButton
+            cell: props => <Button
+                    variant="outline"
+                    color="#c92a2a"
                     style={{
-                        color: 'var(--mantine-color-red-filled)',
+                        width: '100%'
                     }}
                     onClick={() => {
                         onDelete(props.row.original.id);
                     }}
                 >
                     Remove
-                </UnstyledButton>,
+                </Button>,
             header: () => '',
-            size: 1,
-            maxSize: 1,
+            size: 6,
+            maxSize: 6,
         }),
     ];
 
+    const emptyTable = () => {
+        if (entries.length === 0) {
+            return <Table.Tr>
+                <Table.Td colSpan={10}>
+                    <Flex
+                        justify="center"
+                        align="center"
+                    >
+                        <Text>No data yet</Text>
+                    </Flex>
+                </Table.Td>
+            </Table.Tr>
+        }
+    }
+
     const footer = () => {
-        if (selectableStructures.length === 0) {
+        if (!editable) {
             return <></>;
         }
 
@@ -108,9 +126,6 @@ export function StructureList({
             <tr>
                 <Table.Td
                     colSpan={3}
-                    style={{
-                        padding: 0,
-                    }}
                 >
                     <StructureSelector
                         onSelect={setAddStructureSelect}
@@ -120,7 +135,9 @@ export function StructureList({
                     />
                 </Table.Td>
                 <Table.Td>
-                    <UnstyledButton
+                    <Button
+                        disabled={!addStructureSelect}
+                        variant="outline"
                         onClick={() => {
                             if (addStructureSelect) {
                                 onSelect(addStructureSelect);
@@ -128,9 +145,12 @@ export function StructureList({
                                 structureSelectorRef.current.reset();
                             }
                         }}
+                        style={{
+                            width: '100%'
+                        }}
                     >
                         Add
-                    </UnstyledButton>
+                    </Button>
                 </Table.Td>
             </tr>
         </Table.Tfoot>
@@ -138,12 +158,13 @@ export function StructureList({
 
     const table = useReactTable<Structure>({
         columns: columns,
-        data: entries,
+        data: entries
+            .sort((a, b) => a.item.name.localeCompare(b.item.name)),
         autoResetPageIndex: false,
         getCoreRowModel: getCoreRowModel(),
         initialState: {
             columnVisibility: {
-                delete: selectableStructures.length > 0,
+                delete: editable,
             }
         }
     });
@@ -170,6 +191,8 @@ export function StructureList({
             ))}
             </Table.Thead>
             <Table.Tbody>
+                { emptyTable() }
+
                 {table.getRowModel().rows.map(row => (
                     <Table.Tr key={row.id}>
                         {
@@ -196,6 +219,7 @@ export type StructureListProp = {
     structures: Structure[];
 
     selectableStructures?: Structure[];
+    editable?:             boolean;
     onDelete?:             (id: Uuid) => void;
     onSelect?:             (structure: Structure) => void;
 }

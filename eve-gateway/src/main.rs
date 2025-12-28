@@ -7,7 +7,7 @@ static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 use axum_server::tls_rustls::RustlsConfig;
 use axum::{middleware, Router};
 use sqlx::postgres::PgPoolOptions;
-use starfoundry_bin_eve_gateway::{auth, character, healthcheck, item, structure, universe};
+use starfoundry_bin_eve_gateway::{auth, character, healthcheck, item, market, search, structure, universe};
 use starfoundry_bin_eve_gateway::api_docs::ApiDoc;
 use starfoundry_bin_eve_gateway::config::Config;
 use starfoundry_bin_eve_gateway::metrics::{self, path_metrics, setup_metrics_recorder};
@@ -60,7 +60,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing::info!("Starting service server on {}", config.service_address.local_addr().unwrap());
 
     select! {
-        r = axum_server::from_tcp_rustls(config.app_address, tls_config).serve(app(state.clone()).into_make_service()) => {
+        r = axum_server::from_tcp_rustls(config.app_address, tls_config.clone()).serve(app(state.clone()).into_make_service()) => {
             if r.is_err() {
                 tracing::error!("Error in app thread, error: {:?}", r);
             }
@@ -84,6 +84,8 @@ fn app(
         .nest("/auth", auth::routes())
         .nest("/characters", character::routes())
         .nest("/items", item::routes())
+        .nest("/market", market::routes())
+        .nest("/search", search::routes())
         .nest("/structures", structure::routes())
         .nest("/universe", universe::routes())
         .layer(

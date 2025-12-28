@@ -52,12 +52,12 @@ pub async fn fetch_item_bulk(
                 category_id: x.category_id.into(),
                 name:        x.group_name,
             },
-            name:          x.name,
-            type_id:       x.type_id.into(),
-            volume:        x.volume,
+            name:    x.name,
+            type_id: x.type_id.into(),
+            volume:  x.volume,
 
-            meta_group_id: x.meta_group_id.map(Into::into),
-            repackaged:    x.repackaged,
+            meta_group: x.meta_group_id.map(Into::into),
+            repackaged: x.repackaged,
         })
         .collect::<Vec<_>>();
 

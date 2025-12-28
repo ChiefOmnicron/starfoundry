@@ -13,8 +13,9 @@ services:
       - ./eve-gateway/config.toml:/usr/local/bin/config.toml
     develop:
       watch:
-        - action: restart
+        - action: sync+restart
           path: ./target/debug/starfoundry_bin-eve_gateway
+          target: /usr/local/bin/app
 
   gateway:
     build:
@@ -32,6 +33,7 @@ services:
       - ./gateway/config.toml:/usr/local/bin/config.toml
     develop:
       watch:
-        - action: rebuild
+        - action: sync+restart
           path: ./target/debug/starfoundry_bin-gateway
+          target: /usr/local/bin/app
 

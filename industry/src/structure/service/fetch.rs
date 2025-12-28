@@ -2,12 +2,12 @@ use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item, StructurePosition, StructureRigResponse, StructureServiceResponse, System};
 use starfoundry_lib_types::CharacterId;
+use std::collections::HashMap;
 use utoipa::{IntoParams, ToSchema};
 
 use crate::structure::{StructureError, StructureUuid};
 use crate::structure::error::Result;
 
-// TODO: Permission check
 pub async fn fetch(
     pool:                   &PgPool,
     eve_gateway_api_client: &impl EveGatewayApiClient,
@@ -15,7 +15,29 @@ pub async fn fetch(
     structure_uuid:         StructureUuid,
     options:                FetchStructureQuery,
 ) -> Result<Option<Structure>> {
-    let structure = sqlx::query!(r#"
+    let result = fetch_bulk(
+            pool,
+            eve_gateway_api_client,
+            character_id,
+            vec![structure_uuid],
+            options
+        ).await?;
+
+    if let Some(x) = result.first() {
+        Ok(Some(x.clone()))
+    } else {
+        Ok(None)
+    }
+}
+
+pub async fn fetch_bulk(
+    pool:                   &PgPool,
+    eve_gateway_api_client: &impl EveGatewayApiClient,
+    character_id:           CharacterId,
+    structure_uuids:        Vec<StructureUuid>,
+    options:                FetchStructureQuery,
+) -> Result<Vec<Structure>> {
+    let structures = sqlx::query!(r#"
             SELECT
                 id,
                 type_id,
@@ -30,94 +52,124 @@ pub async fn fetch(
             FROM structure
             WHERE
                 (owner = $1 OR owner = 0) AND
-                structure.id = $2
+                id = ANY($2)
         "#,
             *character_id,
-            *structure_uuid,
+            &structure_uuids.iter().map(|x| **x).collect::<Vec<_>>(),
         )
-        .fetch_optional(pool)
+        .fetch_all(pool)
         .await
-        .map_err(|e| StructureError::FetchStructure(e, structure_uuid))?;
+        .map_err(|e| StructureError::FetchStructures(e, structure_uuids.clone()))?;
 
-    let structure = if let Some(x) = structure {
-        x
-    } else {
-        tracing::debug!("Couldn't find structure {}", structure_uuid);
-        return Ok(None);
-    };
+    if structures.is_empty() {
+        tracing::debug!("Couldn't find structure {:?}", structure_uuids);
+        return Ok(Vec::new());
+    }
 
-    let structure_item = if let Some(x) = eve_gateway_api_client.fetch_item(structure.type_id.into()).await? {
-        x
-    } else {
-        tracing::debug!("Couldn't find structure type {}", structure.type_id);
-        return Ok(None);
-    };
-    let system = if let Some(x) = eve_gateway_api_client.fetch_system(structure.system_id.into()).await? {
-        x
-    } else {
-        tracing::debug!("Couldn't find system {}", structure.system_id);
-        return Ok(None);
-    };
+    let mut result = Vec::new();
 
-    let mut rigs = Vec::new();
-    for rig in structure.rigs {
-        if let Ok(Some(x)) = eve_gateway_api_client.fetch_rig(rig.into()).await {
-            rigs.push(x);
+    let mut type_ids = structures
+        .iter()
+        .map(|x| x.type_id)
+        .map(Into::into)
+        .collect::<Vec<_>>();
+    type_ids.sort();
+    type_ids.dedup();
+    let mut system_ids = structures
+        .iter()
+        .map(|x| x.system_id)
+        .map(Into::into)
+        .collect::<Vec<_>>();
+    system_ids.sort();
+    system_ids.dedup();
+
+    let items = eve_gateway_api_client
+        .fetch_item_bulk(type_ids)
+        .await?
+        .into_iter()
+        .map(|x| (x.type_id, x))
+        .collect::<HashMap<_, _>>();
+    let systems = eve_gateway_api_client
+        .fetch_system_bulk(system_ids)
+        .await?
+        .into_iter()
+        .map(|x| (x.system_id, x))
+        .collect::<HashMap<_, _>>();
+
+    for structure in structures {
+        let item = if let Some(x) = items.get(&structure.type_id.into()) {
+            x.clone()
         } else {
-            // silently ignore services that weren't found
-            tracing::debug!("Couldn't find rig {}", rig);
             continue;
-        }
-    }
-
-    let mut services = Vec::new();
-    for service in structure.services {
-        if let Ok(Some(x)) = eve_gateway_api_client.fetch_item(service.into()).await {
-            services.push(x);
+        };
+        let system = if let Some(x) = systems.get(&structure.system_id.into()) {
+            x.clone()
         } else {
-            // silently ignore services that weren't found
-            tracing::debug!("Couldn't find service {}", service);
             continue;
+        };
+
+        let mut rigs = Vec::new();
+        for rig in structure.rigs {
+            if let Ok(Some(x)) = eve_gateway_api_client.fetch_rig(rig.into()).await {
+                rigs.push(x);
+            } else {
+                // silently ignore services that weren't found
+                tracing::debug!("Couldn't find rig {}", rig);
+                continue;
+            }
         }
+
+        let mut services = Vec::new();
+        for service in structure.services {
+            if let Ok(Some(x)) = eve_gateway_api_client.fetch_item(service.into()).await {
+                services.push(x);
+            } else {
+                // silently ignore services that weren't found
+                tracing::debug!("Couldn't find service {}", service);
+                continue;
+            }
+        }
+
+        let mut installable_rigs = None;
+        let mut installable_services = None;
+        if let Some(true) = options.include_installable {
+            if let Ok(x) = eve_gateway_api_client.list_structure_rigs(structure.type_id.into()).await {
+                installable_rigs = Some(x);
+            } else {
+                // silently ignore services that weren't found
+                tracing::debug!("Couldn't list rigs for type_id {}", structure.type_id);
+            }
+
+            if let Ok(x) = eve_gateway_api_client.list_structure_services(structure.type_id.into()).await {
+                installable_services = Some(x);
+            } else {
+                // silently ignore services that weren't found
+                tracing::debug!("Couldn't list services for type_id {}", structure.type_id);
+            }
+        }
+
+        let structure = Structure {
+            id:                   structure.id.into(),
+            name:                   structure.structure_name,
+            structure_id:           structure.structure_id,
+            system:                 system,
+            item:                   item,
+            rigs:                   rigs,
+            services:               services,
+            position:               StructurePosition {
+                                        x: structure.x,
+                                        y: structure.y,
+                                        z: structure.z
+                                    },
+
+            installable_rigs:       installable_rigs,
+            installable_services:   installable_services,
+        };
+        result.push(structure);
     }
 
-    let mut installable_rigs = None;
-    let mut installable_services = None;
-    if let Some(true) = options.include_installable {
-        if let Ok(x) = eve_gateway_api_client.list_structure_rigs(structure.type_id.into()).await {
-            installable_rigs = Some(x);
-        } else {
-            // silently ignore services that weren't found
-            tracing::debug!("Couldn't list rigs for type_id {}", structure.type_id);
-        }
 
-        if let Ok(x) = eve_gateway_api_client.list_structure_services(structure.type_id.into()).await {
-            installable_services = Some(x);
-        } else {
-            // silently ignore services that weren't found
-            tracing::debug!("Couldn't list services for type_id {}", structure.type_id);
-        }
-    }
-
-    let structure = Structure {
-        id:                   structure.id.into(),
-        name:                   structure.structure_name,
-        structure_id:           structure.structure_id,
-        system:                 system,
-        item:                   structure_item,
-        rigs:                   rigs,
-        services:               services,
-        position:               StructurePosition {
-                                    x: structure.x,
-                                    y: structure.y,
-                                    z: structure.z
-                                },
-
-        installable_rigs:       installable_rigs,
-        installable_services:   installable_services,
-    };
-
-    Ok(Some(structure))
+    Ok(result)
 }
 
 #[cfg(test)]
@@ -185,7 +237,7 @@ pub struct FetchStructureQuery {
     pub include_installable: Option<bool>,
 }
 
-#[derive(Debug, Deserialize, Serialize, ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 #[schema(
     example = json!({
         "id": "15bd47e3-6b38-4cc1-887b-94924fff30a1",

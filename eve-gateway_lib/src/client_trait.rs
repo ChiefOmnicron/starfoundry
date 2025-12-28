@@ -2,16 +2,16 @@ use starfoundry_lib_gateway::ApiClient;
 use starfoundry_lib_types::{CategoryId, CharacterId, GroupId, StructureId, SystemId, TypeId};
 
 use crate::error::Result;
-use crate::{Category, CharacterInfo, Group, Item, ListItemFilter, ResolveStructureResponse, StructureRigResponse, StructureServiceResponse, System};
+use crate::{Category, CharacterInfo, EveGatewayApiClientMarket, Group, Item, ListItemFilter, ResolveStructureResponse, StructureRigResponse, StructureServiceResponse, System};
 
-pub trait EveGatewayApiClient: ApiClient {
+pub trait EveGatewayApiClient: ApiClient + EveGatewayApiClientMarket {
     #[allow(async_fn_in_trait)]
     async fn fetch_character(
         &self,
         character_id: CharacterId,
     ) -> Result<CharacterInfo> {
         self
-            .fetch(&format!("characters/{}", *character_id))
+            .fetch(&format!("characters/{}", *character_id), &[])
             .await
             .map_err(Into::into)
     }
@@ -33,7 +33,7 @@ pub trait EveGatewayApiClient: ApiClient {
         type_id: TypeId,
     ) -> Result<Option<Item>> {
         self
-            .fetch(&format!("items/{}", *type_id))
+            .fetch(&format!("items/{}", *type_id), &[])
             .await
             .map_err(Into::into)
     }
@@ -55,7 +55,7 @@ pub trait EveGatewayApiClient: ApiClient {
         category_id: CategoryId,
     ) -> Result<Option<Category>> {
         self
-            .fetch(&format!("items/category/{}", *category_id))
+            .fetch(&format!("items/category/{}", *category_id), &[])
             .await
             .map_err(Into::into)
     }
@@ -66,7 +66,7 @@ pub trait EveGatewayApiClient: ApiClient {
         group_id: GroupId,
     ) -> Result<Option<Group>> {
         self
-            .fetch(&format!("items/group/{}", *group_id))
+            .fetch(&format!("items/group/{}", *group_id), &[])
             .await
             .map_err(Into::into)
     }
@@ -85,7 +85,7 @@ pub trait EveGatewayApiClient: ApiClient {
         structure_id: StructureId,
     ) -> Result<ResolveStructureResponse> {
         self
-            .fetch(&format!("structures/{}", *structure_id))
+            .fetch(&format!("structures/{}", *structure_id), &[])
             .await
             .map_err(Into::into)
     }
@@ -96,7 +96,7 @@ pub trait EveGatewayApiClient: ApiClient {
         rig_type_id: TypeId,
     ) -> Result<Option<StructureRigResponse>> {
         self
-            .fetch(&format!("structures/rigs/{}", *rig_type_id))
+            .fetch(&format!("structures/rigs/{}", *rig_type_id), &[])
             .await
             .map_err(Into::into)
     }
@@ -107,7 +107,7 @@ pub trait EveGatewayApiClient: ApiClient {
         service_type_id: TypeId,
     ) -> Result<Option<StructureServiceResponse>> {
         self
-            .fetch(&format!("structures/services/{}", *service_type_id))
+            .fetch(&format!("structures/services/{}", *service_type_id), &[])
             .await
             .map_err(Into::into)
     }
@@ -118,7 +118,7 @@ pub trait EveGatewayApiClient: ApiClient {
         structure_type_id: TypeId,
     ) -> Result<Vec<StructureRigResponse>> {
         self
-            .fetch(&format!("structures/{}/rigs", *structure_type_id))
+            .fetch(&format!("structures/{}/rigs", *structure_type_id), &[])
             .await
             .map_err(Into::into)
     }
@@ -129,7 +129,7 @@ pub trait EveGatewayApiClient: ApiClient {
         structure_type_id: TypeId,
     ) -> Result<StructureServiceResponse> {
         self
-            .fetch(&format!("structures/{}/services", *structure_type_id))
+            .fetch(&format!("structures/{}/services", *structure_type_id), &[])
             .await
             .map_err(Into::into)
     }
@@ -140,7 +140,7 @@ pub trait EveGatewayApiClient: ApiClient {
         system_id: SystemId,
     ) -> Result<Option<System>> {
         self
-            .fetch(&format!("universe/systems/{}", *system_id))
+            .fetch(&format!("universe/systems/{}", *system_id), &[])
             .await
             .map_err(Into::into)
     }

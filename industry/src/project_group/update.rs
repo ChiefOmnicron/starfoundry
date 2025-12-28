@@ -1,9 +1,3 @@
-mod service;
-mod update;
-
-pub use self::service::*;
-pub use self::update::*;
-
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
@@ -13,6 +7,7 @@ use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized, Un
 use crate::project_group::ProjectGroupUuid;
 use crate::AppState;
 use crate::project_group::error::Result;
+use crate::project_group::service::{UpdateProjectGroup, update};
 
 
 /// Update General Group
@@ -72,7 +67,7 @@ pub async fn api(
 mod tests {
     use axum::body::Body;
     use axum::extract::Request;
-    use axum::http::header::CONTENT_TYPE;
+    use axum::http::header::{CONTENT_TYPE, HOST};
     use axum::http::StatusCode;
     use sqlx::PgPool;
     use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
@@ -82,7 +77,6 @@ mod tests {
 
     #[sqlx::test(
         fixtures("base"),
-        migrator = "crate::test_util::MIGRATOR"
     )]
     async fn happy_path(
         pool: PgPool,
@@ -92,6 +86,7 @@ mod tests {
             .header(CONTENT_TYPE, "application/json")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .method("PUT")
             .body(Body::new(
                 serde_json::to_string(&UpdateProjectGroup {
@@ -117,7 +112,6 @@ mod tests {
 
     #[sqlx::test(
         fixtures("base"),
-        migrator = "crate::test_util::MIGRATOR"
     )]
     async fn unsupported_media_type(
         pool: PgPool,
@@ -127,6 +121,7 @@ mod tests {
             .header(CONTENT_TYPE, "text/plain")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .method("PUT")
             .body(Body::new(
                 serde_json::to_string(&UpdateProjectGroup {
@@ -141,7 +136,6 @@ mod tests {
 
     #[sqlx::test(
         fixtures("base"),
-        migrator = "crate::test_util::MIGRATOR"
     )]
     async fn bad_request_no_body(
         pool: PgPool,
@@ -151,6 +145,7 @@ mod tests {
             .header(CONTENT_TYPE, "application/json")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .method("PUT")
             .body(Body::empty())
             .unwrap();
@@ -160,7 +155,6 @@ mod tests {
 
     #[sqlx::test(
         fixtures("base"),
-        migrator = "crate::test_util::MIGRATOR"
     )]
     async fn bad_request_no_name(
         pool: PgPool,
@@ -170,6 +164,7 @@ mod tests {
             .header(CONTENT_TYPE, "application/json")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .method("PUT")
             .body(Body::new(
                 serde_json::to_string(&serde_json::json!({
@@ -183,7 +178,6 @@ mod tests {
 
     #[sqlx::test(
         fixtures("base"),
-        migrator = "crate::test_util::MIGRATOR"
     )]
     async fn unauthorized(
         pool: PgPool,
@@ -205,7 +199,6 @@ mod tests {
 
     #[sqlx::test(
         fixtures("base"),
-        migrator = "crate::test_util::MIGRATOR"
     )]
     async fn forbidden(
         pool: PgPool,
@@ -215,6 +208,7 @@ mod tests {
             .header(CONTENT_TYPE, "application/json")
             .header(HEADER_CHARACTER_ID, 2)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .method("PUT")
             .body(Body::new(
                 serde_json::to_string(&UpdateProjectGroup {
@@ -229,7 +223,6 @@ mod tests {
 
     #[sqlx::test(
         fixtures("base"),
-        migrator = "crate::test_util::MIGRATOR"
     )]
     async fn not_found(
         pool: PgPool,
@@ -239,6 +232,7 @@ mod tests {
             .header(CONTENT_TYPE, "application/json")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .method("PUT")
             .body(Body::new(
                 serde_json::to_string(&UpdateProjectGroup {

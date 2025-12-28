@@ -1,0 +1,184 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                category,\n                name,\n                price,\n                image_type,\n                image_type_id,\n                description,\n                tags,\n                content,\n                message,\n                delivery_time,\n                additional_products,\n                blacklist,\n                whitelist,\n                delivery_location\n            FROM product\n            WHERE id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "category",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "product",
+            "name": "category"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "product",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "price",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "product",
+            "name": "price"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "image_type",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "product",
+            "name": "image_type"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "image_type_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "product",
+            "name": "image_type_id"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "description",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "product",
+            "name": "description"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "tags",
+        "type_info": "VarcharArray",
+        "origin": {
+          "Table": {
+            "table": "product",
+            "name": "tags"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "content",
+        "type_info": "Jsonb",
+        "origin": {
+          "Table": {
+            "table": "product",
+            "name": "content"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "message",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "product",
+            "name": "message"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "delivery_time",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "product",
+            "name": "delivery_time"
+          }
+        }
+      },
+      {
+        "ordinal": 10,
+        "name": "additional_products",
+        "type_info": "UuidArray",
+        "origin": {
+          "Table": {
+            "table": "product",
+            "name": "additional_products"
+          }
+        }
+      },
+      {
+        "ordinal": 11,
+        "name": "blacklist",
+        "type_info": "Int4Array",
+        "origin": {
+          "Table": {
+            "table": "product",
+            "name": "blacklist"
+          }
+        }
+      },
+      {
+        "ordinal": 12,
+        "name": "whitelist",
+        "type_info": "Int4Array",
+        "origin": {
+          "Table": {
+            "table": "product",
+            "name": "whitelist"
+          }
+        }
+      },
+      {
+        "ordinal": 13,
+        "name": "delivery_location",
+        "type_info": "Int4Array",
+        "origin": {
+          "Table": {
+            "table": "product",
+            "name": "delivery_location"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "36e3c26a0b2c76e6c0b08695e7933b3a2b233fbe6728df124d08d6ce8baa92d3"
+}

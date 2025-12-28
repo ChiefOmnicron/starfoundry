@@ -8,7 +8,7 @@ use std::collections::HashMap;
 
 use crate::admin::fetch::AdminOrderResponse;
 use crate::api_docs::{ErrorResponse, Forbidden, InternalServerError, Unauthorized};
-use crate::AppState;
+use crate::{AppState, SERVICE_NAME};
 use crate::order::OrderProduct;
 use crate::product::error::{ProductError, Result};
 
@@ -89,7 +89,7 @@ pub async fn api(
     character_ids.sort();
     character_ids.dedup();
 
-    let eve_gateway_client = EveGatewayClient::new()?;
+    let eve_gateway_client = EveGatewayClient::new(SERVICE_NAME.into())?;
     let character_ids = eve_gateway_client
         .fetch_character_bulk(character_ids)
         .await?

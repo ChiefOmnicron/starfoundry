@@ -1,0 +1,35 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                MIN(price) as \"price!\",\n                type_id\n            FROM   market_order_latest\n            WHERE  market_order_latest.type_id = ANY($1)\n              AND  is_buy = false\n              AND  structure_id = 60003760\n            GROUP  BY type_id\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "price!",
+        "type_info": "Float8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 1,
+        "name": "type_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "market_order_latest",
+            "name": "type_id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4Array"
+      ]
+    },
+    "nullable": [
+      null,
+      false
+    ]
+  },
+  "hash": "282efb2ab72a7fe8b12fff40dc5297598d63563fc2ab4742d12a8bafd0e7eab8"
+}

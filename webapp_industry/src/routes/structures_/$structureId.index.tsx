@@ -1,4 +1,4 @@
-import { Alert, Button, Flex, Grid, Stack, Table, Title } from '@mantine/core';
+import { Alert, Grid, Stack, Table, Title } from '@mantine/core';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { DeleteResource } from '@/components/DeleteResource';
 import { deleteStructure } from '@/services/structure/delete';
@@ -12,8 +12,9 @@ import { Route as StructureListRoute } from '@/routes/structures/index';
 import { ServiceSelector } from '@/components/selectors/ServiceSelector';
 import { updateStructure, type UpdateStructure } from '@/services/structure/update';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { TypeId } from '@/services/utils';
+import { compareArray, SaveDialog } from '@/components/SaveDialog';
 
 interface QueryParams {
     created?: boolean;
@@ -43,10 +44,13 @@ function StructureComponent() {
     const [selectedRigs, setSelectedRigs] = useState<TypeId[]>([]);
     const [selectedServices, setSelectedServices] = useState<(TypeId)[]>([]);
 
+    const [touchedRigs, setTouchedRigs] = useState<boolean>(false);
+    const [touchedServices, setTouchedServices] = useState<boolean>(false);
+
     const {
         isPending,
         isError,
-        data: structure
+        data: structure,
     } = useFetchStructure(structureId, {
         include_installable: true,
     });
@@ -74,6 +78,25 @@ function StructureComponent() {
         },
     });
 
+    useEffect(() => {
+        if (structure) {
+            setSelectedRigs(structure.rigs.map(x => x.item.type_id));
+            setSelectedServices(structure.services.map(x => x.type_id));
+        }
+    }, [structure]);
+
+    useEffect(() => {
+        const a = (structure || { rigs: [] }).rigs.map(x => x.item.type_id);
+        const b = selectedRigs;
+        setTouchedRigs(!compareArray(a, b));
+    }, [selectedRigs]);
+
+    useEffect(() => {
+        const a = (structure || { services: [] }).services.map(x => x.type_id);
+        const b = selectedServices;
+        setTouchedServices(!compareArray(a, b));
+    }, [selectedServices]);
+
     if (isPending) {
         return LoadingAnimation();
     }
@@ -96,6 +119,11 @@ function StructureComponent() {
                 setErrorDelete(error);
                 setSuccessfulUpdated(false);
             });
+    }
+
+    const resetChanges = () => {
+        setSelectedRigs(structure.rigs.map(x => x.item.type_id));
+        setSelectedServices(structure.services.map(x => x.type_id));
     }
 
     const bonuses = () => {
@@ -223,6 +251,10 @@ function StructureComponent() {
                                     <Table.Td>{ structure.name }</Table.Td>
                                 </Table.Tr>
                                 <Table.Tr>
+                                    <Table.Th>In-Game ID</Table.Th>
+                                    <Table.Td>{ structure.structure_id }</Table.Td>
+                                </Table.Tr>
+                                <Table.Tr>
                                     <Table.Th>Type</Table.Th>
                                     <Table.Td>{ structure.item.name }</Table.Td>
                                 </Table.Tr>
@@ -239,7 +271,7 @@ function StructureComponent() {
 
                         <RigSelector
                             rigs={structure.installable_rigs || []}
-                            selected={structure.rigs.map(x => x.item.type_id)}
+                            selected={selectedRigs}
                             onSelect={(selected: TypeId[]) => {
                                 setSelectedRigs(selected);
                             }}
@@ -248,36 +280,13 @@ function StructureComponent() {
 
                         <ServiceSelector
                             services={structure.installable_services || { slots: 3, services: [] }}
-                            selected={structure.services.map(x => x.type_id)}
+                            selected={selectedServices}
                             onSelect={(selected: TypeId[]) => {
                                 setSelectedServices(selected);
                             }}
                             readonly={isReadonly()}
                         />
                     </Stack>
-
-                    <Flex
-                        justify="flex-end"
-                        gap="sm"
-                    >
-                        {
-                            isReadonly()
-                            ? <></>
-                            : <Button
-                                    data-cy="saveStructure"
-                                    mt="sm"
-                                    type="submit"
-                                    onClick={() => {
-                                        mutationUpdate.mutate({
-                                            rigs:     selectedRigs,
-                                            services: selectedServices,
-                                        });
-                                    }}
-                                >
-                                    Save
-                                </Button>
-                        }
-                    </Flex>
 
                     { dangerZone() }
                 </Grid.Col>
@@ -289,5 +298,16 @@ function StructureComponent() {
                 </Grid.Col>
             </Grid>
         </Stack>
+
+        <SaveDialog
+            onReset={resetChanges}
+            onSave={() => {
+                mutationUpdate.mutate({
+                    rigs:     selectedRigs,
+                    services: selectedServices,
+                });
+            }}
+            show={ touchedRigs || touchedServices }
+        />
     </>;
 }

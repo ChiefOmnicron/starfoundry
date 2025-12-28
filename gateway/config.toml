@@ -2,20 +2,28 @@
 [routes."auth"]
 service_url = "https://localhost:9998"
 
-# eve-gateway
 [routes."eve"]
 service_url = "https://localhost:9998"
 drop_prefix = true
 
+[routes."items"]
+service_url = "https://localhost:9998"
+drop_prefix = true
+
+[routes."market"]
+service_url = "https://localhost:9998"
+drop_prefix = true
+
 # industry
+[routes."projects"]
+service_url = "https://localhost:9994"
+
 [routes."project-groups"]
 service_url = "https://localhost:9994"
 
-# industry
 [routes."structures"]
 service_url = "https://localhost:9994"
 
-# industry
 [routes."structure-groups"]
 service_url = "https://localhost:9994"
 

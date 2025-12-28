@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO structure_group_structure\n            (\n                structure_group_id,\n                structure_id\n            )\n            SELECT $1, * FROM UNNEST($2::UUID[])\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "UuidArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "9f46f4ddbc61d3cd256a7692bfe65261e35fc9c14a029ee30450b3f8483bafbd"
+}

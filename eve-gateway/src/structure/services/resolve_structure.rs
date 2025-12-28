@@ -32,7 +32,7 @@ pub async fn resolve_structure(
     );
 
     let response: EveStructure = eve_api_client
-        .fetch_auth(&path)
+        .fetch_auth(&path, &[])
         .await?;
 
     let item = crate::item::services::fetch_item(pool, response.type_id)

@@ -79,6 +79,7 @@ mod tests {
             .method("DELETE")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .body(Body::empty())
             .unwrap();
         let response = project_group_test_routes(pool, request).await;
@@ -96,6 +97,7 @@ mod tests {
             .method("DELETE")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .body(Body::empty())
             .unwrap();
         let response = project_group_test_routes(pool, request).await;
@@ -131,6 +133,7 @@ mod tests {
             // in the group, but only read permission
             .header(HEADER_CHARACTER_ID, 2)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .body(Body::empty())
             .unwrap();
         let response = project_group_test_routes(pool.clone(), request).await;
@@ -142,6 +145,7 @@ mod tests {
             // has the permission to write but isn't an owner
             .header(HEADER_CHARACTER_ID, 3)
             .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
             .body(Body::empty())
             .unwrap();
         let response = project_group_test_routes(pool, request).await;

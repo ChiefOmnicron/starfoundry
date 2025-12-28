@@ -1,6 +1,6 @@
 use sqlx::PgPool;
 use std::collections::HashMap;
-use uuid::Uuid;
+use uuid::{NoContext, Timestamp, Uuid};
 
 use crate::Mapping;
 
@@ -27,7 +27,8 @@ pub async fn migrate_structure_group(
 
     let mut transaction = postgres_destination.begin().await?;
     for structure_group in structure_groups {
-        let structure_group_id = Uuid::now_v7();
+        let timestamp = Timestamp::from_unix(NoContext, structure_group.created_at.timestamp() as u64, 0);
+        let structure_group_id = Uuid::new_v7(timestamp);
         mappings.insert(structure_group.id, structure_group_id);
 
         sqlx::query!("

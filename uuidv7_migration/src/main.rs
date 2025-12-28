@@ -1,7 +1,9 @@
+mod project;
 mod project_group;
 mod structure;
 mod structure_group;
 
+pub use self::project::*;
 pub use self::project_group::*;
 pub use self::structure::*;
 pub use self::structure_group::*;
@@ -30,12 +32,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let project_group_mapping = migrate_project_group(&postgres_source, &postgres_destination, &structure_mapping).await?;
 
+    let project_mapping = migrate_project(&postgres_source, &postgres_destination, &project_group_mapping, &structure_mapping).await?;
+
     Ok(())
 }
 
 async fn cleanup(
     postgres_destination: &PgPool,
 ) -> Result<(), Box<dyn std::error::Error>> {
+    sqlx::query!("
+            DELETE FROM project_job CASCADE
+        ")
+        .execute(postgres_destination)
+        .await?;
+    sqlx::query!("
+            DELETE FROM project CASCADE
+        ")
+        .execute(postgres_destination)
+        .await?;
     sqlx::query!("
             DELETE FROM structure_group_structure CASCADE
         ")
@@ -69,6 +83,21 @@ async fn cleanup(
         .await?;
     sqlx::query!("
             DELETE FROM project_group_default_blacklist CASCADE
+        ")
+        .execute(postgres_destination)
+        .await?;
+    sqlx::query!("
+            DELETE FROM project_group_default_blueprint_overwrite CASCADE
+        ")
+        .execute(postgres_destination)
+        .await?;
+    sqlx::query!("
+            DELETE FROM project_group_default_job_splitting_general CASCADE
+        ")
+        .execute(postgres_destination)
+        .await?;
+    sqlx::query!("
+            DELETE FROM project_group_default_job_splitting_run CASCADE
         ")
         .execute(postgres_destination)
         .await?;

@@ -1,4 +1,5 @@
-use starfoundry_lib_eve_gateway::EveGatewayApiClient;
+use axum::http::HeaderMap;
+use starfoundry_lib_eve_gateway::{EveGatewayApiClient, EveGatewayApiClientMarket};
 use starfoundry_lib_gateway::ApiClient;
 use starfoundry_lib_types::{SystemId, TypeId};
 
@@ -12,11 +13,13 @@ impl EveGatewayTestApiClient {
 }
 
 impl EveGatewayApiClient for EveGatewayTestApiClient {}
+impl EveGatewayApiClientMarket for EveGatewayTestApiClient {}
 
 impl ApiClient for EveGatewayTestApiClient {
     async fn fetch<T>(
             &self,
-            path: impl Into<String>,
+            path:   impl Into<String>,
+            _query: &[(&str, &str)],
         ) -> starfoundry_lib_gateway::error::Result<T>
         where
             T: serde::de::DeserializeOwned {
@@ -32,6 +35,25 @@ impl ApiClient for EveGatewayTestApiClient {
                     "character_name": "SomeCharacter",
                     "corporation_id": 1,
                     "corporation_name": "SomeCorporation",
+                })
+            },
+            "items/21027" => {
+                serde_json::json!({
+                    "base_price": null,
+                    "meta_group_id": null,
+                    "name": "Capital Cargo Bay",
+                    "repackaged": 10000000,
+                    "type_id": 21027,
+                    "volume": 100000000,
+                    "category": {
+                        "category_id": 0,
+                        "name": "#System"
+                    },
+                    "group": {
+                        "group_id": 0,
+                        "category_id": 0,
+                        "name": "#System"
+                    }
                 })
             },
             "items/35892" => {
@@ -101,7 +123,6 @@ impl ApiClient for EveGatewayTestApiClient {
                 })
             },
             _ => {
-                dbg!(path);
                 serde_json::json!({})
             }
         };
@@ -111,11 +132,22 @@ impl ApiClient for EveGatewayTestApiClient {
         )
     }
 
+    async fn fetch_auth<T>(
+        &self,
+        _path:    impl Into<String>,
+        _query:   &[(&str, &str)],
+        _headers: HeaderMap,
+    ) -> starfoundry_lib_gateway::error::Result<T>
+    where
+        T: serde::de::DeserializeOwned {
+        unimplemented!()
+    }
+
     async fn post<D, T>(
-            &self,
-            path: impl Into<String>,
-            data: D,
-        ) -> starfoundry_lib_gateway::error::Result<T>
+        &self,
+        path: impl Into<String>,
+        data: D,
+    ) -> starfoundry_lib_gateway::error::Result<T>
         where
             D: std::fmt::Debug + serde::Serialize + Send + Sync,
             T: serde::de::DeserializeOwned {
@@ -123,98 +155,140 @@ impl ApiClient for EveGatewayTestApiClient {
         let path = path.into();
         let response = match path.as_ref() {
             "items" => {
-                let data: Vec<TypeId> = serde_json::from_value(serde_json::to_value(&data).unwrap()).unwrap();
-                if data.is_empty() {
-                    serde_json::json!([])
-                } else {
-                    dbg!(&data);
-                    serde_json::json!([{
-                        "base_price": null,
-                        "group_id": 30,
-                        "meta_group_id": null,
-                        "name": "Nitrogen Fuel Block",
-                        "repackaged": 10000000,
-                        "type_id": 4051,
-                        "volume": 100000000,
-                        "category": {
-                            "category_id": 0,
-                            "name": "#System"
-                        },
-                        "group": {
-                            "group_id": 0,
-                            "category_id": 0,
-                            "name": "#System"
-                        }
-                    }, {
-                        "base_price": null,
-                        "group_id": 30,
-                        "meta_group_id": null,
-                        "name": "Hydrogen Fuel Block",
-                        "repackaged": 10000000,
-                        "type_id": 4246,
-                        "volume": 100000000,
-                        "category": {
-                            "category_id": 0,
-                            "name": "#System"
-                        },
-                        "group": {
-                            "group_id": 0,
-                            "category_id": 0,
-                            "name": "#System"
-                        }
-                    }, {
-                        "base_price": null,
-                        "group_id": 30,
-                        "meta_group_id": null,
-                        "name": "Helium Fuel Block",
-                        "repackaged": 10000000,
-                        "type_id": 4247,
-                        "volume": 100000000,
-                        "category": {
-                            "category_id": 0,
-                            "name": "#System"
-                        },
-                        "group": {
-                            "group_id": 0,
-                            "category_id": 0,
-                            "name": "#System"
-                        }
-                    }, {
-                        "base_price": null,
-                        "group_id": 30,
-                        "meta_group_id": null,
-                        "name": "Oxygen Fuel Block",
-                        "repackaged": 10000000,
-                        "type_id": 4312,
-                        "volume": 100000000,
-                        "category": {
-                            "category_id": 0,
-                            "name": "#System"
-                        },
-                        "group": {
-                            "group_id": 0,
-                            "category_id": 0,
-                            "name": "#System"
-                        }
-                    }, {
-                        "base_price": null,
-                        "group_id": 1321,
-                        "meta_group_id": null,
-                        "name": "Standup Market Hub I",
-                        "repackaged": 10000000,
-                        "type_id": 35892,
-                        "volume": 100000000,
-                        "category": {
-                            "category_id": 0,
-                            "name": "#System"
-                        },
-                        "group": {
-                            "group_id": 0,
-                            "category_id": 0,
-                            "name": "#System"
-                        }
-                    }])
+                let mut result = Vec::new();
+
+                let type_ids: Vec<TypeId> = serde_json::from_value(serde_json::to_value(&data).unwrap()).unwrap();
+                for type_id in type_ids {
+                    if type_id == TypeId(21027) {
+                        result.push(serde_json::json!({
+                            "base_price": null,
+                            "meta_group_id": null,
+                            "name": "Capital Cargo Bay",
+                            "repackaged": 10000000,
+                            "type_id": 21027,
+                            "volume": 100000000,
+                            "category": {
+                                "category_id": 0,
+                                "name": "#System"
+                            },
+                            "group": {
+                                "group_id": 0,
+                                "category_id": 0,
+                                "name": "#System"
+                            }
+                        }));
+                    } else if type_id == TypeId(20185) {
+                        result.push(serde_json::json!({
+                            "base_price": null,
+                            "meta_group_id": null,
+                            "name": "Charon",
+                            "repackaged": 10000000,
+                            "type_id": 20185,
+                            "volume": 100000000,
+                            "category": {
+                                "category_id": 0,
+                                "name": "#System"
+                            },
+                            "group": {
+                                "group_id": 0,
+                                "category_id": 0,
+                                "name": "#System"
+                            }
+                        }));
+                    } else if type_id == TypeId(4051) {
+                        result.push(serde_json::json!({
+                            "base_price": null,
+                            "meta_group_id": null,
+                            "name": "Nitrogen Fuel Block",
+                            "repackaged": 10000000,
+                            "type_id": 4051,
+                            "volume": 100000000,
+                            "category": {
+                                "category_id": 0,
+                                "name": "#System"
+                            },
+                            "group": {
+                                "group_id": 0,
+                                "category_id": 0,
+                                "name": "#System"
+                            }
+                        }));
+                    } else if type_id == TypeId(4246) {
+                        result.push(serde_json::json!({
+                            "base_price": null,
+                            "meta_group_id": null,
+                            "name": "Hydrogen Fuel Block",
+                            "repackaged": 10000000,
+                            "type_id": 4246,
+                            "volume": 100000000,
+                            "category": {
+                                "category_id": 0,
+                                "name": "#System"
+                            },
+                            "group": {
+                                "group_id": 0,
+                                "category_id": 0,
+                                "name": "#System"
+                            }
+                        }));
+                    } else if type_id == TypeId(4247) {
+                        result.push(serde_json::json!({
+                            "base_price": null,
+                            "meta_group_id": null,
+                            "name": "Helium Fuel Block",
+                            "repackaged": 10000000,
+                            "type_id": 4247,
+                            "volume": 100000000,
+                            "category": {
+                                "category_id": 0,
+                                "name": "#System"
+                            },
+                            "group": {
+                                "group_id": 0,
+                                "category_id": 0,
+                                "name": "#System"
+                            }
+                        }));
+                    } else if type_id == TypeId(4312) {
+                        result.push(serde_json::json!({
+                            "base_price": null,
+                            "meta_group_id": null,
+                            "name": "Oxygen Fuel Block",
+                            "repackaged": 10000000,
+                            "type_id": 4312,
+                            "volume": 100000000,
+                            "category": {
+                                "category_id": 0,
+                                "name": "#System"
+                            },
+                            "group": {
+                                "group_id": 0,
+                                "category_id": 0,
+                                "name": "#System"
+                            }
+                        }));
+                    } else if type_id == TypeId(35892) {
+                        result.push(serde_json::json!({
+                            "base_price": null,
+                            "meta_group_id": null,
+                            "name": "Standup Market Hub I",
+                            "repackaged": 10000000,
+                            "type_id": 35892,
+                            "volume": 100000000,
+                            "category": {
+                                "category_id": 0,
+                                "name": "#System"
+                            },
+                            "group": {
+                                "group_id": 0,
+                                "category_id": 0,
+                                "name": "#System"
+                            }
+                        }));
+                    }
                 }
+
+                serde_json::json!(result)
             },
             "universe/systems" => {
                 let data: Vec<SystemId> = serde_json::from_value(serde_json::to_value(&data).unwrap()).unwrap();

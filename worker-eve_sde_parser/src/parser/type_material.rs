@@ -37,6 +37,8 @@ pub fn parse(
         .map_err(Error::ParseTypeIds)?;
     let parsed = parsed
         .into_iter()
+        // ignore Prismaticite
+        .filter(|(x, _)| *x != TypeId(90041))
         .map(|(type_id, wrapper)| (type_id, wrapper.materials))
         .collect::<HashMap<_, _>>();
     Ok(parsed)
@@ -55,5 +57,6 @@ pub struct TypeMaterial {
 /// Wrapper only needed for parsing
 #[derive(Deserialize)]
 struct ParseWrapper {
+    #[serde(default)]
     materials: Vec<TypeMaterial>,
 }

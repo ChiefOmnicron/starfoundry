@@ -1,4 +1,4 @@
-import { Alert, Button, Flex, Textarea, TextInput, Title } from '@mantine/core';
+import { Alert, Flex, Textarea, TextInput, Title } from '@mantine/core';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { deleteProjectGroup } from '@/services/project-group/delete';
 import { DeleteResource } from '@/components/DeleteResource';
@@ -7,11 +7,12 @@ import { LIST_PROJECT_GROUPS } from '@/services/project-group/list';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { LoadingError } from '@/components/LoadingError';
 import { Route as ProjectGroupRoute } from '@/routes/project-groups/index';
-import { updateProjectGroup, type UpdateProjectGroup } from '@/services/project-group/update_group';
-import { useFetchProjectGroupMemberSelf } from '@/services/project-group/fetch_members_self';
+import { updateProjectGroup, type UpdateProjectGroup } from '@/services/project-group/updateGroup';
+import { useFetchProjectGroupMemberSelf } from '@/services/project-group/fetchMemberSelf';
 import { useForm } from '@tanstack/react-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import { SaveDialog } from '@/components/SaveDialog';
 
 interface QueryParams {
     created?: boolean;
@@ -41,6 +42,8 @@ export function ProjectGroupOverview() {
     const [errorDelete, setErrorDelete] = useState<string | undefined>();
     const [errorUpdate, setErrorUpdated] = useState<string | undefined>();
 
+    const [touched, setTouched] = useState<boolean>(false);
+
     const {
         isError,
         isPending,
@@ -56,6 +59,7 @@ export function ProjectGroupOverview() {
         onSuccess: () => {
             setErrorUpdated(undefined);
             setSuccessfulUpdated(true);
+            setTouched(false);
             queryClient.invalidateQueries({ queryKey: [FETCH_PROJECT_GROUP] })
         },
     });
@@ -194,6 +198,9 @@ export function ProjectGroupOverview() {
         { notification() }
 
         <form
+            onChange={() => {
+                setTouched(!form.state.isDefaultValue);
+            }}
             onSubmit={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -263,22 +270,21 @@ export function ProjectGroupOverview() {
 
             <form.Subscribe
                 selector={(state) => [state.canSubmit, state.isSubmitting]}
-                children={([canSubmit, isSubmitting]) => (
+                children={() => (
                     <Flex
                         justify="flex-end"
                         gap="sm"
                     >
                         {
                             canWrite()
-                                ? <Button
-                                        data-cy="save"
-                                        mt="sm"
-                                        type="submit"
-                                        disabled={!canSubmit || isSubmitting}
-                                        loading={isSubmitting}
-                                    >
-                                        Save
-                                    </Button>
+                                ? <SaveDialog
+                                    onReset={ () => {
+                                        form.reset();
+                                        setTouched(!form.state.isDefaultValue);
+                                    }}
+                                    onSave={ form.handleSubmit }
+                                    show={ touched }
+                                />
                                 : <></>
                         }
                     </Flex>

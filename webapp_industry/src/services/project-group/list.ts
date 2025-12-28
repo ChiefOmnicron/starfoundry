@@ -1,16 +1,19 @@
-import { axiosClient } from "@/services/client";
+import { axiosClient, type AbortSignal } from "@/services/client";
 import { useQuery } from "@tanstack/react-query";
 import type { ProjectGroup } from "@/services/project-group/fetch";
+import type { GenericAbortSignal } from "axios";
 
 export const LIST_PROJECT_GROUPS = 'listProjectGroups';
 
 export const listProjectGroups = async (
-    filter: ProjectGroupFilter,
+    filter:  ProjectGroupFilter,
+    signal?: GenericAbortSignal,
 ): Promise<ProjectGroup[]> => (await axiosClient())
     .get(
         '/api/project-groups',
         {
             params: filter,
+            signal,
         }
     )
     .then(x => x.data);
@@ -25,7 +28,9 @@ export const useListProjectGroup = (
 ) => {
     return useQuery({
         queryKey: [LIST_PROJECT_GROUPS, filterParams],
-        queryFn: async () => listProjectGroups(filterParams),
+        queryFn: async ({
+            signal
+        }: AbortSignal) => listProjectGroups(filterParams, signal),
         initialData: [],
     })
 }

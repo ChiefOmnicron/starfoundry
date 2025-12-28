@@ -12,4 +12,7 @@ pub enum Error {
     EnvNotSet(&'static str),
     #[error("error while parsing url. Validate the environment variables, error: '{0}'")]
     UrlParseError(url::ParseError),
+
+    #[error("the given category '{0}' is not valid, it must be one of: 'agent', 'alliance', 'character', 'constellation', 'corporation', 'faction', 'inventory_type', 'region', 'solar_system', 'station', 'structure'")]
+    InvalidSearchCategory(String),
 }

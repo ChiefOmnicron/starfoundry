@@ -1,0 +1,196 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                i.*,\n\n                id,\n                runs,\n                status AS \"status: ProjectJobStatus\",\n                cost,\n                job_id,\n                structure_id\n            FROM project_job pj\n            JOIN item i ON i.type_id = pj.type_id\n            WHERE pj.project_id = $1\n            AND (\n                (\n                    NOT (pj.type_id = $2::INTEGER) IS FALSE\n                )\n            )\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "type_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "type_id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "category_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "category_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "group_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "group_id"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "meta_group_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "meta_group_id"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "base_price",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "base_price"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "volume",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "volume"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "repackaged",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "repackaged"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "runs",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "runs"
+          }
+        }
+      },
+      {
+        "ordinal": 10,
+        "name": "status: ProjectJobStatus",
+        "type_info": {
+          "Custom": {
+            "name": "project_job_status",
+            "kind": {
+              "Enum": [
+                "WAITING_FOR_MATERIALS",
+                "BUILDING",
+                "DONE"
+              ]
+            }
+          }
+        },
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "status"
+          }
+        }
+      },
+      {
+        "ordinal": 11,
+        "name": "cost",
+        "type_info": "Float8",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "cost"
+          }
+        }
+      },
+      {
+        "ordinal": 12,
+        "name": "job_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "job_id"
+          }
+        }
+      },
+      {
+        "ordinal": 13,
+        "name": "structure_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "structure_id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false
+    ]
+  },
+  "hash": "884ed06bdc85d5ba3d848e8be61ba02b780f5b0acf949d8aabe2a7000b18be11"
+}

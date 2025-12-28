@@ -7,7 +7,7 @@ use starfoundry_lib_gateway::ExtractIdentity;
 use starfoundry_lib_notification::{Discord, DiscordColor, DiscordEmbed};
 
 use crate::api_docs::{BadRequest, InternalServerError, NotFound, Unauthorized, UnprocessableEntity, UnsupportedMediaType};
-use crate::AppState;
+use crate::{AppState, SERVICE_NAME};
 use crate::config::OrderUuid;
 use crate::order::error::{OrderError, Result};
 
@@ -64,7 +64,7 @@ pub async fn api(
         .await
         .map_err(OrderError::GeneralSqlxError)?;
 
-    let character_info = EveGatewayClient::new()?
+    let character_info = EveGatewayClient::new(SERVICE_NAME.into())?
         .fetch_character(
             identity.character_id,
         )

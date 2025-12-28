@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM structure_group_structure\n            WHERE structure_group_id = $1\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "a65400f5d917a22ffd97ff6fae8961ce7bf9592c8dda5171b40016146b06c0a4"
+}

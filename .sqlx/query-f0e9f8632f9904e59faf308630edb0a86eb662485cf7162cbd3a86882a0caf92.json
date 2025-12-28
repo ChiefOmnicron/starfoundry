@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                    INSERT INTO structure_group_structure\n                    (\n                        structure_group_id,\n                        structure_id\n                    )\n                    VALUES ($1, $2)\n                ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "f0e9f8632f9904e59faf308630edb0a86eb662485cf7162cbd3a86882a0caf92"
+}

@@ -1,0 +1,88 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                i.type_id,\n                i.name AS \"item_name\",\n                i.category_id,\n                i.group_id,\n                quantity,\n                cost\n            FROM project_excess pe\n            JOIN item i ON i.type_id = pe.type_id\n            WHERE pe.project_id = $1\n            ORDER BY item_name\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "type_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "type_id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "item_name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "category_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "category_id"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "group_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "group_id"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "quantity",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_excess",
+            "name": "quantity"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "cost",
+        "type_info": "Float8",
+        "origin": {
+          "Table": {
+            "table": "project_excess",
+            "name": "cost"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "d38fc926d949ead923518f78dc07ca5a3bcddd01f7290017c83582e429cb9a4f"
+}

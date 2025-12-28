@@ -7,7 +7,7 @@ pub async fn delete(
     pool:     &PgPool,
     group_id: ProjectGroupUuid,
 ) -> Result<ProjectGroupUuid> {
-    /*let has_project = sqlx::query!("
+    let has_project = sqlx::query!("
             SELECT 1 AS entry
             FROM project
             WHERE project_group_id = $1
@@ -20,7 +20,7 @@ pub async fn delete(
 
     if has_project.is_some() {
         return Err(ProjectGroupError::ProjectIsAssignedToGroup);
-    }*/
+    }
 
     sqlx::query!("
         DELETE FROM project_group

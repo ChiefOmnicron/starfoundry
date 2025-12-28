@@ -36,6 +36,10 @@ pub enum ProjectGroupError {
 
     #[error("error while fetching defaults for project group '{1}', error: '{0}'")]
     FetchGroupDefaults(sqlx::Error, ProjectGroupUuid),
+    #[error("error while deleting defaults for project group '{1}', error: '{0}'")]
+    DeleteGroupDefaults(sqlx::Error, ProjectGroupUuid),
+    #[error("error while updating defaults for project group '{1}', error: '{0}'")]
+    UpdateGroupDefaults(sqlx::Error, ProjectGroupUuid),
 
     #[error("error while fetching permissions for project group '{1}', error: '{0}'")]
     FetchGroupPermissions(sqlx::Error, ProjectGroupUuid),
@@ -60,7 +64,7 @@ pub enum ProjectGroupError {
     #[error(transparent)]
     GatewayLibError(#[from] starfoundry_lib_gateway::error::Error),
     #[error(transparent)]
-    EveGatewayLibError(#[from] starfoundry_lib_eve_gateway::error::Error),
+    EveGatewayLibError(#[from] starfoundry_lib_eve_gateway::Error),
 }
 
 impl From<crate::structure::StructureError> for ProjectGroupError {

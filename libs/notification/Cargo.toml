@@ -6,13 +6,13 @@ version.workspace = true
 license.workspace = true
 
 [dependencies]
-reqwest = { version = "0.12.24", default-features = false, features = ["charset", "http2", "system-proxy", "json", "rustls-tls"] }
+reqwest = { version = "0.12.25", default-features = false, features = ["charset", "http2", "system-proxy", "json", "rustls-tls"] }
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.145"
-sqlx = "0.8.6"
+sqlx = "0.9.0-alpha.1"
 starfoundry_lib-eve_api = { path = "../eve_api" }
 starfoundry_lib-types = { path = "../../gp_lib-types" }
 thiserror = "2.0.17"
-tracing = "0.1.41"
+tracing = "0.1.43"
 utoipa = { version = "5.4.0", features = ["uuid", "yaml"] }
-uuid = "1.18.1"
+uuid = "1.19.0"

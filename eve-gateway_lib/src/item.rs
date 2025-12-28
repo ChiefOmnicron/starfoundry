@@ -23,14 +23,14 @@ use utoipa::{IntoParams, ToSchema};
     })
 )]
 pub struct Item {
-    pub type_id:       TypeId,
-    pub category:      Category,
-    pub group:         Group,
-    pub volume:        f32,
-    pub name:          String,
+    pub type_id:    TypeId,
+    pub category:   Category,
+    pub group:      Group,
+    pub volume:     f32,
+    pub name:       String,
 
-    pub meta_group_id: Option<GroupId>,
-    pub repackaged:    Option<i32>,
+    pub meta_group: Option<GroupId>,
+    pub repackaged: Option<i32>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]

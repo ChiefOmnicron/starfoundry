@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO project_product\n            (\n                project_id,\n                type_id,\n                quantity,\n                material_efficiency\n            )\n            SELECT $1, * FROM UNNEST(\n                $2::INTEGER[],\n                $3::INTEGER[],\n                $4::INTEGER[]\n            )\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4Array",
+        "Int4Array",
+        "Int4Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "26ad38bc6999a33c475f0f4411dd7b5b5007b61ed772cf23cca912ff15fa7d3f"
+}

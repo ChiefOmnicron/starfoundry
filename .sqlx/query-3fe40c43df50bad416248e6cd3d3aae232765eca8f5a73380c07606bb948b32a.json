@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                INSERT INTO project_group_default_market\n                (\n                    project_group_id,\n                    structure_id,\n                    created_at,\n                    updated_at\n                )\n                SELECT $1, * FROM UNNEST(\n                    $2::UUID[],\n                    $3::TIMESTAMPTZ[],\n                    $4::TIMESTAMPTZ[]\n                )\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "UuidArray",
+        "TimestamptzArray",
+        "TimestamptzArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "3fe40c43df50bad416248e6cd3d3aae232765eca8f5a73380c07606bb948b32a"
+}

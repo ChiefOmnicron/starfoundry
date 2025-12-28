@@ -1,9 +1,10 @@
-use serde::Deserialize;
-use url::Url;
 use jsonwebtoken::DecodingKey;
+use serde::Deserialize;
+use starfoundry_lib_gateway::MtlsApiClient;
+use url::Url;
 
-use crate::client::mtls_client;
 use crate::error::{Error, Result};
+use crate::SERVICE_NAME;
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct JwtKey {
@@ -37,7 +38,9 @@ pub async fn load_signature(
         keys: Vec<JwtKey>,
     }
 
-    let jwt_keys = mtls_client()?
+    let response = MtlsApiClient::new_raw(
+            SERVICE_NAME,
+        )?
         .get(jwt_key_url)
         .send()
         .await
@@ -47,7 +50,7 @@ pub async fn load_signature(
         .map(|x| EveApiJwtKeys(x.keys))
         .map_err(Error::FetchJwtKey)?;
 
-    if let Some((x, y)) = jwt_keys.es256() {
+    if let Some((x, y)) = response.es256() {
         DecodingKey::from_ec_components(
             &x,
             &y,

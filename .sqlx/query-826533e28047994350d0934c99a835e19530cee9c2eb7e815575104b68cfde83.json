@@ -1,0 +1,184 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                DISTINCT(pj.type_id) AS \"type_id: TypeId\",\n                depends_on,\n\n                i.name,\n                i.volume,\n                i.category_id,\n                i.group_id,\n                i.meta_group_id,\n\n                pj.id,\n                pj.runs,\n                pj.status AS \"status: ProjectJobStatus\",\n                pj.cost,\n                pj.job_id,\n                pj.structure_id\n            FROM project_job pj\n            JOIN blueprint_dependency bd ON pj.type_id = bd.ptype_id\n            JOIN project p ON p.id = pj.project_id\n            JOIN item i ON i.type_id = pj.type_id\n            WHERE\n                p.owner = $1 AND\n                project_id = $2\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "type_id: TypeId",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "type_id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "depends_on",
+        "type_info": "Int4Array",
+        "origin": {
+          "Table": {
+            "table": "blueprint_dependency",
+            "name": "depends_on"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "volume",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "volume"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "category_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "category_id"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "group_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "group_id"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "meta_group_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "meta_group_id"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "runs",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "runs"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "status: ProjectJobStatus",
+        "type_info": {
+          "Custom": {
+            "name": "project_job_status",
+            "kind": {
+              "Enum": [
+                "WAITING_FOR_MATERIALS",
+                "BUILDING",
+                "DONE"
+              ]
+            }
+          }
+        },
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "status"
+          }
+        }
+      },
+      {
+        "ordinal": 10,
+        "name": "cost",
+        "type_info": "Float8",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "cost"
+          }
+        }
+      },
+      {
+        "ordinal": 11,
+        "name": "job_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "job_id"
+          }
+        }
+      },
+      {
+        "ordinal": 12,
+        "name": "structure_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "structure_id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false
+    ]
+  },
+  "hash": "826533e28047994350d0934c99a835e19530cee9c2eb7e815575104b68cfde83"
+}

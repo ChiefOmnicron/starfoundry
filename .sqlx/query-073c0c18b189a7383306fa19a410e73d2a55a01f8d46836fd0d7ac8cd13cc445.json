@@ -1,0 +1,123 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                id,\n                runs,\n                status AS \"status: ProjectJobStatus\",\n                cost,\n                job_id,\n                structure_id,\n                type_id,\n                started_by\n            FROM project_job\n            WHERE project_id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "runs",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "runs"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "status: ProjectJobStatus",
+        "type_info": {
+          "Custom": {
+            "name": "project_job_status",
+            "kind": {
+              "Enum": [
+                "WAITING_FOR_MATERIALS",
+                "BUILDING",
+                "DONE"
+              ]
+            }
+          }
+        },
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "status"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "cost",
+        "type_info": "Float8",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "cost"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "job_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "job_id"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "structure_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "structure_id"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "type_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "type_id"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "started_by",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "started_by"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "073c0c18b189a7383306fa19a410e73d2a55a01f8d46836fd0d7ac8cd13cc445"
+}
