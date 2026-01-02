@@ -24,6 +24,7 @@ pub async fn fetch(
                 created_at
             FROM order_info
             WHERE id = $1
+            AND status != 'CANCELED'
             ORDER BY created_at
         ",
             *order_uuid,
