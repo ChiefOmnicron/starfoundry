@@ -556,7 +556,7 @@ async fn process_build(
         // Vendetta
         42125 |
         // Wyvern
-        23917 |
+        23917 => 1.125,
         // Ark
         28850 |
         // Anshar
