@@ -556,7 +556,7 @@ async fn process_build(
         // Vendetta
         42125 |
         // Wyvern
-        23917 => 1.125,
+        23917 => 1.15,
         // Ark
         28850 |
         // Anshar
@@ -564,7 +564,7 @@ async fn process_build(
         // Nomad
         28846 |
         // Rhea
-        28844 => 1.15,
+        28844 => 1.125,
         _ => 1.1,
     };
 
