@@ -1,0 +1,36 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                INSERT INTO project (\n                    id,\n                    name,\n                    owner,\n                    status,\n                    sell_price,\n                    orderer,\n                    note,\n                    --structure_group_id,\n                    project_group_id,\n                    created_at,\n                    updated_at\n                )\n                VALUES ($1, $2, $3, $4::PROJECT_STATUS, $5, $6, $7, $8, $9, $10)\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Varchar",
+        "Int4",
+        {
+          "Custom": {
+            "name": "project_status",
+            "kind": {
+              "Enum": [
+                "PREPARING",
+                "IN_PROGRESS",
+                "PAUSED",
+                "ABORTED",
+                "DONE"
+              ]
+            }
+          }
+        },
+        "Float8",
+        "Varchar",
+        "Varchar",
+        "Uuid",
+        "Timestamptz",
+        "Timestamptz"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "38a5b0ff932ddd46575927fa4f71b860243c9bf0799d6242d155491025b237b7"
+}

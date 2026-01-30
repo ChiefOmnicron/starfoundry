@@ -1,0 +1,31 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT refresh_token\n            FROM eve_credential\n            WHERE\n                domain = $1 AND\n                (\n                    character_main = $2 AND\n                    character_id = $3\n                ) AND\n                scopes && $4::VARCHAR[]\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "refresh_token",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "eve_credential",
+            "name": "refresh_token"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Int4",
+        "Int4",
+        "VarcharArray"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "def96cd8d9cfa146f4cef73ca45c8ca764445c3e026ac8f9e203b24aec6c20b3"
+}

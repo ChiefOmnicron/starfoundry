@@ -32,7 +32,7 @@ impl EveApiClient {
         );
 
         self
-            .fetch::<EveCharacterInfo>(&path, &[])
+            .fetch::<_, EveCharacterInfo>(&path, &())
             .await
             .map_err(Into::into)
     }
@@ -58,7 +58,7 @@ impl EveApiClient {
         );
 
         self
-            .fetch::<EveCharacterInfo>(&path, &[])
+            .fetch::<_, EveCharacterInfo>(&path, &())
             .await
             .map_err(Into::into)
     }
@@ -90,7 +90,7 @@ impl EveApiClient {
         );
 
         self
-            .fetch::<Alliance>(&path, &[])
+            .fetch::<_, Alliance>(&path, &())
             .await
             .map(|x| x.name)
             .map_err(Into::into)

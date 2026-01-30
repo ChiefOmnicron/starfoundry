@@ -17,7 +17,7 @@ use crate::project_group::{ProjectGroupUuid, ProjectGroupUuidPath};
     put,
     operation_id = "project_groups_accept_member",
     path = "/project-groups/{projectGroupUuid}/members/{characterIdPath}/accept",
-    tag = "project-groups",
+    tag = "Project Groups",
     params(
         ProjectGroupUuidPath,
         CharacterIdPath,

@@ -1,0 +1,30 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT\n                    (additional_data ->> 'character_id')::INTEGER AS character_id,\n                    (additional_data ->> 'source')::VARCHAR AS source\n                FROM worker_queue\n                WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')\n                AND task = $1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "character_id",
+        "type_info": "Int4",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 1,
+        "name": "source",
+        "type_info": "Varchar",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      null,
+      null
+    ]
+  },
+  "hash": "27b6e7027ea881bf1ba421c39194a988a796daf8e4a32c6c2aeccc75384acc49"
+}

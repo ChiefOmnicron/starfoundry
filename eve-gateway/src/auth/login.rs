@@ -39,7 +39,7 @@ use axum::Json;
     tag = "Auth",
     responses(
         (
-            status = TEMPORARY_REDIRECT,
+            status = OK,
             description = "Redirects to the Eve Login Server",
             content_type = "text/plain",
             example = json!("https://login.eveonline.com/v2/oauth/authorize/")

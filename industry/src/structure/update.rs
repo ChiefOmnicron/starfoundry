@@ -2,12 +2,12 @@ use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
+use starfoundry_lib_industry::StructureUuid;
 
 use crate::structure::service::{update, UpdateStructure};
 use crate::AppState;
 use crate::structure::error::Result;
 use crate::api_docs::{BadRequest, InternalServerError, Unauthorized, UnprocessableEntity, UnsupportedMediaType};
-use crate::structure::StructureUuid;
 
 /// Create Structure
 /// 

@@ -9,10 +9,10 @@ import { useFetchProjectGroup } from '@/services/project-group/fetch';
 export const Route = createFileRoute(
     '/project-groups_/$projectGroupId/members',
 )({
-    component: ProjectGroupMembers,
+    component: RouteComponent,
 })
 
-export function ProjectGroupMembers() {
+function RouteComponent() {
     const { projectGroupId } = Route.useParams();
 
     const {

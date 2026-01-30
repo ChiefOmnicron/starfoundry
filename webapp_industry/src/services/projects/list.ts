@@ -2,6 +2,7 @@ import { axiosClient, type AbortSignal } from "@/services/client";
 import { useQuery } from "@tanstack/react-query";
 import type { Uuid } from "@/services/utils";
 import type { GenericAbortSignal } from "axios";
+import type { ProjectGroup } from "../project-group/fetch";
 
 export const LIST_PROJECT = 'listProject';
 
@@ -16,12 +17,18 @@ export const listProjects = async (
             signal,
         }
     )
-    .then(x => x.data);
+    .then(x => {
+        if (x.status === 204) {
+            return [];
+        }
+
+        return x.data;
+    });
 
 export type ProjectFilter = {
     name?: string;
     status?: string;
-    project_group?: string;
+    project_group_id?: string;
 }
 
 export const useListProjects = (
@@ -36,12 +43,13 @@ export const useListProjects = (
     })
 }
 
-export type ProjectStatus = 'PREPARING' | 'IN_PROGRESS' | 'PAUSED' | 'DONE';
+export type ProjectStatus = 'CREATED' | 'INITIALIZED' | 'IN_PROGRESS' | 'PAUSED' | 'DONE';
 
 export type ProjectList = {
-    id:         Uuid;
-    name:       string;
-    status:     ProjectStatus;
-    orderer:    string;
-    sell_price: number;
+    id:            Uuid;
+    name:          string;
+    status:        ProjectStatus;
+    orderer:       string;
+    sell_price:    number;
+    project_group: ProjectGroup,
 }

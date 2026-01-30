@@ -2,7 +2,7 @@ use axum::extract::{Path, State};
 use axum::Json;
 use axum::response::IntoResponse;
 use reqwest::StatusCode;
-use starfoundry_lib_eve_gateway::Market;
+use starfoundry_lib_eve_gateway::market::Market;
 use starfoundry_lib_gateway::ExtractIdentity;
 use starfoundry_lib_types::StructureId;
 
@@ -13,7 +13,7 @@ use crate::utils::api_client_auth;
 
 const SCOPE: &str = "esi-markets.structure_markets.v1";
 
-/// Fetch Market for a region
+/// Fetch Player Market
 /// 
 /// - Alternative route: `/latest/market/player/{StructureId}`
 /// - Alternative route: `/v1/market/player/{StructureId}`
@@ -46,9 +46,8 @@ pub async fn api(
 ) -> Result<impl IntoResponse> {
     let api_client = api_client_auth(
             &state.postgres,
-            identity.host,
+            identity.host()?,
             identity.character_id,
-            identity.corporation_id,
             vec![
                 SCOPE.into(),
             ],
@@ -75,6 +74,7 @@ pub async fn api(
         Ok(
             (
                 StatusCode::NO_CONTENT,
+                Json(market_data),
             )
             .into_response()
         )

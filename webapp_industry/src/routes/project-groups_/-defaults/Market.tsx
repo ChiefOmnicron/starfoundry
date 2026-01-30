@@ -1,16 +1,18 @@
-import { Alert, Code, Stack } from '@mantine/core';
+import { Alert, Button, Code, Flex, Stack } from '@mantine/core';
+import { compareArray } from '@/components/SaveDialog';
 import { InternalLink } from '@/components/InternalLink';
+import { LIST_PROJECT_GROUP_DEFAULT_MARKETS, useListProjectGroupDefaultMarkets } from '@/services/project-group/listDefaultMarket';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { LoadingError } from '@/components/LoadingError';
 import { Route as StructureRoute } from '@/routes/structures/index';
-import { StructureList } from '@/components/StructureList';
-import { useEffect, useState } from 'react';
-import { LIST_PROJECT_GROUP_DEFAULT_MARKETS, useListProjectGroupDefaultMarkets } from '@/services/project-group/listDefaultMarket';
-import { useListStructure, type Structure } from '@/services/structure/list';
-import type { Uuid } from '@/services/utils';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { StructureList } from '@/components/StructureCard';
+import { StructureSelectorModal } from '@/components/selectors/StructureSelectorModal';
 import { updateDefaultMarket } from '@/services/project-group/updateDefaultMarket';
-import { compareArray } from '@/components/SaveDialog';
+import { useDisclosure } from '@mantine/hooks';
+import { useEffect, useState } from 'react';
+import { useListStructure, type Structure } from '@/services/structure/list';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import type { Uuid } from '@/services/utils';
 
 export function ProjectGroupDefaultsMarket({
     projectGroupId,
@@ -21,6 +23,7 @@ export function ProjectGroupDefaultsMarket({
 }: DefaultMarketProps) {
     const [touched, setTouched] = useState<boolean>(false);
     const [updateSuccess, setUpdateSuccess] = useState<boolean>(false);
+    const [opened, { open, close }] = useDisclosure(false);
 
     const queryClient = useQueryClient();
     const [selectedStructuresOld, setSelectedStructuresOld] = useState<Structure[]>([]);
@@ -98,17 +101,9 @@ export function ProjectGroupDefaultsMarket({
         return LoadingError();
     }
 
-    const onDeleteStructure = (structureId: string) => {
-        const removedStructure = selectedStructures
-            .filter(x => x.id !== structureId);
-        setSelectedStructures(removedStructure);
-    }
-
-    const onSelectStructure = (structure: Structure) => {
-        setSelectedStructures([
-            structure,
-            ...selectedStructures,
-        ]);
+    const onSelectStructure = (structures: Structure[]) => {
+        setSelectedStructures(structures);
+        close();
     }
 
     const notification = () => {
@@ -130,6 +125,15 @@ export function ProjectGroupDefaultsMarket({
     return <>
         { notification() }
 
+        <StructureSelectorModal
+            opened={opened}
+            onClose={close}
+            onSelect={onSelectStructure}
+
+            structures={structures}
+            selected={selectedStructures}
+        />
+
         <Stack>
             <Alert variant='light' color='gray'>
                 Determines which markets should be used when comparing material prices.
@@ -144,12 +148,21 @@ export function ProjectGroupDefaultsMarket({
                 After that, you can refresh the selector, and your structure will show up.
             </Alert>
 
+            <Flex
+                justify='end'
+            >
+                <Button
+                    onClick={ open }
+                >
+                    Edit structures
+                </Button>
+            </Flex>
+
             <StructureList
                 structures={selectedStructures}
-                editable
-                selectableStructures={structures}
-                onDelete={onDeleteStructure}
-                onSelect={onSelectStructure}
+
+                groupBySystem={false}
+                viewTarget='_blank'
             />
         </Stack>
     </>

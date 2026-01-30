@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO asset\n            (\n                owner_id,\n\n                item_id,\n                location_id,\n                type_id,\n\n                location_flag,\n                location_type,\n                quantity,\n                is_singleton,\n                is_blueprint_copy\n            )\n            SELECT $1, * FROM UNNEST(\n                $2::BIGINT[],\n                $3::BIGINT[],\n                $4::INTEGER[],\n                $5::VARCHAR[],\n                $6::VARCHAR[],\n                $7::INTEGER[],\n                $8::BOOLEAN[],\n                $9::BOOLEAN[]\n            )\n            ON CONFLICT (item_id)\n            DO UPDATE SET\n                location_id = EXCLUDED.location_id,\n                location_flag = EXCLUDED.location_flag,\n                quantity = EXCLUDED.quantity,\n                is_singleton = EXCLUDED.is_singleton\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int8Array",
+        "Int8Array",
+        "Int4Array",
+        "VarcharArray",
+        "VarcharArray",
+        "Int4Array",
+        "BoolArray",
+        "BoolArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "8bd43a052ae6a85b9f5f2c89b152ce9fb8be584b010cf09516471c1e9d3ddfd9"
+}

@@ -7,7 +7,7 @@ use thiserror::Error;
 
 use crate::api_docs::{format_json_errors, ErrorResponse};
 use crate::project::ProjectUuid;
-use crate::project_group::error::ProjectGroupError;
+use crate::project_group::ProjectGroupError;
 
 pub type Result<T, E = ProjectError> = std::result::Result<T, E>;
 
@@ -22,12 +22,17 @@ pub enum ProjectError {
     ValidationError(String),
 
     #[error("error while listing projects, error: '{0}'")]
-    ListProjects(sqlx::Error),
-    #[error("error while listing project jibs, error: '{0}'")]
-    ListProjectJobs(sqlx::Error),
+    List(sqlx::Error),
+    #[error("error while listing project jobs, error: '{0}'")]
+    ListJobs(sqlx::Error),
+    #[error("error while listing project misc, error: '{0}'")]
+    ListMisc(sqlx::Error),
 
     #[error("error while fetching project '{1}', error: '{0}'")]
     FetchProject(sqlx::Error, ProjectUuid),
+
+    #[error("error while creating project, error: '{0}'")]
+    CreateProject(sqlx::Error),
 
     #[error(transparent)]
     JsonExtractorRejection(#[from] JsonRejection),

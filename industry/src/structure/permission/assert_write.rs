@@ -3,11 +3,11 @@ use axum::middleware::Next;
 use axum::response::IntoResponse;
 use sqlx::PgPool;
 use starfoundry_lib_gateway::ExtractIdentity;
+use starfoundry_lib_industry::StructureUuid;
 use starfoundry_lib_types::CharacterId;
 
 use crate::AppState;
 use crate::structure::error::{StructureError, Result};
-use crate::structure::StructureUuid;
 
 pub async fn assert_write(
     State(state):       State<AppState>,

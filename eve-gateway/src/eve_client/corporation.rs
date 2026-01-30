@@ -1,12 +1,12 @@
 use serde::{Deserialize, Serialize};
 use starfoundry_lib_types::{AllianceId, CorporationId, ItemId, LocationId, TypeId};
 
-use crate::eve_client::error::{EveApiError, Result};
+use crate::eve_client::error::Result;
 use crate::eve_client::EveApiClient;
-use crate::eve_client::models::{AssetEntry, AssetName};
+use crate::eve_client::models::AssetEntry;
 
 impl EveApiClient {
-    /// Gets all assets the corporation owns
+    /*/// Gets all assets the corporation owns
     ///
     /// # Errors
     ///
@@ -33,7 +33,7 @@ impl EveApiClient {
             .post::<Vec<ItemId>, Vec<AssetName>>(item_ids, &path)
             .await
             .map_err(Into::into)
-    }
+    }*/
 
     /// Gets general information about the corporation
     ///
@@ -55,7 +55,7 @@ impl EveApiClient {
         );
 
         self
-            .fetch::<EveCorporationInfo>(&path, &[])
+            .fetch::<_, EveCorporationInfo>(&path, &())
             .await
             .map_err(Into::into)
     }
@@ -122,7 +122,7 @@ impl EveApiClient {
             .map_err(Into::into)
     }
 
-    /// Gets a list of all blueprints the corporation owns.
+    /*/// Gets a list of all blueprints the corporation owns.
     ///
     /// # Limits
     ///
@@ -159,7 +159,7 @@ impl EveApiClient {
             .fetch_page_auth::<BlueprintInfo>(&path)
             .await
             .map_err(Into::into)
-    }
+    }*/
 }
 
 /// Represents a transaction entry

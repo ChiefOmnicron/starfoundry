@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS order_product (
 
 -- for the worker
 CREATE TABLE IF NOT EXISTS buildcost_history (
-    id                      UUID        NOT NULL DEFAULT gen_random_uuid(),
+    id                      UUID        NOT NULL DEFAULT uuidv7(),
 
     product_id              UUID        NOT NULL,
     bpc                     REAL        NOT NULL,

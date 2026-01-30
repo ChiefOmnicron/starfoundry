@@ -22,7 +22,7 @@ export const Route = createFileRoute('/project-groups/')({
             throw context.auth.login();
         }
     },
-    component: ProjectGroups,
+    component: RouteComponent,
     validateSearch: (params: {
         deleted: boolean,
     }): QueryParams => {
@@ -77,7 +77,7 @@ const columns = [
     }),
 ];
 
-export function ProjectGroups() {
+function RouteComponent() {
     const { deleted: deletedResource } = Route.useSearch();
     const [opened, { open, close }] = useDisclosure(false);
 

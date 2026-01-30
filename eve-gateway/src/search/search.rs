@@ -2,8 +2,7 @@ use axum::extract::{Query, State};
 use axum::Json;
 use axum::response::IntoResponse;
 use reqwest::StatusCode;
-use serde::Deserialize;
-use starfoundry_lib_eve_gateway::SearchCategory;
+use serde::{Deserialize, Serialize};
 use starfoundry_lib_gateway::ExtractIdentity;
 
 use crate::api_docs::{InternalServerError, NotFound, Unauthorized};
@@ -24,7 +23,7 @@ const SCOPE: &str = "esi-search.search_structures.v1";
 /// 
 #[utoipa::path(
     get,
-    path = "/search",
+    path = "/",
     tag = "Search",
     params(
         ("category" = String, Query),
@@ -50,11 +49,11 @@ pub async fn api(
     State(state):        State<AppState>,
     Query(search_param): Query<SearchParam>,
 ) -> Result<impl IntoResponse> {
+    dbg!(&search_param);
     let api_client = api_client_auth(
             &state.postgres,
-            identity.host,
+            identity.host()?,
             identity.character_id,
-            identity.corporation_id,
             vec![
                 SCOPE.into(),
             ],
@@ -72,34 +71,47 @@ pub async fn api(
         )
     };
 
-    let path = format!("latest/character/{}/search", identity.character_id);
+    #[derive(Serialize)]
+    struct Query {
+        categories: String,
+        search:     String,
+    }
+
+    let path = format!("latest/characters/{}/search", identity.character_id);
     let category: String = search_param.category.into();
     let search_data = api_client
-        .fetch::<Vec<i32>>(
+        .fetch_auth::<_, EveSearchResult>(
             &path,
-            &[
-                ("categories", &category),
-                ("search", &search_param.search),
-            ]
+            &Query {
+                categories: category.clone(),
+                search:     search_param.search,
+            }
         )
         .await?;
 
-    if search_data.is_empty() {
-        Ok(
-            (
-                StatusCode::NO_CONTENT,
+    let result = if category == "character" {
+        let characters = crate::character::fetch_bulk(
+                &state.postgres,
+                search_data
+                    .character
+                    .into_iter()
+                    .map(Into::into)
+                    .collect::<Vec<_>>(),
             )
-            .into_response()
-        )
+            .await
+            .unwrap();
+        serde_json::to_value(&characters).unwrap()
     } else {
-        Ok(
-            (
-                StatusCode::OK,
-                Json(search_data),
-            )
-            .into_response()
+        serde_json::json!({})
+    };
+
+    Ok(
+        (
+            StatusCode::OK,
+            Json(result),
         )
-    }
+        .into_response()
+    )
 }
 
 /// The EVE-API returns some unfavorable data types, always using them will cause
@@ -108,5 +120,18 @@ pub async fn api(
 #[derive(Debug, Deserialize)]
 pub struct SearchParam {
     search:   String,
-    category: SearchCategory,
+    //category: SearchCategory,
+    category: String,
+}
+
+pub struct SearchResult(pub Vec<i64>);
+
+#[derive(Deserialize)]
+struct EveSearchResult {
+    //#[serde(default)]
+    //alliance:       Vec<i64>,
+    #[serde(default)]
+    character:      Vec<i32>,
+    //#[serde(default)]
+    //corporation:    Vec<i64>,
 }

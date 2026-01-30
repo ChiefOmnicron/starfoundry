@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM asset\n            WHERE owner_id = $1\n            AND NOT item_id = ANY($2)\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int8Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "f0504bb2f49bc77eeafe6e42da23a4a37e04c05abc4e29f872fa713887755a38"
+}

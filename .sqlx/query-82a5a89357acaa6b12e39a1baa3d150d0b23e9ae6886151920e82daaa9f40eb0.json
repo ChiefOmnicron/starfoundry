@@ -1,0 +1,112 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT *\n                FROM market_order_latest\n                WHERE type_id = ANY($1)\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "structure_id",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "market_order_latest",
+            "name": "structure_id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "order_id",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "market_order_latest",
+            "name": "order_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "region_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "market_order_latest",
+            "name": "region_id"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "is_buy",
+        "type_info": "Bool",
+        "origin": {
+          "Table": {
+            "table": "market_order_latest",
+            "name": "is_buy"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "type_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "market_order_latest",
+            "name": "type_id"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "remaining",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "market_order_latest",
+            "name": "remaining"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "price",
+        "type_info": "Float8",
+        "origin": {
+          "Table": {
+            "table": "market_order_latest",
+            "name": "price"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "expires",
+        "type_info": "Timestamp",
+        "origin": {
+          "Table": {
+            "table": "market_order_latest",
+            "name": "expires"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4Array"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "82a5a89357acaa6b12e39a1baa3d150d0b23e9ae6886151920e82daaa9f40eb0"
+}

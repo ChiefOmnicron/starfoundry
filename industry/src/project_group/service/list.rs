@@ -1,13 +1,12 @@
-use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item};
-use starfoundry_lib_types::CharacterId;
 use serde::{Deserialize, Serialize};
+use sqlx::PgPool;
+use starfoundry_lib_eve_gateway::EveGatewayApiClient;
+use starfoundry_lib_types::CharacterId;
 use utoipa::{IntoParams, ToSchema};
 
 use crate::project_group::error::{ProjectGroupError, Result};
 use crate::project_group::ProjectGroupUuid;
-use crate::structure::service::Structure;
-use crate::project_group::service::{ProjectGroupMember, list_default_blacklist, list_default_market, list_members};
+use crate::project_group::service::{ProjectGroupMember, list_members};
 
 pub async fn list(
     pool:                   &PgPool,
@@ -58,19 +57,7 @@ pub async fn list(
             project_count:  entry.projects.unwrap_or(0),
             is_owner:       entry.is_owner.unwrap_or_default(),
             description:    entry.description,
-
-            default_blacklist: list_default_blacklist(
-                pool,
-                eve_gateway_api_client,
-                entry.id.into()
-            ).await?,
-            default_market:    list_default_market(
-                pool,
-                character_id,
-                eve_gateway_api_client,
-                entry.id.into()
-            ).await?,
-            members:           list_members(
+            members:        list_members(
                 pool,
                 eve_gateway_api_client,
                 entry.id.into()
@@ -181,7 +168,7 @@ pub struct ProjectGroupFilter {
     pub owner: Option<bool>,
 }
 
-#[derive(Debug, Deserialize, Serialize, ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 #[schema(
     example = json!({
         "id": "b034c3a9-2f4d-487d-95bb-c66fc20148b3",
@@ -189,52 +176,6 @@ pub struct ProjectGroupFilter {
         "project_count": 100,
         "is_owner": true,
         "description": "Bunch of cool projects",
-        "default_blacklist": [{
-            "base_price": null,
-            "category_id": 6,
-            "group_id": 30,
-            "meta_group_id": null,
-            "name": "Ragnarok",
-            "repackaged": 10000000,
-            "type_id": 23773,
-            "volume": 100000000
-        }],
-        "default_market": [{
-            "id": "15bd47e3-6b38-4cc1-887b-94924fff30a1",
-            "name": "1DQ1-A - RIP",
-            "structure_id": 1337,
-            "system": {
-                "constellation_id": 20000696,
-                "constellation_name": "O-EIMK",
-                "region_id": 10000060,
-                "region_name": "Delve",
-                "system_id": 30004759,
-                "system_name": "1DQ1-A",
-                "security": -0.38578233,
-                "security_group": "NULLSEC",
-            },
-            "structure_type": {
-                "base_price": null,
-                "category_id": 65,
-                "group_id": 1657,
-                "meta_group_id": 1,
-                "name": "Keepstar",
-                "repackaged": null,
-                "type_id": 35834,
-                "volume": 800000
-            },
-            "rigs": [],
-            "service": [{
-                "base_price": null,
-                "category_id": 66,
-                "group_id": 1321,
-                "meta_group_id": 54,
-                "name": "Standup Market Hub I",
-                "repackaged": null,
-                "type_id": 35892,
-                "volume": 32000
-            }]
-        }],
         "members": [{
             "character_name": "SomeCharacterName",
             "character_id": 1337,
@@ -249,13 +190,10 @@ pub struct ProjectGroupFilter {
     })
 )]
 pub struct ProjectGroup {
-    pub id:                ProjectGroupUuid,
-    pub name:              String,
-    pub project_count:     i64,
-    pub is_owner:          bool,
-    pub description:       Option<String>,
-
-    pub default_blacklist: Vec<Item>,
-    pub default_market:    Vec<Structure>,
-    pub members:           Vec<ProjectGroupMember>,
+    pub id:            ProjectGroupUuid,
+    pub name:          String,
+    pub project_count: i64,
+    pub is_owner:      bool,
+    pub description:   Option<String>,
+    pub members:       Vec<ProjectGroupMember>,
 }

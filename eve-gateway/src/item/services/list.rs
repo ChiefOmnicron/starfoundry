@@ -8,17 +8,17 @@ pub async fn list_items(
     filter: ListItemFilter,
 ) -> Result<Vec<Item>> {
     if let Some(true) = filter.blueprint {
-        blueprint(pool, filter.name).await
+        blueprint(pool, filter).await
     } else if let Some(true) = filter.buildable {
-        buildable(pool, filter.name).await
+        buildable(pool, filter).await
     } else {
-        all(pool, filter.name).await
+        all(pool, filter).await
     }
 }
 
 async fn all(
-    pool: &PgPool,
-    name: String,
+    pool:   &PgPool,
+    filter: ListItemFilter,
 ) -> Result<Vec<Item>> {
     let items = sqlx::query!(r#"
             SELECT
@@ -34,17 +34,23 @@ async fn all(
             FROM item i
             JOIN category c ON i.category_id = c.category_id
             JOIN groups g ON i.group_id = g.group_id
-            WHERE (LOWER(i.name) LIKE '%' || LOWER($1) || '%')
+            WHERE
+                NOT (LOWER(i.name) LIKE '%' || LOWER($1) || '%') IS FALSE AND
+                NOT ($2::INTEGER[] IS NULL OR i.group_id = ANY($2)) IS FALSE AND
+                NOT ($3::INTEGER[] IS NULL OR i.category_id = ANY($3)) IS FALSE AND
                 -- exclude unnecessary categories
-                AND i.category_id != ALL(ARRAY[2, 11, 14, 30, 63, 91, 2118, 350001])
+                i.category_id != ALL(ARRAY[2, 11, 14, 30, 63, 91, 2118, 350001])
             ORDER BY i.name ASC
-            LIMIT 10
+            LIMIT $4
         "#,
-            name,
+            filter.name,
+            &filter.groups.map(|x| x.into_iter().map(|y| *y).collect::<Vec<_>>()) as _,
+            &filter.categories.map(|x| x.into_iter().map(|y| *y).collect::<Vec<_>>()) as _,
+            filter.limit,
         )
         .fetch_all(pool)
         .await
-        .map_err(ItemError::ListItem)?
+        .map_err(ItemError::List)?
         .into_iter()
         .map(|x| {
             Item {
@@ -70,8 +76,8 @@ async fn all(
 }
 
 async fn blueprint(
-    pool: &PgPool,
-    name: String,
+    pool:  &PgPool,
+    filter: ListItemFilter,
 ) -> Result<Vec<Item>> {
     let items = sqlx::query!(r#"
             SELECT
@@ -85,18 +91,24 @@ async fn blueprint(
                 c.name AS "category_name",
                 g.name AS "group_name"
             FROM blueprint_json bsjon
-            JOIN item i ON i.type_id = bsjon.btype_id
+            JOIN item i ON i.type_id = bsjon.blueprint_type_id
             JOIN category c ON i.category_id = c.category_id
             JOIN groups g ON i.group_id = g.group_id
-            WHERE (LOWER(i.name) LIKE '%' || LOWER($1) || '%blueprint')
+            WHERE
+                (LOWER(i.name) LIKE '%' || LOWER($1) || '%blueprint') IS FALSE AND
+                NOT ($2::INTEGER[] IS NULL OR i.group_id = ANY($2)) IS FALSE AND
+                NOT ($3::INTEGER[] IS NULL OR i.category_id = ANY($3)) IS FALSE
             ORDER BY i.name ASC
-            LIMIT 10
+            LIMIT $4
         "#,
-            name,
+            filter.name,
+            &filter.groups.map(|x| x.into_iter().map(|y| *y).collect::<Vec<_>>()) as _,
+            &filter.categories.map(|x| x.into_iter().map(|y| *y).collect::<Vec<_>>()) as _,
+            filter.limit,
         )
         .fetch_all(pool)
         .await
-        .map_err(ItemError::ListItem)?
+        .map_err(ItemError::List)?
         .into_iter()
         .map(|x| {
             Item {
@@ -122,8 +134,8 @@ async fn blueprint(
 }
 
 async fn buildable(
-    pool: &PgPool,
-    name: String,
+    pool:   &PgPool,
+    filter: ListItemFilter,
 ) -> Result<Vec<Item>> {
     let items = sqlx::query!(r#"
             SELECT
@@ -137,18 +149,24 @@ async fn buildable(
                 c.name AS "category_name",
                 g.name AS "group_name"
             FROM blueprint_json bsjon
-            JOIN item i ON i.type_id = bsjon.ptype_id
+            JOIN item i ON i.type_id = bsjon.product_type_id
             JOIN category c ON i.category_id = c.category_id
             JOIN groups g ON i.group_id = g.group_id
-            WHERE (LOWER(i.name) LIKE '%' || LOWER($1) || '%')
+            WHERE
+                NOT (LOWER(i.name) LIKE '%' || LOWER($1) || '%') IS FALSE AND
+                NOT ($2::INTEGER[] IS NULL OR i.group_id = ANY($2)) IS FALSE AND
+                NOT ($3::INTEGER[] IS NULL OR i.category_id = ANY($3)) IS FALSE
             ORDER BY i.name ASC
-            LIMIT 10
+            LIMIT $4
         "#,
-            name,
+            filter.name,
+            &filter.groups.map(|x| x.into_iter().map(|y| *y).collect::<Vec<_>>()) as _,
+            &filter.categories.map(|x| x.into_iter().map(|y| *y).collect::<Vec<_>>()) as _,
+            filter.limit,
         )
         .fetch_all(pool)
         .await
-        .map_err(ItemError::ListItem)?
+        .map_err(ItemError::List)?
         .into_iter()
         .map(|x| {
             Item {

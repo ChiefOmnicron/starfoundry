@@ -1,0 +1,26 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                    SELECT\n                        name\n                    FROM industry_hub\n                    WHERE id = '00000000-0000-0000-0000-100000000001'\n                ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "industry_hub",
+            "name": "name"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "bc836809cf47362fcd18dfbb79d8318fa077295fcdeb04f5d61ee1b635eb472a"
+}

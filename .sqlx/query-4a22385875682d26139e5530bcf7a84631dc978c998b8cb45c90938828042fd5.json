@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO blueprint_json\n            (\n                blueprint_type_id,\n                product_type_id,\n                data\n            )\n            SELECT * FROM UNNEST(\n                $1::INTEGER[],\n                $2::INTEGER[],\n                $3::JSON[]\n            )\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4Array",
+        "Int4Array",
+        "JsonArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "4a22385875682d26139e5530bcf7a84631dc978c998b8cb45c90938828042fd5"
+}

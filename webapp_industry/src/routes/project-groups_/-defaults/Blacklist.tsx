@@ -1,14 +1,14 @@
+import { Alert, Stack } from '@mantine/core';
+import { compareArray } from '@/components/SaveDialog';
+import { ItemList } from '@/components/ItemList';
+import { LIST_PROJECT_GROUP_DEFAULT_BLACKLIST, useListProjectGroupDefaultBlacklist } from '@/services/project-group/listDefaultBlacklist';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { LoadingError } from '@/components/LoadingError';
-import { useEffect, useState } from 'react';
-import { LIST_PROJECT_GROUP_DEFAULT_BLACKLIST, useListProjectGroupDefaultBlacklist } from '@/services/project-group/listDefaultBlacklist';
-import type { Uuid } from '@/services/utils';
-import type { Item } from '@/services/item/model';
-import { ItemList } from '@/components/ItemList';
-import { Alert, Stack } from '@mantine/core';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateDefaultBlacklist } from '@/services/project-group/updateDefaultBlacklist';
-import { compareArray } from '@/components/SaveDialog';
+import { useEffect, useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import type { Item } from '@/services/item/model';
+import type { Uuid } from '@/services/utils';
 
 export function ProjectGroupDefaultsBlacklist({
     projectGroupId,
@@ -17,10 +17,11 @@ export function ProjectGroupDefaultsBlacklist({
     triggerSave,
     triggerReset,
 }: DefaultMarketProps) {
+    const queryClient = useQueryClient();
+
     const [touched, setTouched] = useState<boolean>(false);
     const [updateSuccess, setUpdateSuccess] = useState<boolean>(false);
 
-    const queryClient = useQueryClient();
     const [selectedBlacklistOld, setSelectedBlacklistOld] = useState<Item[]>([]);
     const [selectedBlacklist, setSelectedBlacklist] = useState<Item[]>([]);
 
@@ -87,17 +88,8 @@ export function ProjectGroupDefaultsBlacklist({
         return LoadingError();
     }
 
-    const onDeleteItem = (typeId: number) => {
-        const removedItem = selectedBlacklist
-            .filter(x => x.type_id !== typeId);
-        setSelectedBlacklist(removedItem)
-    }
-
-    const onSelectItem = (item: Item) => {
-        setSelectedBlacklist([
-            item,
-            ...selectedBlacklist,
-        ]);
+    const onSelectItems = (items: Item[]) => {
+        setSelectedBlacklist(items);
     }
 
     const notification = () => {
@@ -123,9 +115,9 @@ export function ProjectGroupDefaultsBlacklist({
             <Alert variant='light' color='gray'>
                 Determines which items should not be build.
             </Alert>
+
             <ItemList
-                onSelect={onSelectItem}
-                onDelete={onDeleteItem}
+                onSelect={onSelectItems}
                 selected={selectedBlacklist}
                 buildable
                 editable

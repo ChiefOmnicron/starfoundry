@@ -1,7 +1,11 @@
 use axum::http::HeaderMap;
-use starfoundry_lib_eve_gateway::{EveGatewayApiClient, EveGatewayApiClientMarket};
+use serde::Serialize;
+use starfoundry_lib_eve_gateway::{EveGatewayApiClient, EveGatewayApiClientAsset, EveGatewayApiClientIndustry, EveGatewayApiClientItem};
 use starfoundry_lib_gateway::ApiClient;
 use starfoundry_lib_types::{SystemId, TypeId};
+use starfoundry_lib_eve_gateway::market::EveGatewayApiClientMarket;
+use starfoundry_lib_eve_gateway::contract::EveGatewayApiClientContract;
+use starfoundry_lib_market::{MarketApiClient, MarketApiClientPrice};
 
 #[derive(Clone)]
 pub struct EveGatewayTestApiClient;
@@ -13,13 +17,29 @@ impl EveGatewayTestApiClient {
 }
 
 impl EveGatewayApiClient for EveGatewayTestApiClient {}
+impl EveGatewayApiClientAsset for EveGatewayTestApiClient {}
+impl EveGatewayApiClientContract for EveGatewayTestApiClient {}
+impl EveGatewayApiClientIndustry for EveGatewayTestApiClient {}
+impl EveGatewayApiClientItem for EveGatewayTestApiClient {}
 impl EveGatewayApiClientMarket for EveGatewayTestApiClient {}
 
+#[derive(Clone)]
+pub struct MarketTestApiClient;
+
+impl MarketTestApiClient {
+    pub fn new() -> Self {
+        Self {}
+    }
+}
+
+impl MarketApiClient for MarketTestApiClient {}
+impl MarketApiClientPrice for MarketTestApiClient {}
+
 impl ApiClient for EveGatewayTestApiClient {
-    async fn fetch<T>(
+    async fn fetch<Q: Serialize, T>(
             &self,
             path:   impl Into<String>,
-            _query: &[(&str, &str)],
+            _query: &Q,
         ) -> starfoundry_lib_gateway::error::Result<T>
         where
             T: serde::de::DeserializeOwned {
@@ -132,10 +152,10 @@ impl ApiClient for EveGatewayTestApiClient {
         )
     }
 
-    async fn fetch_auth<T>(
+    async fn fetch_auth<Q: Serialize, T>(
         &self,
         _path:    impl Into<String>,
-        _query:   &[(&str, &str)],
+        _query:   &Q,
         _headers: HeaderMap,
     ) -> starfoundry_lib_gateway::error::Result<T>
     where
@@ -316,5 +336,39 @@ impl ApiClient for EveGatewayTestApiClient {
         Ok(
             serde_json::from_value(response).unwrap(),
         )
+    }
+}
+
+impl ApiClient for MarketTestApiClient {
+    async fn fetch<Q: Serialize, T>(
+            &self,
+            path:  impl Into<String>,
+            query: &Q,
+        ) -> starfoundry_lib_gateway::Result<T>
+        where
+            T: serde::de::DeserializeOwned {
+        unimplemented!()
+    }
+
+    async fn fetch_auth<Q: Serialize, T>(
+            &self,
+            path:    impl Into<String>,
+            query:   &Q,
+            headers: HeaderMap,
+        ) -> starfoundry_lib_gateway::Result<T>
+        where
+            T: serde::de::DeserializeOwned {
+        unimplemented!()
+    }
+
+    async fn post<D, T>(
+            &self,
+            path: impl Into<String>,
+            data: D,
+        ) -> starfoundry_lib_gateway::Result<T>
+        where
+            D: std::fmt::Debug + Serialize + Send + Sync,
+            T: serde::de::DeserializeOwned {
+        unimplemented!()
     }
 }

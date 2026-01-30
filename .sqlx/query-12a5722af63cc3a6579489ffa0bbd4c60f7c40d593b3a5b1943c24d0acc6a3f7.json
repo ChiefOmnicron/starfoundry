@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT character_id\n            FROM eve_credential\n            WHERE domain = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "character_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "eve_credential",
+            "name": "character_id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "12a5722af63cc3a6579489ffa0bbd4c60f7c40d593b3a5b1943c24d0acc6a3f7"
+}

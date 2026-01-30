@@ -2,13 +2,13 @@ use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
+use starfoundry_lib_industry::StructureUuid;
 
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized, UnprocessableEntity, UnsupportedMediaType};
 use crate::AppState;
 use crate::project_group::error::Result;
 use crate::project_group::ProjectGroupUuid;
 use crate::project_group::service::update_default_market;
-use crate::structure::StructureUuid;
 
 /// Update Default Market
 /// 
@@ -26,7 +26,7 @@ use crate::structure::StructureUuid;
 #[utoipa::path(
     put,
     path = "/{ProjectGroupUuid}/defaults/market",
-    tag = "project-groups",
+    tag = "Project Groups",
     request_body = Vec<StructureUuid>,
     params(
         ProjectGroupUuid,
@@ -71,12 +71,12 @@ mod tests {
     use axum::http::StatusCode;
     use sqlx::PgPool;
     use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
+    use starfoundry_lib_industry::StructureUuid;
     use starfoundry_lib_types::TypeId;
     use std::str::FromStr;
     use uuid::Uuid;
 
     use crate::project_group::project_group_test_routes;
-    use crate::structure::StructureUuid;
 
     #[sqlx::test(
         fixtures("base"),

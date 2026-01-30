@@ -1,9 +1,10 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
+use starfoundry_lib_industry::StructureUuid;
 use starfoundry_lib_types::TypeId;
 use utoipa::ToSchema;
 
-use crate::structure::{StructureError, StructureUuid};
+use crate::structure::StructureError;
 use crate::structure::error::Result;
 
 pub async fn update(
@@ -35,7 +36,6 @@ mod update_structure_test {
     use uuid::Uuid;
 
     use super::UpdateStructure;
-    use crate::structure::StructureUuid;
 
     #[sqlx::test(
         fixtures(
@@ -48,7 +48,7 @@ mod update_structure_test {
     ) {
         let result = super::update(
                 &pool,
-                StructureUuid(Uuid::from_str("00000000-0000-0000-0000-000000000001").unwrap()),
+                Uuid::from_str("00000000-0000-0000-0000-000000000001").unwrap().into(),
                 UpdateStructure {
                     rigs:     vec![1, 2, 3].into_iter().map(Into::into).collect::<Vec<_>>(),
                     services: vec![1, 2, 3, 4, 5].into_iter().map(Into::into).collect::<Vec<_>>(),

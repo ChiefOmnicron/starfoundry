@@ -11,12 +11,21 @@ import { useDisclosure } from '@mantine/hooks';
 import type { ReactElement } from 'react';
 import type { RouterContext } from '@/main';
 
+import { Route as ProjectOverviewRoute } from '@/routes/projects_/$projectId.overview';
+import { Route as ProjectMiscRoute } from '@/routes/projects_/$projectId.misc';
+
 const routes = [
     {
         link: '/projects',
         label: 'Projects',
         subpath: '/projects/$projectId',
-        paths: []
+        paths: [{
+            link: ProjectOverviewRoute.to,
+            label: 'Overview'
+        }, {
+            link: ProjectMiscRoute.to,
+            label: 'Miscellaneous'
+        }]
     },
     {
         link: '/project-groups',
@@ -25,17 +34,15 @@ const routes = [
         paths: [{
             link: '/project-groups/$projectGroupId/overview',
             label: 'Overview'
-        },
-        // TODO: implement
-        /*{
+        }, {
             link: '/project-groups/$projectGroupId/projects',
             label: 'Projects'
         }, {
-            link: '/project-groups/$projectGroupId/structures',
-            label: 'Structures'
-        }, */{
             link: '/project-groups/$projectGroupId/members',
             label: 'Members'
+        }, {
+            link: '/project-groups/$projectGroupId/industry-hubs',
+            label: 'Industry Hubs'
         }, {
             link: '/project-groups/$projectGroupId/defaults',
             label: 'Defaults'
@@ -47,8 +54,13 @@ const routes = [
         paths: [],
     },
     {
-        link: '/structure-groups',
-        label: 'Structure Groups',
+        link: '/industry-hubs',
+        label: 'Industry Hubs',
+        paths: [],
+    },
+    {
+        link: '/characters',
+        label: 'Characters',
         paths: [],
     }
 ];
@@ -113,6 +125,11 @@ function Shell() {
                     router.matches[router.matches.length - 1].fullPath.indexOf(route.subpath || '') > -1
                 ) {
                     const match = router.matches[router.matches.length - 2];
+
+                    if (!match) {
+                        return <></>;
+                    }
+
                     const params: any = match.params;
 
                     const subRoutes = route

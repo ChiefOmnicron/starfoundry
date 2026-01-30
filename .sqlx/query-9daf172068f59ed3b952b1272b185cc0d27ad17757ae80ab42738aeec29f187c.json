@@ -1,0 +1,102 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                id,\n                name,\n                status AS \"status: ProjectStatus\",\n                orderer,\n                sell_price,\n                project_group_id\n            FROM project\n            WHERE\n                (owner = $1 OR owner = 0) AND\n                id = $2\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "project",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "project",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "status: ProjectStatus",
+        "type_info": {
+          "Custom": {
+            "name": "project_status",
+            "kind": {
+              "Enum": [
+                "CREATED",
+                "INITIALIZED",
+                "IN_PROGRESS",
+                "PAUSED",
+                "DONE"
+              ]
+            }
+          }
+        },
+        "origin": {
+          "Table": {
+            "table": "project",
+            "name": "status"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "orderer",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "project",
+            "name": "orderer"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "sell_price",
+        "type_info": "Float8",
+        "origin": {
+          "Table": {
+            "table": "project",
+            "name": "sell_price"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "project_group_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "project",
+            "name": "project_group_id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      false
+    ]
+  },
+  "hash": "9daf172068f59ed3b952b1272b185cc0d27ad17757ae80ab42738aeec29f187c"
+}

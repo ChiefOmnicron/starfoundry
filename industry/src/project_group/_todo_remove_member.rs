@@ -18,7 +18,7 @@ use crate::project_group::ProjectGroupUuid;
     delete,
     operation_id = "project_groups_remove_member",
     path = "/project-groups/{projectGroupUuid}/members/{characterIdPath}",
-    tag = "project-groups",
+    tag = "Project Groups",
     params(
         ProjectGroupUuidPath,
         CharacterIdPath,

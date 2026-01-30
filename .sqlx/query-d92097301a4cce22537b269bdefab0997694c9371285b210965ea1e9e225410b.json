@@ -1,0 +1,20 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO system_index\n            (\n                system_id,\n                manufacturing,\n                reaction,\n                copying,\n                invention,\n                research_time,\n                research_material\n            )\n            SELECT * FROM UNNEST(\n                $1::INTEGER[],\n                $2::REAL[],\n                $3::REAL[],\n                $4::REAL[],\n                $5::REAL[],\n                $6::REAL[],\n                $7::REAL[]\n            )\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4Array",
+        "Float4Array",
+        "Float4Array",
+        "Float4Array",
+        "Float4Array",
+        "Float4Array",
+        "Float4Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "d92097301a4cce22537b269bdefab0997694c9371285b210965ea1e9e225410b"
+}

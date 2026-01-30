@@ -21,7 +21,7 @@ interface QueryParams {
 export const Route = createFileRoute(
     '/project-groups_/$projectGroupId/overview',
 )({
-    component: ProjectGroupOverview,
+    component: RouteComponent,
     validateSearch: (params: {
         created: boolean,
     }): QueryParams => {
@@ -31,7 +31,7 @@ export const Route = createFileRoute(
     }
 })
 
-export function ProjectGroupOverview() {
+function RouteComponent() {
     const navigation = useNavigate();
     const queryClient = useQueryClient();
 

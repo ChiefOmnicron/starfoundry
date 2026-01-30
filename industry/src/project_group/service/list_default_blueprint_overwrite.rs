@@ -53,7 +53,7 @@ pub async fn list_default_blueprint_overwrite(
     Ok(blueprint_overwrites)
 }
 
-#[derive(Debug, Deserialize, Serialize, ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 #[schema(
     example = json!({
         "material_efficiency": 10,

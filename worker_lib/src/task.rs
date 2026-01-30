@@ -36,6 +36,7 @@ pub async fn fetch_task<M, WT>(
                 WHERE worker_id IS NULL
                   AND status = 'WAITING'
                   AND process_after < NOW()
+                ORDER BY is_subtask ASC
                 LIMIT 1
                 FOR UPDATE SKIP LOCKED
             )
@@ -65,10 +66,13 @@ pub async fn fetch_task<M, WT>(
 }
 
 pub trait WorkerTask: Clone + std::fmt::Debug + sqlx::Type<Postgres> + TryFrom<String> + Into<String> {
-    /// waits until the returned time is reached
+    /// Waits until the returned time is reached
+    /// 
+    /// Returning [Option::None] will prevent the task from being queued again
+    /// 
     fn wait_until(
         &self,
-    ) -> NaiveDateTime;
+    ) -> Option<NaiveDateTime>;
 
     /// Adds the given amount of minutes until the next task execution
     /// If a task is within 11:00 and 11:29, it will always be set to 11:30
@@ -76,7 +80,7 @@ pub trait WorkerTask: Clone + std::fmt::Debug + sqlx::Type<Postgres> + TryFrom<S
     fn add_minutes(
         &self,
         minutes: u64,
-    ) -> NaiveDateTime {
+    ) -> Option<NaiveDateTime> {
         let now = Utc::now();
         // take the given minutes time 60 seconds, and add 30 seconds as an additional
         // wiggle room to prevent data that isn't yet expired
@@ -90,14 +94,14 @@ pub trait WorkerTask: Clone + std::fmt::Debug + sqlx::Type<Postgres> + TryFrom<S
             date
         };
 
-        date
+        Some(date)
     }
 
     /// Tasks after downtime will run at 11:30, with the downtime being at 11:00
     /// 
     fn after_downtime(
         &self,
-    ) -> NaiveDateTime {
+    ) -> Option<NaiveDateTime> {
         let now = Utc::now();
 
         let day = if now.hour() < 11 {
@@ -108,14 +112,14 @@ pub trait WorkerTask: Clone + std::fmt::Debug + sqlx::Type<Postgres> + TryFrom<S
         };
 
         let time = NaiveTime::from_hms_opt(11, 30, 0).unwrap();
-        NaiveDateTime::new(day, time)
+        Some(NaiveDateTime::new(day, time))
     }
 
     /// These tasks will run at 11:00
     /// 
     fn during_downtime(
         &self,
-    ) -> NaiveDateTime {
+    ) -> Option<NaiveDateTime> {
         let now = Utc::now();
 
         let day = if now.hour() < 11 {
@@ -126,7 +130,15 @@ pub trait WorkerTask: Clone + std::fmt::Debug + sqlx::Type<Postgres> + TryFrom<S
         };
 
         let time = NaiveTime::from_hms_opt(11, 0, 0).unwrap();
-        NaiveDateTime::new(day, time)
+        Some(NaiveDateTime::new(day, time))
+    }
+
+    /// Helper function for oneshot tasks
+    /// 
+    fn oneshot(
+        &self
+    ) -> Option<NaiveDateTime> {
+        None
     }
 }
 
@@ -231,6 +243,76 @@ impl<M, WT> Task<M, WT>
         }
     }
 
+    pub async fn add_subtask<T>(
+        &self,
+        pool:            &PgPool,
+        task:            WT,
+        additional_data: Option<T>,
+    ) -> Result<()>
+        where T: std::fmt::Debug + Serialize {
+
+        let additional_data = serde_json::to_value(additional_data)
+            .map_err(Error::ParseAdditionalData)?;
+        sqlx::query!("
+                INSERT INTO worker_queue (
+                    task,
+                    additional_data,
+                    process_after,
+                    is_subtask
+                )
+                VALUES ($1, $2, NOW(), true)
+            ",
+                task.into(),
+                additional_data,
+            )
+            .execute(pool)
+            .await
+            .map(drop)
+            .map_err(Error::InsertTask)?;
+
+        Ok(())
+    }
+    pub async fn add_subtask_bulk<T>(
+        &self,
+        pool:            &PgPool,
+        task:            WT,
+        additional_data: Vec<Option<T>>,
+    ) -> Result<()>
+        where T: std::fmt::Debug + Serialize {
+
+        let additional_data = additional_data
+            .into_iter()
+            .map(|x| serde_json::to_value(x))
+            .map(|x| {
+                if let Ok(x) = x {
+                    Some(x)
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<_>>();
+        sqlx::query!("
+                INSERT INTO worker_queue (
+                    process_after,
+                    is_subtask,
+                    task,
+                    additional_data
+                )
+                SELECT NOW(), true, $1, * FROM UNNEST(
+                    $2::JSONB[]
+                )
+            ",
+                task.into(),
+                &additional_data as _,
+            )
+            .execute(pool)
+            .await
+            .map(drop)
+            .map_err(Error::InsertTask)?;
+
+        Ok(())
+    }
+
     /// Finishes the task and sets the logs and error logs.
     /// Additionally it will create a new task.
     /// 
@@ -273,23 +355,26 @@ impl<M, WT> Task<M, WT>
             .map_err(|e| Error::UpdateTask(e, self.id.clone()))
             .map(drop)?;
 
-        // insert a new task
-        let task_wait_until = self.task.wait_until();
-        sqlx::query!("
-                INSERT INTO worker_queue (
-                    task,
-                    process_after,
-                    additional_data
+        // insert a new task if it has a next time
+        if let Some(task_wait_until) = self.task.wait_until() {
+            sqlx::query!("
+                    INSERT INTO worker_queue (
+                        task,
+                        process_after,
+                        additional_data
+                    )
+                    VALUES ($1, $2, $3)
+                ",
+                    self.task.into(),
+                    task_wait_until,
+                    self.additional_data,
                 )
-                VALUES ($1, $2, $3)
-            ",
-                self.task.into(),
-                task_wait_until,
-                self.additional_data,
-            )
-            .execute(pool)
-            .await
-            .map(drop)
-            .map_err(Error::InsertTask)
+                .execute(pool)
+                .await
+                .map(drop)
+                .map_err(Error::InsertTask)
+        } else {
+            Ok(())
+        }
     }
 }

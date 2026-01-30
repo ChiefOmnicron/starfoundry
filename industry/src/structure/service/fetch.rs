@@ -1,11 +1,12 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item, StructurePosition, StructureRigResponse, StructureServiceResponse, System};
+use starfoundry_lib_eve_gateway::{EveGatewayApiClient, StructurePosition, StructureType};
+use starfoundry_lib_industry::{Structure, StructureUuid};
 use starfoundry_lib_types::CharacterId;
 use std::collections::HashMap;
-use utoipa::{IntoParams, ToSchema};
+use utoipa::IntoParams;
 
-use crate::structure::{StructureError, StructureUuid};
+use crate::structure::StructureError;
 use crate::structure::error::Result;
 
 pub async fn fetch(
@@ -152,6 +153,7 @@ pub async fn fetch_bulk(
             id:                   structure.id.into(),
             name:                   structure.structure_name,
             structure_id:           structure.structure_id,
+            structure_type:         StructureType::from(item.type_id),
             system:                 system,
             item:                   item,
             rigs:                   rigs,
@@ -235,69 +237,4 @@ mod tests {
 pub struct FetchStructureQuery {
     #[serde(default)]
     pub include_installable: Option<bool>,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
-#[schema(
-    example = json!({
-        "id": "15bd47e3-6b38-4cc1-887b-94924fff30a1",
-        "name": "1DQ1-A - RIP",
-        "structure_id": 1337,
-        "system": {
-            "constellation_id": 20000696,
-            "constellation_name": "O-EIMK",
-            "region_id": 10000060,
-            "region_name": "Delve",
-            "system_id": 30004759,
-            "system_name": "1DQ1-A",
-            "security": -0.38578233,
-            "security_group": "NULLSEC",
-        },
-        "item": {
-            "base_price": null,
-            "category_id": 65,
-            "group_id": 1657,
-            "meta_group_id": 1,
-            "name": "Keepstar",
-            "repackaged": null,
-            "type_id": 35834,
-            "volume": 800000
-        },
-        "rigs": [],
-        "service": [{
-            "base_price": null,
-            "category_id": 66,
-            "group_id": 1321,
-            "meta_group_id": 54,
-            "name": "Standup Market Hub I",
-            "repackaged": null,
-            "type_id": 35892,
-            "volume": 32000
-        }]
-    })
-)]
-pub struct Structure {
-    /// Internal id of the structure
-    pub id:                   StructureUuid,
-    /// EVE Id of the structure
-    pub structure_id:         i64,
-    /// Name of the structure
-    pub name:                 String,
-    /// Location of the structure
-    pub system:               System,
-    /// Type information
-    pub item:                 Item,
-    /// List of all rigs that are in the structure
-    pub rigs:                 Vec<StructureRigResponse>,
-    /// Id of the structure in-game
-    pub services:             Vec<Item>,
-    /// Position of the structure in the system
-    pub position:             StructurePosition,
-
-    #[serde(skip_deserializing)]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub installable_rigs:     Option<Vec<StructureRigResponse>>,
-    #[serde(skip_deserializing)]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub installable_services: Option<StructureServiceResponse>,
 }

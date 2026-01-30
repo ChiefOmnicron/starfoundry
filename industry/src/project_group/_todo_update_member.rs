@@ -17,7 +17,7 @@ use crate::project_group::{ProjectGroupUuid, ProjectGroupUuidPath};
     put,
     operation_id = "project_groups_update_members",
     path = "/project-groups/{projectGroupUuid}/members/{characterId}",
-    tag = "project-groups",
+    tag = "Project Groups",
     request_body = ProjectGroupPermission,
     params(
         ProjectGroupUuidPath,

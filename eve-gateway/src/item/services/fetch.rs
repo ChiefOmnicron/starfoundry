@@ -28,7 +28,7 @@ pub async fn fetch_item(
         )
         .fetch_optional(pool)
         .await
-        .map_err(|e| ItemError::FetchItem(e, type_id))?;
+        .map_err(|e| ItemError::Fetch(e, type_id))?;
 
     if let Some(x) = item {
         Ok(Some(Item {

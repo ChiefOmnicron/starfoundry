@@ -26,7 +26,7 @@ use crate::project_group::service::update_default_blacklist;
 #[utoipa::path(
     put,
     path = "/{ProjectGroupUuid}/defaults/blacklist",
-    tag = "project-groups",
+    tag = "Project Groups",
     request_body = Vec<TypeId>,
     params(
         ProjectGroupUuid,

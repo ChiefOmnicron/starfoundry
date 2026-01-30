@@ -43,6 +43,7 @@ pub fn parse(
             constellation_id: wrapper.constellation_id,
             security:         wrapper.security,
             position:         wrapper.position,
+            position_2d:      wrapper.position_2d,
             system_id:        system_id,
 
             star_id:          wrapper.star_id,
@@ -63,6 +64,8 @@ pub struct SystemWrapper {
     #[serde(rename = "securityStatus")]
     pub security:         f32,
     pub position:         Position,
+    #[serde(rename = "position2D")]
+    pub position_2d:      Option<Position2d>,
 
     #[serde(rename = "starID")]
     pub star_id:          Option<StarId>,
@@ -76,6 +79,7 @@ pub struct System {
     pub name:             String,
     pub security:         f32,
     pub position:         Position,
+    pub position_2d:      Option<Position2d>,
 
     pub star_id:          Option<StarId>,
 }
@@ -85,5 +89,11 @@ pub struct Position {
     pub y: f64,
     pub x: f64,
     pub z: f64,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Position2d {
+    pub y: f64,
+    pub x: f64,
 }
 

@@ -1,0 +1,38 @@
+[package]
+name = "starfoundry_bin-market"
+authors.workspace = true
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+axum = "0.8.7"
+axum-server = { version = "0.7.3", features = ["tls-rustls-no-provider"] }
+chrono = "0.4.42"
+dotenvy = "0.15.7"
+futures = "0.3.31"
+good_lp = { version = "1.14.2" }
+metrics = "0.24.3"
+metrics-exporter-prometheus = "0.18.1"
+rustls = "0.23.35"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.145"
+sqlx = { version = "0.9.0-alpha.1", features = ["chrono", "runtime-tokio", "postgres", "uuid", "json", "sqlx-toml"] }
+starfoundry_lib-eve_gateway = { path = "../eve-gateway_lib" }
+starfoundry_lib-gateway = { path = "../gateway_lib" }
+starfoundry_lib-market = { path = "../market_lib" }
+starfoundry_lib-types = { path = "../gp_lib-types" }
+thiserror = "2.0.17"
+tokio = { version = "1.48.0", features = ["full"] }
+tower = "0.5.2"
+tracing = "0.1.43"
+tracing-subscriber =  { version = "0.3.22", features = ["env-filter", "json"] }
+utoipa = { version = "5.4.0", features = ["uuid", "yaml"] }
+utoipa-axum = "0.2.0"
+utoipa-scalar = { version = "0.3.0", features = ["axum"] }
+
+[dev-dependencies]
+http-body-util = "0.1.3"
+
+[target.'cfg(target_env = "musl")'.dependencies]
+mimalloc = "0.1.48"

@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                    INSERT INTO industry_hub_structure\n                    (\n                        industry_hub_id,\n                        structure_id\n                    )\n                    VALUES ($1, $2)\n                ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "71133134bfb90bef1bc64f0dbb27e018f4888acdccc8568661eb91052e6bbbbd"
+}

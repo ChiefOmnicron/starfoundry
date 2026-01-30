@@ -130,6 +130,7 @@ pub async fn token(
     }
 }
 
+
 // only needed as a type hint for utoipa
 #[allow(dead_code)]
 #[derive(ToSchema)]
@@ -138,6 +139,6 @@ pub async fn token(
         "access_token": ""
     })
 )]
-struct AccessToken {
+pub struct AccessToken {
     access_token: String,
 }

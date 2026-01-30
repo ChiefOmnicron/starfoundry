@@ -1,6 +1,9 @@
 use serde::{Deserialize, Serialize};
 use starfoundry_lib_types::{CategoryId, GroupId, TypeId};
 use utoipa::{IntoParams, ToSchema};
+use starfoundry_lib_gateway::ApiClient;
+
+use crate::Result;
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 #[schema(
@@ -59,14 +62,15 @@ pub struct Group {
     pub name:        String,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, ToSchema, IntoParams)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize, ToSchema, IntoParams)]
 #[schema(
     example = json!({
         "name": "Pyerite"
     })
 )]
 pub struct ListItemFilter {
-    pub name: String,
+    #[serde(default)]
+    pub name: Option<String>,
 
     /// Only searches for items that are buildable
     #[serde(default)]
@@ -74,4 +78,97 @@ pub struct ListItemFilter {
     /// Only searches for blueprints
     #[serde(default)]
     pub blueprint: Option<bool>,
+
+    #[serde(default)]
+    pub categories: Option<Vec<CategoryId>>,
+    #[serde(default)]
+    pub groups:     Option<Vec<GroupId>>,
+
+    #[serde(default = "list_item_filter_limit_default")]
+    pub limit:      Option<i64>,
+}
+
+fn list_item_filter_limit_default() -> Option<i64> {
+    Some(10)
+}
+
+#[derive(Clone, Deserialize, Debug, Serialize, ToSchema)]
+pub struct ParsedItem {
+    pub item_name:           String,
+    pub quantity:            i64,
+    pub type_id:             TypeId,
+    pub material_efficiency: Option<usize>,
+
+    pub raw:                 Item,
+}
+
+#[derive(Debug, Deserialize, Serialize, ToSchema)]
+pub struct ParseResult {
+    pub items:   Vec<ParsedItem>,
+    pub invalid: Vec<String>,
+}
+
+pub trait EveGatewayApiClientItem: ApiClient {
+    #[allow(async_fn_in_trait)]
+    async fn fetch_item(
+        &self,
+        type_id: TypeId,
+    ) -> Result<Option<Item>> {
+        self
+            .fetch(&format!("items/{}", *type_id), &())
+            .await
+            .map_err(Into::into)
+    }
+
+    #[allow(async_fn_in_trait)]
+    async fn fetch_item_bulk(
+        &self,
+        type_ids: Vec<TypeId>,
+    ) -> Result<Vec<Item>> {
+        self
+            .post("items", type_ids)
+            .await
+            .map_err(Into::into)
+    }
+
+    #[allow(async_fn_in_trait)]
+    async fn fetch_category(
+        &self,
+        category_id: CategoryId,
+    ) -> Result<Option<Category>> {
+        self
+            .fetch(&format!("items/category/{}", *category_id), &())
+            .await
+            .map_err(Into::into)
+    }
+
+    #[allow(async_fn_in_trait)]
+    async fn fetch_group(
+        &self,
+        group_id: GroupId,
+    ) -> Result<Option<Group>> {
+        self
+            .fetch(&format!("items/group/{}", *group_id), &())
+            .await
+            .map_err(Into::into)
+    }
+
+    #[allow(async_fn_in_trait)]
+    async fn list_items(
+        &self,
+        _filter: ListItemFilter,
+    ) -> Result<Vec<Item>> {
+        unimplemented!()
+    }
+
+    #[allow(async_fn_in_trait)]
+    async fn parse_items(
+        &self,
+        items: String,
+    ) -> Result<ParseResult> {
+        self
+            .post(&format!("items/parse"), items)
+            .await
+            .map_err(Into::into)
+    }
 }

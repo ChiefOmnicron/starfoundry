@@ -7,6 +7,8 @@ use utoipa::{IntoParams, ToSchema};
 use crate::project_group::ProjectGroupUuid;
 use crate::project::error::{ProjectError, Result};
 use crate::project::ProjectUuid;
+use crate::project_group::service::ProjectGroup;
+use std::collections::HashMap;
 
 pub async fn list(
     pool:                   &PgPool,
@@ -14,20 +16,16 @@ pub async fn list(
     filter:                 ProjectFilter,
     eve_gateway_api_client: &impl EveGatewayApiClient,
 ) -> Result<Vec<ProjectList>> {
-    let project_groups = if let Some(x) = filter.project_group {
-        vec![*x]
-    } else {
-        crate::project_group::service::list(
+    let user_project_groups = crate::project_group::service::list(
             pool,
             character_id,
             eve_gateway_api_client,
             Default::default()
         )
-            .await?
-            .into_iter()
-            .map(|x| *x.id)
-            .collect::<Vec<_>>()
-    };
+        .await?
+        .into_iter()
+        .map(|x| *x.id)
+        .collect::<Vec<_>>();
 
     let filter_status: Vec<String> = if let Some(x) = filter.status.clone() {
         x
@@ -36,7 +34,8 @@ pub async fn list(
             .collect::<Vec<_>>()
     } else {
         vec![
-            "PREPARING".into(),
+            "CREATED".into(),
+            "INITIALIZED".into(),
             "IN_PROGRESS".into(),
             "PAUSED".into(),
             "DONE".into(),
@@ -49,19 +48,21 @@ pub async fn list(
                 name,
                 status AS "status: ProjectStatus",
                 orderer,
-                sell_price
+                sell_price,
+                project_group_id
             FROM project
             WHERE
                 (
                     NOT (LOWER(name) LIKE '%' || LOWER($2) || '%') IS FALSE AND
-                    NOT (LOWER(orderer) LIKE '%' || LOWER($5) || '%') IS FALSE AND
-                    NOT (status = ANY($3::PROJECT_STATUS[])) IS FALSE
+                    NOT (status = ANY($3::PROJECT_STATUS[])) IS FALSE AND
+                    NOT (LOWER(orderer) LIKE '%' || LOWER($4) || '%') IS FALSE AND
+                    NOT (project_group_id = $5::UUID) IS FALSE
                 )
                 AND
                 (
                     -- check if the character is in the group
                     (
-                        NOT (project_group_id = ANY($4::UUID[])) IS FALSE
+                        NOT (project_group_id = ANY($6::UUID[])) IS FALSE
                     )
                     OR
                     -- as a fallback check if the character is the owner
@@ -74,26 +75,51 @@ pub async fn list(
             *character_id,
             filter.name,
             &filter_status as _,
-            &project_groups,
             filter.orderer,
+            filter.project_group_id.map(|x| *x),
+            &user_project_groups,
         )
         .fetch_all(pool)
         .await
-        .map_err(ProjectError::ListProjects)?;
+        .map_err(ProjectError::List)?;
 
-    let mut project_groups = Vec::new();
+    let mut project_group_cache: HashMap<ProjectGroupUuid, ProjectGroup> = HashMap::new();
+
+    let mut projects = Vec::new();
     for entry in entries {
-        let project_group = ProjectList {
-            id:         entry.id.into(),
-            name:       entry.name,
-            status:     entry.status,
-            orderer:    entry.orderer,
-            sell_price: entry.sell_price,
+        let project_group = if let Some(x) = project_group_cache.get(&entry.project_group_id.into()) {
+            x.clone()
+        } else {
+            if let Ok(Some(x)) = crate::project_group::service::fetch(
+                pool,
+                eve_gateway_api_client,
+                character_id,
+                entry.project_group_id.into(),
+            ).await {
+
+                project_group_cache
+                    .insert(
+                        entry.project_group_id.into(),
+                        x.clone()
+                    );
+                x
+            } else {
+                continue
+            }
         };
-        project_groups.push(project_group);
+
+        let project_group = ProjectList {
+            id:            entry.id.into(),
+            name:          entry.name,
+            status:        entry.status,
+            orderer:       entry.orderer,
+            sell_price:    entry.sell_price,
+            project_group: project_group,
+        };
+        projects.push(project_group);
     }
 
-    Ok(project_groups)
+    Ok(projects)
 }
 
 #[derive(Debug, Default, Deserialize, ToSchema, IntoParams)]
@@ -104,10 +130,10 @@ pub struct ProjectFilter {
         example = json!("Project 1337"),
         required = false,
     )]
-    pub name:   Option<String>,
+    pub name: Option<String>,
 
     #[param(
-        default = json!("PREPARING,IN_PROGRESS,PAUSED,DONE"),
+        default = json!("CREATED,INITIALIZED,IN_PROGRESS,PAUSED,DONE"),
         required = false,
     )]
     #[serde(default = "default_status")]
@@ -118,18 +144,18 @@ pub struct ProjectFilter {
         example = json!("019b5d76-0ebd-77f4-80b0-12daf86501b6"),
         required = false,
     )]
-    pub project_group: Option<ProjectGroupUuid>,
+    pub project_group_id: Option<ProjectGroupUuid>,
 
     #[serde(default)]
     #[param(
         example = json!("Eistonen Kodan Sasen"),
         required = false,
     )]
-    pub orderer:       Option<String>,
+    pub orderer: Option<String>,
 }
 
 fn default_status() -> Option<String> {
-    Some("PREPARING,IN_PROGRESS,PAUSED,DONE".into())
+    Some("CREATED,INITIALIZED,IN_PROGRESS,PAUSED,DONE".into())
 }
 
 #[derive(Debug, Deserialize, Serialize, ToSchema)]
@@ -143,12 +169,13 @@ fn default_status() -> Option<String> {
     })
 )]
 pub struct ProjectList {
-    pub id:         ProjectUuid,
-    pub name:       String,
-    pub status:     ProjectStatus,
-    pub orderer:    String,
+    pub id:            ProjectUuid,
+    pub name:          String,
+    pub status:        ProjectStatus,
+    pub orderer:       String,
+    pub project_group: ProjectGroup,
 
-    pub sell_price: Option<f64>,
+    pub sell_price:    Option<f64>,
 }
 
 /// Different states of the project
@@ -168,9 +195,10 @@ pub struct ProjectList {
 #[sqlx(rename_all = "SCREAMING_SNAKE_CASE")]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum ProjectStatus {
-    /// the project has not started yet, but materials are gathered
-    /// job detection not active
-    Preparing,
+    /// the project has been created, but no builds have been added
+    Created,
+    /// the project has builds selected, and is ready to be started
+    Initialized,
     /// the project is currently in progress, and job detection is active
     InProgress,
     /// the project is currently paused, job detection not active
@@ -198,13 +226,13 @@ mod list_project_group_test {
         pool: PgPool,
     ) {
         let gateway_client = EveGatewayTestApiClient::new();
-        let result = super::list(
+        let result = dbg!(super::list(
                 &pool,
                 CharacterId(1),
                 ProjectFilter::default(),
                 &gateway_client,
             )
-            .await;
+            .await);
         assert!(result.is_ok());
         assert_eq!(result.unwrap().len(), 4);
 

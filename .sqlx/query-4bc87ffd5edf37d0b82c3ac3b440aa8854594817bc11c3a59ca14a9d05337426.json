@@ -1,0 +1,23 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT\n                    (additional_data ->> 'region_id')::INTEGER AS region_id\n                FROM worker_queue\n                WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')\n                AND task = $1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "region_id",
+        "type_info": "Int4",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "4bc87ffd5edf37d0b82c3ac3b440aa8854594817bc11c3a59ca14a9d05337426"
+}

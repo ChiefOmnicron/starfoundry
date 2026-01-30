@@ -7,13 +7,14 @@ use crate::config::env::ConfigEnv;
 
 #[derive(Debug)]
 pub struct Config {
-    pub database_url:    String,
+    pub database_url:     String,
 
-    pub app_address:     StdTcpListener,
-    pub service_address: TokioTcpListener,
+    pub app_address:      StdTcpListener,
+    pub service_address:  TokioTcpListener,
+    pub internal_address: StdTcpListener,
 
-    pub mtls_cert:       String,
-    pub mtls_priv:       String,
+    pub mtls_cert:        String,
+    pub mtls_priv:        String,
 }
 
 impl Config {
@@ -31,6 +32,7 @@ impl From<ConfigEnv> for Config {
 
             app_address:        env.app_address,
             service_address:    env.service_address,
+            internal_address:   env.internal_address,
 
             mtls_cert:          env.mtls_cert,
             mtls_priv:          env.mtls_priv,

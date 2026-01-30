@@ -26,7 +26,7 @@ use crate::project_group::service::{UpdateProjectGroup, update};
 #[utoipa::path(
     put,
     path = "/{ProjectGroupUuid}",
-    tag = "project-groups",
+    tag = "Project Groups",
     request_body = UpdateProjectGroup,
     params(
         ProjectGroupUuid,

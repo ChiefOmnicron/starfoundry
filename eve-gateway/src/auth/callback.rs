@@ -98,11 +98,44 @@ pub async fn callback(
         ).into_response());
     };
 
-    // TODO: is the character_id in there even if a corporation was logged in
     let character_id = EveJwtToken::extract_character_id(&token_claims.claims)?;
 
     if credential_type == "CORPORATION" {
-        unimplemented!()
+        let corporation_id = sqlx::query!("
+                SELECT corporation_id
+                FROM character
+                WHERE character_id = $1
+            ",
+                main_character_id,
+            )
+            .fetch_one(&state.postgres)
+            .await
+            .map_err(AuthError::UpdateLogin)?
+            .corporation_id;
+
+        sqlx::query!("
+                INSERT INTO eve_credential (
+                    character_id,
+                    domain,
+                    refresh_token,
+                    character_main,
+                    scopes
+                ) VALUES ($1, $2, $3, $4, $5)
+                ON CONFLICT (character_id, domain) DO UPDATE
+                SET
+                    refresh_token = EXCLUDED.refresh_token,
+                    scopes        = EXCLUDED.scopes
+            ",
+                corporation_id,
+                domain,
+                &token.refresh_token,
+                main_character_id,
+                &EveJwtToken::extract_scopes(&token_claims.claims),
+            )
+            .execute(&state.postgres)
+            .await
+            .map_err(AuthError::InsertEveCredential)?;
+
         /*let corporation_id = sqlx::query!("
                 SELECT corporation_id
                 FROM character

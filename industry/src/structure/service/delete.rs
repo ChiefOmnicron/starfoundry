@@ -1,7 +1,8 @@
 use sqlx::PgPool;
+use starfoundry_lib_industry::StructureUuid;
 use starfoundry_lib_types::CharacterId;
 
-use crate::structure::{StructureError, StructureUuid};
+use crate::structure::StructureError;
 use crate::structure::error::Result;
 
 pub async fn delete(

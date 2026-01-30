@@ -14,7 +14,8 @@
                 "WAITING",
                 "IN_PROGRESS",
                 "DONE",
-                "ERROR"
+                "ERROR",
+                "TIMEOUT"
               ]
             }
           }

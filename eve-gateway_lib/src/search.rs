@@ -28,7 +28,7 @@ pub struct SearchResult(pub Vec<i64>);
 
 pub trait EveGatewayApiClientSearch: ApiClient {
     #[allow(async_fn_in_trait)]
-    async fn fetch_market_by_region(
+    async fn in_game_search(
         &self,
         character_id: CharacterId,
         source:       String,
@@ -39,11 +39,17 @@ pub trait EveGatewayApiClientSearch: ApiClient {
         headers.insert(HOST, HeaderValue::from_str(&source).unwrap_or(HeaderValue::from_static("invalid.header")));
         headers.insert(HEADER_CHARACTER_ID, (*character_id).into());
 
+        #[derive(Debug, Serialize)]
+        struct Query {
+            categories: String,
+            search:     String,
+        }
+
         let category_str: String = category.clone().into();
-        let query = &[
-            ("categories", category_str.as_ref()),
-            ("search", search.as_ref())
-        ];
+        let query = &Query {
+            categories: category_str,
+            search: search,
+        };
 
         self
             .fetch_auth(
@@ -73,6 +79,7 @@ pub trait EveGatewayApiClientSearch: ApiClient {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all_fields = "lowercase")]
 pub enum SearchCategory {
     Agent,
     Alliance,

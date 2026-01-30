@@ -25,7 +25,7 @@ use crate::project_group::service::{BlueprintOverwrite, list_default_blueprint_o
 #[utoipa::path(
     get,
     path = "/{ProjectGroupUuid}/defaults/blueprint-overwrites",
-    tag = "project-groups",
+    tag = "Project Groups",
     params(
         ProjectGroupUuid,
     ),

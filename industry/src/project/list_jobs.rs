@@ -21,7 +21,7 @@ use crate::project::ProjectUuid;
 /// 
 /// ## Security
 /// - authenticated
-/// - project_group:read
+/// - project:read
 /// 
 #[utoipa::path(
     get,
@@ -33,7 +33,7 @@ use crate::project::ProjectUuid;
     responses(
         (
             body = Vec<ProjectJob>,
-            description = "List all projects that match the given filters",
+            description = "List all jobs for the given project",
             status = OK,
         ),
         (

@@ -51,6 +51,13 @@ pub enum ProjectGroupError {
     #[error("error while fetching project group members for group '{1}', error: '{0}'")]
     ListGroupMembers(sqlx::Error, ProjectGroupUuid),
 
+    #[error("error while fetching project group industry hubs for group '{1}', error: '{0}'")]
+    ListIndustryHubs(sqlx::Error, ProjectGroupUuid),
+    #[error("error while deleting project group industry hubs for group '{1}', error: '{0}'")]
+    DeleteIndustryHubs(sqlx::Error, ProjectGroupUuid),
+    #[error("error while updating project group industry hubs for group '{1}', error: '{0}'")]
+    UpdateIndustryHubs(sqlx::Error, ProjectGroupUuid),
+
     #[error("error while beginning transaction, error: '{0}'")]
     TransactionBeginError(sqlx::Error),
     #[error("error while committing transaction, error: '{0}'")]
@@ -61,6 +68,8 @@ pub enum ProjectGroupError {
 
     #[error(transparent)]
     JsonExtractorRejection(#[from] JsonRejection),
+    #[error(transparent)]
+    IndustryHubError(#[from] crate::industry_hub::IndustryHubError),
     #[error(transparent)]
     GatewayLibError(#[from] starfoundry_lib_gateway::error::Error),
     #[error(transparent)]

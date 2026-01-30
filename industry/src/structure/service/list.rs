@@ -1,14 +1,14 @@
 use serde::Deserialize;
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::{EveGatewayApiClient, StructurePosition};
+use starfoundry_lib_eve_gateway::{EveGatewayApiClient, StructurePosition, StructureType};
+use starfoundry_lib_industry::{Structure, StructureUuid};
 use starfoundry_lib_types::CharacterId;
 use std::collections::HashMap;
 use std::fmt;
 use utoipa::IntoParams;
 
 use crate::structure::error::Result;
-use crate::structure::service::Structure;
-use crate::structure::{StructureError, StructureUuid};
+use crate::structure::StructureError;
 
 pub async fn list(
     pool:                   &PgPool,
@@ -144,6 +144,7 @@ pub async fn list(
             id:                     structure.id.into(),
             name:                   structure.structure_name,
             structure_id:           structure.structure_id,
+            structure_type:         StructureType::from(structure_item.type_id),
             system:                 system.clone(),
             item:                   structure_item.clone(),
             rigs:                   rigs,

@@ -10,10 +10,10 @@ import { useState } from 'react';
 export const Route = createFileRoute(
     '/project-groups_/$projectGroupId/defaults',
 )({
-    component: ProjectGroupDefaults,
+    component: RouteComponent,
 })
 
-export function ProjectGroupDefaults() {
+function RouteComponent() {
     const { projectGroupId } = Route.useParams();
 
     const [isDirtyMarket, setIsDirtyMarket] = useState<boolean>(false);

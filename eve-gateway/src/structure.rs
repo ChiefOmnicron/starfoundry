@@ -1,3 +1,4 @@
+mod fetch_rig_blueprint_bonus;
 mod error;
 mod fetch_rig;
 mod fetch_service;
@@ -17,6 +18,9 @@ pub fn routes() -> OpenApiRouter<AppState> {
     let fetch_rig = OpenApiRouter::new()
         .routes(routes!(fetch_rig::api));
 
+    let fetch_rig_blueprints = OpenApiRouter::new()
+        .routes(routes!(fetch_rig_blueprint_bonus::api));
+
     let fetch_services = OpenApiRouter::new()
         .routes(routes!(fetch_service::api));
 
@@ -31,6 +35,7 @@ pub fn routes() -> OpenApiRouter<AppState> {
 
     OpenApiRouter::new()
         .merge(fetch_rig)
+        .merge(fetch_rig_blueprints)
         .merge(fetch_services)
         .merge(list_structure_rigs)
         .merge(list_structure_services)

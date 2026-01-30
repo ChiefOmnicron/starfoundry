@@ -60,7 +60,7 @@ pub enum EveApiError {
     #[error("Failed to parse the character id")]
     OAuthParseCharacterId(std::num::ParseIntError),
 
-    #[error("generic reqwest error for path '{1}', error: '{0}'")]
+    #[error("generic reqwest error for path '{1}', error: '{0:?}'")]
     ReqwestError(reqwest::Error, Url),
     #[error("error while constructing reqwest client, error: '{0}'")]
     CouldNotConstructClient(reqwest::Error),

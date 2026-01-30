@@ -2,10 +2,10 @@ import { Text, Title } from '@mantine/core'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/structures')({
-    component: StructureHeader,
+    component: RouteComponent,
 })
 
-function StructureHeader() {
+function RouteComponent() {
     return <>
         <Title
             data-cy="header"

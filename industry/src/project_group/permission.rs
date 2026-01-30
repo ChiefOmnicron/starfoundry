@@ -22,7 +22,7 @@ const BIT_WRITE_DEFAULT:    i32 = 16i32;
 const BIT_WRITE_MEMBER:     i32 = 32i32;
 const BIT_WRITE_GROUP:      i32 = 64i32;
 
-#[derive(Debug, ToSchema)]
+#[derive(Clone, Debug, ToSchema)]
 pub struct ProjectGroupPermission(i32);
 
 impl ProjectGroupPermission {

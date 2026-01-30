@@ -25,7 +25,7 @@ use crate::project_group::service::{UpdateProjectGroupDefaultJobSplitting, updat
 #[utoipa::path(
     put,
     path = "/{ProjectGroupUuid}/defaults/job-splitting",
-    tag = "project-groups",
+    tag = "Project Groups",
     request_body = Vec<UpdateProjectGroupDefaultJobSplitting>,
     params(
         ProjectGroupUuid,

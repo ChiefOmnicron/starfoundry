@@ -1,10 +1,11 @@
 import { Button, Flex, Table, Text } from "@mantine/core";
+import { CopyText } from "./CopyText";
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { EveIcon } from "@/components/EveIcon";
-import { ItemSelector, type ItemSelectorRef } from "@/components/selectors/ItemSelector";
-import { useRef, useState, type ReactElement } from "react";
-import type { TypeId } from "@/services/utils";
+import { ItemSelectorModal } from "./selectors/ItemSelectorModal";
+import { useDisclosure } from "@mantine/hooks";
 import type { Item } from "@/services/item/model";
+import type {ReactElement } from "react";
 
 // Implementation for an editable list
 //
@@ -21,21 +22,12 @@ import type { Item } from "@/services/item/model";
 //     setSelectedItems(defaultBlacklist);
 // }, [defaultBlacklist]);
 //
-// const removeSelectedItem = (typeId: TypeId) => {
-//     const removedItem = selectedItems
-//         .filter(x => x.type_id !== typeId);
-//     setSelectedItems(removedItem)
-// }
-// const addSelectedItem = (item: Item) => {
-//     setSelectedItem([
-//         item,
-//         ...selectedItem,
-//     ]);
+// const addSelectedItem = (items: Item[]) => {
+//     setSelectedItem(items);
 // }
 //
 //  <ItemList
 //      items={defaultBlacklist}
-//      onDelete={removeSelectedItem}
 //      onSelect={addSelectedItem}
 //  />
 // ```
@@ -47,11 +39,9 @@ export function ItemList({
 
     // editable
     editable = false,
-    onDelete = (_) => {},
     onSelect = (_) => {},
 }: ItemListProp): ReactElement {
-    const [addItemSelect, setAddItemSelect] = useState<Item | undefined>();
-    const ItemSelectorRef = useRef<ItemSelectorRef>({} as any);
+    const [opened, { open, close }] = useDisclosure(false);
 
     const columnHelper = createColumnHelper<Item>();
     const columns = [
@@ -65,27 +55,38 @@ export function ItemList({
         }),
         columnHelper.accessor('name', {
             id: 'name',
-            cell: props => props.row.original.name,
+            cell: props => <CopyText
+                value={props.row.original.name}
+            />,
             header: () => 'Name',
-            size: 78,
+            size: 50,
         }),
-        columnHelper.accessor('type_id', {
-            id: 'delete',
-            cell: props => <Button
-                    variant="outline"
-                    color="#c92a2a"
-                    style={{
-                        width: '100%'
-                    }}
-                    onClick={() => {
-                        onDelete(props.row.original.type_id);
-                    }}
-                >
-                    Remove
-                </Button>,
-            header: () => '',
-            size: 6,
-            maxSize: 6,
+        columnHelper.display({
+            id: 'volume',
+            cell: props => <>
+                <CopyText
+                    value={props.row.original.volume}
+                />
+                m3
+            </>,
+            header: () => 'Volume',
+            size: 5,
+        }),
+        columnHelper.display({
+            id: 'group',
+            cell: props => <CopyText
+                value={props.row.original.group.name}
+            />,
+            header: () => 'Group',
+            size: 10,
+        }),
+        columnHelper.display({
+            id: 'category',
+            cell: props => <CopyText
+                value={props.row.original.category.name}
+            />,
+            header: () => 'Category',
+            size: 10,
         }),
     ];
 
@@ -104,46 +105,6 @@ export function ItemList({
         }
     }
 
-    const footer = () => {
-        if (!editable) {
-            return <></>;
-        }
-
-        return <Table.Tfoot>
-            <tr>
-                <Table.Td
-                    colSpan={2}
-                >
-                    <ItemSelector
-                        onSelect={setAddItemSelect}
-                        selected={(entries || []).map(x => x.type_id)}
-                        ref={ItemSelectorRef as any}
-                        blueprint={blueprint}
-                        buildable={buildable}
-                    />
-                </Table.Td>
-                <Table.Td>
-                    <Button
-                        disabled={!addItemSelect}
-                        variant="outline"
-                        onClick={() => {
-                            if (addItemSelect) {
-                                onSelect(addItemSelect);
-                                setAddItemSelect(undefined);
-                                ItemSelectorRef.current.reset();
-                            }
-                        }}
-                        style={{
-                            width: '100%'
-                        }}
-                    >
-                        Add
-                    </Button>
-                </Table.Td>
-            </tr>
-        </Table.Tfoot>
-    }
-
     const table = useReactTable<Item>({
         columns: columns,
         data: entries
@@ -157,7 +118,40 @@ export function ItemList({
         }
     });
 
+    const addItems = () => {
+        if (editable) {
+            return <>
+                <ItemSelectorModal
+                    opened={ opened }
+                    onClose={ close }
+                    onSelect={(items: Item[]) => {
+                        onSelect(items);
+                        close();
+                    }}
+
+                    selected={(entries || [])}
+                    blueprint={blueprint}
+                    buildable={buildable}
+                />
+
+                <Flex
+                    justify='end'
+                >
+                    <Button
+                        onClick={ open }
+                    >
+                        Edit items
+                    </Button>
+                </Flex>
+            </>;
+        } else {
+            return <></>;
+        }
+    }
+
     return <>
+        { addItems() }
+
         <Table striped data-cy="data">
             <Table.Thead>
             {table.getHeaderGroups().map(headerGroup => (
@@ -178,6 +172,7 @@ export function ItemList({
                 </Table.Tr>
             ))}
             </Table.Thead>
+
             <Table.Tbody>
                 { emptyTable() }
 
@@ -198,7 +193,6 @@ export function ItemList({
                     </Table.Tr>
                 ))}
             </Table.Tbody>
-            { footer() }
         </Table>
     </>
 }
@@ -212,6 +206,5 @@ export type ItemListProp = {
 
     // options for editing
     editable?: boolean;
-    onDelete?: (id: TypeId) => void;
-    onSelect?: (item: Item) => void;
+    onSelect?: (items: Item[]) => void;
 }

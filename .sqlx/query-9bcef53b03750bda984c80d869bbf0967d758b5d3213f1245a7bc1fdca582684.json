@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                DELETE FROM worker_queue\n                WHERE DATE(process_after) < DATE(NOW() - INTERVAL '3 DAY')\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "9bcef53b03750bda984c80d869bbf0967d758b5d3213f1245a7bc1fdca582684"
+}

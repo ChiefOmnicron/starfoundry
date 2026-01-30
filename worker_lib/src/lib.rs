@@ -1,20 +1,23 @@
 mod api;
+mod cleanup;
 mod error;
 mod metric;
 mod task;
 mod worker;
 
+pub use self::cleanup::*;
 pub use self::error::*;
 pub use self::task::*;
 pub use self::metric::TaskMetric;
 
 use std::time::Duration;
 
+use prometheus_client::registry::Registry;
 use sqlx::PgPool;
+use std::net::SocketAddr;
 use tokio::sync::mpsc;
 use tokio::time::sleep;
 use uuid::Uuid;
-use prometheus_client::registry::Registry;
 
 use crate::metric::InternalMetric;
 use crate::api::api;
@@ -60,8 +63,9 @@ impl<M, WT> Worker<M, WT>
     pub async fn run(
         self,
         metric_registry: Registry,
+        socket_addr:     SocketAddr,
     ) -> Result<()> {
-        let api = api(self.pool.clone(), metric_registry);
+        let api = api(self.pool.clone(), metric_registry, socket_addr);
 
         let background_task = worker::background_task(
             self.pool.clone(),
@@ -101,10 +105,12 @@ impl<M, WT> Worker<M, WT>
 
                 Err(e) => {
                     tracing::error!("error while fetching task, {}", e);
+                    continue;
                 },
                 Ok(Some(x)) => {
                     tracing::info!("new task {:?}", x.task);
                     self.mpsc_sender.send(x).await.unwrap();
+                    continue;
                 },
                 _ => {
                     tracing::info!("no new tasks, waiting");

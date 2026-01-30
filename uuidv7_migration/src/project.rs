@@ -1,5 +1,4 @@
 use sqlx::PgPool;
-use std::collections::HashMap;
 use uuid::{NoContext, Timestamp, Uuid};
 
 use crate::Mapping;
@@ -7,12 +6,9 @@ use crate::Mapping;
 pub async fn migrate_project(
     postgres_source:       &PgPool,
     postgres_destination:  &PgPool,
-    project_group_mapping: &Mapping,
-    structure_mappings:    &Mapping,
-) -> Result<Mapping, Box<dyn std::error::Error>> {
+    mappings:              &mut Mapping,
+) -> Result<(), Box<dyn std::error::Error>> {
     dbg!("Start - project");
-    let mut mappings = HashMap::new();
-
     // TODO: the field structure_group_id is no more, needs to be properly migrated
 
     let projects = sqlx::query!(r#"
@@ -39,12 +35,19 @@ pub async fn migrate_project(
         let project_id = Uuid::new_v7(timestamp);
         mappings.insert(project.id, project_id);
 
-        if let None = project_group_mapping.get(&project.project_group_id) {
+        if let None = mappings.get(&project.project_group_id) {
             mappings.remove(&project.id);
             continue;
         }
 
-        let project_group_id = project_group_mapping.get(&project.project_group_id).unwrap();
+        let project_group_id = mappings.get(&project.project_group_id).unwrap();
+
+        let status: String = match project.status {
+            ProjectStatus::Done         => "DONE",
+            ProjectStatus::InProgress   => "IN_PROGRESS",
+            ProjectStatus::Paused       => "PAUSED",
+            ProjectStatus::Preparing    => "INITIALIZED",
+        }.into();
 
         sqlx::query!("
                 INSERT INTO project (
@@ -60,12 +63,20 @@ pub async fn migrate_project(
                     created_at,
                     updated_at
                 )
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                VALUES ($1, $2, $3, $4::PROJECT_STATUS, $5, $6, $7, $8, $9, $10)
+                ON CONFLICT (id)
+                DO UPDATE SET
+                    name        = EXCLUDED.name,
+                    status      = EXCLUDED.status,
+                    sell_price  = EXCLUDED.sell_price,
+                    orderer     = EXCLUDED.orderer,
+                    note        = EXCLUDED.note,
+                    updated_at  = EXCLUDED.updated_at
             ",
                 project_id,
                 project.name,
                 project.owner,
-                project.status as _,
+                status as _,
                 project.sell_price,
                 project.orderer,
                 project.note,
@@ -103,12 +114,20 @@ pub async fn migrate_project(
         } else {
             continue;
         };
-        let structure_id =  if let Some(x) = structure_mappings.get(&job.structure_id) {
+        let structure_id =  if let Some(x) = mappings.get(&job.structure_id) {
             x
         } else {
             &Uuid::default()
         };
 
+        sqlx::query!("
+                DELETE FROM project_job
+                WHERE project_id = $1
+            ",
+                project_id,
+            )
+            .execute(&mut *transaction)
+            .await?;
         sqlx::query!("
                 INSERT INTO project_job (
                     project_id,
@@ -141,10 +160,66 @@ pub async fn migrate_project(
             .await?;
     }
 
+    let misc_entries = sqlx::query!(r#"
+            SELECT
+                project_id,
+                item,
+                cost,
+                quantity,
+                description,
+                created_at,
+                updated_at
+            FROM project_misc
+        "#)
+        .fetch_all(postgres_source)
+        .await?;
+    for misc in misc_entries {
+        let timestamp = Timestamp::from_unix(NoContext, misc.created_at.timestamp() as u64, 0);
+        let misc_id = Uuid::new_v7(timestamp);
+        let project_id =  if let Some(x) = mappings.get(&misc.project_id) {
+            x
+        } else {
+            continue;
+        };
+
+        sqlx::query!("
+                DELETE FROM project_misc
+                WHERE project_id = $1
+            ",
+                project_id,
+            )
+            .execute(&mut *transaction)
+            .await?;
+        sqlx::query!("
+                INSERT INTO project_misc (
+                    project_id,
+                    id,
+                    item,
+                    cost,
+                    quantity,
+                    description,
+                    created_at,
+                    updated_at
+                )
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            ",
+                project_id,
+                misc_id,
+                misc.item,
+                misc.cost,
+                misc.quantity,
+                misc.description,
+                misc.created_at,
+                misc.updated_at,
+            )
+            .execute(&mut *transaction)
+            .await?;
+    }
+
     transaction.commit().await?;
     dbg!("Done - project");
 
-    Ok(mappings)
+    Ok(())
 }
 
 #[derive(

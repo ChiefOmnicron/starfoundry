@@ -1,7 +1,7 @@
 import { createRootRoute, createRouter, RouterProvider } from "@tanstack/react-router";
 import { MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ProjectGroupOverview } from './$projectGroupId.overview';
+import { Route } from './$projectGroupId.overview';
 
 import '@mantine/core/styles.css';
 
@@ -18,7 +18,7 @@ const queryClient = new QueryClient({
 
 const componentMount = () => {
     const routeTree = createRootRoute({
-        component: ProjectGroupOverview,
+        component: Route.options.component,
         beforeLoad: ({ params }: { params: any }) => {
             params.projectGroupId = 'e52744df-a140-4e72-b24c-18f534d0ae94';
         }
@@ -451,7 +451,7 @@ describe('Project Group Overview', () => {
 
         const componentMount = () => {
             const routeTree = createRootRoute({
-                component: ProjectGroupOverview,
+                component: Route.options.component,
                 beforeLoad: ({ params, search }: { params: any, search: any }) => {
                     params.projectGroupId = 'e52744df-a140-4e72-b24c-18f534d0ae94';
                     search.created = true;

@@ -1,12 +1,13 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
+use starfoundry_lib_eve_gateway::StructurePosition;
+use starfoundry_lib_industry::StructureUuid;
 use starfoundry_lib_types::{SystemId, TypeId};
 use starfoundry_lib_types::CharacterId;
 use utoipa::ToSchema;
 
-use crate::structure::{StructureError, StructureUuid};
+use crate::structure::StructureError;
 use crate::structure::error::Result;
-use starfoundry_lib_eve_gateway::StructurePosition;
 
 pub async fn create(
     pool:         &PgPool,

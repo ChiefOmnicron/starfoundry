@@ -1,10 +1,8 @@
 import { axiosClient, type AbortSignal } from "@/services/client";
 import { useQuery } from "@tanstack/react-query";
-import type { Item } from "@/services/item/model";
-import type { ProjectGroupMember } from "@/services/project-group/listMembers";
-import type { Structure } from "@/services/structure/list";
-import type { Uuid } from "@/services/utils";
 import type { GenericAbortSignal } from "axios";
+import type { ProjectGroupMember } from "@/services/project-group/listMembers";
+import type { Uuid } from "@/services/utils";
 
 export const FETCH_PROJECT_GROUP = 'fetchProjectGroup';
 
@@ -28,8 +26,6 @@ export type ProjectGroup = {
     description?: string;
 
     members: ProjectGroupMember[];
-    default_market: Structure[];
-    default_blacklist: Item[];
 }
 
 // For general use

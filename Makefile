@@ -6,6 +6,10 @@ sqlx-prepare:
 sqlx-check:
 	cargo sqlx prepare --check --workspace -- --all-targets --all-features
 
+test: sqlx-prepare
+	# local database on a NVMeSSD prevents `PoolTimeout` errors during execution
+	SQLX_OFFLINE=true DATABASE_URL=postgresql://postgres:postgres@localhost:5555/postgres cargo test
+
 .PHONY: web-component-test-chrome
 web-component-test-chrome:
 	docker run \

@@ -1,5 +1,4 @@
 use sqlx::PgPool;
-use std::collections::HashMap;
 use std::str::FromStr;
 use uuid::{NoContext, Timestamp, Uuid};
 
@@ -8,10 +7,9 @@ use crate::Mapping;
 pub async fn migrate_project_group(
     postgres_source:      &PgPool,
     postgres_destination: &PgPool,
-    structure_mapping:    &Mapping,
-) -> Result<Mapping, Box<dyn std::error::Error>> {
+    mappings:             &mut Mapping,
+) -> Result<(), Box<dyn std::error::Error>> {
     dbg!("Start - project group");
-    let mut mappings = HashMap::new();
 
     let project_groups = sqlx::query!(r#"
             SELECT
@@ -35,6 +33,12 @@ pub async fn migrate_project_group(
         } else if project_group.id == Uuid::from_str("5d0033ac-3ac9-4890-a00a-634dc2e69bf8").unwrap() {
             // AA project group
             continue;
+        } else if project_group.id == Uuid::from_str("adbd22d0-0981-47ec-98d0-244b6d4ecd10").unwrap() {
+            // FIS project group
+            continue;
+        } else if project_group.id == Uuid::from_str("65a6a5eb-1195-4f9d-a173-5e064afb845b").unwrap() {
+            // Eve Goal project group
+            continue;
         }
 
         let timestamp = Timestamp::from_unix(NoContext, project_group.created_at.timestamp() as u64, 0);
@@ -52,6 +56,11 @@ pub async fn migrate_project_group(
                     updated_at
                 )
                 VALUES ($1, $2, $3, $4, $5, $6)
+                ON CONFLICT (id)
+                DO UPDATE SET
+                    name        = EXCLUDED.name,
+                    owner       = EXCLUDED.owner,
+                    updated_at  = EXCLUDED.updated_at
             ",
                 project_group_id,
                 project_group.name,
@@ -75,6 +84,14 @@ pub async fn migrate_project_group(
                 project_group.id
             )
             .fetch_all(postgres_source)
+            .await?;
+        sqlx::query!("
+                DELETE FROM project_group_default_blacklist
+                WHERE project_group_id = $1
+            ",
+                project_group_id,
+            )
+            .execute(&mut *transaction)
             .await?;
         sqlx::query!("
                 INSERT INTO project_group_default_blacklist
@@ -112,6 +129,14 @@ pub async fn migrate_project_group(
             .fetch_all(postgres_source)
             .await?;
         sqlx::query!("
+                DELETE FROM project_group_default_market
+                WHERE project_group_id = $1
+            ",
+                project_group_id,
+            )
+            .execute(&mut *transaction)
+            .await?;
+        sqlx::query!("
                 INSERT INTO project_group_default_market
                 (
                     project_group_id,
@@ -129,7 +154,7 @@ pub async fn migrate_project_group(
                 &market
                     .iter()
                     .map(|x| x.structure_id)
-                    .map(|x| structure_mapping.get(&x).unwrap().clone())
+                    .map(|x| mappings.get(&x).unwrap().clone())
                     .collect::<Vec<_>>(),
                 &market.iter().map(|x| x.created_at).collect::<Vec<_>>(),
                 &market.iter().map(|x| x.updated_at).collect::<Vec<_>>(),
@@ -150,6 +175,14 @@ pub async fn migrate_project_group(
                 project_group.id
             )
             .fetch_all(postgres_source)
+            .await?;
+        sqlx::query!("
+                DELETE FROM project_group_member
+                WHERE project_group_id = $1
+            ",
+                project_group_id,
+            )
+            .execute(&mut *transaction)
             .await?;
         sqlx::query!("
                 INSERT INTO project_group_member
@@ -223,11 +256,27 @@ pub async fn migrate_project_group(
                 .execute(&mut *transaction)
                 .await?;
             sqlx::query!("
+                    DELETE FROM project_group_default_job_splitting_general
+                    WHERE project_group_id = $1
+                ",
+                    project_group_id,
+                )
+                .execute(&mut *transaction)
+                .await?;
+            sqlx::query!("
                     INSERT INTO project_group_default_job_splitting_general
                     (
                         project_group_id
                     )
                     VALUES ($1)
+                ",
+                    project_group_id,
+                )
+                .execute(&mut *transaction)
+                .await?;
+            sqlx::query!("
+                    DELETE FROM project_group_default_job_splitting_run
+                    WHERE project_group_id = $1
                 ",
                     project_group_id,
                 )
@@ -311,5 +360,5 @@ pub async fn migrate_project_group(
     transaction.commit().await?;
     dbg!("Done - project group");
 
-    Ok(mappings)
+    Ok(())
 }

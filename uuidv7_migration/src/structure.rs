@@ -6,9 +6,10 @@ use crate::Mapping;
 use std::str::FromStr;
 
 pub async fn migrate_structure(
-    postgres_source: &PgPool,
+    postgres_source:      &PgPool,
     postgres_destination: &PgPool,
-) -> Result<Mapping, Box<dyn std::error::Error>> {
+    mappings:             &mut Mapping,
+) -> Result<(), Box<dyn std::error::Error>> {
     struct StructurePosition {
         x: f32,
         y: f32,
@@ -48,10 +49,16 @@ pub async fn migrate_structure(
     coordinates.insert(60003760, StructurePosition { x: -107303362560f32, y: -18744975360f32, z: 436489052160f32 });
     // Amarr
     coordinates.insert(60008494, StructurePosition { x: -518583951360f32, y: 30256619520f32, z: 1042895708160f32 });
+    // W-16DY Capital Components
+    coordinates.insert(1052306485818, StructurePosition { x: -4725768868501f32, y: -4132599741820f32, z: -5167907526456f32 });
+    // W-16DY Advanced Components
+    coordinates.insert(1052306496323, StructurePosition { x: -4725768866104f32, y: -4132599738818f32, z: -5167906064390f32 });
+    // W-16DY Bellas
+    coordinates.insert(1052306287052, StructurePosition { x: -4725768855891f32, y: -4132599746983f32, z: -5167911352067f32 });
+    // W-16DY No name
+    coordinates.insert(1052306317493, StructurePosition { x: -4725768868665f32, y: -4132599747038f32, z: -5167912758491f32 });
 
     dbg!("Start - structure");
-    let mut mappings = HashMap::new();
-
     let structures = sqlx::query!(r#"
             SELECT
                 id,
@@ -121,6 +128,11 @@ pub async fn migrate_structure(
                     updated_at
                 )
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+                ON CONFLICT (id)
+                DO UPDATE SET
+                    rigs        = EXCLUDED.rigs,
+                    services    = EXCLUDED.services,
+                    updated_at  = EXCLUDED.updated_at
             ",
                 structure_id,
                 structure.structure_id,
@@ -141,5 +153,5 @@ pub async fn migrate_structure(
     }
     transaction.commit().await?;
     dbg!("Done - structure");
-    Ok(mappings)
+    Ok(())
 }

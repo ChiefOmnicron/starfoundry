@@ -7,3 +7,10 @@ FROM ubuntu:latest AS gateway-api
 WORKDIR     /usr/local/bin
 COPY        ./target/debug/starfoundry_bin-gateway /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
+
+FROM ubuntu:latest AS market-api
+WORKDIR     /usr/local/bin
+RUN         apt-get update && \
+            apt-get install -y coinor-cbc coinor-libcbc-dev
+COPY        ./target/debug/starfoundry_bin-market /usr/local/bin/app
+CMD         ["/usr/local/bin/app"]

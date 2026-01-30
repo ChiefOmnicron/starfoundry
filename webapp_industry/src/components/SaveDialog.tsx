@@ -19,7 +19,6 @@ export function SaveDialog({
                 }, 500);
             }
 
-            console.log('block')
             return show;
         },
         enableBeforeUnload: true,

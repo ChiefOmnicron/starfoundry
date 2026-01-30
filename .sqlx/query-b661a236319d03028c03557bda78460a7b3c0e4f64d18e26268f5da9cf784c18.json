@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO industry_hub_clone\n            (\n                original_id,\n                new_id\n            )\n            VALUES ($1, $2)\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "b661a236319d03028c03557bda78460a7b3c0e4f64d18e26268f5da9cf784c18"
+}

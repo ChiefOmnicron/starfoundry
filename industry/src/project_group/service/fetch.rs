@@ -4,7 +4,7 @@ use starfoundry_lib_types::CharacterId;
 
 use crate::project_group::error::{ProjectGroupError, Result};
 use crate::project_group::ProjectGroupUuid;
-use crate::project_group::service::{ProjectGroup, list_default_blacklist, list_default_market, list_members};
+use crate::project_group::service::{ProjectGroup, list_members};
 
 pub async fn fetch(
     pool:                   &PgPool,
@@ -40,18 +40,6 @@ pub async fn fetch(
             project_count:     x.projects.unwrap_or(0),
             is_owner:          x.is_owner.unwrap_or_default(),
             description:       x.description,
-
-            default_blacklist: list_default_blacklist(
-                pool,
-                eve_gateway_api_client,
-                project_group_uuid
-            ).await?,
-            default_market:    list_default_market(
-                pool,
-                character_id,
-                eve_gateway_api_client,
-                project_group_uuid
-            ).await?,
             members:           list_members(
                 pool,
                 eve_gateway_api_client,

@@ -3,13 +3,13 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_gateway::ExtractIdentity;
+use starfoundry_lib_industry::{Structure, StructureUuid};
 
 use crate::eve_gateway_api_client;
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
-use crate::structure::service::{fetch, FetchStructureQuery, Structure};
+use crate::structure::service::{fetch, FetchStructureQuery};
 use crate::AppState;
 use crate::structure::error::Result;
-use crate::structure::StructureUuid;
 
 /// Fetch Structure
 /// 

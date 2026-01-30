@@ -1,22 +1,20 @@
 mod create;
 mod delete;
-mod error;
 mod fetch;
 mod list;
 mod permission;
 mod update;
 
+pub mod error;
 pub mod service;
 
 pub use self::error::StructureError;
 
 use axum::middleware;
-use starfoundry_lib_types::starfoundry_uuid;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
 
 use crate::AppState;
-use crate::structure::error::Result;
 use crate::structure::permission::{assert_exists, assert_read, assert_write};
 
 pub fn routes(
@@ -50,8 +48,6 @@ pub fn routes(
         .merge(update)
         .merge(delete)
 }
-
-starfoundry_uuid!(StructureUuid, "StructureUuid");
 
 #[cfg(test)]
 pub async fn structure_test_routes(

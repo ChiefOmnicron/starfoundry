@@ -26,7 +26,7 @@ use crate::project_group::service::{ProjectGroup, ProjectGroupFilter, list};
 #[utoipa::path(
     get,
     path = "/",
-    tag = "project-groups",
+    tag = "Project Groups",
     params(ProjectGroupFilter),
     responses(
         (

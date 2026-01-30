@@ -6,16 +6,18 @@ use std::fmt::Debug;
 use url::Url;
 
 use crate::error::{Error, Result};
+use crate::HEADER_SERVICE;
+
+pub const ENV_MARKET_API: &str = "STARFOUNDRY_MARKET_API_URL";
 
 pub const ENV_EVE_GATEWAY_API: &str      = "STARFOUNDRY_EVE_GATEWAY_API_URL";
 pub const ENV_EVE_GATEWAY_JWT_SIGN: &str = "STARFOUNDRY_EVE_GATEWAY_JWT_SIGN";
 
 // either a full chain or the intermediate ca
-pub const ENV_MTLS_ROOT_CA: &str    = "STARFOUNDRY_MTLS_ROOT_CA";
-pub const ENV_MTLS_IDENTITY: &str   = "STARFOUNDRY_MTLS_IDENTITY";
-pub const ENV_USER_AGENT: &str      = "STARFOUNDRY_USER_AGENT";
+pub const ENV_MTLS_ROOT_CA: &str  = "STARFOUNDRY_MTLS_ROOT_CA";
+pub const ENV_MTLS_IDENTITY: &str = "STARFOUNDRY_MTLS_IDENTITY";
+pub const ENV_USER_AGENT: &str    = "STARFOUNDRY_USER_AGENT";
 
-const HEADER_SERVICE: &str         = "STARFOUNDRY_SERVICE";
 const HEADER_SERVICE_UNKNOWN: &str = "Unknown";
 
 #[derive(Clone)]
@@ -36,6 +38,9 @@ impl MtlsApiClient {
         })
     }
 
+    /// Creates a new [reqwest::Client] without pre-defined address, and only
+    /// with the Mtls options set
+    /// 
     pub fn new_raw<S: Into<String>>(
         service: S,
     ) -> Result<Client> {
@@ -72,10 +77,10 @@ impl MtlsApiClient {
             .map_err(Into::into)
     }
 
-    pub async fn fetch<T>(
+    pub async fn fetch<Q: Serialize, T>(
         &self,
         path:  impl Into<String>,
-        query: &[(&str, &str)],
+        query: &Q,
     ) -> Result<T>
     where
         T: DeserializeOwned,
@@ -88,10 +93,10 @@ impl MtlsApiClient {
             .await
     }
 
-    pub async fn fetch_auth<T>(
+    pub async fn fetch_auth<Q: Serialize, T>(
         &self,
         path:    impl Into<String>,
-        query:   &[(&str, &str)],
+        query:   &Q,
         headers: HeaderMap,
     ) -> Result<T>
     where
@@ -110,11 +115,10 @@ impl MtlsApiClient {
             )
             .await?;
 
-        let data = response
+        response
             .json::<T>()
             .await
-            .map_err(|x| Error::ReqwestError(x, api_url))?;
-        Ok(data)
+            .map_err(|x| Error::ReqwestError(x, api_url))
     }
 
     pub async fn post<D, T>(
@@ -134,7 +138,7 @@ impl MtlsApiClient {
                 Method::POST,
                 api_url.clone(),
                 serde_json::to_value(&data)?,
-                &[],
+                &(),
                 None,
             )
             .await?
@@ -162,12 +166,12 @@ impl MtlsApiClient {
             .map_err(Into::into)
     }
 
-    async fn send(
+    async fn send<Q: Serialize>(
         &self,
         method:  Method,
         url:     Url,
         body:    serde_json::Value,
-        query:   &[(&str, &str)],
+        query:   &Q,
         headers: Option<HeaderMap>,
     ) -> Result<Response> {
         let mut retry_counter = 0usize;
@@ -255,19 +259,19 @@ impl MtlsApiClient {
 
 pub trait ApiClient {
     #[allow(async_fn_in_trait)]
-    async fn fetch<T>(
+    async fn fetch<Q: Serialize, T>(
         &self,
         path:  impl Into<String>,
-        query: &[(&str, &str)],
+        query: &Q,
     ) -> Result<T>
     where
         T: DeserializeOwned;
 
     #[allow(async_fn_in_trait)]
-    async fn fetch_auth<T>(
+    async fn fetch_auth<Q: Serialize, T>(
         &self,
         path:    impl Into<String>,
-        query:   &[(&str, &str)],
+        query:   &Q,
         headers: HeaderMap,
     ) -> Result<T>
     where

@@ -24,8 +24,16 @@ pub mod state;
 /// useful utility functions
 pub mod utils;
 
+/// functions for fetching assets
+pub mod asset;
 /// public eve route for characters
 pub mod character;
+/// eve route for all contracts
+pub mod contract;
+/// routes for corporations
+pub mod corporation;
+/// all industry related routes
+pub mod industry;
 /// public eve route for items
 pub mod item;
 /// public eve route for market
@@ -36,3 +44,6 @@ pub mod search;
 pub mod structure;
 /// public eve route for universe
 pub mod universe;
+
+/// internal routes, primarily for other services
+pub mod internal;

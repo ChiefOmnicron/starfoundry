@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                    INSERT INTO worker_queue (task, additional_data)\n                    SELECT $1, $2\n                ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Varchar",
+        "Jsonb"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "3361d3bbcb5af94a809dc6203bf7abefb2ca9960c00e13cbc90ab773cc3c3222"
+}

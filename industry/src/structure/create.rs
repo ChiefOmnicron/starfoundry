@@ -4,11 +4,11 @@ use axum::Json;
 use axum::response::IntoResponse;
 use serde::Serialize;
 use starfoundry_lib_gateway::ExtractIdentity;
+use starfoundry_lib_industry::StructureUuid;
 use utoipa::ToSchema;
 
 use crate::structure::service::{create, CreateStructure};
 use crate::AppState;
-use crate::structure::StructureUuid;
 use crate::structure::error::Result;
 use crate::api_docs::{BadRequest, InternalServerError, Unauthorized, UnprocessableEntity, UnsupportedMediaType};
 

@@ -4,7 +4,9 @@ import { InternalLink } from "./InternalLink";
 export function Dotlan({
     system,
 }: Props) {
-    let dotlanLink = `https://evemaps.dotlan.net/map/${system.region_name}/${system.system_name}`;
+    const regionName = system.region_name.replace(/ /g, '_');
+    const systemName = system.system_name.replace(/ /g, '_');
+    const dotlanLink = `https://evemaps.dotlan.net/map/${regionName}/${systemName}`;
 
     return <>
         <InternalLink

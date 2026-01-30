@@ -15,13 +15,15 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import type { TypeId } from '@/services/utils';
 import { compareArray, SaveDialog } from '@/components/SaveDialog';
+import { CopyText } from '@/components/CopyText';
+import { systemRigBonusModifier } from '@/services/structure/utils';
 
 interface QueryParams {
     created?: boolean;
 }
 
 export const Route = createFileRoute('/structures_/$structureId/')({
-    component: StructureComponent,
+    component: RouteComponent,
     validateSearch: (params: {
         created: boolean,
     }): QueryParams => {
@@ -31,7 +33,7 @@ export const Route = createFileRoute('/structures_/$structureId/')({
     }
 })
 
-function StructureComponent() {
+function RouteComponent() {
     const { structureId } = Route.useParams();
     const { created: createdResource } = Route.useSearch();
     const navigation = useNavigate();
@@ -127,18 +129,7 @@ function StructureComponent() {
     }
 
     const bonuses = () => {
-        let systemModifier = 1;
-        switch(structure.system.security_str){
-            case 'LOWSEC':
-                systemModifier = 1.9;
-                break
-            case 'NULLSEC':
-                systemModifier = 2.1;
-                break
-            default:
-                systemModifier = 1
-                break;
-        }
+        let systemModifier = systemRigBonusModifier(structure.system.security_str);
 
         return structure
             .rigs
@@ -238,6 +229,9 @@ function StructureComponent() {
     return <>
         { notification() }
 
+        TAXES
+        WHAT CAN BE BUILD
+
         <Stack style={{ width: '100%' }}>
             <Grid>
                 <Grid.Col span={{ base: 12, sm: 7}}>
@@ -248,15 +242,27 @@ function StructureComponent() {
                             <Table.Tbody>
                                 <Table.Tr>
                                     <Table.Th>Name</Table.Th>
-                                    <Table.Td>{ structure.name }</Table.Td>
+                                    <Table.Td>
+                                        <CopyText
+                                            value={structure.name}
+                                        />
+                                    </Table.Td>
                                 </Table.Tr>
                                 <Table.Tr>
                                     <Table.Th>In-Game ID</Table.Th>
-                                    <Table.Td>{ structure.structure_id }</Table.Td>
+                                    <Table.Td>
+                                        <CopyText
+                                            value={structure.structure_id}
+                                        />
+                                    </Table.Td>
                                 </Table.Tr>
                                 <Table.Tr>
                                     <Table.Th>Type</Table.Th>
-                                    <Table.Td>{ structure.item.name }</Table.Td>
+                                    <Table.Td>
+                                        <CopyText
+                                            value={structure.item.name}
+                                        />
+                                    </Table.Td>
                                 </Table.Tr>
                                 <Table.Tr>
                                     <Table.Th>System</Table.Th>

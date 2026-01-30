@@ -25,7 +25,7 @@ use crate::project_group::service::{JobSplitting, list_default_job_splitting};
 #[utoipa::path(
     get,
     path = "/{ProjectGroupUuid}/defaults/job-splitting",
-    tag = "project-groups",
+    tag = "Project Groups",
     params(
         ProjectGroupUuid,
     ),

@@ -1,0 +1,23 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT * FROM UNNEST($1::BIGINT[]) id\n            EXCEPT\n            SELECT contract_id FROM contract;\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int8",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int8Array"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "3bbf240ced16f8f2ef9e15903010e96ad0bb2041660aed88cb77c49224521e47"
+}

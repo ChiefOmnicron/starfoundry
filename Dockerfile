@@ -1,11 +1,11 @@
 ################################################################################
 # chef wrapper
 ################################################################################
-FROM clux/muslrust:stable AS chef
+FROM rust:1.93 AS chef
 WORKDIR     /app
 
 RUN         cargo install cargo-chef
-RUN         apt update && apt install clang -y
+RUN         apt update && apt install cmake clang -y
 
 ################################################################################
 # chef planner
@@ -15,12 +15,16 @@ COPY        ./Cargo.toml Cargo.toml
 COPY        ./.sqlx ./.sqlx
 COPY        ./eve-gateway ./eve-gateway
 COPY        ./eve-gateway_lib ./eve-gateway_lib
+COPY        ./eve-gateway_worker ./eve-gateway_worker
 COPY        ./gateway ./gateway
 COPY        ./gateway_lib ./gateway_lib
 COPY        ./gp_lib-types ./gp_lib-types
 COPY        ./industry ./industry
+COPY        ./industry_lib ./industry_lib
 COPY        ./libs ./libs
-COPY        ./market-worker ./market-worker
+COPY        ./market ./market
+COPY        ./market_lib ./market_lib
+COPY        ./market_worker ./market_worker
 COPY        ./meta_webserver ./meta_webserver
 COPY        ./store ./store
 COPY        ./worker_lib ./worker_lib
@@ -37,18 +41,22 @@ FROM chef AS builder
 ENV         SQLX_OFFLINE=true
 
 COPY        --from=planner /app/recipe.json recipe.json
-RUN         cargo chef cook --release --target x86_64-unknown-linux-musl --recipe-path recipe.json
+RUN         cargo chef cook --release --recipe-path recipe.json
 
 COPY        ./Cargo.toml Cargo.toml
 COPY        ./.sqlx ./.sqlx
 COPY        ./eve-gateway ./eve-gateway
 COPY        ./eve-gateway_lib ./eve-gateway_lib
+COPY        ./eve-gateway_worker ./eve-gateway_worker
 COPY        ./gateway ./gateway
 COPY        ./gateway_lib ./gateway_lib
 COPY        ./gp_lib-types ./gp_lib-types
 COPY        ./industry ./industry
+COPY        ./industry_lib ./industry_lib
 COPY        ./libs ./libs
-COPY        ./market-worker ./market-worker
+COPY        ./market ./market
+COPY        ./market_lib ./market_lib
+COPY        ./market_worker ./market_worker
 COPY        ./meta_webserver ./meta_webserver
 COPY        ./store ./store
 COPY        ./worker_lib ./worker_lib
@@ -59,45 +67,55 @@ COPY        ./worker-store-cost ./worker-store-cost
 #           eve_gateway_api
 ###############################################################################
 FROM builder AS eve-gateway-api-builder
-RUN         cargo build --bin starfoundry_bin-eve_gateway --target x86_64-unknown-linux-musl --release
+RUN         cargo build --bin starfoundry_bin-eve_gateway --release
 
-FROM alpine:3.22 AS eve-gateway-api
+FROM ubuntu:26.04 AS eve-gateway-api
 WORKDIR     /usr/local/bin
-COPY        --from=eve-gateway-api-builder /app/target/x86_64-unknown-linux-musl/release/starfoundry_bin-eve_gateway /usr/local/bin/app
+COPY        --from=eve-gateway-api-builder /app/target/release/starfoundry_bin-eve_gateway /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
 ###############################################################################
 #           gateway_api
 ###############################################################################
 FROM builder AS gateway-api-builder
-RUN         cargo build --bin starfoundry_bin-gateway --target x86_64-unknown-linux-musl --release
+RUN         cargo build --bin starfoundry_bin-gateway --release
 
-FROM alpine:3.22 AS gateway-api
+FROM ubuntu:26.04 AS gateway-api
 WORKDIR     /usr/local/bin
-RUN         apk update && apk add --no-cache curl
-COPY        --from=gateway-api-builder /app/target/x86_64-unknown-linux-musl/release/starfoundry_bin-gateway /usr/local/bin/app
+COPY        --from=gateway-api-builder /app/target/release/starfoundry_bin-gateway /usr/local/bin/app
+CMD         ["/usr/local/bin/app"]
+
+###############################################################################
+#           market_api
+###############################################################################
+FROM builder AS market-api-builder
+RUN         cargo build --bin starfoundry_bin-market --release
+
+FROM ubuntu:26.04 AS market-api
+WORKDIR     /usr/local/bin
+COPY        --from=market-api-builder /app/target/release/starfoundry_bin-market /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
 ###############################################################################
 #           store_api
 ###############################################################################
 FROM builder AS store-api-builder
-RUN         cargo build --bin starfoundry_bin-store --target x86_64-unknown-linux-musl --release
+RUN         cargo build --bin starfoundry_bin-store --release
 
-FROM alpine:3.22 AS store-api
+FROM ubuntu:26.04 AS store-api
 WORKDIR     /usr/local/bin
-COPY        --from=store-api-builder /app/target/x86_64-unknown-linux-musl/release/starfoundry_bin-store /usr/local/bin/app
+COPY        --from=store-api-builder /app/target/release/starfoundry_bin-store /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
 ###############################################################################
 #           store_worker_cost
 ###############################################################################
 FROM builder AS store-worker-cost-builder
-RUN         cargo build --bin starfoundry_bin-worker_store-cost --target x86_64-unknown-linux-musl --release
+RUN         cargo build --bin starfoundry_bin-worker_store-cost --release
 
-FROM alpine:3.22 AS store-worker-cost
+FROM ubuntu:26.04 AS store-worker-cost
 WORKDIR     /usr/local/bin
-COPY        --from=store-worker-cost-builder /app/target/x86_64-unknown-linux-musl/release/starfoundry_bin-worker_store-cost /usr/local/bin/app
+COPY        --from=store-worker-cost-builder /app/target/release/starfoundry_bin-worker_store-cost /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
 ###############################################################################

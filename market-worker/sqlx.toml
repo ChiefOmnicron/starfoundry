@@ -1,5 +1,0 @@
-[common]
-database-url-var = "STARFOUNDRY_MARKET_DATABASE_URL"
-
-[migrate]
-table-name = "_sqlx_migrations_market_worker"

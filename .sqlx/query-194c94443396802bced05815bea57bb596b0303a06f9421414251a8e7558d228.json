@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO asset_blueprint\n            (\n                owner_id,\n\n                item_id,\n                location_id,\n                type_id,\n\n                location_flag,\n                material_efficiency,\n                time_efficiency,\n                quantity,\n                runs\n            )\n            SELECT $1, * FROM UNNEST(\n                $2::BIGINT[],\n                $3::BIGINT[],\n                $4::INTEGER[],\n                $5::VARCHAR[],\n                $6::INTEGER[],\n                $7::INTEGER[],\n                $8::INTEGER[],\n                $9::INTEGER[]\n            )\n            ON CONFLICT (item_id)\n            DO UPDATE SET\n                location_id = EXCLUDED.location_id,\n                location_flag = EXCLUDED.location_flag,\n                material_efficiency = EXCLUDED.material_efficiency,\n                time_efficiency = EXCLUDED.time_efficiency,\n                quantity = EXCLUDED.quantity,\n                runs = EXCLUDED.runs\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int8Array",
+        "Int8Array",
+        "Int4Array",
+        "VarcharArray",
+        "Int4Array",
+        "Int4Array",
+        "Int4Array",
+        "Int4Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "194c94443396802bced05815bea57bb596b0303a06f9421414251a8e7558d228"
+}

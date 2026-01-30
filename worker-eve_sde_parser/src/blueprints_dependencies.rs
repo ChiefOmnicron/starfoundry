@@ -66,8 +66,8 @@ async fn insert_into_database(
 
     tracing::debug!("Inserting data");
     for (ptype_id, pentry) in products.iter() {
-        let btype_id = *find_btype_id(*ptype_id);
-        let ptype_id = **ptype_id;
+        let blueprint_type_id = *find_btype_id(*ptype_id);
+        let product_type_id = **ptype_id;
         let time = pentry.manufacture_time().unwrap() as i32;
         let depends_on = pentry
             .materials()
@@ -78,8 +78,8 @@ async fn insert_into_database(
         sqlx::query!("
             INSERT INTO blueprint_dependency
             (
-                btype_id,
-                ptype_id,
+                blueprint_type_id,
+                product_type_id,
                 time,
                 depends_on
             )
@@ -91,8 +91,8 @@ async fn insert_into_database(
                 $4::INTEGER[]
             )
         ",
-            &btype_id,
-            &ptype_id,
+            &blueprint_type_id,
+            &product_type_id,
             &time,
             &depends_on
         )

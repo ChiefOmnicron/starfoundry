@@ -14,6 +14,10 @@ drop_prefix = true
 service_url = "https://localhost:9998"
 drop_prefix = true
 
+[routes."search"]
+service_url = "https://localhost:9998"
+drop_prefix = true
+
 # industry
 [routes."projects"]
 service_url = "https://localhost:9994"
@@ -24,7 +28,10 @@ service_url = "https://localhost:9994"
 [routes."structures"]
 service_url = "https://localhost:9994"
 
-[routes."structure-groups"]
+[routes."industry"]
+service_url = "https://localhost:9994"
+
+[routes."industry-hubs"]
 service_url = "https://localhost:9994"
 
 # store
@@ -40,3 +47,4 @@ service_url = "https://localhost:9996"
 [routes."general"]
 service_url = "https://localhost:9996"
 require_auth = false
+

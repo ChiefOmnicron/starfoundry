@@ -27,7 +27,7 @@ use crate::project_group::service::{CreateProjectGroup, create};
 #[utoipa::path(
     post,
     path = "/",
-    tag = "project-groups",
+    tag = "Project Groups",
     request_body = CreateProjectGroup,
     responses(
         (

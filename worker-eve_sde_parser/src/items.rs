@@ -1,5 +1,5 @@
 use sqlx::PgPool;
-use starfoundry_lib_items::Item;
+use starfoundry_lib_eve_gateway::{Category, Group, Item};
 use starfoundry_lib_types::{CategoryId, GroupId, TypeId};
 use std::collections::HashMap;
 use std::time::Instant;
@@ -20,6 +20,7 @@ pub async fn run(
     let start = Instant::now();
 
     let items = prepare_data(
+        &category_ids,
         &group_ids,
         &type_ids,
         &repackaged,
@@ -48,17 +49,10 @@ pub async fn run(
     let mut name          = Vec::new();
 
     for item in items {
-        // fix weird naming
-        if item.name == "Fullerides" {
-            name.push("Fulleride".into());
-        } else {
-            name.push(item.name);
-        }
-
         type_id.push(*item.type_id);
-        category_id.push(*item.category_id);
-        group_id.push(*item.group_id);
-        meta_group_id.push(item.meta_group_id);
+        category_id.push(*item.category.category_id);
+        group_id.push(*item.group.group_id);
+        meta_group_id.push(item.meta_group);
         volume.push(item.volume);
         packaged.push(repackaged.get(&item.type_id));
     }
@@ -153,9 +147,10 @@ pub async fn run(
 }
 
 async fn prepare_data(
-    group_ids:  &HashMap<GroupId, GroupIdEntry>,
-    type_ids:   &HashMap<TypeId, TypeIdEntry>,
-    repackaged: &HashMap<TypeId, i32>,
+    category_ids: &HashMap<CategoryId, CategoryIdEntry>,
+    group_ids:    &HashMap<GroupId, GroupIdEntry>,
+    type_ids:     &HashMap<TypeId, TypeIdEntry>,
+    repackaged:   &HashMap<TypeId, i32>,
 ) -> Result<Vec<Item>, Error> {
     let mut items = Vec::new();
 
@@ -171,11 +166,24 @@ async fn prepare_data(
         let name = entry.name().unwrap_or(format!("Unknown name {}", type_id));
         let repackaged = repackaged.get(&type_id).cloned();
 
+        let group_fetched = group_ids.get(&group_id).unwrap();
+        let group = Group {
+            category_id: group_fetched.category_id,
+            group_id: group_id,
+            name: group_fetched.name().unwrap(),
+        };
+
+        let category_fetched = category_ids.get(&category_id).unwrap();
+        let category = Category {
+            category_id: category_id,
+            name: category_fetched.name().unwrap(),
+        };
+
         let item = Item {
             type_id,
-            group_id,
-            meta_group_id,
-            category_id,
+            group,
+            meta_group: meta_group_id,
+            category,
             volume,
             name,
             repackaged,
@@ -184,4 +192,49 @@ async fn prepare_data(
     }
 
     Ok(items)
+}
+
+pub fn get_item(
+    type_id:      TypeId,
+    category_ids: &HashMap<CategoryId, CategoryIdEntry>,
+    group_ids:    &HashMap<GroupId, GroupIdEntry>,
+    type_ids:     &HashMap<TypeId, TypeIdEntry>,
+    repackaged:   &HashMap<TypeId, i32>,
+) -> Item {
+    let entry = type_ids
+        .get(&type_id)
+        .unwrap();
+
+    let group_id = entry.group_id.into();
+    let category_id = group_ids
+        .get(&group_id)
+        .map(|x| x.category_id.into())
+        .expect("Every entry should have a category id");
+    let volume = entry.volume.unwrap_or(0f32);
+    let meta_group_id = entry.meta_group_id.map(Into::into);
+    let name = entry.name().unwrap_or(format!("Unknown name {}", type_id));
+    let repackaged = repackaged.get(&type_id).cloned();
+
+    let group_fetched = group_ids.get(&group_id).unwrap();
+    let group = Group {
+        category_id: group_fetched.category_id,
+        group_id: group_id,
+        name: group_fetched.name().unwrap(),
+    };
+
+    let category_fetched = category_ids.get(&category_id).unwrap();
+    let category = Category {
+        category_id: category_id,
+        name: category_fetched.name().unwrap(),
+    };
+
+    Item {
+        type_id,
+        group,
+        meta_group: meta_group_id,
+        category,
+        volume,
+        name,
+        repackaged,
+    }
 }

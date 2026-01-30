@@ -16,6 +16,8 @@ jsonwebtoken = { version = "9.3.1", features = ["use_pem"] }
 jwk_kit = "0.1.2"
 metrics = "0.24.3"
 metrics-exporter-prometheus = "0.18.1"
+once_cell = "1.21.3"
+regex = "1.12.2"
 reqwest = { version = "0.12.25", default-features = false, features = ["charset", "http2", "system-proxy", "json", "rustls-tls"] }
 rustls = "0.23.35"
 serde = { version = "1.0.228", features = ["derive"] }
@@ -31,7 +33,7 @@ toml = "0.9.8"
 tower = "0.5.2"
 tracing = "0.1.43"
 tracing-subscriber = { version = "0.3.22", features = ["env-filter", "json"] }
-url = "2.5.7"
+url = { version = "2.5.7", features = ["serde"] }
 utoipa = { version = "5.4.0", features = ["uuid", "yaml"] }
 utoipa-axum = "0.2.0"
 utoipa-scalar = { version = "0.3.0", features = ["axum"] }

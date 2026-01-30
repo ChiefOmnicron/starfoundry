@@ -16,7 +16,7 @@ use reqwest::{Client, Response, StatusCode};
 use reqwest::header::{HeaderMap, HeaderValue};
 use serde::de::DeserializeOwned;
 use serde::Serialize;
-use starfoundry_lib_types::{CorporationId, CharacterId};
+use starfoundry_lib_types::CharacterId;
 use std::collections::HashMap;
 use std::fmt::Debug;
 use std::ops::Deref;
@@ -104,9 +104,8 @@ impl EveApiClient {
     /// - If the reqwest client cannot be constructed
     /// 
     pub fn new_with_refresh_token(
-        character_id:   CharacterId,
-        corporation_id: CorporationId,
-        refresh_token:  impl Into<String>,
+        character_id:  CharacterId,
+        refresh_token: impl Into<String>,
     ) -> Result<Self> {
         let client = Self::client()?;
 
@@ -118,7 +117,6 @@ impl EveApiClient {
             authenticated:  Some(AuthenticatedClient {
                 refresh_token: refresh_token.into(),
                 character_id,
-                corporation_id
             }),
         })
     }
@@ -185,10 +183,10 @@ impl EveApiClient {
     /// - Request fails
     /// - Parsing the response fails
     /// 
-    pub async fn fetch<T>(
+    pub async fn fetch<Q: Serialize, T>(
         &self,
         path:  impl Into<String>,
-        query: &[(&str, &str)],
+        query: &Q,
     ) -> Result<T>
     where
         T: DeserializeOwned,
@@ -223,10 +221,10 @@ impl EveApiClient {
     ///
     /// Parsed json data
     ///
-    pub async fn fetch_auth<T>(
+    pub async fn fetch_auth<Q: Serialize, T>(
         &self,
         path:  impl Into<String>,
-        query: &[(&str, &str)],
+        query: &Q,
     ) -> Result<T>
     where
         T: DeserializeOwned,
@@ -272,7 +270,7 @@ impl EveApiClient {
         api_url.set_path(&path.into());
 
         let response = self
-            .send(api_url.clone(), &[])
+            .send(api_url.clone(), &())
             .await?;
 
         let pages = self.page_count(&response);
@@ -337,7 +335,7 @@ impl EveApiClient {
         api_url.set_path(&path.into());
 
         let response = self
-            .send_auth(api_url.clone(), &[])
+            .send_auth(api_url.clone(), &())
             .await?;
 
         let pages = self.page_count(&response);
@@ -435,10 +433,10 @@ impl EveApiClient {
     ///
     /// Response of the request, ready to work with
     ///
-    async fn send(
+    async fn send<Q: Serialize>(
         &self,
         request_uri: Url,
-        query:       &[(&str, &str)],
+        query:       &Q,
     ) -> Result<Response> {
         let mut retry_counter = 0usize;
         let mut last_status   = StatusCode::OK;
@@ -462,11 +460,21 @@ impl EveApiClient {
                 .await
                 .map_err(|x| EveApiError::ReqwestError(x, request_uri.clone()))?;
 
+            if response.headers().get("X-Ratelimit-Group").is_some() {
+                let group = response.headers().get("X-Ratelimit-Group").unwrap().to_str().unwrap();
+                let remaining: f64 = response.headers().get("X-Ratelimit-Remaining").unwrap().to_str().unwrap().parse::<f64>().unwrap();
+
+                let label = [
+                    ("group", group.to_string()),
+                ];
+                metrics::gauge!("eve-api-rate-limit", &label).set(remaining);
+            }
+
             match response.status() {
                 StatusCode::NOT_FOUND => {
                     return Err(EveApiError::NotFound(request_uri));
                 },
-                StatusCode::IM_A_TEAPOT => {
+                StatusCode::TOO_MANY_REQUESTS => {
                     return Err(EveApiError::RateLimit(request_uri));
                 },
                 StatusCode::NOT_MODIFIED => {
@@ -567,10 +575,10 @@ impl EveApiClient {
     ///
     /// Response of the request, ready to work with
     ///
-    async fn send_auth(
+    async fn send_auth<Q: Serialize>(
         &self,
         request_uri: Url,
-        query:       &[(&str, &str)],
+        query:       &Q,
     ) -> Result<Response> {
         let access_token = {
             #[allow(clippy::unwrap_used)]
@@ -610,32 +618,60 @@ impl EveApiClient {
                 .await
                 .map_err(|x| EveApiError::ReqwestError(x, request_uri.clone()))?;
 
-            if response.status() == StatusCode::NOT_FOUND {
-                return Err(EveApiError::NotFound(request_uri))
-            } else if response.status().as_u16() == 420u16 {
-                return Err(EveApiError::RateLimit(request_uri));
-            } else if response.status() == StatusCode::NOT_MODIFIED {
-                return Err(EveApiError::NotModified(request_uri));
-            } else if response.status() == StatusCode::FORBIDDEN ||
-               response.status() == StatusCode::UNAUTHORIZED {
+            if response.headers().get("X-Ratelimit-Group").is_some() {
+                let group = response.headers().get("X-Ratelimit-Group").unwrap().to_str().unwrap();
+                let remaining: f64 = response.headers().get("X-Ratelimit-Remaining").unwrap().to_str().unwrap().parse::<f64>().unwrap();
 
-                last_status = response.status();
-                last_text   = response
-                    .text()
-                    .await
-                    .unwrap_or_default();
+                let character_id = if let Some(x) = self
+                    .authenticated
+                    .clone()
+                    .map(|x| x.character_id) {
 
-                retry_counter += 1;
-                access_token = Some(self.get_access_token().await?);
+                    x
+                } else {
+                    CharacterId(0)
+                };
 
-                // Wait a second before trying again
-                std::thread::sleep(std::time::Duration::from_secs(1));
-                continue;
+                let label = [
+                    ("group", group.to_string()),
+                    ("character_id", character_id.to_string()),
+                ];
+                metrics::gauge!("eve-api-rate-limit", &label).set(remaining);
             }
 
-            if response.status() == StatusCode::SERVICE_UNAVAILABLE {
-                return Err(EveApiError::ServiceUnavailable);
-            }
+            match response.status() {
+                StatusCode::NOT_FOUND => {
+                    return Err(EveApiError::NotFound(request_uri));
+                },
+                StatusCode::TOO_MANY_REQUESTS => {
+                    return Err(EveApiError::RateLimit(request_uri));
+                },
+                StatusCode::NOT_MODIFIED => {
+                    return Err(EveApiError::NotModified(request_uri));
+                },
+                StatusCode::FORBIDDEN |
+                StatusCode::UNAUTHORIZED => {
+                    last_status = response.status();
+                    last_text   = response
+                        .text()
+                        .await
+                        .unwrap_or_default();
+
+                    retry_counter += 1;
+                    access_token = Some(self.get_access_token().await?);
+
+                    // Wait a second before trying again
+                    std::thread::sleep(std::time::Duration::from_secs(1));
+                    continue;
+                },
+                StatusCode::BAD_GATEWAY => {
+                    return Err(EveApiError::BadGateway);
+                },
+                StatusCode::SERVICE_UNAVAILABLE => {
+                    return Err(EveApiError::ServiceUnavailable);
+                },
+                _ => {}
+            };
 
             let response_status = response.status();
             if !response_status.is_success() {
@@ -954,8 +990,6 @@ impl EveApiClient {
 pub struct AuthenticatedClient {
     /// [CharacterId] of the character this authenticated client belongs to
     pub character_id:   CharacterId,
-    /// [CorporationId] of the corporation this authenticated client belongs to
-    pub corporation_id: CorporationId,
 
     refresh_token:       String,
 }

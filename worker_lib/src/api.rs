@@ -11,8 +11,9 @@ use warp::reply::Reply;
 use warp::filters::BoxedFilter;
 
 pub async fn api(
-    pool:     PgPool,
-    registry: Registry,
+    pool:        PgPool,
+    registry:    Registry,
+    socket_addr: SocketAddr,
 ) {
     let metric = warp::path!("metrics")
         .and(warp::get())
@@ -23,7 +24,8 @@ pub async fn api(
     let routes = healthcheck(pool.clone())
         .or(metric);
 
-    warp::serve(routes).run(address()).await;
+    tracing::info!("Starting service server on {}", socket_addr);
+    warp::serve(routes).run(socket_addr).await;
 }
 
 pub fn healthcheck(
@@ -106,13 +108,4 @@ fn with_registry(
     registry: Arc<Registry>,
 ) -> impl Filter<Extract = (Arc<Registry>,), Error = Infallible> + Clone {
     warp::any().map(move || registry.clone())
-}
-
-fn address() -> SocketAddr {
-    if let Ok(x) = std::env::var("SERVER_ADDRESS") {
-        x.parse().unwrap()
-    } else {
-        tracing::error!("Missing ENV 'SERVER_ADDRESS'");
-        "0.0.0.0:21000".parse().unwrap()
-    }
 }

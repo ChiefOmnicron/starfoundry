@@ -1,5 +1,6 @@
 mod auth_callback;
 mod auth_login_callback;
+mod auth_login_corporation;
 mod auth_login;
 mod auth_token;
 mod generic_delete;
@@ -11,6 +12,7 @@ mod well_known_jwks;
 pub use self::auth_callback::*;
 pub use self::auth_login::*;
 pub use self::auth_login_callback::*;
+pub use self::auth_login_corporation::*;
 pub use self::auth_token::*;
 pub use self::generic_delete::*;
 pub use self::generic_get::*;

@@ -1,13 +1,15 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item};
+use starfoundry_lib_industry::Structure;
 use starfoundry_lib_types::CharacterId;
 use std::collections::HashMap;
 use utoipa::ToSchema;
+use uuid::Uuid;
 
 use crate::project::error::{ProjectError, Result};
 use crate::project::ProjectUuid;
-use crate::structure::service::{FetchStructureQuery, Structure};
+use crate::structure::service::FetchStructureQuery;
 
 pub async fn list_jobs(
     pool:                   &PgPool,
@@ -32,7 +34,7 @@ pub async fn list_jobs(
         )
         .fetch_all(pool)
         .await
-        .map_err(ProjectError::ListProjectJobs)?;
+        .map_err(ProjectError::ListJobs)?;
 
     let mut type_ids = entries
         .iter()
@@ -101,7 +103,7 @@ pub async fn list_jobs(
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 pub struct ProjectJob {
-    pub id:         ProjectUuid,
+    pub id:         Uuid,
     pub job_id:     Option<i32>,
     pub status:     ProjectJobStatus,
 

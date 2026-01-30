@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE contract\n            SET is_active = FALSE\n            WHERE (\n                NOT contract_id = ANY($1) OR\n                date_expired < NOW()\n            )\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "6b7b6c71efa65d5c86072e349b80004fbf7d3be35c4e958e83cd1adc0c600aec"
+}

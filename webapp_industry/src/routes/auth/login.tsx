@@ -5,10 +5,10 @@ import { Route as IndexRoute } from '@/routes';
 import { Route as LegalRoute } from '@/routes/legal';
 
 export const Route = createFileRoute('/auth/login')({
-    component: LoginComponent,
+    component: RouteComponent,
 })
 
-function LoginComponent() {
+function RouteComponent() {
     return <>
         <Center>
             <Stack>

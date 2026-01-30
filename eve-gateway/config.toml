@@ -3,22 +3,29 @@ admins = [
     2117441999,
 ]
 whitelist = [
+    98024275,
+    98748294,
     2117441999,
 ]
 character_scopes = [
     "publicData",
-    "esi-universe.read_structures.v1",
-    "esi-markets.structure_markets.v1",
-    "esi-skills.read_skills.v1",
-    "esi-characters.read_blueprints.v1",
     "esi-assets.read_assets.v1",
+    "esi-characters.read_blueprints.v1",
+    "esi-contracts.read_character_contracts.v1",
     "esi-industry.read_character_jobs.v1",
+    "esi-markets.read_character_orders.v1",
+    "esi-markets.structure_markets.v1",
     "esi-search.search_structures.v1",
+    "esi-skills.read_skills.v1",
+    "esi-universe.read_structures.v1",
 ]
 corporation_scopes = [
-    "esi-corporations.read_blueprints.v1",
+    "publicData",
     "esi-assets.read_corporation_assets.v1",
+    "esi-contracts.read_corporation_contracts.v1",
+    "esi-corporations.read_blueprints.v1",
     "esi-industry.read_corporation_jobs.v1",
+    "esi-markets.read_corporation_orders.v1",
 ]
 redirect = "https://industry.dev.starfoundry.space/api/auth/login/callback"
 
@@ -27,7 +34,8 @@ admins = [
     2117441999,
 ]
 whitelist = [
-    99003214,
+    2117441999,
+    98748294,
 ]
 character_scopes = [
     "publicData",

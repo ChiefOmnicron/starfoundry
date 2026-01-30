@@ -5,6 +5,7 @@ eve_id!(AllianceId, "AllianceId", i32, u32);
 eve_id!(CategoryId, "CategoryId", i32, u32);
 eve_id!(CharacterId, "CharacterId", i32, u32);
 eve_id!(ConstellationId, "ConstellationId", i32, u32);
+eve_id!(ContractId, "ContractId", i64, u64);
 eve_id!(CorporationId, "CorporationId", i32, u32);
 eve_id!(GroupId, "GroupId", i32, u32);
 eve_id!(ItemId, "ItemId", i64, u64);

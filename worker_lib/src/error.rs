@@ -23,4 +23,7 @@ pub enum Error {
 
     #[error("error while parsing additional data: {0}")]
     ParseAdditionalData(serde_json::Error),
+
+    #[error("error while cleaning up old tasks: '{0}'")]
+    CleanupOldTasks(sqlx::Error),
 }

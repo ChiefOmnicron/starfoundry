@@ -7,7 +7,7 @@ static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 use axum_server::tls_rustls::RustlsConfig;
 use axum::{middleware, Router};
 use sqlx::postgres::PgPoolOptions;
-use starfoundry_bin_eve_gateway::{auth, character, healthcheck, item, market, search, structure, universe};
+use starfoundry_bin_eve_gateway::{auth, character, contract, corporation, healthcheck, industry, internal, item, market, search, structure, universe};
 use starfoundry_bin_eve_gateway::api_docs::ApiDoc;
 use starfoundry_bin_eve_gateway::config::Config;
 use starfoundry_bin_eve_gateway::metrics::{self, path_metrics, setup_metrics_recorder};
@@ -83,11 +83,15 @@ fn app(
         .nest("/.well-known", auth::well_known_routes())
         .nest("/auth", auth::routes())
         .nest("/characters", character::routes())
+        .nest("/contracts", contract::routes())
+        .nest("/corporations", corporation::routes())
+        .nest("/industry", industry::routes())
         .nest("/items", item::routes())
         .nest("/market", market::routes())
         .nest("/search", search::routes())
         .nest("/structures", structure::routes())
         .nest("/universe", universe::routes())
+        .nest("/internal", internal::routes())
         .layer(
             ServiceBuilder::new().layer(middleware::from_fn(path_metrics))
         )

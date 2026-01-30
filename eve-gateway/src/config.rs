@@ -41,7 +41,7 @@ impl Config {
 impl From<(ConfigEnv, ConfigFile)> for Config {
     fn from((
         env,
-        file
+        file,
     ): (
         ConfigEnv,
         ConfigFile,

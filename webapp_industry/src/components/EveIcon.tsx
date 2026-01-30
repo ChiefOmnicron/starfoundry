@@ -4,21 +4,19 @@ import type { ReactElement } from "react";
 
 const BASE_URL = 'https://images.evetech.net';
 
-export function EveIcon(
-    {
-        id,
-        type = 'icon',
-        width = 32,
-        height = 32,
-    }: EveIconProp,
-): ReactElement {
+export function EveIcon({
+    id,
+    type = 'icon',
+    width = 32,
+    height = 32,
+}: EveIconProp): ReactElement {
     const url = `${BASE_URL}/types/${id}/${type}?size=1024`;
 
     return <Image
         src={url}
         style={{
-            width,
-            height,
+            maxWidth: width,
+            maxHeight: height,
         }}
     />
 }

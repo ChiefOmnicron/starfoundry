@@ -26,7 +26,7 @@ use crate::project_group::service::list_default_blacklist;
 #[utoipa::path(
     get,
     path = "/{ProjectGroupUuid}/defaults/blacklist",
-    tag = "project-groups",
+    tag = "Project Groups",
     params(
         ProjectGroupUuid,
     ),

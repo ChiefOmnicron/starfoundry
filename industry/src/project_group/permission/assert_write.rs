@@ -17,7 +17,6 @@ pub async fn assert_write(
     request:                  Request,
     next:                     Next,
 ) -> Result<impl IntoResponse> {
-    dbg!("qawseasdasdasd");
     assert_write_access_check(
             &state.pool,
             project_group_uuid,

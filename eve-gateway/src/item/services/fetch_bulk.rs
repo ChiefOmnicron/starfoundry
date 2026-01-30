@@ -40,7 +40,7 @@ pub async fn fetch_item_bulk(
         )
         .fetch_all(pool)
         .await
-        .map_err(ItemError::FetchItemBulk)?
+        .map_err(ItemError::FetchBulk)?
         .into_iter()
         .map(|x| Item {
             category:      Category {

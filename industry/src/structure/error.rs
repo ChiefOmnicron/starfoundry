@@ -1,13 +1,12 @@
-use starfoundry_lib_types::{CharacterId, StructureId};
-use thiserror::Error;
-
 use axum::extract::rejection::JsonRejection;
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::{IntoResponse, Response};
+use starfoundry_lib_industry::StructureUuid;
+use starfoundry_lib_types::CharacterId;
+use thiserror::Error;
 
 use crate::api_docs::{format_json_errors, ErrorResponse};
-use crate::structure::StructureUuid;
 
 pub type Result<T, E = StructureError> = std::result::Result<T, E>;
 
@@ -27,8 +26,6 @@ pub enum StructureError {
     CreateStructure(sqlx::Error),
     #[error("error while fetching structure '{1:?}', error: '{0}'")]
     FetchStructures(sqlx::Error, Vec<StructureUuid>),
-    #[error("error while fetching structure by eve id '{1:?}', error: '{0}'")]
-    FetchStructuresByEveId(sqlx::Error, Vec<StructureId>),
     #[error("error while listing structures, error: '{0}'")]
     ListStructures(sqlx::Error),
     #[error("error while deleting structure '{1}', error: '{0}'")]

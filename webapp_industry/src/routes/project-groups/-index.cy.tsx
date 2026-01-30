@@ -1,7 +1,7 @@
 import { createRootRoute, createRouter, RouterProvider } from "@tanstack/react-router";
 import { MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ProjectGroups } from './index';
+import { Route } from './index';
 
 import '@mantine/core/styles.css';
 
@@ -18,7 +18,7 @@ const queryClient = new QueryClient({
 
 const componentMount = () => {
     const routeTree = createRootRoute({
-        component: ProjectGroups,
+        component: Route.options.component,
     });
     const router = createRouter({
         routeTree,
@@ -113,11 +113,11 @@ describe('Project Group General', () => {
                 projects: 0,
                 description: 'Test 123'
             }],
-        ).as('getProjectGroups');
+        ).as('getRoute.options.component');
 
         cy.mount(componentMount());
 
-        cy.wait('@getProjectGroups');
+        cy.wait('@getRoute.options.component');
 
         cy.get('[data-cy="data"]').should('be.visible');
 
@@ -138,11 +138,11 @@ describe('Project Group General', () => {
                 projects: 0,
                 description: 'Test 123'
             }],
-        ).as('getProjectGroups');
+        ).as('getRoute.options.component');
 
         const componentMount = () => {
             const routeTree = createRootRoute({
-                component: ProjectGroups,
+                component: Route.options.component,
                 beforeLoad: ({ search }: { search: any }) => {
                     search.deleted = true;
                 }
@@ -162,7 +162,7 @@ describe('Project Group General', () => {
         }
         cy.mount(componentMount());
 
-        cy.wait('@getProjectGroups');
+        cy.wait('@getRoute.options.component');
         cy.get('[data-cy="deleteSuccessful"]').should('be.visible');
     });
 });

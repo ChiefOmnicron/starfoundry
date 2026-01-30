@@ -1,6 +1,6 @@
 mod blueprints_dependencies;
 mod blueprints_json;
-mod blueprints_temp;
+mod blueprints;
 mod dogma;
 mod downloads;
 mod items;
@@ -11,7 +11,7 @@ mod systems;
 
 mod error;
 use crate::parser::stars::Star;
-use crate::parser::systems::{Position, System};
+use crate::parser::systems::{Position, Position2d, System};
 
 pub use self::error::*;
 
@@ -56,7 +56,7 @@ pub async fn import_sde(
     let type_ids                  = parser::type_ids::parse(&directory)?;
     let type_material             = parser::type_material::parse(&directory)?;
 
-    //write_system_json(systems.clone(), stars);
+    write_system_json(systems.clone(), stars);
 
     let blueprints_dependencies = blueprints_dependencies::run(
             &pool,
@@ -66,11 +66,12 @@ pub async fn import_sde(
     let blueprints_json = blueprints_json::run(
             &pool,
             &blueprints,
+            &categories,
             &group_ids,
             &type_ids,
             &repackaged,
         );
-    let blueprints_temp = blueprints_temp::run(
+    let blueprints_temp = blueprints::run(
             &pool,
             &blueprints,
         );
@@ -105,7 +106,7 @@ pub async fn import_sde(
         );
 
     // Ignore errors
-    /*let _ = join! {
+    let _ = join! {
         blueprints_dependencies,
         blueprints_json,
         blueprints_temp,
@@ -114,7 +115,7 @@ pub async fn import_sde(
         reprocessing,
         structure,
         systems,
-    };*/
+    };
 
     Ok(checksum)
 }
@@ -131,10 +132,12 @@ fn write_system_json(
 
     #[derive(Debug, Serialize)]
     struct TmpSystem {
-        system_id: SystemId,
-        region_id: RegionId,
-        position:  Position,
-        star:      Star,
+        system_id:   SystemId,
+        region_id:   RegionId,
+        position:    Position,
+        #[serde(rename = "position2D")]
+        position_2d: Option<Position2d>,
+        star:        Star,
     }
 
     let systems = systems
@@ -146,11 +149,13 @@ fn write_system_json(
             x.region_id != RegionId(10000019) &&
             (*x.region_id) < 11000000
         )
+        .filter(|x| x.position_2d.is_some())
         .map(|x| TmpSystem {
-            position:  x.position,
-            region_id: x.region_id,
-            system_id: x.system_id,
-            star:      stars.get(&x.star_id.unwrap()).unwrap().clone(),
+            position:    x.position,
+            position_2d: x.position_2d,
+            region_id:   x.region_id,
+            system_id:   x.system_id,
+            star:        stars.get(&x.star_id.unwrap()).unwrap().clone(),
         })
         .collect::<Vec<_>>();
 

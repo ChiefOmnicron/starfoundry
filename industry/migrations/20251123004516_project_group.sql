@@ -124,6 +124,31 @@ CREATE OR REPLACE TRIGGER set_updated_at
     AFTER INSERT OR UPDATE ON project_group_default_job_splitting_run
     EXECUTE FUNCTION trigger_set_updated_at();
 
+CREATE TABLE IF NOT EXISTS project_group_industry_hub (
+    id                UUID        NOT NULL DEFAULT uuidv7(),
+    project_group_id  UUID        NOT NULL,
+
+    -- character id
+    industry_hub_id   UUID        NOT NULL,
+
+    created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+    PRIMARY KEY (project_group_id, id),
+
+    FOREIGN KEY (project_group_id)
+        REFERENCES project_group (id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (industry_hub_id)
+        REFERENCES industry_hub (id)
+        ON DELETE CASCADE
+);
+CREATE OR REPLACE TRIGGER set_updated_at
+    AFTER INSERT OR UPDATE ON project_group_industry_hub
+    EXECUTE FUNCTION trigger_set_updated_at();
+
+
 CREATE TABLE IF NOT EXISTS project_group_permission (
     bit     INTEGER NOT NULL,
     name    VARCHAR NOT NULL,

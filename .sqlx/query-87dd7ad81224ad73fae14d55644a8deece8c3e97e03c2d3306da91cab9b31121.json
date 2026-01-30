@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                INSERT INTO worker_queue (task)\n                SELECT $1\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Varchar"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "87dd7ad81224ad73fae14d55644a8deece8c3e97e03c2d3306da91cab9b31121"
+}

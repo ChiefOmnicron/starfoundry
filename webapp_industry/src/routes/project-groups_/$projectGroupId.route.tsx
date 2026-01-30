@@ -11,7 +11,7 @@ export const Route = createFileRoute('/project-groups_/$projectGroupId')({
             throw context.auth.login();
         }
     },
-    component: ProjectGroupHeader,
+    component: RouteComponent,
     loader: async ({ context, params }) => {
         const queryClient = context.queryClient;
         queryClient.prefetchQuery(fetchProjectGroupMemberSelfQuery(params.projectGroupId));
@@ -19,7 +19,7 @@ export const Route = createFileRoute('/project-groups_/$projectGroupId')({
     }
 })
 
-export function ProjectGroupHeader() {
+function RouteComponent() {
     const { projectGroupId } = Route.useParams();
 
     const {

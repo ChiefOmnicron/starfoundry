@@ -22,7 +22,7 @@ tower = "0.5.2"
 tower-http = { version = "0.6.8", features = ["compression-full", "decompression-full"] }
 tracing = "0.1.43"
 tracing-subscriber = { version = "0.3.22", features = ["env-filter", "json"] }
-url = "2.5.7"
+url = { version = "2.5.7", features = ["serde"] }
 
 [target.'cfg(target_env = "musl")'.dependencies]
 mimalloc = "0.1.48"

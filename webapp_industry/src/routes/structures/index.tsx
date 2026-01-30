@@ -1,17 +1,14 @@
-import { Alert, Button, Card, Center, Flex, Modal, Stack, Table, Title } from '@mantine/core';
-import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { AddStructure } from './-modal/add';
+import { Alert, Button, Center, Flex, Modal, Stack, Title } from '@mantine/core';
 import { createFileRoute } from '@tanstack/react-router';
 import { Filter, type FilterPropEntry, type SelectedFilter } from '@/components/Filter';
-import { LoadingError } from '@/components/LoadingError';
-import { useEffect, useState } from 'react';
-import { useListStructure, type Structure, type StructureFilter } from '@/services/structure/list';
-import { Dotlan } from '@/components/Dotlan';
-import { AddStructure } from './-modal/add';
-import { useDisclosure } from '@mantine/hooks';
-import { Route as StructureRoute } from '@/routes/structures_/$structureId.index';
-import { InternalLink } from '@/components/InternalLink';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
+import { LoadingError } from '@/components/LoadingError';
 import { normalizeRigServiceName } from '@/services/structure/utils';
+import { StructureList } from '@/components/StructureCard';
+import { useDisclosure } from '@mantine/hooks';
+import { useEffect, useState } from 'react';
+import { useListStructure, type StructureFilter } from '@/services/structure/list';
 
 interface QueryParams {
     deleted?: boolean;
@@ -23,7 +20,7 @@ export const Route = createFileRoute('/structures/')({
             throw context.auth.login();
         }
     },
-    component: Structures,
+    component: RouteComponent,
     validateSearch: (params: {
         deleted: boolean,
     }): QueryParams => {
@@ -33,58 +30,7 @@ export const Route = createFileRoute('/structures/')({
     }
 });
 
-const columnHelper = createColumnHelper<Structure>();
-const columns = [
-    columnHelper.accessor('name', {
-        id: 'name',
-        cell: info => <InternalLink
-                to={ StructureRoute.to }
-                params={{
-                    structureId: info.row.original.id,
-                }}
-                content={ info.getValue() }
-            />,
-        header: () => 'Name',
-    }),
-    columnHelper.accessor('system', {
-        id: 'system',
-        cell: info => <Dotlan system={info.getValue()} />,
-        header: () => 'System',
-    }),
-    columnHelper.accessor('item', {
-        id: 'structure',
-        cell: info => { return info.getValue().name },
-        header: () => 'Type',
-    }),
-    columnHelper.accessor('services', {
-        id: 'services',
-        cell: info => { return <>{
-            info
-                .getValue()
-                .map(x => {
-                    let name = normalizeRigServiceName(x.name);
-                    return <label key={x.type_id}>{ name }</label>
-                })
-                .map(x => <>{x} <br /></>)
-        }</> },
-        header: () => 'Services',
-    }),
-    columnHelper.accessor('rigs', {
-        id: 'rigs',
-        cell: info => { return <>{
-            info
-                .getValue()
-                .map(x => {
-                    let name = normalizeRigServiceName(x.item.name);
-                    return <label key={x.item.type_id}>{ name }</label>
-                })
-                .map(x => <>{x} <br /></>)
-        }</> },
-        header: () => 'Services',
-    }),
-];
-
-function Structures() {
+function RouteComponent() {
     const [opened, { open, close }] = useDisclosure(false);
     const { deleted: deletedResource } = Route.useSearch();
 
@@ -190,13 +136,6 @@ function Structures() {
         });
     };
 
-    const table = useReactTable<Structure>({
-        columns: columns,
-        data: structures || [],
-        autoResetPageIndex: false,
-        getCoreRowModel: getCoreRowModel(),
-    });
-
     const filter = <Filter
         entries={filterOptions}
         onFilterChange={filterChange}
@@ -254,42 +193,6 @@ function Structures() {
         </>
     }
 
-    const dataTable = () => {
-        return <>
-            { addStructureModal() }
-
-            <Card p="0">
-                <Table striped data-cy="data">
-                    <Table.Thead>
-                    {table.getHeaderGroups().map(headerGroup => (
-                        <Table.Tr key={headerGroup.id}>
-                            {headerGroup.headers.map(header => (
-                                <Table.Th key={header.id}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext()
-                                    )}
-                                </Table.Th>
-                            ))}
-                        </Table.Tr>
-                    ))}
-                    </Table.Thead>
-                    <Table.Tbody>
-                        {table.getRowModel().rows.map(row => (
-                            <Table.Tr key={row.id}>
-                                {row.getVisibleCells().map(cell => (
-                                    <Table.Td key={cell.id}>
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </Table.Td>
-                                ))}
-                            </Table.Tr>
-                        ))}
-                    </Table.Tbody>
-                </Table>
-            </Card>
-        </>
-    }
-
     const content = () => {
         if (isPending && !filterParams) {
             return LoadingAnimation();
@@ -301,7 +204,12 @@ function Structures() {
 
                 { filter }
 
-                { dataTable() }
+                <StructureList
+                    structures={structures}
+                    structureCardProps={{
+                        editLink: true,
+                    }}
+                />
             </>
         } else if (filterParams && isPending) {
             return <>
@@ -341,6 +249,8 @@ function Structures() {
 
     return <>
         { notification() }
+
+        { addStructureModal() }
 
         { content() }
     </>

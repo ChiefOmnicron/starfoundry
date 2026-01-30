@@ -1,10 +1,11 @@
+mod create;
 mod error;
+mod fetch;
 mod list_jobs;
+mod list_misc;
 mod list;
 mod permission;
 mod service;
-
-//pub mod permission;
 
 use axum::middleware;
 use starfoundry_lib_types::starfoundry_uuid;
@@ -18,6 +19,14 @@ use crate::project::permission::{assert_exists, assert_read};
 pub fn routes(
     state: AppState,
 ) -> OpenApiRouter<AppState> {
+    let create = OpenApiRouter::new()
+        .routes(routes!(create::api));
+
+    let fetch = OpenApiRouter::new()
+        .routes(routes!(fetch::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+
     let list = OpenApiRouter::new()
         .routes(routes!(list::api));
 
@@ -26,9 +35,17 @@ pub fn routes(
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
 
+    let list_misc = OpenApiRouter::new()
+        .routes(routes!(list_misc::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+
     OpenApiRouter::new()
+        .merge(create)
+        .merge(fetch)
         .merge(list)
         .merge(list_jobs)
+        .merge(list_misc)
 }
 
 starfoundry_uuid!(ProjectUuid, "ProjectUuid");

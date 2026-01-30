@@ -1,8 +1,8 @@
 use sqlx::PgPool;
+use starfoundry_lib_industry::StructureUuid;
 
 use crate::project_group::error::{ProjectGroupError, Result};
 use crate::project_group::ProjectGroupUuid;
-use crate::structure::StructureUuid;
 
 pub async fn update_default_market(
     pool:               &PgPool,
@@ -51,10 +51,9 @@ pub async fn update_default_market(
 #[cfg(test)]
 mod update_default_blueprint_overwrite_project_group_test {
     use sqlx::PgPool;
+    use starfoundry_lib_industry::StructureUuid;
     use std::str::FromStr;
     use uuid::Uuid;
-
-    use crate::structure::StructureUuid;
 
     #[sqlx::test(
         fixtures(

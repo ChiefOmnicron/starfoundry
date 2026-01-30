@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
-use starfoundry_lib_types::{StructureId, TypeId};
+use starfoundry_lib_types::{CategoryId, GroupId, StructureId, TypeId};
 
 use crate::{Category, Group, Item, System};
 
@@ -48,10 +48,45 @@ pub struct StructureRigResponse {
     pub groups:     Vec<Group>,
 }
 
+impl StructureRigResponse {
+    pub fn has_category(
+        &self,
+        category_id: CategoryId,
+    ) -> bool {
+        self
+            .categories
+            .iter()
+            .find(|x| x.category_id == category_id)
+            .is_some()
+    }
+
+    pub fn has_group(
+        &self,
+        group_id: GroupId,
+    ) -> bool {
+        self
+            .groups
+            .iter()
+            .find(|x| x.group_id == group_id)
+            .is_some()
+    }
+}
+
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 pub enum BonusModifier {
     ManufactureMaterial,
     ManufactureTime,
     ReactionMaterial,
     ReactionTime,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct StructureRigBlueprintBonus {
+    pub bonus_me:         f64,
+    pub bonus_te:         f64,
+
+    pub is_manufacturing: bool,
+    pub is_reaction:      bool,
+
+    pub blueprint:        Item,
 }

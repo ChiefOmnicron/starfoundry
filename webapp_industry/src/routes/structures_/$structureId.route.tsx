@@ -10,14 +10,14 @@ export const Route = createFileRoute('/structures_/$structureId')({
             throw context.auth.login();
         }
     },
-    component: StructureHeader,
+    component: RouteComponent,
     loader: async ({ context, params }) => {
         const queryClient = context.queryClient;
         queryClient.prefetchQuery(fetchStructureQuery(params.structureId));
     }
 })
 
-export function StructureHeader() {
+function RouteComponent() {
     const { structureId } = Route.useParams();
 
     const {

@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize, Serializer, Deserializer};
 use starfoundry_lib_types::TypeId;
+use utoipa::ToSchema;
 
 #[derive(Debug, Deserialize, Serialize, PartialEq)]
 pub enum BonusVariations {
@@ -8,7 +9,8 @@ pub enum BonusVariations {
     Isk(f32),
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Eq, ToSchema)]
+#[serde(rename_all = "UPPERCASE")]
 pub enum StructureType {
     /// https://everef.net/type/35835
     Athanor,
@@ -129,6 +131,12 @@ impl From<i32> for StructureType {
 
             _     => Self::Invalid,
         }
+    }
+}
+
+impl From<TypeId> for StructureType {
+    fn from(x: TypeId) -> Self {
+        Self::from(*x)
     }
 }
 

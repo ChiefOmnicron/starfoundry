@@ -14,7 +14,7 @@ pub async fn create(
     character_id: CharacterId,
     info:         CreateProjectGroup,
 ) -> Result<ProjectGroupUuid> {
-    info.valid()?;
+    info.validate()?;
 
     let mut transaction = pool
         .begin()
@@ -94,7 +94,7 @@ pub struct CreateProjectGroup {
 }
 
 impl CreateProjectGroup {
-    pub fn valid(&self) -> Result<bool> {
+    pub fn validate(&self) -> Result<bool> {
         if self.name.len() <= 100 {
             if self.name.trim().is_empty() {
                 return Err(ProjectGroupError::ValidationError("Field 'name' must be set".into()));

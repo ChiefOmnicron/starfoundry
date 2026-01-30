@@ -1,18 +1,18 @@
 use chrono::{Duration, Utc};
-use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, TokenData, Validation};
+use jsonwebtoken::{Algorithm, DecodingKey, EncodingKey, Header, TokenData, Validation, decode, encode};
 use serde::{Deserialize, Serialize};
 use starfoundry_lib_types::CharacterId;
 
 use crate::auth::error::{AuthError, Result};
 use crate::character::CharacterInfo;
 
-const ACCESS_TOKEN_EXP: Duration  = Duration::minutes(15);
-const REFRESH_TOKEN_EXP: Duration = Duration::days(1);
-const JWT_KID: &str               = "starfoundry-eve-gateway";
-
 pub const ENV_JWT_ECDSA_PRIVATE: &str  = "STARFOUNDRY_EVE_GATEWAY_JWT_ECDSA_PRIVATE";
 pub const ENV_JWT_ECDSA_PUBLIC: &str   = "STARFOUNDRY_EVE_GATEWAY_JWT_ECDSA_PUBLIC";
 pub const ENV_JWT_ISSUER_DOMAIN: &str  = "STARFOUNDRY_EVE_GATEWAY_JWT_ISSUER_DOMAIN";
+
+const ACCESS_TOKEN_EXP: Duration  = Duration::minutes(15);
+const REFRESH_TOKEN_EXP: Duration = Duration::days(1);
+const JWT_KID: &str               = "starfoundry-eve-gateway";
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct AccessTokenClaims {
@@ -25,6 +25,7 @@ pub struct AccessTokenClaims {
 
     is_admin:       bool,
     character_info: CharacterInfo,
+    key_type:       KeyType,
 
     pub sub:        CharacterId,
 }
@@ -56,12 +57,14 @@ impl AccessTokenClaims {
             iss: issuer()?,
             kid: JWT_KID.into(),
 
+            key_type: KeyType::Character,
+
             character_info,
             is_admin,
         };
         let claims = serde_json::to_value(claims).unwrap_or_default();
 
-        token(claims)
+        generate_token(claims)
     }
 }
 
@@ -97,7 +100,7 @@ impl RefreshTokenClaims {
         };
         let claims = serde_json::to_value(claims).unwrap_or_default();
 
-        token(claims)
+        generate_token(claims)
     }
 
     pub fn verify(
@@ -128,12 +131,7 @@ pub fn issuer() -> Result<String> {
         .map_err(|_| AuthError::EnvNotSet(ENV_JWT_ISSUER_DOMAIN.into()))
 }
 
-fn private_ecdsa_key() -> Result<String> {
-    std::env::var(ENV_JWT_ECDSA_PRIVATE)
-        .map_err(|_| AuthError::EnvNotSet(ENV_JWT_ECDSA_PRIVATE.into()))
-}
-
-fn token(
+pub(crate) fn generate_token(
     claims: serde_json::Value,
 ) -> Result<String> {
     let ec_pem = EncodingKey::from_ec_pem(
@@ -148,4 +146,17 @@ fn token(
             &ec_pem
         )
         .map_err(AuthError::JsonWebTokenEncode)
+}
+
+fn private_ecdsa_key() -> Result<String> {
+    std::env::var(ENV_JWT_ECDSA_PRIVATE)
+        .map_err(|_| AuthError::EnvNotSet(ENV_JWT_ECDSA_PRIVATE.into()))
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum KeyType {
+    /// The JWT token is from a character
+    Character,
+    /// The JWT token is from a service
+    Service,
 }

@@ -3,12 +3,12 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_gateway::ExtractIdentity;
+use starfoundry_lib_industry::Structure;
 
 use crate::{eve_gateway_api_client, AppState};
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
 use crate::project_group::error::Result;
 use crate::project_group::ProjectGroupUuid;
-use crate::structure::service::Structure;
 use crate::project_group::service::list_default_market;
 
 /// List Markets
@@ -27,7 +27,7 @@ use crate::project_group::service::list_default_market;
 #[utoipa::path(
     get,
     path = "/{ProjectGroupUuid}/defaults/markets",
-    tag = "project-groups",
+    tag = "Project Groups",
     params(
         ProjectGroupUuid,
     ),
@@ -91,9 +91,9 @@ mod tests {
     use http_body_util::BodyExt;
     use sqlx::PgPool;
     use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
+    use starfoundry_lib_industry::Structure;
 
     use crate::project_group::project_group_test_routes;
-    use crate::structure::service::Structure;
 
     #[sqlx::test(
         fixtures("base"),

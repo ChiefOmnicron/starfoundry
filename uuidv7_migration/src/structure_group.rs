@@ -1,17 +1,14 @@
 use sqlx::PgPool;
-use std::collections::HashMap;
 use uuid::{NoContext, Timestamp, Uuid};
 
 use crate::Mapping;
 
-pub async fn migrate_structure_group(
+pub async fn migrate_industry_hubs(
     postgres_source:      &PgPool,
     postgres_destination: &PgPool,
-    structure_mapping:    &Mapping,
-) -> Result<Mapping, Box<dyn std::error::Error>> {
+    mappings:             &mut Mapping,
+) -> Result<(), Box<dyn std::error::Error>> {
     dbg!("Start - structure group");
-    let mut mappings = HashMap::new();
-
     let structure_groups = sqlx::query!(r#"
             SELECT
                 id,
@@ -32,7 +29,7 @@ pub async fn migrate_structure_group(
         mappings.insert(structure_group.id, structure_group_id);
 
         sqlx::query!("
-                INSERT INTO structure_group
+                INSERT INTO industry_hub
                 (
                     id,
                     name,
@@ -41,6 +38,10 @@ pub async fn migrate_structure_group(
                     updated_at
                 )
                 VALUES ($1, $2, $3, $4, $5)
+                ON CONFLICT (id)
+                DO UPDATE SET
+                    name        = EXCLUDED.name,
+                    updated_at  = EXCLUDED.updated_at
             ",
                 structure_group_id,
                 structure_group.name,
@@ -52,16 +53,24 @@ pub async fn migrate_structure_group(
             .await?;
 
         for structure in structure_group.structure_ids {
-            let structure_id = if let Some(x) = structure_mapping.get(&structure) {
+            let structure_id = if let Some(x) = mappings.get(&structure) {
                 x
             } else {
                 continue;
             };
 
             sqlx::query!("
-                    INSERT INTO structure_group_structure
+                    DELETE FROM industry_hub_structure
+                    WHERE industry_hub_id = $1
+                ",
+                    structure_group_id,
+                )
+                .execute(&mut *transaction)
+                .await?;
+            sqlx::query!("
+                    INSERT INTO industry_hub_structure
                     (
-                        structure_group_id,
+                        industry_hub_id,
                         structure_id
                     )
                     VALUES ($1, $2)
@@ -76,5 +85,5 @@ pub async fn migrate_structure_group(
     transaction.commit().await?;
     dbg!("Done - structure group");
 
-    Ok(mappings)
+    Ok(())
 }

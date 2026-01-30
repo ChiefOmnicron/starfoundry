@@ -1,22 +1,26 @@
 mod create;
 mod delete;
+mod error;
 mod fetch_members_self;
 mod fetch;
 mod list_default_blacklist;
 mod list_default_blueprint_overwrites;
 mod list_default_job_splitting;
 mod list_default_market;
+mod list_industry_hub;
 mod list_members;
 mod list;
-mod update;
 mod update_default_blacklist;
 mod update_default_blueprint_overwrite;
 mod update_default_job_splitting;
 mod update_default_market;
+mod update_industry_hubs;
+mod update;
 
-pub mod error;
 pub mod permission;
 pub mod service;
+
+pub use self::error::*;
 
 use axum::middleware;
 use starfoundry_lib_types::starfoundry_uuid;
@@ -81,6 +85,11 @@ pub fn routes(
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
 
+    let list_industry_hubs = OpenApiRouter::new()
+        .routes(routes!(list_industry_hub::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+
     let update_default_blacklist = OpenApiRouter::new()
         .routes(routes!(update_default_blacklist::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_write))
@@ -101,6 +110,11 @@ pub fn routes(
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_write))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
 
+    let update_industry_hubs = OpenApiRouter::new()
+        .routes(routes!(update_industry_hubs::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_write))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+
     OpenApiRouter::new()
         .merge(create)
         .merge(list)
@@ -113,10 +127,12 @@ pub fn routes(
         .merge(list_default_blueprint_overwrites)
         .merge(list_default_job_splitting)
         .merge(list_default_market)
+        .merge(list_industry_hubs)
         .merge(update_default_blacklist)
         .merge(update_default_blueprint_overwrite)
         .merge(update_default_job_splitting)
         .merge(update_default_market)
+        .merge(update_industry_hubs)
 }
 
 starfoundry_uuid!(ProjectGroupUuid, "ProjectGroupUuid");

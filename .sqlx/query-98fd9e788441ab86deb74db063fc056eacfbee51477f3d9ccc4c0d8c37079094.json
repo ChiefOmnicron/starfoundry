@@ -1,0 +1,18 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                INSERT INTO eve_credential (\n                    character_id,\n                    domain,\n                    refresh_token,\n                    character_main,\n                    scopes\n                ) VALUES ($1, $2, $3, $4, $5)\n                ON CONFLICT (character_id, domain) DO UPDATE\n                SET\n                    refresh_token = EXCLUDED.refresh_token,\n                    scopes        = EXCLUDED.scopes\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Varchar",
+        "Varchar",
+        "Int4",
+        "VarcharArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "98fd9e788441ab86deb74db063fc056eacfbee51477f3d9ccc4c0d8c37079094"
+}

@@ -7,10 +7,10 @@ export const Route = createFileRoute('/projects')({
             throw context.auth.login();
         }
     },
-    component: ProjectGroupIndex,
+    component: RouteComponent,
 })
 
-function ProjectGroupIndex() {
+function RouteComponent() {
     return <>
         <Title
             data-cy="header"

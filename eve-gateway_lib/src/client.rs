@@ -7,7 +7,9 @@ use starfoundry_lib_gateway::{ApiClient, MtlsApiClient, Result as GatewayResult}
 use url::Url;
 
 use crate::error::{Error, Result};
-use crate::{EveGatewayApiClient, EveGatewayApiClientMarket};
+use crate::{EveGatewayApiClient, EveGatewayApiClientAsset, EveGatewayApiClientIndustry, EveGatewayApiClientItem};
+use crate::market::EveGatewayApiClientMarket;
+use crate::contract::EveGatewayApiClientContract;
 
 pub const ENV_EVE_GATEWAY_API: &str = "STARFOUNDRY_EVE_GATEWAY_API_URL";
 
@@ -36,10 +38,10 @@ impl EveGatewayClient {
 }
 
 impl ApiClient for EveGatewayClient {
-    async fn fetch<T>(
+    async fn fetch<Q:Serialize, T>(
         &self,
         path:  impl Into<String>,
-        query: &[(&str, &str)],
+        query: &Q,
     ) -> GatewayResult<T>
     where
         T: DeserializeOwned {
@@ -50,10 +52,10 @@ impl ApiClient for EveGatewayClient {
             .map_err(Into::into)
     }
 
-    async fn fetch_auth<T>(
+    async fn fetch_auth<Q: Serialize, T>(
         &self,
         path:       impl Into<String>,
-        query:      &[(&str, &str)],
+        query:      &Q,
         header_map: HeaderMap,
     ) -> GatewayResult<T>
     where
@@ -82,5 +84,13 @@ impl ApiClient for EveGatewayClient {
 }
 
 impl EveGatewayApiClient for EveGatewayClient {}
+
+impl EveGatewayApiClientAsset for EveGatewayClient {}
+
+impl EveGatewayApiClientContract for EveGatewayClient {}
+
+impl EveGatewayApiClientIndustry for EveGatewayClient {}
+
+impl EveGatewayApiClientItem for EveGatewayClient {}
 
 impl EveGatewayApiClientMarket for EveGatewayClient {}

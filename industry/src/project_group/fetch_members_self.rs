@@ -24,7 +24,7 @@ use crate::project_group::service::{ProjectGroupMember, fetch_members_self};
 #[utoipa::path(
     get,
     path = "/{ProjectGroupUuid}/members/self",
-    tag = "project-groups",
+    tag = "Project Groups",
     params(
         ProjectGroupUuid,
     ),

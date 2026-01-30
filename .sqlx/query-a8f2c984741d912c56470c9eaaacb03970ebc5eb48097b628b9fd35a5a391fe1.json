@@ -1,0 +1,23 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT\n                    (additional_data ->> 'corporation_id')::INTEGER AS corporation_id\n                FROM worker_queue\n                WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')\n                AND task = $1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "corporation_id",
+        "type_info": "Int4",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "a8f2c984741d912c56470c9eaaacb03970ebc5eb48097b628b9fd35a5a391fe1"
+}

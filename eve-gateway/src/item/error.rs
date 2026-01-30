@@ -16,15 +16,15 @@ pub enum ItemError {
     AuthError(#[from] AuthError),
 
     #[error("error while fetching item '{1}', error: '{0}'")]
-    FetchItem(sqlx::Error, TypeId),
+    Fetch(sqlx::Error, TypeId),
     #[error("error while fetching bulk items, error: '{0}'")]
-    FetchItemBulk(sqlx::Error),
+    FetchBulk(sqlx::Error),
     #[error("error while fetching category '{1}', error: '{0}'")]
     FetchCategory(sqlx::Error, CategoryId),
     #[error("error while fetching group '{1}', error: '{0}'")]
     FetchGroup(sqlx::Error, GroupId),
     #[error("error while listing items, error: '{0}'")]
-    ListItem(sqlx::Error),
+    List(sqlx::Error),
 }
 
 impl IntoResponse for ItemError {

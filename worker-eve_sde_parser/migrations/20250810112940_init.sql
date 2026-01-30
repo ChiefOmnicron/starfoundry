@@ -58,19 +58,19 @@ CREATE TABLE IF NOT EXISTS system (
 CREATE INDEX IF NOT EXISTS systems_id ON system (region_id, constellation_id, system_id);
 
 CREATE TABLE IF NOT EXISTS blueprint_json(
-    btype_id INTEGER NOT NULL,
-    ptype_id INTEGER NOT NULL,
-    data     JSON    NOT NULL
+    blueprint_type_id INTEGER NOT NULL,
+    product_type_id   INTEGER NOT NULL,
+    data              JSON    NOT NULL
 );
-CREATE INDEX IF NOT EXISTS blueprint_json_typeid ON blueprint_json (btype_id, ptype_id);
+CREATE INDEX IF NOT EXISTS blueprint_json_typeid ON blueprint_json (blueprint_type_id, product_type_id);
 
 CREATE TABLE IF NOT EXISTS blueprint_dependency (
-    btype_id   INTEGER   NOT NULL,
-    ptype_id   INTEGER   NOT NULL,
-    time       INTEGER   NOT NULL,
-    depends_on INTEGER[] NOT NULL
+    blueprint_type_id INTEGER   NOT NULL,
+    product_type_id   INTEGER   NOT NULL,
+    time              INTEGER   NOT NULL,
+    depends_on        INTEGER[] NOT NULL
 );
-CREATE INDEX IF NOT EXISTS blueprint_dependency ON blueprint_json (btype_id, ptype_id);
+CREATE INDEX IF NOT EXISTS blueprint_dependency ON blueprint_json (blueprint_type_id, product_type_id);
 
 CREATE TABLE IF NOT EXISTS industry_index (
     id                UUID      NOT NULL DEFAULT uuidv7(),
@@ -113,7 +113,7 @@ CREATE TABLE IF NOT EXISTS structure_dogma (
 -- temporary blueprint table until one with more info is created
 -- only used for bpc_stock
 -- TODO: remove sooner rather than later
-CREATE TABLE IF NOT EXISTS blueprints_temp(
+CREATE TABLE IF NOT EXISTS blueprint(
     type_id  INTEGER NOT NULL,
     max_runs INTEGER NOT NULL,
 

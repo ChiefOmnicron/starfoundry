@@ -1,0 +1,37 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                (additional_data ->> 'structure_id')::BIGINT AS structure_id,\n                (additional_data ->> 'character_id')::INTEGER AS character_id,\n                (additional_data ->> 'source')::VARCHAR AS source\n            FROM worker_queue\n            WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')\n            AND task = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "structure_id",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 1,
+        "name": "character_id",
+        "type_info": "Int4",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 2,
+        "name": "source",
+        "type_info": "Varchar",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "c336780db4d8717ff1bd92b740fc193a46d2cbaafe2e9b44e216bc0990f814f0"
+}

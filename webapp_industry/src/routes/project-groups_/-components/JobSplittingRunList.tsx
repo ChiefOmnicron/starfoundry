@@ -1,11 +1,12 @@
 import { Button, Flex, NumberInput, Table, Text } from "@mantine/core";
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { EveIcon } from "@/components/EveIcon";
-import { ItemSelector, type ItemSelectorRef } from "@/components/selectors/ItemSelector";
+import { ItemSelector, type ItemSelectorRef } from "@/components/selectors/ItemSelectorInline";
 import { useRef, useState, type ReactElement } from "react";
 import type { TypeId } from "@/services/utils";
 import type { Item } from "@/services/item/model";
 import type { JobSplittingRun } from "@/services/project-group/listDefaultJobSplitting";
+import { CopyText } from "@/components/CopyText";
 
 // Implementation for an editable list
 //
@@ -65,13 +66,17 @@ export function JobSplittingRunList({
         }),
         columnHelper.display({
             id: 'name',
-            cell: props => props.row.original.item.name,
+            cell: props => <CopyText
+                value={props.row.original.item.name}
+            />,
             header: () => 'Name',
             size: 68,
         }),
         columnHelper.display({
             id: 'me',
-            cell: props => props.row.original.max_runs,
+            cell: props => <CopyText
+                value={props.row.original.max_runs}
+            />,
             header: () => 'Max Runs',
             size: 10,
         }),

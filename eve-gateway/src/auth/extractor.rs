@@ -37,7 +37,6 @@ impl ExtractIdentity {
                 Some(
                     EveApiClient::new_with_refresh_token(
                         self.character_info.character_id,
-                        self.character_info.corporation_id,
                         x.refresh_token,
                     )?
                 )

@@ -4,7 +4,7 @@ import {
     PillsInput,
     useCombobox,
 } from "@mantine/core";
-import { useCallback, useEffect, useState, type ReactElement } from "react";
+import { useEffect, useState, type ReactElement } from "react";
 
 //     const exampleData: FilterPropEntry[] = [{
 //        label: 'Single Select',
@@ -82,7 +82,6 @@ export function Filter(
     const [selectedFilters, setSelectFilters] = useState<SelectedFilter[]>(selectedFilter);
 
     const [options, setOptions] = useState(entries);
-    const [originalOptions, setOriginalOptions] = useState(entries);
 
     const combobox = useCombobox({
         onDropdownClose: () => combobox.resetSelectedOption(),
@@ -90,14 +89,13 @@ export function Filter(
     });
 
     useEffect(() => {
-        resetOptions();
+        //resetOptions();
         // TODO: add mutliselect into an array
         onFilterChange(selectedFilters);
     }, [selectedFilters]);
 
     useEffect(() => {
         setOptions(entries);
-        setOriginalOptions(entries);
     }, [entries]);
 
     /// adds an entry to the list of selected filters
@@ -113,28 +111,18 @@ export function Filter(
             : value;
 
         // add the entry to our array of selected filters
-        setSelectFilters(filters => [...filters, {
-            filterLabel,
-            filterKey,
-            value: filterValue,
-            key:   value,
-        }]);
-    }
+        setSelectFilters(filters => {
+            const tmpFilters = currentSelected?.type === 'MULTISELECT'
+                ? filters
+                : filters.filter(x => x.filterKey !== filterKey);
 
-    // check for options that no longer can be selected, or that were removed
-    // and therefor can be added again
-    const resetOptions = () => {
-        const options = originalOptions
-            .filter(x => {
-                const findFilter = selectedFilters.filter(y => y.filterKey === x.key);
-                if (findFilter.length > 0) {
-                    return x.type === 'MULTISELECT' && findFilter.length < (x.options || []).length;
-                }
-
-                return true;
-            });
-
-        setOptions(options);
+            return [...tmpFilters, {
+                filterLabel,
+                filterKey,
+                value: filterValue,
+                key:   value,
+            }]
+        });
     }
 
     const handleValueSelect = (value: string) => {
@@ -177,15 +165,7 @@ export function Filter(
     };
 
     // show the primary entries
-    const optionsFirstLevel = originalOptions
-        .filter(x => {
-            const findFilter = selectedFilters.filter(y => y.filterKey === x.key);
-            if (findFilter.length > 0) {
-                return x.type === 'MULTISELECT' && findFilter.length < (x.options || []).length;
-            }
-
-            return true;
-        })
+    const optionsFirstLevel = options
         .map((item) => (
             <Combobox.Option
                 value={item.key}
@@ -248,9 +228,7 @@ export function Filter(
                 <PillsInput
                     styles={{
                         input: {
-                            borderLeft: 0,
-                            borderRight: 0,
-                            borderTop: 0,
+                            border: 0,
                         }
                     }}
                 >
@@ -272,7 +250,7 @@ export function Filter(
                                         setSearch('');
                                         setCurrentSelected(undefined);
                                         setCurrentSelectedOptions([]);
-                                        resetOptions();
+                                        //resetOptions();
                                     }
                                 }}
                                 onKeyDown={(event) => {

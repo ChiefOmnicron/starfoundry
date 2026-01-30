@@ -3,6 +3,7 @@ mod extractor;
 mod history;
 mod jwks;
 mod jwt;
+mod login_corporation;
 mod login;
 mod token;
 
@@ -13,6 +14,7 @@ pub use self::extractor::*;
 pub use self::jwks::*;
 pub use self::jwt::*;
 pub use self::login::*;
+pub use self::login_corporation::*;
 pub use self::token::*;
 
 use utoipa_axum::router::OpenApiRouter;
@@ -25,6 +27,7 @@ pub fn routes() -> OpenApiRouter<AppState> {
     OpenApiRouter::new()
         .routes(routes!(callback))
         .routes(routes!(login))
+        .routes(routes!(login_corporation))
         .routes(routes!(token))
 }
 

@@ -24,7 +24,7 @@ use crate::project_group::service::delete;
 #[utoipa::path(
     delete,
     path = "/{ProjectGroupUuid}",
-    tag = "project-groups",
+    tag = "Project Groups",
     params(
         ProjectGroupUuid,
     ),

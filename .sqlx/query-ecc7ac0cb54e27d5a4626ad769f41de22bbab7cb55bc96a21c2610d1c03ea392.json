@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM asset_blueprint\n            WHERE owner_id = $1\n            AND NOT item_id = ANY($2)\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int8Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "ecc7ac0cb54e27d5a4626ad769f41de22bbab7cb55bc96a21c2610d1c03ea392"
+}

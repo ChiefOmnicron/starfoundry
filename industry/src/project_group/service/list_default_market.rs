@@ -1,10 +1,11 @@
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::EveGatewayApiClient;
+use starfoundry_lib_industry::Structure;
+use starfoundry_lib_types::CharacterId;
 
 use crate::project_group::error::{ProjectGroupError, Result};
 use crate::project_group::ProjectGroupUuid;
-use crate::structure::service::{FetchStructureQuery, Structure};
-use starfoundry_lib_types::CharacterId;
+use crate::structure::service::FetchStructureQuery;
 
 pub async fn list_default_market(
     pool:                   &PgPool,

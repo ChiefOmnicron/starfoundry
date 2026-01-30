@@ -1,17 +1,26 @@
 use starfoundry_lib_gateway::ApiClient;
-use starfoundry_lib_types::{CategoryId, CharacterId, GroupId, StructureId, SystemId, TypeId};
+use starfoundry_lib_types::{CharacterId, StructureId, SystemId, TypeId};
 
+use crate::{CharacterInfo, EveGatewayApiClientAsset, EveGatewayApiClientIndustry, EveGatewayApiClientItem, ResolveStructureResponse, StructureRigBlueprintBonus, StructureRigResponse, StructureServiceResponse, System};
+use crate::contract::EveGatewayApiClientContract;
 use crate::error::Result;
-use crate::{Category, CharacterInfo, EveGatewayApiClientMarket, Group, Item, ListItemFilter, ResolveStructureResponse, StructureRigResponse, StructureServiceResponse, System};
+use crate::market::EveGatewayApiClientMarket;
 
-pub trait EveGatewayApiClient: ApiClient + EveGatewayApiClientMarket {
+pub trait EveGatewayApiClient:
+    ApiClient +
+    EveGatewayApiClientAsset +
+    EveGatewayApiClientContract +
+    EveGatewayApiClientIndustry +
+    EveGatewayApiClientItem +
+    EveGatewayApiClientMarket {
+
     #[allow(async_fn_in_trait)]
     async fn fetch_character(
         &self,
         character_id: CharacterId,
     ) -> Result<CharacterInfo> {
         self
-            .fetch(&format!("characters/{}", *character_id), &[])
+            .fetch(&format!("characters/{}", *character_id), &())
             .await
             .map_err(Into::into)
     }
@@ -28,64 +37,12 @@ pub trait EveGatewayApiClient: ApiClient + EveGatewayApiClientMarket {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn fetch_item(
-        &self,
-        type_id: TypeId,
-    ) -> Result<Option<Item>> {
-        self
-            .fetch(&format!("items/{}", *type_id), &[])
-            .await
-            .map_err(Into::into)
-    }
-
-    #[allow(async_fn_in_trait)]
-    async fn fetch_item_bulk(
-        &self,
-        type_ids: Vec<TypeId>,
-    ) -> Result<Vec<Item>> {
-        self
-            .post("items", type_ids)
-            .await
-            .map_err(Into::into)
-    }
-
-    #[allow(async_fn_in_trait)]
-    async fn fetch_category(
-        &self,
-        category_id: CategoryId,
-    ) -> Result<Option<Category>> {
-        self
-            .fetch(&format!("items/category/{}", *category_id), &[])
-            .await
-            .map_err(Into::into)
-    }
-
-    #[allow(async_fn_in_trait)]
-    async fn fetch_group(
-        &self,
-        group_id: GroupId,
-    ) -> Result<Option<Group>> {
-        self
-            .fetch(&format!("items/group/{}", *group_id), &[])
-            .await
-            .map_err(Into::into)
-    }
-
-    #[allow(async_fn_in_trait)]
-    async fn list_items(
-        &self,
-        _filter: ListItemFilter,
-    ) -> Result<Vec<Item>> {
-        unimplemented!()
-    }
-
-    #[allow(async_fn_in_trait)]
     async fn resolve_structure(
         &self,
         structure_id: StructureId,
     ) -> Result<ResolveStructureResponse> {
         self
-            .fetch(&format!("structures/{}", *structure_id), &[])
+            .fetch(&format!("structures/{}", *structure_id), &())
             .await
             .map_err(Into::into)
     }
@@ -96,7 +53,7 @@ pub trait EveGatewayApiClient: ApiClient + EveGatewayApiClientMarket {
         rig_type_id: TypeId,
     ) -> Result<Option<StructureRigResponse>> {
         self
-            .fetch(&format!("structures/rigs/{}", *rig_type_id), &[])
+            .fetch(&format!("structures/rigs/{}", *rig_type_id), &())
             .await
             .map_err(Into::into)
     }
@@ -107,7 +64,7 @@ pub trait EveGatewayApiClient: ApiClient + EveGatewayApiClientMarket {
         service_type_id: TypeId,
     ) -> Result<Option<StructureServiceResponse>> {
         self
-            .fetch(&format!("structures/services/{}", *service_type_id), &[])
+            .fetch(&format!("structures/services/{}", *service_type_id), &())
             .await
             .map_err(Into::into)
     }
@@ -118,7 +75,7 @@ pub trait EveGatewayApiClient: ApiClient + EveGatewayApiClientMarket {
         structure_type_id: TypeId,
     ) -> Result<Vec<StructureRigResponse>> {
         self
-            .fetch(&format!("structures/{}/rigs", *structure_type_id), &[])
+            .fetch(&format!("structures/{}/rigs", *structure_type_id), &())
             .await
             .map_err(Into::into)
     }
@@ -129,7 +86,18 @@ pub trait EveGatewayApiClient: ApiClient + EveGatewayApiClientMarket {
         structure_type_id: TypeId,
     ) -> Result<StructureServiceResponse> {
         self
-            .fetch(&format!("structures/{}/services", *structure_type_id), &[])
+            .fetch(&format!("structures/{}/services", *structure_type_id), &())
+            .await
+            .map_err(Into::into)
+    }
+
+    #[allow(async_fn_in_trait)]
+    async fn list_rig_blueprints(
+        &self,
+        rig_type_ids: Vec<TypeId>,
+    ) -> Result<Vec<StructureRigBlueprintBonus>> {
+        self
+            .post("structures/rigs", rig_type_ids)
             .await
             .map_err(Into::into)
     }
@@ -140,7 +108,7 @@ pub trait EveGatewayApiClient: ApiClient + EveGatewayApiClientMarket {
         system_id: SystemId,
     ) -> Result<Option<System>> {
         self
-            .fetch(&format!("universe/systems/{}", *system_id), &[])
+            .fetch(&format!("universe/systems/{}", *system_id), &())
             .await
             .map_err(Into::into)
     }

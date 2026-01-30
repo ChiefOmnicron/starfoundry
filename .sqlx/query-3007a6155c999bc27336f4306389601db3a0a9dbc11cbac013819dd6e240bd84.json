@@ -1,0 +1,23 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT 1 as exists\n                FROM worker_queue\n                WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')\n                AND task = $1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "exists",
+        "type_info": "Int4",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "3007a6155c999bc27336f4306389601db3a0a9dbc11cbac013819dd6e240bd84"
+}

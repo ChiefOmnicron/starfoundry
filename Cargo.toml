@@ -16,26 +16,26 @@ members = [
   # new, could use some cleanup
   'gateway',
   'gateway_lib',
-
-  # refactor due to new services
   'eve-gateway_lib',
+  'eve-gateway_worker',
   'eve-gateway',
   'industry',
+  'industry_lib',
+  'market',
+  'market_lib',
 
   # new workers
-  'market-worker',
+  'market_worker',
   'worker_lib',
 
   # trash tier
   'store',
-  'meta_webserver',
+  #'meta_webserver',
   'worker-store-cost',
   'worker-eve_sde_parser',
-  'libs/appraisal',
-  'libs/compression',
-  'libs/eve_api',
+
+  # deprecated
   'libs/items',
-  'libs/notification',
   'libs/structures',
 
   'uuidv7_migration',

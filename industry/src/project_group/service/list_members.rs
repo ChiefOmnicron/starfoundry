@@ -51,7 +51,7 @@ pub async fn list_members(
     Ok(members)
 }
 
-#[derive(Debug, Deserialize, Serialize, ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 #[schema(
     example = json!({
         "character_name": "SomeCharacterName",

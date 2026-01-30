@@ -1,0 +1,127 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                type_id,\n                volume,\n                meta_group_id,\n                repackaged,\n                i.category_id,\n                i.group_id,\n                i.name,\n                c.name AS \"category_name\",\n                g.name AS \"group_name\"\n            FROM item i\n            JOIN category c ON i.category_id = c.category_id\n            JOIN groups g ON i.group_id = g.group_id\n            WHERE\n                NOT (LOWER(i.name) LIKE '%' || LOWER($1) || '%') IS FALSE AND\n                NOT ($2::INTEGER[] IS NULL OR i.group_id = ANY($2)) IS FALSE AND\n                NOT ($3::INTEGER[] IS NULL OR i.category_id = ANY($3)) IS FALSE AND\n                -- exclude unnecessary categories\n                i.category_id != ALL(ARRAY[2, 11, 14, 30, 63, 91, 2118, 350001])\n            ORDER BY i.name ASC\n            LIMIT $4\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "type_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "type_id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "volume",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "volume"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "meta_group_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "meta_group_id"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "repackaged",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "repackaged"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "category_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "category_id"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "group_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "group_id"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "item",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "category_name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "category",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "group_name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "groups",
+            "name": "name"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Int4Array",
+        "Int4Array",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "40610c2e346e87786d5b05993009b78fe9b5c81e82b47dc38f1a424779f87d22"
+}
