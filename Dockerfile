@@ -75,6 +75,17 @@ COPY        --from=eve-gateway-api-builder /app/target/release/starfoundry_bin-e
 CMD         ["/usr/local/bin/app"]
 
 ###############################################################################
+#           eve_gateway_worker
+###############################################################################
+FROM builder AS eve-gateway-worker-builder
+RUN         cargo build --bin starfoundry_bin-eve_gateway_worker --release
+
+FROM ubuntu:26.04 AS eve-gateway-worker
+WORKDIR     /usr/local/bin
+COPY        --from=eve-gateway-worker-builder /app/target/release/starfoundry_bin-eve_gateway_worker /usr/local/bin/app
+CMD         ["/usr/local/bin/app"]
+
+###############################################################################
 #           gateway_api
 ###############################################################################
 FROM builder AS gateway-api-builder

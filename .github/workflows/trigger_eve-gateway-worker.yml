@@ -8,6 +8,7 @@ on:
     paths:
       - 'eve-gateway_worker/**'
       - '.github/workflows/trigger_eve-gateway_worker.yml'
+      - 'Dockerfile'
 
 concurrency:
   # Make sure every job on main has unique group id (run_id), so cancel-in-progress only affects PR's
@@ -33,7 +34,7 @@ jobs:
       - test
     with:
       name: eve-gateway/worker
-      image: eve-gateway_worker
+      image: eve-gateway-worker
 
   ship-it:
     uses: ./.github/workflows/common_deploy.yml

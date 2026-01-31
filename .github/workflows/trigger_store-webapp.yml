@@ -5,10 +5,6 @@ on:
     branches:
       - main
       - rewrite
-    #paths:
-    #  - 'webapp_store/**'
-    #  - '.github/workflows/trigger_store-webapp.yml'
-  pull_request:
     paths:
       - 'webapp_store/**'
       - '.github/workflows/trigger_store-webapp.yml'

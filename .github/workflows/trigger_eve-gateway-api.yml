@@ -5,10 +5,6 @@ on:
     branches:
       - main
       - rewrite
-    #paths:
-      #- 'eve-gateway/**'
-      #- '.github/workflows/trigger_eve-gateway-api.yml'
-  pull_request:
     paths:
       - 'eve-gateway/**'
       - '.github/workflows/trigger_eve-gateway-api.yml'

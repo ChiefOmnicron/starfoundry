@@ -5,11 +5,6 @@ on:
     branches:
       - main
       - rewrite
-    #paths:
-    #  - 'store/**'
-    #  - 'eve-gateway_lib/**'
-    #  - '.github/workflows/trigger_store-api.yml'
-  pull_request:
     paths:
       - 'store/**'
       - 'eve-gateway_lib/**'
