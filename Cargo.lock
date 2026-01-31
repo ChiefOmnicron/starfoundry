@@ -2824,7 +2824,6 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "dotenvy",
- "mimalloc",
  "prometheus-client",
  "serde",
  "serde_json",
