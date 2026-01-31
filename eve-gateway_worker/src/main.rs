@@ -45,7 +45,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?;
     sqlx::migrate!().run(&pool).await?;
 
-    let mut metric_registry = Registry::with_prefix("starfoundry_market_worker");
+    let mut metric_registry = Registry::with_prefix("starfoundry_eve_gateway_worker");
     let metric = WorkerMetric::new();
 
     let (tx, mut rx) = mpsc::channel(5);
