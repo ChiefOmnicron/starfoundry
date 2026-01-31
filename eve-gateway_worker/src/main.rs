@@ -43,6 +43,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let pool = PgPoolOptions::new()
         .connect(&config.database_url)
         .await?;
+    sqlx::migrate!().run(&pool).await?;
 
     let mut metric_registry = Registry::with_prefix("starfoundry_market_worker");
     let metric = WorkerMetric::new();
