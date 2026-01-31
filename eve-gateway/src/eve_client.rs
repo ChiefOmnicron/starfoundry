@@ -2,7 +2,6 @@ mod character;
 mod corporation;
 mod jwt_key;
 mod jwt;
-mod models;
 mod utils;
 
 /// errors that can be thrown by this module

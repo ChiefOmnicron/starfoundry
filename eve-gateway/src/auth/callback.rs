@@ -1,5 +1,6 @@
 use axum::extract::{Query, State};
 use axum::http::StatusCode;
+use axum::Json;
 use axum::response::IntoResponse;
 use base64::prelude::*;
 use sha2::{Digest, Sha256};
@@ -8,13 +9,12 @@ use std::str::FromStr;
 use uuid::Uuid;
 
 use crate::api_docs::{BadRequest, InternalServerError};
-use crate::auth::RefreshTokenClaims;
 use crate::auth::error::{AuthError, Result};
 use crate::auth::history::insert_into_history;
+use crate::auth::RefreshTokenClaims;
+use crate::character::service::refresh_character_in_db;
 use crate::eve_client::{EveApiClient, EveJwtToken};
-use crate::character::refresh_character_in_db;
 use crate::state::AppState;
-use axum::Json;
 
 const QUERY_PARAM_CODE: &str  = "code";
 const QUERY_PARAM_STATE: &str = "state";

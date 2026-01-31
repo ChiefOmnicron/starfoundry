@@ -21,7 +21,7 @@ pub enum WorkerEveGatewayTask {
 
     /// Fetches the system index for all systems
     SystemIndex,
-    //CompressSystemIndex,
+    SystemIndexCompress,
 
     // Skills
     // Industry Jobs Character
@@ -39,6 +39,7 @@ impl WorkerTask for WorkerEveGatewayTask {
             Self::CharacterBlueprints   => self.add_minutes(60),
             Self::CorporationBlueprints => self.add_minutes(60),
             Self::SystemIndex           => self.add_minutes(60),
+            Self::SystemIndexCompress   => self.during_downtime(),
         }
     }
 }
@@ -54,6 +55,7 @@ impl TryFrom<String> for WorkerEveGatewayTask {
             "CHARACTER_BLUEPRINTS"   => Ok(Self::CharacterBlueprints),
             "CORPORATION_BLUEPRINTS" => Ok(Self::CorporationBlueprints),
             "SYSTEM_INDEX"           => Ok(Self::SystemIndex),
+            "SYSTEM_INDEX_COMPRESS"  => Ok(Self::SystemIndexCompress),
             _                        => Err("Invalid".into()),
         }
     }
@@ -68,6 +70,7 @@ impl Into<String> for WorkerEveGatewayTask {
             Self::CharacterBlueprints   => "CHARACTER_BLUEPRINTS",
             Self::CorporationBlueprints => "CORPORATION_BLUEPRINTS",
             Self::SystemIndex           => "SYSTEM_INDEX",
+            Self::SystemIndexCompress   => "SYSTEM_INDEX_COMPRESS",
         }.into()
     }
 }

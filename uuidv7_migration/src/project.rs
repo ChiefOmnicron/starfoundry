@@ -106,6 +106,11 @@ pub async fn migrate_project(
         "#)
         .fetch_all(postgres_source)
         .await?;
+    sqlx::query!("
+            DELETE FROM project_job
+        ")
+        .execute(&mut *transaction)
+        .await?;
     for job in jobs {
         let timestamp = Timestamp::from_unix(NoContext, job.created_at.timestamp() as u64, 0);
         let job_id = Uuid::new_v7(timestamp);
@@ -120,14 +125,6 @@ pub async fn migrate_project(
             &Uuid::default()
         };
 
-        sqlx::query!("
-                DELETE FROM project_job
-                WHERE project_id = $1
-            ",
-                project_id,
-            )
-            .execute(&mut *transaction)
-            .await?;
         sqlx::query!("
                 INSERT INTO project_job (
                     project_id,
@@ -173,6 +170,11 @@ pub async fn migrate_project(
         "#)
         .fetch_all(postgres_source)
         .await?;
+    sqlx::query!("
+            DELETE FROM project_misc
+        ")
+        .execute(&mut *transaction)
+        .await?;
     for misc in misc_entries {
         let timestamp = Timestamp::from_unix(NoContext, misc.created_at.timestamp() as u64, 0);
         let misc_id = Uuid::new_v7(timestamp);
@@ -182,14 +184,6 @@ pub async fn migrate_project(
             continue;
         };
 
-        sqlx::query!("
-                DELETE FROM project_misc
-                WHERE project_id = $1
-            ",
-                project_id,
-            )
-            .execute(&mut *transaction)
-            .await?;
         sqlx::query!("
                 INSERT INTO project_misc (
                     project_id,

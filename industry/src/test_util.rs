@@ -342,8 +342,8 @@ impl ApiClient for EveGatewayTestApiClient {
 impl ApiClient for MarketTestApiClient {
     async fn fetch<Q: Serialize, T>(
             &self,
-            path:  impl Into<String>,
-            query: &Q,
+            _path:  impl Into<String>,
+            _query: &Q,
         ) -> starfoundry_lib_gateway::Result<T>
         where
             T: serde::de::DeserializeOwned {
@@ -352,9 +352,9 @@ impl ApiClient for MarketTestApiClient {
 
     async fn fetch_auth<Q: Serialize, T>(
             &self,
-            path:    impl Into<String>,
-            query:   &Q,
-            headers: HeaderMap,
+            _path:    impl Into<String>,
+            _query:   &Q,
+            _headers: HeaderMap,
         ) -> starfoundry_lib_gateway::Result<T>
         where
             T: serde::de::DeserializeOwned {
@@ -363,8 +363,8 @@ impl ApiClient for MarketTestApiClient {
 
     async fn post<D, T>(
             &self,
-            path: impl Into<String>,
-            data: D,
+            _path: impl Into<String>,
+            _data: D,
         ) -> starfoundry_lib_gateway::Result<T>
         where
             D: std::fmt::Debug + Serialize + Send + Sync,

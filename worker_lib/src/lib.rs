@@ -123,3 +123,14 @@ impl<M, WT> Worker<M, WT>
         }
     }
 }
+
+pub async fn dummy<M, WT>(
+    _: &PgPool,
+    _: &mut Task<M, WT>,
+) -> Result<()>
+    where
+        M: TaskMetric,
+        WT: WorkerTask, {
+
+    return Ok(())
+}

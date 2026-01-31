@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                    DELETE FROM industry_hub_structure\n                    WHERE industry_hub_id = $1\n                ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "27e0bc21f48c9560c471001b759889cd8b60fdad0990a964fe0965e77abb5357"
+}

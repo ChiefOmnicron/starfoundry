@@ -101,6 +101,7 @@ async fn sync_tasks(
     for task in vec![
         WorkerEveGatewayTask::Sync,
         WorkerEveGatewayTask::SystemIndex,
+        WorkerEveGatewayTask::SystemIndexCompress,
     ] {
         let task: String = task.into();
 

@@ -5,10 +5,10 @@ use axum::http::StatusCode;
 use axum::Json;
 use serde_json::json;
 use sqlx::PgPool;
+use starfoundry_lib_eve_gateway::CharacterInfo;
 
 use crate::auth::error::{AuthError, Result};
 use crate::auth::verify;
-use crate::character::CharacterInfo;
 use crate::eve_client::EveApiClient;
 use crate::state::AppState;
 

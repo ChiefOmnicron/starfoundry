@@ -1,0 +1,40 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                source_uuid,\n                target_uuid\n            FROM tmp_mappings\n            WHERE environment = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "source_uuid",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "tmp_mappings",
+            "name": "source_uuid"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "target_uuid",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "tmp_mappings",
+            "name": "target_uuid"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "f55b0f0c8931968cbb91578207c4e05a6dcea512b4bf402639c8eadf71da234c"
+}

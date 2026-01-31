@@ -30,8 +30,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut mappings = mappings(&postgres_source, environment.clone()).await;
 
-    cleanup(&postgres_destination_industry).await?;
-    cleanup_mapping(&postgres_source, environment.clone()).await;
+    //cleanup(&postgres_destination_industry).await?;
+    //cleanup_mapping(&postgres_source, environment.clone()).await;
     migrate_structure(&postgres_source, &postgres_destination_industry, &mut mappings).await?;
     migrate_industry_hubs(&postgres_source, &postgres_destination_industry, &mut mappings).await?;
 
@@ -89,6 +89,7 @@ async fn save_mappings(
                 $2::UUID[],
                 $3::UUID[]
             )
+            ON CONFLICT (source_uuid) DO NOTHING
         ",
             environment,
             &source,

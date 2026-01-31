@@ -7,12 +7,12 @@ use base64::prelude::*;
 use reqwest::header::HOST;
 use serde_json::json;
 use sha2::{Digest, Sha256};
+use starfoundry_lib_eve_gateway::CharacterInfo;
 use utoipa::ToSchema;
 
 use crate::api_docs::Unauthorized;
 use crate::auth::{AccessTokenClaims, RefreshTokenClaims};
 use crate::auth::error::{AuthError, Result};
-use crate::character::CharacterInfo;
 use crate::state::AppState;
 
 /// Access Token

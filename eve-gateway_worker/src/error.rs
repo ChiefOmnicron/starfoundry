@@ -25,6 +25,8 @@ pub enum Error {
 
     #[error("error while inserting system index, error: '{0}'")]
     InsertSystemIndex(sqlx::Error),
+    #[error("error while compressing system index, error: '{0}'")]
+    CompressSystemIndex(sqlx::Error),
 
     #[error("generic sqlx error: '{0}'")]
     GenericSqlxError(sqlx::Error),

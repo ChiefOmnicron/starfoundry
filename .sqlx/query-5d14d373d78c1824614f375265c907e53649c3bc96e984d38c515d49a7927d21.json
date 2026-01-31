@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO tmp_mappings\n            (\n                environment,\n                source_uuid,\n                target_uuid\n            )\n            SELECT $1, * FROM UNNEST(\n                $2::UUID[],\n                $3::UUID[]\n            )\n            ON CONFLICT (source_uuid) DO NOTHING\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Varchar",
+        "UuidArray",
+        "UuidArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "5d14d373d78c1824614f375265c907e53649c3bc96e984d38c515d49a7927d21"
+}

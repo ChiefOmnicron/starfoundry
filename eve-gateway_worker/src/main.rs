@@ -131,43 +131,42 @@ async fn task_select(
         },
 
         WorkerEveGatewayTask::CharacterAssets => {
-            //crate::asset::character::assets(
-            dummy(
+            crate::asset::character::assets(
                 pool,
-                task
+                task,
             ).await
         },
         WorkerEveGatewayTask::CorporationAssets => {
-            //crate::asset::corporation::assets(
-            dummy(
+            crate::asset::corporation::assets(
                 pool,
-                task
+                task,
             ).await
         },
 
         WorkerEveGatewayTask::CharacterBlueprints => {
-            //crate::blueprint::character::blueprints(
-            dummy(
+            crate::blueprint::character::blueprints(
                 pool,
-                task
+                task,
             ).await
         },
         WorkerEveGatewayTask::CorporationBlueprints => {
-            //crate::blueprint::corporation::blueprints(
-            dummy(
+            crate::blueprint::corporation::blueprints(
                 pool,
-                task
+                task,
             ).await
         },
+
         WorkerEveGatewayTask::SystemIndex => {
             crate::industry::system_index(
                 pool,
-                task
+                task,
+            ).await
+        },
+        WorkerEveGatewayTask::SystemIndexCompress => {
+            crate::industry::system_index_compress(
+                pool,
+                task,
             ).await
         },
     }
-}
-
-async fn dummy(_pool: &PgPool, _task: &mut Task<WorkerMetric, WorkerEveGatewayTask>) -> Result<()> {
-    return Ok(())
 }

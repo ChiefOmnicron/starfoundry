@@ -1,0 +1,131 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT\n                    DATE(timestamp) AS \"date!\",\n                    *\n                FROM system_index\n                WHERE system_id = $1\n                --AND DATE(timestamp) > DATE(NOW() - INTERVAL '7 DAY')\n                AND DATE(timestamp) < DATE(NOW() - INTERVAL '3 DAY')\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "date!",
+        "type_info": "Date",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 1,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "system_index",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "timestamp",
+        "type_info": "Timestamp",
+        "origin": {
+          "Table": {
+            "table": "system_index",
+            "name": "timestamp"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "system_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "system_index",
+            "name": "system_id"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "manufacturing",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "system_index",
+            "name": "manufacturing"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "copying",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "system_index",
+            "name": "copying"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "invention",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "system_index",
+            "name": "invention"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "reaction",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "system_index",
+            "name": "reaction"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "research_time",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "system_index",
+            "name": "research_time"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "research_material",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "system_index",
+            "name": "research_material"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      null,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "1708e7dbd9b9f8839070e66d3061df2f0ba916f238f2b84935d52aa580c9d764"
+}

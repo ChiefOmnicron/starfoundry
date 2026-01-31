@@ -1,0 +1,36 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                INSERT INTO project (\n                    id,\n                    name,\n                    owner,\n                    status,\n                    sell_price,\n                    orderer,\n                    note,\n                    --structure_group_id,\n                    project_group_id,\n                    created_at,\n                    updated_at\n                )\n                VALUES ($1, $2, $3, $4::PROJECT_STATUS, $5, $6, $7, $8, $9, $10)\n                ON CONFLICT (id)\n                DO UPDATE SET\n                    name        = EXCLUDED.name,\n                    status      = EXCLUDED.status,\n                    sell_price  = EXCLUDED.sell_price,\n                    orderer     = EXCLUDED.orderer,\n                    note        = EXCLUDED.note,\n                    updated_at  = EXCLUDED.updated_at\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Varchar",
+        "Int4",
+        {
+          "Custom": {
+            "name": "project_status",
+            "kind": {
+              "Enum": [
+                "PREPARING",
+                "IN_PROGRESS",
+                "PAUSED",
+                "ABORTED",
+                "DONE"
+              ]
+            }
+          }
+        },
+        "Float8",
+        "Varchar",
+        "Varchar",
+        "Uuid",
+        "Timestamptz",
+        "Timestamptz"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "2639ed244eab7bb2c089bf10afe63895787291a5e364b937260b819ebb17fe6b"
+}

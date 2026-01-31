@@ -90,7 +90,7 @@ pub async fn api(
         .await?;
 
     let result = if category == "character" {
-        let characters = crate::character::fetch_bulk(
+        let characters = crate::character::service::fetch_character_bulk(
                 &state.postgres,
                 search_data
                     .character

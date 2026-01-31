@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM project_job\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "fd2dbb6452cc5f3572e71636d59c9afd2937e463048d73e87d97f3e79bb3b507"
+}

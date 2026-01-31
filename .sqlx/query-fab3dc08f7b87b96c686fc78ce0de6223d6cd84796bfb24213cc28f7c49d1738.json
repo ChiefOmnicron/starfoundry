@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM\n            tmp_mappings\n            WHERE environment = $1\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "fab3dc08f7b87b96c686fc78ce0de6223d6cd84796bfb24213cc28f7c49d1738"
+}

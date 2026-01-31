@@ -2,22 +2,22 @@ mod error;
 mod fetch;
 mod fetch_bulk;
 
+pub mod service;
+
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
 
 use crate::state::AppState;
 
 pub use self::error::*;
-pub use self::fetch::*;
-pub use self::fetch_bulk::*;
 
 /// returns all routes that are under the path `/characters`
 pub fn routes() -> OpenApiRouter<AppState> {
     let fetch = OpenApiRouter::new()
-        .routes(routes!(fetch::api));
+        .routes(routes!(self::fetch::api));
 
     let fetch_bulk = OpenApiRouter::new()
-        .routes(routes!(fetch_bulk::api));
+        .routes(routes!(self::fetch_bulk::api));
 
     let eve_fetch_assets = OpenApiRouter::new()
         .routes(routes!(crate::asset::fetch_character_asset_api));

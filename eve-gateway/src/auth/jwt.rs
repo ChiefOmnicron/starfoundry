@@ -1,10 +1,10 @@
 use chrono::{Duration, Utc};
 use jsonwebtoken::{Algorithm, DecodingKey, EncodingKey, Header, TokenData, Validation, decode, encode};
 use serde::{Deserialize, Serialize};
+use starfoundry_lib_eve_gateway::CharacterInfo;
 use starfoundry_lib_types::CharacterId;
 
 use crate::auth::error::{AuthError, Result};
-use crate::character::CharacterInfo;
 
 pub const ENV_JWT_ECDSA_PRIVATE: &str  = "STARFOUNDRY_EVE_GATEWAY_JWT_ECDSA_PRIVATE";
 pub const ENV_JWT_ECDSA_PUBLIC: &str   = "STARFOUNDRY_EVE_GATEWAY_JWT_ECDSA_PUBLIC";

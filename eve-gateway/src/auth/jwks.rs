@@ -5,12 +5,12 @@ use jwk_kit::generator::ecdsa::extract_es256_coordinates;
 use jwk_kit::jwk::{create_jwks, JwkBuilder};
 use reqwest::StatusCode;
 use serde::Deserialize;
+use starfoundry_lib_eve_gateway::CharacterInfo;
 use utoipa::ToSchema;
 
 use crate::api_docs::InternalServerError;
 use crate::auth::error::{AuthError, Result};
 use crate::auth::{issuer, public_ecdsa_key};
-use crate::character::CharacterInfo;
 
 /// JWKS
 /// 
