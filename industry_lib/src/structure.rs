@@ -5,7 +5,8 @@ pub use self::internal::*;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use starfoundry_lib_eve_gateway::{Item, StructurePosition, StructureRigResponse, StructureServiceResponse, StructureType, System};
-use starfoundry_lib_types::starfoundry_uuid;
+use starfoundry_lib_types::{TypeId, starfoundry_uuid};
+use std::collections::HashMap;
 
 starfoundry_uuid!(StructureUuid, "StructureUuid");
 
@@ -68,6 +69,8 @@ pub struct Structure {
     pub position:             StructurePosition,
     /// Type of the structure
     pub structure_type:       StructureType,
+    /// Taxes by service type id
+    pub taxes:                 HashMap<TypeId, f32>,
 
     #[serde(skip_deserializing)]
     #[serde(skip_serializing_if = "Option::is_none")]

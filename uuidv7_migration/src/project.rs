@@ -31,9 +31,14 @@ pub async fn migrate_project(
 
     let mut transaction = postgres_destination.begin().await?;
     for project in projects {
-        let timestamp = Timestamp::from_unix(NoContext, project.created_at.timestamp() as u64, 0);
-        let project_id = Uuid::new_v7(timestamp);
-        mappings.insert(project.id, project_id);
+        let project_id = if let Some(x) = mappings.get(&project.id) {
+            x.clone()
+        } else {
+            let timestamp = Timestamp::from_unix(NoContext, project.created_at.timestamp() as u64, 0);
+            let project_id = Uuid::new_v7(timestamp);
+            mappings.insert(project.id, project_id);
+            project_id
+        };
 
         if let None = mappings.get(&project.project_group_id) {
             mappings.remove(&project.id);

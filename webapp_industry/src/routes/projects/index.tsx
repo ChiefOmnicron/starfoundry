@@ -3,10 +3,11 @@ import { createFileRoute } from '@tanstack/react-router';
 import { Filter, type FilterPropEntry, type SelectedFilter } from '@/components/Filter';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { LoadingError } from '@/components/LoadingError';
-import { ProjectList } from '@/components/ProjectCard';
+import { ProjectList } from '@/components/ProjectList';
 import { useDisclosure, useIsFirstRender } from '@mantine/hooks';
 import { useListProjects, type ProjectFilter } from '@/services/projects/list';
 import { useState } from 'react';
+import { AddProjectModal } from './-modal/add';
 
 interface QueryParams {
     deleted?: boolean;
@@ -51,7 +52,7 @@ const filters: FilterPropEntry[] = [{
 
 function RouteComponent() {
     const { deleted: deletedResource } = Route.useSearch();
-    const [_, { open }] = useDisclosure(false);
+    const [opened, { open, close }] = useDisclosure(false);
 
     const isFirstRender = useIsFirstRender();
 
@@ -125,6 +126,11 @@ function RouteComponent() {
 
     return <>
         { notification() }
+
+        <AddProjectModal
+            opened={opened}
+            close={close}
+        />
 
         {
             isFirstRender

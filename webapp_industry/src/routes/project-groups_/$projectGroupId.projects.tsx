@@ -3,7 +3,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { LoadingError } from '@/components/LoadingError';
 import { useListProjects } from '@/services/projects/list';
-import { ProjectList } from '@/components/ProjectCard';
+import { ProjectList } from '@/components/ProjectList';
 
 export const Route = createFileRoute(
     '/project-groups_/$projectGroupId/projects',

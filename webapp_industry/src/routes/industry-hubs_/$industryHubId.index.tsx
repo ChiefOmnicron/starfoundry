@@ -9,7 +9,7 @@ import { LoadingError } from '@/components/LoadingError';
 import { Route as StructureListRoute } from '@/routes/structures/index';
 import { ShareIndustryHub } from '@/routes/industry-hubs_/-component/Share';
 import { StructureLayout } from '@/components/StructureLayout';
-import { StructureList } from '@/components/StructureCard';
+import { StructureList } from '@/components/StructureList';
 import { StructureSelectorModal } from '@/components/selectors/StructureSelectorModal';
 import { updateIndustryHub, type UpdateIndustryHub } from '@/services/industry-hub/update';
 import { useDisclosure } from '@mantine/hooks';

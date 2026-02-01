@@ -1,3 +1,4 @@
+mod archive;
 mod create;
 mod delete;
 mod error;
@@ -34,6 +35,11 @@ use crate::project_group::permission::{assert_exists, assert_read, assert_owner,
 pub fn routes(
     state: AppState,
 ) -> OpenApiRouter<AppState> {
+    let archive = OpenApiRouter::new()
+        .routes(routes!(archive::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_owner))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+
     let create = OpenApiRouter::new()
         .routes(routes!(create::api));
 
@@ -116,6 +122,7 @@ pub fn routes(
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
 
     OpenApiRouter::new()
+        .merge(archive)
         .merge(create)
         .merge(list)
         .merge(update)

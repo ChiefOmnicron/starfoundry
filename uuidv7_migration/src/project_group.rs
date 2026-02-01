@@ -41,9 +41,14 @@ pub async fn migrate_project_group(
             continue;
         }
 
-        let timestamp = Timestamp::from_unix(NoContext, project_group.created_at.timestamp() as u64, 0);
-        let project_group_id = Uuid::new_v7(timestamp);
-        mappings.insert(project_group.id, project_group_id);
+        let project_group_id = if let Some(x) = mappings.get(&project_group.id) {
+            x.clone()
+        } else {
+            let timestamp = Timestamp::from_unix(NoContext, project_group.created_at.timestamp() as u64, 0);
+            let project_group_id = Uuid::new_v7(timestamp);
+            mappings.insert(project_group.id, project_group_id);
+            project_group_id
+        };
 
         sqlx::query!("
                 INSERT INTO project_group

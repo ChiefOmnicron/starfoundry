@@ -68,6 +68,17 @@
             "name": "updated_at"
           }
         }
+      },
+      {
+        "ordinal": 6,
+        "name": "archived",
+        "type_info": "Bool",
+        "origin": {
+          "Table": {
+            "table": "project_group",
+            "name": "archived"
+          }
+        }
       }
     ],
     "parameters": {
@@ -78,6 +89,7 @@
       false,
       false,
       true,
+      false,
       false,
       false
     ]

@@ -8,6 +8,7 @@ use utoipa::ToSchema;
 
 use crate::structure::StructureError;
 use crate::structure::error::Result;
+use std::collections::HashMap;
 
 pub async fn create(
     pool:         &PgPool,
@@ -16,7 +17,12 @@ pub async fn create(
 ) -> Result<StructureUuid> {
     info.valid()?;
 
-    sqlx::query!("
+    let mut transaction = pool
+        .begin()
+        .await
+        .map_err(StructureError::BeginTransaction)?;
+
+    let structure_id = sqlx::query!("
             INSERT INTO structure
             (
                 owner,
@@ -44,10 +50,47 @@ pub async fn create(
             info.position.y,
             info.position.z,
         )
-        .fetch_one(pool)
+        .fetch_one(&mut *transaction)
         .await
         .map(|x| StructureUuid::new(x.id))
-        .map_err(|e| StructureError::CreateStructure(e))
+        .map_err(StructureError::CreateStructure)?;
+
+    let mut type_ids = Vec::new();
+    let mut taxes = Vec::new();
+    info
+        .taxes
+        .into_iter()
+        .for_each(|(type_id, tax)| {
+            type_ids.push(*type_id);
+            taxes.push(tax);
+        });
+
+    sqlx::query!("
+            INSERT INTO structure_tax
+            (
+                structure_id,
+                service_type_id,
+                tax
+            )
+            SELECT $1, * FROM UNNEST(
+                $2::INTEGER[],
+                $3::REAL[]
+            )
+        ",
+            *structure_id,
+            &type_ids,
+            &taxes,
+        )
+        .execute(&mut *transaction)
+        .await
+        .map_err(StructureError::CreateStructure)?;
+
+    transaction
+        .commit()
+        .await
+        .map_err(StructureError::CommitTransaction)?;
+
+    Ok(structure_id)
 }
 
 #[cfg(test)]
@@ -55,6 +98,7 @@ mod create_project_group_test {
     use sqlx::PgPool;
     use starfoundry_lib_eve_gateway::{StructurePosition, StructureType};
     use starfoundry_lib_types::CharacterId;
+    use std::collections::HashMap;
 
     use crate::structure::error::StructureError;
     use super::CreateStructure;
@@ -74,6 +118,7 @@ mod create_project_group_test {
                     services:          Vec::new(),
                     structure_id:      1_000_000_000_000,
                     position:          StructurePosition { x: 0f32, y: 0f32, z: 0f32 },
+                    taxes:             HashMap::new(),
                 }
             )
             .await;
@@ -96,6 +141,7 @@ mod create_project_group_test {
                     services:          Vec::new(),
                     structure_id:      100_000_000_000,
                     position:          StructurePosition { x: 0f32, y: 0f32, z: 0f32 },
+                    taxes:             HashMap::new(),
                 }
             )
             .await;
@@ -118,6 +164,7 @@ mod create_project_group_test {
                     services:          Vec::new(),
                     structure_id:      1_100_000_000_000,
                     position:          StructurePosition { x: 0f32, y: 0f32, z: 0f32 },
+                    taxes:             HashMap::new(),
                 }
             )
             .await;
@@ -172,6 +219,8 @@ pub struct CreateStructure {
     pub services:          Vec<TypeId>,
     /// Position of the structure in the galaxy
     pub position:          StructurePosition,
+    /// Taxes based on service type
+    pub taxes:             HashMap<TypeId, f32>,
 
     /// EVE Id of the structure
     pub structure_id:      i64,

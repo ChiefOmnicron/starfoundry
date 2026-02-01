@@ -68,7 +68,8 @@ mod tests {
     use axum::http::StatusCode;
     use sqlx::PgPool;
     use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
-
+    use std::collections::HashMap;
+    
     use crate::structure::service::UpdateStructure;
     use crate::structure::structure_test_routes;
 
@@ -87,8 +88,9 @@ mod tests {
             .method("PUT")
             .body(Body::new(
                 serde_json::to_string(&UpdateStructure {
-                    rigs: vec![1.into(), 2.into(), 3.into()],
+                    rigs:     vec![1.into(), 2.into(), 3.into()],
                     services: vec![1.into(), 2.into(), 3.into(), 4.into(), 5.into()],
+                    taxes:    HashMap::new(),
                 }).unwrap()
             ))
             .unwrap();
@@ -124,8 +126,9 @@ mod tests {
             .method("PUT")
             .body(Body::new(
                 serde_json::to_string(&UpdateStructure {
-                    rigs: vec![1.into()],
+                    rigs:     vec![1.into()],
                     services: vec![1.into()],
+                    taxes:    HashMap::new(),
                 }).unwrap()
             ))
             .unwrap();

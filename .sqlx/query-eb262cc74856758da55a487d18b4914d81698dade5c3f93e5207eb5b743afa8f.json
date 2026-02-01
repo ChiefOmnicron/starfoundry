@@ -1,0 +1,81 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                pg.id,\n                pg.name,\n                pg.description,\n                pg.owner = $1 AS is_owner,\n                pg.archived,\n                (\n                    SELECT COUNT(*)\n                    FROM project\n                    WHERE project_group_id = pg.id\n                ) AS projects\n            FROM project_group pg\n            JOIN project_group_member pgm ON pg.id = pgm.project_group_id\n            -- fetch all projects where the user is a member\n            WHERE pgm.character_id = $1 AND\n                NOT (LOWER(name) LIKE '%' || LOWER($2) || '%') IS FALSE AND\n                NOT (owner = $1 OR $3) IS FALSE AND\n                archived = $4 AND\n                -- make sure the user got accepted into the group\n                accepted = TRUE\n            ORDER BY pg.name ASC\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "project_group",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "project_group",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "description",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "project_group",
+            "name": "description"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "is_owner",
+        "type_info": "Bool",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 4,
+        "name": "archived",
+        "type_info": "Bool",
+        "origin": {
+          "Table": {
+            "table": "project_group",
+            "name": "archived"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "projects",
+        "type_info": "Int8",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Text",
+        "Bool",
+        "Bool"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      null,
+      false,
+      null
+    ]
+  },
+  "hash": "eb262cc74856758da55a487d18b4914d81698dade5c3f93e5207eb5b743afa8f"
+}

@@ -21,6 +21,7 @@ export const listProjectGroups = async (
 export type ProjectGroupFilter = {
     name?: string;
     owner?: boolean;
+    archived?: boolean;
 }
 
 export const useListProjectGroup = (

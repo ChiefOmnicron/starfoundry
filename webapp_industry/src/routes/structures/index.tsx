@@ -5,7 +5,7 @@ import { Filter, type FilterPropEntry, type SelectedFilter } from '@/components/
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { LoadingError } from '@/components/LoadingError';
 import { normalizeRigServiceName } from '@/services/structure/utils';
-import { StructureList } from '@/components/StructureCard';
+import { StructureList } from '@/components/StructureList';
 import { useDisclosure } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
 import { useListStructure, type StructureFilter } from '@/services/structure/list';

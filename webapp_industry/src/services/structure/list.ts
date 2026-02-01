@@ -28,10 +28,13 @@ export type Structure = {
     rigs:                   StructureRig[];
     services:               Item[];
     position:               StructurePosition;
+    taxes:                  StructureTax,
 
     installable_rigs?:      StructureRig[];
     installable_services?:  StructureService;
 }
+
+export type StructureTax = { [key: number]: number };
 
 export type StructureService = {
     services: Item[],

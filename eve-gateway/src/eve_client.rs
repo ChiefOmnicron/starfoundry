@@ -481,7 +481,8 @@ impl EveApiClient {
                 },
                 StatusCode::FORBIDDEN |
                 StatusCode::UNAUTHORIZED => {
-                    return Err(EveApiError::ClientNotAuthenticated);
+                    let content = response.text().await.unwrap_or_default();
+                    return Err(EveApiError::Unauthorized(request_uri, content));
                 },
                 StatusCode::BAD_GATEWAY => {
                     return Err(EveApiError::BadGateway);

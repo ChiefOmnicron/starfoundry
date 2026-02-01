@@ -5,7 +5,7 @@ import { LIST_PROJECT_GROUP_DEFAULT_MARKETS, useListProjectGroupDefaultMarkets }
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { LoadingError } from '@/components/LoadingError';
 import { Route as StructureRoute } from '@/routes/structures/index';
-import { StructureList } from '@/components/StructureCard';
+import { StructureList } from '@/components/StructureList';
 import { StructureSelectorModal } from '@/components/selectors/StructureSelectorModal';
 import { updateDefaultMarket } from '@/services/project-group/updateDefaultMarket';
 import { useDisclosure } from '@mantine/hooks';

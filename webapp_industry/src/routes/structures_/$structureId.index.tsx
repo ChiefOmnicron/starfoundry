@@ -1,22 +1,23 @@
 import { Alert, Grid, Stack, Table, Title } from '@mantine/core';
+import { compareArray, SaveDialog } from '@/components/SaveDialog';
+import { CopyText } from '@/components/CopyText';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { DeleteResource } from '@/components/DeleteResource';
 import { deleteStructure } from '@/services/structure/delete';
 import { Dotlan } from '@/components/Dotlan';
 import { FETCH_STRUCTURE, useFetchStructure } from '@/services/structure/fetch';
-import { LIST_STRUCTURE } from '@/services/structure/list';
+import { LIST_STRUCTURE, type StructureTax } from '@/services/structure/list';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { LoadingError } from '@/components/LoadingError';
 import { RigSelector } from '@/components/selectors/RigSelector';
 import { Route as StructureListRoute } from '@/routes/structures/index';
 import { ServiceSelector } from '@/components/selectors/ServiceSelector';
-import { updateStructure, type UpdateStructure } from '@/services/structure/update';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
-import type { TypeId } from '@/services/utils';
-import { compareArray, SaveDialog } from '@/components/SaveDialog';
-import { CopyText } from '@/components/CopyText';
 import { systemRigBonusModifier } from '@/services/structure/utils';
+import { TaxByService } from '@/routes/structures_/-components/TaxesByService';
+import { updateStructure, type UpdateStructure } from '@/services/structure/update';
+import { useEffect, useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import type { TypeId } from '@/services/utils';
 
 interface QueryParams {
     created?: boolean;
@@ -45,9 +46,11 @@ function RouteComponent() {
 
     const [selectedRigs, setSelectedRigs] = useState<TypeId[]>([]);
     const [selectedServices, setSelectedServices] = useState<(TypeId)[]>([]);
+    const [taxes, setTaxes] = useState<StructureTax>({});
 
     const [touchedRigs, setTouchedRigs] = useState<boolean>(false);
     const [touchedServices, setTouchedServices] = useState<boolean>(false);
+    const [touchedTaxes, setTouchedTaxes] = useState<boolean>(false);
 
     const {
         isPending,
@@ -84,6 +87,7 @@ function RouteComponent() {
         if (structure) {
             setSelectedRigs(structure.rigs.map(x => x.item.type_id));
             setSelectedServices(structure.services.map(x => x.type_id));
+            setTaxes({ ...structure.taxes });
         }
     }, [structure]);
 
@@ -98,6 +102,10 @@ function RouteComponent() {
         const b = selectedServices;
         setTouchedServices(!compareArray(a, b));
     }, [selectedServices]);
+
+    useEffect(() => {
+        setTouchedTaxes(JSON.stringify(taxes) !== JSON.stringify(structure?.taxes));
+    }, [taxes]);
 
     if (isPending) {
         return LoadingAnimation();
@@ -126,6 +134,7 @@ function RouteComponent() {
     const resetChanges = () => {
         setSelectedRigs(structure.rigs.map(x => x.item.type_id));
         setSelectedServices(structure.services.map(x => x.type_id));
+        setTaxes({ ...structure.taxes });
     }
 
     const bonuses = () => {
@@ -229,9 +238,6 @@ function RouteComponent() {
     return <>
         { notification() }
 
-        TAXES
-        WHAT CAN BE BUILD
-
         <Stack style={{ width: '100%' }}>
             <Grid>
                 <Grid.Col span={{ base: 12, sm: 7}}>
@@ -275,22 +281,31 @@ function RouteComponent() {
                             </Table.Tbody>
                         </Table>
 
+                        <Title order={2}>Installed Rigs and Services</Title>
                         <RigSelector
                             rigs={structure.installable_rigs || []}
                             selected={selectedRigs}
-                            onSelect={(selected: TypeId[]) => {
-                                setSelectedRigs(selected);
-                            }}
+                            onSelect={setSelectedRigs}
                             readonly={isReadonly()}
                         />
 
                         <ServiceSelector
                             services={structure.installable_services || { slots: 3, services: [] }}
                             selected={selectedServices}
-                            onSelect={(selected: TypeId[]) => {
-                                setSelectedServices(selected);
-                            }}
+                            onSelect={setSelectedServices}
                             readonly={isReadonly()}
+                        />
+
+                        <Title order={2}>Taxes</Title>
+                        <TaxByService
+                            taxes={taxes}
+                            services={selectedServices}
+
+                            onChange={(x) => {
+                                setTaxes({
+                                    ...x
+                                })
+                            }}
                         />
                     </Stack>
 
@@ -311,9 +326,10 @@ function RouteComponent() {
                 mutationUpdate.mutate({
                     rigs:     selectedRigs,
                     services: selectedServices,
+                    taxes:    taxes,
                 });
             }}
-            show={ touchedRigs || touchedServices }
+            show={ touchedRigs || touchedServices || touchedTaxes }
         />
     </>;
 }

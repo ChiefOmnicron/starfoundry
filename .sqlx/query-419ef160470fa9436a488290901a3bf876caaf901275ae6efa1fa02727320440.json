@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                pg.id,\n                pg.name,\n                pg.description,\n                pg.owner = $1 AS is_owner,\n                (\n                    SELECT COUNT(*)\n                    FROM project\n                    WHERE project_group_id = pg.id\n                ) AS projects\n            FROM project_group pg\n            JOIN project_group_member pgm ON pg.id = pgm.project_group_id\n            -- fetch all projects where the user is a member\n            WHERE pgm.character_id = $1 AND\n                NOT (LOWER(name) LIKE '%' || LOWER($2) || '%') IS FALSE AND\n                NOT (owner = $1 OR $3) IS FALSE AND\n                -- make sure the user got accepted into the group\n                accepted = TRUE\n            ORDER BY pg.name ASC\n        ",
+  "query": "\n            SELECT\n                id,\n                name,\n                description,\n                archived,\n                owner = $1 AS is_owner,\n                (\n                    SELECT COUNT(*)\n                    FROM project\n                    WHERE project_group_id = $2\n                ) AS projects\n            FROM project_group pg\n            WHERE pg.id = $2\n        ",
   "describe": {
     "columns": [
       {
@@ -38,12 +38,23 @@
       },
       {
         "ordinal": 3,
+        "name": "archived",
+        "type_info": "Bool",
+        "origin": {
+          "Table": {
+            "table": "project_group",
+            "name": "archived"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
         "name": "is_owner",
         "type_info": "Bool",
         "origin": "Expression"
       },
       {
-        "ordinal": 4,
+        "ordinal": 5,
         "name": "projects",
         "type_info": "Int8",
         "origin": "Expression"
@@ -52,17 +63,17 @@
     "parameters": {
       "Left": [
         "Int4",
-        "Text",
-        "Bool"
+        "Uuid"
       ]
     },
     "nullable": [
       false,
       false,
       true,
+      false,
       null,
       null
     ]
   },
-  "hash": "c6cc34fed02a32534de1740380e064a2b964859a2fbf7a0db6016aa7135269bb"
+  "hash": "419ef160470fa9436a488290901a3bf876caaf901275ae6efa1fa02727320440"
 }

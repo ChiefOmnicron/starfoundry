@@ -33,6 +33,8 @@ pub enum ProjectGroupError {
     DeleteGroup(sqlx::Error, ProjectGroupUuid),
     #[error("error while updating project group '{1}', error: '{0}'")]
     UpdateGroup(sqlx::Error, ProjectGroupUuid),
+    #[error("error while archiving project group '{1}', error: '{0}'")]
+    ArchiveGroup(sqlx::Error, ProjectGroupUuid),
 
     #[error("error while fetching defaults for project group '{1}', error: '{0}'")]
     FetchGroupDefaults(sqlx::Error, ProjectGroupUuid),

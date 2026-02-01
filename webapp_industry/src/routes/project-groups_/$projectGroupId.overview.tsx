@@ -1,4 +1,6 @@
 import { Alert, Flex, Textarea, TextInput, Title } from '@mantine/core';
+import { archiveProjectGroup } from '@/services/project-group/archive';
+import { ArchiveResource } from '@/components/ArchiveResource';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { deleteProjectGroup } from '@/services/project-group/delete';
 import { DeleteResource } from '@/components/DeleteResource';
@@ -7,12 +9,12 @@ import { LIST_PROJECT_GROUPS } from '@/services/project-group/list';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { LoadingError } from '@/components/LoadingError';
 import { Route as ProjectGroupRoute } from '@/routes/project-groups/index';
+import { SaveDialog } from '@/components/SaveDialog';
 import { updateProjectGroup, type UpdateProjectGroup } from '@/services/project-group/updateGroup';
 import { useFetchProjectGroupMemberSelf } from '@/services/project-group/fetchMemberSelf';
 import { useForm } from '@tanstack/react-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { SaveDialog } from '@/components/SaveDialog';
 
 interface QueryParams {
     created?: boolean;
@@ -38,7 +40,9 @@ function RouteComponent() {
     const { projectGroupId } = Route.useParams();
     const { created: createdResource } = Route.useSearch();
 
-    const [successfulUpdate, setSuccessfulUpdated] = useState<boolean>();
+    const [successfulArchive, setSuccessfulArchive] = useState<boolean>();
+    const [successfulUpdate, setSuccessfulUpdate] = useState<boolean>();
+    const [errorArchive, setErrorArchive] = useState<string | undefined>();
     const [errorDelete, setErrorDelete] = useState<string | undefined>();
     const [errorUpdate, setErrorUpdated] = useState<string | undefined>();
 
@@ -58,9 +62,20 @@ function RouteComponent() {
         mutationFn: (data: UpdateProjectGroup) => updateProjectGroup(projectGroupId, data),
         onSuccess: () => {
             setErrorUpdated(undefined);
-            setSuccessfulUpdated(true);
+            setSuccessfulUpdate(true);
             setTouched(false);
             queryClient.invalidateQueries({ queryKey: [FETCH_PROJECT_GROUP] })
+        },
+    });
+
+    const mutationArchive = useMutation({
+        mutationFn: () => archiveProjectGroup(projectGroupId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [FETCH_PROJECT_GROUP] });
+            queryClient.invalidateQueries({ queryKey: [LIST_PROJECT_GROUPS] });
+
+            setSuccessfulArchive(true);
+            setErrorArchive(undefined);
         },
     });
 
@@ -88,7 +103,7 @@ function RouteComponent() {
             .mutateAsync(value)
             .catch(error => {
                 setErrorUpdated(error);
-                setSuccessfulUpdated(false);
+                setSuccessfulUpdate(false);
             }),
     });
 
@@ -100,12 +115,21 @@ function RouteComponent() {
         return LoadingError();
     }
 
+    const archiveGroup = async () => {
+        await mutationArchive
+            .mutateAsync()
+            .catch(error => {
+                setErrorArchive(error);
+                setSuccessfulUpdate(false);
+            });
+    }
+
     const deleteGroup = async () => {
         await mutationDelete
             .mutateAsync()
             .catch(error => {
                 setErrorDelete(error);
-                setSuccessfulUpdated(false);
+                setSuccessfulUpdate(false);
             });
     }
 
@@ -131,10 +155,26 @@ function RouteComponent() {
                 color='green'
                 title='Update successful'
                 data-cy="successfulUpdate"
-                onClose={ () => setSuccessfulUpdated(false) }
+                onClose={ () => setSuccessfulUpdate(false) }
                 withCloseButton
             >
                 The project group was updated
+            </Alert>;
+        } else if (successfulArchive) {
+            return <Alert
+                mt="sm"
+                variant='light'
+                color='green'
+                title={`${projectGroup.archived ? 'Archive' : 'Unarchive'} successful`}
+                data-cy="successfulArchive"
+                onClose={ () => setSuccessfulArchive(false) }
+                withCloseButton
+            >
+                {
+                    projectGroup.archived
+                    ? 'The project group was archived'
+                    : 'The project group was unarchived'
+                }
             </Alert>;
         } else if (createdResource) {
             return <Alert
@@ -157,6 +197,18 @@ function RouteComponent() {
                 withCloseButton
             >
                 There was an error while updating. Please try again later.
+            </Alert>;
+        } else if (errorArchive) {
+            return <Alert
+                mt="sm"
+                variant='light'
+                color='red'
+                title={`${projectGroup.archived ? 'Unarchive' : 'Archive'} error`}
+                data-cy="errorArchive"
+                onClose={ () => setErrorArchive(undefined) }
+                withCloseButton
+            >
+                There was an error while archiving. Please try again later.
             </Alert>;
         } else if (errorDelete) {
             return <Alert
@@ -186,6 +238,12 @@ function RouteComponent() {
             >
                 Danger Zone
             </Title>
+
+            <ArchiveResource
+                isArchived={projectGroup.archived}
+                resource={projectGroup.name}
+                onConfirm={() => archiveGroup()}
+            />
 
             <DeleteResource
                 resource={projectGroup.name}

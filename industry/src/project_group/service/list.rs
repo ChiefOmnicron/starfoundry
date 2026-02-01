@@ -19,6 +19,11 @@ pub async fn list(
         Some(false) |
         None        => true,
     };
+    let archived_filter = match filter.archived {
+        Some(true)  => true,
+        Some(false) |
+        None        => false,
+    };
 
     let entries = sqlx::query!("
             SELECT
@@ -26,6 +31,7 @@ pub async fn list(
                 pg.name,
                 pg.description,
                 pg.owner = $1 AS is_owner,
+                pg.archived,
                 (
                     SELECT COUNT(*)
                     FROM project
@@ -37,6 +43,7 @@ pub async fn list(
             WHERE pgm.character_id = $1 AND
                 NOT (LOWER(name) LIKE '%' || LOWER($2) || '%') IS FALSE AND
                 NOT (owner = $1 OR $3) IS FALSE AND
+                archived = $4 AND
                 -- make sure the user got accepted into the group
                 accepted = TRUE
             ORDER BY pg.name ASC
@@ -44,6 +51,7 @@ pub async fn list(
             *character_id,
             filter.name,
             owner_filter,
+            archived_filter,
         )
         .fetch_all(pool)
         .await
@@ -57,6 +65,7 @@ pub async fn list(
             project_count:  entry.projects.unwrap_or(0),
             is_owner:       entry.is_owner.unwrap_or_default(),
             description:    entry.description,
+            archived:       entry.archived,
             members:        list_members(
                 pool,
                 eve_gateway_api_client,
@@ -94,6 +103,7 @@ mod list_project_group_test {
                 ProjectGroupFilter {
                     name: None,
                     owner: None,
+                    archived: Some(false),
                 }
             )
             .await;
@@ -107,6 +117,7 @@ mod list_project_group_test {
                 ProjectGroupFilter {
                     name: Some(String::from("Filter")),
                     owner: None,
+                    archived: Some(false),
                 }
             )
             .await;
@@ -120,6 +131,7 @@ mod list_project_group_test {
                 ProjectGroupFilter {
                     name: Some(String::from("SomeGibberish")),
                     owner: None,
+                    archived: Some(false),
                 }
             )
             .await;
@@ -133,6 +145,7 @@ mod list_project_group_test {
                 ProjectGroupFilter {
                     name: None,
                     owner: Some(true),
+                    archived: Some(false),
                 }
             )
             .await;
@@ -146,6 +159,7 @@ mod list_project_group_test {
                 ProjectGroupFilter {
                     name: None,
                     owner: Some(false),
+                    archived: Some(false),
                 }
             )
             .await;
@@ -166,6 +180,9 @@ pub struct ProjectGroupFilter {
 
     #[serde(default)]
     pub owner: Option<bool>,
+
+    #[serde(default)]
+    pub archived: Option<bool>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
@@ -196,4 +213,5 @@ pub struct ProjectGroup {
     pub is_owner:      bool,
     pub description:   Option<String>,
     pub members:       Vec<ProjectGroupMember>,
+    pub archived:      bool,
 }

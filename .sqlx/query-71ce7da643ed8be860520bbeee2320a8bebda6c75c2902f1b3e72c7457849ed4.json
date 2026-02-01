@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO structure_tax\n            (\n                structure_id,\n                service_type_id,\n                tax\n            )\n            SELECT $1, * FROM UNNEST(\n                $2::INTEGER[],\n                $3::REAL[]\n            )\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4Array",
+        "Float4Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "71ce7da643ed8be860520bbeee2320a8bebda6c75c2902f1b3e72c7457849ed4"
+}

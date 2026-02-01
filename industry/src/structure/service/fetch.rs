@@ -98,6 +98,22 @@ pub async fn fetch_bulk(
         .collect::<HashMap<_, _>>();
 
     for structure in structures {
+        let taxes = sqlx::query!("
+                SELECT
+                    service_type_id,
+                    tax
+                FROM structure_tax
+                WHERE structure_id = $1
+            ",
+                structure.id,
+            )
+            .fetch_all(pool)
+            .await
+            .map_err(|e| StructureError::FetchStructureTax(e, structure.id.into()))?
+            .into_iter()
+            .map(|x| (x.service_type_id.into(), x.tax))
+            .collect::<HashMap<_, _>>();
+
         let item = if let Some(x) = items.get(&structure.type_id.into()) {
             x.clone()
         } else {
@@ -158,6 +174,7 @@ pub async fn fetch_bulk(
             item:                   item,
             rigs:                   rigs,
             services:               services,
+            taxes:                  taxes,
             position:               StructurePosition {
                                         x: structure.x,
                                         y: structure.y,

@@ -13,6 +13,11 @@ pub type Result<T, E = StructureError> = std::result::Result<T, E>;
 #[derive(Debug, Error)]
 #[non_exhaustive]
 pub enum StructureError {
+    #[error("error creating transaction, '{0}'")]
+    BeginTransaction(sqlx::Error),
+    #[error("error committing transaction, '{0}'")]
+    CommitTransaction(sqlx::Error),
+
     #[error("the character '{1}' is not allowed to access '{0}'")]
     Forbidden(StructureUuid, CharacterId),
     #[error("structure with id '{0}' not found")]
@@ -26,6 +31,8 @@ pub enum StructureError {
     CreateStructure(sqlx::Error),
     #[error("error while fetching structure '{1:?}', error: '{0}'")]
     FetchStructures(sqlx::Error, Vec<StructureUuid>),
+    #[error("error while fetching structure tax '{1}', error: '{0}'")]
+    FetchStructureTax(sqlx::Error, StructureUuid),
     #[error("error while listing structures, error: '{0}'")]
     ListStructures(sqlx::Error),
     #[error("error while deleting structure '{1}', error: '{0}'")]

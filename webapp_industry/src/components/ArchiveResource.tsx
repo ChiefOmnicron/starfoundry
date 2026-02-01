@@ -2,11 +2,12 @@ import { Button, Card, Flex, Grid, Modal, Stack, Text, TextInput } from "@mantin
 import { useDisclosure } from "@mantine/hooks";
 import { useEffect, useState, type ReactElement } from "react";
 
-export function DeleteResource({
-        resource,
-        onConfirm,
-    }: DeleteResourceProps,
-): ReactElement {
+export function ArchiveResource({
+    isArchived,
+
+    resource,
+    onConfirm,
+}: ArchiveResourceProps): ReactElement {
     const [opened, { open, close }] = useDisclosure(false);
     const [validation, setValidation] = useState('');
 
@@ -14,12 +15,12 @@ export function DeleteResource({
         setValidation('');
     }, [opened]);
 
-    return <>
-        <Modal
-            data-cy="modalConfirmDelete"
-            opened={ opened }
-            onClose={ close }
-            title="Confirm delete"
+    const confirmModal = () => {
+        return <Modal
+            data-cy="modalConfirmArchive"
+            opened={opened}
+            onClose={close}
+            title="Confirm archive"
             overlayProps={{
                 backgroundOpacity: 0.55,
                 blur: 3,
@@ -31,12 +32,12 @@ export function DeleteResource({
         >
             <Stack>
                 <Text>
-                    Are you sure you want to delete '<b>{ resource }</b>'?
-                    This cannot be reversed!
+                    Are you sure you want to archive '<b>{ resource }</b>'?
+                    This can be reversed at any time
                 </Text>
 
                 <TextInput
-                    data-cy="confirmDeleteText"
+                    data-cy="confirmArchiveText"
                     label="Insert name to confirm"
                     placeholder={resource}
                     value={validation}
@@ -44,23 +45,27 @@ export function DeleteResource({
                 />
 
                 <Button
-                    data-cy="confirmDelete"
-                    color="red"
+                    data-cy="confirmArchive"
+                    color="orange"
                     onClick={() => {
                         onConfirm();
                         close();
                     }}
                     disabled={validation.toLocaleLowerCase() !== resource.toLocaleLowerCase()}
                 >
-                    I know what I am doing, delete it
+                    I know what I am doing, archive it
                 </Button>
             </Stack>
         </Modal>
+    }
+
+    return <>
+        { confirmModal() }
 
         <Card
-            data-cy="danger-zone-card"
+            data-cy="archiveCard"
             style={{
-                borderColor: 'var(--mantine-color-red-filled)',
+                borderColor: 'var(--mantine-color-orange-filled)',
             }}
             mt="sm"
             withBorder
@@ -72,11 +77,22 @@ export function DeleteResource({
                             fontWeight: 'bold',
                         }}
                     >
-                        Delete '{ resource }'
+                        {
+                            isArchived
+                            ? `Unarchive '${resource}'`
+                            : `Archive '${resource}'`
+                        }
+
+                        
                     </Text>
                     <Text
                     >
-                        This can not be reversed
+                        {
+                            isArchived
+                            ? `'${resource}' will be found in searches again`
+                            : `'${resource}' will still be available, but will not show up in searches`
+                        }
+                        
                     </Text>
                 </Grid.Col>
                 <Grid.Col span={6}>
@@ -84,11 +100,23 @@ export function DeleteResource({
                         justify="flex-end"
                     >
                         <Button
-                            data-cy="delete"
-                            color="red"
-                            onClick={ () => open() }
+                            data-cy="archive"
+                            color="orange"
+                            onClick={() => {
+                                // shortcut when the resource is archived
+                                if (isArchived) {
+                                    onConfirm();
+                                    return;
+                                }
+
+                                open();
+                            }}
                         >
-                            Delete
+                            {
+                                isArchived
+                                ? 'Unarchive'
+                                : 'Archive'
+                            }
                         </Button>
                     </Flex>
                 </Grid.Col>
@@ -97,7 +125,9 @@ export function DeleteResource({
     </>
 }
 
-export type DeleteResourceProps = {
+export type ArchiveResourceProps = {
+    isArchived: boolean;
+
     resource: string,
     onConfirm: () => void,
 }

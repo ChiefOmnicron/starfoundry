@@ -22,11 +22,18 @@ pub async fn sync_task(
             config.address,
         )?;
 
-        let structure_response = client
+        let structure_response = match client
             .list_structures(InternalStructureFilter {
                 service_id: Some(35892.into()),
             })
-            .await?;
+            .await {
+
+            Ok(x)  => x,
+            Err(e) => {
+                task.append_error(e.to_string());
+                HashMap::new()
+            }
+        };
 
         match sync_player_stations(
             pool,
@@ -87,11 +94,18 @@ pub async fn sync(
             config.address,
         )?;
 
-        let structure_response = client
+        let structure_response = match client
             .list_structures(InternalStructureFilter {
                 service_id: Some(35892.into()),
             })
-            .await?;
+            .await {
+
+            Ok(x)  => x,
+            Err(e) => {
+                tracing::error!("{}", e);
+                HashMap::new()
+            }
+        };
 
         sync_player_stations(
             pool,
@@ -287,6 +301,7 @@ async fn sync_public_contract(
     let task_name: String = WorkerMarketTask::PublicContracts.into();
     let mut new_entries = Vec::new();
 
+    // FIXME:_ configurable
     for region_id in vec![10000002, 10000043] {
         let public_contract = sqlx::query!("
                 SELECT

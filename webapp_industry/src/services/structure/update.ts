@@ -1,5 +1,6 @@
 import { axiosClient } from "@/services/client";
 import type { Uuid } from "@/services/utils";
+import type { StructureTax } from "./list";
 
 export const updateStructure = async (
     structureId: Uuid,
@@ -12,8 +13,9 @@ export const updateStructure = async (
     .then(x => x.data);
 
 export type UpdateStructure = {
-    rigs:               number[];
-    services:           number[];
+    rigs:       number[];
+    services:   number[];
+    taxes:      StructureTax,
 }
 
 export type UpdateStructureResponse = {

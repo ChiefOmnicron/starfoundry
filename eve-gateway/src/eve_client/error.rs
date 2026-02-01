@@ -46,6 +46,8 @@ pub enum EveApiError {
     ServiceUnavailable,
     #[error("the eve Server not reachable")]
     BadGateway,
+    #[error("the client is either forbidden to access the resource or unauthorized, '{0}', '{1}'")]
+    Unauthorized(Url, String),
     #[error("the request to the given URL failed 3 times in a row, '{0}', '{1}', '{2}'")]
     TooManyRetries(Url, StatusCode, String),
 
@@ -137,6 +139,18 @@ impl IntoResponse for EveApiError {
                     Json(
                         ErrorResponse {
                             error: "BAD_GATEWAY".into(),
+                            description: format!("{}", self),
+                        }
+                    )
+                ).into_response()
+            },
+            Self::Unauthorized(_, _) => {
+                tracing::warn!("{}", self.to_string());
+                (
+                    StatusCode::UNAUTHORIZED,
+                    Json(
+                        ErrorResponse {
+                            error: "UNAUTHORIZED".into(),
                             description: format!("{}", self),
                         }
                     )

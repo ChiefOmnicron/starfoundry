@@ -1,5 +1,5 @@
 import { AddProjectGroup } from '@/routes/project-groups/-modal/add';
-import { Alert, Button, Card, Center, Flex, Modal, Pill, Stack, Table, Title } from '@mantine/core';
+import { Alert, Button, Card, Center, Flex, Modal, Pill, Stack, Table, Tabs, TabsPanel, Title } from '@mantine/core';
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { createFileRoute } from '@tanstack/react-router';
 import { Filter, type FilterPropEntry, type SelectedFilter } from '@/components/Filter';
@@ -81,6 +81,8 @@ function RouteComponent() {
     const { deleted: deletedResource } = Route.useSearch();
     const [opened, { open, close }] = useDisclosure(false);
 
+    const [archived, setArchived] = useState(false);
+
     const [filterParams, setFilterParams] = useState<ProjectGroupFilter>({});
     const filterChange = (filters: SelectedFilter[]) => {
         setFilterParams({
@@ -93,7 +95,10 @@ function RouteComponent() {
         isError,
         isFetching,
         data: projectGroups
-    } = useListProjectGroup(filterParams);
+    } = useListProjectGroup({
+        archived,
+        ...filterParams,
+    });
 
     const table = useReactTable<ProjectGroup>({
         columns: columns,
@@ -101,6 +106,14 @@ function RouteComponent() {
         autoResetPageIndex: false,
         getCoreRowModel: getCoreRowModel(),
     });
+
+    const onTabChange = (tab: string | null) => {
+        if (tab === 'archived') {
+            setArchived(true);
+        } else {
+            setArchived(false);
+        }
+    }
 
     const addProjectGroup = () => {
         return <Modal
@@ -136,22 +149,24 @@ function RouteComponent() {
         }
     }
 
+    const actionBar = () => {
+        return <Flex
+            align='center'
+            justify='flex-start'
+            direction='row-reverse'
+            pb='sm'
+        >
+            <Button
+                variant='filled'
+                onClick={ open }
+            >
+                Create Group
+            </Button>
+        </Flex>
+    }
+
     const dataTable = () => {
         return <>
-            <Flex
-                align='center'
-                justify='flex-start'
-                direction='row-reverse'
-                pb='sm'
-            >
-                <Button
-                    variant='filled'
-                    onClick={ open }
-                >
-                    Create Group
-                </Button>
-            </Flex>
-
             <Filter
                 entries={filters}
                 onFilterChange={filterChange}
@@ -219,6 +234,30 @@ function RouteComponent() {
 
         { addProjectGroup() }
 
-        { content() }
+        { actionBar() }
+
+        <Tabs
+            defaultValue="active"
+            onChange={onTabChange}
+        >
+            <Tabs.List>
+                <Tabs.Tab value="active">
+                    Active
+                </Tabs.Tab>
+
+                <Tabs.Tab value="archived">
+                    Archived
+                </Tabs.Tab>
+            </Tabs.List>
+
+            <Tabs.Panel value="active">
+
+                { content() }
+            </Tabs.Panel>
+
+            <Tabs.Panel value="archived">
+                { content() }
+            </Tabs.Panel>
+        </Tabs>
     </>
 }

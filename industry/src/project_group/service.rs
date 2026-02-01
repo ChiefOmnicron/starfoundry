@@ -1,3 +1,4 @@
+mod archive;
 mod create;
 mod delete;
 mod fetch_members_self;
@@ -16,6 +17,7 @@ mod update_default_job_splitting;
 mod update_default_market;
 mod update_industry_hub;
 
+pub use self::archive::*;
 pub use self::create::*;
 pub use self::delete::*;
 pub use self::fetch_members_self::*;

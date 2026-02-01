@@ -84,15 +84,20 @@ pub async fn migrate_structure(
             continue;
         };
 
-        let structure_id = if structure.id == Uuid::from_str("00000000-0000-0000-0000-000000000001").unwrap() {
-            Uuid::from_str("00000000-0000-0000-0000-000000000001").unwrap()
-        } else if  structure.id == Uuid::from_str("00000000-0000-0000-0000-000000000002").unwrap() {
-            Uuid::from_str("00000000-0000-0000-0000-000000000002").unwrap()
+        let structure_id = if let Some(x) = mappings.get(&structure.id) {
+            x.clone()
         } else {
-            let timestamp = Timestamp::from_unix(NoContext, structure.created_at.timestamp() as u64, 0);
-            Uuid::new_v7(timestamp)
+            let structure_id = if structure.id == Uuid::from_str("00000000-0000-0000-0000-000000000001").unwrap() {
+                Uuid::from_str("00000000-0000-0000-0000-000000000001").unwrap()
+            } else if  structure.id == Uuid::from_str("00000000-0000-0000-0000-000000000002").unwrap() {
+                Uuid::from_str("00000000-0000-0000-0000-000000000002").unwrap()
+            } else {
+                let timestamp = Timestamp::from_unix(NoContext, structure.created_at.timestamp() as u64, 0);
+                Uuid::new_v7(timestamp)
+            };
+            mappings.insert(structure.id, structure_id);
+            structure_id
         };
-        mappings.insert(structure.id, structure_id);
 
         let services = if structure.id == Uuid::from_str("00000000-0000-0000-0000-000000000001").unwrap() {
             vec![35892]

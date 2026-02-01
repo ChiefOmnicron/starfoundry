@@ -101,6 +101,22 @@ pub async fn list(
 
     let mut structure_result = Vec::new();
     for structure in structures {
+        let taxes = sqlx::query!("
+                SELECT
+                    service_type_id,
+                    tax
+                FROM structure_tax
+                WHERE structure_id = $1
+            ",
+                structure.id,
+            )
+            .fetch_all(pool)
+            .await
+            .map_err(|e| StructureError::FetchStructureTax(e, structure.id.into()))?
+            .into_iter()
+            .map(|x| (x.service_type_id.into(), x.tax))
+            .collect::<HashMap<_, _>>();
+
         // TODO: add bulk function
         let mut rigs = Vec::new();
         for rig in structure.rigs {
@@ -149,6 +165,7 @@ pub async fn list(
             item:                   structure_item.clone(),
             rigs:                   rigs,
             services:               services,
+            taxes:                  taxes,
             position:               StructurePosition {
                                         x: structure.x,
                                         y: structure.y,

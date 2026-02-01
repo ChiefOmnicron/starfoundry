@@ -6,13 +6,13 @@ use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{EveGatewayApiClient, StructurePosition, StructureType};
 use starfoundry_lib_gateway::ExtractIdentity;
 use starfoundry_lib_industry::{InternalStructureFilter, Structure};
+use starfoundry_lib_types::CharacterId;
 use std::collections::HashMap;
 
 use crate::structure::StructureError;
 use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 use crate::{eve_gateway_api_client, AppState};
 use crate::structure::error::Result;
-use starfoundry_lib_types::CharacterId;
 
 /// List Structures
 /// 
@@ -209,6 +209,7 @@ async fn list(
             item:                   structure_item.clone(),
             rigs:                   rigs,
             services:               services,
+            taxes:                  HashMap::new(),
             position:               StructurePosition {
                                         x: structure.x,
                                         y: structure.y,

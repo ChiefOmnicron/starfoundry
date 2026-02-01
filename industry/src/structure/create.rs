@@ -85,12 +85,13 @@ mod tests {
     use http_body_util::BodyExt;
     use serde::Deserialize;
     use sqlx::PgPool;
+    use starfoundry_lib_eve_gateway::StructurePosition;
     use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
+    use std::collections::HashMap;
     use uuid::Uuid;
 
     use crate::structure::service::CreateStructure;
     use crate::structure::structure_test_routes;
-    use starfoundry_lib_eve_gateway::StructurePosition;
 
     #[sqlx::test(
         fixtures("base"),
@@ -119,6 +120,7 @@ mod tests {
                     services:           vec![35892.into()],
                     structure_id:       1_000_000_000_000,
                     position:           StructurePosition { x: 0f32, y: 0f32, z: 0f32 },
+                    taxes:              HashMap::new(),
                 }).unwrap()
             ))
             .unwrap();
@@ -165,6 +167,7 @@ mod tests {
                     services:           vec![35892.into()],
                     structure_id:       1_000_000_000_000,
                     position:           StructurePosition { x: 0f32, y: 0f32, z: 0f32 },
+                    taxes:              HashMap::new(),
                 }).unwrap()
             ))
             .unwrap();

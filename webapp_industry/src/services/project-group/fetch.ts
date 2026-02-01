@@ -19,13 +19,14 @@ export const fetchProjectGroup = async (
     .then(x => x.data);
 
 export type ProjectGroup = {
-    id: Uuid,
-    name: string;
-    project_count: number;
-    is_owner: boolean;
-    description?: string;
+    id:             Uuid,
+    name:           string;
+    project_count:  number;
+    is_owner:       boolean;
+    description?:   string;
+    archived:       boolean,
 
-    members: ProjectGroupMember[];
+    members:        ProjectGroupMember[];
 }
 
 // For general use

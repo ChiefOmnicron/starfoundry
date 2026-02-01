@@ -45,7 +45,7 @@ export function AddStructure({
         onError: (error) => {
             setErrorCreate(error.message);
         }
-    })
+    });
 
     const notification = () => {
         if (errorCreate) {

@@ -24,9 +24,14 @@ pub async fn migrate_industry_hubs(
 
     let mut transaction = postgres_destination.begin().await?;
     for structure_group in structure_groups {
-        let timestamp = Timestamp::from_unix(NoContext, structure_group.created_at.timestamp() as u64, 0);
-        let structure_group_id = Uuid::new_v7(timestamp);
-        mappings.insert(structure_group.id, structure_group_id);
+        let structure_group_id = if let Some(x) = mappings.get(&structure_group.id) {
+            x.clone()
+        } else {
+            let timestamp = Timestamp::from_unix(NoContext, structure_group.created_at.timestamp() as u64, 0);
+            let structure_group_id = Uuid::new_v7(timestamp);
+            mappings.insert(structure_group.id, structure_group_id);
+            structure_group_id
+        };
 
         sqlx::query!("
                 INSERT INTO industry_hub

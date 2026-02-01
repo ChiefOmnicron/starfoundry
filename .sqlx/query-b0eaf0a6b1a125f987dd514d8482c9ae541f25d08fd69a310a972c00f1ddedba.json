@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        UPDATE project_group\n        SET archived = NOT archived\n        WHERE id = $1\n    ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "b0eaf0a6b1a125f987dd514d8482c9ae541f25d08fd69a310a972c00f1ddedba"
+}

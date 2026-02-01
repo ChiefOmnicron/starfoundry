@@ -17,6 +17,7 @@ pub async fn fetch(
                 id,
                 name,
                 description,
+                archived,
                 owner = $1 AS is_owner,
                 (
                     SELECT COUNT(*)
@@ -40,6 +41,7 @@ pub async fn fetch(
             project_count:     x.projects.unwrap_or(0),
             is_owner:          x.is_owner.unwrap_or_default(),
             description:       x.description,
+            archived:          x.archived,
             members:           list_members(
                 pool,
                 eve_gateway_api_client,

@@ -1,7 +1,7 @@
 import { Group, Modal, Stack, Title } from '@mantine/core';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { LoadingError } from '@/components/LoadingError';
-import { StructureList } from './StructureCard';
+import { StructureList } from './StructureList';
 import { StructureRigBadge } from '../routes/structures/-components/StructureRigBadge';
 import { StructureServiceBadge } from '../routes/structures/-components/StructureServiceBadge';
 import { useFetchIndustryHub } from '@/services/industry-hub/fetch';
