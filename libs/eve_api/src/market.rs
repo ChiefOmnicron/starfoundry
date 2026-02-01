@@ -50,7 +50,7 @@ impl EveApiClient {
     ) -> Result<Vec<Market>, Error> {
         let path = format!("latest/markets/structures/{}", station_id);
         self
-            .fetch_page_auth::<Market>(&path, Cache::Follow)
+            .fetch_page_auth::<Market>(&path, Cache::Ignore)
             .await
             .map_err(Into::into)
     }
