@@ -109,7 +109,7 @@ export function ItemSelectorModal({
                     <Table.Th />
                     <Table.Th
                         style={{
-                            width: '1%'
+                            width: '5%'
                         }}
                     />
                     <Table.Th

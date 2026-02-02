@@ -71,7 +71,7 @@ mod tests {
     use axum::extract::Request;
     use axum::http::StatusCode;
     use sqlx::PgPool;
-    use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
+    use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID, HEADER_SERVICE};
 
     use crate::structure::structure_test_routes;
 
@@ -83,14 +83,15 @@ mod tests {
     ) {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000001")
-            .method("GET")
+            .method("DELETE")
+            .header(HEADER_SERVICE, "industry.test")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
             .header(HOST, "test.starfoundry.space")
             .body(Body::empty())
             .unwrap();
         let response = structure_test_routes(pool, request).await;
-        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(response.status(), StatusCode::NO_CONTENT);
     }
 
     #[sqlx::test(
@@ -101,7 +102,7 @@ mod tests {
     ) {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000001")
-            .method("GET")
+            .method("DELETE")
             .body(Body::empty())
             .unwrap();
         let response = structure_test_routes(pool, request).await;
@@ -116,7 +117,8 @@ mod tests {
     ) {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000002")
-            .method("GET")
+            .method("DELETE")
+            .header(HEADER_SERVICE, "industry.test")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
             .header(HOST, "test.starfoundry.space")
@@ -134,7 +136,8 @@ mod tests {
     ) {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000000")
-            .method("GET")
+            .method("DELETE")
+            .header(HEADER_SERVICE, "industry.test")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
             .header(HOST, "test.starfoundry.space")

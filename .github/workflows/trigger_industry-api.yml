@@ -1,4 +1,4 @@
-name: store-api
+name: industry-api
 
 on:
   push:

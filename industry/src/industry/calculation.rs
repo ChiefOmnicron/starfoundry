@@ -198,13 +198,11 @@ pub async fn api(
     }
 
     let dependency_result = dependency_tree
-        .write_debug_file_named("aaa.json")
         .apply_bonus()
         //.add_stocks(&stock_filtered)
         .finalize();
 
     let total_cost = dependency_result.total_cost();
-    dependency_result.write_debug_file();
 
     let material = dependency_result
         .tree

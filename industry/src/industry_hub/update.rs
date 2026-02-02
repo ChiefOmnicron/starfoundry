@@ -72,7 +72,7 @@ mod tests {
     use axum::http::header::{CONTENT_TYPE, HOST};
     use axum::http::StatusCode;
     use sqlx::PgPool;
-    use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
+    use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID, HEADER_SERVICE};
 
     use crate::industry_hub::service::UpdateIndustryHub;
     use crate::industry_hub::industry_hub_test_routes;
@@ -87,6 +87,7 @@ mod tests {
             .header(CONTENT_TYPE, "application/json")
             .uri("/00000000-0000-0000-0000-100000000001")
             .method("PUT")
+            .header(HEADER_SERVICE, "industry.test")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
             .header(HOST, "test.starfoundry.space")
@@ -126,6 +127,7 @@ mod tests {
             .header(CONTENT_TYPE, "application/json")
             .uri("/00000000-0000-0000-0000-100000000002")
             .method("PUT")
+            .header(HEADER_SERVICE, "industry.test")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
             .header(HOST, "test.starfoundry.space")

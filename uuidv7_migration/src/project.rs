@@ -51,7 +51,7 @@ pub async fn migrate_project(
             ProjectStatus::Done         => "DONE",
             ProjectStatus::InProgress   => "IN_PROGRESS",
             ProjectStatus::Paused       => "PAUSED",
-            ProjectStatus::Preparing    => "INITIALIZED",
+            ProjectStatus::Preparing    => "DRAFT",
         }.into();
 
         sqlx::query!("

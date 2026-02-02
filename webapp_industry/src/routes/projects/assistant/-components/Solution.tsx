@@ -130,8 +130,8 @@ const columnsManufacturing = [
 ];
 
 export function Solution({
-    nextStep,
-    prevStep,
+    //nextStep,
+    //prevStep,
 
     projectGroupId,
 }: SolutionProps) {
@@ -175,11 +175,6 @@ export function Solution({
         setSelectedBlacklist(projectGroupBlacklist);
         setSelectedBlueprintOverwrite(projectGroupBlueprintOverwrite);
     }, [projectGroupBlacklist, selectedBlueprintOverwrite]);
-
-    const next = () => {
-        nextStep();
-        prevStep();
-    }
 
     const tableMaterials = useReactTable<SolutionMaterial>({
         columns: columnsMaterial,

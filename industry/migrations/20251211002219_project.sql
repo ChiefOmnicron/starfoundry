@@ -35,8 +35,8 @@ BEGIN
         AND typ.typname = 'project_status'
     ) THEN
         CREATE TYPE PROJECT_STATUS AS ENUM (
-            'CREATED',
-            'INITIALIZED',
+            'DRAFT',
+            'READY_TO_START',
             'IN_PROGRESS',
             'PAUSED',
             'DONE'
@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS project (
 
     project_group_id   UUID             NOT NULL,
 
-    status             PROJECT_STATUS   NOT NULL DEFAULT 'CREATED',
+    status             PROJECT_STATUS   NOT NULL DEFAULT 'DRAFT',
 
     orderer            VARCHAR(128)     NOT NULL,
     name               VARCHAR(128)     NOT NULL,

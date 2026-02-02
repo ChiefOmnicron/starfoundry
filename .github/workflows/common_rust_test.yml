@@ -36,12 +36,13 @@ jobs:
       - check
     services:
       postgres:
-        image: postgres:18rc1-alpine
+        image: postgres:18
         ports:
           - 5678:5432
         options: >-
           -e POSTGRES_PASSWORD=postgres
           -e POSTGRES_DB=for-testing
+          -v /tmp/github_postgres_testing:/var/lib/postgresql
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
@@ -52,6 +53,7 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5678/for-testing
           STARFOUNDRY_STORE_DATABASE_URL: postgresql://postgres:postgres@localhost:5678/for-testing
+          STARFOUNDRY_INDUSTRY_DATABASE_URL: postgresql://postgres:postgres@localhost:5678/for-testing
         run: |
           cd ${{ inputs.folder }}
           sqlx migrate run || true

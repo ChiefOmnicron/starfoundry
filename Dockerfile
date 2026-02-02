@@ -152,3 +152,38 @@ COPY        --from=store-webapp-builder /app/dist /usr/share/nginx/html
 COPY        webapp_store/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE      80
 CMD         ["nginx", "-g", "daemon off;"]
+
+###############################################################################
+#           industry_api
+###############################################################################
+FROM builder AS industry-api-builder
+RUN         cargo build --bin starfoundry_bin-industry --release
+
+FROM ubuntu:26.04 AS industry-api
+WORKDIR     /usr/local/bin
+COPY        --from=industry-api-builder /app/target/release/starfoundry_bin-industry /usr/local/bin/app
+CMD         ["/usr/local/bin/app"]
+
+###############################################################################
+#           industry_webapp
+###############################################################################
+FROM node AS industry-webapp-builder
+ARG         VITE_SENTRY_STORE_DSN
+ARG         SENTRY_AUTH_TOKEN
+WORKDIR     /app
+COPY        webapp_industry/package*.json ./
+COPY        webapp_industry/tsconfig*.json ./
+COPY        webapp_industry/vite.config.ts ./
+COPY        webapp_industry/index.html ./
+COPY        webapp_industry/src ./src
+COPY        webapp_industry/cypress ./cypress
+COPY        webapp_industry/public ./public
+RUN         npm install -g npm@latest
+RUN         npm install
+RUN         npm run build
+
+FROM        nginx:stable-alpine AS industry-webapp
+COPY        --from=industry-webapp-builder /app/dist /usr/share/nginx/html
+COPY        webapp_industry/nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE      80
+CMD         ["nginx", "-g", "daemon off;"]

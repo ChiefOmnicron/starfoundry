@@ -70,7 +70,7 @@ mod tests {
     use axum::http::header::HOST;
     use axum::http::StatusCode;
     use sqlx::PgPool;
-    use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
+    use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID, HEADER_SERVICE};
 
     use crate::industry_hub::industry_hub_test_routes;
 
@@ -83,9 +83,9 @@ mod tests {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-100000000001")
             .method("GET")
+            .header(HEADER_SERVICE, "industry.test")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
-            .header(HOST, "test.starfoundry.space")
             .header(HOST, "test.starfoundry.space")
             .body(Body::empty())
             .unwrap();
@@ -102,6 +102,7 @@ mod tests {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-100000000001")
             .method("GET")
+            .header(HEADER_SERVICE, "industry.test")
             .header(HOST, "test.starfoundry.space")
             .body(Body::empty())
             .unwrap();
@@ -118,9 +119,9 @@ mod tests {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-100000000002")
             .method("GET")
+            .header(HEADER_SERVICE, "industry.test")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
-            .header(HOST, "test.starfoundry.space")
             .header(HOST, "test.starfoundry.space")
             .body(Body::empty())
             .unwrap();
@@ -137,9 +138,9 @@ mod tests {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000000")
             .method("GET")
+            .header(HEADER_SERVICE, "industry.test")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
-            .header(HOST, "test.starfoundry.space")
             .header(HOST, "test.starfoundry.space")
             .body(Body::empty())
             .unwrap();

@@ -1,4 +1,5 @@
-import { axiosClient, type CharacterInfo } from "@/services/client";
+import { axiosClient } from "@/services/client";
+import type { Category } from "@/services/utils";
 import type { GenericAbortSignal } from "axios";
 
 export const LIST_ITEM = 'listItem';
@@ -6,13 +7,13 @@ export const LIST_ITEM = 'listItem';
 export const inGameSearch = async (
     filter:  InGameSearchFilter,
     signal?: GenericAbortSignal,
-): Promise<CharacterInfo[]> => (await axiosClient())
+): Promise<InGameSearchResponse[]> => (await axiosClient())
     .get(
         `/api/search`,
         {
             params: {
                 search: filter.search,
-                category: filter.categories.join(','),
+                categories: filter.categories.join(','),
             },
             signal,
         }
@@ -20,6 +21,12 @@ export const inGameSearch = async (
     .then(x => x.data);
 
 export type InGameSearchFilter = {
-    search: string;
-    categories: string[];
+    search:     string;
+    categories: Category[];
+}
+
+export type InGameSearchResponse = {
+    id:       number;
+    category: Category,
+    name:     string;
 }

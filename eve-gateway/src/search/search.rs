@@ -4,9 +4,10 @@ use axum::response::IntoResponse;
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
 use starfoundry_lib_gateway::ExtractIdentity;
+use utoipa::{IntoParams, ToSchema};
 
-use crate::api_docs::{InternalServerError, NotFound, Unauthorized};
-use crate::market::error::Result;
+use crate::api_docs::{BadRequest, InternalServerError, Unauthorized};
+use crate::search::{Result, SearchError};
 use crate::state::AppState;
 use crate::utils::api_client_auth;
 
@@ -26,12 +27,12 @@ const SCOPE: &str = "esi-search.search_structures.v1";
     path = "/",
     tag = "Search",
     params(
-        ("category" = String, Query),
+        ("categories" = String, Query),
         ("search" = String, Query),
     ),
     responses(
         (
-            body = Vec<i32>,
+            body = Vec<IdToName>,
             description = "List of results",
             status = OK,
         ),
@@ -39,7 +40,7 @@ const SCOPE: &str = "esi-search.search_structures.v1";
             description = "Nothing was found",
             status = NO_CONTENT,
         ),
-        NotFound,
+        BadRequest,
         InternalServerError,
         Unauthorized,
     ),
@@ -49,7 +50,10 @@ pub async fn api(
     State(state):        State<AppState>,
     Query(search_param): Query<SearchParam>,
 ) -> Result<impl IntoResponse> {
-    dbg!(&search_param);
+    if search_param.search.len() < 3 {
+        return Err(SearchError::TooShort);
+    }
+
     let api_client = api_client_auth(
             &state.postgres,
             identity.host()?,
@@ -78,37 +82,41 @@ pub async fn api(
     }
 
     let path = format!("latest/characters/{}/search", identity.character_id);
-    let category: String = search_param.category.into();
     let search_data = api_client
         .fetch_auth::<_, EveSearchResult>(
             &path,
             &Query {
-                categories: category.clone(),
+                categories: search_param.categories.clone(),
                 search:     search_param.search,
             }
         )
         .await?;
+    let mut ids = Vec::new();
+    ids.extend(search_data.alliance);
+    ids.extend(search_data.corporation);
+    ids.extend(search_data.character);
 
-    let result = if category == "character" {
-        let characters = crate::character::service::fetch_character_bulk(
-                &state.postgres,
-                search_data
-                    .character
-                    .into_iter()
-                    .map(Into::into)
-                    .collect::<Vec<_>>(),
+    if ids.is_empty() {
+        return Ok(
+            (
+                StatusCode::NO_CONTENT,
+                Json(ids),
             )
-            .await
-            .unwrap();
-        serde_json::to_value(&characters).unwrap()
-    } else {
-        serde_json::json!({})
-    };
+            .into_response()
+        )
+    }
+
+    let entries = api_client
+        .post::<Vec<i64>, Vec<IdToName>>(
+            ids,
+            "/universe/names"
+        )
+        .await?;
 
     Ok(
         (
             StatusCode::OK,
-            Json(result),
+            Json(entries),
         )
         .into_response()
     )
@@ -117,21 +125,31 @@ pub async fn api(
 /// The EVE-API returns some unfavorable data types, always using them will cause
 /// more issues, so this type is a wrapper type to properly parse the EVE-API result
 /// 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, IntoParams)]
 pub struct SearchParam {
-    search:   String,
-    //category: SearchCategory,
-    category: String,
+    pub search:     String,
+
+    #[param(
+        default = json!("alliance,character,corporation"),
+        required = true,
+    )]
+    pub categories: String,
 }
 
-pub struct SearchResult(pub Vec<i64>);
+#[derive(Debug, Deserialize, Serialize, ToSchema)]
+pub struct IdToName {
+    pub id:       i64,
+    /// Allowed values: alliance, character, constellation, corporation, inventory_type, region, solar_system, station, faction
+    pub category: String,
+    pub name:     String,
+}
 
 #[derive(Deserialize)]
 struct EveSearchResult {
-    //#[serde(default)]
-    //alliance:       Vec<i64>,
     #[serde(default)]
-    character:      Vec<i32>,
-    //#[serde(default)]
-    //corporation:    Vec<i64>,
+    alliance:       Vec<i64>,
+    #[serde(default)]
+    character:      Vec<i64>,
+    #[serde(default)]
+    corporation:    Vec<i64>,
 }

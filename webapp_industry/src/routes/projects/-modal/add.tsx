@@ -1,4 +1,4 @@
-import { Alert, Button, Flex, InputBase, Modal, NumberInput, Stack } from '@mantine/core';
+import { Alert, Button, Flex, InputBase, Modal, NumberInput, Stack, Textarea } from '@mantine/core';
 import { createProject, type CreateProject } from '@/services/projects/create';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { LoadingError } from '@/components/LoadingError';
@@ -52,6 +52,7 @@ export function AddProject({
             name: '',
             orderer: '',
             sellPrice: 0,
+            notes: '',
 
             project_group_id: '',
         },
@@ -189,7 +190,7 @@ export function AddProject({
                                 thousandSeparator
                                 data-cy="sellPrice"
                                 label="Sell price"
-                                description="Price of the "
+                                description="Price of the products"
                                 placeholder="1,000,000,000"
                                 id={field.name}
                                 name={field.name}
@@ -203,6 +204,29 @@ export function AddProject({
                                         field.handleChange(e as number);
                                     }
                                 }}
+                            />
+                        </>
+                    }}
+                />
+
+                <form.Field
+                    name="notes"
+                    children={(field) => {
+                        return <>
+                            <Textarea
+                                data-1p-ignore
+                                data-cy="notes"
+                                label="Notes"
+                                description="Notes about the project. This supports markdown"
+                                placeholder="Some notes in markdown"
+                                id={field.name}
+                                name={field.name}
+                                value={field.state.value}
+                                error={
+                                    !field.state.meta.isValid && field.state.meta.errors.join(', ')
+                                }
+                                onBlur={field.handleBlur}
+                                onChange={(e) => field.handleChange(e.target.value)}
                             />
                         </>
                     }}
@@ -247,7 +271,7 @@ export function AddProjectModal({
     return <Modal
         opened={ opened }
         onClose={ close }
-        title="Add structure"
+        title="Add project"
         overlayProps={{
             backgroundOpacity: 0.55,
             blur: 3,

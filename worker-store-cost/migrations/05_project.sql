@@ -36,7 +36,7 @@ BEGIN
     ) THEN
         CREATE TYPE PROJECT_STATUS AS ENUM (
             'CREATED',
-            'INITIALIZED',
+            'READY_TO_START',
             'IN_PROGRESS',
             'PAUSED',
             'DONE'

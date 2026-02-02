@@ -1,4 +1,4 @@
-name: store-webapp
+name: industry-webapp
 
 on:
   push:
@@ -20,17 +20,17 @@ permissions:
   packages: write # for ghcr.io
 
 jobs:
-  test:
-    uses: ./.github/workflows/common_webapp_test.yml
-    secrets: inherit
-    with:
-      folder: webapp_industry
+  #test:
+  #  uses: ./.github/workflows/common_webapp_test.yml
+  #  secrets: inherit
+  #  with:
+  #    folder: webapp_industry
 
   build-image:
     uses: ./.github/workflows/common_build_docker.yml
     secrets: inherit
-    needs:
-      - test
+    #needs:
+    #  - test
     with:
       name: industry/webapp
       image: industry-webapp

@@ -34,8 +34,8 @@ pub async fn list(
             .collect::<Vec<_>>()
     } else {
         vec![
-            "CREATED".into(),
-            "INITIALIZED".into(),
+            "DRAFT".into(),
+            "READY_TO_START".into(),
             "IN_PROGRESS".into(),
             "PAUSED".into(),
             "DONE".into(),
@@ -133,7 +133,7 @@ pub struct ProjectFilter {
     pub name: Option<String>,
 
     #[param(
-        default = json!("CREATED,INITIALIZED,IN_PROGRESS,PAUSED,DONE"),
+        default = json!("DRAFT,READY_TO_START,IN_PROGRESS,PAUSED,DONE"),
         required = false,
     )]
     #[serde(default = "default_status")]
@@ -155,7 +155,7 @@ pub struct ProjectFilter {
 }
 
 fn default_status() -> Option<String> {
-    Some("CREATED,INITIALIZED,IN_PROGRESS,PAUSED,DONE".into())
+    Some("DRAFT,READY_TO_START,IN_PROGRESS,PAUSED,DONE".into())
 }
 
 #[derive(Debug, Deserialize, Serialize, ToSchema)]
@@ -196,9 +196,9 @@ pub struct ProjectList {
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum ProjectStatus {
     /// the project has been created, but no builds have been added
-    Created,
+    Draft,
     /// the project has builds selected, and is ready to be started
-    Initialized,
+    ReadyToStart,
     /// the project is currently in progress, and job detection is active
     InProgress,
     /// the project is currently paused, job detection not active
@@ -206,7 +206,6 @@ pub enum ProjectStatus {
     /// the project is finished, industry job detection is no longer active
     Done,
 }
-
 
 #[cfg(test)]
 mod list_project_group_test {
@@ -226,13 +225,14 @@ mod list_project_group_test {
         pool: PgPool,
     ) {
         let gateway_client = EveGatewayTestApiClient::new();
-        let result = dbg!(super::list(
+        let result = super::list(
                 &pool,
                 CharacterId(1),
                 ProjectFilter::default(),
                 &gateway_client,
             )
-            .await);
+            .await;
+        dbg!(&result);
         assert!(result.is_ok());
         assert_eq!(result.unwrap().len(), 4);
 

@@ -18,6 +18,7 @@ import { useFetchIndustryHub } from '@/services/industry-hub/fetch';
 import { useForm } from '@tanstack/react-form';
 import { useListStructure, type Structure } from '@/services/structure/list';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { EntitySelectorModal } from '@/components/selectors/EntitySelectorModal';
 
 interface QueryParams {
     created?: boolean;
@@ -37,7 +38,8 @@ export const Route = createFileRoute('/industry-hubs_/$industryHubId/')({
 function RouteComponent() {
     const { industryHubId } = Route.useParams();
     const { created: createdResource } = Route.useSearch();
-    const [opened, { open, close }] = useDisclosure(false);
+    const [entitySelectorOpened, { open: openEntitySelector, close: closeEntitySelector }] = useDisclosure(false);
+    const [structureSelectorOpened, { open: openStructureSelector, close: closeStructureSelector }] = useDisclosure(false);
 
     const navigation = useNavigate();
     const queryClient = useQueryClient();
@@ -121,7 +123,6 @@ function RouteComponent() {
     if (isErrorStructures) {
         return LoadingError();
     }
-
 
     const deleteResource = async () => {
         await mutationDelete
@@ -243,11 +244,20 @@ function RouteComponent() {
 
     const onSelectStructure = (structures: Structure[]) => {
         setSelectedStructures(structures);
-        close();
+        closeStructureSelector();
     }
 
     return <>
         { notification() }
+
+        <EntitySelectorModal
+            opened={entitySelectorOpened}
+            onClose={closeEntitySelector}
+
+            entities={[]}
+            selected={[]}
+            onSelect={() => {}}
+        />
 
         <form
             onSubmit={(e) => {
@@ -294,8 +304,8 @@ function RouteComponent() {
                         children={(_) => {
                             return <>
                                 <StructureSelectorModal
-                                    opened={opened}
-                                    onClose={close}
+                                    opened={structureSelectorOpened}
+                                    onClose={closeStructureSelector}
                                     onSelect={onSelectStructure}
 
                                     structures={structures}
@@ -306,7 +316,7 @@ function RouteComponent() {
                                     justify='end'
                                 >
                                     <Button
-                                        onClick={open}
+                                        onClick={openStructureSelector}
                                     >
                                         Edit structures
                                     </Button>
@@ -326,6 +336,17 @@ function RouteComponent() {
                     { structureLayouts() }
 
                     <Title order={3}>Sharing</Title>
+
+                    <Flex
+                        justify='end'
+                    >
+                        <Button
+                            onClick={openEntitySelector}
+                        >
+                            Edit Shares
+                        </Button>
+                    </Flex>
+
                     <ShareIndustryHub />
                 </Stack>
 

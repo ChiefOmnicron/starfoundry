@@ -43,7 +43,7 @@ export const useListProjects = (
     })
 }
 
-export type ProjectStatus = 'CREATED' | 'INITIALIZED' | 'IN_PROGRESS' | 'PAUSED' | 'DONE';
+export type ProjectStatus = 'DRAFT' | 'READY_TO_START' | 'IN_PROGRESS' | 'PAUSED' | 'DONE';
 
 export type ProjectList = {
     id:            Uuid;

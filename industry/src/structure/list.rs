@@ -86,7 +86,7 @@ mod tests {
     use axum::http::StatusCode;
     use http_body_util::BodyExt;
     use sqlx::PgPool;
-    use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
+    use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID, HEADER_SERVICE};
     use starfoundry_lib_industry::Structure;
 
     use crate::structure::structure_test_routes;
@@ -100,6 +100,7 @@ mod tests {
         let request = Request::builder()
             .uri("/")
             .method("GET")
+            .header(HEADER_SERVICE, "industry.test")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
             .header(HOST, "test.starfoundry.space")
@@ -123,6 +124,7 @@ mod tests {
         let request = Request::builder()
             .uri("/?name=Filter")
             .method("GET")
+            .header(HEADER_SERVICE, "industry.test")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
             .header(HOST, "test.starfoundry.space")
@@ -146,6 +148,7 @@ mod tests {
         let request = Request::builder()
             .uri("/?name=SomeGibberish")
             .method("GET")
+            .header(HEADER_SERVICE, "industry.test")
             .header(HEADER_CHARACTER_ID, 1)
             .header(HEADER_CORPORATION_ID, 1)
             .header(HOST, "test.starfoundry.space")

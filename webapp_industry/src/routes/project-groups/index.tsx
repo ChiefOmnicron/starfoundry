@@ -1,5 +1,5 @@
 import { AddProjectGroup } from '@/routes/project-groups/-modal/add';
-import { Alert, Button, Card, Center, Flex, Modal, Pill, Stack, Table, Tabs, TabsPanel, Title } from '@mantine/core';
+import { Alert, Button, Card, Center, Flex, Modal, Pill, Stack, Table, Tabs, Title } from '@mantine/core';
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { createFileRoute } from '@tanstack/react-router';
 import { Filter, type FilterPropEntry, type SelectedFilter } from '@/components/Filter';

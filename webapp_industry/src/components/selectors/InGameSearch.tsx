@@ -1,25 +1,46 @@
-import { Avatar, Combobox, Group, Input, InputBase, Loader, Text, useCombobox } from "@mantine/core";
-import { EveIcon } from "../EveIcon";
+import { Avatar, Combobox, Group, Input, InputBase, Loader, Pill, Text, useCombobox } from "@mantine/core";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { useState, type ReactElement } from "react";
-import type { Item } from "@/services/item/model";
-import { inGameSearch, type InGameSearchFilter } from "@/services/inGameSearch";
-import type { CharacterInfo } from "@/services/client";
+import { inGameSearch, type InGameSearchFilter, type InGameSearchResponse } from "@/services/inGameSearch";
+import type { Category } from "@/services/utils";
 
-function SelectOption(character: CharacterInfo) {
+function SelectOption(searchResult: InGameSearchResponse) {
+    let category;
+    switch (searchResult.category) {
+        case 'alliance':
+            category = 'alliances';
+            break;
+        case 'corporation':
+            category = 'corporations';
+            break;
+        case 'character':
+            category = 'characters';
+            break;
+        default:
+            category = 'types';
+    }
+
+    let variation = searchResult.category === 'character'
+        ? 'portrait'
+        : 'logo';
+
     return (
-        <Group key={character.character_id}>
+        <Group key={searchResult.id}>
             {
                 <Avatar
-                    src={`https://images.evetech.net/characters/${character.character_id}/portrait`}
+                    src={`https://images.evetech.net/${category}/${searchResult.id}/${variation}`}
                     radius="xl"
                 />
             }
 
             <div>
                 <Text fz="sm" fw={500}>
-                    {character.character_name}
+                    {searchResult.name}
                 </Text>
+
+                <Pill>
+                    {searchResult.category}
+                </Pill>
             </div>
         </Group>
     );
@@ -47,7 +68,7 @@ export function InGameSearch({
         }
     },
 
-    category,
+    categories,
 
     withinPortal = false,
 }: InGameSearchProp): ReactElement {
@@ -65,55 +86,52 @@ export function InGameSearch({
 
     const [loading, setLoading] = useState<boolean>(false);
 
-    const [value, setValue] = useState<string | null>(null);
     const [search, setSearch] = useState('');
-
+    
     const [options, setOptions] = useState<any[]>([]);
-    const [characterInfo, setCharacterInfo] = useState<CharacterInfo[]>([]);
+    const [_, setSelectedValue] = useState<InGameSearchResponse | undefined>(undefined);
+    const [searchResponse, setSearchResponse] = useState<InGameSearchResponse[]>([]);
 
     const resetValue = () => {
-        setValue(null);
+        setSelectedValue(undefined);
         setOptions([]);
     };
     ref.current.reset = resetValue;
 
     const fetchData = useDebouncedCallback(async (query: string) => {
+        if (query.length < 3) {
+            return;
+        }
+
         setLoading(true);
 
         let filter: InGameSearchFilter = {
-            categories: [category],
+            categories,
             search: query,
         };
 
         inGameSearch(filter)
             .then(x => {
-                setCharacterInfo(x);
                 setLoading(false);
+                setSearchResponse(x);
+
+                if (!x) {
+                    return;
+                }
 
                 const data = x
-                    .map((character) => (
+                    .map((searchResult) => (
                         <Combobox.Option
-                            value={character.character_id.toString()}
-                            key={character.character_id}
+                            value={searchResult.id.toString()}
+                            key={searchResult.id}
                         >
-                            <SelectOption key={character.character_id} {...character} />
+                            <SelectOption key={searchResult.id} {...searchResult} />
                         </Combobox.Option>
                     ));
 
                 setOptions(data);
             })
     }, 200);
-
-    const itemByTypeId = (
-        typeId: string | null
-    ): CharacterInfo | undefined => {
-        if (typeId) {
-            const typeIdConverted = Number.parseInt(typeId || '0');
-            return (characterInfo || []).find(x => x.character_id === typeIdConverted)
-        } else {
-            return undefined;
-        }
-    }
 
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(event.currentTarget.value);
@@ -125,8 +143,11 @@ export function InGameSearch({
             store={combobox}
             withinPortal={withinPortal}
             onOptionSubmit={(val) => {
-                setValue(val);
-                onSelect(characterInfo.find(x => x.character_id.toString() === val) as any);
+                const entry = searchResponse
+                    .find(x => x.id.toString() === val) as any
+
+                onSelect(entry);
+                setSelectedValue(entry)
                 combobox.closeDropdown();
             }}
             styles={{
@@ -150,8 +171,10 @@ export function InGameSearch({
                     pointer
                 >
                     {
-                        //itemByTypeId(value as any)?.name ||
-                        //<Input.Placeholder>Select an item</Input.Placeholder>
+                        //selectedValue
+                        //    ? selectedValue.name
+                        //    : <Input.Placeholder>Search for an alliance, corporation or character</Input.Placeholder>
+                        <Input.Placeholder>Search for an alliance, corporation or character</Input.Placeholder>
                     }
                 </InputBase>
             </Combobox.Target>
@@ -160,7 +183,7 @@ export function InGameSearch({
                 <Combobox.Search
                     value={search}
                     onChange={handleSearch}
-                    placeholder="Search item"
+                    placeholder="Search for an alliance, corporation or character"
                 />
                 <Combobox.Options
                     mah={300}
@@ -178,9 +201,9 @@ export function InGameSearch({
 }
 
 export type InGameSearchProp = {
-    onSelect: (entry: any) => void;
+    onSelect: (entry: InGameSearchResponse) => void;
 
-    category: 'agent' | 'alliance' | 'character' | 'constellation' | 'corporation' | 'faction' | 'inventory_type' | 'region' | 'solar_system' | 'station' | 'structure';
+    categories: Category[];
 
     ref: { current: InGameSearchRef };
     withinPortal?: boolean;

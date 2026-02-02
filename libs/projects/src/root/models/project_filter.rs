@@ -13,7 +13,7 @@ pub struct ProjectFilter {
 
     // workourd as arrays aren´t supported
     #[param(
-        default = json!("CREATED,INITIALIZED,IN_PROGRESS,PAUSED,DONE")
+        default = json!("CREATED,READY_TO_START,IN_PROGRESS,PAUSED,DONE")
     )]
     #[serde(default = "default_status")]
     pub status: Option<String>,
@@ -23,5 +23,5 @@ pub struct ProjectFilter {
 }
 
 fn default_status() -> Option<String> {
-    Some("CREATED,INITIALIZED,IN_PROGRESS,PAUSED,DONE".into())
+    Some("CREATED,READY_TO_START,IN_PROGRESS,PAUSED,DONE".into())
 }

@@ -3,9 +3,8 @@ admins = [
     2117441999,
 ]
 whitelist = [
-    98024275,
-    98748294,
-    2117441999,
+    98024275,   # RCI
+    98748294,   # Flanders
 ]
 character_scopes = [
     "publicData",

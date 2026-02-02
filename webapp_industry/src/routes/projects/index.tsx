@@ -33,11 +33,11 @@ const filters: FilterPropEntry[] = [{
     key: 'status',
     type: 'SELECT',
     options: [{
-        label: 'Created',
-        key: 'CREATED'
+        label: 'Draft',
+        key: 'DRAFT'
     }, {
-        label: 'Initialized',
-        key: 'INITIALIZED'
+        label: 'Ready to start',
+        key: 'READY_TO_START'
     }, {
         label: 'In Progress',
         key: 'IN_PROGRESS'
