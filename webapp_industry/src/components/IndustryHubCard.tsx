@@ -11,6 +11,8 @@ import { StructureRigBadge } from "@/routes/structures/-components/StructureRigB
 import { useDisclosure } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import { IndustryHubViewModal } from "./IndustryHubView";
+import { useMutation } from "@tanstack/react-query";
+import { cloneIndustryHub } from "@/services/industry-hub/clone";
 
 export function IndustryHubList({
     industryHubs,
@@ -47,8 +49,9 @@ export function IndustryHubCard({
 
     viewTarget = '_self',
 
-    editLink = false,
-    viewLink = true,
+    cloneLink = false,
+    editLink  = false,
+    viewLink  = true,
 
     checkable = false,
     checked = [],
@@ -60,6 +63,12 @@ export function IndustryHubCard({
     useEffect(() => {
         setIsSelected(!!checked.find(x => x.id === industryHub.id));
     }, [checked]);
+
+    const cloneMutation = useMutation({
+        mutationFn: () => {
+            return cloneIndustryHub(industryHub.id);
+        }
+    });
 
     const systems: System[] = [];
     industryHub
@@ -200,6 +209,19 @@ export function IndustryHubCard({
     }
 
     const actionBar = () => {
+        const clone = cloneLink
+            ?   <UnstyledButton
+                    onClick={() => {
+                        cloneMutation.mutate();
+                    }}
+                    style={{
+                        color: 'var(--mantine-color-blue-4)',
+                        fontSize: 'var(--mantine-font-size-sm)',
+                    }}
+                >
+                    Clone
+                </UnstyledButton>
+            :   <></>
         const edit = editLink
             ?   <InternalLink
                     to={IndustryHubRoute.to}
@@ -212,7 +234,7 @@ export function IndustryHubCard({
             :   <></>
         const view = viewLink
             ?   <UnstyledButton
-                    onClick={ openView }
+                    onClick={openView}
                     style={{
                         color: 'var(--mantine-color-blue-4)',
                         fontSize: 'var(--mantine-font-size-sm)',
@@ -222,7 +244,7 @@ export function IndustryHubCard({
                 </UnstyledButton>
             :   <></>
 
-        if (editLink || viewLink) {
+        if (cloneLink || editLink || viewLink) {
             return <>
                 <Flex
                     align='flex-end'
@@ -233,6 +255,8 @@ export function IndustryHubCard({
                     }}
                 >
                     <Group>
+                        { clone }
+
                         { edit }
 
                         { view }
@@ -249,7 +273,7 @@ export function IndustryHubCard({
             opened={openedView}
             onClose={closeView}
 
-            industryHubId={industryHub.id}
+            industryHub={industryHub}
         />
 
         <Card
@@ -291,8 +315,9 @@ type IndustryHubCardMandatoryProps = {
 }
 
 type IndustryHubCardPAdditionalProps = {
-    editLink?: boolean;
-    viewLink?: boolean;
+    cloneLink?: boolean;
+    editLink?:  boolean;
+    viewLink?:  boolean;
 
     // Determines if a checkbox is added or not
     checkable?: boolean,

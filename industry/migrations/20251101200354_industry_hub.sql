@@ -20,7 +20,11 @@ CREATE OR REPLACE TRIGGER set_updated_at
 
 CREATE TABLE IF NOT EXISTS industry_hub_structure (
     industry_hub_id UUID NOT NULL,
-    structure_id       UUID NOT NULL,
+    structure_id    UUID NOT NULL,
+
+    FOREIGN KEY (industry_hub_id)
+        REFERENCES industry_hub
+        ON DELETE CASCADE,
 
     FOREIGN KEY (structure_id)
         REFERENCES structure (id)

@@ -54,6 +54,27 @@ pub async fn fetch(
         .map(|x| x.structure_id.into())
         .collect();
 
+    let shares = sqlx::query!(r#"
+            SELECT
+                share_id,
+                share_type AS "share_type!: ShareType",
+                name
+            FROM industry_hub_share
+            WHERE industry_hub_id = $1
+        "#,
+            industry_hub.id,
+        )
+        .fetch_all(pool)
+        .await
+        .unwrap_or_default()
+        .into_iter()
+        .map(|x| IndustryHubShare {
+            name: x.name,
+            share_id: x.share_id,
+            share_type: x.share_type,
+        })
+        .collect::<Vec<_>>();
+
     let structures = crate::structure::service::list(
             &pool,
             eve_gateway_api_client,
@@ -69,6 +90,7 @@ pub async fn fetch(
         id:         industry_hub.id.into(),
         name:       industry_hub.name,
         structures: structures,
+        shares:     shares,
     };
 
     Ok(Some(industry_hub))
@@ -173,4 +195,27 @@ pub struct IndustryHub {
     pub id:         IndustryHubUuid,
     pub name:       String,
     pub structures: Vec<Structure>,
+    pub shares:     Vec<IndustryHubShare>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
+pub struct IndustryHubShare {
+    pub name:       String,
+    /// either a character id, corporation id or alliance id
+    pub share_id:   i32,
+    pub share_type: ShareType,
+}
+
+#[derive(
+    Clone, Debug, Copy, Hash,
+    PartialEq, Eq, PartialOrd, Ord,
+    sqlx::Type, Deserialize, Serialize, ToSchema,
+)]
+#[sqlx(type_name = "SHARE_TYPE")]
+#[sqlx(rename_all = "SCREAMING_SNAKE_CASE")]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum ShareType {
+    Character,
+    Corporation,
+    Alliance,
 }

@@ -1,4 +1,5 @@
 import { axiosClient } from "@/services/client";
+import type { IndustryHubShare } from "@/services/industry-hub/list";
 import type { Uuid } from "@/services/utils";
 
 export const updateIndustryHub = async (
@@ -14,4 +15,5 @@ export const updateIndustryHub = async (
 export type UpdateIndustryHub = {
     name:       string,
     structures: Uuid[],
+    shares:     IndustryHubShare[];
 }

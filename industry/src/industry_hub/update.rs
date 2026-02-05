@@ -26,6 +26,7 @@ use crate::industry_hub::IndustryHubUuid;
     put,
     path = "/{IndustryHubUuid}",
     tag = "Industry Hubs",
+    request_body = UpdateIndustryHub,
     params(
         IndustryHubUuid,
     ),
@@ -95,6 +96,7 @@ mod tests {
                 serde_json::to_string(&UpdateIndustryHub {
                     name: "My cool structure group".into(),
                     structures: Vec::new(),
+                    shares: Vec::new(),
                 }).unwrap()
             ))
             .unwrap();
@@ -135,6 +137,7 @@ mod tests {
                 serde_json::to_string(&UpdateIndustryHub {
                     name: "My cool structure group".into(),
                     structures: Vec::new(),
+                    shares: Vec::new(),
                 }).unwrap()
             ))
             .unwrap();

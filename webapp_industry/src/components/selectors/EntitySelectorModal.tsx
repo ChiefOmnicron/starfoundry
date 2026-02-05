@@ -23,23 +23,18 @@ export function EntitySelectorModal({
         return <CharacterCorporationAllianceList
             characterCorporationAlliances={selectedEntities}
 
-            //characterCorporationAllianceCardProps={{
-            //    checkable: true,
-            //    checked: selectedEntities,
-            //    onChange: (event: 'checked' | 'unchecked', entity: CharacterCorporationAlliance) => {
-            //        setSelectedEntities(
-            //            event === 'checked'
-            //                ? [...selectedEntities, entity]
-            //                : selectedEntities.filter((y) => y.id !== entity.id)
-            //        );
-            //    }
-            //}}
+            characterCorporationAllianceCardProps={{
+                editable: true,
+                onChange: (event: 'remove', entity: CharacterCorporationAlliance) => {
+                    if (event === 'remove') {
+                        setSelectedEntities(
+                            selectedEntities.filter(x => x.id !== entity.id)
+                        );
+                    }
+                }
+            }}
         />
     }
-
-    //const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //    setSearch(event.currentTarget.value);
-    //};
 
     return <Modal
         opened={opened}
@@ -96,8 +91,6 @@ export type EntitySelectorModalProp = {
     onSelect: (entry: CharacterCorporationAlliance[]) => void;
     onClose: () => void;
 
-    // structures the user can select
-    entities: CharacterCorporationAlliance[],
-    // list of values that are already selected
+    // list of entities that are selected
     selected: CharacterCorporationAlliance[],
 }

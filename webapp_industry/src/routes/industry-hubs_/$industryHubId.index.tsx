@@ -7,7 +7,6 @@ import { LIST_INDUSTRY_HUB } from '@/services/industry-hub/list';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { LoadingError } from '@/components/LoadingError';
 import { Route as StructureListRoute } from '@/routes/structures/index';
-import { ShareIndustryHub } from '@/routes/industry-hubs_/-component/Share';
 import { StructureLayout } from '@/components/StructureLayout';
 import { StructureList } from '@/components/StructureList';
 import { StructureSelectorModal } from '@/components/selectors/StructureSelectorModal';
@@ -19,6 +18,7 @@ import { useForm } from '@tanstack/react-form';
 import { useListStructure, type Structure } from '@/services/structure/list';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { EntitySelectorModal } from '@/components/selectors/EntitySelectorModal';
+import { CharacterCorporationAllianceList, type CharacterCorporationAlliance } from '@/components/EntityList';
 
 interface QueryParams {
     created?: boolean;
@@ -49,6 +49,7 @@ function RouteComponent() {
     const [errorDelete, setErrorDelete] = useState<string | undefined>();
     const [errorUpdate, setErrorUpdate] = useState<string | undefined>();
 
+    const [selectedEntities, setSelectedEntities] = useState<CharacterCorporationAlliance[]>([]);
     const [selectedStructures, setSelectedStructures] = useState<Structure[]>([]);
 
     const {
@@ -95,6 +96,17 @@ function RouteComponent() {
 
     useEffect(() => {
         setSelectedStructures(industryHub.structures);
+
+        let shares = industryHub
+            .shares
+            .map(x => {
+                return {
+                    id: x.share_id,
+                    name: x.name,
+                    category: x.share_type.toLowerCase() as any,
+                }
+            });
+        setSelectedEntities(shares);
     }, [industryHub]);
 
     const form = useForm({
@@ -107,7 +119,16 @@ function RouteComponent() {
             return await mutationUpdate
                 .mutateAsync({
                     ...value,
-                    structures: selectedStructures.map(x => x.id),
+                    structures: selectedStructures
+                                    .map(x => x.id),
+                    shares:     selectedEntities
+                                    .map(x => {
+                                        return {
+                                            name: x.name,
+                                            share_id: x.id,
+                                            share_type: x.category.toUpperCase() as any,
+                                        }
+                                    }),
                 })
                 .catch(error => {
                     setErrorUpdate(error);
@@ -254,9 +275,11 @@ function RouteComponent() {
             opened={entitySelectorOpened}
             onClose={closeEntitySelector}
 
-            entities={[]}
-            selected={[]}
-            onSelect={() => {}}
+            selected={selectedEntities}
+            onSelect={(selectedEntities) => {
+                setSelectedEntities(selectedEntities);
+                closeEntitySelector();
+            }}
         />
 
         <form
@@ -298,7 +321,18 @@ function RouteComponent() {
                         }}
                     />
 
-                    <Title order={2}>Structures</Title>
+                    <Flex
+                        justify='space-between'
+                    >
+                        <Title order={3}>Structures</Title>
+
+                        <Button
+                            onClick={openStructureSelector}
+                        >
+                            Edit structures
+                        </Button>
+                    </Flex>
+
                     <form.Field
                         name="structures"
                         children={(_) => {
@@ -311,16 +345,6 @@ function RouteComponent() {
                                     structures={structures}
                                     selected={selectedStructures}
                                 />
-
-                                <Flex
-                                    justify='end'
-                                >
-                                    <Button
-                                        onClick={openStructureSelector}
-                                    >
-                                        Edit structures
-                                    </Button>
-                                </Flex>
 
                                 <StructureList
                                     structures={selectedStructures}
@@ -335,11 +359,11 @@ function RouteComponent() {
                     <Title order={3}>Layout</Title>
                     { structureLayouts() }
 
-                    <Title order={3}>Sharing</Title>
-
                     <Flex
-                        justify='end'
+                        justify='space-between'
                     >
+                        <Title order={3}>Sharing</Title>
+
                         <Button
                             onClick={openEntitySelector}
                         >
@@ -347,7 +371,13 @@ function RouteComponent() {
                         </Button>
                     </Flex>
 
-                    <ShareIndustryHub />
+                    <Alert color="gray">
+                        Characters in the list, in the corporation or in the alliance listed below, will be able to see the industry hub, and save it into their account.
+                    </Alert>
+
+                    <CharacterCorporationAllianceList
+                        characterCorporationAlliances={selectedEntities}
+                    />
                 </Stack>
 
                 <Flex

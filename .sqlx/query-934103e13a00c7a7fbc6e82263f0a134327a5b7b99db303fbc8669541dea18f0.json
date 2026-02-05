@@ -1,0 +1,63 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT\n                    share_id,\n                    share_type AS \"share_type!: ShareType\",\n                    name\n                FROM industry_hub_share\n                WHERE industry_hub_id = $1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "share_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "industry_hub_share",
+            "name": "share_id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "share_type!: ShareType",
+        "type_info": {
+          "Custom": {
+            "name": "share_type",
+            "kind": {
+              "Enum": [
+                "CHARACTER",
+                "CORPORATION",
+                "ALLIANCE"
+              ]
+            }
+          }
+        },
+        "origin": {
+          "Table": {
+            "table": "industry_hub_share",
+            "name": "share_type"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "industry_hub_share",
+            "name": "name"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "934103e13a00c7a7fbc6e82263f0a134327a5b7b99db303fbc8669541dea18f0"
+}

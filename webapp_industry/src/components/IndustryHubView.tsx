@@ -6,24 +6,11 @@ import { StructureRigBadge } from '../routes/structures/-components/StructureRig
 import { StructureServiceBadge } from '../routes/structures/-components/StructureServiceBadge';
 import { useFetchIndustryHub } from '@/services/industry-hub/fetch';
 import type { Uuid } from '@/services/utils';
+import type { IndustryHub } from '@/services/industry-hub/list';
 
 export function IndustryHubView({
-    industryHubId,
+    industryHub,
 }: IndustryHubViewProps) {
-    const {
-        isPending,
-        isError,
-        data: industryHub,
-    } = useFetchIndustryHub(industryHubId);
-
-    if (isPending) {
-        return LoadingAnimation();
-    }
-
-    if (isError) {
-        return LoadingError();
-    }
-
     return <>
         <Stack>
             <Title order={1}>{industryHub.name}</Title>
@@ -62,8 +49,33 @@ export function IndustryHubViewModal({
     opened,
     onClose,
 
+    industryHub,
     industryHubId,
 }: IndustryHubViewModalProps) {
+    let hub;
+    if (industryHubId) {
+        const {
+            isPending,
+            isError,
+            data: industryHub,
+        } = useFetchIndustryHub(industryHubId);
+
+        if (isPending) {
+            return LoadingAnimation();
+        }
+
+        if (isError) {
+            return LoadingError();
+        }
+
+        hub = industryHub;
+    } else if (industryHub) {
+        hub = industryHub;
+    } else {
+        console.error('either a "industryHub" or a "industryHubId" is required');
+        return <></>
+    }
+
     return <Modal
         opened={ opened }
         onClose={ onClose }
@@ -77,18 +89,19 @@ export function IndustryHubViewModal({
         closeOnClickOutside
     >
         <IndustryHubView
-            industryHubId={ industryHubId }
+            industryHub={hub}
         />
     </Modal>
 }
 
 export type IndustryHubViewProps = {
-    industryHubId: Uuid;
+    industryHub: IndustryHub;
 }
 
 export type IndustryHubViewModalProps = {
     opened: boolean;
     onClose: () => void;
 
-    industryHubId: Uuid;
+    industryHub?:   IndustryHub,
+    industryHubId?: Uuid;
 }

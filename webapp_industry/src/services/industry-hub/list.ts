@@ -23,10 +23,18 @@ export type IndustryHub = {
     id:         Uuid;
     name:       string;
     structures: Structure[],
+    shares:     IndustryHubShare[];
+}
+
+export type IndustryHubShare = {
+    name: string,
+    share_id: number;
+    share_type: 'CHARACTER' | 'CORPORATION' | 'ALLIANCE'
 }
 
 export type IndustryHubFilter = {
     name?: string;
+    shared?: boolean;
 }
 
 // For general use

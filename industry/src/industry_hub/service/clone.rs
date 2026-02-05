@@ -45,20 +45,29 @@ pub async fn clone(
                 type_id,
                 rigs,
                 services,
-                name
+                name,
+                x,
+                y,
+                z
             )
             SELECT
                 $1 AS owner,
-                structure_id,
-                system_id,
-                type_id,
-                rigs,
-                services,
-                name
-            FROM structure s
+                s.structure_id,
+                s.system_id,
+                s.type_id,
+                s.rigs,
+                s.services,
+                s.name,
+                s.x,
+                s.y,
+                s.z
+            FROM industry_hub_structure ihs
+            JOIN structure s ON ihs.structure_id = s.id
+            WHERE ihs.industry_hub_id = $2
             RETURNING id
         ",
             *character_id,
+            *industry_hub_id,
         )
         .fetch_all(&mut *transaction)
         .await
@@ -103,13 +112,4 @@ pub async fn clone(
         .map_err(IndustryHubError::CommitTransactionError)?;
 
     Ok(cloned_id)
-}
-
-#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, sqlx::Type)]
-#[sqlx(type_name = "SHARE_TYPE")]
-#[sqlx(rename_all = "SCREAMING_SNAKE_CASE")]
-pub enum ShareType {
-    Character,
-    Corporation,
-    Alliance,
 }

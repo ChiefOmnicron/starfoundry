@@ -9,6 +9,7 @@ use utoipa::IntoParams;
 
 use crate::structure::error::Result;
 use crate::structure::StructureError;
+use uuid::Uuid;
 
 pub async fn list(
     pool:                   &PgPool,
@@ -62,8 +63,110 @@ pub async fn list(
                 }
             }
         })
+        .map(|x| {
+            TmpStructure {
+                id: x.id,
+                rigs: x.rigs,
+                services: x.services,
+                structure_id: x.structure_id,
+                structure_name: x.structure_name,
+                system_id: x.system_id,
+                type_id: x.type_id,
+                x: x.x,
+                y: x.y,
+                z: x.z,
+            }
+        })
         .collect::<Vec<_>>();
 
+    process_structure(
+            &pool,
+            eve_gateway_api_client,
+            structures,
+        )
+        .await
+        .map_err(Into::into)
+}
+
+pub(crate) async fn list_shared(
+    pool:                   &PgPool,
+    eve_gateway_api_client: &impl EveGatewayApiClient,
+    filter:                 StructureFilter,
+) -> Result<Vec<Structure>> {
+    let structures = sqlx::query!(r#"
+            SELECT
+                id,
+                type_id,
+                structure_id,
+                name AS "structure_name",
+                services,
+                rigs,
+                system_id,
+                x,
+                y,
+                z
+            FROM structure
+            WHERE
+                NOT (LOWER(structure.name) LIKE '%' || LOWER($1) || '%') IS FALSE AND
+                NOT (structure.type_id = $2) IS FALSE AND
+                NOT (structure.system_id = $3) IS FALSE AND
+                NOT ($4::INTEGER IS NULL OR $4::INTEGER = ANY(services)) IS FALSE AND
+                NOT ($5::INTEGER IS NULL OR $5::INTEGER = ANY(rigs)) IS FALSE AND
+                NOT ($6::UUID[] IS NULL OR id = ANY($6)) IS FALSE
+            ORDER BY structure.name
+        "#,
+            filter.name,
+            filter.structure_type_id,
+            filter.system_id,
+            filter.service_id,
+            filter.rig_id,
+            &filter.structure_ids as _,
+        )
+        .fetch_all(pool)
+        .await
+        .map_err(|e| StructureError::ListStructures(e))?
+        .into_iter()
+        .filter(|x| {
+            if let Some(true) = filter.include_npc {
+                true
+            } else {
+                if x.type_id == 46767 || x.type_id == 52678 {
+                    false
+                } else {
+                    true
+                }
+            }
+        })
+        .map(|x| {
+            TmpStructure {
+                id: x.id,
+                rigs: x.rigs,
+                services: x.services,
+                structure_id: x.structure_id,
+                structure_name: x.structure_name,
+                system_id: x.system_id,
+                type_id: x.type_id,
+                x: x.x,
+                y: x.y,
+                z: x.z,
+            }
+        })
+        .collect::<Vec<_>>();
+
+    process_structure(
+            &pool,
+            eve_gateway_api_client,
+            structures,
+        )
+        .await
+        .map_err(Into::into)
+}
+
+async fn process_structure(
+    pool:                   &PgPool,
+    eve_gateway_api_client: &impl EveGatewayApiClient,
+    structures:             Vec<TmpStructure>,
+) -> Result<Vec<Structure>> {
     let mut type_ids = structures
         .iter()
         .map(|x| x.type_id)
@@ -179,6 +282,19 @@ pub async fn list(
     }
 
     Ok(structure_result)
+}
+
+struct TmpStructure {
+    id:             Uuid,
+    type_id:        i32,
+    structure_id:   i64,
+    structure_name: String,
+    services:       Vec<i32>,
+    rigs:           Vec<i32>,
+    system_id:      i32,
+    x:              f32,
+    y:              f32,
+    z:              f32,
 }
 
 #[cfg(test)]

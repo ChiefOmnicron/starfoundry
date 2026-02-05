@@ -42,7 +42,7 @@ jobs:
         options: >-
           -e POSTGRES_PASSWORD=postgres
           -e POSTGRES_DB=for-testing
-          -v /tmp/github_postgres_testing:/var/lib/postgresql
+          -v /tmp/github_postgres_testing/${{ github.workflow }}-${{ github.head_ref && github.ref || github.run_id }}:/var/lib/postgresql
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s

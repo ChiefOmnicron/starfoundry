@@ -6,6 +6,7 @@ use uuid::Uuid;
 
 use crate::industry_hub::IndustryHubUuid;
 use crate::industry_hub::error::{Result, IndustryHubError};
+use crate::industry_hub::service::IndustryHubShare;
 
 pub async fn update(
     pool:                &PgPool,
@@ -59,6 +60,42 @@ pub async fn update(
         .await
         .map_err(|e| IndustryHubError::UpdateIndustryHub(e, industry_hub_uuid))?;
 
+    sqlx::query!("
+            DELETE FROM industry_hub_share
+            WHERE industry_hub_id = $1
+        ",
+            *industry_hub_uuid,
+        )
+        .execute(&mut *transaction)
+        .await
+        .map_err(|e| IndustryHubError::UpdateIndustryHub(e, industry_hub_uuid))?;
+
+    let share_ids = industry_hub.shares.iter().map(|x| x.share_id).collect::<Vec<_>>();
+    let share_types = industry_hub.shares.iter().map(|x| x.share_type).collect::<Vec<_>>();
+    let names = industry_hub.shares.iter().map(|x| x.name.clone()).collect::<Vec<_>>();
+    sqlx::query!("
+            INSERT INTO industry_hub_share
+            (
+                industry_hub_id,
+                share_id,
+                share_type,
+                name
+            )
+            SELECT $1, * FROM UNNEST(
+                $2::INTEGER[],
+                $3::SHARE_TYPE[],
+                $4::VARCHAR[]
+            )
+        ",
+            *industry_hub_uuid,
+            &share_ids,
+            &share_types as _,
+            &names,
+        )
+        .execute(&mut *transaction)
+        .await
+        .map_err(|e| IndustryHubError::UpdateIndustryHub(e, industry_hub_uuid))?;
+
     transaction
         .commit()
         .await
@@ -93,6 +130,7 @@ mod tests {
                 structures: vec![
                     Uuid::from_str("00000000-0000-0000-0000-000000000001").unwrap()
                 ],
+                shares: Vec::new(),
             }
         )
         .await;
@@ -140,4 +178,5 @@ mod tests {
 pub struct UpdateIndustryHub {
     pub name:       String,
     pub structures: Vec<Uuid>,
+    pub shares:     Vec<IndustryHubShare>,
 }

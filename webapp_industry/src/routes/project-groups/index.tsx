@@ -211,7 +211,7 @@ function RouteComponent() {
             return LoadingError();
         } else if (projectGroups.length > 0) {
             return dataTable();
-        } else {
+        } else if (projectGroups.length === 0 && !archived) {
             return <>
                 <Center mt={50} data-cy="noData">
                     <Stack>
@@ -223,6 +223,14 @@ function RouteComponent() {
                         >
                             Create Group
                         </Button>
+                    </Stack>
+                </Center>
+            </>
+        } else if (projectGroups.length === 0 && archived) {
+            return <>
+                <Center mt={50} data-cy="noData">
+                    <Stack>
+                        <Title order={4}>No archived project groups</Title>
                     </Stack>
                 </Center>
             </>
@@ -251,7 +259,6 @@ function RouteComponent() {
             </Tabs.List>
 
             <Tabs.Panel value="active">
-
                 { content() }
             </Tabs.Panel>
 

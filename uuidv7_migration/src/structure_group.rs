@@ -57,6 +57,14 @@ pub async fn migrate_industry_hubs(
             .execute(&mut *transaction)
             .await?;
 
+        sqlx::query!("
+                DELETE FROM industry_hub_structure
+                WHERE industry_hub_id = $1
+            ",
+                structure_group_id,
+            )
+            .execute(&mut *transaction)
+            .await?;
         for structure in structure_group.structure_ids {
             let structure_id = if let Some(x) = mappings.get(&structure) {
                 x
@@ -64,14 +72,6 @@ pub async fn migrate_industry_hubs(
                 continue;
             };
 
-            sqlx::query!("
-                    DELETE FROM industry_hub_structure
-                    WHERE industry_hub_id = $1
-                ",
-                    structure_group_id,
-                )
-                .execute(&mut *transaction)
-                .await?;
             sqlx::query!("
                     INSERT INTO industry_hub_structure
                     (

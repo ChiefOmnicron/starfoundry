@@ -53,7 +53,7 @@ export function StructureList({
                     <SimpleGrid
                         cols={{
                             base: 1,
-                            sm: 3,
+                            sm: 2,
                         }}
                     >
                         { structureCardBySystem(x.system_id) }
@@ -65,7 +65,7 @@ export function StructureList({
             <SimpleGrid
                 cols={{
                     base: 1,
-                    sm: 3,
+                    sm: 2,
                 }}
             >
                 {
@@ -181,20 +181,24 @@ export function StructureCard({
                     </Text>
                 </Group>
 
-                <Group
-                    gap={'xs'}
-                >
-                    <Text
-                        size='sm'
-                        fw={700}
-                    >
-                        Services:
-                    </Text>
+                {
+                    structure.services.length > 0
+                    ?   <Group
+                            gap={'xs'}
+                        >
+                            <Text
+                                size='sm'
+                                fw={700}
+                            >
+                                Services:
+                            </Text>
 
-                    <StructureServiceBadge
-                        services={structure.services}
-                    />
-                </Group>
+                            <StructureServiceBadge
+                                services={structure.services}
+                            />
+                        </Group>
+                    : <></>
+                }
 
                 {
                     structure.rigs.length > 0

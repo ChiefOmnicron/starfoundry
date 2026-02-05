@@ -1,7 +1,6 @@
-import { Card, Checkbox, Group, Pill, SimpleGrid, Stack, Text } from '@mantine/core';
+import { Card, Flex, Group, Pill, SimpleGrid, Stack, Text, UnstyledButton } from '@mantine/core';
 import { CopyText } from '@/components/CopyText';
 import { EveIcon } from './EveIcon';
-import { useEffect, useState } from 'react';
 
 export function CharacterCorporationAllianceList({
     characterCorporationAlliances,
@@ -12,7 +11,7 @@ export function CharacterCorporationAllianceList({
         <SimpleGrid
             cols={{
                 base: 1,
-                sm: 6,
+                sm: 3,
             }}
         >
             {
@@ -30,48 +29,9 @@ export function CharacterCorporationAllianceList({
 export function CharacterCorporationAllianceCard({
     characterCorporationAlliance,
 
-    checkable = false,
-    checked = [],
+    editable = false,
     onChange = () => {},
 }: CharacterCorporationAllianceCardProps) {
-    const [isSelected, setIsSelected] = useState<boolean>(false);
-
-    useEffect(() => {
-        setIsSelected(!!checked.find(x => x.id === characterCorporationAlliance.id as any));
-    }, [checked]);
-
-    const selectEntity = (
-        state: boolean,
-    ) => {
-        if (!checkable) {
-            return;
-        }
-
-        setIsSelected(state);
-
-        if (state) {
-            onChange('checked', characterCorporationAlliance);
-        } else {
-            onChange('unchecked', characterCorporationAlliance);
-        }
-    }
-
-    const checkbox = () => {
-        if (!checkable) {
-            return <></>
-        }
-
-        return <>
-            <Checkbox
-                checked={isSelected}
-                size='xs'
-                onChange={(event) => {
-                    selectEntity(event.currentTarget.checked);
-                }}
-            />
-        </>
-    }
-
     const card = () => {
         let category: 'alliances' | 'corporations' | 'characters' | 'types';
         switch (characterCorporationAlliance.category) {
@@ -101,54 +61,58 @@ export function CharacterCorporationAllianceCard({
                 }}
             >
                 <Group
-                    justify='center'
+                    justify='space-between'
                 >
-                    <EveIcon
-                        id={characterCorporationAlliance.id}
-                        category={category}
-                        type={variation}
-                    />
-
-                    <Text>
-                        <CopyText
-                            value={characterCorporationAlliance.name}
+                    <Group>
+                        <EveIcon
+                            id={characterCorporationAlliance.id}
+                            category={category}
+                            type={variation}
                         />
+
+                        <Text>
+                            <CopyText
+                                value={characterCorporationAlliance.name}
+                            />
+                        </Text>
+                    </Group>
+                </Group>
+
+                <Group
+                    gap={'xs'}
+                >
+                    <Text
+                        size='sm'
+                        fw={700}
+                    >
+                        Type:
                     </Text>
-
-                    <Pill>
-                        {characterCorporationAlliance.category}
-                    </Pill>
-
-                    { checkbox() }
+                    <Text
+                        size='sm'
+                    >
+                        <Pill>
+                            {characterCorporationAlliance.category}
+                        </Pill>
+                    </Text>
                 </Group>
             </Stack>
         </>
     }
 
     const actionBar = () => {
-        /*const edit = editLink
-            ?   <InternalLink
-                    to={StructureEditRoute.to}
-                    params={{
-                        structureId: structure.id,
-                    } as any}
-                    target={viewTarget}
-                    content='Edit'
-                />
-            :   <></>
-        const view = viewLink
+        const edit = editable
             ?   <UnstyledButton
-                    onClick={ openView }
+                    onClick={() => onChange('remove', characterCorporationAlliance)}
                     style={{
                         color: 'var(--mantine-color-blue-4)',
                         fontSize: 'var(--mantine-font-size-sm)',
                     }}
                 >
-                    View
+                    Remove
                 </UnstyledButton>
             :   <></>
 
-        if (editLink || viewLink) {
+        if (editable) {
             return <>
                 <Flex
                     align='flex-end'
@@ -160,14 +124,12 @@ export function CharacterCorporationAllianceCard({
                 >
                     <Group>
                         { edit }
-
-                        { view }
                     </Group>
                 </Flex>
             </>
-        } else {*/
+        } else {
             return <></>
-        //}
+        }
     }
 
     return <>
@@ -175,13 +137,9 @@ export function CharacterCorporationAllianceCard({
             key={characterCorporationAlliance.id}
             style={{
                 padding: 0,
-                border: isSelected ? '1px solid var(--mantine-color-blue-9)' : '',
             }}
         >
             <Card.Section
-                onClick={ () => {
-                    selectEntity(!isSelected);
-                }}
                 style={{
                     margin: '10px',
                     height: '100%'
@@ -214,13 +172,9 @@ type CharacterCorporationAllianceCardMandatoryProps = {
 }
 
 type CharacterCorporationAllianceCardAdditionalProps = {
-    editLink?: boolean;
-    viewLink?: boolean;
+    editable?: boolean;
 
-    // Determines if a checkbox is added or not
-    checkable?: boolean,
-    checked?: CharacterCorporationAlliance[];
-    onChange?: (event: 'checked' | 'unchecked', entity: CharacterCorporationAlliance) => void;
+    onChange?: (event: 'remove', entity: CharacterCorporationAlliance) => void;
 }
 
 export type CharacterCorporationAllianceCardProps = CharacterCorporationAllianceCardMandatoryProps & CharacterCorporationAllianceCardAdditionalProps;

@@ -1,5 +1,5 @@
 import { AddIndustryHub } from '@/routes/industry-hubs/-modal/add';
-import { Alert, Button, Center, Flex, Modal, Stack, Title } from '@mantine/core';
+import { Alert, Button, Center, Flex, Modal, Stack, Tabs, Title } from '@mantine/core';
 import { createFileRoute } from '@tanstack/react-router';
 import { Filter, type FilterPropEntry, type SelectedFilter } from '@/components/Filter';
 import { IndustryHubList } from '@/components/IndustryHubCard';
@@ -8,8 +8,7 @@ import { LoadingError } from '@/components/LoadingError';
 import { normalizeRigServiceName } from '@/services/structure/utils';
 import { useDisclosure } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
-import { useListIndustryHub } from '@/services/industry-hub/list';
-import type { StructureFilter } from '@/services/structure/list';
+import { useListIndustryHub, type IndustryHubFilter } from '@/services/industry-hub/list';
 
 interface QueryParams {
     deleted?: boolean;
@@ -35,7 +34,7 @@ function RouteComponent() {
     const [opened, { open, close }] = useDisclosure(false);
     const { deleted: deletedResource } = Route.useSearch();
 
-    const [filterParams, setFilterParams] = useState<StructureFilter | undefined>();
+    const [filterParams, setFilterParams] = useState<IndustryHubFilter>({});
     const [filterOptions, setFilterOptions] = useState<FilterPropEntry[]>([]);
 
     const {
@@ -43,7 +42,7 @@ function RouteComponent() {
         isError,
         isSuccess,
         data: industryHubs,
-    } = useListIndustryHub(filterParams || {});
+    } = useListIndustryHub(filterParams);
 
     useEffect(() => {
         if (!isSuccess) {
@@ -134,10 +133,6 @@ function RouteComponent() {
     const filterChange = (filters: SelectedFilter[]) => {
         setFilterParams({
             name: filters.find(x => x.filterKey === 'name')?.value as string,
-            structure_type_id: filters.find(x => x.filterKey === 'structure_type_id')?.key as number,
-            system_id: filters.find(x => x.filterKey === 'system_id')?.key as number,
-            service_id: filters.find(x => x.filterKey === 'service_id')?.key as number,
-            rig_id: filters.find(x => x.filterKey === 'rig_id')?.key as number,
         });
     };
 
@@ -207,26 +202,20 @@ function RouteComponent() {
             return LoadingError();
         } else if (isSuccess && industryHubs.length > 0) {
             return <>
-                { actionBar() }
-
                 { filter }
             </>
         } else if (filterParams && isPending) {
             return <>
-                { actionBar() }
-
                 { filter }
 
                 { LoadingAnimation() }
             </>
         } else if (filterParams && isSuccess && industryHubs.length === 0) {
             return <>
-                { actionBar() }
-
                 { filter }
 
                 <Center mt={50} data-cy="noData">
-                    <Title order={4}>No structure matching</Title>
+                    <Title order={4}>No industry hubs matching</Title>
                 </Center>
             </>
         } else {
@@ -247,16 +236,52 @@ function RouteComponent() {
         }
     }
 
+    const changeTabs = (tab: string | null) => {
+        let shared = tab === 'shared';
+        setFilterParams({
+            ...filterParams,
+            shared,
+        });
+    }
+
     return <>
         { notification() }
 
-        { content() }
+        { actionBar() }
 
-        <IndustryHubList
-            industryHubs={industryHubs || []}
-            industryHubCardProps={{
-                editLink: true,
-            }}
-        />
+        <Tabs
+            defaultValue="my"
+            onChange={changeTabs}
+        >
+            <Tabs.List>
+                <Tabs.Tab value="my">
+                    My Industry Hubs
+                </Tabs.Tab>
+
+                <Tabs.Tab value="shared">
+                    Industry Hubs Shared with me
+                </Tabs.Tab>
+            </Tabs.List>
+
+            { content() }
+
+            <Tabs.Panel value="my">
+                <IndustryHubList
+                    industryHubs={industryHubs || []}
+                    industryHubCardProps={{
+                        editLink: true,
+                    }}
+                />
+            </Tabs.Panel>
+
+            <Tabs.Panel value="shared">
+                <IndustryHubList
+                    industryHubs={industryHubs || []}
+                    industryHubCardProps={{
+                        cloneLink: true,
+                    }}
+                />
+            </Tabs.Panel>
+        </Tabs>
     </>
 }

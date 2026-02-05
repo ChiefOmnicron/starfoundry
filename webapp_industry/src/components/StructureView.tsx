@@ -27,6 +27,42 @@ export function StructureView({
         return LoadingError();
     }
 
+    const showServices = () => {
+        if (structure.services.length === 0) {
+            return <></>;
+        }
+
+        return <>
+            <Title order={2}>
+                Services
+            </Title>
+            <Group>
+                <StructureServiceBadge
+                    services={structure.services || []}
+                    size='md'
+                />
+            </Group>
+        </>
+    }
+
+    const showRigs = () => {
+        if (structure.rigs.length === 0) {
+            return <></>;
+        }
+
+        return <>
+            <Title order={2}>
+                Rigs
+            </Title>
+            <Group>
+                <StructureRigBadge
+                    rigs={structure.rigs || []}
+                    size='md'
+                />
+            </Group>
+        </>
+    }
+
     return <>
         <Stack>
             <Title order={2}>Information</Title>
@@ -68,25 +104,9 @@ export function StructureView({
                 </Table.Tbody>
             </Table>
 
-            <Title order={2}>
-                Services
-            </Title>
-            <Group>
-                <StructureServiceBadge
-                    services={structure.services || []}
-                    size='md'
-                />
-            </Group>
+            {showServices()}
 
-            <Title order={2}>
-                Rigs
-            </Title>
-            <Group>
-                <StructureRigBadge
-                    rigs={structure.rigs || []}
-                    size='md'
-                />
-            </Group>
+            {showRigs()}
 
             {
                 //<Title order={2}>

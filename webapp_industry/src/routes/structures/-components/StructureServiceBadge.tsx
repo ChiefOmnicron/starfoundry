@@ -77,6 +77,11 @@ export function StructureServiceBadge({
                     content = 'Research';
                     sortKey = '5'
                     break;
+                case 35894:
+                    color = 'pink.8';
+                    content = 'Cloning Bay';
+                    sortKey = '11'
+                    break;
                 default:
                     break;
             }

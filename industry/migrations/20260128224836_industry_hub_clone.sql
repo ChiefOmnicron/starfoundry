@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS industry_hub_share (
 
     share_id        INTEGER     NOT NULL,
     share_type      SHARE_TYPE  NOT NULL,
+    name            VARCHAR     NOT NULL,
 
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),

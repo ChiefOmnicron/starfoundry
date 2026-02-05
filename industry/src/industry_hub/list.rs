@@ -56,6 +56,8 @@ pub async fn api(
             &state.pool,
             &eve_gateway_api_client()?,
             identity.character_id,
+            identity.corporation_id,
+            identity.alliance_id,
             filter,
         )
         .await?;
