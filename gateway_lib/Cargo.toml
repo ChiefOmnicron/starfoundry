@@ -8,7 +8,7 @@ license.workspace = true
 [dependencies]
 axum = "0.8.7"
 chrono = "0.4.42"
-reqwest = { version = "0.12.25", default-features = false, features = ["charset", "http2", "system-proxy", "json", "rustls-tls"] }
+reqwest = { version = "0.13.1", features = ["json", "query", "form"] }
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.145"
 starfoundry_lib-types = { path = "../gp_lib-types" }

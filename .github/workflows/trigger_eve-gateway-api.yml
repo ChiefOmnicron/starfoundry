@@ -7,7 +7,11 @@ on:
       - rewrite
     paths:
       - 'eve-gateway/**'
+      - 'eve-gateway_lib/**'
+      - 'gateway_lib/**'
+      - 'gp_lib-types/**'
       - '.github/workflows/trigger_eve-gateway-api.yml'
+      - 'Dockerfile'
 
 concurrency:
   # Make sure every job on main has unique group id (run_id), so cancel-in-progress only affects PR's

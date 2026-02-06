@@ -8,7 +8,9 @@ on:
     paths:
       - 'store/**'
       - 'eve-gateway_lib/**'
+      - 'gateway_lib/**'
       - '.github/workflows/trigger_store-api.yml'
+      - 'Dockerfile'
 
 concurrency:
   # Make sure every job on main has unique group id (run_id), so cancel-in-progress only affects PR's

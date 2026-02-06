@@ -8,6 +8,10 @@ on:
     paths:
       - 'industry/**'
       - 'eve-gateway_lib/**'
+      - 'gateway_lib/**'
+      - 'gp_lib-types/**'
+      - 'industry_lib/**'
+      - 'market_lib/**'
       - '.github/workflows/trigger_industry-api.yml'
       - 'Dockerfile'
 

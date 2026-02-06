@@ -2,7 +2,7 @@ use axum::extract::{Query, State};
 use axum::http::HeaderMap;
 use axum::response::IntoResponse;
 use reqwest::StatusCode;
-use starfoundry_lib_gateway::MtlsApiClient;
+use starfoundry_lib_gateway::StarFoundryApiClient;
 use std::collections::HashMap;
 
 use crate::error::Result;
@@ -18,7 +18,7 @@ pub async fn catch_all_well_known(
         let mut url = x.service_url.clone();
         url.set_path("/.well-known/jwks");
 
-        let response = MtlsApiClient::new_raw(
+        let response = StarFoundryApiClient::new_raw(
                 SERVICE_NAME,
             )?
             .get(url)

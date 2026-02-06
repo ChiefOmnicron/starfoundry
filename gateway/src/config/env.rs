@@ -1,4 +1,4 @@
-use starfoundry_lib_gateway::{ENV_MTLS_IDENTITY, ENV_MTLS_ROOT_CA, ENV_USER_AGENT};
+use starfoundry_lib_gateway::ENV_USER_AGENT;
 use tokio::net::TcpListener;
 use url::Url;
 
@@ -65,8 +65,6 @@ impl ConfigEnv {
             ENV_EVE_GATEWAY_JWK_URL,
             ENV_EVE_GATEWAY_JWT_SIGN,
 
-            ENV_MTLS_ROOT_CA,
-            ENV_MTLS_IDENTITY,
             ENV_USER_AGENT,
         ]
         .iter()

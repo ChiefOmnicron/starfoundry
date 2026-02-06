@@ -1,10 +1,3 @@
-// Avoid musl's default allocator due to lackluster performance
-// https://nickb.dev/blog/default-musl-allocator-considered-harmful-to-performance
-#[cfg(target_env = "musl")]
-#[global_allocator]
-static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
-
-use axum_server::tls_rustls::RustlsConfig;
 use axum::{middleware, Router};
 use sqlx::postgres::PgPoolOptions;
 use starfoundry_bin_eve_gateway::{auth, character, contract, corporation, healthcheck, industry, internal, item, market, search, structure, universe};
@@ -47,20 +40,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         auth_domains: Arc::new(config.domains),
     };
 
-    rustls::crypto::aws_lc_rs::default_provider().install_default().unwrap();
-
-    // configure certificate and private key used by https
-    let tls_config = RustlsConfig::from_pem(
-            config.mtls_cert.as_bytes().to_vec(),
-            config.mtls_priv.as_bytes().to_vec(),
-        )
-        .await?;
-
     tracing::info!("Starting app server on {}", config.app_address.local_addr().unwrap());
     tracing::info!("Starting service server on {}", config.service_address.local_addr().unwrap());
 
     select! {
-        r = axum_server::from_tcp_rustls(config.app_address, tls_config.clone()).serve(app(state.clone()).into_make_service()) => {
+        r = axum::serve(config.app_address, app(state.clone())) => {
             if r.is_err() {
                 tracing::error!("Error in app thread, error: {:?}", r);
             }

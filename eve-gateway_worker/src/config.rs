@@ -1,4 +1,4 @@
-use starfoundry_lib_gateway::{ENV_EVE_GATEWAY_API, ENV_MTLS_IDENTITY, ENV_MTLS_ROOT_CA, ENV_USER_AGENT};
+use starfoundry_lib_gateway::{ENV_EVE_GATEWAY_API, ENV_USER_AGENT};
 use std::net::SocketAddr;
 
 const ENV_DATABASE_URL: &str    = "STARFOUNDRY_EVE_GATEWAY_WORKER_DATABASE_URL";
@@ -39,8 +39,6 @@ impl Config {
             ENV_DATABASE_URL,
             ENV_SERVICE_ADDRESS,
 
-            ENV_MTLS_ROOT_CA,
-            ENV_MTLS_IDENTITY,
             ENV_USER_AGENT,
 
             ENV_EVE_GATEWAY_API,

@@ -8,6 +8,7 @@ on:
     paths:
       - 'webapp_store/**'
       - '.github/workflows/trigger_store-webapp.yml'
+      - 'Dockerfile'
 
 concurrency:
   # Make sure every job on main has unique group id (run_id), so cancel-in-progress only affects PR's

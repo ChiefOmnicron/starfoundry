@@ -1,2 +1,2 @@
 [hosts."industry.dev.starfoundry.space"]
-address = "https://localhost:8995"
+address = "http://localhost:8995"

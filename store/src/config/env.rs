@@ -1,25 +1,18 @@
-use starfoundry_lib_gateway::{ENV_EVE_GATEWAY_API, ENV_MTLS_IDENTITY, ENV_MTLS_ROOT_CA, ENV_USER_AGENT};
-use std::net::TcpListener as StdTcpListener;
-use tokio::net::TcpListener as TokioTcpListener;
+use starfoundry_lib_gateway::{ENV_EVE_GATEWAY_API, ENV_USER_AGENT};
+use tokio::net::TcpListener;
 
 const ENV_DATABASE_URL: &str    = "STARFOUNDRY_STORE_DATABASE_URL";
 const ENV_DISCORD_URL: &str     = "STARFOUNDRY_STORE_DISCORD_URL";
 const ENV_APP_ADDRESS: &str     = "STARFOUNDRY_STORE_APP_ADDRESS";
 const ENV_SERVICE_ADDRESS: &str = "STARFOUNDRY_STORE_SERVICE_ADDRESS";
 
-const ENV_MTLS_CERT: &str       = "STARFOUNDRY_STORE_MTLS_CERT";
-const ENV_MTLS_PRIV: &str       = "STARFOUNDRY_STORE_MTLS_PRIV";
-
 #[derive(Debug)]
 pub struct ConfigEnv {
     pub database_url:    String,
     pub discord_url:     String,
 
-    pub app_address:     StdTcpListener,
-    pub service_address: TokioTcpListener,
-
-    pub mtls_cert:       String,
-    pub mtls_priv:       String,
+    pub app_address:     TcpListener,
+    pub service_address: TcpListener,
 }
 
 impl ConfigEnv {
@@ -29,7 +22,7 @@ impl ConfigEnv {
         }
 
         let app_address = std::env::var(ENV_APP_ADDRESS)?;
-        let app_address = match std::net::TcpListener::bind(app_address) {
+        let app_address = match TcpListener::bind(app_address).await {
             Ok(x) => x,
             Err(e) => {
                 tracing::error!("Error validating config {ENV_APP_ADDRESS}. Error: {}", e);
@@ -38,7 +31,7 @@ impl ConfigEnv {
         };
 
         let service_address = std::env::var(ENV_SERVICE_ADDRESS)?;
-        let service_address = match tokio::net::TcpListener::bind(service_address).await {
+        let service_address = match TcpListener::bind(service_address).await {
             Ok(x) => x,
             Err(e) => {
                 tracing::error!("Error validating config {ENV_SERVICE_ADDRESS}. Error: {}", e);
@@ -49,18 +42,12 @@ impl ConfigEnv {
         let database_url = std::env::var(ENV_DATABASE_URL)?;
         let discord_url = std::env::var(ENV_DISCORD_URL)?;
 
-        let mtls_cert = std::env::var(ENV_MTLS_CERT)?;
-        let mtls_priv = std::env::var(ENV_MTLS_PRIV)?;
-
         Ok(Self {
             database_url,
             discord_url,
 
             app_address,
             service_address,
-
-            mtls_cert,
-            mtls_priv,
         })
     }
 
@@ -71,12 +58,7 @@ impl ConfigEnv {
             ENV_APP_ADDRESS,
             ENV_SERVICE_ADDRESS,
 
-            ENV_MTLS_ROOT_CA,
-            ENV_MTLS_IDENTITY,
             ENV_USER_AGENT,
-
-            ENV_MTLS_CERT,
-            ENV_MTLS_PRIV,
 
             ENV_EVE_GATEWAY_API,
         ]

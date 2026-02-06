@@ -3,7 +3,7 @@ use axum::http::HeaderMap;
 use axum::response::{IntoResponse, Redirect};
 use reqwest::StatusCode;
 use serde::Deserialize;
-use starfoundry_lib_gateway::MtlsApiClient;
+use starfoundry_lib_gateway::StarFoundryApiClient;
 use std::collections::HashMap;
 
 use crate::error::Result;
@@ -19,7 +19,7 @@ pub async fn catch_all_auth_login(
         let mut url = x.service_url.clone();
         url.set_path("/auth/login");
 
-        let response = MtlsApiClient::new_raw(
+        let response = StarFoundryApiClient::new_raw(
                 SERVICE_NAME,
             )?
             .get(url)

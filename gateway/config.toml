@@ -1,50 +1,50 @@
 # eve-gateway
 [routes."auth"]
-service_url = "https://localhost:9998"
+service_url = "http://localhost:9998"
 
 [routes."eve"]
-service_url = "https://localhost:9998"
+service_url = "http://localhost:9998"
 drop_prefix = true
 
 [routes."items"]
-service_url = "https://localhost:9998"
+service_url = "http://localhost:9998"
 drop_prefix = true
 
 [routes."market"]
-service_url = "https://localhost:9998"
+service_url = "http://localhost:9998"
 drop_prefix = true
 
 [routes."search"]
-service_url = "https://localhost:9998"
+service_url = "http://localhost:9998"
 drop_prefix = true
 
 # industry
 [routes."projects"]
-service_url = "https://localhost:9994"
+service_url = "http://localhost:9994"
 
 [routes."project-groups"]
-service_url = "https://localhost:9994"
+service_url = "http://localhost:9994"
 
 [routes."structures"]
-service_url = "https://localhost:9994"
+service_url = "http://localhost:9994"
 
 [routes."industry"]
-service_url = "https://localhost:9994"
+service_url = "http://localhost:9994"
 
 [routes."industry-hubs"]
-service_url = "https://localhost:9994"
+service_url = "http://localhost:9994"
 
 # store
 [routes."products"]
-service_url = "https://localhost:9996"
+service_url = "http://localhost:9996"
 
 [routes."orders"]
-service_url = "https://localhost:9996"
+service_url = "http://localhost:9996"
 
 [routes."admin"]
-service_url = "https://localhost:9996"
+service_url = "http://localhost:9996"
 
 [routes."general"]
-service_url = "https://localhost:9996"
+service_url = "http://localhost:9996"
 require_auth = false
 

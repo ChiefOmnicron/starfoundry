@@ -1,7 +1,6 @@
 mod env;
 
-use std::net::TcpListener as StdTcpListener;
-use tokio::net::TcpListener as TokioTcpListener;
+use tokio::net::TcpListener;
 
 use crate::config::env::ConfigEnv;
 
@@ -9,11 +8,8 @@ use crate::config::env::ConfigEnv;
 pub struct Config {
     pub database_url:     String,
 
-    pub app_address:      StdTcpListener,
-    pub service_address:  TokioTcpListener,
-
-    pub mtls_cert:        String,
-    pub mtls_priv:        String,
+    pub app_address:      TcpListener,
+    pub service_address:  TcpListener,
 }
 
 impl Config {
@@ -31,9 +27,6 @@ impl From<ConfigEnv> for Config {
 
             app_address:        env.app_address,
             service_address:    env.service_address,
-
-            mtls_cert:          env.mtls_cert,
-            mtls_priv:          env.mtls_priv,
         }
     }
 }

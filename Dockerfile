@@ -71,6 +71,11 @@ RUN         cargo build --bin starfoundry_bin-eve_gateway --release
 
 FROM ubuntu:26.04 AS eve-gateway-api
 WORKDIR     /usr/local/bin
+
+RUN         apt-get update && \
+            apt-get install -y ca-certificates curl && \
+            apt-get clean
+
 COPY        --from=eve-gateway-api-builder /app/target/release/starfoundry_bin-eve_gateway /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
@@ -82,6 +87,11 @@ RUN         cargo build --bin starfoundry_bin-eve_gateway_worker --release
 
 FROM ubuntu:26.04 AS eve-gateway-worker
 WORKDIR     /usr/local/bin
+
+RUN         apt-get update && \
+            apt-get install -y ca-certificates curl && \
+            apt-get clean
+
 COPY        --from=eve-gateway-worker-builder /app/target/release/starfoundry_bin-eve_gateway_worker /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
@@ -93,6 +103,11 @@ RUN         cargo build --bin starfoundry_bin-gateway --release
 
 FROM ubuntu:26.04 AS gateway-api
 WORKDIR     /usr/local/bin
+
+RUN         apt-get update && \
+            apt-get install -y ca-certificates curl && \
+            apt-get clean
+
 COPY        --from=gateway-api-builder /app/target/release/starfoundry_bin-gateway /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
@@ -104,6 +119,11 @@ RUN         cargo build --bin starfoundry_bin-market --release
 
 FROM ubuntu:26.04 AS market-api
 WORKDIR     /usr/local/bin
+
+RUN         apt-get update && \
+            apt-get install -y ca-certificates curl && \
+            apt-get clean
+
 COPY        --from=market-api-builder /app/target/release/starfoundry_bin-market /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
@@ -115,6 +135,11 @@ RUN         cargo build --bin starfoundry_bin-store --release
 
 FROM ubuntu:26.04 AS store-api
 WORKDIR     /usr/local/bin
+
+RUN         apt-get update && \
+            apt-get install -y ca-certificates curl && \
+            apt-get clean
+
 COPY        --from=store-api-builder /app/target/release/starfoundry_bin-store /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
@@ -126,6 +151,11 @@ RUN         cargo build --bin starfoundry_bin-worker_store-cost --release
 
 FROM ubuntu:26.04 AS store-worker-cost
 WORKDIR     /usr/local/bin
+
+RUN         apt-get update && \
+            apt-get install -y ca-certificates curl && \
+            apt-get clean
+
 COPY        --from=store-worker-cost-builder /app/target/release/starfoundry_bin-worker_store-cost /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
@@ -161,6 +191,11 @@ RUN         cargo build --bin starfoundry_bin-industry --release
 
 FROM ubuntu:26.04 AS industry-api
 WORKDIR     /usr/local/bin
+
+RUN         apt-get update && \
+            apt-get install -y ca-certificates curl && \
+            apt-get clean
+
 COPY        --from=industry-api-builder /app/target/release/starfoundry_bin-industry /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 

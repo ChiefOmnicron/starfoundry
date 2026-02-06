@@ -1,6 +1,6 @@
 use jsonwebtoken::DecodingKey;
 use serde::Deserialize;
-use starfoundry_lib_gateway::MtlsApiClient;
+use starfoundry_lib_gateway::StarFoundryApiClient;
 use url::Url;
 
 use crate::error::{Error, Result};
@@ -38,7 +38,7 @@ pub async fn load_signature(
         keys: Vec<JwtKey>,
     }
 
-    let response = MtlsApiClient::new_raw(
+    let response = StarFoundryApiClient::new_raw(
             SERVICE_NAME,
         )?
         .get(jwt_key_url)

@@ -1,5 +1,4 @@
-use std::net::TcpListener as StdTcpListener;
-use tokio::net::TcpListener as TokioTcpListener;
+use tokio::net::TcpListener;
 
 use crate::auth::{ENV_JWT_ECDSA_PRIVATE, ENV_JWT_ECDSA_PUBLIC, ENV_JWT_ISSUER_DOMAIN};
 use crate::eve_client::{ENV_CALLBACK, ENV_CLIENT_ID, ENV_SECRET_KEY};
@@ -8,18 +7,12 @@ const ENV_DATABASE_URL: &str     = "STARFOUNDRY_EVE_GATEWAY_DATABASE_URL";
 const ENV_APP_ADDRESS: &str      = "STARFOUNDRY_EVE_GATEWAY_APP_ADDRESS";
 const ENV_SERVICE_ADDRESS: &str  = "STARFOUNDRY_EVE_GATEWAY_SERVICE_ADDRESS";
 
-const ENV_MTLS_CERT: &str       = "STARFOUNDRY_EVE_GATEWAY_MTLS_CERT";
-const ENV_MTLS_PRIV: &str       = "STARFOUNDRY_EVE_GATEWAY_MTLS_PRIV";
-
 #[derive(Debug)]
 pub struct ConfigEnv {
     pub database_url:    String,
 
-    pub app_address:     StdTcpListener,
-    pub service_address: TokioTcpListener,
-
-    pub mtls_cert:       String,
-    pub mtls_priv:       String,
+    pub app_address:     TcpListener,
+    pub service_address: TcpListener,
 }
 
 impl ConfigEnv {
@@ -29,7 +22,7 @@ impl ConfigEnv {
         }
 
         let app_address = std::env::var(ENV_APP_ADDRESS)?;
-        let app_address = match std::net::TcpListener::bind(app_address) {
+        let app_address = match TcpListener::bind(app_address).await {
             Ok(x) => x,
             Err(e) => {
                 tracing::error!("Error validating config {ENV_APP_ADDRESS}. Error: {}", e);
@@ -38,7 +31,7 @@ impl ConfigEnv {
         };
 
         let service_address = std::env::var(ENV_SERVICE_ADDRESS)?;
-        let service_address = match tokio::net::TcpListener::bind(service_address).await {
+        let service_address = match TcpListener::bind(service_address).await {
             Ok(x) => x,
             Err(e) => {
                 tracing::error!("Error validating config {ENV_SERVICE_ADDRESS}. Error: {}", e);
@@ -47,16 +40,11 @@ impl ConfigEnv {
         };
 
         let database_url = std::env::var(ENV_DATABASE_URL)?;
-        let mtls_cert = std::env::var(ENV_MTLS_CERT)?;
-        let mtls_priv = std::env::var(ENV_MTLS_PRIV)?;
 
         Ok(Self {
             database_url,
             app_address,
             service_address,
-
-            mtls_cert,
-            mtls_priv,
         })
     }
 
@@ -69,9 +57,6 @@ impl ConfigEnv {
             ENV_JWT_ECDSA_PRIVATE,
             ENV_JWT_ECDSA_PUBLIC,
             ENV_JWT_ISSUER_DOMAIN,
-
-            ENV_MTLS_CERT,
-            ENV_MTLS_PRIV,
 
             ENV_CLIENT_ID,
             ENV_SECRET_KEY,

@@ -3,7 +3,7 @@ use std::fmt::Debug;
 use axum::http::HeaderMap;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
-use starfoundry_lib_gateway::{ApiClient, MtlsApiClient, Result as GatewayResult};
+use starfoundry_lib_gateway::{ApiClient, StarFoundryApiClient, Result as GatewayResult};
 use url::Url;
 
 use crate::error::{Error, Result};
@@ -13,15 +13,15 @@ use crate::contract::EveGatewayApiClientContract;
 
 pub const ENV_EVE_GATEWAY_API: &str = "STARFOUNDRY_EVE_GATEWAY_API_URL";
 
-pub struct EveGatewayClient(MtlsApiClient);
+pub struct EveGatewayClient(StarFoundryApiClient);
 
 impl EveGatewayClient {
     pub fn new(
         service: String,
     ) -> Result<Self> {
         let api_url = Self::api_url()?;
-        let mtls_client = MtlsApiClient::new(api_url, service)?;
-        Ok(Self(mtls_client))
+        let api_client = StarFoundryApiClient::new(api_url, service)?;
+        Ok(Self(api_client))
     }
 
     fn api_url() -> Result<Url> {

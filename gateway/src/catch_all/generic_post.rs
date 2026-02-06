@@ -4,7 +4,7 @@ use axum::Json;
 use axum::response::IntoResponse;
 use reqwest::header::HOST;
 use reqwest::StatusCode;
-use starfoundry_lib_gateway::MtlsApiClient;
+use starfoundry_lib_gateway::StarFoundryApiClient;
 use std::collections::HashMap;
 
 use crate::auth::ExtractIdentity;
@@ -80,7 +80,7 @@ pub async fn catch_all_generic_post(
             url.set_path(&path);
         }
 
-        let response = MtlsApiClient::new_raw(
+        let response = StarFoundryApiClient::new_raw(
                 SERVICE_NAME,
             )?
             .post(url)

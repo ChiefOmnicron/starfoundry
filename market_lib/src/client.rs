@@ -3,7 +3,7 @@ use std::fmt::Debug;
 use axum::http::HeaderMap;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
-use starfoundry_lib_gateway::{ApiClient, MtlsApiClient, Result as GatewayResult};
+use starfoundry_lib_gateway::{ApiClient, StarFoundryApiClient, Result as GatewayResult};
 use url::Url;
 
 use crate::error::{Error, Result};
@@ -11,7 +11,7 @@ use crate::MarketApiClientPrice;
 
 pub const EVE_MARKET_API: &str = "STARFOUNDRY_MARKET_API_URL";
 
-pub struct MarketClient(MtlsApiClient);
+pub struct MarketClient(StarFoundryApiClient);
 
 impl MarketClient {
     /// Creates a new [MarketClient] pulling the address form the ENV
@@ -28,8 +28,8 @@ impl MarketClient {
 
         let api_url = Url::parse(&env).map_err(Error::UrlParseError)?;
 
-        let mtls_client = MtlsApiClient::new(api_url, service)?;
-        Ok(Self(mtls_client))
+        let api_client = StarFoundryApiClient::new(api_url, service)?;
+        Ok(Self(api_client))
     }
 
     /// Creates a new [MarketClient] using the given address
@@ -40,8 +40,8 @@ impl MarketClient {
     ) -> Result<Self> {
         let api_url = Url::parse(&address).map_err(Error::UrlParseError)?;
 
-        let mtls_client = MtlsApiClient::new(api_url, service)?;
-        Ok(Self(mtls_client))
+        let api_client = StarFoundryApiClient::new(api_url, service)?;
+        Ok(Self(api_client))
     }
 }
 

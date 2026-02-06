@@ -4,8 +4,7 @@ mod file;
 pub use self::file::*;
 
 use std::collections::HashMap;
-use std::net::TcpListener as StdTcpListener;
-use tokio::net::TcpListener as TokioTcpListener;
+use tokio::net::TcpListener;
 
 use crate::config::env::ConfigEnv;
 
@@ -16,12 +15,9 @@ pub struct Config {
     pub database_url:    String,
 
     /// address under which the application should be exposed
-    pub app_address:     StdTcpListener,
+    pub app_address:     TcpListener,
     /// address under which health checks and metrics are exposed
-    pub service_address: TokioTcpListener,
-
-    pub mtls_cert:       String,
-    pub mtls_priv:       String,
+    pub service_address: TcpListener,
 
     /// list of domains that are allowed to use this service for authentication
     pub domains:         HashMap<String, ConfigFileDomain>,
@@ -51,9 +47,6 @@ impl From<(ConfigEnv, ConfigFile)> for Config {
 
             app_address:     env.app_address,
             service_address: env.service_address,
-
-            mtls_cert:       env.mtls_cert,
-            mtls_priv:       env.mtls_priv,
 
             domains:         file.domains,
         }

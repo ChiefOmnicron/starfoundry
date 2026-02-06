@@ -7,7 +7,9 @@ on:
       - rewrite
     paths:
       - 'gateway/**'
+      - 'gateway_lib/**'
       - '.github/workflows/gateway.yml'
+      - 'Dockerfile'
 
 concurrency:
   # Make sure every job on main has unique group id (run_id), so cancel-in-progress only affects PR's

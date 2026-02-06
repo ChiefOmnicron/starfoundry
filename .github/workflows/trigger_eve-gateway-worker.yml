@@ -7,6 +7,10 @@ on:
       - rewrite
     paths:
       - 'eve-gateway_worker/**'
+      - 'eve-gateway_lib/**'
+      - 'gateway_lib/**'
+      - 'gp_lib-types/**'
+      - 'worker_lib/**'
       - '.github/workflows/trigger_eve-gateway_worker.yml'
       - 'Dockerfile'
 

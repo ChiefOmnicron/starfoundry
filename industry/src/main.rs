@@ -1,9 +1,3 @@
-// Avoid musl's default allocator due to lackluster performance
-// https://nickb.dev/blog/default-musl-allocator-considered-harmful-to-performance
-#[cfg(target_env = "musl")]
-#[global_allocator]
-static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
-
 mod api_docs;
 mod config;
 mod healthcheck;
@@ -59,20 +53,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         pool,
     };
 
-    rustls::crypto::aws_lc_rs::default_provider().install_default().unwrap();
-    // configure certificate and private key used by https
-    let tls_config = RustlsConfig::from_pem(
-            config.mtls_cert.as_bytes().to_vec(),
-            config.mtls_priv.as_bytes().to_vec(),
-        )
-        .await?;
-
     tracing::info!("Starting app server on {}", config.app_address.local_addr().unwrap());
     tracing::info!("Starting service server on {}", config.service_address.local_addr().unwrap());
     tracing::info!("Starting internal server on {}", config.internal_address.local_addr().unwrap());
 
     select! {
-        r = axum_server::from_tcp_rustls(config.app_address, tls_config.clone()).serve(app(state.clone()).into_make_service()) => {
+        r = axum::serve(config.app_address, app(state.clone())) => {
             if r.is_err() {
                 tracing::error!("Error in app thread, error: {:?}", r);
             }
@@ -82,7 +68,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 tracing::error!("Error in service thread, error: {:?}", r);
             }
         },
-        r = axum_server::from_tcp_rustls(config.internal_address, tls_config).serve(internal(state.clone()).into_make_service()) => {
+        r = axum::serve(config.internal_address, internal(state.clone())) => {
             if r.is_err() {
                 tracing::error!("Error in internal thread, error: {:?}", r);
             }
@@ -160,7 +146,6 @@ pub fn market_api_client() -> Result<MarketClient, starfoundry_lib_market::Error
 mod test_util;
 #[cfg(test)]
 use crate::test_util::EveGatewayTestApiClient;
-use axum_server::tls_rustls::RustlsConfig;
 #[cfg(test)]
 pub fn eve_gateway_api_client() -> Result<EveGatewayTestApiClient, starfoundry_lib_eve_gateway::Error> {
     Ok(EveGatewayTestApiClient {})
