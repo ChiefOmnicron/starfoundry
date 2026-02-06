@@ -166,20 +166,20 @@ FROM node AS store-webapp-builder
 ARG         VITE_SENTRY_STORE_DSN
 ARG         SENTRY_AUTH_TOKEN
 WORKDIR     /app
-COPY        webapp_store/package*.json ./
-COPY        webapp_store/tsconfig*.json ./
-COPY        webapp_store/vite.config.ts ./
-COPY        webapp_store/index.html ./
-COPY        webapp_store/src ./src
-COPY        webapp_store/cypress ./cypress
-COPY        webapp_store/public ./public
+COPY        store_webapp/package*.json ./
+COPY        store_webapp/tsconfig*.json ./
+COPY        store_webapp/vite.config.ts ./
+COPY        store_webapp/index.html ./
+COPY        store_webapp/src ./src
+COPY        store_webapp/cypress ./cypress
+COPY        store_webapp/public ./public
 RUN         npm install -g npm@latest
 RUN         npm install
 RUN         npm run build
 
 FROM        nginx:stable-alpine AS store-webapp
 COPY        --from=store-webapp-builder /app/dist /usr/share/nginx/html
-COPY        webapp_store/nginx.conf /etc/nginx/conf.d/default.conf
+COPY        store_webapp/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE      80
 CMD         ["nginx", "-g", "daemon off;"]
 
@@ -206,19 +206,19 @@ FROM node AS industry-webapp-builder
 ARG         VITE_SENTRY_STORE_DSN
 ARG         SENTRY_AUTH_TOKEN
 WORKDIR     /app
-COPY        webapp_industry/package*.json ./
-COPY        webapp_industry/tsconfig*.json ./
-COPY        webapp_industry/vite.config.ts ./
-COPY        webapp_industry/index.html ./
-COPY        webapp_industry/src ./src
-COPY        webapp_industry/cypress ./cypress
-COPY        webapp_industry/public ./public
+COPY        industry_webapp/package*.json ./
+COPY        industry_webapp/tsconfig*.json ./
+COPY        industry_webapp/vite.config.ts ./
+COPY        industry_webapp/index.html ./
+COPY        industry_webapp/src ./src
+COPY        industry_webapp/cypress ./cypress
+COPY        industry_webapp/public ./public
 RUN         npm install -g npm@latest
 RUN         npm install
 RUN         npm run build
 
 FROM        nginx:stable-alpine AS industry-webapp
 COPY        --from=industry-webapp-builder /app/dist /usr/share/nginx/html
-COPY        webapp_industry/nginx.conf /etc/nginx/conf.d/default.conf
+COPY        industry_webapp/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE      80
 CMD         ["nginx", "-g", "daemon off;"]

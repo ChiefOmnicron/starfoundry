@@ -25,7 +25,7 @@ jobs:
     uses: ./.github/workflows/common_webapp_test.yml
     secrets: inherit
     with:
-      folder: webapp_store
+      folder: store_webapp
 
   build-image:
     uses: ./.github/workflows/common_build_docker.yml
