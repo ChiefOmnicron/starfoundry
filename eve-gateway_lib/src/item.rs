@@ -102,7 +102,7 @@ pub struct ParsedItem {
     pub raw:                 Item,
 }
 
-#[derive(Debug, Deserialize, Serialize, ToSchema)]
+#[derive(Debug, Default, Deserialize, Serialize, ToSchema)]
 pub struct ParseResult {
     pub items:   Vec<ParsedItem>,
     pub invalid: Vec<String>,

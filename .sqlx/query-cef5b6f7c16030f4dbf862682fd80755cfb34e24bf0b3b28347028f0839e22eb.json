@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n                SELECT *\n                FROM market_order_latest\n                WHERE type_id = ANY($1)\n            ",
+  "query": "\n            SELECT *\n            FROM market_order_latest mol\n            WHERE mol.type_id = ANY($1)\n            AND mol.structure_id = ANY($2)\n            AND mol.is_buy = false\n            ORDER BY mol.price ASC\n        ",
   "describe": {
     "columns": [
       {
@@ -94,7 +94,8 @@
     ],
     "parameters": {
       "Left": [
-        "Int4Array"
+        "Int4Array",
+        "Int8Array"
       ]
     },
     "nullable": [
@@ -108,5 +109,5 @@
       false
     ]
   },
-  "hash": "82a5a89357acaa6b12e39a1baa3d150d0b23e9ae6886151920e82daaa9f40eb0"
+  "hash": "cef5b6f7c16030f4dbf862682fd80755cfb34e24bf0b3b28347028f0839e22eb"
 }

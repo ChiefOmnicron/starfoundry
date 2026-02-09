@@ -11,7 +11,7 @@ pub type Result<T, E = Error> = std::result::Result<T, E>;
 pub enum Error {
     #[error("the env {0} is not set")]
     EnvNotSet(&'static str),
-    #[error("generic reqwest error, error: '{0}'")]
+    #[error("generic reqwest error, error: '{0:?}'")]
     GenericReqwestError(reqwest::Error),
 
     #[error("error while fetching JWT-Keys, '{0}'")]

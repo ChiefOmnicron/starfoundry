@@ -10,7 +10,7 @@ use crate::project::error::Result;
 use crate::project::ProjectUuid;
 use crate::project::service::{ProjectMisc, list_misc};
 
-/// List Groups
+/// List Misc
 /// 
 /// - Alternative route: `/latest/projects/{ProjectUuid}/misc`
 /// - Alternative route: `/v1/projects/{ProjectUuid}/misc`

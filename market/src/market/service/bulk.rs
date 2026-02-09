@@ -1,29 +1,59 @@
-use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-use starfoundry_lib_types::{StructureId, TypeId};
+use starfoundry_lib_market::{BuyStrategy, MarketBulkRequest, MarketBulkResponse};
+use starfoundry_lib_types::TypeId;
 use std::collections::HashMap;
-use utoipa::{IntoParams, ToSchema};
 
-use crate::market::error::Result;
 use crate::lp::{MarketLpEntry, MarketProblem};
+use crate::market::error::Result;
+use crate::eve_gateway_api_client;
+use starfoundry_lib_eve_gateway::EveGatewayApiClientItem;
 
 pub async fn bulk(
     pool:    &PgPool,
     request: MarketBulkRequest,
-) -> Result<Vec<String>> {
-    if let Some(items) = request.item_list {
-        // TODO: extract
-        let mut market_data: HashMap<TypeId, Vec<MarketLpEntry>> = HashMap::new();
-        sqlx::query!("
-                SELECT *
-                FROM market_order_latest
-                WHERE type_id = ANY($1)
-            ",
-                &items.iter().map(|x| *x.type_id).collect::<Vec<_>>(),
-            )
-            .fetch_all(pool)
-            .await
-            .unwrap()
+) -> Result<Vec<MarketBulkResponse>> {
+    let mut market_data: HashMap<TypeId, Vec<MarketLpEntry>> = HashMap::new();
+    let market_items = if let Some(items) = request.item_list {
+        items
+    } else {
+        return Ok(Vec::new());
+    };
+
+    let mut type_ids = market_items
+        .iter()
+        .map(|x| x.type_id)
+        .collect::<Vec<_>>();
+    type_ids.push(62402.into()); // Compressed Fullerite-C28
+
+    let items = eve_gateway_api_client()
+        .unwrap()
+        .fetch_item_bulk(type_ids.clone())
+        .await
+        .unwrap()
+        .into_iter()
+        .map(|x| (x.type_id, x))
+        .collect::<HashMap<_, _>>();
+
+    let market_prices = sqlx::query!("
+            SELECT *
+            FROM market_order_latest mol
+            WHERE mol.type_id = ANY($1)
+            AND mol.structure_id = ANY($2)
+            AND mol.is_buy = false
+            ORDER BY mol.price ASC
+        ",
+            &type_ids.into_iter().map(|x| *x).collect::<Vec<_>>(),
+            &request.markets.iter().map(|x| **x).collect::<Vec<_>>(),
+        )
+        .fetch_all(pool)
+        .await
+        .unwrap();
+
+    if request.strategy == BuyStrategy::SmartBuy {
+        let start = std::time::Instant::now();
+        let mut results: Vec<MarketBulkResponse> = Vec::new();
+
+        market_prices
             .into_iter()
             .for_each(|x| {
                 let entry = MarketLpEntry {
@@ -31,6 +61,8 @@ pub async fn bulk(
                     structure_id: x.structure_id,
                     price:        x.price,
                     quantity:     x.remaining,
+                    item_volume:  items.get(&x.type_id.into()).unwrap().volume as f64,
+                    type_id:      x.type_id.into(),
                 };
 
                 market_data
@@ -39,75 +71,137 @@ pub async fn bulk(
                     .or_insert(vec![entry]);
             });
 
-        for item in items {
-            let data = market_data.get(&item.type_id).unwrap();
+        for item in market_items {
+            let mut data = market_data.get(&item.type_id).unwrap().clone();
+
+            if item.type_id == TypeId(30375) {
+                data.extend(market_data.get(&TypeId(62402)).unwrap().clone());
+                data.sort_by(|a, b| a.price.total_cmp(&b.price));
+            }
 
             let mut lp = MarketProblem::new();
             lp.calculate_market(data.clone());
-            lp.solve(item.quantity);
+            let result = lp
+                .solve(item.quantity);
+
+            let result = result
+                .into_iter()
+                .map(|(structure_id, x)| MarketBulkResponse {
+                    insufficient_data: false,
+                    price: x.price,
+                    quantity: x.quantity as u64,
+                    remaining: 0,
+                    source: structure_id,
+                    type_id: *x.type_id,
+                })
+                .collect::<Vec<_>>();
+            results.extend(result);
         }
-    }
+        dbg!("smart", start.elapsed().as_millis());
+        return Ok(results);
+    } else if request.strategy == BuyStrategy::MultiBuy {
+        let start = std::time::Instant::now();
+        let mut viable_markets: HashMap<i32, MarketBulkResponse> = HashMap::new();
 
-    Ok(Vec::new())
-}
+        for item in market_items {
+            // Group all prices by the station_id and type_id
+            let mut grouped_by_station = HashMap::new();
+            for price in market_prices.iter().filter(|x| x.type_id == *item.type_id) {
+                let entry = MarketBulkResponse {
+                    insufficient_data: false,
+                    price: price.price,
+                    quantity: item.quantity as u64,
+                    remaining: price.remaining as u64,
+                    source: price.structure_id,
+                    type_id: *item.type_id,
+                };
 
+                grouped_by_station
+                    .entry((price.structure_id, price.type_id))
+                    .and_modify(|x: &mut Vec<MarketBulkResponse>| x.push(entry.clone()))
+                    .or_insert(vec![entry.clone()]);
+            }
 
+            // Sort the vectors by price
+            for (_, entries) in grouped_by_station.iter_mut() {
+                entries.sort_by_key(|x| x.price.floor() as u64);
+            }
 
-/// Bulk request for resolving prices
-/// 
-/// Either `appraisal` or `item_list` must be set
-/// 
-#[derive(Debug, Default, Deserialize, ToSchema, IntoParams)]
-pub struct MarketBulkRequest {
-    pub strategy: BuyStrategy,
-    pub markets:  Vec<StructureId>,
+            let mut previous_iterations = Vec::new();
+            for ((_, type_id), entries) in grouped_by_station {
+                let mut selected = MarketBulkResponse::default();
 
-    pub appraisal: Option<String>,
-    pub item_list: Option<Vec<MarketItemList>>,
-}
+                for entry in entries {
+                    if selected.quantity == 0 {
+                        selected = entry;
+                        continue;
+                    }
 
-#[derive(Debug, Deserialize, ToSchema, IntoParams)]
-pub struct MarketItemList {
-    pub type_id:  TypeId,
-    pub quantity: i32,
-}
+                    // If there are more remaining entries than the quantity we need,
+                    // we found a viable market
+                    if selected.remaining >= selected.quantity {
+                        if let Some(x) = viable_markets.get(&type_id) {
+                            if selected.price < x.price {
+                                viable_markets.insert(type_id, selected.clone());
+                            }
+                        } else {
+                            viable_markets.insert(type_id, selected.clone());
+                        }
+                        //break;
+                    }
 
-/// Different strategies for buying materials
-/// 
-#[derive(
-    Clone, Debug, Copy, Hash,
-    PartialEq, Eq, PartialOrd, Ord,
-    Deserialize, Serialize, ToSchema,
-)]
-#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
-pub enum BuyStrategy {
-    /// Acts like the in-game multi buy window
-    /// 
-    /// Advantages:
-    /// - faster
-    /// 
-    /// Disadvantages:
-    /// - can only buy from one market
-    /// - no support for hauling costs
-    /// - if a market does not have enough of the requested item type, it will
-    ///   use the last price value
-    MultiBuy,
-    /// Looks at multiple markets in a detailed view
-    /// 
-    /// Advantages:
-    /// - can buy from multiple markets
-    /// - considers hauling costs
-    /// 
-    /// Disadvantages:
-    /// - slower
-    /// - depending on how old the market data is, the results may no longer be
-    ///   valid
-    SmartBuy,
-}
+                    selected.remaining += entry.remaining;
 
-impl Default for BuyStrategy {
-    fn default() -> Self {
-        Self::MultiBuy
+                    // If the price from the current entry is higher than the old price,
+                    // set the new value
+                    if selected.price < entry.price {
+                        selected.price = entry.price;
+                    }
+                }
+
+                // The market does not have enough to support our needs
+                if selected.remaining < selected.quantity {
+                    previous_iterations.push(selected);
+                    continue;
+                }
+
+                if selected.remaining >= selected.quantity {
+                    if let Some(x) = viable_markets.get(&type_id) {
+                        if selected.price < x.price {
+                            viable_markets.insert(type_id, selected.clone());
+                        }
+                    } else {
+                        viable_markets.insert(type_id, selected.clone());
+                    }
+                    continue;
+                }
+            }
+
+            // no market had enough materials to fulfil the request
+            // take the most expensive one
+            if !viable_markets.contains_key(&*item.type_id) {
+                let mut solution = MarketBulkResponse::default();
+
+                for market in previous_iterations {
+                    if (market.remaining as f64 * market.price) > (solution.remaining as f64 * solution.price) {
+
+                        solution = market;
+                        solution.insufficient_data = true;
+                    }
+                }
+
+                viable_markets.insert(*item.type_id, solution);
+            }
+        }
+
+        let result = viable_markets
+            .into_iter()
+            .map(|(_, x)| x)
+            .collect::<Vec<_>>();
+        dbg!("multi", start.elapsed().as_millis());
+        return Ok(result);
+    } else {
+        return Ok(Vec::new());
     }
 }
 

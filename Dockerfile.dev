@@ -22,8 +22,7 @@ CMD         ["/usr/local/bin/app"]
 FROM ubuntu:latest AS market-api
 WORKDIR     /usr/local/bin
 RUN         apt-get update && \
-            apt-get install -y coinor-cbc coinor-libcbc-dev coinor-libcbc3.1 ca-certificates
-RUN         mv /usr/lib/x86_64-linux-gnu/libCbcSolver.so.3.1 /usr/lib/x86_64-linux-gnu/libCbcSolver.so.3
+            apt-get install -y ca-certificates
 COPY        ./target/debug/starfoundry_bin-market /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 

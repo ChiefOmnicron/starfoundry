@@ -82,7 +82,7 @@ impl ApiClient for IndustryClient {
     ) -> GatewayResult<T>
     where
         D: Debug + Serialize + Send + Sync,
-        T: DeserializeOwned {
+        T: Default + DeserializeOwned {
 
         self.0
             .post(path, data)

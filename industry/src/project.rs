@@ -2,6 +2,7 @@ mod create;
 mod error;
 mod fetch;
 mod list_jobs;
+mod list_market;
 mod list_misc;
 mod list;
 mod permission;
@@ -35,6 +36,11 @@ pub fn routes(
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
 
+    let list_market = OpenApiRouter::new()
+        .routes(routes!(list_market::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+
     let list_misc = OpenApiRouter::new()
         .routes(routes!(list_misc::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
@@ -45,6 +51,7 @@ pub fn routes(
         .merge(fetch)
         .merge(list)
         .merge(list_jobs)
+        .merge(list_market)
         .merge(list_misc)
 }
 

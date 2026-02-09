@@ -10,7 +10,7 @@ use crate::project::error::Result;
 use crate::project::service::{ProjectJob, list_jobs};
 use crate::project::ProjectUuid;
 
-/// List Groups
+/// List Jobs
 /// 
 /// - Alternative route: `/latest/projects/{ProjectUuid}/jobs`
 /// - Alternative route: `/v1/projects/{ProjectUuid}/jobs`

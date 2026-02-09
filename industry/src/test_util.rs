@@ -5,7 +5,7 @@ use starfoundry_lib_gateway::ApiClient;
 use starfoundry_lib_types::{SystemId, TypeId};
 use starfoundry_lib_eve_gateway::market::EveGatewayApiClientMarket;
 use starfoundry_lib_eve_gateway::contract::EveGatewayApiClientContract;
-use starfoundry_lib_market::{MarketApiClient, MarketApiClientPrice};
+use starfoundry_lib_market::{MarketApiClient, MarketApiClientOrder, MarketApiClientPrice};
 
 #[derive(Clone)]
 pub struct EveGatewayTestApiClient;
@@ -33,6 +33,7 @@ impl MarketTestApiClient {
 }
 
 impl MarketApiClient for MarketTestApiClient {}
+impl MarketApiClientOrder for MarketTestApiClient {}
 impl MarketApiClientPrice for MarketTestApiClient {}
 
 impl ApiClient for EveGatewayTestApiClient {

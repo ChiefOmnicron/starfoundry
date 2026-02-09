@@ -11,7 +11,7 @@ use crate::project_group::error::Result;
 use crate::project_group::ProjectGroupUuid;
 use crate::project_group::service::list_industry_hubs;
 
-/// List Markets
+/// List Industry Hubs
 /// 
 /// - Alternative route: `/latest/project-groups/{ProjectGroupUuid}/industry-hubs`
 /// Alternative route: `/v1/project-groups/{ProjectGroupUuid}/industry-hubs`

@@ -152,7 +152,7 @@ CREATE TABLE IF NOT EXISTS project_market (
 
     cost         DOUBLE PRECISION,
 
-    source       VARCHAR(128)     NOT NULL DEFAULT 'Unknown',
+    source       VARCHAR(128),
 
     created_at   TIMESTAMPTZ      NOT NULL DEFAULT NOW(),
     updated_at   TIMESTAMPTZ      NOT NULL DEFAULT NOW(),

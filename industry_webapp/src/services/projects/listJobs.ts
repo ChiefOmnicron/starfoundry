@@ -40,8 +40,8 @@ export const useListProjectJobs = (
 export type ProjectJobStatus = 'WAITING_FOR_MATERIALS' | 'BUILDING' | 'DONE';
 
 export type ProjectJobGroup = {
-    header: string;
-    entries: ProjectJob[];
+    header:     string;
+    entries:    ProjectJob[];
 }
 
 export type ProjectJob = {

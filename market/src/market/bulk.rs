@@ -2,17 +2,17 @@ use axum::extract::State;
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
-use starfoundry_lib_gateway::ExtractIdentity;
+use starfoundry_lib_market::{MarketBulkRequest, MarketBulkResponse};
 
 use crate::api_docs::{BadRequest, InternalServerError, Unauthorized};
-use crate::market::error::Result;
-use crate::market::service::{MarketBulkRequest, bulk};
 use crate::AppState;
+use crate::market::error::Result;
+use crate::market::service::bulk;
 
 /// Bulk Market Data
 /// 
-/// - Alternative route: `/latest/market/bulk`
-/// - Alternative route: `/v1/market/bulk`
+/// - Alternative route: `/latest/markets/bulk`
+/// - Alternative route: `/v1/markets/bulk`
 /// 
 /// ---
 /// 
@@ -23,13 +23,13 @@ use crate::AppState;
 /// - structure:read
 /// 
 #[utoipa::path(
-    get,
-    path = "/",
+    post,
+    path = "/bulk",
     tag = "Markets",
     request_body = MarketBulkRequest,
     responses(
         (
-            body = Vec<String>,
+            body = Vec<MarketBulkResponse>,
             description = "List of all matching market entries",
             status = OK,
         ),
@@ -46,7 +46,6 @@ use crate::AppState;
     ),
 )]
 pub async fn api(
-    _identity:     ExtractIdentity,
     State(state):  State<AppState>,
     Json(request): Json<MarketBulkRequest>,
 ) -> Result<impl IntoResponse> {

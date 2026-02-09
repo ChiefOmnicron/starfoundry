@@ -1,42 +1,46 @@
-use axum::extract::{Query, State};
+use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_gateway::ExtractIdentity;
 
-use crate::api_docs::{BadRequest, InternalServerError, Unauthorized};
 use crate::{AppState, eve_gateway_api_client};
+use crate::api_docs::{BadRequest, InternalServerError, NotFound, Unauthorized};
 use crate::project::error::Result;
-use crate::project::service::{ProjectList, ProjectFilter, list};
+use crate::project::ProjectUuid;
+use crate::project::service::{ProjectMarketGroup, list_market};
 
-/// List Projects
+/// List Market
 /// 
-/// - Alternative route: `/latest/projects`
-/// - Alternative route: `/v1/projects`
+/// - Alternative route: `/latest/projects/{ProjectUuid}/market`
+/// - Alternative route: `/v1/projects/{ProjectUuid}/market`
 /// 
 /// ---
 /// 
-/// Lists all projects the user has access to.
+/// Lists all materials that need to be bought
 /// 
 /// ## Security
 /// - authenticated
-/// - project_group:read
+/// - project:read
 /// 
 #[utoipa::path(
     get,
-    path = "/",
+    path = "/{ProjectUuid}/market",
     tag = "projects",
-    params(ProjectFilter),
+    params(
+        ProjectUuid,
+    ),
     responses(
         (
-            body = Vec<ProjectList>,
-            description = "List all projects that match the given filters",
+            body = Vec<ProjectMarketGroup>,
+            description = "List all materials for a project",
             status = OK,
         ),
         (
-            description = "There aren't any projects matching the filter",
+            description = "There aren't any materials required for the project",
             status = NO_CONTENT,
         ),
+        NotFound,
         BadRequest,
         Unauthorized,
         InternalServerError,
@@ -46,14 +50,13 @@ use crate::project::service::{ProjectList, ProjectFilter, list};
     ),
 )]
 pub async fn api(
-    identity:      ExtractIdentity,
-    State(state):  State<AppState>,
-    Query(filter): Query<ProjectFilter>,
+    _identity:        ExtractIdentity,
+    State(state):     State<AppState>,
+    Path(project_id): Path<ProjectUuid>,
 ) -> Result<impl IntoResponse> {
-    let data = list(
+    let data = list_market(
             &state.pool,
-            identity.character_id,
-            filter,
+            project_id,
             &eve_gateway_api_client()?,
         ).await?;
 
@@ -87,7 +90,7 @@ mod tests {
     use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID, HEADER_SERVICE};
 
     use crate::project::project_test_routes;
-    use crate::project::service::ProjectList;
+    use crate::project::service::{ProjectJobGroup, ProjectList};
 
     #[sqlx::test(
         fixtures("base"),
@@ -96,7 +99,7 @@ mod tests {
         pool: PgPool,
     ) {
         let request = Request::builder()
-            .uri("/")
+            .uri("/00000000-0000-0000-0000-000000000101/jobs")
             .method("GET")
             .header(HEADER_SERVICE, "industry.test")
             .header(HEADER_CHARACTER_ID, 1)
@@ -107,32 +110,7 @@ mod tests {
 
         let response = project_test_routes(pool.clone(), request).await;
         assert_eq!(response.status(), StatusCode::OK);
-        let body: Vec<ProjectList> = serde_json::from_slice(
-            &response.into_body().collect().await.unwrap().to_bytes()
-        ).unwrap();
-        assert_eq!(body.len(), 4);
-    }
-
-    #[sqlx::test(
-        fixtures("base"),
-    )]
-    async fn happy_path_filter(
-        pool: PgPool,
-    ) {
-        // Filter
-        let request = Request::builder()
-            .uri("/?name=Filter")
-            .method("GET")
-            .header(HEADER_SERVICE, "industry.test")
-            .header(HEADER_CHARACTER_ID, 1)
-            .header(HEADER_CORPORATION_ID, 1)
-            .header(HOST, "test.starfoundry.space")
-            .body(Body::empty())
-            .unwrap();
-
-        let response = project_test_routes(pool.clone(), request).await;
-        assert_eq!(response.status(), StatusCode::OK);
-        let body: Vec<ProjectList> = serde_json::from_slice(
+        let body: Vec<ProjectJobGroup> = serde_json::from_slice(
             &response.into_body().collect().await.unwrap().to_bytes()
         ).unwrap();
         assert_eq!(body.len(), 1);
@@ -146,7 +124,7 @@ mod tests {
     ) {
         // Empty
         let request = Request::builder()
-            .uri("/?name=SomeGibberish")
+            .uri("/00000000-0000-0000-0000-000000000103/jobs")
             .method("GET")
             .header(HEADER_SERVICE, "industry.test")
             .header(HEADER_CHARACTER_ID, 1)
@@ -161,6 +139,26 @@ mod tests {
             &response.into_body().collect().await.unwrap().to_bytes()
         ).unwrap();
         assert_eq!(body.len(), 0);
+    }
+
+    #[sqlx::test(
+        fixtures("base"),
+    )]
+    async fn not_found(
+        pool: PgPool,
+    ) {
+        let request = Request::builder()
+            .uri("/00000000-0000-0000-0000-000000000115/jobs")
+            .method("GET")
+            .header(HEADER_SERVICE, "industry.test")
+            .header(HEADER_CHARACTER_ID, 1)
+            .header(HEADER_CORPORATION_ID, 1)
+            .header(HOST, "test.starfoundry.space")
+            .body(Body::empty())
+            .unwrap();
+
+        let response = project_test_routes(pool.clone(), request).await;
+        assert_eq!(response.status(), StatusCode::NOT_FOUND);
     }
 
     #[sqlx::test(

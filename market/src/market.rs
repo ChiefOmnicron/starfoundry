@@ -6,7 +6,6 @@ use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
 
 use crate::AppState;
-use crate::market::error::Result;
 
 pub fn routes(
     state: AppState,

@@ -7,7 +7,7 @@ use starfoundry_lib_gateway::{ApiClient, StarFoundryApiClient, Result as Gateway
 use url::Url;
 
 use crate::error::{Error, Result};
-use crate::MarketApiClientPrice;
+use crate::{MarketApiClientOrder, MarketApiClientPrice};
 
 pub const EVE_MARKET_API: &str = "STARFOUNDRY_MARKET_API_URL";
 
@@ -82,7 +82,7 @@ impl ApiClient for MarketClient {
     ) -> GatewayResult<T>
     where
         D: Debug + Serialize + Send + Sync,
-        T: DeserializeOwned {
+        T: Default + DeserializeOwned {
 
         self.0
             .post(path, data)
@@ -95,9 +95,12 @@ impl MarketApiClient for MarketClient {}
 
 impl MarketApiClientPrice for MarketClient {}
 
+impl MarketApiClientOrder for MarketClient {}
+
 /// Trait that should be implemented on all clients
 /// The default implementation will be sufficient in most cases, overwriting
 /// them is only recommended for mocking tests
 pub trait MarketApiClient:
     ApiClient +
-    MarketApiClientPrice {}
+    MarketApiClientPrice +
+    MarketApiClientOrder {}

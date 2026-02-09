@@ -109,12 +109,14 @@ impl StarFoundryApiClient {
     ) -> Result<T>
     where
         D: Debug + Serialize + Send + Sync,
-        T: DeserializeOwned,
+        T: Default + DeserializeOwned,
     {
-        let mut api_url = self.address.clone();
-        api_url.set_path(&path.into());
+        let path = path.into();
 
-        let json = self
+        let mut api_url = self.address.clone();
+        api_url.set_path(&path.clone());
+
+        let response = self
             .send(
                 Method::POST,
                 api_url.clone(),
@@ -122,11 +124,38 @@ impl StarFoundryApiClient {
                 &(),
                 None,
             )
-            .await?
-            .json::<T>()
-            .await
-            .map_err(|x| Error::ReqwestError(x, api_url))?;
-        Ok(json)
+            .await?;
+
+        match response.status() {
+            StatusCode::NOT_FOUND => {
+                return Err(Error::NotFound(api_url).into());
+            },
+            StatusCode::FORBIDDEN => {
+                return Err(Error::Forbidden(api_url).into());
+            },
+            StatusCode::UNAUTHORIZED => {
+                return Err(Error::Unauthorized.into());
+            },
+            StatusCode::BAD_GATEWAY => {
+                return Err(Error::BadGateway.into());
+            },
+            StatusCode::SERVICE_UNAVAILABLE => {
+                return Err(Error::ServiceUnavailable.into());
+            },
+            StatusCode::NO_CONTENT => {
+                return Ok(T::default());
+            },
+            StatusCode::OK => {
+                return response
+                    .json::<T>()
+                    .await
+                    .map_err(|x| Error::ReqwestError(x, api_url));
+            },
+            _ => {
+                // TODO: better fallback
+                return Err(Error::Unauthorized.into());
+            }
+        };
     }
 
     fn user_agent() -> Result<String> {
@@ -254,5 +283,5 @@ pub trait ApiClient {
     ) -> Result<T>
     where
         D: Debug + Serialize + Send + Sync,
-        T: DeserializeOwned;
+        T: Default + DeserializeOwned;
 }
