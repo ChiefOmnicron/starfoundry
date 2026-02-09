@@ -6,7 +6,7 @@ on:
       - main
       - rewrite
     paths:
-      - 'webapp_industry/**'
+      - 'industry_webapp/**'
       - '.github/workflows/trigger_industry-webapp.yml'
       - 'Dockerfile'
 

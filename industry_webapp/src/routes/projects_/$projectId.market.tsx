@@ -106,7 +106,7 @@ const columns = [
     }),
     columnHelper.display({
         id: 'cost_smart2',
-        cell: props => <></> /*{
+        cell: _ => <></> /*{
             const a = props
                 .row
                 .original

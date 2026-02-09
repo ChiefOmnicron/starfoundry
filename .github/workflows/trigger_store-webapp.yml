@@ -6,7 +6,7 @@ on:
       - main
       - rewrite
     paths:
-      - 'webapp_store/**'
+      - 'store_webapp/**'
       - '.github/workflows/trigger_store-webapp.yml'
       - 'Dockerfile'
 
