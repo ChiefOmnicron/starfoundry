@@ -19,6 +19,7 @@ pub async fn catch_all_generic_delete(
     Query(query): Query<HashMap<String, String>>,
     Path(path):   Path<String>,
 ) -> Result<impl IntoResponse> {
+    tracing::info!("[DELETE] - path: '{}'", path);
     let host = if let Some(x) = header_map.get(HOST) {
         x
     } else {
@@ -102,6 +103,7 @@ pub async fn catch_all_generic_delete(
             ).into_response());
         }
     } else {
+        tracing::error!("no target found for path '{}'", path);
         // TODO: better error handling
         return Ok((
             StatusCode::BAD_GATEWAY,
