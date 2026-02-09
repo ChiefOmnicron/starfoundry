@@ -48,6 +48,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let pool = PgPoolOptions::new()
         .connect(&config.database_url)
         .await?;
+    sqlx::migrate!().run(&pool).await?;
 
     let state = AppState {
         pool,
