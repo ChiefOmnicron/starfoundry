@@ -854,17 +854,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9e5c1b78ca4aae1ac06c48a526a655760685149f0d465d21f37abfe57ce075c6"
 
 [[package]]
-name = "futures-macro"
-version = "0.3.31"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "162ee34ebcb7c64a8abebc059ce0fee27c2262618d7b60ed8faf72fef13c3650"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
 name = "futures-sink"
 version = "0.3.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -884,7 +873,6 @@ checksum = "9fa08315bb612088cc391249efdc3bc77536f16c91f6cf495e6fbe85b20a4a81"
 dependencies = [
  "futures-core",
  "futures-io",
- "futures-macro",
  "futures-sink",
  "futures-task",
  "memchr",
@@ -3058,56 +3046,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "starfoundry_bin-store"
-version = "0.1.0"
-dependencies = [
- "axum",
- "chrono",
- "dotenvy",
- "metrics",
- "metrics-exporter-prometheus",
- "reqwest",
- "serde",
- "serde_json",
- "sqlx",
- "starfoundry_lib-eve_gateway",
- "starfoundry_lib-gateway",
- "starfoundry_lib-notification",
- "starfoundry_lib-types",
- "thiserror 2.0.18",
- "tokio",
- "toml 0.9.11+spec-1.1.0",
- "tower",
- "tracing",
- "tracing-subscriber",
- "utoipa",
- "utoipa-axum",
- "utoipa-scalar",
- "uuid",
-]
-
-[[package]]
-name = "starfoundry_bin-worker_store-cost"
-version = "0.1.0"
-dependencies = [
- "dotenvy",
- "futures-util",
- "reqwest",
- "serde",
- "serde_json",
- "sqlx",
- "starfoundry_lib-items",
- "starfoundry_lib-structures",
- "starfoundry_lib-types",
- "thiserror 2.0.18",
- "tokio",
- "toml 0.9.11+spec-1.1.0",
- "tracing",
- "tracing-subscriber",
- "uuid",
-]
-
-[[package]]
 name = "starfoundry_lib-eve_api"
 version = "0.1.0"
 dependencies = [
@@ -3226,22 +3164,6 @@ dependencies = [
  "thiserror 2.0.18",
  "tracing",
  "url",
- "utoipa",
- "uuid",
-]
-
-[[package]]
-name = "starfoundry_lib-notification"
-version = "0.1.0"
-dependencies = [
- "reqwest",
- "serde",
- "serde_json",
- "sqlx",
- "starfoundry_lib-eve_api",
- "starfoundry_lib-types",
- "thiserror 2.0.18",
- "tracing",
  "utoipa",
  "uuid",
 ]

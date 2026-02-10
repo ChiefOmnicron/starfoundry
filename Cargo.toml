@@ -28,10 +28,7 @@ members = [
   'market_worker',
   'worker_lib',
 
-  # trash tier
-  'store',
   #'meta_webserver',
-  'worker-store-cost',
   'worker-eve_sde_parser',
 
   # deprecated
