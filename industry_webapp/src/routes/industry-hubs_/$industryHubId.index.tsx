@@ -1,7 +1,9 @@
-import { Alert, Button, Flex, Stack, TextInput, Title } from '@mantine/core';
+import { Alert, Button, Flex, Group, Stack, TextInput, Title } from '@mantine/core';
+import { CharacterCorporationAllianceList, type CharacterCorporationAlliance } from '@/components/EntityList';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { deleteIndustryHub } from '@/services/industry-hub/delete';
 import { DeleteResource } from '@/components/DeleteResource';
+import { EntitySelectorModal } from '@/components/selectors/EntitySelectorModal';
 import { FETCH_INDUSTRY_HUB } from '@/services/industry-hub/fetch';
 import { LIST_INDUSTRY_HUB } from '@/services/industry-hub/list';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
@@ -17,8 +19,6 @@ import { useFetchIndustryHub } from '@/services/industry-hub/fetch';
 import { useForm } from '@tanstack/react-form';
 import { useListStructure, type Structure } from '@/services/structure/list';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { EntitySelectorModal } from '@/components/selectors/EntitySelectorModal';
-import { CharacterCorporationAllianceList, type CharacterCorporationAlliance } from '@/components/EntityList';
 
 interface QueryParams {
     created?: boolean;
@@ -359,7 +359,7 @@ function RouteComponent() {
                     <Title order={3}>Layout</Title>
                     { structureLayouts() }
 
-                    <Flex
+                    <Group
                         justify='space-between'
                     >
                         <Title order={3}>Sharing</Title>
@@ -369,7 +369,7 @@ function RouteComponent() {
                         >
                             Edit Shares
                         </Button>
-                    </Flex>
+                    </Group>
 
                     <Alert color="gray">
                         Characters in the list, in the corporation or in the alliance listed below, will be able to see the industry hub, and save it into their account.

@@ -12,6 +12,7 @@ use tracing_subscriber::EnvFilter;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_scalar::{Scalar, Servable};
 use utoipa::OpenApi;
+use starfoundry_bin_eve_gateway::item::services::load_items;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -34,6 +35,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .connect(&config.database_url)
         .await?;
     sqlx::migrate!().run(&postgres).await?;
+
+    // load items in the background to not interrupt the startup phase
+    let pool = postgres.clone();
+    tokio::spawn(async move {
+        tracing::info!("starting item cache population");
+        let _ = load_items(&pool).await;
+        tracing::info!("item cache populated");
+    });
 
     let state = AppState {
         postgres,

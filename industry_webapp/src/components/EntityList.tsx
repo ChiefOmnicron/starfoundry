@@ -104,7 +104,7 @@ export function CharacterCorporationAllianceCard({
             ?   <UnstyledButton
                     onClick={() => onChange('remove', characterCorporationAlliance)}
                     style={{
-                        color: 'var(--mantine-color-blue-4)',
+                        color: 'var(--mantine-color-red-4)',
                         fontSize: 'var(--mantine-font-size-sm)',
                     }}
                 >

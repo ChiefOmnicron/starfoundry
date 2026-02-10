@@ -137,9 +137,13 @@ pub fn parse(
     }
 }
 
-pub async fn load_items(
+pub async fn load_items<'a>(
     pool: &PgPool,
-) -> Result<HashMap<String, Item>> {
+) -> Result<&'a HashMap<String, Item>> {
+    if let Some(x) = ITEM_CACHE.get() {
+        return Ok(x);
+    }
+
     let all_items_db = sqlx::query!("
             SELECT
                 name,
@@ -190,7 +194,7 @@ pub async fn load_items(
     }
 
     let data = ITEM_CACHE.get_or_init(|| all_items);
-    Ok(data.clone())
+    Ok(data)
 }
 
 // some names have too many spaces
@@ -204,9 +208,6 @@ fn sanitize_name(
         .replace("  Hauler", " Hauler")
         .replace("  skin", " skin")
         .replace("  SKIN", " SKIN")
-        // WTF
-        .replace("compressed  crokite iv-grade", "compressed crokite iv-grade")
-        .replace("compressed  mordunium iv-grade", "compressed mordunium iv-grade")
         .replace(" ", "") // \u{a0}
         .trim_start()
         .trim_end()
@@ -221,9 +222,9 @@ mod item_parser_tests {
     use starfoundry_lib_eve_gateway::Item;
     use sqlx::PgPool;
 
-    async fn load_items(
+    async fn load_items<'a>(
         pool: &PgPool,
-    ) -> HashMap<String, Item> {
+    ) -> &'a HashMap<String, Item> {
         dotenvy::dotenv().ok();
         super::load_items(&pool).await.unwrap()
     }

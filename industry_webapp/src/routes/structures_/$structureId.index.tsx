@@ -1,4 +1,4 @@
-import { Alert, Grid, Stack, Table, Title } from '@mantine/core';
+import { Alert, Button, Grid, Group, Stack, Table, Title } from '@mantine/core';
 import { compareArray, SaveDialog } from '@/components/SaveDialog';
 import { CopyText } from '@/components/CopyText';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
@@ -18,6 +18,9 @@ import { updateStructure, type UpdateStructure } from '@/services/structure/upda
 import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { TypeId } from '@/services/utils';
+import { useDisclosure } from '@mantine/hooks';
+import { StructureScanModal } from './-components/StructureScanModal';
+import type { Item } from '@/services/item/model';
 
 interface QueryParams {
     created?: boolean;
@@ -51,6 +54,8 @@ function RouteComponent() {
     const [touchedRigs, setTouchedRigs] = useState<boolean>(false);
     const [touchedServices, setTouchedServices] = useState<boolean>(false);
     const [touchedTaxes, setTouchedTaxes] = useState<boolean>(false);
+
+    const [structureScanOpened, { open: openStructureScan, close: closeStructureScan }] = useDisclosure(false);
 
     const {
         isPending,
@@ -238,6 +243,60 @@ function RouteComponent() {
     return <>
         { notification() }
 
+        <StructureScanModal
+            opened={structureScanOpened}
+            onClose={closeStructureScan}
+            onParsed={(items: Item[]) => {
+                // medium engineering rigs
+                items
+                    .filter(x => [
+                        1816, 1817, 1818, 1819, 1820, 1821, 1822, 1823, 1824,
+                        1825, 1826, 1827, 1828, 1829, 1830, 1831, 1832, 1833,
+                        1834, 1835, 1836, 1837, 1838, 1839, 1840, 1841, 1842,
+                        1843, 1844, 1845, 1846, 1847, 1848, 1849,
+                    ].indexOf(x.group.group_id) > -1)
+                    .map(x => setSelectedServices([...selectedServices, x.type_id]));
+                // large engineering rigs
+                items
+                    .filter(x => [
+                        1850, 1851, 1852, 1853, 1854, 1855, 1856, 1857, 1858,
+                        1859, 1860, 1861, 1862, 1863, 1864, 1865, 1866,
+                    ].indexOf(x.group.group_id) > -1)
+                    .map(x => setSelectedServices([...selectedServices, x.type_id]));
+                // x-large engineering rigs
+                items
+                    .filter(x => [
+                        1867, 1868, 1869, 1870,
+                    ].indexOf(x.group.group_id) > -1)
+                    .map(x => setSelectedServices([...selectedServices, x.type_id]));
+                // medium resource processing rigs
+                items
+                    .filter(x => [
+                        1933, 1934, 1935, 1936, 1937, 1938, 1941, 1942, 1943,
+                    ].indexOf(x.group.group_id) > -1)
+                    .map(x => setSelectedServices([...selectedServices, x.type_id]));
+                // large resource processing rigs
+                items
+                    .filter(x => [
+                        1939, 1944,
+                    ].indexOf(x.group.group_id) > -1)
+                    .map(x => setSelectedServices([...selectedServices, x.type_id]));
+
+                // citadel
+                items
+                    .filter(x => x.group.group_id === 1321)
+                    .map(x => setSelectedServices([...selectedServices, x.type_id]));
+                // resource processing
+                items
+                    .filter(x => x.group.group_id === 1322)
+                    .map(x => setSelectedServices([...selectedServices, x.type_id]));
+                // engineering
+                items
+                    .filter(x => x.group.group_id === 1415)
+                    .map(x => setSelectedServices([...selectedServices, x.type_id]));
+            }}
+        />
+
         <Stack style={{ width: '100%' }}>
             <Grid>
                 <Grid.Col span={{ base: 12, sm: 7}}>
@@ -281,7 +340,17 @@ function RouteComponent() {
                             </Table.Tbody>
                         </Table>
 
-                        <Title order={2}>Installed Rigs and Services</Title>
+                        <Group
+                            justify='space-between'
+                        >
+                            <Title order={2}>Installed Rigs and Services</Title>
+
+                            <Button
+                                onClick={openStructureScan}
+                            >
+                                Set with Structure Scan
+                            </Button>
+                        </Group>
                         <RigSelector
                             rigs={structure.installable_rigs || []}
                             selected={selectedRigs}
