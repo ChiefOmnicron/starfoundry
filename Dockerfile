@@ -151,6 +151,7 @@ COPY        industry_webapp/vite.config.ts ./
 COPY        industry_webapp/index.html ./
 COPY        industry_webapp/src ./src
 COPY        industry_webapp/public ./public
+COPY        industry_webapp/cypress ./cypress
 RUN         npm install -g npm@latest
 RUN         npm install
 RUN         npm run build
