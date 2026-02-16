@@ -30,8 +30,6 @@ pub mod asset;
 pub mod character;
 /// eve route for all contracts
 pub mod contract;
-/// routes for corporations
-pub mod corporation;
 /// all industry related routes
 pub mod industry;
 /// public eve route for items
@@ -45,5 +43,7 @@ pub mod structure;
 /// public eve route for universe
 pub mod universe;
 
+/// eve routes for data fetching
+pub mod eve;
 /// internal routes, primarily for other services
 pub mod internal;

@@ -24,7 +24,7 @@ const SCOPE: &str = "esi-characters.read_blueprints.v1";
 /// 
 #[utoipa::path(
     get,
-    path = "/eve/{CharacterId}/assets/blueprints",
+    path = "/characters/{CharacterId}/assets/blueprints",
     tag = "Assets",
     params(
         CharacterId,
@@ -44,7 +44,7 @@ const SCOPE: &str = "esi-characters.read_blueprints.v1";
         InternalServerError,
     ),
 )]
-pub async fn fetch_character_blueprint_api(
+pub async fn api(
     identity:           ExtractIdentity,
     State(state):       State<AppState>,
     Path(character_id): Path<CharacterId>,

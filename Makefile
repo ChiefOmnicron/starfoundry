@@ -17,7 +17,7 @@ test: sqlx-prepare
 
 .PHONY: test-database
 test-database:
-	docker run --name postgres_test -e POSTGRES_PASSWORD=postgres -v /tmp/postgres_testing:/var/lib/postgresql -p 5555:5432 -d postgres:18
+	docker run --rm -ti --name postgres_test -e POSTGRES_PASSWORD=postgres -v /tmp/postgres_testing:/var/lib/postgresql -p 5555:5432 -d postgres:18
 
 .PHONY: web-industry-test-chrome
 web-industry-test-chrome:

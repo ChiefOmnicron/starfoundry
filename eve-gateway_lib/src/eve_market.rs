@@ -11,14 +11,14 @@ use starfoundry_lib_types::{CharacterId, CorporationId, RegionId, StructureId};
 
 use crate::error::Result;
 
-pub trait EveGatewayApiClientMarket: ApiClient {
+pub trait EveGatewayApiClientEveMarket: ApiClient {
     #[allow(async_fn_in_trait)]
     async fn fetch_market_by_region(
         &self,
         region_id: RegionId,
     ) -> Result<Vec<Market>> {
         self
-            .fetch(&format!("market/region/{}", *region_id), &())
+            .fetch(&format!("eve/market/region/{}", *region_id), &())
             .await
             .map_err(Into::into)
     }
@@ -36,7 +36,7 @@ pub trait EveGatewayApiClientMarket: ApiClient {
 
         self
             .fetch_auth(
-                &format!("market/player/{}", *structure_id),
+                &format!("eve/market/player/{}", *structure_id),
                 &(),
                 headers,
             )
@@ -56,7 +56,7 @@ pub trait EveGatewayApiClientMarket: ApiClient {
 
         self
             .fetch_auth(
-                &format!("market/orders/characters"),
+                &format!("eve/market/orders/characters"),
                 &(),
                 headers,
             )
@@ -78,7 +78,7 @@ pub trait EveGatewayApiClientMarket: ApiClient {
 
         self
             .fetch_auth(
-                &format!("market/orders/corporations"),
+                &format!("eve/market/orders/corporations"),
                 &(),
                 headers,
             )
@@ -92,7 +92,7 @@ pub trait EveGatewayApiClientMarket: ApiClient {
     ) -> Result<Vec<MarketPrice>> {
         self
             .fetch(
-                &format!("market/prices"),
+                &format!("eve/market/prices"),
                 &(),
             )
             .await

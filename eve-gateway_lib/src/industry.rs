@@ -31,14 +31,4 @@ pub trait EveGatewayApiClientIndustry: ApiClient {
             .await
             .map_err(Into::into)
     }
-
-    #[allow(async_fn_in_trait)]
-    async fn eve_fetch_system_index(
-        &self,
-    ) -> Result<Vec<IndustrySystem>> {
-        self
-            .fetch(&format!("industry/eve/system-index"), &())
-            .await
-            .map_err(Into::into)
-    }
 }

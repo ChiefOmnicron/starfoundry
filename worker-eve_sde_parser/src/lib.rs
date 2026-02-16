@@ -18,7 +18,6 @@ pub use self::error::*;
 use serde::Serialize;
 use sqlx::PgPool;
 use starfoundry_lib_types::{RegionId, SystemId};
-use tokio::join;
 use std::collections::HashMap;
 use std::fs;
 
@@ -58,64 +57,60 @@ pub async fn import_sde(
 
     write_system_json(systems.clone(), stars);
 
-    let blueprints_dependencies = blueprints_dependencies::run(
+    blueprints_dependencies::run(
             &pool,
             &blueprints,
             &type_ids
-        );
-    let blueprints_json = blueprints_json::run(
+        )
+        .await?;
+    blueprints_json::run(
             &pool,
             &blueprints,
             &categories,
             &group_ids,
             &type_ids,
             &repackaged,
-        );
-    let blueprints_temp = blueprints::run(
+        )
+        .await?;
+    blueprints::run(
             &pool,
             &blueprints,
-        );
-    let dogma = dogma::run(
+        )
+        .await?;
+    dogma::run(
             &pool,
             &dogma_effects,
             &industry_modifier_sources,
             &industry_target_filters,
             &type_dogma,
-        );
-    let items = items::run(
+        )
+        .await?;
+    items::run(
             &pool,
             &categories,
             &group_ids,
             &type_ids,
             &repackaged,
-        );
-    let reprocessing = reprocessing::run(
+        )
+        .await?;
+    reprocessing::run(
             &pool,
             &type_material,
-        );
-    let structure = structure::run(
+        )
+        .await?;
+    structure::run(
             &pool,
             &type_ids,
             &type_dogma,
-        );
-    let systems = systems::run(
+        )
+        .await?;
+    systems::run(
             &pool,
             regions,
             constellations,
             systems,
-        );
-
-    // Ignore errors
-    let _ = join! {
-        blueprints_dependencies,
-        blueprints_json,
-        blueprints_temp,
-        dogma,
-        items,
-        reprocessing,
-        structure,
-        systems,
-    };
+        )
+        .await?;
 
     Ok(checksum)
 }

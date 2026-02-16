@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use starfoundry_lib_types::{ItemId, LocationId, TypeId};
 
-use crate::asset::location_flag::LocationFlag;
+use crate::eve_asset::location_flag::LocationFlag;
 
 #[derive(Debug, Deserialize, Serialize, ToSchema)]
 pub struct Blueprint {

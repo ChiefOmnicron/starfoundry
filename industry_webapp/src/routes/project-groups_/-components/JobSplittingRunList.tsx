@@ -59,7 +59,6 @@ export function JobSplittingRunList({
             id: 'icon',
             cell: props => <EveIcon
                 id={props.row.original.item.type_id}
-                type="bp"
             />,
             size: 1,
             maxSize: 1,
@@ -129,7 +128,7 @@ export function JobSplittingRunList({
                         onSelect={setAddItemSelect}
                         selected={(entries || []).map(x => x.item.type_id)}
                         ref={ItemSelectorRef as any}
-                        blueprint
+                        buildable
                     />
                 </Table.Td>
                 <Table.Td

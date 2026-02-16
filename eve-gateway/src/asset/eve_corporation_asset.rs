@@ -24,7 +24,7 @@ const SCOPE: &str = "esi-assets.read_corporation_assets.v1";
 /// 
 #[utoipa::path(
     get,
-    path = "/eve/{CorporationId}/assets",
+    path = "/corporations/{CorporationId}/assets",
     tag = "Assets",
     params(
         CorporationId,
@@ -44,7 +44,7 @@ const SCOPE: &str = "esi-assets.read_corporation_assets.v1";
         InternalServerError,
     ),
 )]
-pub async fn fetch_corporation_asset_api(
+pub async fn api(
     identity:             ExtractIdentity,
     State(state):         State<AppState>,
     Path(corporation_id): Path<CorporationId>,

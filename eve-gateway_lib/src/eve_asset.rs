@@ -6,14 +6,15 @@ pub use self::asset::*;
 pub use self::blueprint::*;
 pub use self::location_flag::*;
 
-use axum::http::{HeaderMap, HeaderValue};
 use starfoundry_lib_gateway::{ApiClient, HEADER_CHARACTER_ID};
-use starfoundry_lib_types::{CharacterId, CorporationId};
 
-use crate::Result;
+use starfoundry_lib_types::{CharacterId, CorporationId};
+use axum::http::{HeaderMap, HeaderValue};
 use reqwest::header::HOST;
 
-pub trait EveGatewayApiClientAsset: ApiClient {
+use crate::Result;
+
+pub trait EveGatewayApiClientEveAsset: ApiClient {
     #[allow(async_fn_in_trait)]
     async fn eve_fetch_character_assets(
         &self,

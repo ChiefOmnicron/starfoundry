@@ -295,58 +295,58 @@ pub async fn migrate_project_group(
                         max_runs
                     )
                     VALUES
-                        -- Capital Armor Plates Blueprint
-                        ($1, 21018, 40),
-                        -- Capital Capacitor Battery Blueprint
-                        ($1, 21020, 40),
-                        -- Capital Cargo Bay Blueprint
-                        ($1, 21028, 40),
-                        -- Capital Clone Vat Bay Blueprint
-                        ($1, 24548, 40),
-                        -- Capital Computer System Blueprint
-                        ($1, 21036, 40),
-                        -- Capital Construction Parts Blueprint
-                        ($1, 21038, 40),
-                        -- Capital Corporate Hangar Bay Blueprint
-                        ($1, 24561, 40),
-                        -- Capital Doomsday Weapon Mount Blueprint
-                        ($1, 24557, 40),
-                        -- Capital Drone Bay Blueprint
-                        ($1, 21030, 40),
-                        -- Capital Jump Bridge Array Blueprint
-                        ($1, 24546, 40),
-                        -- Capital Jump Drive Blueprint
-                        ($1, 21026, 40),
-                        -- Capital Launcher Hardpoint Blueprint
-                        ($1, 21042, 40),
-                        -- Capital Power Generator Blueprint
-                        ($1, 21022, 40),
-                        -- Capital Propulsion Engine Blueprint
-                        ($1, 21010, 40),
-                        -- Capital Sensor Cluster Blueprint
-                        ($1, 21014, 40),
-                        -- Capital Shield Emitter Blueprint
-                        ($1, 21024, 40),
-                        -- Capital Ship Maintenance Bay Blueprint
-                        ($1, 24559, 40),
-                        -- Capital Siege Array Blueprint
-                        ($1, 21040, 40),
-                        -- Capital Turret Hardpoint Blueprint
-                        ($1, 21012, 40),
-                        -- Gravimetric-FTL Interlink Communicator Blueprint
-                        ($1, 57512, 40),
-                        -- Ladar-FTL Interlink Communicator Blueprint
-                        ($1, 57514, 40),
-                        -- Magnetometric-FTL Interlink Communicator Blueprint
-                        ($1, 57513, 40),
-                        -- Radar-FTL Interlink Communicator Blueprint
-                        ($1, 57511, 40),
-                        -- Life Support Backup Unit Blueprint
-                        ($1, 57523, 200),
-                        -- Auto-Integrity Preservation Seal Blueprint
-                        ($1, 57515, 200),
-                        -- Core Temperature Regulator Blueprint
-                        ($1, 57516, 40),
+                        -- Capital Armor Plates
+                        ($1, 21017, 40),
+                        -- Capital Capacitor Battery
+                        ($1, 21019, 40),
+                        -- Capital Cargo Bay
+                        ($1, 21027, 40),
+                        -- Capital Clone Vat Bay
+                        ($1, 24547, 40),
+                        -- Capital Computer System
+                        ($1, 21035, 40),
+                        -- Capital Construction Parts
+                        ($1, 21037, 40),
+                        -- Capital Corporate Hangar Bay
+                        ($1, 24560, 40),
+                        -- Capital Doomsday Weapon Mount
+                        ($1, 24556, 40),
+                        -- Capital Drone Bay
+                        ($1, 21029, 40),
+                        -- Capital Jump Bridge Array
+                        ($1, 24545, 40),
+                        -- Capital Jump Drive
+                        ($1, 21025, 40),
+                        -- Capital Launcher Hardpoint
+                        ($1, 21041, 40),
+                        -- Capital Power Generator
+                        ($1, 21021, 40),
+                        -- Capital Propulsion Engine
+                        ($1, 21009, 40),
+                        -- Capital Sensor Cluster
+                        ($1, 21013, 40),
+                        -- Capital Shield Emitter
+                        ($1, 21023, 40),
+                        -- Capital Ship Maintenance Bay
+                        ($1, 24558, 40),
+                        -- Capital Siege Array
+                        ($1, 21039, 40),
+                        -- Capital Turret Hardpoint
+                        ($1, 21011, 40),
+                        -- Gravimetric-FTL Interlink Communicator
+                        ($1, 57475, 40),
+                        -- Ladar-FTL Interlink Communicator
+                        ($1, 57477, 40),
+                        -- Magnetometric-FTL Interlink Communicator
+                        ($1, 57476, 40),
+                        -- Radar-FTL Interlink Communicator
+                        ($1, 57474, 40),
+                        -- Life Support Backup Unit
+                        ($1, 57486, 200),
+                        -- Auto-Integrity Preservation Seal
+                        ($1, 57478, 200),
+                        -- Core Temperature Regulator
+                        ($1, 57479, 40),
                         -- G-O Trigger Neurolink Conduit Blueprint
                         ($1, 57510, 200),
                         -- R-O Trigger Neurolink Conduit Blueprint

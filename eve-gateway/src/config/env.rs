@@ -9,10 +9,10 @@ const ENV_SERVICE_ADDRESS: &str  = "STARFOUNDRY_EVE_GATEWAY_SERVICE_ADDRESS";
 
 #[derive(Debug)]
 pub struct ConfigEnv {
-    pub database_url:    String,
+    pub database_url:     String,
 
-    pub app_address:     TcpListener,
-    pub service_address: TcpListener,
+    pub app_address:      TcpListener,
+    pub service_address:  TcpListener,
 }
 
 impl ConfigEnv {

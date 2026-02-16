@@ -7,9 +7,10 @@ use starfoundry_lib_gateway::{ApiClient, StarFoundryApiClient, Result as Gateway
 use url::Url;
 
 use crate::error::{Error, Result};
-use crate::{EveGatewayApiClient, EveGatewayApiClientAsset, EveGatewayApiClientIndustry, EveGatewayApiClientItem};
-use crate::market::EveGatewayApiClientMarket;
+use crate::{EveGatewayApiClient, EveGatewayApiClientEveAsset, EveGatewayApiClientIndustry, EveGatewayApiClientItem};
 use crate::contract::EveGatewayApiClientContract;
+use crate::eve_market::EveGatewayApiClientEveMarket;
+use crate::eve_industry::EveGatewayApiClientEveIndustry;
 
 pub const ENV_EVE_GATEWAY_API: &str = "STARFOUNDRY_EVE_GATEWAY_API_URL";
 
@@ -84,13 +85,9 @@ impl ApiClient for EveGatewayClient {
 }
 
 impl EveGatewayApiClient for EveGatewayClient {}
-
-impl EveGatewayApiClientAsset for EveGatewayClient {}
-
 impl EveGatewayApiClientContract for EveGatewayClient {}
-
+impl EveGatewayApiClientEveAsset for EveGatewayClient {}
+impl EveGatewayApiClientEveIndustry for EveGatewayClient {}
+impl EveGatewayApiClientEveMarket for EveGatewayClient {}
 impl EveGatewayApiClientIndustry for EveGatewayClient {}
-
 impl EveGatewayApiClientItem for EveGatewayClient {}
-
-impl EveGatewayApiClientMarket for EveGatewayClient {}

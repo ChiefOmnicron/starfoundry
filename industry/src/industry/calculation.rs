@@ -81,7 +81,7 @@ pub async fn api(
         .await?
         // FIXME:
         .into_iter()
-        .find(|x| x.id == Uuid::from_str("019bc88b-50a0-74b1-9e2c-1a4e88ee541e").unwrap().into())
+        .find(|x| x.id == Uuid::from_str("019bc88f-ec50-7776-b9df-c99782182e52").unwrap().into())
         .unwrap()
         .clone();
 
@@ -144,20 +144,27 @@ pub async fn api(
         .collect::<Vec<_>>();
 
     let mut system_index = HashMap::new();
-    let index = &eve_gateway_api_client()?
-        .fetch_system_index(
-            industry_hubs.structures.get(0).unwrap().system.system_id,
-        )
-        .await
-        .unwrap()
-        .unwrap();
-    system_index.insert(
-        industry_hubs.structures.get(0).unwrap().system.system_id,
-        (
-            index.manufacturing,
-            index.reaction,
-        )
-    );
+    let mut all_system_ids = Vec::new();
+    for structure in industry_hubs.structures.iter() {
+        all_system_ids.push(structure.system.system_id);
+    }
+    all_system_ids.sort();
+    all_system_ids.dedup();
+
+    for system_id in all_system_ids {
+        let index = &eve_gateway_api_client()?
+            .fetch_system_index(system_id)
+            .await
+            .unwrap()
+            .unwrap();
+        system_index.insert(
+            system_id,
+            (
+                index.manufacturing,
+                index.reaction,
+            )
+        );
+    }
 
     let market_prices = market_api_client()?
         .all_prices()
@@ -201,8 +208,7 @@ pub async fn api(
         .apply_bonus()
         //.add_stocks(&stock_filtered)
         .finalize();
-
-    let total_cost = dependency_result.total_cost();
+    dependency_result.write_debug_file();
 
     let material = dependency_result
         .tree

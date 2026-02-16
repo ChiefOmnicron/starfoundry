@@ -1,11 +1,12 @@
 use axum::http::HeaderMap;
 use serde::Serialize;
-use starfoundry_lib_eve_gateway::{EveGatewayApiClient, EveGatewayApiClientAsset, EveGatewayApiClientIndustry, EveGatewayApiClientItem};
-use starfoundry_lib_gateway::ApiClient;
-use starfoundry_lib_types::{SystemId, TypeId};
-use starfoundry_lib_eve_gateway::market::EveGatewayApiClientMarket;
+use starfoundry_lib_eve_gateway::{EveGatewayApiClient, EveGatewayApiClientEveAsset, EveGatewayApiClientIndustry, EveGatewayApiClientItem};
 use starfoundry_lib_eve_gateway::contract::EveGatewayApiClientContract;
+use starfoundry_lib_eve_gateway::eve_industry::EveGatewayApiClientEveIndustry;
+use starfoundry_lib_eve_gateway::eve_market::EveGatewayApiClientEveMarket;
+use starfoundry_lib_gateway::ApiClient;
 use starfoundry_lib_market::{MarketApiClient, MarketApiClientOrder, MarketApiClientPrice};
+use starfoundry_lib_types::{SystemId, TypeId};
 
 #[derive(Clone)]
 pub struct EveGatewayTestApiClient;
@@ -17,11 +18,12 @@ impl EveGatewayTestApiClient {
 }
 
 impl EveGatewayApiClient for EveGatewayTestApiClient {}
-impl EveGatewayApiClientAsset for EveGatewayTestApiClient {}
 impl EveGatewayApiClientContract for EveGatewayTestApiClient {}
+impl EveGatewayApiClientEveAsset for EveGatewayTestApiClient {}
+impl EveGatewayApiClientEveIndustry for EveGatewayTestApiClient {}
+impl EveGatewayApiClientEveMarket for EveGatewayTestApiClient {}
 impl EveGatewayApiClientIndustry for EveGatewayTestApiClient {}
 impl EveGatewayApiClientItem for EveGatewayTestApiClient {}
-impl EveGatewayApiClientMarket for EveGatewayTestApiClient {}
 
 #[derive(Clone)]
 pub struct MarketTestApiClient;

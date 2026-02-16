@@ -34,12 +34,13 @@ pub struct MarketBulkRequest {
     pub item_list: Option<Vec<MarketItemList>>,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize, ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 pub struct MarketBulkResponse {
-    pub source:             i64,
+    pub source:             StructureId,
     pub type_id:            i32,
+    /// number of units that should be bought
     pub quantity:           u64,
-    pub remaining:          u64,
+    /// price per units
     pub price:              f64,
     /// if set to true, then there is no market to fulfill the request
     pub insufficient_data:  bool,

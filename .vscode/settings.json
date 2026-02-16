@@ -13,5 +13,15 @@
   },
   "search.exclude": {
     "**/routeTree.gen.ts": true
-  }
+  },
+  "cSpell.words": [
+    "Battlecruiser",
+    "Fullerite",
+    "Karura",
+    "Killmail",
+    "Megacyte",
+    "Moros",
+    "multibuy",
+    "Naglfar"
+  ]
 }

@@ -19,6 +19,7 @@ pub async fn fetch_system_index(
                 research_material
             FROM system_index
             WHERE system_id = $1
+            ORDER BY timestamp DESC
         "#,
             *system_id,
         )

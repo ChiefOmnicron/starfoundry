@@ -101,7 +101,7 @@ pub async fn list_market(
         let tmp_market_orders_multi = if let Some(entry) = tmp_market_orders_multi.iter().find(|x| x.type_id == entry.type_id) {
             entry.clone()
         } else {
-            MarketBulkResponse { source: 0, type_id: 0, quantity: 0, remaining: 0, price: 0f64, insufficient_data: true }
+            MarketBulkResponse { source: 0i64.into(), type_id: 0, quantity: 0, price: 0f64, insufficient_data: true }
         };
         let tmp_market_orders_smart = tmp_market_orders_smart
             .iter()

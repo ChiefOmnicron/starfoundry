@@ -1,6 +1,6 @@
 use serde::Deserialize;
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::{EveGatewayApiClientAsset, EveGatewayClient};
+use starfoundry_lib_eve_gateway::{EveGatewayApiClientEveAsset, EveGatewayClient};
 use starfoundry_lib_types::CharacterId;
 use starfoundry_lib_worker::Task;
 

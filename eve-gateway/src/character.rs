@@ -19,15 +19,7 @@ pub fn routes() -> OpenApiRouter<AppState> {
     let fetch_bulk = OpenApiRouter::new()
         .routes(routes!(self::fetch_bulk::api));
 
-    let eve_fetch_assets = OpenApiRouter::new()
-        .routes(routes!(crate::asset::fetch_character_asset_api));
-
-    let eve_fetch_blueprint = OpenApiRouter::new()
-        .routes(routes!(crate::asset::fetch_character_blueprint_api));
-
     OpenApiRouter::new()
         .merge(fetch)
         .merge(fetch_bulk)
-        .merge(eve_fetch_assets)
-        .merge(eve_fetch_blueprint)
 }

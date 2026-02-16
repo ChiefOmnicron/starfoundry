@@ -78,7 +78,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         tokio::select! {
             status = task_select(
                 &pool,
-                &mut task
+                &mut task,
             ) => {
                 let pool = pool.clone();
 

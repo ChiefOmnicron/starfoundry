@@ -348,7 +348,7 @@ Naglfar Fleet Issue\t1".into();
         assert_eq!(result.items[0].material_efficiency, Some(10));
     }
 
-        #[sqlx::test(
+    #[sqlx::test(
         fixtures(
             path = "../fixtures",
             scripts("category", "groups", "items_min")
@@ -375,7 +375,26 @@ Naglfar Fleet Issue\t1".into();
         assert_eq!(result.items[2].material_efficiency, Some(2));
     }
 
-        #[sqlx::test(
+    #[sqlx::test(
+        fixtures(
+            path = "../fixtures",
+            scripts("category", "groups", "items_min")
+        ),
+    )]
+    async fn blueprint_builds_with_x_as_quantity(
+        pool: PgPool,
+    ) {
+        let all_items = load_items(&pool).await;
+        let content = "Revelation\tx2\t10".into();
+        let result = parse(&all_items, content);
+
+        assert_eq!(result.items.len(), 1);
+        assert_eq!(result.items[0].item_name, "Revelation".to_string());
+        assert_eq!(result.items[0].quantity, 2);
+        assert_eq!(result.items[0].material_efficiency, Some(10));
+    }
+
+    #[sqlx::test(
         fixtures(
             path = "../fixtures",
             scripts("category", "groups", "items_min")
@@ -394,7 +413,7 @@ Naglfar Fleet Issue\t1".into();
         assert_eq!(result.items[0].material_efficiency, None);
     }
 
-        #[sqlx::test(
+    #[sqlx::test(
         fixtures(
             path = "../fixtures",
             scripts("category", "groups", "items_min")
@@ -412,7 +431,7 @@ Naglfar Fleet Issue\t1".into();
         assert_eq!(result.items[0].quantity, 400_000);
     }
 
-        #[sqlx::test(
+    #[sqlx::test(
         fixtures(
             path = "../fixtures",
             scripts("category", "groups", "items_min")
@@ -431,7 +450,7 @@ Naglfar Fleet Issue\t1".into();
         assert_eq!(result.items[0].material_efficiency, Some(10));
     }
 
-        #[sqlx::test(
+    #[sqlx::test(
         fixtures(
             path = "../fixtures",
             scripts("category", "groups", "items_min")
@@ -451,13 +470,13 @@ Naglfar Fleet Issue\t1".into();
         assert_eq!(result.items[0].material_efficiency, Some(10));
     }
 
-        #[sqlx::test(
+    #[sqlx::test(
         fixtures(
             path = "../fixtures",
             scripts("category", "groups", "items_min")
         ),
     )]
-    async fn singele_line_with_dash(
+    async fn single_line_with_dash(
         pool: PgPool,
     ) {
         let all_items = load_items(&pool).await;
@@ -469,7 +488,7 @@ Naglfar Fleet Issue\t1".into();
         assert_eq!(result.items[0].quantity, 100);
     }
 
-        #[sqlx::test(
+    #[sqlx::test(
         fixtures(
             path = "../fixtures",
             scripts("category", "groups", "items_min")
@@ -487,7 +506,7 @@ Naglfar Fleet Issue\t1".into();
         assert_eq!(result.items[0].quantity, 1);
     }
 
-        #[sqlx::test(
+    #[sqlx::test(
         fixtures(
             path = "../fixtures",
             scripts("category", "groups", "items_min")
@@ -505,7 +524,7 @@ Naglfar Fleet Issue\t1".into();
         assert_eq!(result.items[0].quantity, 1);
     }
 
-        #[sqlx::test(
+    #[sqlx::test(
         fixtures(
             path = "../fixtures",
             scripts("category", "groups", "items_min")
@@ -523,7 +542,7 @@ Naglfar Fleet Issue\t1".into();
         assert_eq!(result.items[0].quantity, 4);
     }
 
-        #[sqlx::test(
+    #[sqlx::test(
         fixtures(
             path = "../fixtures",
             scripts("category", "groups", "items_min")
@@ -557,7 +576,7 @@ Naglfar Fleet Issue\t1".into();
         assert_eq!(result.items.len(), 0);
     }
 
-        #[sqlx::test(
+    #[sqlx::test(
         fixtures(
             path = "../fixtures",
             scripts("category", "groups", "items_min")
@@ -575,7 +594,7 @@ Naglfar Fleet Issue\t1".into();
         assert_eq!(result.items[0].quantity, 130);
     }
 
-        #[sqlx::test(
+    #[sqlx::test(
         fixtures(
             path = "../fixtures",
             scripts("category", "groups", "items_min")
@@ -602,7 +621,7 @@ Triple Neutron Blaster Cannon II, Void XL".into();
         assert_eq!(result.items[3].quantity, 1);
     }
 
-        #[sqlx::test(
+    #[sqlx::test(
         fixtures(
             path = "../fixtures",
             scripts("category", "groups", "items_min")
@@ -620,7 +639,7 @@ Triple Neutron Blaster Cannon II, Void XL".into();
         assert_eq!(result.items[0].quantity, 8476);
     }
 
-        #[sqlx::test(
+    #[sqlx::test(
         fixtures(
             path = "../fixtures",
             scripts("category", "groups", "items_min")
@@ -638,7 +657,7 @@ Triple Neutron Blaster Cannon II, Void XL".into();
         assert_eq!(result.items[0].quantity, 8476);
     }
 
-        #[sqlx::test(
+    #[sqlx::test(
         fixtures(
             path = "../fixtures",
             scripts("category", "groups", "items_full")

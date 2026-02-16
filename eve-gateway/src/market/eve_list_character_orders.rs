@@ -2,34 +2,33 @@ use axum::extract::State;
 use axum::Json;
 use axum::response::IntoResponse;
 use reqwest::StatusCode;
-use starfoundry_lib_eve_gateway::market::Market;
+use starfoundry_lib_eve_gateway::eve_market::Market;
 use starfoundry_lib_gateway::ExtractIdentity;
-use starfoundry_lib_types::CorporationId;
 
 use crate::api_docs::{InternalServerError, NotFound};
 use crate::market::error::Result;
 use crate::state::AppState;
-use crate::utils::api_client_corporation_auth;
+use crate::utils::api_client_auth;
 
-const SCOPE: &str = "esi-markets.read_corporation_orders.v1";
+const SCOPE: &str = "esi-markets.read_character_orders.v1";
 
 /// Fetch Character Orders
 /// 
-/// - Alternative route: `/latest/market/orders/corporations`
-/// - Alternative route: `/v1/market/orders/corporations`
+/// - Alternative route: `/latest/eve/market/orders/characters`
+/// - Alternative route: `/v1/eve/market/orders/characters`
 /// 
 /// ---
 /// 
-/// Loads all open orders from a corporation
+/// Loads all open orders from a character
 /// 
 #[utoipa::path(
     get,
-    path = "/orders/corporations",
+    path = "/market/orders/characters",
     tag = "Market",
     responses(
         (
             body = Vec<Market>,
-            description = "List of orders from the corporation",
+            description = "List of orders from the character",
             status = OK,
         ),
         NotFound,
@@ -40,11 +39,10 @@ pub async fn api(
     identity:        ExtractIdentity,
     State(state):    State<AppState>,
 ) -> Result<impl IntoResponse> {
-    let api_client = api_client_corporation_auth(
+    let api_client = api_client_auth(
             &state.postgres,
             identity.host()?,
             identity.character_id,
-            identity.corporation_id.unwrap_or(CorporationId(0)),
             vec![
                 SCOPE.into(),
             ],
@@ -63,9 +61,8 @@ pub async fn api(
     };
 
     let path = format!(
-        "latest/corporations/{}/orders",
-        // TODO: refactor
-        *identity.corporation_id.unwrap_or(CorporationId(0)),
+        "latest/characters/{}/orders",
+        *identity.character_id,
     );
     let market_data = api_client
         .fetch_page_auth::<Market>(&path)

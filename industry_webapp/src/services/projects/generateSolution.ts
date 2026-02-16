@@ -1,13 +1,15 @@
 import { axiosClient } from "@/services/client";
 import type { Item } from "@/services/item/model";
 import type { Structure } from "@/services/structure/list";
+import type { Uuid } from "../utils";
 
 export const generateSolution = async (
+    projectGroupId: Uuid,
 ): Promise<GenerateSolutionResponse> => (await axiosClient())
     .post(
         '/api/industry/calculation',
         {
-            project_group_id: '0196bc79-d070-7a4c-86d0-686ed6d5cc32',
+            project_group_id: projectGroupId,
             type_ids:         [23773],
         },
     )

@@ -18,9 +18,13 @@ use crate::market::service::bulk;
 /// 
 /// Bulk get data from the markets
 /// 
-/// ## Security
-/// - authenticated
-/// - structure:read
+/// The API has two strategies for finding prices.
+/// - `MULTI_BUY` uses the same method as the in-game multibuy
+///   window. If no market has enough units to fulfil the wanted materials
+///   the highest price found will be used and the flag `insufficient_data` will
+///   be set to `true`
+/// - `SMART_BUY` factors in hauling cost and the prices of all available markets.
+///   The feature is currently locked behind a feature flag
 /// 
 #[utoipa::path(
     post,
@@ -41,10 +45,8 @@ use crate::market::service::bulk;
         Unauthorized,
         InternalServerError,
     ),
-    security(
-        ("api_key" = [])
-    ),
 )]
+#[axum::debug_handler]
 pub async fn api(
     State(state):  State<AppState>,
     Json(request): Json<MarketBulkRequest>,
@@ -72,106 +74,3 @@ pub async fn api(
         )
     }
 }
-
-/*#[cfg(test)]
-mod tests {
-    use axum::body::Body;
-    use axum::extract::Request;
-    use axum::http::header::HOST;
-    use axum::http::StatusCode;
-    use http_body_util::BodyExt;
-    use sqlx::PgPool;
-    use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID};
-
-    use crate::project::project_test_routes;
-    use crate::project::service::ProjectList;
-
-    #[sqlx::test(
-        fixtures("base"),
-    )]
-    async fn happy_path_all(
-        pool: PgPool,
-    ) {
-        let request = Request::builder()
-            .uri("/")
-            .method("GET")
-            .header(HEADER_CHARACTER_ID, 1)
-            .header(HEADER_CORPORATION_ID, 1)
-            .header(HOST, "test.starfoundry.space")
-            .body(Body::empty())
-            .unwrap();
-
-        let response = project_test_routes(pool.clone(), request).await;
-        assert_eq!(response.status(), StatusCode::OK);
-        let body: Vec<ProjectList> = serde_json::from_slice(
-            &response.into_body().collect().await.unwrap().to_bytes()
-        ).unwrap();
-        assert_eq!(body.len(), 4);
-    }
-
-    #[sqlx::test(
-        fixtures("base"),
-    )]
-    async fn happy_path_filter(
-        pool: PgPool,
-    ) {
-        // Filter
-        let request = Request::builder()
-            .uri("/?name=Filter")
-            .method("GET")
-            .header(HEADER_CHARACTER_ID, 1)
-            .header(HEADER_CORPORATION_ID, 1)
-            .header(HOST, "test.starfoundry.space")
-            .body(Body::empty())
-            .unwrap();
-
-        let response = project_test_routes(pool.clone(), request).await;
-        assert_eq!(response.status(), StatusCode::OK);
-        let body: Vec<ProjectList> = serde_json::from_slice(
-            &response.into_body().collect().await.unwrap().to_bytes()
-        ).unwrap();
-        assert_eq!(body.len(), 1);
-    }
-
-    #[sqlx::test(
-        fixtures("base"),
-    )]
-    async fn happy_path_empty(
-        pool: PgPool,
-    ) {
-        // Empty
-        let request = Request::builder()
-            .uri("/?name=SomeGibberish")
-            .method("GET")
-            .header(HEADER_CHARACTER_ID, 1)
-            .header(HEADER_CORPORATION_ID, 1)
-            .header(HOST, "test.starfoundry.space")
-            .body(Body::empty())
-            .unwrap();
-
-        let response = project_test_routes(pool.clone(), request).await;
-        assert_eq!(response.status(), StatusCode::NO_CONTENT);
-        let body: Vec<ProjectList> = serde_json::from_slice(
-            &response.into_body().collect().await.unwrap().to_bytes()
-        ).unwrap();
-        assert_eq!(body.len(), 0);
-    }
-
-    #[sqlx::test(
-        fixtures("base"),
-    )]
-    async fn unauthorized(
-        pool: PgPool,
-    ) {
-        let request = Request::builder()
-            .uri("/")
-            .method("GET")
-            .header(HOST, "test.starfoundry.space")
-            .body(Body::empty())
-            .unwrap();
-
-        let response = project_test_routes(pool.clone(), request).await;
-        assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
-    }
-}
-*/

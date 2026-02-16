@@ -1,4 +1,4 @@
-import { AppShell, Burger, createTheme, DEFAULT_THEME, Group, MantineProvider, mergeMantineTheme, ScrollArea } from '@mantine/core';
+import { AppShell, Burger, createTheme, DEFAULT_THEME, Group, Image, MantineProvider, mergeMantineTheme, ScrollArea } from '@mantine/core';
 import { CharacterComponent } from '@/components/Character';
 import { createRootRouteWithContext, Link, Outlet, useRouterState } from '@tanstack/react-router';
 import { CustomLink } from '@/components/RouterLink';
@@ -11,20 +11,20 @@ import { useDisclosure } from '@mantine/hooks';
 import type { ReactElement } from 'react';
 import type { RouterContext } from '@/main';
 
-import { Route as ProjectOverviewRoute } from '@/routes/projects_/$projectId.overview';
-import { Route as ProjectMiscRoute } from '@/routes/projects_/$projectId.misc';
-
 const routes = [
     {
         link: '/projects',
         label: 'Projects',
         subpath: '/projects/$projectId',
         paths: [{
-            link: ProjectOverviewRoute.to,
+            link: '/projects/$projectId/overview',
             label: 'Overview'
         }, {
-            link: ProjectMiscRoute.to,
+            link: '/projects/$projectId/misc',
             label: 'Miscellaneous'
+        }, {
+            link: '/projects/$projectId/market',
+            label: 'Market'
         }]
     },
     {
@@ -224,9 +224,13 @@ function Shell() {
                                 color: 'var(--mantine-color-dark-0)'
                             }}
                         >
-                            StarFoundry Industry
+                            <Image
+                                src="/sf_logo.png"
+                                h="calc(3rem * var(--mantine-scale))"
+                                w="auto"
+                                fit="contain"
+                            />
                         </Link>
-
                         <Link
                             key="about"
                             to={ AboutRoute.to }

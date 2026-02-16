@@ -1,18 +1,20 @@
 use starfoundry_lib_gateway::ApiClient;
 use starfoundry_lib_types::{CharacterId, StructureId, SystemId, TypeId};
 
-use crate::{CharacterInfo, EveGatewayApiClientAsset, EveGatewayApiClientIndustry, EveGatewayApiClientItem, ResolveStructureResponse, StructureRigBlueprintBonus, StructureRigResponse, StructureServiceResponse, System};
+use crate::{CharacterInfo, EveGatewayApiClientEveAsset, EveGatewayApiClientIndustry, EveGatewayApiClientItem, ResolveStructureResponse, StructureRigBlueprintBonus, StructureRigResponse, StructureServiceResponse, System};
 use crate::contract::EveGatewayApiClientContract;
 use crate::error::Result;
-use crate::market::EveGatewayApiClientMarket;
+use crate::eve_industry::EveGatewayApiClientEveIndustry;
+use crate::eve_market::EveGatewayApiClientEveMarket;
 
 pub trait EveGatewayApiClient:
     ApiClient +
-    EveGatewayApiClientAsset +
     EveGatewayApiClientContract +
+    EveGatewayApiClientEveAsset +
+    EveGatewayApiClientEveIndustry +
+    EveGatewayApiClientEveMarket +
     EveGatewayApiClientIndustry +
-    EveGatewayApiClientItem +
-    EveGatewayApiClientMarket {
+    EveGatewayApiClientItem {
 
     #[allow(async_fn_in_trait)]
     async fn fetch_character(

@@ -5,6 +5,7 @@ use axum::Json;
 use reqwest::header::HOST;
 use serde_json::json;
 use starfoundry_lib_types::{AllianceId, CharacterId, CorporationId};
+
 use crate::{Error, Result};
 
 pub const HEADER_CHARACTER_ID: &str   = "X-SF-CharacterId";

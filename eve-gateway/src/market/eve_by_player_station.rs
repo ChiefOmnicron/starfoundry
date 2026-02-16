@@ -2,7 +2,7 @@ use axum::extract::{Path, State};
 use axum::Json;
 use axum::response::IntoResponse;
 use reqwest::StatusCode;
-use starfoundry_lib_eve_gateway::market::Market;
+use starfoundry_lib_eve_gateway::eve_market::Market;
 use starfoundry_lib_gateway::ExtractIdentity;
 use starfoundry_lib_types::StructureId;
 
@@ -15,8 +15,8 @@ const SCOPE: &str = "esi-markets.structure_markets.v1";
 
 /// Fetch Player Market
 /// 
-/// - Alternative route: `/latest/market/player/{StructureId}`
-/// - Alternative route: `/v1/market/player/{StructureId}`
+/// - Alternative route: `/latest/eve/market/player/{StructureId}`
+/// - Alternative route: `/v1/eve/market/player/{StructureId}`
 /// 
 /// ---
 /// 
@@ -24,7 +24,7 @@ const SCOPE: &str = "esi-markets.structure_markets.v1";
 /// 
 #[utoipa::path(
     get,
-    path = "/player/{StructureId}",
+    path = "/market/player/{StructureId}",
     tag = "Market",
     params(
         StructureId,

@@ -8,6 +8,9 @@ use crate::industry::calculation::models::{BlueprintTyp, Bonus, Dependency, Depe
 use crate::industry::calculation::project_config::ProjectConfig;
 use crate::industry::calculation::result::EngineResult;
 
+/// SCC tax that is added to every job, currently 4%
+const SCC_TAX: f32 = 0.04;
+
 /// Group of dependencies.
 /// 
 #[derive(Debug, Default, Serialize)]
@@ -226,6 +229,10 @@ impl CalculationEngine {
                     (x.needed as f32 / x.produces as f32).ceil() as u32,
                     1u32
                 );
+
+                if x.product_type_id == 57478.into() {
+                    dbg!(&self.config.max_runs, &self.config.max_runs.get(&x.product_type_id));
+                }
 
                 let max_bp_runs = if let Some(x) = self.config.max_runs.get(&x.product_type_id) {
                     *x
@@ -617,15 +624,15 @@ impl CalculationEngine {
                 .get(&structure.system.system_id)
                 .unwrap_or(&(1f32, 1f32));
 
-            let system_cost = if structure.structure_type == StructureType::Raitaru ||
+            let (system_cost, system_cost_percent) = if structure.structure_type == StructureType::Raitaru ||
                 structure.structure_type == StructureType::Azbel ||
                 structure.structure_type == StructureType::Sotiyo {
-                100f32 * (materials_cost_total * (system_cost.0 / 100f32))
+                (materials_cost_total * system_cost.0, system_cost.0)
             } else if structure.structure_type == StructureType::Athanor ||
                 structure.structure_type == StructureType::Tatara {
-                100f32 * (materials_cost_total * (system_cost.1  / 100f32))
+                (materials_cost_total * system_cost.1, system_cost.1)
             } else {
-                f32::INFINITY
+                (f32::INFINITY, f32::INFINITY)
             };
 
             let facility_bonus: f32 = if structure.structure_type == StructureType::Sotiyo {
@@ -641,19 +648,29 @@ impl CalculationEngine {
 
             // TODO: add option to adjust facility costs
             let facility = materials_cost_total * 0.01;
-            let scc = materials_cost_total * 0.04;
+            let scc = materials_cost_total * SCC_TAX;
+            let total_taxes = facility + scc;
 
-            let total_job_cost = (total_job_gross + facility + scc).ceil();
+            let total_job_cost = (total_job_gross + total_taxes).ceil();
 
             self.tree
                 .get_mut(&entry.product_type_id)
                 .map(|x: &mut DependencyTreeEntry| {
+                    x.build_cost.base_item_cost      = materials_cost_total;
+
+                    x.build_cost.system_cost_percent = system_cost_percent;
+                    x.build_cost.system_cost         = system_cost;
+                    x.build_cost.total_job_gross     = total_job_gross;
+
+                    x.build_cost.facility            = facility;
+                    // TODO: replace with facility cost
+                    x.build_cost.facility_percent    = 0.01;
+                    x.build_cost.scc                 = scc;
+                    x.build_cost.scc_percent         = SCC_TAX;
+                    x.build_cost.total_tax           = total_taxes;
+
+                    x.build_cost.total_job_cost          = total_job_cost;
                     x.build_cost.material_adjusted_price = material_adjusted_price;
-                    x.build_cost.total_job_gross = total_job_gross;
-                    x.build_cost.material_cost_total = materials_cost_total;
-                    x.build_cost.facility = facility;
-                    x.build_cost.scc = scc;
-                    x.build_cost.total_job_cost = total_job_cost;
                 });
         }
     }

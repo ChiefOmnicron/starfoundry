@@ -1,4 +1,4 @@
-import { Alert, AppShell, Center, Group, Stack } from '@mantine/core'
+import { Alert, AppShell, Center, Group, Image, Stack } from '@mantine/core'
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
 import { Route as AboutRoute } from '@/routes/about';
 import { Route as IndexRoute } from '@/routes';
@@ -56,7 +56,12 @@ export function UnauthorizedShell() {
                             color: 'var(--mantine-color-dark-0)'
                         }}
                     >
-                        StarFoundry Industry
+                        <Image
+                            src="/sf_logo.png"
+                            h="calc(3rem * var(--mantine-scale))"
+                            w="auto"
+                            fit="contain"
+                        />
                     </Link>
 
                     <Link

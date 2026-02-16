@@ -15,6 +15,8 @@ import { InternalLink } from '@/components/InternalLink';
 import { Route as ProjectGroupDefaultsRoute } from '@/routes/project-groups_/$projectGroupId.defaults';
 import { useListProjectGroupDefaultBlueprintOverwrites, type BlueprintOverwrite } from '@/services/project-group/listDefaultBlueprintOverwrites';
 import { BlueprintOverwriteList } from '@/routes/project-groups_/-components/BlueprintOverwriteLIst';
+import { JobSplittingRunList } from '@/routes/project-groups_/-components/JobSplittingRunList';
+import { useListProjectGroupDefaultJobSplitting, type JobSplittingRun } from '@/services/project-group/listDefaultJobSplitting';
 
 const columnHelperMaterial = createColumnHelper<SolutionMaterial>();
 const columnsMaterial = [
@@ -140,11 +142,12 @@ export function Solution({
 
     const [selectedBlacklist, setSelectedBlacklist] = useState<Item[]>([]);
     const [selectedBlueprintOverwrite, setSelectedBlueprintOverwrite] = useState<BlueprintOverwrite[]>([]);
+    const [selectedJobSplittingRun, setSelectedJobSplittingRun] = useState<JobSplittingRun[]>([]);
 
     // tmp
     const generateSolutionMutation = useMutation({
         mutationFn: async () => {
-            return await generateSolution()
+            return await generateSolution(projectGroupId)
         },
         onSuccess: (data: GenerateSolutionResponse) => {
             setSolutionMaterial(data.material);
@@ -164,6 +167,12 @@ export function Solution({
         data: projectGroupBlueprintOverwrite,
     } = useListProjectGroupDefaultBlueprintOverwrites(projectGroupId);
 
+    const {
+        isPending: isPendingJobSplitting,
+        isError: isErrorJobSplitting,
+        data: projectGroupDefaultJobSplittings,
+    } = useListProjectGroupDefaultJobSplitting(projectGroupId);
+
     useEffect(() => {
         if (isPendingBlacklist || isErrorBlacklist) {
             return;
@@ -171,10 +180,14 @@ export function Solution({
         if (isPendingBlueprintOverwrite || isErrorBlueprintOverwrite) {
             return;
         }
+        if (isPendingJobSplitting || isErrorJobSplitting) {
+            return;
+        }
 
         setSelectedBlacklist(projectGroupBlacklist);
         setSelectedBlueprintOverwrite(projectGroupBlueprintOverwrite);
-    }, [projectGroupBlacklist, selectedBlueprintOverwrite]);
+        setSelectedJobSplittingRun(projectGroupDefaultJobSplittings.runs);
+    }, [projectGroupBlacklist, selectedBlueprintOverwrite, projectGroupDefaultJobSplittings]);
 
     const tableMaterials = useReactTable<SolutionMaterial>({
         columns: columnsMaterial,
@@ -302,6 +315,37 @@ export function Solution({
         </>
     }
 
+    const estimatedPrice = () => {
+        if (solutionManufacturing.length === 0) {
+            return <></>
+        }
+
+        return <>
+            <Title order={2}>Estimated cost</Title>
+
+            <Table variant="vertical" layout="fixed">
+                <Table.Tbody>
+                    <Table.Tr>
+                        <Table.Th w={200}>Manufacturing</Table.Th>
+                        <Table.Td><CopyText value={solutionManufacturing.map(x => x.build_tax).reduce((prev, curr) => prev += curr, 0)} number /></Table.Td>
+                    </Table.Tr>
+                    <Table.Tr>
+                        <Table.Th w={200}>Market</Table.Th>
+                        <Table.Td><CopyText value={0} number /></Table.Td>
+                    </Table.Tr>
+                    <Table.Tr>
+                        <Table.Th w={200}>Hauling</Table.Th>
+                        <Table.Td><CopyText value={0} number /></Table.Td>
+                    </Table.Tr>
+                    <Table.Tr>
+                        <Table.Th w={200}>Total</Table.Th>
+                        <Table.Td><CopyText value={0} number /></Table.Td>
+                    </Table.Tr>
+                </Table.Tbody>
+            </Table>
+        </>
+    }
+
     return <>
         <Stack>
             <Title order={3}>Project Group Defaults</Title>
@@ -359,17 +403,34 @@ export function Solution({
                                 target='_blank'
                             />
                         </Alert>
-                        <ItemList
-                            selected={selectedBlacklist}
-                            onSelect={(tmpBlacklist) => {
-                                setSelectedBlacklist(tmpBlacklist);
-                            }}
-                            buildable
-                            editable
-                        />
-
                         <BlueprintOverwriteList
                             selected={selectedBlueprintOverwrite}
+                        />
+                    </Accordion.Panel>
+                </Accordion.Item>
+                <Accordion.Item value='job_splitting'>
+                    <Accordion.Control>
+                        <Text>Job Splitting</Text>
+
+                        <Text size="sm" c="dimmed" fw={400}>
+                            Set the max runs for blueprints
+                        </Text>
+                    </Accordion.Control>
+
+                    <Accordion.Panel>
+                        <Alert variant='light' color='gray'>
+                            Any changes made will only be applied to this project.
+                            For permanent changes head over to <InternalLink
+                                content='Project Group Defaults'
+                                to={ProjectGroupDefaultsRoute.to}
+                                params={{
+                                    projectGroupId,
+                                }}
+                                target='_blank'
+                            />
+                        </Alert>
+                        <JobSplittingRunList
+                            selected={selectedJobSplittingRun}
                         />
                     </Accordion.Panel>
                 </Accordion.Item>
@@ -379,6 +440,8 @@ export function Solution({
         { material() }
 
         { manufacturing() }
+
+        { estimatedPrice() }
 
         <Button
             data-cy="create"

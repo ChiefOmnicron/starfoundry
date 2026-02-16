@@ -1,8 +1,9 @@
 use axum::{middleware, Router};
 use sqlx::postgres::PgPoolOptions;
-use starfoundry_bin_eve_gateway::{auth, character, contract, corporation, healthcheck, industry, internal, item, market, search, structure, universe};
+use starfoundry_bin_eve_gateway::{auth, character, contract, healthcheck, industry, internal, item, search, structure, universe, eve};
 use starfoundry_bin_eve_gateway::api_docs::ApiDoc;
 use starfoundry_bin_eve_gateway::config::Config;
+use starfoundry_bin_eve_gateway::item::services::load_items;
 use starfoundry_bin_eve_gateway::metrics::{self, path_metrics, setup_metrics_recorder};
 use starfoundry_bin_eve_gateway::state::AppState;
 use std::sync::Arc;
@@ -12,7 +13,6 @@ use tracing_subscriber::EnvFilter;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_scalar::{Scalar, Servable};
 use utoipa::OpenApi;
-use starfoundry_bin_eve_gateway::item::services::load_items;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -74,16 +74,17 @@ fn app(
     // build our application with a route
     let (router, api) = OpenApiRouter::with_openapi(ApiDoc::openapi())
         .nest("/.well-known", auth::well_known_routes())
+
         .nest("/auth", auth::routes())
         .nest("/characters", character::routes())
         .nest("/contracts", contract::routes())
-        .nest("/corporations", corporation::routes())
         .nest("/industry", industry::routes())
         .nest("/items", item::routes())
-        .nest("/market", market::routes())
         .nest("/search", search::routes())
         .nest("/structures", structure::routes())
         .nest("/universe", universe::routes())
+
+        .nest("/eve", eve::routes())
         .nest("/internal", internal::routes())
         .layer(
             ServiceBuilder::new().layer(middleware::from_fn(path_metrics))

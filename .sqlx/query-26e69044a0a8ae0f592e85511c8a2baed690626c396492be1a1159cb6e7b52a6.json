@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                manufacturing,\n                reaction,\n                copying,\n                invention,\n                research_time,\n                research_material\n            FROM system_index\n            WHERE system_id = $1\n        ",
+  "query": "\n            SELECT\n                manufacturing,\n                reaction,\n                copying,\n                invention,\n                research_time,\n                research_material\n            FROM system_index\n            WHERE system_id = $1\n            ORDER BY timestamp DESC\n        ",
   "describe": {
     "columns": [
       {
@@ -84,5 +84,5 @@
       false
     ]
   },
-  "hash": "62124a9c39e8270cff840c91b1e5071d4b228d738388a6ae916590d7e9396eb4"
+  "hash": "26e69044a0a8ae0f592e85511c8a2baed690626c396492be1a1159cb6e7b52a6"
 }

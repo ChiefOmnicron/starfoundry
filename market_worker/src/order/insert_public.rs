@@ -1,6 +1,6 @@
 use chrono::Days;
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::market::Market;
+use starfoundry_lib_eve_gateway::eve_market::Market;
 use starfoundry_lib_types::{RegionId, StructureId};
 use starfoundry_lib_worker::Task;
 

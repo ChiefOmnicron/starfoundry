@@ -6,7 +6,7 @@ version.workspace = true
 license.workspace = true
 
 [dependencies]
-axum = "0.8.7"
+axum = { version = "0.8.8", features = ["macros"]}
 chrono = "0.4.42"
 dotenvy = "0.15.7"
 good_lp = { version = "1.14.2", default-features = false, features = ["scip", "scip_bundled"] }

@@ -1,5 +1,6 @@
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::{EveGatewayApiClientIndustry, EveGatewayClient};
+use starfoundry_lib_eve_gateway::eve_industry::EveGatewayApiClientEveIndustry;
+use starfoundry_lib_eve_gateway::EveGatewayClient;
 use starfoundry_lib_worker::Task;
 
 use crate::error::{Error, Result};

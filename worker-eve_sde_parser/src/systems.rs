@@ -3,6 +3,7 @@ use starfoundry_lib_types::{ConstellationId, RegionId};
 use std::collections::HashMap;
 use std::time::Instant;
 
+use crate::Error;
 use crate::parser::regions::Region;
 use crate::parser::systems::System;
 use crate::parser::constellations::Constellation;
@@ -12,7 +13,7 @@ pub async fn run(
     regions:        HashMap<RegionId, Region>,
     constellations: HashMap<ConstellationId, Constellation>,
     systems:        Vec<System>,
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<(), Error> {
     tracing::info!("Processing systems");
     let start = Instant::now();
 
@@ -37,17 +38,19 @@ async fn insert_into_database(
     systems:        Vec<System>,
     constellations: HashMap<ConstellationId, Constellation>,
     regions:        HashMap<RegionId, Region>,
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<(), Error> {
     let mut transaction = pool
         .begin()
-        .await?;
+        .await
+        .map_err(Error::TransactionError)?;
 
     tracing::debug!("Clearing system database");
     sqlx::query!("
             DELETE FROM system
         ")
         .execute(&mut *transaction)
-        .await?;
+        .await
+        .map_err(Error::DeleteSystems)?;
     tracing::debug!("Clearing systems database done");
 
     let region_ids = systems
@@ -126,8 +129,13 @@ async fn insert_into_database(
             &security_str,
         )
         .execute(&mut *transaction)
-        .await?;
-    transaction.commit().await?;
+        .await
+        .map_err(Error::InsertSystem)?;
+
+    transaction
+        .commit()
+        .await
+        .map_err(Error::TransactionError)?;
     tracing::debug!("Inserting data done");
 
     Ok(())

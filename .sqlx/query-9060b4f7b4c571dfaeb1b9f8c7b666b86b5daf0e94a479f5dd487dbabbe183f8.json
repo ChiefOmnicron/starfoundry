@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM groups\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "9060b4f7b4c571dfaeb1b9f8c7b666b86b5daf0e94a479f5dd487dbabbe183f8"
+}

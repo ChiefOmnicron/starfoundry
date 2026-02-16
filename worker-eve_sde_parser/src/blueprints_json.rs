@@ -3,12 +3,12 @@ use sqlx::PgPool;
 use starfoundry_lib_types::{CategoryId, GroupId, TypeId};
 use std::collections::{HashMap, VecDeque};
 use std::time::Instant;
+use starfoundry_lib_eve_gateway::Item;
 
 use crate::Error;
 use crate::parser::blueprints::BlueprintEntry;
 use crate::parser::groups::GroupIdEntry;
 use crate::parser::type_ids::TypeIdEntry;
-use starfoundry_lib_eve_gateway::Item;
 use crate::items::get_item;
 use crate::parser::categories::CategoryIdEntry;
 

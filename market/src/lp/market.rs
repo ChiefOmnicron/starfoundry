@@ -1,6 +1,8 @@
 use good_lp::{Constraint, Expression, ProblemVariables, Solution, SolverModel, Variable, constraint, default_solver, variable, variables};
 use std::collections::HashMap;
-use starfoundry_lib_types::TypeId;
+use starfoundry_lib_types::{StructureId, TypeId};
+
+use crate::market::MarketEntry;
 
 pub struct MarketProblem {
     vars:        ProblemVariables,
@@ -10,7 +12,7 @@ pub struct MarketProblem {
     want:        Expression,
     constraints: Vec<Constraint>,
 
-    mapping_order_id_market: HashMap<i64, MarketLpEntry>,
+    mapping_order_id_market: HashMap<i64, MarketEntry>,
 
     /// max recorded price per unit of the material
     max_per_unit_price: f64,
@@ -36,14 +38,12 @@ impl MarketProblem {
 
     pub fn calculate_market(
         &mut self,
-        market_entries: Vec<MarketLpEntry>,
+        market_entries: Vec<MarketEntry>,
     ) {
         for entry in market_entries {
-            let var_definition = variable().name(format!(
-                "{}_{}",
-                entry.structure_id,
-                entry.order_id,
-            ));
+            let var_definition = variable()
+                .name(entry.name())
+                .min(0);
             let variable = self.vars.add(var_definition.clone());
             self.variables.push(variable);
             self.mapping_order_id_market.insert(entry.order_id, entry.clone());
@@ -57,18 +57,17 @@ impl MarketProblem {
             self.total_units += entry.quantity as f64;
 
             self.want += variable;
-            self.constraints.push(constraint!(variable >= 0));
             self.constraints.push(constraint!(variable <= entry.quantity));
         }
     }
 
     fn hauling_cost(
         &self,
-        structure_id: i64,
+        structure_id: StructureId,
         quantity: Variable,
         volume: f64,
     ) -> Expression {
-        match structure_id {
+        match *structure_id {
             // UALX
             1046664001931i64 => {
                 let hauling_full = 370_000f64;
@@ -101,7 +100,7 @@ impl MarketProblem {
     pub fn solve(
         mut self,
         want: i32,
-    ) -> HashMap<i64, MarketProblemResult> {
+    ) -> HashMap<StructureId, MarketProblemResult> {
         self.constraints.push(constraint!(self.want == want));
 
         let mapping = self.variables
@@ -158,12 +157,12 @@ pub struct MarketProblemResult {
     pub type_id: TypeId,
 }
 
-#[derive(Clone, Debug)]
-pub struct MarketLpEntry {
-    pub order_id:     i64,
-    pub structure_id: i64,
-    pub price:        f64,
-    pub quantity:     i32,
-    pub item_volume:  f64,
-    pub type_id:      TypeId,
+impl MarketEntry {
+    pub fn name(&self) -> String {
+        format!(
+            "{}_{}",
+            self.structure_id,
+            self.order_id,
+        )
+    }
 }

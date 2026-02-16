@@ -20,6 +20,11 @@ pub enum Error {
     #[error("inserting the blueprint data failed, '{0}'")]
     InsertBlueprintJson(sqlx::Error),
 
+    #[error("error while deleting the system database, '{0}'")]
+    DeleteSystems(sqlx::Error),
+    #[error("inserting the system data failed, '{0}'")]
+    InsertSystem(sqlx::Error),
+
     #[error("error while deleting the blueprint json database, '{0}'")]
     DeleteStructureDogma(sqlx::Error),
     #[error("inserting the blueprint data failed, '{0}'")]

@@ -2,6 +2,8 @@ mod error;
 mod bulk;
 mod service;
 
+pub use self::service::*;
+
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
 

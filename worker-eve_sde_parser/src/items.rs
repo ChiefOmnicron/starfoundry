@@ -38,6 +38,18 @@ pub async fn run(
         .execute(&mut *transaction)
         .await
         .map_err(Error::DeleteItems)?;
+    sqlx::query!("
+            DELETE FROM category
+        ")
+        .execute(&mut *transaction)
+        .await
+        .map_err(Error::DeleteItems)?;
+    sqlx::query!("
+            DELETE FROM groups
+        ")
+        .execute(&mut *transaction)
+        .await
+        .map_err(Error::DeleteItems)?;
     tracing::debug!("Clearing database done");
 
     let mut type_id       = Vec::new();
@@ -50,6 +62,7 @@ pub async fn run(
 
     for item in items {
         type_id.push(*item.type_id);
+        name.push(item.name);
         category_id.push(*item.category.category_id);
         group_id.push(*item.group.group_id);
         meta_group_id.push(item.meta_group);

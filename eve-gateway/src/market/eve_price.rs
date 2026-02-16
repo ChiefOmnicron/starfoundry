@@ -1,34 +1,29 @@
-use axum::extract::Path;
 use axum::Json;
 use axum::response::IntoResponse;
 use reqwest::StatusCode;
-use starfoundry_lib_eve_gateway::market::Market;
-use starfoundry_lib_types::RegionId;
+use starfoundry_lib_eve_gateway::eve_market::MarketPrice;
 
 use crate::api_docs::{InternalServerError, NotFound};
-use crate::eve_client::EveApiClient;
 use crate::market::error::Result;
+use crate::eve_client::EveApiClient;
 
 /// Fetch Market for a region
 /// 
-/// - Alternative route: `/latest/market/region/{RegionId}`
-/// - Alternative route: `/v1/market/region/{RegionId}`
+/// - Alternative route: `/latest/eve/market/prices`
+/// - Alternative route: `/v1/eve/market/prices`
 /// 
 /// ---
 /// 
-/// Resolves the market data for the given region
+/// Returns the cost of all items
 /// 
 #[utoipa::path(
     get,
-    path = "/region/{RegionId}",
+    path = "/market/prices",
     tag = "Market",
-    params(
-        RegionId,
-    ),
     responses(
         (
-            body = Vec<Market>,
-            description = "Market data for the region",
+            body = Vec<MarketPrice>,
+            description = "Market prices for all items",
             status = OK,
         ),
         NotFound,
@@ -36,13 +31,12 @@ use crate::market::error::Result;
     ),
 )]
 pub async fn api(
-    Path(region_id): Path<RegionId>,
 ) -> Result<impl IntoResponse> {
     let api_client = EveApiClient::new()?;
 
-    let path = format!("latest/markets/{region_id}/orders");
+    let path = format!("latest/markets/prices");
     let market_data = api_client
-        .fetch_page::<Market>(&path)
+        .fetch::<_, Vec<MarketPrice>>(&path, &())
         .await?;
 
     if market_data.is_empty() {
@@ -63,3 +57,4 @@ pub async fn api(
         )
     }
 }
+
