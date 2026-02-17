@@ -124,6 +124,22 @@ COPY        --from=market-api-builder /app/target/release/starfoundry_bin-market
 CMD         ["/usr/local/bin/app"]
 
 ###############################################################################
+#           market_worker
+###############################################################################
+FROM builder AS market-worker-builder
+RUN         cargo build --bin starfoundry_bin-market_worker --release
+
+FROM ubuntu:26.04 AS market-worker
+WORKDIR     /usr/local/bin
+
+RUN         apt-get update && \
+            apt-get install -y ca-certificates curl && \
+            apt-get clean
+
+COPY        --from=market-worker-builder /app/target/release/starfoundry_bin-market_worker /usr/local/bin/app
+CMD         ["/usr/local/bin/app"]
+
+###############################################################################
 #           industry_api
 ###############################################################################
 FROM builder AS industry-api-builder
