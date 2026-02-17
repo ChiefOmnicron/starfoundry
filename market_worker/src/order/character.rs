@@ -10,9 +10,6 @@ use crate::error::{Error, Result};
 use crate::metric::WorkerMetric;
 use crate::order::insert_private_orders;
 
-// FIXME: this needs to be a config file, the whole syncing needs to be a config file
-const HOST_INDUSTRY: &str = "industry.dev.starfoundry.space";
-
 pub async fn character_orders(
     pool: &PgPool,
     task: &mut Task<WorkerMetric, WorkerMarketTask>,
@@ -34,7 +31,7 @@ pub async fn character_orders(
     let client = EveGatewayClient::new(SERVICE_NAME.into())?;
     let entries = match client
         .fetch_character_orders(
-            HOST_INDUSTRY.into(),
+            additional_data.source,
             additional_data.character_id,
         )
         .await {
@@ -61,4 +58,5 @@ pub async fn character_orders(
 #[derive(Debug, Deserialize)]
 struct AdditionalData {
     character_id: CharacterId,
+    source:       String,
 }
