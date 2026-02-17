@@ -1,0 +1,50 @@
+name: market-api
+
+on:
+  push:
+    branches:
+      - main
+      - rewrite
+    paths:
+      - 'market/**'
+      - 'market_lib/**'
+      - 'gateway_lib/**'
+      - 'gp_lib-types/**'
+      - '.github/workflows/trigger_market-api.yml'
+      - 'Dockerfile'
+
+concurrency:
+  # Make sure every job on main has unique group id (run_id), so cancel-in-progress only affects PR's
+  # https://stackoverflow.com/questions/74117321/if-condition-in-concurrency-in-gha
+  group: ${{ github.workflow }}-${{ github.head_ref && github.ref || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  test:
+    uses: ./.github/workflows/common_rust_test.yml
+    secrets: inherit
+    with:
+      folder: market
+
+  build-image:
+    uses: ./.github/workflows/common_build_docker.yml
+    needs:
+      - test
+    secrets: inherit
+    with:
+      name: market/api
+      image: market-api
+
+  ship-id:
+    uses: ./.github/workflows/common_deploy.yml
+    needs:
+      - build-image
+    secrets: inherit
+    with:
+      image: ${{ needs.build-image.outputs.IMAGE }}
+      image-name: market-api
+      folder: market
