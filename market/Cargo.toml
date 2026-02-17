@@ -9,7 +9,7 @@ license.workspace = true
 axum = { version = "0.8.8", features = ["macros"]}
 chrono = "0.4.42"
 dotenvy = "0.15.7"
-good_lp = { version = "1.14.2", default-features = false, features = ["scip", "scip_bundled"] }
+good_lp = "1.14.2"
 metrics = "0.24.3"
 metrics-exporter-prometheus = "0.18.1"
 serde = { version = "1.0.228", features = ["derive"] }
