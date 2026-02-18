@@ -111,8 +111,7 @@ CMD         ["/usr/local/bin/app"]
 #           market_api
 ###############################################################################
 FROM builder AS market-api-builder
-RUN         cargo install clang coinor-libcbc3.1 && \
-            cp /usr/lib/x86_64-linux-gnu/libCbcSolver.so.3.1 /usr/lib/x86_64-linux-gnu/libCbcSolver.so.3 && \
+RUN         apt-get install -y clang coinor-cbc coinor-libcbc-dev && \
             cargo build --bin starfoundry_bin-market --release
 
 FROM ubuntu:26.04 AS market-api
@@ -136,7 +135,7 @@ FROM ubuntu:26.04 AS market-worker
 WORKDIR     /usr/local/bin
 
 RUN         apt-get update && \
-            apt-get install -y ca-certificates curl
+            apt-get install -y ca-certificates curl && \
             apt-get clean
 
 COPY        --from=market-worker-builder /app/target/release/starfoundry_bin-market_worker /usr/local/bin/app
