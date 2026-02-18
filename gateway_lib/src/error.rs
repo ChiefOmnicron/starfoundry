@@ -26,6 +26,8 @@ pub enum Error {
     #[error("the client is forbidden from accessing the resource, {0}")]
     Forbidden(Url),
 
+    #[error("error while parsing eve response data, url: '{2}', text: '{1}', error: '{0:?}'")]
+    JsonParseError(serde_json::Error, String, Url),
     #[error("url reqwest error for path '{1}', error: '{0:?}'")]
     ReqwestError(reqwest::Error, Url),
     #[error("generic reqwest error, '{0:?}'")]

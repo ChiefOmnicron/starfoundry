@@ -197,11 +197,16 @@ impl EveApiClient {
             .send(api_url.clone(), query)
             .await?;
 
-        let data = response
-            .json::<T>()
-            .await
-            .map_err(|x| EveApiError::ReqwestError(x, api_url))?;
-        Ok(data)
+        match response.text().await {
+            Err(e) => {
+                tracing::error!("Error parsing json, {}", e);
+                Err(EveApiError::ReqwestError(e, api_url))
+            },
+            Ok(x) => {
+                serde_json::from_str(&x)
+                    .map_err(|e| EveApiError::JsonParseError(e, x, api_url))
+            }
+        }
     }
 
     /// Makes a single request to the given path and returns parses the result
@@ -235,11 +240,16 @@ impl EveApiClient {
             .send_auth(api_url.clone(), query)
             .await?;
 
-        let data = response
-            .json::<T>()
-            .await
-            .map_err(|x| EveApiError::ReqwestError(x, api_url))?;
-        Ok(data)
+        match response.text().await {
+            Err(e) => {
+                tracing::error!("Error parsing json, {}", e);
+                Err(EveApiError::ReqwestError(e, api_url))
+            },
+            Ok(x) => {
+                serde_json::from_str(&x)
+                    .map_err(|e| EveApiError::JsonParseError(e, x, api_url))
+            }
+        }
     }
 
     /// Makes requests as long as there are pages to fetch.

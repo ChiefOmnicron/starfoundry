@@ -96,10 +96,16 @@ impl StarFoundryApiClient {
             )
             .await?;
 
-        response
-            .json::<T>()
-            .await
-            .map_err(|x| Error::ReqwestError(x, api_url))
+        match response.text().await {
+            Err(e) => {
+                tracing::error!("Error parsing json, {}", e);
+                Err(Error::ReqwestError(e, api_url))
+            },
+            Ok(x) => {
+                serde_json::from_str(&x)
+                    .map_err(|e| Error::JsonParseError(e, x, api_url))
+            }
+        }
     }
 
     pub async fn post<D, T>(

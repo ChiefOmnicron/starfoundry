@@ -78,6 +78,9 @@ pub enum EveApiError {
 
     #[error("no identity found")]
     NoIdentity,
+
+    #[error("error while parsing eve response data, url: '{2}', text: '{1}', error: '{0:?}'")]
+    JsonParseError(serde_json::Error, String, Url),
 }
 
 impl IntoResponse for EveApiError {
