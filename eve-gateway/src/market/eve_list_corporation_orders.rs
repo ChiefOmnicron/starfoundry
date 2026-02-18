@@ -2,7 +2,7 @@ use axum::extract::State;
 use axum::Json;
 use axum::response::IntoResponse;
 use reqwest::StatusCode;
-use starfoundry_lib_eve_gateway::eve_market::Market;
+use starfoundry_lib_eve_gateway::eve_market::MarketOrder;
 use starfoundry_lib_gateway::ExtractIdentity;
 use starfoundry_lib_types::CorporationId;
 
@@ -28,7 +28,7 @@ const SCOPE: &str = "esi-markets.read_corporation_orders.v1";
     tag = "Market",
     responses(
         (
-            body = Vec<Market>,
+            body = Vec<MarketOrder>,
             description = "List of orders from the corporation",
             status = OK,
         ),
@@ -68,7 +68,7 @@ pub async fn api(
         *identity.corporation_id.unwrap_or(CorporationId(0)),
     );
     let market_data = api_client
-        .fetch_page_auth::<Market>(&path)
+        .fetch_page_auth::<MarketOrder>(&path)
         .await?;
 
     if market_data.is_empty() {

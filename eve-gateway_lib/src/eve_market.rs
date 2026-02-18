@@ -1,7 +1,9 @@
 mod market;
+mod order;
 mod prices;
 
 pub use self::market::*;
+pub use self::order::*;
 pub use self::prices::*;
 
 use axum::http::{HeaderMap, HeaderValue};
@@ -49,7 +51,7 @@ pub trait EveGatewayApiClientEveMarket: ApiClient {
         &self,
         source:       String,
         character_id: CharacterId,
-    ) -> Result<Vec<Market>> {
+    ) -> Result<Vec<MarketOrder>> {
         let mut headers = HeaderMap::new();
         headers.insert(HOST, HeaderValue::from_str(&source).unwrap_or(HeaderValue::from_static("invalid.header")));
         headers.insert(HEADER_CHARACTER_ID, (*character_id).into());
@@ -70,7 +72,7 @@ pub trait EveGatewayApiClientEveMarket: ApiClient {
         source:         String,
         character_id:   CharacterId,
         corporation_id: CorporationId,
-    ) -> Result<Vec<Market>> {
+    ) -> Result<Vec<MarketOrder>> {
         let mut headers = HeaderMap::new();
         headers.insert(HOST, HeaderValue::from_str(&source).unwrap_or(HeaderValue::from_static("invalid.header")));
         headers.insert(HEADER_CHARACTER_ID, (*character_id).into());

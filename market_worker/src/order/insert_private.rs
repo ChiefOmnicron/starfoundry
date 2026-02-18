@@ -1,6 +1,6 @@
 use chrono::Days;
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::eve_market::Market;
+use starfoundry_lib_eve_gateway::eve_market::MarketOrder;
 use starfoundry_lib_worker::Task;
 
 use crate::WorkerMarketTask;
@@ -11,7 +11,7 @@ pub async fn insert_private_orders(
     pool:       &PgPool,
     task:       &mut Task<WorkerMetric, WorkerMarketTask>,
     issuer_id:  i32,
-    entries:    Vec<Market>,
+    entries:    Vec<MarketOrder>,
 ) -> Result<()> {
     if entries.is_empty() {
         return Ok(());

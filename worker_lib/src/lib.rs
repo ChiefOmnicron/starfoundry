@@ -93,6 +93,8 @@ impl<M, WT> Worker<M, WT>
     async fn pull_task(
         &self,
     ) {
+        dbg!(self.mpsc_sender.capacity());
+
         loop {
             match fetch_task(
                     &self.pool,

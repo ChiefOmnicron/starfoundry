@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS blueprint_dependency (
     time              INTEGER   NOT NULL,
     depends_on        INTEGER[] NOT NULL
 );
-CREATE INDEX IF NOT EXISTS blueprint_dependency ON blueprint_json (blueprint_type_id, product_type_id);
+CREATE INDEX IF NOT EXISTS blueprint_dependency_typeid ON blueprint_dependency (blueprint_type_id, product_type_id);
 
 CREATE TABLE IF NOT EXISTS industry_index (
     id                UUID      NOT NULL DEFAULT uuidv7(),
@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS structure_service (
 );
 
 CREATE TABLE IF NOT EXISTS structure_dogma (
-  ptype_id    INTEGER         NOT NULL,
+  type_id     INTEGER         NOT NULL,
   modifier    BONUS_MODIFIER  NOT NULL,
   amount      FLOAT           NOT NULL,
   categories  INTEGER[]       NOT NULL,

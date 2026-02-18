@@ -110,6 +110,11 @@ pub async fn sync(
         sync_player_stations(
             pool,
             &structure_response,
+            host.clone(),
+        ).await?;
+
+        sync_private_orders(
+            pool,
             host,
         ).await?;
 
@@ -124,10 +129,6 @@ pub async fn sync(
     ).await?;
 
     sync_misc_tasks(
-        pool,
-    ).await?;
-
-    sync_private_orders(
         pool,
     ).await?;
 
@@ -341,6 +342,7 @@ async fn sync_public_contract(
 
 async fn sync_private_orders(
     pool: &PgPool,
+    host: String,
 ) -> Result<usize> {
     let mut total_added = 0;
 
@@ -364,6 +366,7 @@ async fn sync_private_orders(
         if public_contract.is_none() {
             new_entries.push(serde_json::json!({
                 "character_id": character_id,
+                "source": host.clone(),
             }))
         }
 
@@ -385,7 +388,7 @@ async fn sync_private_orders(
     }
 
     // FIXME: only tmp
-    for corporation_id in vec![98748294] {
+    for corporation_id in vec![98024275] {
         let mut new_entries = Vec::new();
         let task_name: String = WorkerMarketTask::CorporationOrders.into();
         let public_contract = sqlx::query!("
@@ -405,6 +408,7 @@ async fn sync_private_orders(
             new_entries.push(serde_json::json!({
                 "corporation_id": corporation_id,
                 "character_id": 2117441999,
+                "source": host.clone(),
             }))
         }
 

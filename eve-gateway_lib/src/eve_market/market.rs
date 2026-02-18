@@ -9,30 +9,30 @@ use crate::utils::from_datetime;
 #[derive(Debug, Deserialize, Serialize, ToSchema)]
 pub struct Market {
     /// Duration of the market entry until it expires
-    pub duration:      u32,
+    pub duration:       u32,
     /// Determines if the order is a buy or sell order
     #[serde(deserialize_with = "BuyOrder::from_bool")]
     #[serde(serialize_with = "BuyOrder::to_bool")]
     #[serde(default)]
-    pub is_buy_order:  BuyOrder,
+    pub is_buy_order:   BuyOrder,
     /// Date when the market entry was issued
     #[serde(deserialize_with = "from_datetime")]
-    pub issued:        NaiveDateTime,
+    pub issued:         NaiveDateTime,
     /// Station the market entry was issued from
-    pub location_id:   LocationId,
+    pub location_id:    LocationId,
     /// Relevant for buy orders, how much needs to be at least fulfilled
     #[serde(default)]
-    pub min_volume:    u32,
+    pub min_volume:     u32,
     /// Order id of the market entry
-    pub order_id:      OrderId,
+    pub order_id:       OrderId,
     /// Price the issuer wants
-    pub price:         f32,
+    pub price:          f32,
     /// TypeId of the item
-    pub type_id:       TypeId,
+    pub type_id:        TypeId,
     /// Volume that is still up
-    pub volume_remain: u32,
+    pub volume_remain:  u32,
     /// Total volume of the market order
-    pub volume_total:  u32,
+    pub volume_total:   u32,
 }
 
 /// Determines if an market entry is a Buy or Sell order
