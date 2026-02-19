@@ -1,0 +1,39 @@
+[[reprocessing."ARKONOR"]]
+mineral = 35
+amount = 3200
+
+[[reprocessing."ARKONOR"]]
+mineral = 36
+amount = 1200
+
+[[reprocessing."ARKONOR"]]
+mineral = 40
+amount = 120
+
+# Arkonor
+[[asteroid]]
+uncompressed_type_id = 22
+compressed_type_id = 62568
+modifier = 1
+reprocessing = "ARKONOR"
+
+# Arkonor II-Grade
+[[asteroid]]
+uncompressed_type_id = 17425
+compressed_type_id = 62569
+modifier = 1.05
+reprocessing = "ARKONOR"
+
+# Arkonor III-Grade
+[[asteroid]]
+uncompressed_type_id = 17426
+compressed_type_id = 62570
+modifier = 1.1
+reprocessing = "ARKONOR"
+
+# Arkonor IV-Grade
+[[asteroid]]
+uncompressed_type_id = 46678
+compressed_type_id = 62571
+modifier = 1.15
+reprocessing = "ARKONOR"

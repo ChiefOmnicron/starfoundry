@@ -146,6 +146,7 @@ CMD         ["/usr/local/bin/app"]
 ###############################################################################
 FROM builder AS industry-api-builder
 RUN         cargo build --bin starfoundry_bin-industry --release
+RUN         cargo build --bin uuidv7_migration --release
 
 FROM ubuntu:26.04 AS industry-api
 WORKDIR     /usr/local/bin
@@ -155,6 +156,7 @@ RUN         apt-get update && \
             apt-get clean
 
 COPY        --from=industry-api-builder /app/target/release/starfoundry_bin-industry /usr/local/bin/app
+COPY        --from=industry-api-builder /app/target/release/uuidv7_migration /usr/local/bin/migration
 CMD         ["/usr/local/bin/app"]
 
 ###############################################################################
