@@ -96,6 +96,48 @@ pub async fn insert_structure_market(
         .execute(&mut *transaction)
         .await
         .map_err(|e| Error::InsertStationOrdersError(e, structure_id))?;
+
+    // keep the order infos even when the above deletes them when they are no
+    // longer relevant
+    sqlx::query!("
+            INSERT INTO market_order_info AS mol
+            (
+                structure_id,
+                region_id,
+                order_id,
+
+                type_id,
+                price,
+                expires,
+                is_buy
+            )
+            SELECT $1, $2, * FROM UNNEST(
+                $3::BIGINT[],
+                $4::INTEGER[],
+                $5::FLOAT[],
+                $6::TIMESTAMP[],
+                $7::BOOLEAN[]
+            )
+            ON CONFLICT (order_id)
+            DO UPDATE SET
+                expires = EXCLUDED.expires,
+                price = EXCLUDED.price
+            WHERE mol.expires != EXCLUDED.expires
+            OR mol.price != EXCLUDED.price
+        ",
+            *structure_id,
+            *region_id,
+            &order_ids,
+
+            &type_id,
+            &price,
+            &expires,
+            &is_buy,
+        )
+        .execute(&mut *transaction)
+        .await
+        .map_err(|e| Error::InsertStationOrdersError(e, structure_id))?;
+
     // TODO: refactor to `as_millis_f64()` when https://github.com/rust-lang/rust/issues/122451 is stable
     let update_time = update_start.elapsed().as_millis();
     task.metric.increase_market_order_rows_changed(
@@ -124,6 +166,7 @@ pub async fn insert_structure_market(
         .execute(&mut *transaction)
         .await
         .map_err(|e| Error::CleanupOrdersError(e, structure_id))?;
+
     // TODO: refactor to `as_millis_f64()` when https://github.com/rust-lang/rust/issues/122451 is stable
     let delete_time = delete_start.elapsed().as_millis();
     task.metric.increase_market_order_rows_deleted(
