@@ -6,8 +6,8 @@ use prometheus_client::registry::Registry;
 use starfoundry_lib_types::StructureId;
 use starfoundry_lib_worker::TaskMetric;
 
-const BUCKETS: [f64; 4] = [
-    500f64, 1_000f64, 10_000f64, 60_000f64,
+const BUCKETS: [f64; 3] = [
+    1_000f64, 10_000f64, 60_000f64,
 ];
 
 #[derive(Clone, Debug, Hash, PartialEq, Eq, EncodeLabelSet)]

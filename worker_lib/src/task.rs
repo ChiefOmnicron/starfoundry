@@ -328,7 +328,7 @@ impl<M, WT> Task<M, WT>
             .internal_metric
             .add_task_duration(
                 task_name.clone(),
-                self.start.elapsed().as_secs_f64(),
+                self.start.elapsed().as_millis(),
             );
         self
             .internal_metric

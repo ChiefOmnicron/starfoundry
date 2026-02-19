@@ -57,14 +57,14 @@ impl InternalMetric {
     pub fn add_task_duration(
         &self,
         task:     String,
-        duration: f64,
+        duration: u128,
     ) {
         self.task_duration.get_or_create(
             &MetricLabel {
                 worker_id: self.worker_id.to_string(),
                 task,
             }
-        ).observe(duration);
+        ).observe(duration as f64);
     }
 
     pub fn increase_task_counter(
