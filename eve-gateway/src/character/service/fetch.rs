@@ -58,10 +58,22 @@ pub async fn refresh_character_in_db(
         &client,
         character_id
     ).await?;
+    let eve_character = if let Some(x) = eve_character {
+        x
+    } else {
+        return Err(CharacterError::NotFound);
+    };
+
     let eve_corporation = fetch_corporation_from_eve(
         &client,
         eve_character.corporation_id,
     ).await?;
+    let eve_corporation = if let Some(x) = eve_corporation {
+        x
+    } else {
+        return Err(CharacterError::NotFound);
+    };
+
     let alliance_name = fetch_alliance_name_from_eve(
         &client,
         eve_character.alliance_id,
@@ -88,7 +100,7 @@ pub async fn refresh_character_in_db(
 async fn fetch_character_from_eve(
     client:       &EveApiClient,
     character_id: CharacterId,
-) -> Result<EveCharacterInfo> {
+) -> Result<Option<EveCharacterInfo>> {
     client
         .character_info(character_id)
         .await
@@ -98,7 +110,7 @@ async fn fetch_character_from_eve(
 async fn fetch_corporation_from_eve(
     client:         &EveApiClient,
     corporation_id: CorporationId,
-) -> Result<EveCorporationInfo> {
+) -> Result<Option<EveCorporationInfo>> {
     client
         .corporation_info_by_id(corporation_id)
         .await
@@ -114,7 +126,7 @@ async fn fetch_alliance_name_from_eve(
             .alliance_name_by_id(x)
             .await {
 
-            Ok(Some(x))
+            Ok(x)
         } else {
             Ok(None)
         }

@@ -188,6 +188,7 @@ impl EveApiClient {
         query: &Q,
     ) -> Result<T>
     where
+        T: Default,
         T: DeserializeOwned,
     {
         let mut api_url = Self::api_url()?;
@@ -196,6 +197,10 @@ impl EveApiClient {
         let response = self
             .send(api_url.clone(), query)
             .await?;
+
+        if response.status() == StatusCode::NO_CONTENT {
+            return Ok(T::default());
+        }
 
         match response.text().await {
             Err(e) => {
@@ -231,6 +236,7 @@ impl EveApiClient {
         query: &Q,
     ) -> Result<T>
     where
+        T: Default,
         T: DeserializeOwned,
     {
         let mut api_url = Self::api_url()?;
@@ -239,6 +245,10 @@ impl EveApiClient {
         let response = self
             .send_auth(api_url.clone(), query)
             .await?;
+
+        if response.status() == StatusCode::NO_CONTENT {
+            return Ok(T::default());
+        }
 
         match response.text().await {
             Err(e) => {

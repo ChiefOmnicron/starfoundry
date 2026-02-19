@@ -25,15 +25,21 @@ pub async fn resolve_structure(
     pool:           &PgPool,
     eve_api_client: EveApiClient,
     structure_id:   StructureId,
-) -> Result<ResolveStructureResponse> {
+) -> Result<Option<ResolveStructureResponse>> {
     let path = format!(
         "latest/universe/structures/{}",
         structure_id
     );
 
-    let response: EveStructure = eve_api_client
+    let response: Option<EveStructure> = eve_api_client
         .fetch_auth(&path, &())
         .await?;
+
+    let response = if let Some(x) = response {
+        x
+    } else {
+        return Ok(None)
+    };
 
     let item = crate::item::services::fetch_item(pool, response.type_id)
         .await?
@@ -56,7 +62,7 @@ pub async fn resolve_structure(
         .await?;
 
     Ok(
-        ResolveStructureResponse {
+        Some(ResolveStructureResponse {
             structure_id:         structure_id,
             name:                 response.name,
             system:               system,
@@ -64,7 +70,7 @@ pub async fn resolve_structure(
             position:             response.position,
             installable_rigs:     rigs,
             installable_services: services,
-        }
+        })
     )
 }
 

@@ -10,13 +10,15 @@ pub type Result<T, E = CharacterError> = std::result::Result<T, E>;
 
 #[derive(Debug, Error)]
 #[non_exhaustive]
-pub enum CharacterError {
+pub enum  CharacterError {
     #[error("error while fetching character, error: '{0}'")]
     FetchCharacter(sqlx::Error),
     #[error("error while bulk fetching character, error: '{0}'")]
     FetchCharacterBulk(sqlx::Error),
     #[error("error while inserting character information, error: '{0}'")]
     InsertCharacter(sqlx::Error),
+    #[error("the requested character couldn't be found")]
+    NotFound,
 
     #[error("error performing eve api call, error: '{0}'")]
     EveApiError(#[from] EveApiError),

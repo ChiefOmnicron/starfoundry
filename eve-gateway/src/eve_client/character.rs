@@ -18,14 +18,14 @@ impl EveApiClient {
     pub async fn character_info(
         &self,
         character_id: CharacterId,
-    ) -> Result<EveCharacterInfo> {
+    ) -> Result<Option<EveCharacterInfo>> {
         let path = format!(
             "latest/characters/{}/",
             character_id,
         );
 
         self
-            .fetch::<_, EveCharacterInfo>(&path, &())
+            .fetch(&path, &())
             .await
             .map_err(Into::into)
     }
@@ -43,7 +43,7 @@ impl EveApiClient {
     pub async fn alliance_name_by_id(
         &self,
         alliance_id: AllianceId,
-    ) -> Result<String> {
+    ) -> Result<Option<String>> {
         /// Temporary struct for deserializing
         #[derive(Deserialize)]
         struct Alliance {
@@ -57,9 +57,9 @@ impl EveApiClient {
         );
 
         self
-            .fetch::<_, Alliance>(&path, &())
+            .fetch::<_, Option<Alliance>>(&path, &())
             .await
-            .map(|x| x.name)
+            .map(|x| x.map(|y| y.name))
             .map_err(Into::into)
     }
 }

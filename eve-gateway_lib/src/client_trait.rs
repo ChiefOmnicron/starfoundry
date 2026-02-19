@@ -42,7 +42,7 @@ pub trait EveGatewayApiClient:
     async fn resolve_structure(
         &self,
         structure_id: StructureId,
-    ) -> Result<ResolveStructureResponse> {
+    ) -> Result<Option<ResolveStructureResponse>> {
         self
             .fetch(&format!("structures/{}", *structure_id), &())
             .await

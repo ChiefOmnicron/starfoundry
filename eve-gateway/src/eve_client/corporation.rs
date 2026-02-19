@@ -18,14 +18,14 @@ impl EveApiClient {
     pub async fn corporation_info_by_id(
         &self,
         corporation_id: CorporationId,
-    ) -> Result<EveCorporationInfo> {
+    ) -> Result<Option<EveCorporationInfo>> {
         let path = format!(
             "latest/corporations/{}",
             corporation_id,
         );
 
         self
-            .fetch::<_, EveCorporationInfo>(&path, &())
+            .fetch(&path, &())
             .await
             .map_err(Into::into)
     }

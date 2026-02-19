@@ -144,7 +144,7 @@ pub struct IdToName {
     pub name:     String,
 }
 
-#[derive(Deserialize)]
+#[derive(Default, Deserialize)]
 struct EveSearchResult {
     #[serde(default)]
     alliance:       Vec<i64>,
