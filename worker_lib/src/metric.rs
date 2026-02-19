@@ -7,8 +7,9 @@ use uuid::Uuid;
 
 use crate::TaskStatus;
 
-const BUCKETS: [f64; 2] = [
-    0.95, 0.99,
+const TOTAL_TASK_DURATION_BUCKETS: [f64; 6] = [
+    // times in ms
+    500f64, 1_000f64, 30_000f64, 60_000f64, 300_000f64, 600_000f64,
 ];
 
 pub trait TaskMetric: Clone {
@@ -46,7 +47,7 @@ impl InternalMetric {
         Self {
             task_counter:  Family::<MetricLabelStatus, Counter>::default(),
             task_duration: Family::new_with_constructor(|| {
-                Histogram::new(BUCKETS.into_iter())
+                Histogram::new(TOTAL_TASK_DURATION_BUCKETS.into_iter())
             }),
 
             worker_id,
