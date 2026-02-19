@@ -12,6 +12,8 @@ pub enum Error {
 
     #[error("insert orders for structure '{1}', error: '{0}'")]
     InsertStationOrdersError(sqlx::Error, StructureId),
+    #[error("insert order history, error: '{0}'")]
+    InsertHistoryOrders(sqlx::Error),
     #[error("cleaning orders for structure '{1}', error: '{0}'")]
     CleanupOrdersError(sqlx::Error, StructureId),
 

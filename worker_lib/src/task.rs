@@ -147,6 +147,7 @@ pub trait WorkerTask: Clone + std::fmt::Debug + sqlx::Type<Postgres> + TryFrom<S
 #[sqlx(type_name = "WORKER_TASK_STATUS")]
 pub enum TaskStatus {
     Waiting,
+    Warning,
     InProgress,
     Done,
     Error,
@@ -158,6 +159,7 @@ impl Into<String> for TaskStatus {
         match self {
             Self::Done       => "DONE",
             Self::Error      => "ERROR",
+            Self::Warning    => "WARNING",
             Self::InProgress => "IN_PROGRESS",
             Self::Timeout    => "TIMEOUT",
             Self::Waiting    => "WAITING",

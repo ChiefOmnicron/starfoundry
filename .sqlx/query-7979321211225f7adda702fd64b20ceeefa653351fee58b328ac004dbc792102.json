@@ -15,7 +15,8 @@
                 "IN_PROGRESS",
                 "DONE",
                 "ERROR",
-                "TIMEOUT"
+                "TIMEOUT",
+                "WARNING"
               ]
             }
           }

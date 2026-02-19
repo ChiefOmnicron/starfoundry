@@ -136,6 +136,25 @@ pub async fn insert_structure_market(
     );
     task.append_log(format!("Deletes: {}", result.rows_affected()));
 
+    sqlx::query!("
+            INSERT INTO market_order_history (
+                order_id,
+                remaining
+            )
+            SELECT * FROM UNNEST(
+                $1::BIGINT[],
+                $2::INTEGER[]
+            )
+            ON CONFLICT (order_id, remaining)
+            DO NOTHING
+        ",
+            &order_ids,
+            &remaining,
+        )
+        .execute(&mut *transaction)
+        .await
+        .map_err(Error::InsertHistoryOrders)?;
+
     transaction
         .commit()
         .await
