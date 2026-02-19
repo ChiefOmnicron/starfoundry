@@ -82,20 +82,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             ) => {
                 let pool = pool.clone();
 
-                if let Ok(_) = status {
-                    task.finish(
+                match status {
+                    Ok(_) => {
+                        task.finish(
                             &pool,
                             TaskStatus::Done,
                         )
                         .await
                         .unwrap();
-                } else {
-                    task.finish(
+                    },
+                    Err(e) => {
+                        task.append_error(e.to_string());
+                        task.finish(
                             &pool,
                             TaskStatus::Error,
                         )
                         .await
                         .unwrap();
+                    }
                 }
             }
             _ = &mut task_timeout => {
