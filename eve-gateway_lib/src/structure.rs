@@ -90,3 +90,9 @@ pub struct StructureRigBlueprintBonus {
 
     pub blueprint:        Item,
 }
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct BlueprintBonusByRig {
+    pub rigs:     Vec<TypeId>,
+    pub services: Vec<TypeId>,
+}

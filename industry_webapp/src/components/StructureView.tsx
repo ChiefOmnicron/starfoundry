@@ -7,6 +7,7 @@ import { StructureRigBadge } from '../routes/structures/-components/StructureRig
 import { StructureServiceBadge } from '../routes/structures/-components/StructureServiceBadge';
 import { useFetchStructure } from '@/services/structure/fetch';
 import type { Uuid } from '@/services/utils';
+import { BlueprintBonusList } from './BlueprintBonusList';
 
 export function StructureView({
     structureId,
@@ -109,13 +110,16 @@ export function StructureView({
             {showRigs()}
 
             {
-                //<Title order={2}>
-                //    Bonused Blueprints
-                //</Title>
-                //<BlueprintBonusList
-                //    rigTypeIds={ structure.rigs.map(x => x.item.type_id) }
-                //    systemSecurityStr={ structure.system.security_str }
-                ///>
+                <>
+                    <Title order={2}>
+                        Bonused Blueprints
+                    </Title>
+                    <BlueprintBonusList
+                        rigs={ structure.rigs.map(x => x.item.type_id) }
+                        services={ structure.services.map(x => x.type_id) }
+                        systemSecurityStr={ structure.system.security_str }
+                    />
+                </>
             }
         </Stack>
     </>;

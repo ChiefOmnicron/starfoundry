@@ -2,7 +2,7 @@ use axum::extract::State;
 use axum::Json;
 use axum::response::IntoResponse;
 use reqwest::StatusCode;
-use starfoundry_lib_eve_gateway::Item;
+use starfoundry_lib_eve_gateway::{BlueprintBonusByRig, Item};
 use starfoundry_lib_types::TypeId;
 
 use crate::api_docs::{InternalServerError, NotFound};
@@ -37,12 +37,13 @@ use crate::structure::services::fetch_rig_blueprint_bonus;
     ),
 )]
 pub async fn api(
-    State(state):       State<AppState>,
-    Json(rig_type_ids): Json<Vec<TypeId>>,
+    State(state): State<AppState>,
+    Json(body):   Json<BlueprintBonusByRig>,
 ) -> Result<impl IntoResponse> {
     let entries = fetch_rig_blueprint_bonus(
         &state.postgres,
-        rig_type_ids,
+        body.services,
+        body.rigs,
     ).await?;
 
     if entries.is_empty() {

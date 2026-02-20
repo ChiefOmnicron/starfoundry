@@ -6,13 +6,13 @@ import type { Item } from "@/services/item/model";
 export const FETCH_RIG_STRUCTURE_BONUS = "listRigBlueprintBonus";
 
 export const listRigBlueprintBonus = async (
-    rigTypeIds: number[],
-    signal?:    GenericAbortSignal,
+    body:    BlueprintBonusByRig,
+    signal?: GenericAbortSignal,
 ): Promise<RigBlueprintBonus[]> =>
     (await axiosClient())
         .post(
             `/api/eve/structures/rigs/blueprints`,
-            rigTypeIds,
+            body,
             {
                 signal,
             }
@@ -21,23 +21,28 @@ export const listRigBlueprintBonus = async (
 
 // For general use
 export const useListRigBlueprintBonus = (
-    rigTypeIds: number[],
+    body: BlueprintBonusByRig,
 ) => {
-    return useQuery(listRigBlueprintBonusQuery(rigTypeIds));
+    return useQuery(listRigBlueprintBonusQuery(body));
 }
 
 // For pre-fetching
 export const listRigBlueprintBonusQuery = (
-    rigTypeIds: number[],
+    body: BlueprintBonusByRig,
 ) => ({
-    queryKey: [FETCH_RIG_STRUCTURE_BONUS, rigTypeIds],
+    queryKey: [FETCH_RIG_STRUCTURE_BONUS, body],
     queryFn: async ({
         signal
-    }: AbortSignal) => listRigBlueprintBonus(rigTypeIds, signal),
+    }: AbortSignal) => listRigBlueprintBonus(body, signal),
     // ms * s * m * h -> 24 hours
     staleTime: 1000 * 60 * 60 * 24,
     refetchOnWindowFocus: false,
 });
+
+export type BlueprintBonusByRig = {
+    rigs: number[];
+    services: number[];
+}
 
 export type RigBlueprintBonus = {
     bonus_me:         number;

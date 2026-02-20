@@ -1,0 +1,1 @@
+ALTER TABLE blueprint ADD COLUMN IF NOT EXISTS required_service_type_id INTEGER NOT NULL DEFAULT 35878;

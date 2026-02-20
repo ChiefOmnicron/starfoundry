@@ -8,10 +8,17 @@ use crate::item::services::list_items;
 use std::collections::HashMap;
 
 pub async fn fetch_rig_blueprint_bonus(
-    pool:         &PgPool,
-    rig_type_ids: Vec<TypeId>,
+    pool:             &PgPool,
+    service_type_ids: Vec<TypeId>,
+    rig_type_ids:     Vec<TypeId>,
 ) -> Result<Vec<StructureRigBlueprintBonus>> {
     let mut structure_rig_blueprint_entries = HashMap::new();
+
+    let services = if service_type_ids.is_empty() {
+        None
+    } else {
+        Some(service_type_ids)
+    };
 
     for rig_type_id in rig_type_ids {
         let entries = sqlx::query!(r#"
@@ -86,6 +93,7 @@ pub async fn fetch_rig_blueprint_bonus(
                     ListItemFilter {
                         categories: categories,
                         groups:     groups,
+                        services:   services.clone(),
                         buildable:  Some(true),
                         limit:      Some(500),
                         ..Default::default()

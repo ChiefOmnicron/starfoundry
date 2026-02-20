@@ -75,6 +75,7 @@ pub async fn import_sde(
     blueprints::run(
             &pool,
             &blueprints,
+            &type_ids,
         )
         .await?;
     dogma::run(

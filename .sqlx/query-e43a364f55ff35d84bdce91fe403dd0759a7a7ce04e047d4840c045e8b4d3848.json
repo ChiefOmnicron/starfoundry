@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                type_id,\n                volume,\n                meta_group_id,\n                repackaged,\n                i.category_id,\n                i.group_id,\n                i.name,\n                c.name AS \"category_name\",\n                g.name AS \"group_name\"\n            FROM blueprint_json bsjon\n            JOIN item i ON i.type_id = bsjon.product_type_id\n            JOIN category c ON i.category_id = c.category_id\n            JOIN groups g ON i.group_id = g.group_id\n            WHERE\n                NOT (LOWER(i.name) LIKE '%' || LOWER($1) || '%') IS FALSE AND\n                NOT ($2::INTEGER[] IS NULL OR i.group_id = ANY($2)) IS FALSE AND\n                NOT ($3::INTEGER[] IS NULL OR i.category_id = ANY($3)) IS FALSE\n            ORDER BY i.name ASC\n            LIMIT $4\n        ",
+  "query": "\n            SELECT\n                i.type_id,\n                i.volume,\n                i.meta_group_id,\n                i.repackaged,\n                i.category_id,\n                i.group_id,\n                i.name,\n                c.name AS \"category_name\",\n                g.name AS \"group_name\"\n            FROM blueprint_json bsjon\n            JOIN item i ON i.type_id = bsjon.product_type_id\n            JOIN category c ON i.category_id = c.category_id\n            JOIN groups g ON i.group_id = g.group_id\n            JOIN blueprint b ON b.type_id = bsjon.blueprint_type_id\n            WHERE\n                NOT (LOWER(i.name) LIKE '%' || LOWER($1) || '%') IS FALSE AND\n                NOT ($2::INTEGER[] IS NULL OR i.group_id = ANY($2)) IS FALSE AND\n                NOT ($3::INTEGER[] IS NULL OR i.category_id = ANY($3)) IS FALSE AND\n                NOT ($4::INTEGER[] IS NULL OR b.required_service_type_id = ANY($4)) IS FALSE\n            ORDER BY i.name ASC\n            LIMIT $5\n        ",
   "describe": {
     "columns": [
       {
@@ -108,6 +108,7 @@
         "Text",
         "Int4Array",
         "Int4Array",
+        "Int4Array",
         "Int8"
       ]
     },
@@ -123,5 +124,5 @@
       false
     ]
   },
-  "hash": "f5b3081587ace0a698ce579372c76bd782541e22be1c9897ea7afb994ecd5578"
+  "hash": "e43a364f55ff35d84bdce91fe403dd0759a7a7ce04e047d4840c045e8b4d3848"
 }

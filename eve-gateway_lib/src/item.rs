@@ -83,13 +83,17 @@ pub struct ListItemFilter {
     pub categories: Option<Vec<CategoryId>>,
     #[serde(default)]
     pub groups:     Option<Vec<GroupId>>,
+    /// only for `buildable = true`. Filters out blueprints that cannot be build
+    /// with the given services
+    #[serde(default)]
+    pub services:   Option<Vec<TypeId>>,
 
     #[serde(default = "list_item_filter_limit_default")]
     pub limit:      Option<i64>,
 }
 
 fn list_item_filter_limit_default() -> Option<i64> {
-    Some(10)
+    Some(20)
 }
 
 #[derive(Clone, Deserialize, Debug, Serialize, ToSchema)]

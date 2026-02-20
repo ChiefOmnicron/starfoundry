@@ -1,7 +1,7 @@
 import { CopyText } from "./CopyText";
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { EveIcon } from "@/components/EveIcon";
-import { Flex, Table, Text, TextInput } from "@mantine/core";
+import { CloseButton, Flex, Table, Text, TextInput } from "@mantine/core";
 import {useState, type ReactElement } from "react";
 import { useListRigBlueprintBonus, type RigBlueprintBonus } from "@/services/structure/listRigBlueprintBonus";
 import { LoadingAnimation } from "./LoadingAnimation";
@@ -9,7 +9,8 @@ import { LoadingError } from "./LoadingError";
 import { systemRigBonusModifier } from "@/services/structure/utils";
 
 export function BlueprintBonusList({
-    rigTypeIds,
+    rigs,
+    services,
 
     systemSecurityStr,
 }: BlueprintBonusListProps): ReactElement {
@@ -58,7 +59,10 @@ export function BlueprintBonusList({
         isPending,
         isError,
         data: blueprintBonuses,
-    } = useListRigBlueprintBonus(rigTypeIds);
+    } = useListRigBlueprintBonus({
+        rigs,
+        services,
+    });
 
     const table = useReactTable<RigBlueprintBonus>({
         columns: columns,
@@ -94,7 +98,15 @@ export function BlueprintBonusList({
         <TextInput
             label="Search"
             placeholder="Search for anything buildable"
+            value={search}
             onChange={ (e) => setSearch(e.currentTarget.value) }
+            rightSection={
+                <CloseButton
+                    aria-label="Clear input"
+                    onClick={() => setSearch('')}
+                    style={{ display: search ? undefined : 'none' }}
+                />
+            }
         />
 
         <Table.ScrollContainer minWidth={500} maxHeight={300}>
@@ -159,7 +171,8 @@ export function BlueprintBonusList({
 }
 
 export type BlueprintBonusListProps = {
-    rigTypeIds: number[];
+    rigs:     number[];
+    services: number[];
 
     systemSecurityStr: string;
 }

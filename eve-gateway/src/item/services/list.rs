@@ -139,10 +139,10 @@ async fn buildable(
 ) -> Result<Vec<Item>> {
     let items = sqlx::query!(r#"
             SELECT
-                type_id,
-                volume,
-                meta_group_id,
-                repackaged,
+                i.type_id,
+                i.volume,
+                i.meta_group_id,
+                i.repackaged,
                 i.category_id,
                 i.group_id,
                 i.name,
@@ -152,16 +152,19 @@ async fn buildable(
             JOIN item i ON i.type_id = bsjon.product_type_id
             JOIN category c ON i.category_id = c.category_id
             JOIN groups g ON i.group_id = g.group_id
+            JOIN blueprint b ON b.type_id = bsjon.blueprint_type_id
             WHERE
                 NOT (LOWER(i.name) LIKE '%' || LOWER($1) || '%') IS FALSE AND
                 NOT ($2::INTEGER[] IS NULL OR i.group_id = ANY($2)) IS FALSE AND
-                NOT ($3::INTEGER[] IS NULL OR i.category_id = ANY($3)) IS FALSE
+                NOT ($3::INTEGER[] IS NULL OR i.category_id = ANY($3)) IS FALSE AND
+                NOT ($4::INTEGER[] IS NULL OR b.required_service_type_id = ANY($4)) IS FALSE
             ORDER BY i.name ASC
-            LIMIT $4
+            LIMIT $5
         "#,
             filter.name,
             &filter.groups.map(|x| x.into_iter().map(|y| *y).collect::<Vec<_>>()) as _,
             &filter.categories.map(|x| x.into_iter().map(|y| *y).collect::<Vec<_>>()) as _,
+            &filter.services.map(|x| x.into_iter().map(|y| *y).collect::<Vec<_>>()) as _,
             filter.limit,
         )
         .fetch_all(pool)

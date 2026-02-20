@@ -167,7 +167,7 @@ async fn prepare_data(
         let item = Structure {
             type_id,
             structure_type_ids,
-            excluded: excludes(type_id),
+            excluded: mutually_exclusive_rigs(type_id),
         };
         structures.push(item);
     }
@@ -235,7 +235,7 @@ fn group_to_ids(group: u32, name: &str) -> Vec<TypeId> {
     }
 }
 
-fn excludes(
+fn mutually_exclusive_rigs(
     type_id: TypeId,
 ) -> Vec<TypeId> {
     match *type_id {

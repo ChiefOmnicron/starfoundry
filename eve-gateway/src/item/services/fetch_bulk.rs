@@ -3,6 +3,7 @@ use starfoundry_lib_eve_gateway::{Category, Group, Item};
 use starfoundry_lib_types::TypeId;
 
 use crate::item::error::{ItemError, Result};
+use crate::item::services::ITEM_CACHE;
 
 /// Fetches the character information for the given ids from the database.
 /// If the character does not exist yet, it will be fetched using the EVE-API.
@@ -19,7 +20,23 @@ pub async fn fetch_item_bulk(
     type_ids.sort();
     type_ids.dedup();
 
-    let type_ids = sqlx::query!(r#"
+    if let Some(x) = ITEM_CACHE.get() {
+        let items = x
+            .into_iter()
+            .filter(|(_, item)| type_ids.contains(&item.type_id))
+            .map(|(_, item)| item.clone())
+            .collect::<Vec<_>>();
+        Ok(items)
+    } else {
+        fetch_db(pool, type_ids).await
+    }
+}
+
+async fn fetch_db(
+    pool:     &PgPool,
+    type_ids: Vec<TypeId>,
+) -> Result<Vec<Item>> {
+    let items = sqlx::query!(r#"
             SELECT
                 type_id,
                 volume,
@@ -61,7 +78,5 @@ pub async fn fetch_item_bulk(
         })
         .collect::<Vec<_>>();
 
-    Ok(
-        type_ids
-    )
+    Ok(items)
 }
