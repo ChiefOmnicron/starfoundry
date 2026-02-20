@@ -7,9 +7,9 @@ use uuid::Uuid;
 
 use crate::TaskStatus;
 
-const TOTAL_TASK_DURATION_BUCKETS: [f64; 6] = [
+const TOTAL_TASK_DURATION_BUCKETS: [f64; 7] = [
     // times in ms
-    500f64, 1_000f64, 30_000f64, 60_000f64, 300_000f64, 600_000f64,
+    500f64, 1_000f64, 10_000f64, 30_000f64, 60_000f64, 300_000f64, 600_000f64,
 ];
 
 pub trait TaskMetric: Clone {
