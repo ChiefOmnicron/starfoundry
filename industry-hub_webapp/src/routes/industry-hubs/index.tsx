@@ -279,7 +279,7 @@ function RouteComponent() {
                 <IndustryHubList
                     industryHubs={industryHubs || []}
                     industryHubCardProps={{
-                        editLink: EditRoute.to,
+                        cloneLink: true,
                     }}
                 />
             </Tabs.Panel>

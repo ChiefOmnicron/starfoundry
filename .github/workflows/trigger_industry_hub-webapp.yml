@@ -6,7 +6,7 @@ on:
       - main
       - rewrite
     paths:
-      - 'industry-hubs_webapp/**'
+      - 'industry-hub_webapp/**'
       - '.github/workflows/trigger_industry_hub-webapp.yml'
       - 'Dockerfile'
 
@@ -44,4 +44,4 @@ jobs:
     with:
       image: ${{ needs.build-image.outputs.IMAGE }}
       image-name: industry-hub-webapp
-      folder: industry-hubs
+      folder: industry-hub
