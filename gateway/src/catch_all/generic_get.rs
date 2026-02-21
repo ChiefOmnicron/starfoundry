@@ -89,6 +89,7 @@ pub async fn catch_all_generic_get(
             .send()
             .await?;
 
+        tracing::info!("[GET] - path: '{}'. Status: {}", path, response.status());
         if response.status().is_success() {
             let status = response.status();
             let body = response.text().await?;
