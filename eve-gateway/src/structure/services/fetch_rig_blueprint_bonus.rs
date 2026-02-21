@@ -1,11 +1,11 @@
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{ListItemFilter, StructureRigBlueprintBonus};
 use starfoundry_lib_types::{CategoryId, GroupId, TypeId};
+use std::collections::HashMap;
 
 use crate::structure::error::{Result, StructureError};
 use crate::structure::services::BonusModifier;
 use crate::item::services::list_items;
-use std::collections::HashMap;
 
 pub async fn fetch_rig_blueprint_bonus(
     pool:             &PgPool,

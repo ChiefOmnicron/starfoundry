@@ -1,6 +1,7 @@
 import { AddIndustryHub } from '@/routes/industry-hubs/-modal/add';
 import { Alert, Button, Center, Flex, Modal, Stack, Tabs, Title } from '@mantine/core';
 import { createFileRoute } from '@tanstack/react-router';
+import { Filter, type FilterPropEntry, type SelectedFilter } from '@starfoundry/components/misc/Filter';
 import { IndustryHubList } from '@starfoundry/components/list/IndustryHubList';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
@@ -35,7 +36,7 @@ function RouteComponent() {
     const { deleted: deletedResource } = Route.useSearch();
 
     const [filterParams, setFilterParams] = useState<IndustryHubFilter>({});
-    //const [filterOptions, setFilterOptions] = useState<FilterPropEntry[]>([]);
+    const [filterOptions, setFilterOptions] = useState<FilterPropEntry[]>([]);
 
     const [cloneSuccess, setCloneSuccess] = useState<boolean>(false);
     const [cloneError, setCloneError] = useState<string | undefined>(undefined);
@@ -49,10 +50,6 @@ function RouteComponent() {
 
     useEffect(() => {
         if (!isSuccess) {
-            return;
-        }
-
-        if (filterParams) {
             return;
         }
 
@@ -106,7 +103,7 @@ function RouteComponent() {
             })
             .map(x => uniqueRigs.set(x.key, x));
 
-        /*setFilterOptions([{
+        setFilterOptions([{
             label: 'Name',
             key: 'name',
             type: 'STRING',
@@ -130,20 +127,24 @@ function RouteComponent() {
             key: 'rig_id',
             type: 'SELECT',
             options: [...uniqueRigs.values()].sort((a, b) => a.label.localeCompare(b.label)),
-        }]);*/
+        }]);
     }, [industryHubs]);
 
-    //const filterChange = (filters: SelectedFilter[]) => {
-    //    setFilterParams({
-    //        name: filters.find(x => x.filterKey === 'name')?.value as string,
-    //    });
-    //};
+    const filterChange = (filters: SelectedFilter[]) => {
+        console.log(filters)
+        setFilterParams({
+            name: filters.find(x => x.filterKey === 'name')?.value as string,
+            structure_type_id: filters.find(x => x.filterKey === 'structure_type_id')?.key as number,
+            system_id: filters.find(x => x.filterKey === 'system_id')?.key as number,
+            service_id: filters.find(x => x.filterKey === 'service_id')?.key as number,
+            rig_id: filters.find(x => x.filterKey === 'rig_id')?.key as number,
+        });
+    };
 
-    //const filter = <Filter
-    //    entries={filterOptions}
-    //    onFilterChange={filterChange}
-    ///>;
-    const filter = <></>
+    const filter = <Filter
+        entries={filterOptions}
+        onFilterChange={filterChange}
+    />;
 
     const addIndustryHubModal = () => {
         return <Modal
@@ -291,33 +292,35 @@ function RouteComponent() {
                 </Tabs.Tab>
             </Tabs.List>
 
-            { content() }
+            <Stack>
+                { content() }
 
-            <Tabs.Panel value="my">
-                <IndustryHubList
-                    industryHubs={industryHubs || []}
-                    industryHubCardProps={{
-                        editLink: EditRoute.to,
-                    }}
-                />
-            </Tabs.Panel>
+                <Tabs.Panel value="my">
+                    <IndustryHubList
+                        industryHubs={industryHubs || []}
+                        industryHubCardProps={{
+                            editLink: EditRoute.to,
+                        }}
+                    />
+                </Tabs.Panel>
 
-            <Tabs.Panel value="shared">
-                <IndustryHubList
-                    industryHubs={industryHubs || []}
-                    industryHubCardProps={{
-                        cloneLink: true,
-                        onCloneSuccess: () => {
-                            setCloneSuccess(true);
-                            setCloneError(undefined);
-                        },
-                        onCloneError: (e) => {
-                            setCloneSuccess(false);
-                            setCloneError(e);
-                        },
-                    }}
-                />
-            </Tabs.Panel>
+                <Tabs.Panel value="shared">
+                    <IndustryHubList
+                        industryHubs={industryHubs || []}
+                        industryHubCardProps={{
+                            cloneLink: true,
+                            onCloneSuccess: () => {
+                                setCloneSuccess(true);
+                                setCloneError(undefined);
+                            },
+                            onCloneError: (e) => {
+                                setCloneSuccess(false);
+                                setCloneError(e);
+                            },
+                        }}
+                    />
+                </Tabs.Panel>
+            </Stack>
         </Tabs>
     </>
 }

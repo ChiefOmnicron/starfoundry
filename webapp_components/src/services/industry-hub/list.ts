@@ -35,6 +35,10 @@ export type IndustryHubShare = {
 
 export type IndustryHubFilter = {
     name?: string;
+    structure_type_id?: number;
+    system_id?: number;
+    service_id?: number;
+    rig_id?: number;
     shared?: boolean;
 }
 
