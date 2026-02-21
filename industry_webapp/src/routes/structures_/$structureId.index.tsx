@@ -1,28 +1,28 @@
 import { Alert, Button, Grid, Group, Stack, Table, Title } from '@mantine/core';
-import { compareArray, SaveDialog } from '@/components/SaveDialog';
-import { CopyText } from '@/components/CopyText';
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { DeleteResource } from '@/components/DeleteResource';
-import { deleteStructure } from '@/services/structure/delete';
-import { Dotlan } from '@/components/Dotlan';
-import { FETCH_STRUCTURE, useFetchStructure } from '@/services/structure/fetch';
-import { LIST_STRUCTURE, type StructureTax } from '@/services/structure/list';
-import { LoadingAnimation } from '@/components/LoadingAnimation';
-import { LoadingError } from '@/components/LoadingError';
-import { RigSelector } from '@/components/selectors/RigSelector';
-import { Route as StructureListRoute } from '@/routes/structures/index';
-import { ServiceSelector } from '@/components/selectors/ServiceSelector';
-import { systemRigBonusModifier } from '@/services/structure/utils';
-import { TaxByService } from '@/routes/structures_/-components/TaxesByService';
-import { updateStructure, type UpdateStructure } from '@/services/structure/update';
+import { compareArray, SaveDialog } from '@starfoundry/components/misc/SaveDialog';
+import { CopyText } from '@starfoundry/components/misc/CopyText';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { DeleteResource } from '@starfoundry/components/misc/DeleteResource';
+import { deleteStructure } from '@starfoundry/components/services/structure/delete';
+import { Dotlan } from '@starfoundry/components/misc/Dotlan';
+import { FETCH_STRUCTURE, useFetchStructure } from '@starfoundry/components/services/structure/fetch';
+import { LIST_STRUCTURE, type StructureTax } from '@starfoundry/components/services/structure/list';
+import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
+import { LoadingError } from '@starfoundry/components/misc/LoadingError';
+import { RigSelector } from '@starfoundry/components/selectors/RigSelector';
+import { Route as StructureListRoute } from '@/routes/structures';
+import { ServiceSelector } from '@starfoundry/components/selectors/ServiceSelector';
+import { StructureScanModal } from './-components/StructureScanModal';
+import { systemRigBonusModifier } from '@starfoundry/components/services/structure/utils';
+import { TaxByService } from './-components/TaxesByService';
+import { updateStructure, type UpdateStructure } from '@starfoundry/components/services/structure/update';
+import { useDisclosure } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { TypeId } from '@/services/utils';
-import { useDisclosure } from '@mantine/hooks';
-import { StructureScanModal } from './-components/StructureScanModal';
-import type { Item } from '@/services/item/model';
+import type { Item } from '@starfoundry/components/services/item/model';
+import type { TypeId } from '@starfoundry/components/services/utils';
 
-interface QueryParams {
+export interface QueryParams {
     created?: boolean;
 }
 

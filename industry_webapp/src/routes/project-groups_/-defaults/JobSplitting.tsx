@@ -1,13 +1,13 @@
 import { Alert, Stack } from '@mantine/core';
 import { JobSplittingRunList } from '../-components/JobSplittingRunList';
-import { LoadingAnimation } from '@/components/LoadingAnimation';
-import { LoadingError } from '@/components/LoadingError';
 import { useEffect, useState } from 'react';
-import { LIST_PROJECT_GROUP_DEFAULT_JOB_SPLITTING, useListProjectGroupDefaultJobSplitting, type JobSplittingRun } from '@/services/project-group/listDefaultJobSplitting';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { Uuid } from '@/services/utils';
-import { updateDefaultJobSplitting } from '@/services/project-group/updateDefaultJobSplitting';
-import { compareArray } from '@/components/SaveDialog';
+import { LIST_PROJECT_GROUP_DEFAULT_JOB_SPLITTING, useListProjectGroupDefaultJobSplitting, type JobSplittingRun } from '@starfoundry/components/services/project-group/listDefaultJobSplitting';
+import { updateDefaultJobSplitting } from '@starfoundry/components/services/project-group/updateDefaultJobSplitting';
+import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
+import { compareArray } from '@starfoundry/components/misc/SaveDialog';
+import type { Uuid } from '@starfoundry/components/services/utils';
+import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 
 export function ProjectGroupDefaultsJobSplitting({
     projectGroupId,

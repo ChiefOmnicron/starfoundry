@@ -1,26 +1,25 @@
 import { Alert, Button, Flex, Group, Stack, Text, TextInput, Title } from '@mantine/core';
-import { CharacterCorporationAllianceList, type CharacterCorporationAlliance } from '@/components/EntityList';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { deleteIndustryHub } from '@/services/industry-hub/delete';
-import { DeleteResource } from '@/components/DeleteResource';
-import { EntitySelectorModal } from '@/components/selectors/EntitySelectorModal';
-import { FETCH_INDUSTRY_HUB } from '@/services/industry-hub/fetch';
-import { LIST_INDUSTRY_HUB } from '@/services/industry-hub/list';
-import { LoadingAnimation } from '@/components/LoadingAnimation';
-import { LoadingError } from '@/components/LoadingError';
-import { MarkdownEditor } from '@/components/MarkdownEditor';
+import { deleteIndustryHub } from '@starfoundry/components/services/industry-hub/delete';
+import { FETCH_INDUSTRY_HUB, useFetchIndustryHub } from '@starfoundry/components/services/industry-hub/fetch';
+import { LIST_INDUSTRY_HUB } from '@starfoundry/components/services/industry-hub/list';
+import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
+import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 import { Route as StructureListRoute } from '@/routes/structures/index';
-import { StructureList } from '@/components/StructureList';
-import { StructureSelectorModal } from '@/components/selectors/StructureSelectorModal';
-import { updateIndustryHub, type UpdateIndustryHub } from '@/services/industry-hub/update';
+import { updateIndustryHub, type UpdateIndustryHub } from '@starfoundry/components/services/industry-hub/update';
 import { useDisclosure } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
-import { useFetchIndustryHub } from '@/services/industry-hub/fetch';
 import { useForm } from '@tanstack/react-form';
-import { useListStructure, type Structure } from '@/services/structure/list';
+import { useListStructure, type Structure } from '@starfoundry/components/services/structure/list';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { EntityList, type Entity } from '@starfoundry/components/list/EntityList';
+import { DeleteResource } from '@starfoundry/components/misc/DeleteResource';
+import { EntitySelectorModal } from '@starfoundry/components/selectors/EntitySelectorModal';
+import { StructureSelectorModal } from '@starfoundry/components/selectors/StructureSelectorModal';
+import { StructureList } from '@starfoundry/components/list/StructureList';
+import { MarkdownEditor } from '@starfoundry/components/misc/MarkdownEditor';
 
-interface QueryParams {
+export interface QueryParams {
     created?: boolean;
 }
 
@@ -49,7 +48,7 @@ function RouteComponent() {
     const [errorDelete, setErrorDelete] = useState<string | undefined>();
     const [errorUpdate, setErrorUpdate] = useState<string | undefined>();
     
-    const [selectedEntities, setSelectedEntities] = useState<CharacterCorporationAlliance[]>([]);
+    const [selectedEntities, setSelectedEntities] = useState<Entity[]>([]);
     const [selectedStructures, setSelectedStructures] = useState<Structure[]>([]);
     const [description, setDescription] = useState('');
 
@@ -391,8 +390,8 @@ function RouteComponent() {
                         If a character is either in the corporation or in the alliance, they will be able to see the industry hub.
                     </Alert>
 
-                    <CharacterCorporationAllianceList
-                        characterCorporationAlliances={selectedEntities}
+                    <EntityList
+                        entities={selectedEntities}
                     />
                 </Stack>
 

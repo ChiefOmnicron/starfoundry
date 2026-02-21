@@ -1,10 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { LoadingAnimation } from '@/components/LoadingAnimation';
-import { LoadingError } from '@/components/LoadingError';
 import { ProjectMiscList } from './-components/MiscList'
-import { useListProjectMisc, type ProjectMisc } from '@/services/projects/listMisc';
 import { useEffect, useState } from 'react';
-import { SaveDialog } from '@/components/SaveDialog';
+import { useListProjectMisc, type ProjectMisc } from '@starfoundry/components/services/projects/listMisc';
+import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
+import { LoadingError } from '@starfoundry/components/misc/LoadingError';
+import { SaveDialog } from '@starfoundry/components/misc/SaveDialog';
 
 export const Route = createFileRoute('/projects_/$projectId/misc')({
   component: RouteComponent,

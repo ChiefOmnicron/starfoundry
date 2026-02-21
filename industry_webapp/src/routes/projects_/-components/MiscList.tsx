@@ -1,8 +1,8 @@
 import { Button, Flex, NumberInput, Table, Text, TextInput } from "@mantine/core";
-import { CopyText } from "@/components/CopyText";
+import { CopyText } from "@starfoundry/components/misc/CopyText";
+import type { ProjectMisc } from "@starfoundry/components/services/projects/listMisc";
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { useState, type ReactElement } from "react";
-import type { ProjectMisc } from "@/services/projects/listMisc";
 
 // Implementation for an editable list
 //

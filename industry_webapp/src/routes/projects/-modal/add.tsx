@@ -1,16 +1,16 @@
 import { Alert, Button, Flex, InputBase, Modal, NumberInput, Stack, Textarea } from '@mantine/core';
-import { createProject, type CreateProject } from '@/services/projects/create';
-import { LoadingAnimation } from '@/components/LoadingAnimation';
-import { LoadingError } from '@/components/LoadingError';
-import { ProjectGroupSelector } from '@/components/selectors/ProjectGroupSelector';
 import { Route as ProjectOverviewRoute } from '@/routes/projects_/$projectId.overview';
 import { Route as StructureRoute } from '@/routes/structures_/$structureId.index';
 import { useForm } from '@tanstack/react-form';
-import { useListProjectGroup } from '@/services/project-group/list';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
-import type { Uuid } from '@/services/utils';
+import { useListProjectGroup } from '@starfoundry/components/services/project-group/list';
+import { createProject, type CreateProject } from '@starfoundry/components/services/projects/create';
+import type { Uuid } from '@starfoundry/components/services/utils';
+import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
+import { LoadingError } from '@starfoundry/components/misc/LoadingError';
+import { ProjectGroupSelector } from '@starfoundry/components/selectors/ProjectGroupSelector';
 
 export function AddProject({
     close

@@ -1,10 +1,10 @@
 import { Button, Flex, InputBase, NumberInput, Stack } from '@mantine/core';
-import { LoadingAnimation } from '@/components/LoadingAnimation';
-import { LoadingError } from '@/components/LoadingError';
-import { ProjectGroupSelector } from '@/components/selectors/ProjectGroupSelector';
 import { useForm } from '@tanstack/react-form';
-import { useListProjectGroup } from '@/services/project-group/list';
 import type { ProjectAssistantGeneralInformation } from '@/routes/projects/assistant';
+import { useListProjectGroup } from '@starfoundry/components/services/project-group/list';
+import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
+import { LoadingError } from '@starfoundry/components/misc/LoadingError';
+import { ProjectGroupSelector } from '@starfoundry/components/selectors/ProjectGroupSelector';
 
 export function GeneralInfo({
     nextStep,

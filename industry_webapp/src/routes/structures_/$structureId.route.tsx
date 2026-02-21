@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
-import { fetchStructureQuery, useFetchStructure } from '@/services/structure/fetch';
-import { LoadingAnimation } from '@/components/LoadingAnimation';
-import { LoadingError } from '@/components/LoadingError';
+import { fetchStructureQuery, useFetchStructure } from '@starfoundry/components/services/structure/fetch';
+import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
+import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 import { Title } from '@mantine/core'
 
 export const Route = createFileRoute('/structures_/$structureId')({

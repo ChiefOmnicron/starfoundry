@@ -2,9 +2,9 @@ import { ActionIcon, Card, CopyButton, TextInput, Tooltip } from '@mantine/core'
 import { createFileRoute } from '@tanstack/react-router'
 import { faCopy } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { LoadingAnimation } from '@/components/LoadingAnimation';
-import { LoadingError } from '@/components/LoadingError';
-import { useFetchProjectGroup } from '@/services/project-group/fetch';
+import { useFetchProjectGroup } from '@starfoundry/components/services/project-group/fetch';
+import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
+import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 
 export const Route = createFileRoute(
     '/project-groups_/$projectGroupId/members',

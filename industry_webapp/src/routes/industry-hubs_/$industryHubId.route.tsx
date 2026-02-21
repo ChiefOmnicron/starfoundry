@@ -1,8 +1,8 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
-import { LoadingAnimation } from '@/components/LoadingAnimation';
-import { LoadingError } from '@/components/LoadingError';
 import { Title } from '@mantine/core'
-import { fetchIndustryHubQuery, useFetchIndustryHub } from '@/services/industry-hub/fetch';
+import { fetchIndustryHubQuery, useFetchIndustryHub } from '@starfoundry/components/services/industry-hub/fetch';
+import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
+import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 
 export const Route = createFileRoute('/industry-hubs_/$industryHubId')({
     beforeLoad: async ({ context }) => {

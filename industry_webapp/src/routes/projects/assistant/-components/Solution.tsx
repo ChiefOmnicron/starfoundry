@@ -1,22 +1,22 @@
 import { Accordion, Alert, Button, Stack, Table, Text, Title } from '@mantine/core';
-import { CopyText } from '@/components/CopyText';
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { EveIcon } from '@/components/EveIcon';
-import { generateSolution, type GenerateSolutionResponse, type SolutionManufacturing, type SolutionMaterial } from '@/services/projects/generateSolution';
-import { ItemList } from '@/components/ItemList';
-import { LoadingAnimation } from '@/components/LoadingAnimation';
-import { LoadingError } from '@/components/LoadingError';
-import { useListProjectGroupDefaultBlacklist } from '@/services/project-group/listDefaultBlacklist';
 import { useMutation } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import type { Uuid } from '@/services/utils';
-import type { Item } from '@/services/item/model';
-import { InternalLink } from '@/components/InternalLink';
 import { Route as ProjectGroupDefaultsRoute } from '@/routes/project-groups_/$projectGroupId.defaults';
-import { useListProjectGroupDefaultBlueprintOverwrites, type BlueprintOverwrite } from '@/services/project-group/listDefaultBlueprintOverwrites';
 import { BlueprintOverwriteList } from '@/routes/project-groups_/-components/BlueprintOverwriteLIst';
 import { JobSplittingRunList } from '@/routes/project-groups_/-components/JobSplittingRunList';
-import { useListProjectGroupDefaultJobSplitting, type JobSplittingRun } from '@/services/project-group/listDefaultJobSplitting';
+import { generateSolution, type GenerateSolutionResponse, type SolutionManufacturing, type SolutionMaterial } from '@starfoundry/components/services/projects/generateSolution';
+import { EveIcon } from '@starfoundry/components/misc/EveIcon';
+import { CopyText } from '@starfoundry/components/misc/CopyText';
+import type { Item } from '@starfoundry/components/services/item/model';
+import { useListProjectGroupDefaultBlueprintOverwrites, type BlueprintOverwrite } from '@starfoundry/components/services/project-group/listDefaultBlueprintOverwrites';
+import { useListProjectGroupDefaultJobSplitting, type JobSplittingRun } from '@starfoundry/components/services/project-group/listDefaultJobSplitting';
+import { useListProjectGroupDefaultBlacklist } from '@starfoundry/components/services/project-group/listDefaultBlacklist';
+import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
+import { LoadingError } from '@starfoundry/components/misc/LoadingError';
+import { ItemList } from '@starfoundry/components/list/ItemList';
+import { InternalLink } from '@starfoundry/components/links/InternalLink';
+import type { Uuid } from '@starfoundry/components/services/utils';
 
 const columnHelperMaterial = createColumnHelper<SolutionMaterial>();
 const columnsMaterial = [

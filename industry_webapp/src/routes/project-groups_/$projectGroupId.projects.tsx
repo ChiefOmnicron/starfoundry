@@ -1,9 +1,9 @@
 import { Center, Stack, Title } from '@mantine/core';
+import { ProjectList } from '@starfoundry/components/list/ProjectList';
+import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
+import { LoadingError } from '@starfoundry/components/misc/LoadingError';
+import { useListProjects } from '@starfoundry/components/services/projects/list';
 import { createFileRoute } from '@tanstack/react-router'
-import { LoadingAnimation } from '@/components/LoadingAnimation';
-import { LoadingError } from '@/components/LoadingError';
-import { useListProjects } from '@/services/projects/list';
-import { ProjectList } from '@/components/ProjectList';
 
 export const Route = createFileRoute(
     '/project-groups_/$projectGroupId/projects',
@@ -49,4 +49,3 @@ function RouteComponent() {
         { content() }
     </>
 }
-

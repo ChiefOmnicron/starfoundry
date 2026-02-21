@@ -1,5 +1,5 @@
 {
-  "name": "@starfoundry/webapp-industry",
+  "name": "@starfoundry/industry",
   "private": true,
   "version": "0.0.0",
   "scripts": {
@@ -12,6 +12,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
+    "@starfoundry/components": "0.0.0",
     "@tanstack/react-form": "^1.12.2",
     "@uiw/codemirror-extensions-langs": "^4.25.4",
     "@uiw/codemirror-theme-vscode": "^4.25.4",

@@ -4,7 +4,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { Route as ProjectGroupRoute } from '@/routes/project-groups_/$projectGroupId.overview';
-import { createProjectGroup, type CreateProjectGroup } from '@/services/project-group/create';
+import { createProjectGroup, type CreateProjectGroup } from '@starfoundry/components/services/project-group/create';
 
 export function AddProjectGroup({
     close

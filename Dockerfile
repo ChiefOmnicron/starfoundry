@@ -160,24 +160,58 @@ COPY        --from=industry-api-builder /app/target/release/uuidv7_migration /us
 CMD         ["/usr/local/bin/app"]
 
 ###############################################################################
-#           industry_webapp
+#           webapp_base
 ###############################################################################
-FROM node AS industry-webapp-builder
+FROM node AS webapp_base
 ARG         SENTRY_AUTH_TOKEN
 WORKDIR     /app
-COPY        industry_webapp/package*.json ./
-COPY        industry_webapp/tsconfig*.json ./
-COPY        industry_webapp/vite.config.ts ./
-COPY        industry_webapp/index.html ./
-COPY        industry_webapp/src ./src
-COPY        industry_webapp/public ./public
-COPY        industry_webapp/cypress ./cypress
+
+COPY        industry_webapp/vite.config.ts ./industry_webapp/vite.config.ts
+COPY        industry_webapp/nginx.conf ./industry_webapp/nginx.conf
+COPY        industry_webapp/package*.json ./industry_webapp/
+COPY        industry_webapp/tsconfig*.json ./industry_webapp/
+COPY        industry_webapp/index.html ./industry_webapp/index.html
+COPY        industry_webapp/src ./industry_webapp/src
+COPY        industry_webapp/public ./industry_webapp/public
+COPY        industry_webapp/cypress ./industry_webapp/cypress
+
+COPY        industry-hub_webapp/vite.config.ts ./industry-hub_webapp/vite.config.ts
+COPY        industry-hub_webapp/nginx.conf ./industry-hub_webapp/nginx.conf
+COPY        industry-hub_webapp/package*.json ./industry-hub_webapp/
+COPY        industry-hub_webapp/tsconfig*.json ./industry-hub_webapp/
+COPY        industry-hub_webapp/index.html ./industry-hub_webapp/index.html
+COPY        industry-hub_webapp/src ./industry-hub_webapp/src
+COPY        industry-hub_webapp/public ./industry-hub_webapp/public
+
+COPY        webapp_components/package*.json ./webapp_components/
+COPY        webapp_components/tsconfig*.json ./webapp_components/
+COPY        webapp_components/src ./webapp_components/src
+
+COPY        package*.json ./
+
 RUN         npm install -g npm@latest
 RUN         npm install
-RUN         npm run build
 
+RUN         cd industry_webapp && \
+                npm run build
+
+RUN         cd industry-hub_webapp && \
+                npm run build
+
+###############################################################################
+#           industry_webapp
+###############################################################################
 FROM        nginx:stable-alpine AS industry-webapp
-COPY        --from=industry-webapp-builder /app/dist /usr/share/nginx/html
-COPY        industry_webapp/nginx.conf /etc/nginx/conf.d/default.conf
+COPY        --from=webapp_base /app/industry_webapp/dist /usr/share/nginx/html
+COPY        --from=webapp_base /app/industry_webapp/nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE      80
+CMD         ["nginx", "-g", "daemon off;"]
+
+###############################################################################
+#           industry-hubs_webapp
+###############################################################################
+FROM        nginx:stable-alpine AS industry-hub-webapp
+COPY        --from=webapp_base /app/industry-hub_webapp/dist /usr/share/nginx/html
+COPY        --from=webapp_base /app/industry-hub_webapp/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE      80
 CMD         ["nginx", "-g", "daemon off;"]

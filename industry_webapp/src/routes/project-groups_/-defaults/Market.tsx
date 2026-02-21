@@ -1,18 +1,18 @@
 import { Alert, Button, Code, Flex, Stack } from '@mantine/core';
-import { compareArray } from '@/components/SaveDialog';
-import { InternalLink } from '@/components/InternalLink';
-import { LIST_PROJECT_GROUP_DEFAULT_MARKETS, useListProjectGroupDefaultMarkets } from '@/services/project-group/listDefaultMarket';
-import { LoadingAnimation } from '@/components/LoadingAnimation';
-import { LoadingError } from '@/components/LoadingError';
 import { Route as StructureRoute } from '@/routes/structures/index';
-import { StructureList } from '@/components/StructureList';
-import { StructureSelectorModal } from '@/components/selectors/StructureSelectorModal';
-import { updateDefaultMarket } from '@/services/project-group/updateDefaultMarket';
 import { useDisclosure } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
-import { useListStructure, type Structure } from '@/services/structure/list';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { Uuid } from '@/services/utils';
+import { useListStructure, type Structure } from '@starfoundry/components/services/structure/list';
+import { updateDefaultMarket } from '@starfoundry/components/services/project-group/updateDefaultMarket';
+import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
+import { LoadingError } from '@starfoundry/components/misc/LoadingError';
+import { compareArray } from '@starfoundry/components/misc/SaveDialog';
+import { StructureSelectorModal } from '@starfoundry/components/selectors/StructureSelectorModal';
+import { InternalLink } from '@starfoundry/components/links/InternalLink';
+import { StructureList } from '@starfoundry/components/list/StructureList';
+import { LIST_PROJECT_GROUP_DEFAULT_MARKETS, useListProjectGroupDefaultMarkets } from '@starfoundry/components/services/project-group/listDefaultMarket';
+import type { Uuid } from '@starfoundry/components/services/utils';
 
 export function ProjectGroupDefaultsMarket({
     projectGroupId,

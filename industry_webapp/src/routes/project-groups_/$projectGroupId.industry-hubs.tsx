@@ -1,16 +1,16 @@
 import { Alert, Button, Center, Flex, Stack, Title } from '@mantine/core';
 import { createFileRoute } from '@tanstack/react-router'
-import { IndustryHubList } from '@/components/IndustryHubCard';
-import { LoadingAnimation } from '@/components/LoadingAnimation';
-import { LoadingError } from '@/components/LoadingError';
-import { LIST_PROJECT_GROUP_INDUSTRY_HUBS, useListProjectGroupIndustryHubs } from '@/services/project-group/listIndustryHubs';
 import { useDisclosure } from '@mantine/hooks';
-import { IndustryHubSelectorModal } from '@/components/selectors/IndustryHubSelector';
-import { useListIndustryHub, type IndustryHub } from '@/services/industry-hub/list';
 import { useEffect, useState } from 'react';
-import { SaveDialog } from '@/components/SaveDialog';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { updateIndustryHubs } from '@/services/project-group/updateIndustryHubs';
+import { useListIndustryHub, type IndustryHub } from '@starfoundry/components/services/industry-hub/list';
+import { LIST_PROJECT_GROUP_INDUSTRY_HUBS, useListProjectGroupIndustryHubs } from '@starfoundry/components/services/project-group/listIndustryHubs';
+import { updateIndustryHubs } from '@starfoundry/components/services/project-group/updateIndustryHubs';
+import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
+import { LoadingError } from '@starfoundry/components/misc/LoadingError';
+import { IndustryHubSelectorModal } from '@starfoundry/components/selectors/IndustryHubSelector';
+import { IndustryHubList } from '@starfoundry/components/list/IndustryHubList';
+import { SaveDialog } from '@starfoundry/components/misc/SaveDialog';
 
 export const Route = createFileRoute(
     '/project-groups_/$projectGroupId/industry-hubs',

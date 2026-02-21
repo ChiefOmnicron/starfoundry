@@ -1,0 +1,55 @@
+import { axiosClient, type AbortSignal } from "@internal/services/client";
+import { useQuery } from "@tanstack/react-query";
+import type { GenericAbortSignal } from "axios";
+import type { ProjectGroupMember } from "@internal/services/project-group/listMembers";
+import type { Uuid } from "@internal/services/utils";
+
+export const FETCH_PROJECT_GROUP = 'fetchProjectGroup';
+
+export const fetchProjectGroup = async (
+    projectGroupUuid: Uuid,
+    signal?:          GenericAbortSignal,
+): Promise<ProjectGroup> => (await axiosClient())
+    .get(
+        `/api/project-groups/${projectGroupUuid}`,
+        {
+            signal,
+        }
+    )
+    .then(x => {
+        if (x.status === 204) {
+            return [];
+        } else {
+            return x.data;
+        }
+    });
+
+export type ProjectGroup = {
+    id:             Uuid,
+    name:           string;
+    project_count:  number;
+    is_owner:       boolean;
+    description?:   string;
+    archived:       boolean,
+
+    members:        ProjectGroupMember[];
+}
+
+// For general use
+export const useFetchProjectGroup = (
+    projectGroupUuid: Uuid,
+) => {
+    return useQuery(fetchProjectGroupQuery(projectGroupUuid));
+}
+
+// For pre-fetching
+export const fetchProjectGroupQuery = (
+    projectGroupUuid: Uuid,
+) => ({
+    queryKey: [FETCH_PROJECT_GROUP, projectGroupUuid],
+    queryFn: async ({
+        signal
+    }: AbortSignal) => fetchProjectGroup(projectGroupUuid, signal),
+    // ms * s * m
+    staleTime: 1000 * 60 * 5,
+});

@@ -1,12 +1,12 @@
 import { Button, Flex, NumberInput, Table, Text } from "@mantine/core";
+import { CopyText } from "@starfoundry/components/misc/CopyText";
+import { EveIcon } from "@starfoundry/components/misc/EveIcon";
+import { ItemSelector, type ItemSelectorRef } from "@starfoundry/components/selectors/ItemSelectorInline";
+import type { Item } from "@starfoundry/components/services/item/model";
+import type { JobSplittingRun } from "@starfoundry/components/services/project-group/listDefaultJobSplitting";
+import type { TypeId } from "@starfoundry/components/services/utils";
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { EveIcon } from "@/components/EveIcon";
-import { ItemSelector, type ItemSelectorRef } from "@/components/selectors/ItemSelectorInline";
 import { useRef, useState, type ReactElement } from "react";
-import type { TypeId } from "@/services/utils";
-import type { Item } from "@/services/item/model";
-import type { JobSplittingRun } from "@/services/project-group/listDefaultJobSplitting";
-import { CopyText } from "@/components/CopyText";
 
 // Implementation for an editable list
 //

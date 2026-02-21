@@ -3,7 +3,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 import { GeneralInfo } from '@/routes/projects/assistant/-components/GeneralInfo';
 import { Solution } from '@/routes/projects/assistant/-components/Solution';
-import type { Uuid } from '@/services/utils';
+import type { Uuid } from '@starfoundry/components/services/utils';
 
 export const Route = createFileRoute('/projects/assistant/')({
     component: RouteComponent,

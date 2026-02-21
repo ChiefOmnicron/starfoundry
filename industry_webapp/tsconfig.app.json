@@ -17,6 +17,7 @@
     "types": ["cypress", "node"],
 
     /* Linting */
+    "composite": true,
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -25,11 +26,16 @@
     "noUncheckedSideEffectImports": true,
 
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@starfoundry/components/*": ["../webapp_components/src/*"]
     }
   },
+  "references": [{
+    "path": "../webapp_components"
+  }],
   "include": [
     "src",
-    "cypress/support/cypress.d.ts"
+    "cypress/support/cypress.d.ts",
+    "../webapp_components/src"
   ]
 }

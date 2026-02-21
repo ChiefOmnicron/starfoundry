@@ -1,5 +1,4 @@
-import { axiosClient } from "./services/client";
-import { isAdmin as isAdminJwt } from '@/services/client';
+import { axiosClient, isAdmin as isAdminJwt } from '@starfoundry/components/services/client';
 import { redirect } from '@tanstack/react-router';
 import { Route as LoginRoute } from "./routes/auth/login";
 import * as React from "react";

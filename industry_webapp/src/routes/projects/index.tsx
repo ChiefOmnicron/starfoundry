@@ -1,15 +1,15 @@
+import { AddProjectModal } from './-modal/add';
 import { Alert, Button, Center, Flex, Stack, Title } from '@mantine/core';
 import { createFileRoute } from '@tanstack/react-router';
-import { Filter, type FilterPropEntry, type SelectedFilter } from '@/components/Filter';
-import { LoadingAnimation } from '@/components/LoadingAnimation';
-import { LoadingError } from '@/components/LoadingError';
-import { ProjectList } from '@/components/ProjectList';
+import { Filter, type FilterPropEntry, type SelectedFilter } from '@starfoundry/components/misc/Filter';
 import { useDisclosure, useIsFirstRender } from '@mantine/hooks';
-import { useListProjects, type ProjectFilter } from '@/services/projects/list';
 import { useState } from 'react';
-import { AddProjectModal } from './-modal/add';
+import { useListProjects, type ProjectFilter } from '@starfoundry/components/services/projects/list';
+import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
+import { LoadingError } from '@starfoundry/components/misc/LoadingError';
+import { ProjectList } from '@starfoundry/components/list/ProjectList';
 
-interface QueryParams {
+export interface QueryParams {
     deleted?: boolean;
 }
 

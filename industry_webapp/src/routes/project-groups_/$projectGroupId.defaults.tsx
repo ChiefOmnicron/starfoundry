@@ -4,8 +4,8 @@ import { ProjectGroupDefaultsMarket } from '@/routes/project-groups_/-defaults/M
 import { Tabs } from '@mantine/core';
 import { ProjectGroupDefaultsBlueprintOverwrite } from '@/routes/project-groups_/-defaults/BlueprintOverwrite';
 import { ProjectGroupDefaultsJobSplitting } from '@/routes/project-groups_/-defaults/JobSplitting';
-import { SaveDialog } from '@/components/SaveDialog';
 import { useState } from 'react';
+import { SaveDialog } from '@starfoundry/components/misc/SaveDialog';
 
 export const Route = createFileRoute(
     '/project-groups_/$projectGroupId/defaults',

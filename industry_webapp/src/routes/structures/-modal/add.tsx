@@ -1,17 +1,16 @@
 import { Alert, Button, Flex, Stack, Table } from '@mantine/core';
-import { createStructure, type CreateStructure } from '@/services/structure/create';
-import { Dotlan } from '@/components/Dotlan';
-import { LoadingAnimation } from '@/components/LoadingAnimation';
-import { ResolveStructure } from '@/routes/structures/-components/ResolveStructure';
-import { RigSelector } from '@/components/selectors/RigSelector';
+import { createStructure, type CreateStructure } from '@starfoundry/components/services/structure/create';
 import { Route as StructureRoute } from '@/routes/structures_/$structureId.index';
-import { ServiceSelector } from '@/components/selectors/ServiceSelector';
-import { type CreateProjectGroup as AddStructure } from '@/services/project-group/create';
-import { type ResolveStructureResponse } from '@/services/structure/resolveStructure';
-import { type TypeId, type Uuid } from '@/services/utils';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
+import type { ResolveStructureResponse } from '@starfoundry/components/services/structure/resolveStructure';
+import type { TypeId, Uuid } from '@starfoundry/components/services/utils';
+import { Dotlan } from '@starfoundry/components/misc/Dotlan';
+import { RigSelector } from '@starfoundry/components/selectors/RigSelector';
+import { ServiceSelector } from '@starfoundry/components/selectors/ServiceSelector';
+import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
+import { ResolveStructure } from '@starfoundry/components/structure/ResolveStructure';
 
 export function AddStructure({
     close

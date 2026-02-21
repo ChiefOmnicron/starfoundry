@@ -1,16 +1,17 @@
 import { AddIndustryHub } from '@/routes/industry-hubs/-modal/add';
 import { Alert, Button, Center, Flex, Modal, Stack, Tabs, Title } from '@mantine/core';
 import { createFileRoute } from '@tanstack/react-router';
-import { Filter, type FilterPropEntry, type SelectedFilter } from '@/components/Filter';
-import { IndustryHubList } from '@/components/IndustryHubCard';
-import { LoadingAnimation } from '@/components/LoadingAnimation';
-import { LoadingError } from '@/components/LoadingError';
-import { normalizeRigServiceName } from '@/services/structure/utils';
+import { Filter, type FilterPropEntry, type SelectedFilter } from '@starfoundry/components/misc/Filter';
 import { useDisclosure } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
-import { useListIndustryHub, type IndustryHubFilter } from '@/services/industry-hub/list';
+import { useListIndustryHub, type IndustryHubFilter } from '@starfoundry/components/services/industry-hub/list';
+import { normalizeRigServiceName } from '@starfoundry/components/services/structure/utils';
+import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
+import { LoadingError } from '@starfoundry/components/misc/LoadingError';
+import { IndustryHubList } from '@starfoundry/components/list/IndustryHubList';
+import { Route as StructureEditRoute } from '@/routes/structures_/$structureId.index';
 
-interface QueryParams {
+export interface QueryParams {
     deleted?: boolean;
 }
 
@@ -269,7 +270,7 @@ function RouteComponent() {
                 <IndustryHubList
                     industryHubs={industryHubs || []}
                     industryHubCardProps={{
-                        editLink: true,
+                        editLink: StructureEditRoute.to,
                     }}
                 />
             </Tabs.Panel>

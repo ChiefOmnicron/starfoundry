@@ -1,9 +1,9 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
-import { fetchProjectGroupMemberSelfQuery } from '@/services/project-group/fetchMemberSelf';
-import { fetchProjectGroupQuery, useFetchProjectGroup } from '@/services/project-group/fetch';
-import { LoadingAnimation } from '@/components/LoadingAnimation';
-import { LoadingError } from '@/components/LoadingError';
 import { Title } from '@mantine/core'
+import { fetchProjectGroupQuery, useFetchProjectGroup } from '@starfoundry/components/services/project-group/fetch';
+import { fetchProjectGroupMemberSelfQuery } from '@starfoundry/components/services/project-group/fetchMemberSelf';
+import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
+import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 
 export const Route = createFileRoute('/project-groups_/$projectGroupId')({
     beforeLoad: async ({ context }) => {

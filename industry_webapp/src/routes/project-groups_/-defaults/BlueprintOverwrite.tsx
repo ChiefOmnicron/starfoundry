@@ -1,13 +1,13 @@
 import { Alert, Stack } from '@mantine/core';
 import { BlueprintOverwriteList } from '@/routes/project-groups_/-components/BlueprintOverwriteLIst';
-import { LIST_PROJECT_GROUP_DEFAULT_BLUEPRINT_OVERWRITES, useListProjectGroupDefaultBlueprintOverwrites, type BlueprintOverwrite } from '@/services/project-group/listDefaultBlueprintOverwrites';
-import { LoadingAnimation } from '@/components/LoadingAnimation';
-import { LoadingError } from '@/components/LoadingError';
-import { updateDefaultBlueprintOverwrite } from '@/services/project-group/updateDefaultBlueprintOverwrite';
 import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { Uuid } from '@/services/utils';
-import { compareArray } from '@/components/SaveDialog';
+import { LIST_PROJECT_GROUP_DEFAULT_BLUEPRINT_OVERWRITES, useListProjectGroupDefaultBlueprintOverwrites, type BlueprintOverwrite } from '@starfoundry/components/services/project-group/listDefaultBlueprintOverwrites';
+import { compareArray } from '@starfoundry/components/misc/SaveDialog';
+import { updateDefaultBlueprintOverwrite } from '@starfoundry/components/services/project-group/updateDefaultBlueprintOverwrite';
+import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
+import { LoadingError } from '@starfoundry/components/misc/LoadingError';
+import type { Uuid } from '@starfoundry/components/services/utils';
 
 export function ProjectGroupDefaultsBlueprintOverwrite({
     projectGroupId,

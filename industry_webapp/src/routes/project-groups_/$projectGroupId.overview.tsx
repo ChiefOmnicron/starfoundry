@@ -1,22 +1,22 @@
 import { Alert, Flex, Textarea, TextInput, Title } from '@mantine/core';
-import { archiveProjectGroup } from '@/services/project-group/archive';
-import { ArchiveResource } from '@/components/ArchiveResource';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { deleteProjectGroup } from '@/services/project-group/delete';
-import { DeleteResource } from '@/components/DeleteResource';
-import { FETCH_PROJECT_GROUP, useFetchProjectGroup } from '@/services/project-group/fetch';
-import { LIST_PROJECT_GROUPS } from '@/services/project-group/list';
-import { LoadingAnimation } from '@/components/LoadingAnimation';
-import { LoadingError } from '@/components/LoadingError';
 import { Route as ProjectGroupRoute } from '@/routes/project-groups/index';
-import { SaveDialog } from '@/components/SaveDialog';
-import { updateProjectGroup, type UpdateProjectGroup } from '@/services/project-group/updateGroup';
-import { useFetchProjectGroupMemberSelf } from '@/services/project-group/fetchMemberSelf';
 import { useForm } from '@tanstack/react-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import { FETCH_PROJECT_GROUP, useFetchProjectGroup } from '@starfoundry/components/services/project-group/fetch';
+import { useFetchProjectGroupMemberSelf } from '@starfoundry/components/services/project-group/fetchMemberSelf';
+import { updateProjectGroup, type UpdateProjectGroup } from '@starfoundry/components/services/project-group/updateGroup';
+import { archiveProjectGroup } from '@starfoundry/components/services/project-group/archive';
+import { LIST_PROJECT_GROUPS } from '@starfoundry/components/services/project-group/list';
+import { deleteProjectGroup } from '@starfoundry/components/services/project-group/delete';
+import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
+import { LoadingError } from '@starfoundry/components/misc/LoadingError';
+import { ArchiveResource } from '@starfoundry/components/misc/ArchiveResource';
+import { DeleteResource } from '@starfoundry/components/misc/DeleteResource';
+import { SaveDialog } from '@starfoundry/components/misc/SaveDialog';
 
-interface QueryParams {
+export interface QueryParams {
     created?: boolean;
 }
 

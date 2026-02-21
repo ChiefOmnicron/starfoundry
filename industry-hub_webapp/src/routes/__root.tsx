@@ -1,0 +1,233 @@
+import { AppShell, Burger, createTheme, DEFAULT_THEME, Group, Image, MantineProvider, mergeMantineTheme, ScrollArea } from '@mantine/core';
+import { CharacterComponent } from '@starfoundry/components/misc/Character';
+import { createRootRouteWithContext, Link, Outlet } from '@tanstack/react-router';
+import { CustomLink } from '@starfoundry/components/links/RouterLink';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { Route as AboutRoute } from '@/routes/about';
+import { Route as IndexRoute } from '@/routes';
+import { Route as LegalRoute } from '@/routes/legal';
+import { UnauthorizedShell } from './auth/login';
+import { useDisclosure } from '@mantine/hooks';
+import type { ReactElement } from 'react';
+import type { RouterContext } from '@/main';
+
+const routes = [
+    {
+        link: '/industry-hubs',
+        label: 'Industry Hubs',
+        paths: [],
+    },
+    {
+        link: '/structures',
+        label: 'Structures',
+        paths: [],
+    },
+];
+
+const themeOverride = createTheme({
+    fontFamily: '"Roboto Mono", monospace',
+    fontFamilyMonospace: '"Roboto Mono", monospace',
+    radius: {
+        lg: '0',
+        md: '0',
+        sm: '0',
+        xl: '0',
+        xs: '0',
+    },
+});
+
+const theme = mergeMantineTheme(DEFAULT_THEME, themeOverride);
+
+export const Route = createRootRouteWithContext<RouterContext>()({
+    component: LayoutComponent,
+    loader: async ({ context }) => {
+        return {
+            isAuthenticated: await context.auth.isAuthenticated()
+        }
+    }
+});
+
+function LayoutComponent(): ReactElement {
+    const { isAuthenticated } = Route.useLoaderData();
+
+    const shell = () => {
+        if (isAuthenticated) {
+            return Shell();
+        } else {
+            return UnauthorizedShell();
+        }
+    }
+
+    return (
+        <MantineProvider
+            forceColorScheme='dark'
+            theme={theme}
+        >
+            { shell() }
+        </MantineProvider>
+    );
+}
+
+function Shell() {
+    const [opened, { toggle }] = useDisclosure();
+
+    const navigation = (): ReactElement[] => {
+        return routes
+            .map(route => {
+                if (!(route && route.label)) {
+                    return <></>;
+                }
+
+                return (
+                    <CustomLink
+                        key={ route.label.toLowerCase() }
+                        to={ route.link }
+                        label={ route.label }
+                    />
+                );
+            })
+    }
+
+    const sideNavigation = (): ReactElement => {
+        const { isAuthenticated } = Route.useLoaderData();
+
+        if (isAuthenticated) {
+            return (
+                <AppShell.Navbar>
+                    <AppShell.Section grow my="md" component={ScrollArea}>
+                        { navigation() }
+                    </AppShell.Section>
+
+
+                    <AppShell.Section>
+                        <CharacterComponent />
+                    </AppShell.Section>
+                </AppShell.Navbar>
+            );
+        } else {
+            return <></>
+        }
+    }
+
+    return (
+        <MantineProvider
+            forceColorScheme='dark'
+            theme={theme}
+        >
+            <AppShell
+                header={{ height: 60 }}
+                navbar={{
+                    width: 250,
+                    breakpoint: 'sm',
+                    collapsed: {
+                        mobile: !opened
+                    },
+                }}
+                padding='md'
+            >
+                <AppShell.Header>
+                    <Group
+                        h="100%"
+                        px="md"
+                        justify="space-between"
+                    >
+                        <Burger
+                            opened={opened}
+                            onClick={toggle}
+                            hiddenFrom="sm"
+                            size="sm"
+                        />
+
+                        <Link
+                            key="index"
+                            to={ IndexRoute.to }
+                            style={{
+                                textDecoration: 'None',
+                                color: 'var(--mantine-color-dark-0)'
+                            }}
+                        >
+                            <Image
+                                src="/sf_logo.png"
+                                h="calc(3rem * var(--mantine-scale))"
+                                w="auto"
+                                fit="contain"
+                            />
+                        </Link>
+                        <Link
+                            key="about"
+                            to={ AboutRoute.to }
+                            style={{
+                                textDecoration: 'None',
+                                color: 'var(--mantine-color-dark-0)'
+                            }}
+                        >
+                            About
+                        </Link>
+                    </Group>
+                </AppShell.Header>
+
+                { sideNavigation() }
+
+                <AppShell.Main
+                    style={{
+                        paddingBottom: '50px'
+                    }}
+                >
+                    <Outlet />
+
+                    <ReactQueryDevtools />
+                </AppShell.Main>
+
+                <AppShell.Footer>
+                    <div
+                        style={{
+                            fontSize: '10px',
+                            paddingLeft: '250px'
+                        }}
+                    >
+                        All
+    
+                        <Link
+                            to={ LegalRoute.to }
+                            style={{
+                                color: 'var(--mantine-color-blue-9)',
+                                padding: '5px',
+                                textDecoration: 'none',
+                            }}
+                        >
+                            Eve related materials
+                        </Link>
+    
+                        are property of
+    
+                        <a
+                            href="https://www.ccpgames.com"
+                            target="_blank"
+                            style={{
+                                color: 'var(--mantine-color-blue-9)',
+                                padding: '5px',
+                                textDecoration: 'none',
+                            }}
+                        >
+                            CCP Games
+                        </a>
+    
+                        See
+    
+                        <Link
+                            to={ LegalRoute.to }
+                            style={{
+                                color: 'var(--mantine-color-blue-9)',
+                                paddingLeft: '5px',
+                                textDecoration: 'none',
+                            }}
+                        >
+                            legal notice
+                        </Link>
+                        .
+                    </div>
+                </AppShell.Footer>
+            </AppShell>
+        </MantineProvider>
+    );
+}

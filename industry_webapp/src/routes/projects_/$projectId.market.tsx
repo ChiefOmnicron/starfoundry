@@ -1,11 +1,11 @@
-import { CopyText } from '@/components/CopyText';
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { createFileRoute } from '@tanstack/react-router'
-import { EveIcon } from '@/components/EveIcon';
-import { LoadingAnimation } from '@/components/LoadingAnimation';
-import { LoadingError } from '@/components/LoadingError';
 import { Table } from '@mantine/core';
-import { useListProjectMarket, type ProjectMarketEntry } from '@/services/projects/listMarket';
+import { useListProjectMarket, type ProjectMarketEntry } from '@starfoundry/components/services/projects/listMarket';
+import { EveIcon } from '@starfoundry/components/misc/EveIcon';
+import { CopyText } from '@starfoundry/components/misc/CopyText';
+import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
+import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 
 export const Route = createFileRoute('/projects_/$projectId/market')({
     component: RouteComponent,

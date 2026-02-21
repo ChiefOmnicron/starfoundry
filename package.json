@@ -1,0 +1,10 @@
+{
+    "name": "starfoundry",
+    "private": true,
+    "version": "0.0.0",
+    "workspaces": [
+        "industry_webapp",
+        "industry-hub_webapp",
+        "webapp_components"
+    ]
+}

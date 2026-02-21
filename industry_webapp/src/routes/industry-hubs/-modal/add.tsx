@@ -1,10 +1,10 @@
 import { Alert, Button, Flex, TextInput } from '@mantine/core';
-import { createIndustryHub, type CreateIndustryHub } from '@/services/industry-hub/create';
 import { Route as IndustryHubRoute } from '@/routes/industry-hubs_/$industryHubId.index';
 import { useForm } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
+import { createIndustryHub, type CreateIndustryHub } from '@starfoundry/components/services/industry-hub/create';
 
 export function AddIndustryHub({
     close,

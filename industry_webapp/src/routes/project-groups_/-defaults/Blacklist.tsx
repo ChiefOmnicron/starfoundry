@@ -1,14 +1,14 @@
 import { Alert, Stack } from '@mantine/core';
-import { compareArray } from '@/components/SaveDialog';
-import { ItemList } from '@/components/ItemList';
-import { LIST_PROJECT_GROUP_DEFAULT_BLACKLIST, useListProjectGroupDefaultBlacklist } from '@/services/project-group/listDefaultBlacklist';
-import { LoadingAnimation } from '@/components/LoadingAnimation';
-import { LoadingError } from '@/components/LoadingError';
-import { updateDefaultBlacklist } from '@/services/project-group/updateDefaultBlacklist';
 import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { Item } from '@/services/item/model';
-import type { Uuid } from '@/services/utils';
+import type { Item } from '@starfoundry/components/services/item/model';
+import { LIST_PROJECT_GROUP_DEFAULT_BLACKLIST, useListProjectGroupDefaultBlacklist } from '@starfoundry/components/services/project-group/listDefaultBlacklist';
+import { updateDefaultBlacklist } from '@starfoundry/components/services/project-group/updateDefaultBlacklist';
+import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
+import { LoadingError } from '@starfoundry/components/misc/LoadingError';
+import { compareArray } from '@starfoundry/components/misc/SaveDialog';
+import { ItemList } from '@starfoundry/components/list/ItemList';
+import type { Uuid } from '@starfoundry/components/services/utils';
 
 export function ProjectGroupDefaultsBlacklist({
     projectGroupId,

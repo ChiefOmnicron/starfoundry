@@ -1,7 +1,7 @@
-import { LoadingAnimation } from '@/components/LoadingAnimation';
-import { LoadingError } from '@/components/LoadingError';
-import { fetchProjectQuery, useFetchProject } from '@/services/projects/fetch';
 import { Title } from '@mantine/core'
+import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
+import { LoadingError } from '@starfoundry/components/misc/LoadingError';
+import { fetchProjectQuery, useFetchProject } from '@starfoundry/components/services/projects/fetch';
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/projects_/$projectId')({

@@ -2,17 +2,17 @@ import { AddProjectGroup } from '@/routes/project-groups/-modal/add';
 import { Alert, Button, Card, Center, Flex, Modal, Pill, Stack, Table, Tabs, Title } from '@mantine/core';
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { createFileRoute } from '@tanstack/react-router';
-import { Filter, type FilterPropEntry, type SelectedFilter } from '@/components/Filter';
-import { InternalLink } from '@/components/InternalLink';
-import { LoadingAnimation } from '@/components/LoadingAnimation';
-import { LoadingError } from '@/components/LoadingError';
+import { Filter, type FilterPropEntry, type SelectedFilter } from '@starfoundry/components/misc/Filter';
 import { Route as ProjectGroupRoute } from '@/routes/project-groups_/$projectGroupId.overview';
-import { type ProjectGroup } from '@/services/project-group/fetch';
 import { useDisclosure } from '@mantine/hooks';
-import { useListProjectGroup, type ProjectGroupFilter } from '@/services/project-group/list';
 import { useState } from 'react';
+import type { ProjectGroup } from '@starfoundry/components/services/project-group/fetch';
+import { InternalLink } from '@starfoundry/components/links/InternalLink';
+import { useListProjectGroup, type ProjectGroupFilter } from '@starfoundry/components/services/project-group/list';
+import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
+import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 
-interface QueryParams {
+export interface QueryParams {
     deleted?: boolean;
 }
 
@@ -84,6 +84,7 @@ function RouteComponent() {
     const [archived, setArchived] = useState(false);
 
     const [filterParams, setFilterParams] = useState<ProjectGroupFilter>({});
+
     const filterChange = (filters: SelectedFilter[]) => {
         setFilterParams({
             name: filters.find(x => x.key === 'name')?.value as string,

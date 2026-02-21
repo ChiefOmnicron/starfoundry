@@ -1,7 +1,5 @@
 import { AppShell, Burger, createTheme, DEFAULT_THEME, Group, Image, MantineProvider, mergeMantineTheme, ScrollArea } from '@mantine/core';
-import { CharacterComponent } from '@/components/Character';
 import { createRootRouteWithContext, Link, Outlet, useRouterState } from '@tanstack/react-router';
-import { CustomLink } from '@/components/RouterLink';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Route as AboutRoute } from '@/routes/about';
 import { Route as IndexRoute } from '@/routes';
@@ -10,6 +8,8 @@ import { UnauthorizedShell } from './auth/login';
 import { useDisclosure } from '@mantine/hooks';
 import type { ReactElement } from 'react';
 import type { RouterContext } from '@/main';
+import { CustomLink } from '@starfoundry/components/links/RouterLink';
+import { CharacterComponent } from '@starfoundry/components/misc/Character';
 
 const routes = [
     {
@@ -225,7 +225,7 @@ function Shell() {
                             }}
                         >
                             <Image
-                                src="/sf_logo_1.png"
+                                src="/sf_logo.png"
                                 h="calc(3rem * var(--mantine-scale))"
                                 w="auto"
                                 fit="contain"

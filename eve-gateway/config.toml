@@ -28,6 +28,21 @@ corporation_scopes = [
 ]
 redirect = "https://industry.dev.starfoundry.space/api/auth/login/callback"
 
+[domains."industry-hubs.dev.starfoundry.space"]
+admins = [
+    2117441999,
+]
+whitelist = [
+    98024275,   # RCI
+    98748294,   # Flanders
+]
+character_scopes = [
+    "publicData",
+    "esi-search.search_structures.v1"
+]
+corporation_scopes = []
+redirect = "https://industry-hubs.dev.starfoundry.space/api/auth/login/callback"
+
 [domains."store.dev.starfoundry.space"]
 admins = [
     2117441999,

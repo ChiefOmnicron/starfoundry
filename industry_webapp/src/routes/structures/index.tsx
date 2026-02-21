@@ -1,16 +1,17 @@
 import { AddStructure } from './-modal/add';
 import { Alert, Button, Center, Flex, Modal, Stack, Title } from '@mantine/core';
 import { createFileRoute } from '@tanstack/react-router';
-import { Filter, type FilterPropEntry, type SelectedFilter } from '@/components/Filter';
-import { LoadingAnimation } from '@/components/LoadingAnimation';
-import { LoadingError } from '@/components/LoadingError';
-import { normalizeRigServiceName } from '@/services/structure/utils';
-import { StructureList } from '@/components/StructureList';
+import { Filter, type FilterPropEntry, type SelectedFilter } from '@starfoundry/components/misc/Filter';
+import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
+import { LoadingError } from '@starfoundry/components/misc/LoadingError';
+import { normalizeRigServiceName } from '@starfoundry/components/services/structure/utils';
+import { Route as StructureEditRoute } from '@/routes/structures_/$structureId.index';
+import { StructureList } from '@starfoundry/components/list/StructureList';
 import { useDisclosure } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
-import { useListStructure, type StructureFilter } from '@/services/structure/list';
+import { useListStructure, type StructureFilter } from '@starfoundry/components/services/structure/list';
 
-interface QueryParams {
+export interface QueryParams {
     deleted?: boolean;
 }
 
@@ -207,7 +208,7 @@ function RouteComponent() {
                 <StructureList
                     structures={structures}
                     structureCardProps={{
-                        editLink: true,
+                        editLink: StructureEditRoute.to,
                     }}
                 />
             </>
