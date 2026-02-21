@@ -37,7 +37,6 @@ async fn assert_exists_check(
         .await
         .map_err(|e| StructureError::FetchPermission(e, structure_uuid))?;
 
-    tracing::info!("{:?} {:?}", &result, structure_uuid);
     if result.is_some() {
         Ok(())
     } else {

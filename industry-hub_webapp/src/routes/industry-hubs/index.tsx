@@ -1,7 +1,6 @@
 import { AddIndustryHub } from '@/routes/industry-hubs/-modal/add';
 import { Alert, Button, Center, Flex, Modal, Stack, Tabs, Title } from '@mantine/core';
 import { createFileRoute } from '@tanstack/react-router';
-import { Filter, type FilterPropEntry, type SelectedFilter } from '@starfoundry/components/misc/Filter';
 import { IndustryHubList } from '@starfoundry/components/list/IndustryHubList';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
@@ -36,7 +35,7 @@ function RouteComponent() {
     const { deleted: deletedResource } = Route.useSearch();
 
     const [filterParams, setFilterParams] = useState<IndustryHubFilter>({});
-    const [filterOptions, setFilterOptions] = useState<FilterPropEntry[]>([]);
+    //const [filterOptions, setFilterOptions] = useState<FilterPropEntry[]>([]);
 
     const [cloneSuccess, setCloneSuccess] = useState<boolean>(false);
     const [cloneError, setCloneError] = useState<string | undefined>(undefined);
@@ -107,7 +106,7 @@ function RouteComponent() {
             })
             .map(x => uniqueRigs.set(x.key, x));
 
-        setFilterOptions([{
+        /*setFilterOptions([{
             label: 'Name',
             key: 'name',
             type: 'STRING',
@@ -131,19 +130,20 @@ function RouteComponent() {
             key: 'rig_id',
             type: 'SELECT',
             options: [...uniqueRigs.values()].sort((a, b) => a.label.localeCompare(b.label)),
-        }]);
+        }]);*/
     }, [industryHubs]);
 
-    const filterChange = (filters: SelectedFilter[]) => {
-        setFilterParams({
-            name: filters.find(x => x.filterKey === 'name')?.value as string,
-        });
-    };
+    //const filterChange = (filters: SelectedFilter[]) => {
+    //    setFilterParams({
+    //        name: filters.find(x => x.filterKey === 'name')?.value as string,
+    //    });
+    //};
 
-    const filter = <Filter
-        entries={filterOptions}
-        onFilterChange={filterChange}
-    />;
+    //const filter = <Filter
+    //    entries={filterOptions}
+    //    onFilterChange={filterChange}
+    ///>;
+    const filter = <></>
 
     const addIndustryHubModal = () => {
         return <Modal
