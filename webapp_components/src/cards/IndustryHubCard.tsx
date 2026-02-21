@@ -22,6 +22,9 @@ export function IndustryHubCard({
     editLink  = undefined,
     viewLink  = true,
 
+    onCloneSuccess = () => {},
+    onCloneError = () => {},
+
     checkable = false,
     checked = [],
     onChange = () => {},
@@ -36,6 +39,12 @@ export function IndustryHubCard({
     const cloneMutation = useMutation({
         mutationFn: () => {
             return cloneIndustryHub(industryHub.id);
+        },
+        onSuccess: () => {
+            onCloneSuccess();
+        },
+        onError: (error) => {
+            onCloneError(error.message);
         }
     });
 
@@ -278,7 +287,10 @@ type IndustryHubCardRequiredProps = {
 export type IndustryHubCardAdditionalProps = {
     cloneLink?: boolean;
     viewLink?:  boolean;
-    editLink?: string,
+    editLink?: string;
+
+    onCloneSuccess?: () => void;
+    onCloneError?: (error: string) => void;
 
     // Determines if a checkbox is added or not
     checkable?: boolean,

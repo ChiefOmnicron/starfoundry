@@ -2,16 +2,16 @@ import { AddIndustryHub } from '@/routes/industry-hubs/-modal/add';
 import { Alert, Button, Center, Flex, Modal, Stack, Tabs, Title } from '@mantine/core';
 import { createFileRoute } from '@tanstack/react-router';
 import { Filter, type FilterPropEntry, type SelectedFilter } from '@starfoundry/components/misc/Filter';
+import { IndustryHubList } from '@starfoundry/components/list/IndustryHubList';
+import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
+import { LoadingError } from '@starfoundry/components/misc/LoadingError';
+import { Route as EditRoute } from '@/routes/industry-hubs_/$industryHubId.index';
 import { useDisclosure } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
 import { useListIndustryHub, type IndustryHubFilter } from '@starfoundry/components/services/industry-hub/list';
 import { normalizeRigServiceName } from '@starfoundry/components/services/structure/utils';
-import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
-import { LoadingError } from '@starfoundry/components/misc/LoadingError';
-import { IndustryHubList } from '@starfoundry/components/list/IndustryHubList';
-import { Route as StructureEditRoute } from '@/routes/structures_/$structureId.index';
 
-export interface QueryParams {
+interface QueryParams {
     deleted?: boolean;
 }
 
@@ -37,6 +37,9 @@ function RouteComponent() {
 
     const [filterParams, setFilterParams] = useState<IndustryHubFilter>({});
     const [filterOptions, setFilterOptions] = useState<FilterPropEntry[]>([]);
+
+    const [cloneSuccess, setCloneSuccess] = useState<boolean>(false);
+    const [cloneError, setCloneError] = useState<string | undefined>(undefined);
 
     const {
         isPending,
@@ -173,6 +176,30 @@ function RouteComponent() {
             >
                 The structure group was successfully deleted
             </Alert>;
+        } else if (cloneSuccess) {
+            return <Alert
+                mt="sm"
+                variant='light'
+                color='green'
+                title='Clone successful'
+                data-cy="cloneSuccessful"
+                onClose={ () => setCloneSuccess(false) }
+                withCloseButton
+            >
+                Industry Hub clone successful
+            </Alert>;
+        } else if (cloneError) {
+            return <Alert
+                mt="sm"
+                variant='light'
+                color='red'
+                title='Clone error'
+                data-cy="errorUpdate"
+                onClose={ () => setCloneError(undefined) }
+                withCloseButton
+            >
+                There was an error while cloning. Please try again later.
+            </Alert>;
         }
     }
 
@@ -270,7 +297,7 @@ function RouteComponent() {
                 <IndustryHubList
                     industryHubs={industryHubs || []}
                     industryHubCardProps={{
-                        editLink: StructureEditRoute.to,
+                        editLink: EditRoute.to,
                     }}
                 />
             </Tabs.Panel>
@@ -280,6 +307,14 @@ function RouteComponent() {
                     industryHubs={industryHubs || []}
                     industryHubCardProps={{
                         cloneLink: true,
+                        onCloneSuccess: () => {
+                            setCloneSuccess(true);
+                            setCloneError(undefined);
+                        },
+                        onCloneError: (e) => {
+                            setCloneSuccess(false);
+                            setCloneError(e);
+                        },
                     }}
                 />
             </Tabs.Panel>

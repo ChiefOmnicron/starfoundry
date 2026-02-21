@@ -38,6 +38,9 @@ function RouteComponent() {
     const [filterParams, setFilterParams] = useState<IndustryHubFilter>({});
     const [filterOptions, setFilterOptions] = useState<FilterPropEntry[]>([]);
 
+    const [cloneSuccess, setCloneSuccess] = useState<boolean>(false);
+    const [cloneError, setCloneError] = useState<string | undefined>(undefined);
+
     const {
         isPending,
         isError,
@@ -173,6 +176,30 @@ function RouteComponent() {
             >
                 The structure group was successfully deleted
             </Alert>;
+        } else if (cloneSuccess) {
+            return <Alert
+                mt="sm"
+                variant='light'
+                color='green'
+                title='Clone successful'
+                data-cy="cloneSuccessful"
+                onClose={ () => setCloneSuccess(false) }
+                withCloseButton
+            >
+                Industry Hub clone successful
+            </Alert>;
+        } else if (cloneError) {
+            return <Alert
+                mt="sm"
+                variant='light'
+                color='red'
+                title='Clone error'
+                data-cy="errorUpdate"
+                onClose={ () => setCloneError(undefined) }
+                withCloseButton
+            >
+                There was an error while cloning. Please try again later.
+            </Alert>;
         }
     }
 
@@ -280,6 +307,14 @@ function RouteComponent() {
                     industryHubs={industryHubs || []}
                     industryHubCardProps={{
                         cloneLink: true,
+                        onCloneSuccess: () => {
+                            setCloneSuccess(true);
+                            setCloneError(undefined);
+                        },
+                        onCloneError: (e) => {
+                            setCloneSuccess(false);
+                            setCloneError(e);
+                        },
                     }}
                 />
             </Tabs.Panel>

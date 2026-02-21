@@ -19,11 +19,13 @@ pub async fn clone(
             INSERT INTO industry_hub
             (
                 owner,
-                name
+                name,
+                description
             )
             VALUES(
                 $1,
-                (SELECT name FROM industry_hub WHERE id = $2)
+                (SELECT name FROM industry_hub WHERE id = $2),
+                (SELECT description FROM industry_hub WHERE id = $2)
             )
             RETURNING id
         ",
