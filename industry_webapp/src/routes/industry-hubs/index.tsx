@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 import { useListIndustryHub, type IndustryHubFilter } from '@starfoundry/components/services/industry-hub/list';
 import { normalizeRigServiceName } from '@starfoundry/components/services/structure/utils';
 
-interface QueryParams {
+export interface QueryParams {
     deleted?: boolean;
 }
 
