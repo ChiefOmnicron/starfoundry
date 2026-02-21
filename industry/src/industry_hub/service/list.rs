@@ -20,8 +20,9 @@ pub async fn list(
     filter:                 IndustryHubFilter,
 ) -> Result<Vec<IndustryHub>> {
     struct TmpIndustryHub {
-        id:   Uuid,
-        name: String,
+        id:          Uuid,
+        name:        String,
+        description: Option<String>,
     }
 
     let shared = match filter.shared {
@@ -34,7 +35,8 @@ pub async fn list(
         sqlx::query!(r#"
                 SELECT
                     DISTINCT(ih.id),
-                    ih.name
+                    ih.name,
+                    ih.description
                 FROM industry_hub ih
                 JOIN industry_hub_structure ihs ON ihs.industry_hub_id = ih.id
                 JOIN structure s ON s.id = ihs.structure_id
@@ -67,26 +69,28 @@ pub async fn list(
             .map_err(|e| IndustryHubError::ListIndustryHubs(e))?
             .into_iter()
             .map(|x| TmpIndustryHub {
-                id:   x.id,
-                name: x.name,
+                id:          x.id,
+                name:        x.name,
+                description: x.description,
             })
             .collect::<Vec<_>>()
     } else {
         sqlx::query!(r#"
                 SELECT
-                    DISTINCT(sg.id),
-                    sg.name
-                FROM industry_hub sg
-                JOIN industry_hub_structure sgs ON sgs.industry_hub_id = sg.id
+                    DISTINCT(ih.id),
+                    ih.name,
+                    ih.description
+                FROM industry_hub ih
+                JOIN industry_hub_structure sgs ON sgs.industry_hub_id = ih.id
                 JOIN structure s ON s.id = sgs.structure_id
                 WHERE
-                    NOT (LOWER(sg.name) LIKE '%' || LOWER($2) || '%') IS FALSE AND
+                    NOT (LOWER(ih.name) LIKE '%' || LOWER($2) || '%') IS FALSE AND
                     NOT (s.type_id = $3) IS FALSE AND
                     NOT (s.system_id = $4) IS FALSE AND
                     NOT ($5::INTEGER IS NULL OR $5::INTEGER = ANY(s.services)) IS FALSE AND
                     NOT ($6::INTEGER IS NULL OR $6::INTEGER = ANY(s.rigs)) IS FALSE AND
-                    sg.owner = $1
-                ORDER BY sg.name
+                    ih.owner = $1
+                ORDER BY ih.name
             "#,
                 *character_id,
                 filter.name,
@@ -100,8 +104,9 @@ pub async fn list(
             .map_err(|e| IndustryHubError::ListIndustryHubs(e))?
             .into_iter()
             .map(|x| TmpIndustryHub {
-                id:   x.id,
-                name: x.name,
+                id:          x.id,
+                name:        x.name,
+                description: x.description,
             })
             .collect::<Vec<_>>()
     };
@@ -168,10 +173,11 @@ pub async fn list(
             .collect::<Vec<_>>();
 
         result.push(IndustryHub {
-            id:         industry_hub.id.into(),
-            name:       industry_hub.name,
-            structures: structures,
-            shares:     shares,
+            id:          industry_hub.id.into(),
+            name:        industry_hub.name,
+            structures:  structures,
+            shares:      shares,
+            description: industry_hub.description,
         });
     }
 

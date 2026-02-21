@@ -1,0 +1,1 @@
+ALTER TABLE industry_hub ADD COLUMN IF NOT EXISTS description VARCHAR;

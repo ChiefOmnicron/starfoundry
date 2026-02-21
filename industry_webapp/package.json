@@ -13,9 +13,13 @@
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@tanstack/react-form": "^1.12.2",
+    "@uiw/codemirror-extensions-langs": "^4.25.4",
+    "@uiw/codemirror-theme-vscode": "^4.25.4",
+    "@uiw/react-codemirror": "^4.25.4",
     "axios": "^1.9.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "react-markdown": "^10.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",

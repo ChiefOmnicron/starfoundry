@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                id,\n                name\n            FROM industry_hub\n            WHERE\n                owner = $1 AND\n                id = $2\n        ",
+  "query": "\n            SELECT\n                id,\n                name,\n                description\n            FROM industry_hub\n            WHERE\n                owner = $1 AND\n                id = $2\n        ",
   "describe": {
     "columns": [
       {
@@ -24,6 +24,17 @@
             "name": "name"
           }
         }
+      },
+      {
+        "ordinal": 2,
+        "name": "description",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "industry_hub",
+            "name": "description"
+          }
+        }
       }
     ],
     "parameters": {
@@ -34,8 +45,9 @@
     },
     "nullable": [
       false,
-      false
+      false,
+      true
     ]
   },
-  "hash": "165722b410dc26b4b99218e18dbb7996c079ddfe2161ecff6c1320f6fb2d36db"
+  "hash": "b65b9423bf9f44c5e640b2b65410a65ef8628347b01db738c15627aa8bbec7b1"
 }

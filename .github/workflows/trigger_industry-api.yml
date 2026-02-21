@@ -14,6 +14,8 @@ on:
       - 'market_lib/**'
       - '.github/workflows/trigger_industry-api.yml'
       - 'Dockerfile'
+      # tmp
+      - 'uuidv7_migration/**'
 
 concurrency:
   # Make sure every job on main has unique group id (run_id), so cancel-in-progress only affects PR's

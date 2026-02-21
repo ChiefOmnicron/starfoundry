@@ -1,0 +1,57 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT\n                    DISTINCT(ih.id),\n                    ih.name,\n                    ih.description\n                FROM industry_hub ih\n                JOIN industry_hub_structure sgs ON sgs.industry_hub_id = ih.id\n                JOIN structure s ON s.id = sgs.structure_id\n                WHERE\n                    NOT (LOWER(ih.name) LIKE '%' || LOWER($2) || '%') IS FALSE AND\n                    NOT (s.type_id = $3) IS FALSE AND\n                    NOT (s.system_id = $4) IS FALSE AND\n                    NOT ($5::INTEGER IS NULL OR $5::INTEGER = ANY(s.services)) IS FALSE AND\n                    NOT ($6::INTEGER IS NULL OR $6::INTEGER = ANY(s.rigs)) IS FALSE AND\n                    ih.owner = $1\n                ORDER BY ih.name\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "industry_hub",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "industry_hub",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "description",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "industry_hub",
+            "name": "description"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Text",
+        "Int4",
+        "Int4",
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "6babc938bc9c8bd717de20dd8e68b91fdb8703ca485c40e8a94cc001c55e5aec"
+}

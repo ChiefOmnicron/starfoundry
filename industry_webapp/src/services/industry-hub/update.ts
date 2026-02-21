@@ -13,7 +13,8 @@ export const updateIndustryHub = async (
     .then(x => x.data.id);
 
 export type UpdateIndustryHub = {
-    name:       string,
-    structures: Uuid[],
-    shares:     IndustryHubShare[];
+    name:         string,
+    structures:   Uuid[],
+    shares:       IndustryHubShare[];
+    description?: string;
 }

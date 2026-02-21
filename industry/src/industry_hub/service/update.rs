@@ -22,7 +22,8 @@ pub async fn update(
     sqlx::query!("
             UPDATE industry_hub
             SET
-                name = $3
+                name = $3,
+                description = $4
             WHERE
                 id = $1 AND
                 owner = $2
@@ -30,6 +31,7 @@ pub async fn update(
             *industry_hub_uuid,
             *character_id,
             industry_hub.name,
+            industry_hub.description,
         )
         .execute(&mut *transaction)
         .await
@@ -131,6 +133,7 @@ mod tests {
                     Uuid::from_str("00000000-0000-0000-0000-000000000001").unwrap()
                 ],
                 shares: Vec::new(),
+                description: None,
             }
         )
         .await;
@@ -176,7 +179,9 @@ mod tests {
     })
 )]
 pub struct UpdateIndustryHub {
-    pub name:       String,
-    pub structures: Vec<Uuid>,
-    pub shares:     Vec<IndustryHubShare>,
+    pub name:        String,
+    pub structures:  Vec<Uuid>,
+    pub shares:      Vec<IndustryHubShare>,
+
+    pub description: Option<String>,
 }

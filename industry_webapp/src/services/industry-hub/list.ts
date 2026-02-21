@@ -20,10 +20,11 @@ export const listIndustryHubs = async (
     .then(x => x.data);
 
 export type IndustryHub = {
-    id:         Uuid;
-    name:       string;
-    structures: Structure[],
-    shares:     IndustryHubShare[];
+    id:           Uuid;
+    name:         string;
+    structures:   Structure[],
+    shares:       IndustryHubShare[];
+    description?: string,
 }
 
 export type IndustryHubShare = {

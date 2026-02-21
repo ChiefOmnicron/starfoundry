@@ -225,7 +225,7 @@ function Shell() {
                             }}
                         >
                             <Image
-                                src="/sf_logo.png"
+                                src="/sf_logo_1.png"
                                 h="calc(3rem * var(--mantine-scale))"
                                 w="auto"
                                 fit="contain"

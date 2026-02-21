@@ -7,10 +7,25 @@ import { StructureServiceBadge } from '../routes/structures/-components/Structur
 import { useFetchIndustryHub } from '@/services/industry-hub/fetch';
 import type { Uuid } from '@/services/utils';
 import type { IndustryHub } from '@/services/industry-hub/list';
+import { MarkdownView } from './MarkdownView';
 
 export function IndustryHubView({
     industryHub,
 }: IndustryHubViewProps) {
+    const description = () => {
+        if (industryHub.description) {
+            return <>
+                <Title order={2}>
+                    Description
+                </Title>
+
+                <MarkdownView content={industryHub.description} />
+            </>
+        } else {
+            return <></>;
+        }
+    }
+
     return <>
         <Stack>
             <Title order={1}>{industryHub.name}</Title>
@@ -41,6 +56,10 @@ export function IndustryHubView({
             <StructureList
                 structures={industryHub.structures}
             />
+
+            {
+                description()
+            }
         </Stack>
     </>;
 }

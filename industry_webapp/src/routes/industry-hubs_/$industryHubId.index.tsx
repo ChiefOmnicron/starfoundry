@@ -1,4 +1,4 @@
-import { Alert, Button, Flex, Group, Stack, TextInput, Title } from '@mantine/core';
+import { Alert, Button, Flex, Group, Stack, Text, TextInput, Title } from '@mantine/core';
 import { CharacterCorporationAllianceList, type CharacterCorporationAlliance } from '@/components/EntityList';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { deleteIndustryHub } from '@/services/industry-hub/delete';
@@ -8,8 +8,8 @@ import { FETCH_INDUSTRY_HUB } from '@/services/industry-hub/fetch';
 import { LIST_INDUSTRY_HUB } from '@/services/industry-hub/list';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { LoadingError } from '@/components/LoadingError';
+import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { Route as StructureListRoute } from '@/routes/structures/index';
-import { StructureLayout } from '@/components/StructureLayout';
 import { StructureList } from '@/components/StructureList';
 import { StructureSelectorModal } from '@/components/selectors/StructureSelectorModal';
 import { updateIndustryHub, type UpdateIndustryHub } from '@/services/industry-hub/update';
@@ -48,9 +48,10 @@ function RouteComponent() {
     const [successfulDelete, setSuccessfulDelete] = useState<boolean>();
     const [errorDelete, setErrorDelete] = useState<string | undefined>();
     const [errorUpdate, setErrorUpdate] = useState<string | undefined>();
-
+    
     const [selectedEntities, setSelectedEntities] = useState<CharacterCorporationAlliance[]>([]);
     const [selectedStructures, setSelectedStructures] = useState<Structure[]>([]);
+    const [description, setDescription] = useState('');
 
     const {
         isPending,
@@ -107,12 +108,14 @@ function RouteComponent() {
                 }
             });
         setSelectedEntities(shares);
+        setDescription(industryHub.description || '');
     }, [industryHub]);
 
     const form = useForm({
         defaultValues: {
-            name:       industryHub.name,
-            structures: industryHub.structures.map(x => x.id),
+            name:        industryHub.name,
+            structures:  industryHub.structures.map(x => x.id),
+            description: description,
         },
         onSubmit: async ({ value }) => {
             console.log(value)
@@ -233,7 +236,7 @@ function RouteComponent() {
         </>
     }
 
-    const structureLayouts = () => {
+    /*const structureLayouts = () => {
         let systems: TmpSystem[] = [];
         selectedStructures
             .forEach(x => {
@@ -261,7 +264,7 @@ function RouteComponent() {
         }
 
         return elements;
-    }
+    }*/
 
     const onSelectStructure = (structures: Structure[]) => {
         setSelectedStructures(structures);
@@ -324,7 +327,7 @@ function RouteComponent() {
                     <Flex
                         justify='space-between'
                     >
-                        <Title order={3}>Structures</Title>
+                        <Title order={2}>Structures</Title>
 
                         <Button
                             onClick={openStructureSelector}
@@ -356,13 +359,25 @@ function RouteComponent() {
                         }}
                     />
 
-                    <Title order={3}>Layout</Title>
-                    { structureLayouts() }
+                    <Title order={2}>Description</Title>
+                    <Text>
+                        Additional information about the industry hub.<br />
+                        Markdown is supported.
+                    </Text>
+                    <MarkdownEditor
+                        content={description}
+                        onChange={setDescription}
+                    />
+
+                    {
+                        //<Title order={2}>Layout</Title>
+                        //{ structureLayouts() }
+                    }
 
                     <Group
                         justify='space-between'
                     >
-                        <Title order={3}>Sharing</Title>
+                        <Title order={2}>Sharing</Title>
 
                         <Button
                             onClick={openEntitySelector}
@@ -372,7 +387,8 @@ function RouteComponent() {
                     </Group>
 
                     <Alert color="gray">
-                        Characters in the list, in the corporation or in the alliance listed below, will be able to see the industry hub, and save it into their account.
+                        Characters added below will be able to see the industry hub.
+                        If a character is either in the corporation or in the alliance, they will be able to see the industry hub.
                     </Alert>
 
                     <CharacterCorporationAllianceList

@@ -97,6 +97,7 @@ mod tests {
                     name: "My cool structure group".into(),
                     structures: Vec::new(),
                     shares: Vec::new(),
+                    description: None,
                 }).unwrap()
             ))
             .unwrap();
@@ -138,6 +139,7 @@ mod tests {
                     name: "My cool structure group".into(),
                     structures: Vec::new(),
                     shares: Vec::new(),
+                    description: None,
                 }).unwrap()
             ))
             .unwrap();

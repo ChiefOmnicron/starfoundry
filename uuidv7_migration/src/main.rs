@@ -30,8 +30,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut mappings = mappings(&postgres_source, environment.clone()).await;
 
-    cleanup(&postgres_destination_industry).await?;
-    cleanup_mapping(&postgres_source, environment.clone()).await;
+    //cleanup(&postgres_destination_industry).await?;
+    //cleanup_mapping(&postgres_source, environment.clone()).await;
     migrate_structure(&postgres_source, &postgres_destination_industry, &mut mappings).await?;
     migrate_industry_hubs(&postgres_source, &postgres_destination_industry, &mut mappings).await?;
 

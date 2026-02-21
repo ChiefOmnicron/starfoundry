@@ -19,7 +19,8 @@ pub async fn fetch(
     let industry_hub = sqlx::query!(r#"
             SELECT
                 id,
-                name
+                name,
+                description
             FROM industry_hub
             WHERE
                 owner = $1 AND
@@ -87,10 +88,11 @@ pub async fn fetch(
         .await?;
 
     let industry_hub = IndustryHub {
-        id:         industry_hub.id.into(),
-        name:       industry_hub.name,
-        structures: structures,
-        shares:     shares,
+        id:          industry_hub.id.into(),
+        name:        industry_hub.name,
+        structures:  structures,
+        shares:      shares,
+        description: industry_hub.description,
     };
 
     Ok(Some(industry_hub))
@@ -192,10 +194,11 @@ mod tests {
     })
 )]
 pub struct IndustryHub {
-    pub id:         IndustryHubUuid,
-    pub name:       String,
-    pub structures: Vec<Structure>,
-    pub shares:     Vec<IndustryHubShare>,
+    pub id:          IndustryHubUuid,
+    pub name:        String,
+    pub structures:  Vec<Structure>,
+    pub shares:      Vec<IndustryHubShare>,
+    pub description: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]

@@ -57,6 +57,17 @@
             "name": "updated_at"
           }
         }
+      },
+      {
+        "ordinal": 5,
+        "name": "description",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "industry_hub",
+            "name": "description"
+          }
+        }
       }
     ],
     "parameters": {
@@ -69,7 +80,8 @@
       false,
       false,
       false,
-      false
+      false,
+      true
     ]
   },
   "hash": "04f5c9a8cf2c0ac8efed754fa995313b3357d777b1aaee621e6f415ef2845ff9"
