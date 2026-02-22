@@ -123,10 +123,11 @@ pub async fn fetch_rig_blueprint_bonus(
         }
     }
 
-    let values =structure_rig_blueprint_entries
+    let mut values =structure_rig_blueprint_entries
         .values()
         .cloned()
         .into_iter()
         .collect::<Vec<_>>();
+    values.sort_by_key(|x| x.blueprint.name.clone());
     Ok(values)
 }

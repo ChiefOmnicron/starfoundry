@@ -72,46 +72,46 @@ pub async fn import_sde(
     //        &repackaged,
     //    )
     //    .await?;
-    //blueprints::run(
+    blueprints::run(
+            &pool,
+            &blueprints,
+            &type_ids,
+        )
+        .await?;
+    //dogma::run(
     //        &pool,
-    //        &blueprints,
-    //        &type_ids,
+    //        &dogma_effects,
+    //        &industry_modifier_sources,
+    //        &industry_target_filters,
+    //        &type_dogma,
     //    )
     //    .await?;
-    dogma::run(
-            &pool,
-            &dogma_effects,
-            &industry_modifier_sources,
-            &industry_target_filters,
-            &type_dogma,
-        )
-        .await?;
-    items::run(
-            &pool,
-            &categories,
-            &group_ids,
-            &type_ids,
-            &repackaged,
-        )
-        .await?;
-    reprocessing::run(
-            &pool,
-            &type_material,
-        )
-        .await?;
-    structure::run(
-            &pool,
-            &type_ids,
-            &type_dogma,
-        )
-        .await?;
-    systems::run(
-            &pool,
-            regions,
-            constellations,
-            systems,
-        )
-        .await?;
+    //items::run(
+    //        &pool,
+    //        &categories,
+    //        &group_ids,
+    //        &type_ids,
+    //        &repackaged,
+    //    )
+    //    .await?;
+    //reprocessing::run(
+    //        &pool,
+    //        &type_material,
+    //    )
+    //    .await?;
+    //structure::run(
+    //        &pool,
+    //        &type_ids,
+    //        &type_dogma,
+    //    )
+    //    .await?;
+    //systems::run(
+    //        &pool,
+    //        regions,
+    //        constellations,
+    //        systems,
+    //    )
+    //    .await?;
 
     Ok(checksum)
 }
