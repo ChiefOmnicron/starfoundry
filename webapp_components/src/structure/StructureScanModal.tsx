@@ -1,8 +1,8 @@
 import { Button, Flex, Modal, Stack, Textarea, UnstyledButton } from "@mantine/core";
-import type { Item } from "@starfoundry/components/services/item/model";
-import { parseItem } from "@starfoundry/components/services/item/parse";
+import { parseItem } from "@internal/services/item/parse";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
+import type { Item } from "@internal/services/item/model";
 
 export function StructureScanModal({
     opened,

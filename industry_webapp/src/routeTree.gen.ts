@@ -208,10 +208,10 @@ export interface FileRoutesByFullPath {
   '/projects/$projectId': typeof ProjectsProjectIdRouteRouteWithChildren
   '/structures/$structureId': typeof StructuresStructureIdRouteRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
-  '/about': typeof AboutIndexRoute
-  '/characters': typeof CharactersIndexRoute
+  '/about/': typeof AboutIndexRoute
+  '/characters/': typeof CharactersIndexRoute
   '/industry-hubs/': typeof IndustryHubsIndexRoute
-  '/legal': typeof LegalIndexRoute
+  '/legal/': typeof LegalIndexRoute
   '/project-groups/': typeof ProjectGroupsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/structures/': typeof StructuresIndexRoute
@@ -297,10 +297,10 @@ export interface FileRouteTypes {
     | '/projects/$projectId'
     | '/structures/$structureId'
     | '/auth/login'
-    | '/about'
-    | '/characters'
+    | '/about/'
+    | '/characters/'
     | '/industry-hubs/'
-    | '/legal'
+    | '/legal/'
     | '/project-groups/'
     | '/projects/'
     | '/structures/'
@@ -449,7 +449,7 @@ declare module '@tanstack/react-router' {
     '/legal/': {
       id: '/legal/'
       path: '/legal'
-      fullPath: '/legal'
+      fullPath: '/legal/'
       preLoaderRoute: typeof LegalIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -463,14 +463,14 @@ declare module '@tanstack/react-router' {
     '/characters/': {
       id: '/characters/'
       path: '/characters'
-      fullPath: '/characters'
+      fullPath: '/characters/'
       preLoaderRoute: typeof CharactersIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about/': {
       id: '/about/'
       path: '/about'
-      fullPath: '/about'
+      fullPath: '/about/'
       preLoaderRoute: typeof AboutIndexRouteImport
       parentRoute: typeof rootRouteImport
     }

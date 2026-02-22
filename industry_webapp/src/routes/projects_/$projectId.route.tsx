@@ -1,8 +1,8 @@
-import { Title } from '@mantine/core'
+import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { fetchProjectQuery, useFetchProject } from '@starfoundry/components/services/projects/fetch';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
-import { fetchProjectQuery, useFetchProject } from '@starfoundry/components/services/projects/fetch';
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { Title } from '@mantine/core'
 
 export const Route = createFileRoute('/projects_/$projectId')({
     beforeLoad: async ({ context }) => {
@@ -24,7 +24,7 @@ function RouteComponent() {
         isPending,
         isError,
         data: project,
-    } = useFetchProject(projectId)
+    } = useFetchProject(projectId);
 
     if (isPending) {
         return LoadingAnimation();

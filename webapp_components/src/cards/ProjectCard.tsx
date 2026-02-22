@@ -189,8 +189,12 @@ export function ProjectCard({
     </>
 }
 
-export type ProjectCardProps = {
+type ProjectRequiredCardProps = {
     project: ProjectList;
+}
 
+export type ProjectCardAdditionalProps = {
     viewLink?: string;
 }
+
+export type ProjectCardProps = ProjectRequiredCardProps & ProjectCardAdditionalProps;

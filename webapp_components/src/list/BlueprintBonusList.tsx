@@ -34,6 +34,7 @@ export function BlueprintBonusList({
                 value={props.row.original.blueprint.name}
             />,
             header: () => 'Name',
+            size: 60,
         }),
         columnHelper.display({
             id: 'me',
@@ -42,7 +43,7 @@ export function BlueprintBonusList({
                 display={`-${(props.row.original.bonus_me * systemModifier).toFixed(2)}%`}
             />,
             header: () => 'ME',
-            size: 15,
+            size: 10,
         }),
         columnHelper.display({
             id: 'te',
@@ -51,7 +52,7 @@ export function BlueprintBonusList({
                 display={`-${(props.row.original.bonus_te * systemModifier).toFixed(2)}%`}
             />,
             header: () => 'TE',
-            size: 15,
+            size: 10,
         }),
     ];
 

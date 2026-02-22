@@ -1,11 +1,13 @@
-import { ProjectCard } from "@internal/cards/ProjectCard";
+import { ProjectCard, type ProjectCardAdditionalProps } from "@internal/cards/ProjectCard";
+import { SimpleGrid, Title } from "@mantine/core";
 import type { ProjectGroup } from "@internal/services/project-group/fetch";
 import type { ProjectList } from "@internal/services/projects/list";
 import type { Uuid } from "@internal/services/utils";
-import { SimpleGrid, Title } from "@mantine/core";
 
 export function ProjectList({
     projects,
+
+    projectCardProps,
 }: ProjectListProps) {
     const groups: ProjectGroup[] = [];
     projects
@@ -18,7 +20,10 @@ export function ProjectList({
     const groupCards = (projectGroupId: Uuid) => {
         return projects
             .filter(x => x.project_group.id === projectGroupId)
-            .map(x => <ProjectCard project={x} />);
+            .map(x => <ProjectCard
+                project={x}
+                {...projectCardProps}
+            />);
     }
 
     const projectGroups = groups
@@ -47,4 +52,6 @@ export function ProjectList({
 
 export type ProjectListProps = {
     projects: ProjectList[];
+
+    projectCardProps?: ProjectCardAdditionalProps;
 }

@@ -1,50 +1,50 @@
+import type { StructureTax } from "@internal/services/structure/list";
 import { NumberInput } from "@mantine/core";
-import type { StructureTax } from "@starfoundry/components/services/structure/list";
 
-const taxByService = [{
+export const TAXES_SERVICE_MODULES = [{
     name: 'Biochemical Reactions',
     serviceTypeId: 45539,
-    default: 1,
+    default: 0,
 }, {
     name: 'Hybrid Reactions',
     serviceTypeId: 45538,
-    default: 1,
+    default: 0,
 }, {
     name: 'Composite Reactions',
     serviceTypeId: 45537,
-    default: 1,
+    default: 0,
 }, {
     name: 'Manufacturing',
     serviceTypeId: 35878,
-    default: 1,
+    default: 0,
 }, {
     name: 'Manufacturing Capitals',
     serviceTypeId: 35881,
-    default: 1,
-}, , {
+    default: 0,
+}, {
     name: 'Manufacturing Super Capitals',
     serviceTypeId: 35877,
-    default: 1,
-}, , {
+    default: 0,
+}, {
     name: 'Research',
     serviceTypeId: 35891,
-    default: 1,
-}, , {
+    default: 0,
+}, {
     name: 'Research',
     serviceTypeId: 45550,
-    default: 1,
+    default: 0,
 }, {
     name: 'Invention',
     serviceTypeId: 35886,
-    default: 1,
+    default: 0,
 }, {
     name: 'Market',
     serviceTypeId: 35892,
-    default: 1.5,
+    default: 0,
 }, {
     name: 'Reprocessing',
     serviceTypeId: 35899,
-    default: 2,
+    default: 0,
 }];
 
 export function TaxByService({
@@ -55,7 +55,7 @@ export function TaxByService({
 }: TaxByServiceProps) {
     const taxInput = services
         .map(x => {
-            const entry = taxByService.find(y => y?.serviceTypeId === x);
+            const entry = TAXES_SERVICE_MODULES.find(y => y?.serviceTypeId === x);
             if (entry) {
                 return <NumberInput
                     label={entry.name}
@@ -63,7 +63,7 @@ export function TaxByService({
                     suffix="%"
                     min={0}
                     allowDecimal
-                    defaultValue={1}
+                    defaultValue={entry.default}
                     onChange={(value) => {
                         console.log(value)
                         taxes[x] = Number.parseFloat(value as string);

@@ -200,7 +200,8 @@ export function StructureCard({
             opened={openedView}
             onClose={closeView}
 
-            structureId={structure.id}
+            structure={structure}
+            showBlueprintBonus
         />
 
         <Card

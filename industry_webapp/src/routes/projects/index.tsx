@@ -8,6 +8,7 @@ import { useListProjects, type ProjectFilter } from '@starfoundry/components/ser
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 import { ProjectList } from '@starfoundry/components/list/ProjectList';
+import { Route as ProjectOverviewRoute } from '@/routes/projects_/$projectId.overview';
 
 export interface QueryParams {
     deleted?: boolean;
@@ -67,7 +68,6 @@ function RouteComponent() {
 
     const filterChange = (filters: SelectedFilter[]) => {
         setSelectedFilters(filters);
-        console.log(filters, filters.find(x => x.key === 'name')?.value)
         setFilterParams({
             name: filters.find(x => x.filterKey === 'name')?.value as string,
             status: filters.find(x => x.filterKey === 'status')?.key as string,
@@ -104,6 +104,10 @@ function RouteComponent() {
             return <>
                 <ProjectList
                     projects={ projects }
+
+                    projectCardProps={{
+                        viewLink: ProjectOverviewRoute.to,
+                    }}
                 />
             </>;
         } else {

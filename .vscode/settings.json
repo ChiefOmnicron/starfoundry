@@ -1,4 +1,27 @@
 {
+  "editor.rulers": [
+    80,
+    120
+  ],
+  "[rust]": {
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4
+  },
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features",
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4
+  },
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
     "tsconfig.json": "tsconfig.*.json, env.d.ts",
@@ -15,9 +38,12 @@
     "**/routeTree.gen.ts": true
   },
   "cSpell.words": [
+    "Amarr",
     "Arkonor",
     "Battlecruiser",
+    "Dotlan",
     "Fullerite",
+    "Jita",
     "Karura",
     "Killmail",
     "Megacyte",
@@ -25,6 +51,7 @@
     "multibuy",
     "Naglfar",
     "Pyerite",
+    "starfoundry",
     "vite"
   ]
 }
