@@ -2,7 +2,7 @@ use axum::extract::{Path, State};
 use axum::Json;
 use axum::response::IntoResponse;
 use reqwest::StatusCode;
-use starfoundry_lib_eve_gateway::Blueprint;
+use starfoundry_lib_eve_gateway::{Blueprint, EveBlueprintResponse};
 use starfoundry_lib_gateway::ExtractIdentity;
 use starfoundry_lib_types::CharacterId;
 
@@ -72,8 +72,7 @@ pub async fn api(
 
     let path = format!("latest/characters/{character_id}/blueprints");
     let blueprints = api_client
-        //.fetch_page_auth::<Blueprint>(&path)
-        .fetch_page_auth::<serde_json::Value>(&path)
+        .fetch_page_auth::<EveBlueprintResponse>(&path)
         .await?;
 
     if blueprints.is_empty() {

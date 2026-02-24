@@ -11,6 +11,7 @@ use axum::response::IntoResponse;
 use serde::{Deserialize, Serialize};
 use starfoundry_lib_eve_gateway::{EveGatewayApiClientIndustry, Item};
 use starfoundry_lib_gateway::ExtractIdentity;
+use starfoundry_lib_industry::Structure;
 use starfoundry_lib_market::MarketApiClientPrice;
 use starfoundry_lib_types::TypeId;
 use std::collections::HashMap;
@@ -26,7 +27,6 @@ use crate::industry::calculation::project_config_builder::ProjectConfigBuilder;
 use crate::industry::error::Result;
 use crate::project_group::ProjectGroupUuid;
 use crate::project_group::service::{fetch, list_default_blacklist, list_default_blueprint_overwrite, list_default_job_splitting, list_industry_hubs};
-use starfoundry_lib_industry::Structure;
 
 /// Build plan
 /// 

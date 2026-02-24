@@ -3,7 +3,7 @@ use sqlx::postgres::PgPoolOptions;
 use starfoundry_bin_eve_gateway::{auth, character, contract, healthcheck, industry, internal, item, search, structure, universe, eve};
 use starfoundry_bin_eve_gateway::api_docs::ApiDoc;
 use starfoundry_bin_eve_gateway::config::Config;
-use starfoundry_bin_eve_gateway::item::services::load_items;
+use starfoundry_bin_eve_gateway::item::services::load_items_by_name;
 use starfoundry_bin_eve_gateway::metrics::{self, path_metrics, setup_metrics_recorder};
 use starfoundry_bin_eve_gateway::state::AppState;
 use std::sync::Arc;
@@ -40,7 +40,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let pool = postgres.clone();
     tokio::spawn(async move {
         tracing::info!("starting item cache population");
-        let _ = load_items(&pool).await;
+        let _ = load_items_by_name(&pool).await;
         tracing::info!("item cache populated");
     });
 

@@ -5,7 +5,7 @@ use starfoundry_lib_types::{ItemId, LocationId, TypeId};
 use crate::eve_asset::location_flag::LocationFlag;
 
 #[derive(Debug, Deserialize, Serialize, ToSchema)]
-pub struct Blueprint {
+pub struct EveBlueprintResponse {
     /// Unique ID for this item
     pub item_id:                ItemId,
     /// References a station, a ship or an item_id if this blueprint is located within a container

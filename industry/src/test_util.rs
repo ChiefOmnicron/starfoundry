@@ -1,6 +1,6 @@
 use axum::http::HeaderMap;
 use serde::Serialize;
-use starfoundry_lib_eve_gateway::{EveGatewayApiClient, EveGatewayApiClientEveAsset, EveGatewayApiClientIndustry, EveGatewayApiClientItem};
+use starfoundry_lib_eve_gateway::{EveGatewayApiClient, EveGatewayApiClientAsset, EveGatewayApiClientEveAsset, EveGatewayApiClientIndustry, EveGatewayApiClientItem};
 use starfoundry_lib_eve_gateway::contract::EveGatewayApiClientContract;
 use starfoundry_lib_eve_gateway::eve_industry::EveGatewayApiClientEveIndustry;
 use starfoundry_lib_eve_gateway::eve_market::EveGatewayApiClientEveMarket;
@@ -18,6 +18,7 @@ impl EveGatewayTestApiClient {
 }
 
 impl EveGatewayApiClient for EveGatewayTestApiClient {}
+impl EveGatewayApiClientAsset for EveGatewayTestApiClient {}
 impl EveGatewayApiClientContract for EveGatewayTestApiClient {}
 impl EveGatewayApiClientEveAsset for EveGatewayTestApiClient {}
 impl EveGatewayApiClientEveIndustry for EveGatewayTestApiClient {}

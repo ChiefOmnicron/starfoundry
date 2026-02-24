@@ -1,3 +1,4 @@
+mod asset;
 mod character;
 mod client_trait;
 mod client;
@@ -15,6 +16,7 @@ pub mod contract;
 pub mod eve_industry;
 pub mod eve_market;
 
+pub use self::asset::*;
 pub use self::character::*;
 pub use self::client::*;
 pub use self::client_trait::*;

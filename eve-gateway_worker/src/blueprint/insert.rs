@@ -1,6 +1,6 @@
 use sqlx::PgPool;
 use starfoundry_lib_worker::Task;
-use starfoundry_lib_eve_gateway::Blueprint;
+use starfoundry_lib_eve_gateway::EveBlueprintResponse;
 
 use crate::error::{Error, Result};
 use crate::metric::WorkerMetric;
@@ -10,7 +10,7 @@ pub async fn insert_blueprints(
     pool:     &PgPool,
     task:     &mut Task<WorkerMetric, WorkerEveGatewayTask>,
     owner_id: i32,
-    entries:  Vec<Blueprint>,
+    entries:  Vec<EveBlueprintResponse>,
 ) -> Result<()> {
     if entries.is_empty() {
         return Ok(());

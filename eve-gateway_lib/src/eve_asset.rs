@@ -61,7 +61,7 @@ pub trait EveGatewayApiClientEveAsset: ApiClient {
         &self,
         source:       String,
         character_id: CharacterId,
-    ) -> Result<Vec<Blueprint>> {
+    ) -> Result<Vec<EveBlueprintResponse>> {
         let mut headers = HeaderMap::new();
         headers.insert(HOST, HeaderValue::from_str(&source).unwrap_or(HeaderValue::from_static("invalid.header")));
         headers.insert(HEADER_CHARACTER_ID, (*character_id).into());
@@ -82,7 +82,7 @@ pub trait EveGatewayApiClientEveAsset: ApiClient {
         source:         String,
         character_id:   CharacterId,
         corporation_id: CorporationId,
-    ) -> Result<Vec<Blueprint>> {
+    ) -> Result<Vec<EveBlueprintResponse>> {
         let mut headers = HeaderMap::new();
         headers.insert(HOST, HeaderValue::from_str(&source).unwrap_or(HeaderValue::from_static("invalid.header")));
         headers.insert(HEADER_CHARACTER_ID, (*character_id).into());

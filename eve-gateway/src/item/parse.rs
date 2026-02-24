@@ -6,7 +6,7 @@ use starfoundry_lib_eve_gateway::ParseResult;
 
 use crate::api_docs::{InternalServerError, NotFound};
 use crate::item::error::Result;
-use crate::item::services::{load_items, parse};
+use crate::item::services::{load_items_by_name, parse};
 use crate::state::AppState;
 
 /// Fetch an item
@@ -37,7 +37,7 @@ pub async fn api(
     State(state):  State<AppState>,
     Json(content): Json<String>,
 ) -> Result<impl IntoResponse> {
-    let item_cache = load_items(
+    let item_cache = load_items_by_name(
             &state.postgres,
         )
         .await?;

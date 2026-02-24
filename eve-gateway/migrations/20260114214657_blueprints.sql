@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS asset_blueprint (
 
     item_id             BIGINT  NOT NULL,
     location_id         BIGINT  NOT NULL,
-    type_id             BIGINT  NOT NULL,
+    type_id             INTEGER NOT NULL,
 
     location_flag       VARCHAR NOT NULL,
     material_efficiency INTEGER NOT NULL,

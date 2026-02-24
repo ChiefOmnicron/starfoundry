@@ -2,12 +2,14 @@ use once_cell::sync::{Lazy, OnceCell};
 use regex::Regex;
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{Item, ParseResult, ParsedItem};
+use starfoundry_lib_types::TypeId;
 use std::collections::HashMap;
 
 use crate::item::error::{ItemError, Result};
 use crate::item::services::{fetch_category, fetch_group};
 
-pub static ITEM_CACHE: OnceCell<HashMap<String, Item>> = OnceCell::new();
+static ITEM_CACHE_NAME: OnceCell<HashMap<String, Item>> = OnceCell::new();
+static ITEM_CACHE_TYPE_ID: OnceCell<HashMap<TypeId, Item>> = OnceCell::new();
 
 /// Parses the given content and tries to detect item names and their quantity
 /// 
@@ -137,13 +139,41 @@ pub fn parse(
     }
 }
 
-pub async fn load_items<'a>(
+pub async fn load_items_by_name(
     pool: &PgPool,
-) -> Result<&'a HashMap<String, Item>> {
-    if let Some(x) = ITEM_CACHE.get() {
-        return Ok(x);
+) -> Result<HashMap<String, Item>> {
+    if let Some(x) = ITEM_CACHE_NAME.get() {
+        return Ok(x.clone());
     }
 
+    load_items(pool).await?;
+
+    if let Some(x) = ITEM_CACHE_NAME.get() {
+        return Ok(x.clone())
+    } else {
+        Ok(HashMap::new())
+    }
+}
+
+pub async fn load_items_by_type_id(
+    pool: &PgPool,
+) -> Result<HashMap<TypeId, Item>> {
+    if let Some(x) = ITEM_CACHE_TYPE_ID.get() {
+        return Ok(x.clone());
+    }
+
+    load_items(pool).await?;
+
+    if let Some(x) = ITEM_CACHE_TYPE_ID.get() {
+        return Ok(x.clone())
+    } else {
+        Ok(HashMap::new())
+    }
+}
+
+async fn load_items<'a>(
+    pool: &PgPool,
+) -> Result<()> {
     let all_items_db = sqlx::query!("
             SELECT
                 name,
@@ -159,7 +189,8 @@ pub async fn load_items<'a>(
         .await
         .map_err(ItemError::List)?;
 
-    let mut all_items = HashMap::new();
+    let mut all_items_name = HashMap::new();
+    let mut all_items_type_id = HashMap::new();
     for item in all_items_db {
         let category = if let Ok(Some(x)) = fetch_category(
             pool,
@@ -178,11 +209,12 @@ pub async fn load_items<'a>(
             continue;
         };
 
+        let type_id: TypeId = item.type_id.into();
         let item = Item {
             name:       sanitize_name(item.name.clone()),
             volume:     item.volume,
             repackaged: item.repackaged,
-            type_id:    item.type_id.into(),
+            type_id:    type_id.clone(),
 
             category:   category,
             group:      group,
@@ -190,11 +222,13 @@ pub async fn load_items<'a>(
         };
 
         let name = sanitize_name(item.name.to_lowercase());
-        all_items.insert(name, item);
+        all_items_name.insert(name, item.clone());
+        all_items_type_id.insert(type_id, item);
     }
 
-    let data = ITEM_CACHE.get_or_init(|| all_items);
-    Ok(data)
+    ITEM_CACHE_NAME.get_or_init(|| all_items_name);
+    ITEM_CACHE_TYPE_ID.get_or_init(|| all_items_type_id);
+    Ok(())
 }
 
 // some names have too many spaces
@@ -224,9 +258,9 @@ mod item_parser_tests {
 
     async fn load_items<'a>(
         pool: &PgPool,
-    ) -> &'a HashMap<String, Item> {
+    ) -> HashMap<String, Item> {
         dotenvy::dotenv().ok();
-        super::load_items(&pool).await.unwrap()
+        super::load_items_by_name(&pool).await.unwrap()
     }
 
     #[sqlx::test(
