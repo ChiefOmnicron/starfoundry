@@ -1,6 +1,7 @@
 import { useBlocker } from "@tanstack/react-router";
 import { Button, Dialog, Group, Text } from "@mantine/core";
 import { useState } from "react";
+import { useMediaQuery } from "@mantine/hooks";
 
 export function SaveDialog({
     show,
@@ -8,6 +9,7 @@ export function SaveDialog({
     onReset,
 }: Props) {
     const [shakeDialog, setShakeDialog] = useState<boolean>(false);
+        const isMobile = useMediaQuery('(max-width: 50em)');
 
     useBlocker({
         shouldBlockFn: () => {
@@ -30,7 +32,7 @@ export function SaveDialog({
             size="xl"
             position={{
                 bottom: 50,
-                right: '35%',
+                right: isMobile ? '0' : '35%',
             }}
             className={`${shakeDialog ? 'shakeDialog' : ''}`}
         >

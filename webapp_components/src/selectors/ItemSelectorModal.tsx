@@ -2,7 +2,7 @@ import { Button, Checkbox, Flex, InputBase, Modal, Stack, Table, Text, UnstyledB
 import { EveIcon } from "../misc/EveIcon";
 import { listItem, type ItemFilter } from "@internal/services/item/list";
 import { LoadingAnimation } from "../misc/LoadingAnimation";
-import { useDebouncedCallback } from "@mantine/hooks";
+import { useDebouncedCallback, useMediaQuery } from "@mantine/hooks";
 import { useEffect, useState, type JSX, type ReactElement } from "react";
 import type { Item } from "@internal/services/item/model";
 
@@ -16,6 +16,8 @@ export function ItemSelectorModal({
     blueprint = false,
     buildable = false,
 }: ItemSelectorModalProp): ReactElement {
+    const isMobile = useMediaQuery('(max-width: 50em)');
+
     // all items selected by the user
     const [selectedItems, setSelectedItems] = useState<Item[]>([]);
     // list of items that can be selected
@@ -180,6 +182,7 @@ export function ItemSelectorModal({
             blur: 3,
         }}
         size="70%"
+        fullScreen={isMobile}
         centered
         closeOnEscape
         closeOnClickOutside

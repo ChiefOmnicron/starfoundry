@@ -38,7 +38,6 @@ pub async fn fetch_bulk(
     structure_uuids:        Vec<StructureUuid>,
     options:                FetchStructureQuery,
 ) -> Result<Vec<Structure>> {
-    tracing::info!("{:?} {:?}", &structure_uuids, character_id);
     let structures = sqlx::query!(r#"
             SELECT
                 id,

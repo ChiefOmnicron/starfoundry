@@ -6,6 +6,7 @@ import { StructureRigBadge } from '@internal/structure/StructureRigBadge';
 import { StructureServiceBadge } from '@internal/structure/StructureServiceBadge';
 import type { Structure } from '@internal/services/structure/list';
 import { TAXES_SERVICE_MODULES } from '@internal/structure/TaxesByService';
+import { useMediaQuery } from '@mantine/hooks';
 
 export function StructureView({
     structure,
@@ -146,6 +147,8 @@ export function StructureViewModal({
     structure,
     showBlueprintBonus,
 }: StructureViewModalProps) {
+    const isMobile = useMediaQuery('(max-width: 50em)');
+
     return <Modal
         opened={ opened }
         onClose={ onClose }
@@ -154,6 +157,7 @@ export function StructureViewModal({
             blur: 3,
         }}
         size="70%"
+        fullScreen={isMobile}
         centered
         closeOnEscape
         closeOnClickOutside

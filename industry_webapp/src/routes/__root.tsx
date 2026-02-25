@@ -1,5 +1,8 @@
-import { AppShell, Burger, createTheme, DEFAULT_THEME, Group, Image, MantineProvider, mergeMantineTheme, ScrollArea } from '@mantine/core';
+import { AppShell, Burger, createTheme, DEFAULT_THEME, Divider, Group, Image, MantineProvider, mergeMantineTheme, ScrollArea } from '@mantine/core';
+import { CharacterComponent } from '@starfoundry/components/misc/Character';
 import { createRootRouteWithContext, Link, Outlet, useRouterState } from '@tanstack/react-router';
+import { CustomLink } from '@starfoundry/components/links/RouterLink';
+import { Footer } from '@starfoundry/components/misc/Footer';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Route as AboutRoute } from '@/routes/about';
 import { Route as IndexRoute } from '@/routes';
@@ -8,11 +11,20 @@ import { UnauthorizedShell } from './auth/login';
 import { useDisclosure } from '@mantine/hooks';
 import type { ReactElement } from 'react';
 import type { RouterContext } from '@/main';
-import { CustomLink } from '@starfoundry/components/links/RouterLink';
-import { CharacterComponent } from '@starfoundry/components/misc/Character';
 
-const routes = [
-    {
+type RouteDefinition = {
+    entries: RouteEntry[];
+}
+
+type RouteEntry = {
+    link: string;
+    label: string;
+    subpath?: string;
+    paths: { link: string, label: string }[];
+}
+
+const routes: RouteDefinition[] = [{
+    entries: [{
         link: '/projects',
         label: 'Projects',
         subpath: '/projects/$projectId',
@@ -26,8 +38,7 @@ const routes = [
             link: '/projects/$projectId/market',
             label: 'Market'
         }]
-    },
-    {
+    }, {
         link: '/project-groups',
         label: 'Project Groups',
         subpath: '/project-groups/$projectGroupId',
@@ -47,23 +58,24 @@ const routes = [
             link: '/project-groups/$projectGroupId/defaults',
             label: 'Defaults'
         }]
-    },
-    {
-        link: '/structures',
-        label: 'Structures',
-        paths: [],
-    },
-    {
+    }]
+}, {
+    entries: [{
         link: '/industry-hubs',
         label: 'Industry Hubs',
         paths: [],
-    },
-    {
+    }, {
+        link: '/structures',
+        label: 'Structures',
+        paths: [],
+    }]
+}, {
+    entries: [{
         link: '/characters',
         label: 'Characters',
         paths: [],
-    }
-];
+    }]
+}];
 
 const themeOverride = createTheme({
     fontFamily: '"Roboto Mono", monospace',
@@ -114,56 +126,70 @@ function Shell() {
     const [opened, { toggle }] = useDisclosure();
 
     const navigation = (): ReactElement[] => {
-        return routes
-            .map(route => {
-                if (!(route && route.label)) {
-                    return <></>;
-                }
+        const groups = routes
+            .map(group => {
+                return group.entries
+                    .map(route => {
+                        if (!(route && route.label)) {
+                            return <></>;
+                        }
 
-                if (
-                    router.matches[router.matches.length - 1] &&
-                    router.matches[router.matches.length - 1].fullPath.indexOf(route.subpath || '') > -1
-                ) {
-                    const match = router.matches[router.matches.length - 2];
+                        if (
+                            router.matches[router.matches.length - 1] &&
+                            router.matches[router.matches.length - 1].fullPath.indexOf(route.subpath || '') > -1
+                        ) {
+                            const match = router.matches[router.matches.length - 2];
 
-                    if (!match) {
-                        return <></>;
-                    }
+                            if (!match) {
+                                return <></>;
+                            }
 
-                    const params: any = match.params;
+                            const params: any = match.params;
 
-                    const subRoutes = route
-                        .paths
-                        .map(subRoute => {
-                            return (<CustomLink
-                                key={ subRoute.label.toLowerCase() }
-                                to={ subRoute.link }
-                                label={ subRoute.label }
-                                params={params}
-                            />)
-                        });
+                            const subRoutes = route
+                                .paths
+                                .map(subRoute => {
+                                    return (<CustomLink
+                                        key={ subRoute.label.toLowerCase() }
+                                        to={ subRoute.link }
+                                        label={ subRoute.label }
+                                        params={params}
+                                    />)
+                                });
 
-                    return (
-                        <CustomLink
-                            key={ route.label.toLowerCase() }
-                            to={ route.link }
-                            label={ route.label }
-                            rightSection={<></> }
-                            opened
-                        >
-                            { subRoutes }
-                        </CustomLink>
-                    )
-                } else {
-                    return (
-                        <CustomLink
-                            key={ route.label.toLowerCase() }
-                            to={ route.link }
-                            label={ route.label }
-                        />
-                    );
-                }
+                            return (
+                                <CustomLink
+                                    key={ route.label.toLowerCase() }
+                                    to={ route.link }
+                                    label={ route.label }
+                                    rightSection={<></> }
+                                    opened
+                                >
+                                    { subRoutes }
+                                </CustomLink>
+                            )
+                        } else {
+                            return (
+                                <CustomLink
+                                    key={ route.label.toLowerCase() }
+                                    to={ route.link }
+                                    label={ route.label }
+                                />
+                            );
+                        }
+                    });
             });
+
+        return groups
+            .map((x, index) => <>
+                { x }
+
+                {
+                    index === groups.length -1
+                    ? <></>
+                    : <Divider />
+                }
+            </>)
     }
 
     const sideNavigation = (): ReactElement => {
@@ -248,7 +274,7 @@ function Shell() {
 
                 <AppShell.Main
                     style={{
-                        paddingBottom: '50px'
+                        paddingBottom: '10%'
                     }}
                 >
                     <Outlet />
@@ -256,55 +282,9 @@ function Shell() {
                     <ReactQueryDevtools />
                 </AppShell.Main>
 
-                <AppShell.Footer>
-                    <div
-                        style={{
-                            fontSize: '10px',
-                            paddingLeft: '250px'
-                        }}
-                    >
-                        All
-    
-                        <Link
-                            to={ LegalRoute.to }
-                            style={{
-                                color: 'var(--mantine-color-blue-9)',
-                                padding: '5px',
-                                textDecoration: 'none',
-                            }}
-                        >
-                            Eve related materials
-                        </Link>
-    
-                        are property of
-    
-                        <a
-                            href="https://www.ccpgames.com"
-                            target="_blank"
-                            style={{
-                                color: 'var(--mantine-color-blue-9)',
-                                padding: '5px',
-                                textDecoration: 'none',
-                            }}
-                        >
-                            CCP Games
-                        </a>
-    
-                        See
-    
-                        <Link
-                            to={ LegalRoute.to }
-                            style={{
-                                color: 'var(--mantine-color-blue-9)',
-                                paddingLeft: '5px',
-                                textDecoration: 'none',
-                            }}
-                        >
-                            legal notice
-                        </Link>
-                        .
-                    </div>
-                </AppShell.Footer>
+                <Footer
+                    legalRoute={LegalRoute.to}
+                />
             </AppShell>
         </MantineProvider>
     );

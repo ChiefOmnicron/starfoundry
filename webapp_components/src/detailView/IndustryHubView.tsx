@@ -8,6 +8,7 @@ import { StructureServiceBadge } from '@internal/structure/StructureServiceBadge
 import { useFetchIndustryHub } from '@internal/services/industry-hub/fetch';
 import type { IndustryHub } from '@internal/services/industry-hub/list';
 import type { Uuid } from '@internal/services/utils';
+import { useMediaQuery } from '@mantine/hooks';
 
 export function IndustryHubView({
     industryHub,
@@ -71,6 +72,8 @@ export function IndustryHubViewModal({
     industryHub,
     industryHubId,
 }: IndustryHubViewModalProps) {
+    const isMobile = useMediaQuery('(max-width: 50em)');
+
     let hub;
     if (industryHubId) {
         const {
@@ -103,6 +106,7 @@ export function IndustryHubViewModal({
             blur: 3,
         }}
         size="70%"
+        fullScreen={isMobile}
         centered
         closeOnEscape
         closeOnClickOutside

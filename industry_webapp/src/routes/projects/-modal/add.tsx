@@ -11,6 +11,7 @@ import type { Uuid } from '@starfoundry/components/services/utils';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 import { ProjectGroupSelector } from '@starfoundry/components/selectors/ProjectGroupSelector';
+import { useMediaQuery } from '@mantine/hooks';
 
 export function AddProject({
     close
@@ -268,6 +269,8 @@ export function AddProjectModal({
     opened,
     close,
 }: AddProjectModalProps) {
+    const isMobile = useMediaQuery('(max-width: 50em)');
+
     return <Modal
         opened={ opened }
         onClose={ close }
@@ -277,6 +280,7 @@ export function AddProjectModal({
             blur: 3,
         }}
         size="70%"
+        fullScreen={isMobile}
         centered
         closeOnEscape
         closeOnClickOutside
