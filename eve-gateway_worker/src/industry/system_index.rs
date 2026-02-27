@@ -12,7 +12,7 @@ pub async fn system_index(
     pool: &PgPool,
     task: &mut Task<WorkerMetric, WorkerEveGatewayTask>,
 ) -> Result<()> {
-    let client = EveGatewayClient::new(SERVICE_NAME.into())?;
+    let client = EveGatewayClient::new(SERVICE_NAME)?;
     let entries = match client
         .eve_fetch_system_index()
         .await {

@@ -28,7 +28,7 @@ pub async fn assets(
         }
     };
 
-    let client = EveGatewayClient::new(SERVICE_NAME.into())?;
+    let client = EveGatewayClient::new(SERVICE_NAME)?;
     let entries = match client
         .eve_fetch_character_assets(
             additional_data.source,

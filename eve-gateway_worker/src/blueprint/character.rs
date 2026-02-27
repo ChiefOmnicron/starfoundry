@@ -28,7 +28,7 @@ pub async fn blueprints(
         }
     };
 
-    let client = EveGatewayClient::new(SERVICE_NAME.into())?;
+    let client = EveGatewayClient::new(SERVICE_NAME)?;
     let entries = match client
         .eve_fetch_character_blueprints(
             additional_data.source,

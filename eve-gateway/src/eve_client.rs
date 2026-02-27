@@ -489,6 +489,13 @@ impl EveApiClient {
                 metrics::gauge!("eve-api-rate-limit", &label).set(remaining);
             }
 
+            let status_label = [
+                ("status_code", response.status().to_string()),
+                ("path", request_uri.clone().to_string()),
+                ("action", "GET".into()),
+            ];
+            metrics::counter!("eve-api-status", &status_label).increment(1);
+
             match response.status() {
                 StatusCode::NOT_FOUND => {
                     return Err(EveApiError::NotFound(request_uri));
@@ -659,6 +666,13 @@ impl EveApiClient {
                 metrics::gauge!("eve-api-rate-limit", &label).set(remaining);
             }
 
+            let status_label = [
+                ("status_code", response.status().to_string()),
+                ("path", request_uri.clone().to_string()),
+                ("action", "GET".into()),
+            ];
+            metrics::counter!("eve-api-status", &status_label).increment(1);
+
             match response.status() {
                 StatusCode::NOT_FOUND => {
                     return Err(EveApiError::NotFound(request_uri));
@@ -789,6 +803,13 @@ impl EveApiClient {
                 .send()
                 .await
                 .map_err(|x| EveApiError::ReqwestError(x, request_uri.clone()))?;
+
+            let status_label = [
+                ("status_code", response.status().to_string()),
+                ("path", request_uri.clone().to_string()),
+                ("action", "POST".into()),
+            ];
+            metrics::counter!("eve-api-status", &status_label).increment(1);
 
             if response.status() == StatusCode::FORBIDDEN ||
                response.status() == StatusCode::UNAUTHORIZED {

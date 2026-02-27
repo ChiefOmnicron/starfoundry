@@ -28,7 +28,7 @@ pub async fn by_region_task(
         }
     };
 
-    let client = EveGatewayClient::new(SERVICE_NAME.into())?;
+    let client = EveGatewayClient::new(SERVICE_NAME)?;
     let mut entries = client
         .fetch_market_by_region(additional_data.region_id)
         .await?;

@@ -134,13 +134,13 @@ fn internal(
 use starfoundry_lib_eve_gateway::EveGatewayClient;
 #[cfg(not(test))]
 pub fn eve_gateway_api_client() -> Result<EveGatewayClient, starfoundry_lib_eve_gateway::Error> {
-    EveGatewayClient::new(SERVICE_NAME.into())
+    EveGatewayClient::new(SERVICE_NAME)
 }
 #[cfg(not(test))]
 use starfoundry_lib_market::MarketClient;
 #[cfg(not(test))]
 pub fn market_api_client() -> Result<MarketClient, starfoundry_lib_market::Error> {
-    MarketClient::new(SERVICE_NAME.into())
+    MarketClient::new(SERVICE_NAME)
 }
 
 #[cfg(test)]

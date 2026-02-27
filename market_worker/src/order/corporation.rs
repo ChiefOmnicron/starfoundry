@@ -28,7 +28,7 @@ pub async fn corporation_orders(
         }
     };
 
-    let client = EveGatewayClient::new(SERVICE_NAME.into())?;
+    let client = EveGatewayClient::new(SERVICE_NAME)?;
     let entries = match client
         .fetch_corporation_orders(
             additional_data.source,

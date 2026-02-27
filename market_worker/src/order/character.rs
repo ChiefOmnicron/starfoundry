@@ -28,7 +28,7 @@ pub async fn character_orders(
         }
     };
 
-    let client = EveGatewayClient::new(SERVICE_NAME.into())?;
+    let client = EveGatewayClient::new(SERVICE_NAME)?;
     let entries = match client
         .fetch_character_orders(
             additional_data.source,

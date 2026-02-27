@@ -11,7 +11,7 @@ pub async fn prices(
     pool: &PgPool,
     task: &mut Task<WorkerMetric, WorkerMarketTask>,
 ) -> Result<()> {
-    let client = EveGatewayClient::new(SERVICE_NAME.into())?;
+    let client = EveGatewayClient::new(SERVICE_NAME)?;
     let entries = match client
         .fetch_prices()
         .await {

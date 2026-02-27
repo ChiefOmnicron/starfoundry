@@ -17,8 +17,8 @@ impl IndustryClient {
     /// Creates a new [IndustryClient] pulling the address form the ENV
     /// ENV: `STARFOUNDRY_INDUSTRY_API_URL`
     /// 
-    pub fn new(
-        service: String,
+    pub fn new<S: Into<String>>(
+        service: S,
     ) -> Result<Self> {
         let env = if let Ok(x) = std::env::var(ENV_INDUSTRY_API) {
             x
@@ -28,7 +28,7 @@ impl IndustryClient {
 
         let api_url = Url::parse(&env).map_err(Error::UrlParseError)?;
 
-        let api_client = StarFoundryApiClient::new(api_url, service)?;
+        let api_client = StarFoundryApiClient::new(api_url, service.into())?;
         Ok(Self(api_client))
     }
 

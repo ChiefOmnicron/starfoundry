@@ -27,7 +27,7 @@ pub async fn public_contract_items(
         }
     };
 
-    let client = EveGatewayClient::new(SERVICE_NAME.into())?;
+    let client = EveGatewayClient::new(SERVICE_NAME)?;
     let contracts = client
         .fetch_public_contract_items(additional_data.contract_id.into())
         .await?;

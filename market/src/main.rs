@@ -113,7 +113,7 @@ fn service(
 use starfoundry_lib_eve_gateway::EveGatewayClient;
 #[cfg(not(test))]
 pub fn eve_gateway_api_client() -> Result<EveGatewayClient, starfoundry_lib_eve_gateway::Error> {
-    EveGatewayClient::new(SERVICE_NAME.into())
+    EveGatewayClient::new(SERVICE_NAME)
 }
 
 #[cfg(test)]
@@ -122,5 +122,5 @@ use starfoundry_lib_eve_gateway::EveGatewayClient;
 pub fn eve_gateway_api_client() -> Result<EveGatewayClient, starfoundry_lib_eve_gateway::Error> {
     use starfoundry_lib_eve_gateway::EveGatewayClient;
 
-    EveGatewayClient::new("MARKET_TESTING".into())
+    EveGatewayClient::new("MARKET_TESTING")
 }

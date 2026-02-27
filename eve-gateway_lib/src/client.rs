@@ -17,11 +17,11 @@ pub const ENV_EVE_GATEWAY_API: &str = "STARFOUNDRY_EVE_GATEWAY_API_URL";
 pub struct EveGatewayClient(StarFoundryApiClient);
 
 impl EveGatewayClient {
-    pub fn new(
-        service: String,
+    pub fn new<S: Into<String>>(
+        service: S,
     ) -> Result<Self> {
         let api_url = Self::api_url()?;
-        let api_client = StarFoundryApiClient::new(api_url, service)?;
+        let api_client = StarFoundryApiClient::new(api_url, service.into())?;
         Ok(Self(api_client))
     }
 

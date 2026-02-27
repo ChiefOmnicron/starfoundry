@@ -28,7 +28,7 @@ pub async fn by_player_station_task(
         }
     };
 
-    let client = EveGatewayClient::new(SERVICE_NAME.into())?;
+    let client = EveGatewayClient::new(SERVICE_NAME)?;
     let entries = match client
         .fetch_market_by_player(
             additional_data.source,
