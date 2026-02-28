@@ -64,7 +64,7 @@ pub async fn api(
     Json(config): Json<TmpRequest>,
 ) -> Result<impl IntoResponse> {
     let project_group = fetch(
-            &state.pool,
+            &state.postgres,
             &eve_gateway_api_client()?,
             identity.character_id,
             config.project_group_id,
@@ -73,7 +73,7 @@ pub async fn api(
         .unwrap();
 
     let industry_hubs = list_industry_hubs(
-            &state.pool,
+            &state.postgres,
             &eve_gateway_api_client()?,
             identity.character_id,
             config.project_group_id,
@@ -86,7 +86,7 @@ pub async fn api(
         .clone();
 
     let splitting = list_default_job_splitting(
-            &state.pool,
+            &state.postgres,
             &eve_gateway_api_client()?,
             config.project_group_id,
         )
@@ -97,7 +97,7 @@ pub async fn api(
         .collect::<HashMap<_, _>>();
 
     let blacklist = list_default_blacklist(
-            &state.pool,
+            &state.postgres,
             &eve_gateway_api_client()?,
             config.project_group_id,
         )
@@ -107,7 +107,7 @@ pub async fn api(
         .collect::<Vec<_>>();
 
     let blueprint_overwrites = list_default_blueprint_overwrite(
-            &state.pool,
+            &state.postgres,
             &eve_gateway_api_client()?,
             config.project_group_id,
         )

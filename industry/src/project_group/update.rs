@@ -1,3 +1,4 @@
+
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
@@ -8,7 +9,6 @@ use crate::project_group::ProjectGroupUuid;
 use crate::AppState;
 use crate::project_group::error::Result;
 use crate::project_group::service::{UpdateProjectGroup, update};
-
 
 /// Update General Group
 /// 
@@ -53,7 +53,7 @@ pub async fn api(
     Json(update_info):        Json<UpdateProjectGroup>,
 ) -> Result<impl IntoResponse> {
     update(
-        &state.pool,
+        &state.postgres,
         project_group_uuid,
         update_info,
     ).await?;

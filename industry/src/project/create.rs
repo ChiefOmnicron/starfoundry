@@ -54,7 +54,7 @@ pub async fn api(
     Json(project_info): Json<CreateProject>,
 ) -> Result<impl IntoResponse> {
     let id = create(
-            &state.pool,
+            &state.postgres,
             identity.character_id,
             project_info,
         ).await?;

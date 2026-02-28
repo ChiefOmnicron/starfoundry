@@ -2,11 +2,17 @@ use axum::extract::{FromRef, FromRequestParts};
 use axum::http::request::Parts;
 use sqlx::PgPool;
 use std::convert::Infallible;
+use std::sync::Arc;
+
+use crate::metrics::Metric;
 
 #[derive(Clone)]
 pub struct AppState
 where {
-    pub pool: PgPool,
+    /// Postgres connection pool
+    pub postgres: PgPool,
+    /// Track metrics for the application
+    pub metric:   Arc<Metric>,
 }
 
 impl<S> FromRequestParts<S> for AppState

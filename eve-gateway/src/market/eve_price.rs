@@ -1,3 +1,4 @@
+use axum::extract::State;
 use axum::Json;
 use axum::response::IntoResponse;
 use reqwest::StatusCode;
@@ -6,6 +7,7 @@ use starfoundry_lib_eve_gateway::eve_market::MarketPrice;
 use crate::api_docs::{InternalServerError, NotFound};
 use crate::market::error::Result;
 use crate::eve_client::EveApiClient;
+use crate::state::AppState;
 
 /// Fetch Market for a region
 /// 
@@ -31,8 +33,9 @@ use crate::eve_client::EveApiClient;
     ),
 )]
 pub async fn api(
+    State(state): State<AppState>,
 ) -> Result<impl IntoResponse> {
-    let api_client = EveApiClient::new()?;
+    let api_client = EveApiClient::new(state.metric)?;
 
     let path = format!("latest/markets/prices");
     let market_data = api_client

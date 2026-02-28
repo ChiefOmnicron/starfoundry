@@ -17,7 +17,7 @@ pub async fn assert_read(
     next:               Next,
 ) -> Result<impl IntoResponse> {
     assert_read_access_check(
-            &state.pool,
+            &state.postgres,
             project_uuid,
             identity.character_id,
         )

@@ -51,7 +51,7 @@ pub async fn api(
     Json(info):   Json<CreateIndustryHub>,
 ) -> Result<impl IntoResponse> {
     let id = create(
-        &state.pool,
+        &state.postgres,
         identity.character_id,
         info,
     ).await?;

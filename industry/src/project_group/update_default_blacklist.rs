@@ -53,7 +53,7 @@ pub async fn api(
     Json(update_info):        Json<Vec<TypeId>>,
 ) -> Result<impl IntoResponse> {
     update_default_blacklist(
-        &state.pool,
+        &state.postgres,
         project_group_uuid,
         update_info,
     ).await?;

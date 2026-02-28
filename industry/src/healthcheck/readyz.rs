@@ -30,10 +30,8 @@ use crate::AppState;
 pub async fn readyz(
     State(state): State<AppState>,
 ) -> impl IntoResponse {
-    let pool = state.pool.clone();
-
     let postgres_version = sqlx::query!("SELECT version()")
-        .fetch_one(&pool)
+        .fetch_one(&state.postgres)
         .await;
 
     if postgres_version.is_err() {

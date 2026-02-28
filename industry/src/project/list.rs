@@ -51,7 +51,7 @@ pub async fn api(
     Query(filter): Query<ProjectFilter>,
 ) -> Result<impl IntoResponse> {
     let data = list(
-            &state.pool,
+            &state.postgres,
             identity.character_id,
             filter,
             &eve_gateway_api_client()?,

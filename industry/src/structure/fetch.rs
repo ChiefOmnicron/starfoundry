@@ -54,7 +54,7 @@ pub async fn api(
     Query(options):       Query<FetchStructureQuery>,
 ) -> Result<impl IntoResponse> {
     let entry = fetch(
-            &state.pool,
+            &state.postgres,
             &eve_gateway_api_client()?,
             identity.character_id,
             structure_uuid,

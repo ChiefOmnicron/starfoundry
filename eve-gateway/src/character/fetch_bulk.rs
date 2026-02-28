@@ -39,7 +39,11 @@ pub async fn api(
     State(state):        State<AppState>,
     Json(character_ids): Json<Vec<CharacterId>>,
 ) -> Result<impl IntoResponse> {
-    let entry = fetch_character_bulk(&state.postgres, character_ids).await?;
+    let entry = fetch_character_bulk(
+        &state.postgres,
+        state.metric,
+        character_ids
+    ).await?;
 
     Ok(
         (

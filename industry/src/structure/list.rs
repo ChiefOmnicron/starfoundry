@@ -52,7 +52,7 @@ pub async fn api(
     Query(filter): Query<StructureFilter>,
 ) -> Result<impl IntoResponse> {
     let data = list(
-            &state.pool,
+            &state.postgres,
             &eve_gateway_api_client()?,
             identity.character_id,
             filter,

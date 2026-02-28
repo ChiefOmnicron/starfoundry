@@ -146,13 +146,17 @@ starfoundry_uuid!(ProjectGroupUuid, "ProjectGroupUuid");
 
 #[cfg(test)]
 pub async fn project_group_test_routes(
-    pool: sqlx::PgPool,
-    request: axum::http::Request<axum::body::Body>,
+    postgres: sqlx::PgPool,
+    request:  axum::http::Request<axum::body::Body>,
 ) -> axum::http::Response<axum::body::Body> {
     use tower::ServiceExt;
+    use std::sync::Arc;
+
+    use crate::metrics::Metric;
 
     let state = AppState {
-        pool: pool.clone(),
+        postgres: postgres.clone(),
+        metric:   Arc::new(Metric::new()),
     };
     let (app, _) = crate::project_group::routes(state.clone()).split_for_parts();
     let app = app.with_state(state.clone());

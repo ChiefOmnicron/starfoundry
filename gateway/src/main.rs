@@ -8,6 +8,7 @@ mod state;
 
 use axum::{middleware, Router};
 use axum::routing::get;
+use prometheus_client::registry::Registry;
 use std::sync::Arc;
 use tokio::select;
 use tower_http::compression::CompressionLayer;
@@ -18,7 +19,7 @@ use tracing_subscriber::EnvFilter;
 use crate::auth::load_signature;
 use crate::catch_all::*;
 use crate::config::Config;
-use crate::metrics::{path_metrics, setup_metrics_recorder};
+use crate::metrics::{Metric, path_metrics};
 use crate::state::AppState;
 
 pub(crate) const SERVICE_NAME: &str = "SF_GATEWAY";
@@ -43,8 +44,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let decoding_key = load_signature(config.eve_gateway_jwk_url).await?;
     let decoding_key = Arc::new(decoding_key);
 
-    let shared_state = AppState {
+    let mut metric_registry = Registry::with_prefix("starfoundry_gateway_api");
+    let metric = Metric::new();
+    metric.register(&mut metric_registry);
+
+    let state = AppState {
         routes: Arc::new(config.routes),
+        metric: Arc::new(metric),
 
         decoding_key,
     };
@@ -53,12 +59,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing::info!("Starting service server on {}", config.service_address.local_addr().unwrap());
 
     select! {
-        r = axum::serve(config.app_address, app(shared_state.clone())) => {
+        r = axum::serve(config.app_address, app(state.clone())) => {
             if r.is_err() {
                 tracing::error!("Error in app thread, error: {:?}", r);
             }
         },
-        r = axum::serve(config.service_address, service(shared_state.clone())) => {
+        r = axum::serve(config.service_address, service(
+            state.clone(),
+            Arc::new(metric_registry),
+        )) => {
             if r.is_err() {
                 tracing::error!("Error in service thread, error: {:?}", r);
             }
@@ -86,7 +95,7 @@ fn app(
         )
         .layer(
             ServiceBuilder::new()
-                .layer(middleware::from_fn(path_metrics))
+                .layer(middleware::from_fn_with_state(state.clone(), path_metrics))
                 .layer(RequestDecompressionLayer::new())
                 .layer(CompressionLayer::new())
         )
@@ -95,13 +104,12 @@ fn app(
 
 /// General service routes that do not need to be publicly accessible
 fn service(
-    state: AppState,
+    state:    AppState,
+    registry: Arc<Registry>,
 ) -> Router {
-    let metrics = setup_metrics_recorder();
-
     Router::new()
         .nest("/health", healthcheck::routes().with_state(state))
         .route("/metrics", axum::routing::get(|| async move {
-            metrics::route(metrics)
+            metrics::route(registry)
         }))
 }

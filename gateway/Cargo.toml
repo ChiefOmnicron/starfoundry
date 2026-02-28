@@ -9,8 +9,7 @@ license.workspace = true
 axum = { version = "0.8.7", features = ["macros"] }
 dotenvy = "0.15.7"
 jsonwebtoken = { version = "9.3.1", features = ["use_pem"] }
-metrics = "0.24.3"
-metrics-exporter-prometheus = "0.18.1"
+prometheus-client = "0.24.0"
 reqwest = { version = "0.13.1", features = ["json", "query", "form"] }
 starfoundry_lib-gateway ={ path = "../gateway_lib" }
 serde = { version = "1.0.228", features = ["derive"] }

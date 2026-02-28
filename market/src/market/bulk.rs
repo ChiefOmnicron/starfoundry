@@ -52,7 +52,7 @@ pub async fn api(
     Json(request): Json<MarketBulkRequest>,
 ) -> Result<impl IntoResponse> {
     let data = bulk(
-            &state.pool,
+            &state.postgres,
             request,
         ).await?;
 

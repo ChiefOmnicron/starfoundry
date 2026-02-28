@@ -18,7 +18,7 @@ pub async fn assert_owner(
     next:                     Next,
 ) -> Result<impl IntoResponse> {
     assert_owner_check(
-            &state.pool,
+            &state.postgres,
             project_group_uuid,
             identity.character_id,
         )

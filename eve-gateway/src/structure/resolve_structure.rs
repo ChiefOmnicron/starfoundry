@@ -45,13 +45,17 @@ use crate::structure::services::resolve_structure;
         InternalServerError,
     ),
 )]
+#[axum::debug_handler]
 pub async fn api(
     State(state):       State<AppState>,
     identity:           ExtractIdentity,
     Path(structure_id): Path<StructureId>,
 ) -> Result<impl IntoResponse> {
     let eve_api_client = identity
-        .eve_api_client(&state.postgres)
+        .eve_api_client(
+            &state.postgres,
+            state.metric,
+        )
         .await?
         .ok_or(EveApiError::ClientNotAuthenticated)?;
 

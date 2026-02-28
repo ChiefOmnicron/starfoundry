@@ -52,7 +52,7 @@ pub async fn api(
     Json(update_info):        Json<Vec<UpdateProjectGroupDefaultBlueprintOverwrite>>,
 ) -> Result<impl IntoResponse> {
     update_default_blueprint_overwrite(
-        &state.pool,
+        &state.postgres,
         project_group_uuid,
         update_info,
     ).await?;

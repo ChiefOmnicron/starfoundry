@@ -47,7 +47,7 @@ pub async fn api(
     Path(project_group_uuid): Path<ProjectGroupUuid>,
 ) -> Result<impl IntoResponse> {
     delete(
-        &state.pool,
+        &state.postgres,
         project_group_uuid,
     ).await?;
 

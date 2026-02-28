@@ -14,7 +14,7 @@ pub async fn assert_exists(
     next:               Next,
 ) -> Result<impl IntoResponse> {
     assert_exists_check(
-            &state.pool,
+            &state.postgres,
             structure_id,
         )
         .await?;

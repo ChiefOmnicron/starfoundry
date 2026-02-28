@@ -2,15 +2,18 @@ use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::CharacterInfo;
 use starfoundry_lib_types::CharacterId;
 use std::collections::HashMap;
+use std::sync::Arc;
 
 use crate::character::{CharacterError, Result};
 use crate::character::service::refresh_character_in_db;
+use crate::metrics::Metric;
 
 /// Fetches the character information for the given ids from the database.
 /// If the character does not exist yet, it will be fetched using the EVE-API.
 /// 
 pub async fn fetch_character_bulk(
     pool:          &PgPool,
+    metric:        Arc<Metric>,
     character_ids: Vec<CharacterId>,
 ) -> Result<Vec<CharacterInfo>> {
     let mut db_lookup_result = sqlx::query!("
@@ -44,7 +47,11 @@ pub async fn fetch_character_bulk(
         for character_id in character_ids {
             if !db_lookup_result.contains_key(&*character_id) {
                 // ignore errors
-                if let Ok(x) = refresh_character_in_db(&pool, character_id).await {
+                if let Ok(x) = refresh_character_in_db(
+                    &pool,
+                    metric.clone(),
+                    character_id
+                ).await {
                     db_lookup_result.insert(*character_id, x);
                 }
             }

@@ -55,7 +55,7 @@ pub async fn api(
     Path(project_id): Path<ProjectUuid>,
 ) -> Result<impl IntoResponse> {
     let data = list_jobs(
-            &state.pool,
+            &state.postgres,
             identity.character_id,
             project_id,
             &eve_gateway_api_client()?,

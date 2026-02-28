@@ -55,7 +55,7 @@ pub async fn api(
     Path(project_id): Path<ProjectUuid>,
 ) -> Result<impl IntoResponse> {
     let data = list_market(
-            &state.pool,
+            &state.postgres,
             project_id,
             &eve_gateway_api_client()?,
         ).await?;

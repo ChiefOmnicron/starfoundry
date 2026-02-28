@@ -20,7 +20,7 @@ use utoipa::OpenApi;
 
 use crate::config::Config;
 use crate::api_docs::ApiDoc;
-use crate::metrics::{setup_metrics_recorder, path_metrics};
+use crate::metrics::{Metric, path_metrics};
 
 #[allow(dead_code)]
 const SERVICE_NAME: &str = "SF_MARKET";
@@ -47,8 +47,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?;
     sqlx::migrate!().run(&pool).await?;
 
+    let mut metric_registry = Registry::with_prefix("starfoundry_market_api");
+    let metric = Metric::new();
+    metric.register(&mut metric_registry);
+
     let state = AppState {
-        pool,
+        postgres: pool,
+        metric:   Arc::new(metric),
     };
 
     tracing::info!("Starting app server on {}", config.app_address.local_addr().unwrap());
@@ -60,7 +65,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 tracing::error!("Error in app thread, error: {:?}", r);
             }
         },
-        r = axum::serve(config.service_address, service(state.clone())) => {
+        r = axum::serve(config.service_address, service(
+            state.clone(),
+            Arc::new(metric_registry),
+        )) => {
             if r.is_err() {
                 tracing::error!("Error in service thread, error: {:?}", r);
             }
@@ -81,7 +89,7 @@ fn app(
         .nest("/prices", price::routes())
         .layer(
             ServiceBuilder::new()
-                .layer(middleware::from_fn(path_metrics))
+                .layer(middleware::from_fn_with_state(state.clone(), path_metrics))
         )
         .with_state(state.clone())
         .split_for_parts();
@@ -98,14 +106,13 @@ fn app(
 
 /// General service routes that do not need to be publicly accessible
 fn service(
-    state: AppState,
+    state:    AppState,
+    registry: Arc<Registry>,
 ) -> Router {
-    let metrics = setup_metrics_recorder();
-
     Router::new()
         .nest("/health", healthcheck::routes().with_state(state))
         .route("/metrics", axum::routing::get(|| async move {
-            metrics::route(metrics)
+            metrics::route(registry)
         }))
 }
 
@@ -118,6 +125,8 @@ pub fn eve_gateway_api_client() -> Result<EveGatewayClient, starfoundry_lib_eve_
 
 #[cfg(test)]
 use starfoundry_lib_eve_gateway::EveGatewayClient;
+use std::sync::Arc;
+use prometheus_client::registry::Registry;
 #[cfg(test)]
 pub fn eve_gateway_api_client() -> Result<EveGatewayClient, starfoundry_lib_eve_gateway::Error> {
     use starfoundry_lib_eve_gateway::EveGatewayClient;

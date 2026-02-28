@@ -1,10 +1,11 @@
 use axum::{middleware, Router};
+use prometheus_client::registry::Registry;
 use sqlx::postgres::PgPoolOptions;
 use starfoundry_bin_eve_gateway::{auth, character, contract, healthcheck, industry, internal, item, search, structure, universe, eve};
 use starfoundry_bin_eve_gateway::api_docs::ApiDoc;
 use starfoundry_bin_eve_gateway::config::Config;
 use starfoundry_bin_eve_gateway::item::services::load_items_by_name;
-use starfoundry_bin_eve_gateway::metrics::{self, path_metrics, setup_metrics_recorder};
+use starfoundry_bin_eve_gateway::metrics::{self, Metric, path_metrics};
 use starfoundry_bin_eve_gateway::state::AppState;
 use std::sync::Arc;
 use tokio::select;
@@ -44,8 +45,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         tracing::info!("item cache populated");
     });
 
+    let mut metric_registry = Registry::with_prefix("starfoundry_eve_gateway_api");
+    let metric = Metric::new();
+    metric.register(&mut metric_registry);
+
     let state = AppState {
         postgres,
+        metric:       Arc::new(metric),
         auth_domains: Arc::new(config.domains),
     };
 
@@ -58,7 +64,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 tracing::error!("Error in app thread, error: {:?}", r);
             }
         },
-        r = axum::serve(config.service_address, service(state.clone())) => {
+        r = axum::serve(config.service_address, service(
+            state.clone(),
+            Arc::new(metric_registry),
+        )) => {
             if r.is_err() {
                 tracing::error!("Error in service thread, error: {:?}", r);
             }
@@ -87,7 +96,7 @@ fn app(
         .nest("/eve", eve::routes())
         .nest("/internal", internal::routes())
         .layer(
-            ServiceBuilder::new().layer(middleware::from_fn(path_metrics))
+            ServiceBuilder::new().layer(middleware::from_fn_with_state(state.clone(), path_metrics))
         )
         .with_state(state.clone())
         .split_for_parts();
@@ -104,13 +113,12 @@ fn app(
 
 /// General service routes that do not need to be publicly accessible
 fn service(
-    state: AppState,
+    state:    AppState,
+    registry: Arc<Registry>,
 ) -> Router {
-    let metrics = setup_metrics_recorder();
-
     Router::new()
         .nest("/health", healthcheck::routes().with_state(state))
         .route("/metrics", axum::routing::get(|| async move {
-            metrics::route(metrics)
+            metrics::route(registry)
         }))
 }

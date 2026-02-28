@@ -23,6 +23,7 @@ use std::sync::{Arc, Mutex};
 use url::Url;
 
 use crate::eve_client::error::{EveApiError, Result};
+use crate::metrics::Metric;
 
 /// Required by the EVE-Api
 const COMPATIBILITY_DATE_HEADER: &str       = "X-Compatibility-Date";
@@ -69,6 +70,8 @@ pub struct EveApiClient {
 
     /// Token needed to get data that is behind auth
     access_token:       Arc<Mutex<Option<String>>>,
+
+    metric:             Arc<Metric>,
 }
 
 impl EveApiClient {
@@ -83,7 +86,9 @@ impl EveApiClient {
     /// - If the reqwest Client cannot be constructed.
     /// - If the ENV '[ENV_CLIENT_ID]' is not set
     /// 
-    pub fn new() -> Result<Self> {
+    pub fn new(
+        metric: Arc<Metric>,
+    ) -> Result<Self> {
         let client = Self::client()?;
 
         Ok(Self {
@@ -91,6 +96,8 @@ impl EveApiClient {
             access_token:  Arc::new(Mutex::new(None)),
 
             authenticated: None,
+
+            metric:        metric,
         })
     }
 
@@ -103,6 +110,7 @@ impl EveApiClient {
     /// - If the reqwest client cannot be constructed
     /// 
     pub fn new_with_refresh_token(
+        metric:        Arc<Metric>,
         character_id:  CharacterId,
         refresh_token: impl Into<String>,
     ) -> Result<Self> {
@@ -117,6 +125,8 @@ impl EveApiClient {
                 refresh_token: refresh_token.into(),
                 character_id,
             }),
+
+            metric:         metric,
         })
     }
 
@@ -481,20 +491,23 @@ impl EveApiClient {
 
             if response.headers().get("X-Ratelimit-Group").is_some() {
                 let group = response.headers().get("X-Ratelimit-Group").unwrap().to_str().unwrap();
-                let remaining: f64 = response.headers().get("X-Ratelimit-Remaining").unwrap().to_str().unwrap().parse::<f64>().unwrap();
+                let remaining: i64 = response.headers().get("X-Ratelimit-Remaining").unwrap().to_str().unwrap().parse::<i64>().unwrap();
 
-                let label = [
-                    ("group", group.to_string()),
-                ];
-                metrics::gauge!("eve-api-rate-limit", &label).set(remaining);
+                self
+                    .metric
+                    .set_eve_rate_limit(
+                        group,
+                        None,
+                        remaining,
+                    );
             }
 
-            let status_label = [
-                ("status_code", response.status().to_string()),
-                ("path", request_uri.clone().to_string()),
-                ("action", "GET".into()),
-            ];
-            metrics::counter!("eve-api-status", &status_label).increment(1);
+            self
+                .metric
+                .increase_eve_status(
+                    response.status().to_string(),
+                    request_uri.clone().to_string(),
+                );
 
             match response.status() {
                 StatusCode::NOT_FOUND => {
@@ -647,7 +660,7 @@ impl EveApiClient {
 
             if response.headers().get("X-Ratelimit-Group").is_some() {
                 let group = response.headers().get("X-Ratelimit-Group").unwrap().to_str().unwrap();
-                let remaining: f64 = response.headers().get("X-Ratelimit-Remaining").unwrap().to_str().unwrap().parse::<f64>().unwrap();
+                let remaining: i64 = response.headers().get("X-Ratelimit-Remaining").unwrap().to_str().unwrap().parse::<i64>().unwrap();
 
                 let character_id = if let Some(x) = self
                     .authenticated
@@ -659,19 +672,21 @@ impl EveApiClient {
                     CharacterId(0)
                 };
 
-                let label = [
-                    ("group", group.to_string()),
-                    ("character_id", character_id.to_string()),
-                ];
-                metrics::gauge!("eve-api-rate-limit", &label).set(remaining);
+                self
+                    .metric
+                    .set_eve_rate_limit(
+                        group,
+                        Some(character_id),
+                        remaining,
+                    );
             }
 
-            let status_label = [
-                ("status_code", response.status().to_string()),
-                ("path", request_uri.clone().to_string()),
-                ("action", "GET".into()),
-            ];
-            metrics::counter!("eve-api-status", &status_label).increment(1);
+            self
+                .metric
+                .increase_eve_status(
+                    response.status().to_string(),
+                    request_uri.clone().to_string(),
+                );
 
             match response.status() {
                 StatusCode::NOT_FOUND => {
@@ -804,12 +819,12 @@ impl EveApiClient {
                 .await
                 .map_err(|x| EveApiError::ReqwestError(x, request_uri.clone()))?;
 
-            let status_label = [
-                ("status_code", response.status().to_string()),
-                ("path", request_uri.clone().to_string()),
-                ("action", "POST".into()),
-            ];
-            metrics::counter!("eve-api-status", &status_label).increment(1);
+            self
+                .metric
+                .increase_eve_status(
+                    response.status().to_string(),
+                    request_uri.clone().to_string(),
+                );
 
             if response.status() == StatusCode::FORBIDDEN ||
                response.status() == StatusCode::UNAUTHORIZED {

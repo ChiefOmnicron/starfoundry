@@ -51,6 +51,7 @@ pub async fn api(
 ) -> Result<impl IntoResponse> {
     let api_client = api_client_corporation_auth(
             &state.postgres,
+            state.metric,
             identity.host()?,
             identity.character_id,
             corporation_id,

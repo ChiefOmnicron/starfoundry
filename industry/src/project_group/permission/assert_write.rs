@@ -18,7 +18,7 @@ pub async fn assert_write(
     next:                     Next,
 ) -> Result<impl IntoResponse> {
     assert_write_access_check(
-            &state.pool,
+            &state.postgres,
             project_group_uuid,
             identity.character_id,
             ProjectGroupPermissionCode::WriteGroup,

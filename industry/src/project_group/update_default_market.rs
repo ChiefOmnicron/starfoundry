@@ -53,7 +53,7 @@ pub async fn api(
     Json(update_info):        Json<Vec<StructureUuid>>,
 ) -> Result<impl IntoResponse> {
     update_default_market(
-        &state.pool,
+        &state.postgres,
         project_group_uuid,
         update_info,
     ).await?;

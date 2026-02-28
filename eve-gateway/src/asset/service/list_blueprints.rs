@@ -14,7 +14,7 @@ pub async fn list_blueprints(
         return Ok(Vec::new());
     };
 
-    let mut blueprints = sqlx::query!(r#"
+    let blueprints = sqlx::query!(r#"
             SELECT
                 item_id,
                 location_id,

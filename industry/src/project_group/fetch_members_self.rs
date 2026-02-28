@@ -48,7 +48,7 @@ pub async fn api(
     identity:                 ExtractIdentity,
 ) -> Result<impl IntoResponse> {
     let data = fetch_members_self(
-            &state.pool,
+            &state.postgres,
             identity.character_id,
             &eve_gateway_api_client()?,
             project_group_uuid,

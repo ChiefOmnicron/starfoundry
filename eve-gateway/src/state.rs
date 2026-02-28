@@ -1,11 +1,12 @@
 use axum::extract::{FromRef, FromRequestParts};
 use axum::http::request::Parts;
 use sqlx::PgPool;
+use std::collections::HashMap;
 use std::convert::Infallible;
 use std::sync::Arc;
-use std::collections::HashMap;
 
 use crate::config::ConfigFileDomain;
+use crate::metrics::Metric;
 
 /// State that can be used in every route
 #[derive(Clone)]
@@ -14,6 +15,8 @@ pub struct AppState {
     pub postgres:       PgPool,
     /// Valid domains read from the config file
     pub auth_domains:   Arc<HashMap<String, ConfigFileDomain>>,
+    /// Track metrics for the application
+    pub metric:         Arc<Metric>,
 }
 
 impl<S> FromRequestParts<S> for AppState

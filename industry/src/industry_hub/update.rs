@@ -50,7 +50,7 @@ pub async fn api(
     Json(industry_hub):      Json<UpdateIndustryHub>,
 ) -> Result<impl IntoResponse> {
     let data = update(
-            &state.pool,
+            &state.postgres,
             identity.character_id,
             industry_hub_uuid,
             industry_hub,

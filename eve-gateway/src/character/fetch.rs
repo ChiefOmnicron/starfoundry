@@ -40,7 +40,11 @@ pub async fn api(
     State(state):       State<AppState>,
     Path(character_id): Path<CharacterId>,
 ) -> Result<impl IntoResponse> {
-    let entry = fetch_character(&state.postgres, character_id).await?;
+    let entry = fetch_character(
+        &state.postgres,
+        state.metric,
+        character_id
+    ).await?;
 
     Ok(
         (

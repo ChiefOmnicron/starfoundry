@@ -1,4 +1,4 @@
-use axum::extract::Path;
+use axum::extract::{Path, State};
 use axum::Json;
 use axum::response::IntoResponse;
 use reqwest::StatusCode;
@@ -8,6 +8,7 @@ use starfoundry_lib_types::ContractId;
 use crate::api_docs::{InternalServerError, NotFound};
 use crate::market::error::Result;
 use crate::eve_client::EveApiClient;
+use crate::state::AppState;
 
 /// Fetch Market for a region
 /// 
@@ -40,9 +41,10 @@ use crate::eve_client::EveApiClient;
     ),
 )]
 pub async fn api(
+    State(state):      State<AppState>,
     Path(contract_id): Path<ContractId>,
 ) -> Result<impl IntoResponse> {
-    let api_client = EveApiClient::new()?;
+    let api_client = EveApiClient::new(state.metric)?;
 
     let path = format!("latest/contracts/public/items/{}", *contract_id);
     let contract_data = api_client

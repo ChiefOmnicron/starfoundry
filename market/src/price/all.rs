@@ -50,7 +50,7 @@ pub async fn api(
     State(state):  State<AppState>,
 ) -> Result<impl IntoResponse> {
     let data = all(
-            &state.pool,
+            &state.postgres,
         ).await?;
 
     if data.is_empty() {

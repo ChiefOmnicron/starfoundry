@@ -52,7 +52,7 @@ pub async fn api(
     identity:      ExtractIdentity,
 ) -> Result<impl IntoResponse> {
     let data = list(
-            &state.pool,
+            &state.postgres,
             identity.character_id,
             &eve_gateway_api_client()?,
             filter,

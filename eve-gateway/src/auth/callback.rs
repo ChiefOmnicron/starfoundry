@@ -189,7 +189,11 @@ pub async fn callback(
         .map_err(AuthError::InsertEveCredential)?;
     }
 
-    let character_info = refresh_character_in_db(&state.postgres, character_id).await?;
+    let character_info = refresh_character_in_db(
+        &state.postgres,
+        state.metric,
+        character_id
+    ).await?;
 
     if auth_domain.whitelist.contains(&(*character_id as i64)) ||
         auth_domain.whitelist.contains(&(*character_info.corporation_id as i64)) ||

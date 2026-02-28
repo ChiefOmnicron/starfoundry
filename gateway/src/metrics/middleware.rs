@@ -1,12 +1,18 @@
-use axum::extract::{MatchedPath, Request};
+use axum::extract::{MatchedPath, Request, State};
 use axum::http::header::{HOST, USER_AGENT};
 use axum::middleware::Next;
 use axum::response::IntoResponse;
 use std::time::Instant;
 
+use crate::state::AppState;
+
 /// Collects statistics for incoming requests and adds them into the global
 /// metrics object for later consumption
-pub async fn path_metrics(req: Request, next: Next) -> impl IntoResponse {
+pub async fn path_metrics(
+    State(state): State<AppState>,
+    req:          Request,
+    next:         Next,
+) -> impl IntoResponse {
     let start = Instant::now();
 
     let path = if let Some(matched_path) = &req.extensions().get::<MatchedPath>() {
@@ -29,31 +35,27 @@ pub async fn path_metrics(req: Request, next: Next) -> impl IntoResponse {
 
     let method = req.method().clone();
 
-    // Run the rest of the request handling first, so we can measure it and get response
-    // codes.
+    // Run the rest of the request handling first, so that the duration can be
+    // recorded
     let response = next.run(req).await;
 
-    let latency = start.elapsed().as_secs_f64();
+    let duration = start.elapsed().as_secs_f64();
     let status = response.status().as_u16().to_string();
+    let method = method.to_string();
 
-    let labels_host_count = [
-        ("host", host.to_string()),
-    ];
-    let labels_count = [
-        ("method", method.to_string()),
-        ("path", path.clone()),
-        ("status", status.clone()),
-        ("agent", agent.into())
-    ];
-    let labels_duration = [
-        ("method", method.to_string()),
-        ("path", path),
-        ("status", status),
-    ];
-
-    metrics::counter!("host_source", &labels_host_count).increment(1);
-    metrics::counter!("http_requests_total", &labels_count).increment(1);
-    metrics::histogram!("http_requests_duration_seconds", &labels_duration).record(latency);
+    state.metric.increase_host_counter(host);
+    state.metric.increase_http_request_total(
+        method.to_string(),
+        path.clone(),
+        status.clone(),
+        agent.into(),
+    );state.metric.record_http_request_total(
+        method.to_string(),
+        path,
+        status,
+        agent.into(),
+        duration,
+    );
 
     response
 }

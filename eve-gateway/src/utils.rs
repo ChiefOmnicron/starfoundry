@@ -1,11 +1,14 @@
 use sqlx::PgPool;
 use starfoundry_lib_types::{CharacterId, CorporationId};
+use std::sync::Arc;
 
 use crate::eve_client::EveApiClient;
 use crate::eve_client::error::{EveApiError, Result};
+use crate::metrics::Metric;
 
 pub async fn api_client_auth(
     pool:           &PgPool,
+    metric:         Arc<Metric>,
     host:           String,
     character_id:   CharacterId,
     min_scopes:     Vec<String>,
@@ -36,6 +39,7 @@ pub async fn api_client_auth(
     };
 
     EveApiClient::new_with_refresh_token(
+        metric,
         character_id,
         refresh_token,
     )
@@ -45,6 +49,7 @@ pub async fn api_client_auth(
 
 pub async fn api_client_corporation_auth(
     pool:           &PgPool,
+    metric:         Arc<Metric>,
     host:           String,
     character_id:   CharacterId,
     corporation_id: CorporationId,
@@ -78,6 +83,7 @@ pub async fn api_client_corporation_auth(
     };
 
     EveApiClient::new_with_refresh_token(
+        metric,
         (*corporation_id).into(),
         refresh_token,
     )

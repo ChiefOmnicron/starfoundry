@@ -47,7 +47,7 @@ pub async fn api(
     Json(data):           Json<UpdateStructure>,
 ) -> Result<impl IntoResponse> {
     update(
-        &state.pool,
+        &state.postgres,
         structure_uuid,
         data,
     ).await?;

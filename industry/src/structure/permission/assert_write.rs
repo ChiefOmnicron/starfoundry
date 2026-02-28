@@ -17,7 +17,7 @@ pub async fn assert_write(
     next:               Next,
 ) -> Result<impl IntoResponse> {
     assert_write_check(
-            &state.pool,
+            &state.postgres,
             structure_id,
             identity.character_id,
         )

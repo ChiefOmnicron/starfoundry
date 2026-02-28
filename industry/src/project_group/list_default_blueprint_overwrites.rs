@@ -53,7 +53,7 @@ pub async fn api(
     Path(project_group_uuid): Path<ProjectGroupUuid>,
 ) -> Result<impl IntoResponse> {
     let data = list_default_blueprint_overwrite(
-            &state.pool,
+            &state.postgres,
             &eve_gateway_api_client()?,
             project_group_uuid,
         )

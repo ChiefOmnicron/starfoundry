@@ -56,7 +56,7 @@ pub async fn api(
     Path(project_group_uuid): Path<ProjectGroupUuid>,
 ) -> Result<impl IntoResponse> {
     let data = list_industry_hubs(
-            &state.pool,
+            &state.postgres,
             &eve_gateway_api_client()?,
             identity.character_id,
             project_group_uuid,

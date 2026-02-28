@@ -21,14 +21,14 @@ pub async fn api(
         .and_then(metrics)
         .boxed();
 
-    let routes = healthcheck(pool.clone())
+    let routes = health_check(pool.clone())
         .or(metric);
 
     tracing::info!("Starting service server on {}", socket_addr);
     warp::serve(routes).run(socket_addr).await;
 }
 
-pub fn healthcheck(
+pub fn health_check(
     pool: PgPool,
 ) -> BoxedFilter<(impl Reply,)> {
     let livez = warp::path!("healthz")

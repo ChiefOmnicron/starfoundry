@@ -48,7 +48,7 @@ pub async fn api(
     Path(industry_hub_uuid): Path<IndustryHubUuid>,
 ) -> Result<impl IntoResponse> {
     delete(
-        &state.pool,
+        &state.postgres,
         identity.character_id,
         industry_hub_uuid,
     )

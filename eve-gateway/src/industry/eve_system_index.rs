@@ -1,3 +1,4 @@
+use axum::extract::State;
 use axum::Json;
 use axum::response::IntoResponse;
 use reqwest::StatusCode;
@@ -6,6 +7,7 @@ use starfoundry_lib_eve_gateway::IndustrySystem;
 use crate::api_docs::{InternalServerError, NotFound};
 use crate::eve_client::EveApiClient;
 use crate::industry::error::Result;
+use crate::state::AppState;
 
 /// Fetch System Index
 /// 
@@ -31,8 +33,10 @@ use crate::industry::error::Result;
         InternalServerError,
     ),
 )]
-pub async fn api() -> Result<impl IntoResponse> {
-    let api_client = EveApiClient::new()?;
+pub async fn api(
+    State(state): State<AppState>,
+) -> Result<impl IntoResponse> {
+    let api_client = EveApiClient::new(state.metric)?;
 
     let path = format!(
         "latest/industry/systems",

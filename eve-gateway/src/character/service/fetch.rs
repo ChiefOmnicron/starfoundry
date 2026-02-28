@@ -1,15 +1,18 @@
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::CharacterInfo;
 use starfoundry_lib_types::{AllianceId, CharacterId, CorporationId};
+use std::sync::Arc;
 
 use crate::character::{CharacterError, Result};
 use crate::eve_client::{EveApiClient, EveCharacterInfo, EveCorporationInfo};
+use crate::metrics::Metric;
 
 /// Fetches the character information from the database.
 /// If the character does not exist yet, it will be fetched using the EVE-API.
 /// 
 pub async fn fetch_character(
     pool:         &PgPool,
+    metric:       Arc<Metric>,
     character_id: CharacterId,
 ) -> Result<CharacterInfo> {
     let db_lookup_result = sqlx::query!("
@@ -39,7 +42,7 @@ pub async fn fetch_character(
             alliance_id:      x.alliance_id.map(Into::into),
         }
     } else {
-        refresh_character_in_db(&pool, character_id).await?
+        refresh_character_in_db(&pool, metric, character_id).await?
     };
 
     Ok(character_info)
@@ -50,9 +53,10 @@ pub async fn fetch_character(
 /// 
 pub async fn refresh_character_in_db(
     pool:         &PgPool,
+    metric:       Arc<Metric>,
     character_id: CharacterId,
 ) -> Result<CharacterInfo> {
-    let client = EveApiClient::new()?;
+    let client = EveApiClient::new(metric)?;
 
     let eve_character = fetch_character_from_eve(
         &client,

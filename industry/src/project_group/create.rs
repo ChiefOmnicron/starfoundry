@@ -52,7 +52,7 @@ pub async fn api(
 ) -> Result<impl IntoResponse> {
     // TODO: add initial time_split table
     let id = create(
-        &state.pool,
+        &state.postgres,
         identity.character_id,
         info,
     ).await?;

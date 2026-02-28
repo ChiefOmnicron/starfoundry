@@ -1,7 +1,7 @@
 use axum::extract::State;
 use axum::http::{HeaderMap, StatusCode};
-use axum::response::IntoResponse;
 use axum::Json;
+use axum::response::IntoResponse;
 use reqwest::header::HOST;
 use starfoundry_lib_gateway::ExtractIdentity;
 

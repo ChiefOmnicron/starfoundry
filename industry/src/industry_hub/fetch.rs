@@ -51,7 +51,7 @@ pub async fn api(
     Path(industry_hub_uuid): Path<IndustryHubUuid>,
 ) -> Result<impl IntoResponse> {
     let entry = fetch(
-            &state.pool,
+            &state.postgres,
             &eve_gateway_api_client()?,
             identity.character_id,
             industry_hub_uuid,

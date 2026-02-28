@@ -54,7 +54,7 @@ pub async fn api(
     Json(update_info):        Json<Vec<IndustryHubUuid>>,
 ) -> Result<impl IntoResponse> {
     update_industry_hubs(
-        &state.pool,
+        &state.postgres,
         project_group_uuid,
         update_info,
     ).await?;

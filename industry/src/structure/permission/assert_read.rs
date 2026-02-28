@@ -17,7 +17,7 @@ pub async fn assert_read(
     next:               Next,
 ) -> Result<impl IntoResponse> {
     assert_read_check(
-            &state.pool,
+            &state.postgres,
             structure_id,
             identity.character_id,
         )

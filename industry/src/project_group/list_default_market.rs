@@ -56,7 +56,7 @@ pub async fn api(
     Path(project_group_uuid): Path<ProjectGroupUuid>,
 ) -> Result<impl IntoResponse> {
     let data = list_default_market(
-            &state.pool,
+            &state.postgres,
             identity.character_id,
             &eve_gateway_api_client()?,
             project_group_uuid,

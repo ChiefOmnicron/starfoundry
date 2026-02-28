@@ -53,7 +53,7 @@ pub async fn api(
     Query(filter): Query<IndustryHubFilter>,
 ) -> Result<impl IntoResponse> {
     let data = list(
-            &state.pool,
+            &state.postgres,
             &eve_gateway_api_client()?,
             identity.character_id,
             identity.corporation_id,
