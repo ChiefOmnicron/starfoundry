@@ -33,6 +33,7 @@ import { Route as IndustryHubsIndustryHubIdIndexRouteImport } from './routes/ind
 import { Route as ProjectsProjectIdOverviewRouteImport } from './routes/projects_/$projectId.overview'
 import { Route as ProjectsProjectIdMiscRouteImport } from './routes/projects_/$projectId.misc'
 import { Route as ProjectsProjectIdMarketRouteImport } from './routes/projects_/$projectId.market'
+import { Route as ProjectsProjectIdJobsRouteImport } from './routes/projects_/$projectId.jobs'
 import { Route as ProjectGroupsProjectGroupIdProjectsRouteImport } from './routes/project-groups_/$projectGroupId.projects'
 import { Route as ProjectGroupsProjectGroupIdOverviewRouteImport } from './routes/project-groups_/$projectGroupId.overview'
 import { Route as ProjectGroupsProjectGroupIdMembersRouteImport } from './routes/project-groups_/$projectGroupId.members'
@@ -165,6 +166,11 @@ const ProjectsProjectIdMarketRoute = ProjectsProjectIdMarketRouteImport.update({
   path: '/market',
   getParentRoute: () => ProjectsProjectIdRouteRoute,
 } as any)
+const ProjectsProjectIdJobsRoute = ProjectsProjectIdJobsRouteImport.update({
+  id: '/jobs',
+  path: '/jobs',
+  getParentRoute: () => ProjectsProjectIdRouteRoute,
+} as any)
 const ProjectGroupsProjectGroupIdProjectsRoute =
   ProjectGroupsProjectGroupIdProjectsRouteImport.update({
     id: '/projects',
@@ -220,6 +226,7 @@ export interface FileRoutesByFullPath {
   '/project-groups/$projectGroupId/members': typeof ProjectGroupsProjectGroupIdMembersRoute
   '/project-groups/$projectGroupId/overview': typeof ProjectGroupsProjectGroupIdOverviewRoute
   '/project-groups/$projectGroupId/projects': typeof ProjectGroupsProjectGroupIdProjectsRoute
+  '/projects/$projectId/jobs': typeof ProjectsProjectIdJobsRoute
   '/projects/$projectId/market': typeof ProjectsProjectIdMarketRoute
   '/projects/$projectId/misc': typeof ProjectsProjectIdMiscRoute
   '/projects/$projectId/overview': typeof ProjectsProjectIdOverviewRoute
@@ -244,6 +251,7 @@ export interface FileRoutesByTo {
   '/project-groups/$projectGroupId/members': typeof ProjectGroupsProjectGroupIdMembersRoute
   '/project-groups/$projectGroupId/overview': typeof ProjectGroupsProjectGroupIdOverviewRoute
   '/project-groups/$projectGroupId/projects': typeof ProjectGroupsProjectGroupIdProjectsRoute
+  '/projects/$projectId/jobs': typeof ProjectsProjectIdJobsRoute
   '/projects/$projectId/market': typeof ProjectsProjectIdMarketRoute
   '/projects/$projectId/misc': typeof ProjectsProjectIdMiscRoute
   '/projects/$projectId/overview': typeof ProjectsProjectIdOverviewRoute
@@ -276,6 +284,7 @@ export interface FileRoutesById {
   '/project-groups_/$projectGroupId/members': typeof ProjectGroupsProjectGroupIdMembersRoute
   '/project-groups_/$projectGroupId/overview': typeof ProjectGroupsProjectGroupIdOverviewRoute
   '/project-groups_/$projectGroupId/projects': typeof ProjectGroupsProjectGroupIdProjectsRoute
+  '/projects_/$projectId/jobs': typeof ProjectsProjectIdJobsRoute
   '/projects_/$projectId/market': typeof ProjectsProjectIdMarketRoute
   '/projects_/$projectId/misc': typeof ProjectsProjectIdMiscRoute
   '/projects_/$projectId/overview': typeof ProjectsProjectIdOverviewRoute
@@ -309,6 +318,7 @@ export interface FileRouteTypes {
     | '/project-groups/$projectGroupId/members'
     | '/project-groups/$projectGroupId/overview'
     | '/project-groups/$projectGroupId/projects'
+    | '/projects/$projectId/jobs'
     | '/projects/$projectId/market'
     | '/projects/$projectId/misc'
     | '/projects/$projectId/overview'
@@ -333,6 +343,7 @@ export interface FileRouteTypes {
     | '/project-groups/$projectGroupId/members'
     | '/project-groups/$projectGroupId/overview'
     | '/project-groups/$projectGroupId/projects'
+    | '/projects/$projectId/jobs'
     | '/projects/$projectId/market'
     | '/projects/$projectId/misc'
     | '/projects/$projectId/overview'
@@ -364,6 +375,7 @@ export interface FileRouteTypes {
     | '/project-groups_/$projectGroupId/members'
     | '/project-groups_/$projectGroupId/overview'
     | '/project-groups_/$projectGroupId/projects'
+    | '/projects_/$projectId/jobs'
     | '/projects_/$projectId/market'
     | '/projects_/$projectId/misc'
     | '/projects_/$projectId/overview'
@@ -558,6 +570,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsProjectIdMarketRouteImport
       parentRoute: typeof ProjectsProjectIdRouteRoute
     }
+    '/projects_/$projectId/jobs': {
+      id: '/projects_/$projectId/jobs'
+      path: '/jobs'
+      fullPath: '/projects/$projectId/jobs'
+      preLoaderRoute: typeof ProjectsProjectIdJobsRouteImport
+      parentRoute: typeof ProjectsProjectIdRouteRoute
+    }
     '/project-groups_/$projectGroupId/projects': {
       id: '/project-groups_/$projectGroupId/projects'
       path: '/projects'
@@ -700,6 +719,7 @@ const ProjectGroupsProjectGroupIdRouteRouteWithChildren =
   )
 
 interface ProjectsProjectIdRouteRouteChildren {
+  ProjectsProjectIdJobsRoute: typeof ProjectsProjectIdJobsRoute
   ProjectsProjectIdMarketRoute: typeof ProjectsProjectIdMarketRoute
   ProjectsProjectIdMiscRoute: typeof ProjectsProjectIdMiscRoute
   ProjectsProjectIdOverviewRoute: typeof ProjectsProjectIdOverviewRoute
@@ -707,6 +727,7 @@ interface ProjectsProjectIdRouteRouteChildren {
 
 const ProjectsProjectIdRouteRouteChildren: ProjectsProjectIdRouteRouteChildren =
   {
+    ProjectsProjectIdJobsRoute: ProjectsProjectIdJobsRoute,
     ProjectsProjectIdMarketRoute: ProjectsProjectIdMarketRoute,
     ProjectsProjectIdMiscRoute: ProjectsProjectIdMiscRoute,
     ProjectsProjectIdOverviewRoute: ProjectsProjectIdOverviewRoute,

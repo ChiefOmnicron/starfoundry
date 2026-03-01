@@ -37,6 +37,9 @@ const routes: RouteDefinition[] = [{
         }, {
             link: '/projects/$projectId/market',
             label: 'Market'
+        }, {
+            link: '/projects/$projectId/jobs',
+            label: 'Jobs'
         }]
     }, {
         link: '/project-groups',

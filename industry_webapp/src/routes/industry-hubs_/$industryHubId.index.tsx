@@ -24,6 +24,11 @@ export interface QueryParams {
 }
 
 export const Route = createFileRoute('/industry-hubs_/$industryHubId/')({
+    beforeLoad: async ({ context }) => {
+        if (!(await context.auth.isAuthenticated())) {
+            throw context.auth.login();
+        }
+    },
     component: RouteComponent,
     validateSearch: (params: {
         created: boolean,

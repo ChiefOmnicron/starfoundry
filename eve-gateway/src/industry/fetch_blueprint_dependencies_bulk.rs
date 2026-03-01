@@ -1,32 +1,32 @@
-use axum::extract::{Path, State};
+use axum::extract::State;
 use axum::Json;
 use axum::response::IntoResponse;
 use reqwest::StatusCode;
-use starfoundry_lib_eve_gateway::BlueprintJson;
+use starfoundry_lib_eve_gateway::BlueprintDependency;
 use starfoundry_lib_types::TypeId;
 
 use crate::api_docs::{InternalServerError, NotFound};
 use crate::industry::error::Result;
-use crate::industry::service::fetch_blueprint_json;
 use crate::state::AppState;
+use crate::industry::service::fetch_blueprint_dependency_bulk;
 
 /// Fetch System Index
 /// 
-/// - Alternative route: `/latest/industry/blueprints/{TypeId}/json`
-/// - Alternative route: `/v1/industry/blueprints/{TypeId}/json`
+/// - Alternative route: `/latest/industry/blueprints/dependencies/bulk`
+/// - Alternative route: `/v1/industry/blueprints/dependencies/bulk`
 /// 
 /// ---
 /// 
 /// Loads all open orders from a character
 /// 
 #[utoipa::path(
-    get,
-    path = "/blueprints/{TypeId}/json",
+    post,
+    path = "/blueprints/dependencies/bulk",
     tag = "Industry",
     responses(
         (
-            body = BlueprintJson,
-            description = "JSON representing blueprint dependencies",
+            body = Vec<BlueprintDependency>,
+            description = "Blueprint and their dependencies",
             status = OK,
         ),
         NotFound,
@@ -34,20 +34,20 @@ use crate::state::AppState;
     ),
 )]
 pub async fn api(
-    State(state):  State<AppState>,
-    Path(type_id): Path<TypeId>,
+    State(state):   State<AppState>,
+    Json(type_ids): Json<Vec<TypeId>>,
 ) -> Result<impl IntoResponse> {
-    let blueprint_json = fetch_blueprint_json(
+    let blueprint_dependencies = fetch_blueprint_dependency_bulk(
             &state.postgres,
-            type_id,
+            type_ids,
         )
         .await?;
 
-    if blueprint_json.is_none() {
+    if blueprint_dependencies.is_empty() {
         Ok(
             (
                 StatusCode::NO_CONTENT,
-                Json(blueprint_json),
+                Json(blueprint_dependencies),
             )
             .into_response()
         )
@@ -55,7 +55,7 @@ pub async fn api(
         Ok(
             (
                 StatusCode::OK,
-                Json(blueprint_json),
+                Json(blueprint_dependencies),
             )
             .into_response()
         )

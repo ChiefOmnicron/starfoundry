@@ -2,6 +2,11 @@ import { axiosClient } from '@starfoundry/components/services/client'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/characters/')({
+    beforeLoad: async ({ context }) => {
+        if (!(await context.auth.isAuthenticated())) {
+            throw context.auth.login();
+        }
+    },
     component: RouteComponent,
 })
 

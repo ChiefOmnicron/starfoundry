@@ -1,7 +1,8 @@
 mod error;
+mod fetch_blueprint_dependencies_bulk;
 mod fetch_blueprint_json;
-mod service;
 mod fetch_system_index;
+mod service;
 
 pub mod eve_system_index;
 
@@ -15,10 +16,14 @@ pub fn routes() -> OpenApiRouter<AppState> {
     let fetch_system_index = OpenApiRouter::new()
         .routes(routes!(self::fetch_system_index::api));
 
+    let fetch_blueprint_dependencies = OpenApiRouter::new()
+        .routes(routes!(self::fetch_blueprint_dependencies_bulk::api));
+
     let fetch_blueprint_json = OpenApiRouter::new()
         .routes(routes!(self::fetch_blueprint_json::api));
 
     OpenApiRouter::new()
+        .merge(fetch_blueprint_dependencies)
         .merge(fetch_blueprint_json)
         .merge(fetch_system_index)
 }

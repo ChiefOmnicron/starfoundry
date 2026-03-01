@@ -13,6 +13,8 @@ pub type Result<T, E = IndustryError> = std::result::Result<T, E>;
 #[derive(Debug, Error)]
 #[non_exhaustive]
 pub enum IndustryError {
+    #[error("error while fetching blueprint dependency, error: '{0}'")]
+    FetchBlueprintDependency(sqlx::Error),
     #[error("error while fetching blueprint json '{1}', error: '{0}'")]
     FetchBlueprintJson(sqlx::Error, TypeId),
     #[error("error while fetching system index '{1}', error: '{0}'")]

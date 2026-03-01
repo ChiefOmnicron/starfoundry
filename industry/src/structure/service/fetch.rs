@@ -63,7 +63,6 @@ pub async fn fetch_bulk(
         .map_err(|e| StructureError::FetchStructures(e, structure_uuids.clone()))?;
 
     if structures.is_empty() {
-        tracing::info!("Couldn't find structure {:?}", structure_uuids);
         return Ok(Vec::new());
     }
 

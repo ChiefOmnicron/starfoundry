@@ -7,6 +7,7 @@ export function ProjectProgressBar({
     const backgroundColor = (job: ProjectJob): string => {
         switch (job.status) {
             case 'WAITING_FOR_MATERIALS':
+            case 'READY_TO_START':
                 return 'var(--mantine-color-red-9)'
             case 'BUILDING':
                 return 'var(--mantine-color-blue-9)'

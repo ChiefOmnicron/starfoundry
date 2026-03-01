@@ -2,7 +2,7 @@ import { createFileRoute, Outlet } from '@tanstack/react-router'
 import { fetchProjectQuery, useFetchProject } from '@starfoundry/components/services/projects/fetch';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
-import { Title } from '@mantine/core'
+import { Stack, Title } from '@mantine/core'
 
 export const Route = createFileRoute('/projects_/$projectId')({
     beforeLoad: async ({ context }) => {
@@ -35,13 +35,15 @@ function RouteComponent() {
     }
 
     return <>
-        <Title
-            data-cy="header"
-            order={1}
-        >
-            Project '{ project.name }'
-        </Title>
+        <Stack>
+            <Title
+                data-cy="header"
+                order={1}
+            >
+                Project '{ project.name }'
+            </Title>
 
-        <Outlet />
+            <Outlet />
+        </Stack>
     </>
 }

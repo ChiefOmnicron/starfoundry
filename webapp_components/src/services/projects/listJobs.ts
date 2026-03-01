@@ -37,7 +37,7 @@ export const useListProjectJobs = (
     })
 }
 
-export type ProjectJobStatus = 'WAITING_FOR_MATERIALS' | 'BUILDING' | 'DONE';
+export type ProjectJobStatus = 'WAITING_FOR_MATERIALS' | 'READY_TO_START' | 'BUILDING' | 'DONE';
 
 export type ProjectJobGroup = {
     header:     string;

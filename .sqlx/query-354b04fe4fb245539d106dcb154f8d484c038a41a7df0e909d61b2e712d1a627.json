@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                id,\n                runs,\n                status AS \"status: ProjectJobStatus\",\n                cost,\n                job_id,\n                structure_id,\n                type_id,\n                started_by\n            FROM project_job\n            WHERE project_id = $1\n        ",
+  "query": "\n            SELECT\n                id,\n                runs,\n                status AS \"status: ProjectJobStatusDatabase\",\n                cost,\n                job_id,\n                structure_id,\n                type_id,\n                started_by\n            FROM project_job\n            WHERE project_id = $1\n        ",
   "describe": {
     "columns": [
       {
@@ -27,7 +27,7 @@
       },
       {
         "ordinal": 2,
-        "name": "status: ProjectJobStatus",
+        "name": "status: ProjectJobStatusDatabase",
         "type_info": {
           "Custom": {
             "name": "project_job_status",
@@ -119,5 +119,5 @@
       true
     ]
   },
-  "hash": "073c0c18b189a7383306fa19a410e73d2a55a01f8d46836fd0d7ac8cd13cc445"
+  "hash": "354b04fe4fb245539d106dcb154f8d484c038a41a7df0e909d61b2e712d1a627"
 }

@@ -60,7 +60,7 @@ export function ProjectCard({
     const card = () => {
         const waiting = jobs
             .flatMap(x => x.entries)
-            .filter(x => x.status === 'WAITING_FOR_MATERIALS')
+            .filter(x => x.status === 'WAITING_FOR_MATERIALS' || x.status === 'READY_TO_START')
             .length;
         const inProgress = jobs
             .flatMap(x => x.entries)

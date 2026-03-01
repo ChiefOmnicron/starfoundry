@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item};
 use starfoundry_lib_industry::Structure;
-use starfoundry_lib_types::CharacterId;
+use starfoundry_lib_types::{CharacterId, TypeId};
 use std::collections::HashMap;
 use utoipa::ToSchema;
 use uuid::Uuid;
@@ -21,7 +21,7 @@ pub async fn list_jobs(
             SELECT
                 id,
                 runs,
-                status AS "status: ProjectJobStatus",
+                status AS "status: ProjectJobStatusDatabase",
                 cost,
                 job_id,
                 structure_id,
@@ -86,7 +86,7 @@ pub async fn list_jobs(
         let project_group = ProjectJob {
             id:         entry.id.into(),
             job_id:     entry.job_id,
-            status:     entry.status,
+            status:     entry.status.into(),
 
             cost:       entry.cost,
             runs:       entry.runs,
@@ -98,7 +98,113 @@ pub async fn list_jobs(
         project_jobs.push(project_group);
     }
 
+    determine_ready_to_start(
+            pool,
+            project_id,
+            eve_gateway_api_client,
+            &mut project_jobs,
+        )
+        .await?;
+
     Ok(sort_jobs(project_jobs))
+}
+
+async fn determine_ready_to_start(
+    pool:                   &PgPool,
+    project_id:             ProjectUuid,
+    eve_gateway_api_client: &impl EveGatewayApiClient,
+    entries:                &mut Vec<ProjectJob>,
+) -> Result<()> {
+    let mut waiting_for_materials = entries
+        .iter()
+        .filter(|x| x.status == ProjectJobStatus::WaitingForMaterials)
+        .map(|x| x.item.type_id)
+        .map(Into::into)
+        .collect::<Vec<_>>();
+    waiting_for_materials.sort();
+    waiting_for_materials.dedup();
+
+    let dependencies = eve_gateway_api_client
+        .fetch_blueprint_dependencies_bulk(waiting_for_materials)
+        .await?
+        .into_iter()
+        .map(|x| (x.product_type_id, x))
+        .collect::<HashMap<_, _>>();
+
+    let market_data = bought_materials(
+            pool,
+            project_id,
+        )
+        .await?;
+
+    let mut done = entries
+        .iter()
+        .filter(|x| x.status == ProjectJobStatus::Done)
+        .map(|x| x.item.type_id)
+        .map(Into::into)
+        .collect::<Vec<TypeId>>();
+    // bought market data is considered as done, and qualifies for something
+    // to be ready to start
+    done.extend(market_data);
+
+    let building = entries
+        .iter()
+        .filter(|x| x.status == ProjectJobStatus::Building)
+        .map(|x| x.item.type_id)
+        .map(Into::into)
+        .collect::<Vec<TypeId>>();
+
+    for entry in entries.iter_mut() {
+        let dependency = if let Some(dependency) = dependencies.get(&entry.item.type_id) {
+            dependency
+        } else {
+            continue;
+        };
+
+        // if a dependency is still building, ignore it
+        let has_dependency_building = dependency
+            .depends_on
+            .iter()
+            .any(|x| building.contains(x));
+        if has_dependency_building {
+            continue;
+        }
+
+        // if all dependencies are done, define it as ready to start
+        let all_done = dependency
+            .depends_on
+            .iter()
+            .all(|x| done.contains(x));
+        if all_done {
+            entry.status = ProjectJobStatus::ReadyToStart;
+        }
+    }
+
+    Ok(())
+}
+
+async fn bought_materials(
+    pool:      &PgPool,
+    project_id: ProjectUuid,
+) -> Result<Vec<TypeId>> {
+    sqlx::query!("
+            SELECT type_id
+            FROM project_market
+            WHERE project_id = $1
+            AND cost IS NOT NULL
+        ",
+            *project_id,
+        )
+        .fetch_all(pool)
+        .await
+        .map(|x| {
+            x
+                .into_iter()
+                .map(|y| y.type_id)
+                .map(Into::into)
+                .collect::<Vec<_>>()
+        })
+        .map_err(ProjectError::ListJobs)
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
@@ -122,6 +228,29 @@ pub struct ProjectJobGroup {
 }
 
 #[derive(
+    Clone, Debug, Copy,
+    PartialEq, Eq, PartialOrd, Ord,
+    Deserialize, Serialize, ToSchema
+)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum ProjectJobStatus {
+    WaitingForMaterials,
+    ReadyToStart,
+    Building,
+    Done,
+}
+
+impl From<ProjectJobStatusDatabase> for ProjectJobStatus {
+    fn from(value: ProjectJobStatusDatabase) -> Self {
+        match value {
+            ProjectJobStatusDatabase::WaitingForMaterials => Self::WaitingForMaterials,
+            ProjectJobStatusDatabase::Building => Self::Building,
+            ProjectJobStatusDatabase::Done => Self::Done,
+        }
+    }
+}
+
+#[derive(
     Clone, Debug, Copy, Hash,
     PartialEq, Eq, PartialOrd, Ord,
     sqlx::Type, Deserialize, Serialize, ToSchema,
@@ -129,7 +258,7 @@ pub struct ProjectJobGroup {
 #[sqlx(type_name = "PROJECT_JOB_STATUS")]
 #[sqlx(rename_all = "SCREAMING_SNAKE_CASE")]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
-pub enum ProjectJobStatus {
+pub enum ProjectJobStatusDatabase {
     WaitingForMaterials,
     Building,
     Done,
