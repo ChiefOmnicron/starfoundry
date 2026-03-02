@@ -16,5 +16,5 @@ CREATE TABLE IF NOT EXISTS market_order_info (
     -- Date the order expires naturally
     expires         TIMESTAMP NOT NULL
 );
-CREATE UNIQUE INDEX IF NOT EXISTS market_order_latest_orderid ON market_order_latest(order_id);
-CREATE INDEX IF NOT EXISTS market_order_latest_structureid_typeid_isbuy ON market_order_latest(structure_id, type_id, is_buy);
+CREATE UNIQUE INDEX IF NOT EXISTS market_order_info_orderid ON market_order_info(order_id);
+CREATE INDEX IF NOT EXISTS market_order_info_structureid_typeid_isbuy ON market_order_info(structure_id, type_id, is_buy);

@@ -22,7 +22,7 @@ use crate::market::experimental_insert_into_cache::write_to_cache;
 /// 
 #[utoipa::path(
     get,
-    path = "/eve/region/{RegionId}",
+    path = "/market/region/{RegionId}",
     tag = "Market",
     params(
         RegionId,
