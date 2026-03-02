@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM industry_job CASCADE\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "8566bcce68b20de35c0192293cfac536ec0037670766850dba9c7ccb3a18aa65"
+}

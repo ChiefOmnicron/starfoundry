@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use starfoundry_lib_types::TypeId;
 use utoipa::ToSchema;
 
-#[derive(Debug, Serialize, Deserialize, ToSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, ToSchema)]
 pub struct MarketPrice {
     /// Type ID of the item
     pub type_id:       TypeId,

@@ -1,8 +1,10 @@
+mod industry_job;
 mod project;
 mod project_group;
 mod structure;
 mod structure_group;
 
+pub use self::industry_job::*;
 pub use self::project::*;
 pub use self::project_group::*;
 pub use self::structure::*;
@@ -37,6 +39,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     migrate_project_group(&postgres_source, &postgres_destination_industry, &mut mappings).await?;
     migrate_project(&postgres_source, &postgres_destination_industry, &mut mappings).await?;
+
+    migrate_industry_jobs(&postgres_source, &postgres_destination_industry).await?;
 
     save_mappings(&postgres_source, environment, mappings).await;
 
@@ -162,6 +166,11 @@ async fn cleanup(
         .await?;
     sqlx::query!("
             DELETE FROM project_group_default_job_splitting_run CASCADE
+        ")
+        .execute(postgres_destination_industry)
+        .await?;
+    sqlx::query!("
+            DELETE FROM industry_job CASCADE
         ")
         .execute(postgres_destination_industry)
         .await?;

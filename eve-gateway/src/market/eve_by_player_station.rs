@@ -10,6 +10,7 @@ use crate::api_docs::{InternalServerError, NotFound};
 use crate::market::error::Result;
 use crate::state::AppState;
 use crate::utils::api_client_auth;
+use crate::market::experimental_insert_into_cache::write_to_cache;
 
 const SCOPE: &str = "esi-markets.structure_markets.v1";
 
@@ -70,6 +71,16 @@ pub async fn api(
     let market_data = api_client
         .fetch_page_auth::<Market>(&path)
         .await?;
+
+    let time = std::time::Instant::now();
+    if let Err(_) = write_to_cache(
+        &state.postgres,
+        serde_json::to_value(market_data.clone()).unwrap_or_default(),
+        format!("STRUCTURE_{}_{}", identity.character_id, structure_id),
+    ).await {
+        tracing::error!("Error writing into cache");
+    }
+    tracing::info!("cache time: {}", time.elapsed().as_millis());
 
     if market_data.is_empty() {
         Ok(

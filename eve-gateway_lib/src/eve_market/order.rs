@@ -7,7 +7,7 @@ use crate::utils::from_datetime;
 use crate::eve_market::BuyOrder;
 
 /// Holds information about a market entry
-#[derive(Debug, Deserialize, Serialize, ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 pub struct MarketOrder {
     /// Duration of the market entry until it expires
     pub duration:        u32,

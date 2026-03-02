@@ -10,25 +10,30 @@ opt-level = 3
 
 [workspace]
 members = [
-  # considered done
+  # general purpose
   'gp_lib-types',
 
-  # new, could use some cleanup
+  # gateway
   'gateway',
   'gateway_lib',
+
+  # eve gateway
   'eve-gateway_lib',
   'eve-gateway_worker',
   'eve-gateway',
+
+  # industry
   'industry',
   'industry_lib',
+
+  # market
   'market',
   'market_lib',
-
-  # new workers
   'market_worker',
   'worker_lib',
 
   #'meta_webserver',
+  # needs rewrite to match new worker
   'worker-eve_sde_parser',
 
   # deprecated

@@ -4,3 +4,5 @@ pub mod eve_by_region;
 pub mod eve_list_character_orders;
 pub mod eve_price;
 pub mod eve_list_corporation_orders;
+
+mod experimental_insert_into_cache;

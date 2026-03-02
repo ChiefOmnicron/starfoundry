@@ -1,0 +1,185 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                blueprint_id,\n                blueprint_location_id,\n                blueprint_type_id,\n                facility_id,\n                installer_id,\n                job_id,\n                runs,\n                cost,\n                end_date,\n                activity AS \"activity!: IndustryActivity\",\n                is_delivered,\n                character_corporation_id,\n                ignore\n            FROM industry_job\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "blueprint_id",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "industry_job",
+            "name": "blueprint_id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "blueprint_location_id",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "industry_job",
+            "name": "blueprint_location_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "blueprint_type_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "industry_job",
+            "name": "blueprint_type_id"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "facility_id",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "industry_job",
+            "name": "facility_id"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "installer_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "industry_job",
+            "name": "installer_id"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "job_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "industry_job",
+            "name": "job_id"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "runs",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "industry_job",
+            "name": "runs"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "cost",
+        "type_info": "Float8",
+        "origin": {
+          "Table": {
+            "table": "industry_job",
+            "name": "cost"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "end_date",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "industry_job",
+            "name": "end_date"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "activity!: IndustryActivity",
+        "type_info": {
+          "Custom": {
+            "name": "industry_activity",
+            "kind": {
+              "Enum": [
+                "MANUFACTURING",
+                "TIME_EFFICIENCY_RESEARCH",
+                "MATERIAL_EFFICIENCY_RESEARCH",
+                "COPYING",
+                "INVENTION",
+                "REACTIONS",
+                "UNKNOWN"
+              ]
+            }
+          }
+        },
+        "origin": {
+          "Table": {
+            "table": "industry_job",
+            "name": "activity"
+          }
+        }
+      },
+      {
+        "ordinal": 10,
+        "name": "is_delivered",
+        "type_info": "Bool",
+        "origin": {
+          "Table": {
+            "table": "industry_job",
+            "name": "is_delivered"
+          }
+        }
+      },
+      {
+        "ordinal": 11,
+        "name": "character_corporation_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "industry_job",
+            "name": "character_corporation_id"
+          }
+        }
+      },
+      {
+        "ordinal": 12,
+        "name": "ignore",
+        "type_info": "Bool",
+        "origin": {
+          "Table": {
+            "table": "industry_job",
+            "name": "ignore"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "a6ac987ff4fcab1920ecde0a135b42bf3f61da4c757314af6e4b3f9fc98e0af9"
+}

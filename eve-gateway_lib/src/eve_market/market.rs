@@ -6,7 +6,7 @@ use utoipa::ToSchema;
 use crate::utils::from_datetime;
 
 /// Holds information about a market entry
-#[derive(Debug, Deserialize, Serialize, ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 pub struct Market {
     /// Duration of the market entry until it expires
     pub duration:       u32,

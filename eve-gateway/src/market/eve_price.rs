@@ -8,6 +8,7 @@ use crate::api_docs::{InternalServerError, NotFound};
 use crate::market::error::Result;
 use crate::eve_client::EveApiClient;
 use crate::state::AppState;
+use crate::market::experimental_insert_into_cache::write_to_cache;
 
 /// Fetch Market for a region
 /// 
@@ -41,6 +42,16 @@ pub async fn api(
     let market_data = api_client
         .fetch::<_, Vec<MarketPrice>>(&path, &())
         .await?;
+
+    let time = std::time::Instant::now();
+    if let Err(_) = write_to_cache(
+        &state.postgres,
+        serde_json::to_value(market_data.clone()).unwrap_or_default(),
+        format!("PRICES"),
+    ).await {
+        tracing::error!("Error writing into cache");
+    }
+    tracing::info!("cache time: {}", time.elapsed().as_millis());
 
     if market_data.is_empty() {
         Ok(
