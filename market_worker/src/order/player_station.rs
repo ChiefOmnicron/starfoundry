@@ -51,7 +51,7 @@ pub async fn by_player_station_task(
         &pool,
         task,
         additional_data.structure_id,
-        additional_data.region_id,
+        RegionId(0),
         entries
     )
     .await
@@ -61,7 +61,6 @@ pub async fn by_player_station_task(
 struct AdditionalData {
     character_id: CharacterId,
     structure_id: StructureId,
-    region_id:    RegionId,
     // source from where the player structure was fetched
     // for example, either from the industry tool, or the appraisal
     source:       String,
