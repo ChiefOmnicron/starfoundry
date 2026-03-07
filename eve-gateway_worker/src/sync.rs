@@ -20,7 +20,6 @@ pub async fn sync_task(
 
     match sync_character_assets(
         pool,
-
     ).await {
         Ok(new_entries) => {
             if new_entries > 0 {
@@ -32,7 +31,6 @@ pub async fn sync_task(
 
     match sync_character_blueprints(
         pool,
-
     ).await {
         Ok(new_entries) => {
             if new_entries > 0 {
@@ -44,7 +42,6 @@ pub async fn sync_task(
 
     match sync_corporation_assets(
         pool,
-
     ).await {
         Ok(new_entries) => {
             if new_entries > 0 {
@@ -56,7 +53,6 @@ pub async fn sync_task(
 
     match sync_corporation_blueprints(
         pool,
-
     ).await {
         Ok(new_entries) => {
             if new_entries > 0 {

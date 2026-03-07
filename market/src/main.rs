@@ -6,6 +6,7 @@ mod market;
 mod metrics;
 mod price;
 mod state;
+mod structure;
 
 pub use self::state::*;
 
@@ -87,6 +88,7 @@ fn app(
     let (router, api) = OpenApiRouter::with_openapi(ApiDoc::openapi())
         .nest("/markets", market::routes(state.clone()))
         .nest("/prices", price::routes())
+        .nest("/structures", structure::routes())
         .layer(
             ServiceBuilder::new()
                 .layer(middleware::from_fn_with_state(state.clone(), path_metrics))

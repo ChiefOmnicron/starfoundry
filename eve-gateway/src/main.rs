@@ -14,6 +14,7 @@ use tracing_subscriber::EnvFilter;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_scalar::{Scalar, Servable};
 use utoipa::OpenApi;
+use starfoundry_lib_eve_client::EveApiClientMetric;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -49,10 +50,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let metric = Metric::new();
     metric.register(&mut metric_registry);
 
+    let eve_client_metric = EveApiClientMetric::new();
+    eve_client_metric.register(&mut metric_registry);
+
     let state = AppState {
         postgres,
-        metric:       Arc::new(metric),
-        auth_domains: Arc::new(config.domains),
+        metric:         Arc::new(metric),
+        eve_api_metric: Arc::new(eve_client_metric),
+        auth_domains:   Arc::new(config.domains),
     };
 
     tracing::info!("Starting app server on {}", config.app_address.local_addr().unwrap());

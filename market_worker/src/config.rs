@@ -1,10 +1,5 @@
-mod file;
-
 use starfoundry_lib_gateway::{ENV_EVE_GATEWAY_API, ENV_USER_AGENT};
 use std::net::SocketAddr;
-use std::collections::HashMap;
-
-use crate::config::file::{ConfigFile, ConfigFileHostEntry};
 
 const ENV_DATABASE_URL: &str    = "STARFOUNDRY_MARKET_WORKER_DATABASE_URL";
 const ENV_SERVICE_ADDRESS: &str = "STARFOUNDRY_MARKET_WORKER_SERVICE_ADDRESS";
@@ -14,8 +9,6 @@ pub struct Config {
     pub database_url:    String,
 
     pub service_address: SocketAddr,
-
-    pub hosts:           HashMap<String, ConfigFileHostEntry>,
 }
 
 impl Config {
@@ -35,13 +28,9 @@ impl Config {
 
         let database_url = std::env::var(ENV_DATABASE_URL)?;
 
-        let config_file = ConfigFile::load()?;
-
         Ok(Self {
             database_url,
             service_address,
-
-            hosts: config_file.hosts,
         })
     }
 

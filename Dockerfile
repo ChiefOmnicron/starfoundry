@@ -18,6 +18,7 @@ COPY        ./eve-gateway_lib ./eve-gateway_lib
 COPY        ./eve-gateway_worker ./eve-gateway_worker
 COPY        ./gateway ./gateway
 COPY        ./gateway_lib ./gateway_lib
+COPY        ./gp_lib-eve_client ./gp_lib-eve_client
 COPY        ./gp_lib-types ./gp_lib-types
 COPY        ./industry ./industry
 COPY        ./industry_lib ./industry_lib
@@ -48,6 +49,7 @@ COPY        ./eve-gateway_lib ./eve-gateway_lib
 COPY        ./eve-gateway_worker ./eve-gateway_worker
 COPY        ./gateway ./gateway
 COPY        ./gateway_lib ./gateway_lib
+COPY        ./gp_lib-eve_client ./gp_lib-eve_client
 COPY        ./gp_lib-types ./gp_lib-types
 COPY        ./industry ./industry
 COPY        ./industry_lib ./industry_lib

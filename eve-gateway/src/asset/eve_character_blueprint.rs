@@ -51,7 +51,7 @@ pub async fn api(
 ) -> Result<impl IntoResponse> {
     let api_client = api_client_auth(
             &state.postgres,
-            state.metric,
+            state.eve_api_metric,
             identity.host()?,
             character_id,
             vec![

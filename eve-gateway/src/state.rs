@@ -1,6 +1,7 @@
 use axum::extract::{FromRef, FromRequestParts};
 use axum::http::request::Parts;
 use sqlx::PgPool;
+use starfoundry_lib_eve_client::EveApiClientMetric;
 use std::collections::HashMap;
 use std::convert::Infallible;
 use std::sync::Arc;
@@ -17,6 +18,8 @@ pub struct AppState {
     pub auth_domains:   Arc<HashMap<String, ConfigFileDomain>>,
     /// Track metrics for the application
     pub metric:         Arc<Metric>,
+    /// Track metrics for the eve api client
+    pub eve_api_metric: Arc<EveApiClientMetric>,
 }
 
 impl<S> FromRequestParts<S> for AppState

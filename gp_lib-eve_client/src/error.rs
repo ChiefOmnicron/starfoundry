@@ -1,11 +1,10 @@
 use axum::Json;
 use axum::response::{IntoResponse, Response};
 use reqwest::StatusCode;
+use serde::Serialize;
 use starfoundry_lib_types::CharacterId;
 use thiserror::Error;
 use url::Url;
-
-use crate::api_docs::ErrorResponse;
 
 pub type Result<T, E = EveApiError> = std::result::Result<T, E>;
 
@@ -198,4 +197,13 @@ impl IntoResponse for EveApiError {
         }
         .into_response()
     }
+}
+
+/// Use in error types
+#[derive(Serialize)]
+pub struct ErrorResponse {
+    /// General error name
+    pub error: String,
+    /// Human description of the error
+    pub description: String,
 }

@@ -1,12 +1,12 @@
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::{IntoResponse, Response};
+use starfoundry_lib_eve_client::EveApiError;
 use starfoundry_lib_types::{SystemId, TypeId};
 use thiserror::Error;
 
 use crate::api_docs::ErrorResponse;
 use crate::universe::error::UniverseError;
-use crate::eve_client::error::EveApiError;
 
 pub type Result<T, E = IndustryError> = std::result::Result<T, E>;
 
@@ -32,6 +32,9 @@ pub enum IndustryError {
 impl IntoResponse for IndustryError {
     fn into_response(self) -> Response {
         match self {
+            Self::EveApiError(e) => {
+                EveApiError::into_response(e)
+            },
             _ => {
                 tracing::error!("{}", self.to_string());
                 (

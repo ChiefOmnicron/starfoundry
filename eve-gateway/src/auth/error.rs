@@ -1,10 +1,10 @@
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::{IntoResponse, Response};
+use starfoundry_lib_eve_client::EveApiError;
 use thiserror::Error;
 
 use crate::api_docs::ErrorResponse;
-use crate::eve_client::error::EveApiError;
 use crate::character::CharacterError;
 
 pub type Result<T, E = AuthError> = std::result::Result<T, E>;

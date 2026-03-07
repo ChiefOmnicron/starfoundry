@@ -3,11 +3,11 @@ use axum::http::{HeaderMap, StatusCode};
 use axum::Json;
 use axum::response::IntoResponse;
 use reqwest::header::HOST;
+use starfoundry_lib_eve_client::EveApiClient;
 use starfoundry_lib_gateway::ExtractIdentity;
 
 use crate::api_docs::InternalServerError;
 use crate::auth::error::{AuthError, Result};
-use crate::eve_client::EveApiClient;
 use crate::state::AppState;
 
 /// Login Corporation

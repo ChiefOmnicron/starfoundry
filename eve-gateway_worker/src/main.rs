@@ -4,16 +4,17 @@ mod config;
 mod error;
 mod industry;
 mod metric;
-mod tasks;
 mod sync;
+mod tasks;
 
-use std::time::Duration;
-use sqlx::postgres::PgPoolOptions;
-use starfoundry_lib_worker::{Task, TaskStatus, Worker};
-use tokio::sync::mpsc;
-use tracing_subscriber::EnvFilter;
 use prometheus_client::registry::Registry;
 use sqlx::PgPool;
+use sqlx::postgres::PgPoolOptions;
+use starfoundry_lib_eve_client::EveApiClientMetric;
+use starfoundry_lib_worker::{Task, TaskStatus, Worker};
+use std::time::Duration;
+use tokio::sync::mpsc;
+use tracing_subscriber::EnvFilter;
 
 use crate::config::Config;
 use crate::error::Result;
@@ -47,6 +48,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut metric_registry = Registry::with_prefix("starfoundry_eve_gateway_worker");
     let metric = WorkerMetric::new();
+    let eve_api_metric = EveApiClientMetric::new();
+    eve_api_metric.register(&mut metric_registry);
 
     let (tx, mut rx) = mpsc::channel(5);
 
@@ -118,8 +121,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 async fn task_select(
-    pool: &PgPool,
-    task: &mut Task<WorkerMetric, WorkerEveGatewayTask>,
+    pool:   &PgPool,
+    task:   &mut Task<WorkerMetric, WorkerEveGatewayTask>,
 ) -> Result<()> {
     match task.task {
         WorkerEveGatewayTask::Sync => {

@@ -5,14 +5,13 @@ use axum::http::StatusCode;
 use axum::Json;
 use serde_json::json;
 use sqlx::PgPool;
+use starfoundry_lib_eve_client::{EveApiClient, EveApiClientMetric};
 use starfoundry_lib_eve_gateway::CharacterInfo;
 use std::sync::Arc;
 
 use crate::auth::error::{AuthError, Result};
 use crate::auth::verify;
-use crate::eve_client::EveApiClient;
 use crate::state::AppState;
-use crate::metrics::Metric;
 
 pub struct ExtractIdentity {
     pub character_info: CharacterInfo,
@@ -22,7 +21,7 @@ impl ExtractIdentity {
     pub async fn eve_api_client(
         &self,
         postgres: &PgPool,
-        metric:   Arc<Metric>,
+        metric:   Arc<EveApiClientMetric>,
     ) -> Result<Option<EveApiClient>> {
         let refresh_token = sqlx::query!("
                 SELECT refresh_token

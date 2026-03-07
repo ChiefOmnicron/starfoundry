@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use url::Url;
 
-use crate::eve_client::error::{EveApiError, Result};
+use crate::error::{EveApiError, Result};
 use crate::eve_client::EveApiClient;
 
 impl EveApiClient {

@@ -1,29 +1,30 @@
+use axum::extract::rejection::JsonRejection;
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::{IntoResponse, Response};
-use starfoundry_lib_eve_client::EveApiError;
 use thiserror::Error;
 
-use crate::api_docs::ErrorResponse;
+use crate::api_docs::{format_json_errors, ErrorResponse};
 
-pub type Result<T, E = InternalError> = std::result::Result<T, E>;
+pub type Result<T, E = StructureError> = std::result::Result<T, E>;
 
 #[derive(Debug, Error)]
 #[non_exhaustive]
-pub enum InternalError {
-    #[error("error while fetching characters, error: '{0}'")]
-    FetchCharacter(sqlx::Error),
+pub enum StructureError {
+    #[error("sqlx error: '{0}'")]
+    GenericSqlxError(sqlx::Error),
 
-    #[error("error performing eve api call, error: '{0}'")]
-    EveApiError(#[from] EveApiError),
+    #[error(transparent)]
+    JsonExtractorRejection(#[from] JsonRejection),
 }
 
-impl IntoResponse for InternalError {
+impl IntoResponse for StructureError {
     fn into_response(self) -> Response {
         match self {
-            Self::EveApiError(e) => {
-                EveApiError::into_response(e)
+            Self::JsonExtractorRejection(x) => {
+                format_json_errors(x).into_response()
             },
+
             _ => {
                 tracing::error!("{}", self.to_string());
                 (

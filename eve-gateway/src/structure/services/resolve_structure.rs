@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
+use starfoundry_lib_eve_client::EveApiClient;
 use starfoundry_lib_eve_gateway::{ResolveStructureResponse, StructurePosition};
 use starfoundry_lib_types::{StructureId, SystemId, TypeId};
 
-use crate::eve_client::EveApiClient;
 use crate::structure::error::{Result, StructureError};
 use crate::structure::services::{fetch_services, list_structure_rigs};
 

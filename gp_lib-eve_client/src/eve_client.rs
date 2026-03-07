@@ -1,16 +1,3 @@
-mod character;
-mod corporation;
-mod jwt_key;
-mod jwt;
-mod utils;
-
-/// errors that can be thrown by this module
-pub mod error;
-
-pub use self::jwt::*;
-pub use self::character::*;
-pub use self::corporation::*;
-
 use reqwest::{Client, Response, StatusCode};
 use reqwest::header::{HeaderMap, HeaderValue};
 use serde::de::DeserializeOwned;
@@ -22,8 +9,7 @@ use std::ops::Deref;
 use std::sync::{Arc, Mutex};
 use url::Url;
 
-use crate::eve_client::error::{EveApiError, Result};
-use crate::metrics::Metric;
+use crate::{EveApiError, EveJwtToken, EveApiClientMetric, Result};
 
 /// Required by the EVE-Api
 const COMPATIBILITY_DATE_HEADER: &str       = "X-Compatibility-Date";
@@ -71,7 +57,7 @@ pub struct EveApiClient {
     /// Token needed to get data that is behind auth
     access_token:       Arc<Mutex<Option<String>>>,
 
-    metric:             Arc<Metric>,
+    metric:             Arc<EveApiClientMetric>,
 }
 
 impl EveApiClient {
@@ -87,7 +73,7 @@ impl EveApiClient {
     /// - If the ENV '[ENV_CLIENT_ID]' is not set
     /// 
     pub fn new(
-        metric: Arc<Metric>,
+        metric: Arc<EveApiClientMetric>,
     ) -> Result<Self> {
         let client = Self::client()?;
 
@@ -110,7 +96,7 @@ impl EveApiClient {
     /// - If the reqwest client cannot be constructed
     /// 
     pub fn new_with_refresh_token(
-        metric:        Arc<Metric>,
+        metric:        Arc<EveApiClientMetric>,
         character_id:  CharacterId,
         refresh_token: impl Into<String>,
     ) -> Result<Self> {

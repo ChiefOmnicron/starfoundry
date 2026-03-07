@@ -1,10 +1,9 @@
 use axum::Json;
 use axum::response::{IntoResponse, Response};
 use reqwest::StatusCode;
+use starfoundry_lib_eve_client::EveApiError;
 use starfoundry_lib_gateway::ErrorResponse;
 use thiserror::Error;
-
-use crate::eve_client::error::EveApiError;
 
 pub type Result<T, E = SearchError> = std::result::Result<T, E>;
 

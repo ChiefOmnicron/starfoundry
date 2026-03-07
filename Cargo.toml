@@ -11,6 +11,7 @@ opt-level = 3
 [workspace]
 members = [
   # general purpose
+  'gp_lib-eve_client',
   'gp_lib-types',
 
   # gateway

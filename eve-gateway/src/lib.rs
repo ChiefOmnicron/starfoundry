@@ -13,8 +13,6 @@ pub mod api_docs;
 pub mod auth;
 /// loading and validating from configurations
 pub mod config;
-/// wrapper client for the eve api
-pub mod eve_client;
 /// application health checks
 pub mod healthcheck;
 /// application metrics

@@ -5,7 +5,7 @@ use std::fmt;
 // Wrapper struct to hold a Vec<T>
 #[derive(Debug, PartialEq)]
 struct SingleOrVec(Vec<String>);
- 
+
 // Helper method to unwrap the inner Vec<T>
 impl SingleOrVec {
     fn into_inner(self) -> Vec<String> {

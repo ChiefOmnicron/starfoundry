@@ -3,9 +3,8 @@ use starfoundry_lib_types::CharacterId;
 use jsonwebtoken::{Algorithm, DecodingKey, TokenData, Validation};
 use url::Url;
 
-use crate::eve_client::error::{EveApiError, Result};
-use crate::eve_client::utils::single_or_vec;
-use crate::eve_client::{EveApiClient, EveClientId};
+use crate::{EveApiClient, EveClientId, EveApiError, Result};
+use crate::utils::single_or_vec;
 
 /// Parsed version of the response from EVE after a successful login.
 ///

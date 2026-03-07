@@ -1,7 +1,7 @@
+use starfoundry_lib_eve_client::{ENV_CALLBACK, ENV_CLIENT_ID, ENV_SECRET_KEY};
 use tokio::net::TcpListener;
 
 use crate::auth::{ENV_JWT_ECDSA_PRIVATE, ENV_JWT_ECDSA_PUBLIC, ENV_JWT_ISSUER_DOMAIN};
-use crate::eve_client::{ENV_CALLBACK, ENV_CLIENT_ID, ENV_SECRET_KEY};
 
 const ENV_DATABASE_URL: &str     = "STARFOUNDRY_EVE_GATEWAY_DATABASE_URL";
 const ENV_APP_ADDRESS: &str      = "STARFOUNDRY_EVE_GATEWAY_APP_ADDRESS";

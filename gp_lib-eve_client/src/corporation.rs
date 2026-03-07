@@ -1,8 +1,7 @@
 use serde::{Deserialize, Serialize};
 use starfoundry_lib_types::{AllianceId, CorporationId};
 
-use crate::eve_client::error::Result;
-use crate::eve_client::EveApiClient;
+use crate::{EveApiClient, Result};
 
 impl EveApiClient {
     /// Gets general information about the corporation

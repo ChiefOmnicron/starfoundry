@@ -1,7 +1,6 @@
 use axum::response::{IntoResponse, Response};
+use starfoundry_lib_eve_client::EveApiError;
 use thiserror::Error;
-
-use crate::eve_client::error::EveApiError;
 
 pub type Result<T, E = ContractError> = std::result::Result<T, E>;
 

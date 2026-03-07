@@ -4,6 +4,7 @@ use axum::Json;
 use axum::response::IntoResponse;
 use base64::prelude::*;
 use sha2::{Digest, Sha256};
+use starfoundry_lib_eve_client::{EveApiClient, EveJwtToken};
 use std::collections::HashMap;
 use std::str::FromStr;
 use uuid::Uuid;
@@ -13,7 +14,6 @@ use crate::auth::error::{AuthError, Result};
 use crate::auth::history::insert_into_history;
 use crate::auth::RefreshTokenClaims;
 use crate::character::service::refresh_character_in_db;
-use crate::eve_client::{EveApiClient, EveJwtToken};
 use crate::state::AppState;
 
 const QUERY_PARAM_CODE: &str  = "code";
@@ -191,7 +191,7 @@ pub async fn callback(
 
     let character_info = refresh_character_in_db(
         &state.postgres,
-        state.metric,
+        state.eve_api_metric,
         character_id
     ).await?;
 

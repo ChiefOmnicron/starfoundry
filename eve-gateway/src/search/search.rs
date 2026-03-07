@@ -56,7 +56,7 @@ pub async fn api(
 
     let api_client = api_client_auth(
             &state.postgres,
-            state.metric,
+            state.eve_api_metric,
             identity.host()?,
             identity.character_id,
             vec![

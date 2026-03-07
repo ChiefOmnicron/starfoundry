@@ -2579,6 +2579,7 @@ dependencies = [
  "serde_json",
  "sha2",
  "sqlx",
+ "starfoundry_lib-eve_client",
  "starfoundry_lib-eve_gateway",
  "starfoundry_lib-gateway",
  "starfoundry_lib-types",
@@ -2604,7 +2605,9 @@ dependencies = [
  "prometheus-client",
  "serde",
  "serde_json",
+ "sha2",
  "sqlx",
+ "starfoundry_lib-eve_client",
  "starfoundry_lib-eve_gateway",
  "starfoundry_lib-gateway",
  "starfoundry_lib-types",
@@ -2706,7 +2709,6 @@ dependencies = [
  "sqlx",
  "starfoundry_lib-eve_gateway",
  "starfoundry_lib-gateway",
- "starfoundry_lib-industry",
  "starfoundry_lib-types",
  "starfoundry_lib-worker",
  "thiserror 2.0.18",
@@ -2728,6 +2730,23 @@ dependencies = [
  "serde_json",
  "sqlx",
  "starfoundry_lib-types",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "starfoundry_lib-eve_client"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "base64",
+ "jsonwebtoken",
+ "prometheus-client",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "starfoundry_lib-types",
+ "thiserror 2.0.18",
  "tracing",
  "url",
 ]

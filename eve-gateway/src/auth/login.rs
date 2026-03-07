@@ -3,10 +3,10 @@ use axum::http::{HeaderMap, StatusCode};
 use axum::http::header::HOST;
 use axum::Json;
 use axum::response::IntoResponse;
+use starfoundry_lib_eve_client::EveApiClient;
 
 use crate::api_docs::InternalServerError;
 use crate::auth::error::{AuthError, Result};
-use crate::eve_client::EveApiClient;
 use crate::state::AppState;
 
 /// Login Main

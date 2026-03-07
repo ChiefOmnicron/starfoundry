@@ -2,6 +2,7 @@ use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
+use starfoundry_lib_eve_client::EveApiError;
 use starfoundry_lib_eve_gateway::ResolveStructureResponse;
 use starfoundry_lib_types::StructureId;
 
@@ -9,7 +10,6 @@ use crate::api_docs::{InternalServerError, NotFound};
 use crate::state::AppState;
 
 use crate::auth::ExtractIdentity;
-use crate::eve_client::error::EveApiError;
 use crate::structure::error::Result;
 use crate::structure::services::resolve_structure;
 
@@ -54,7 +54,7 @@ pub async fn api(
     let eve_api_client = identity
         .eve_api_client(
             &state.postgres,
-            state.metric,
+            state.eve_api_metric,
         )
         .await?
         .ok_or(EveApiError::ClientNotAuthenticated)?;

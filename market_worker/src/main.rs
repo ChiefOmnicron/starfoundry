@@ -74,7 +74,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     sync(
         &pool,
-        config.clone(),
     ).await?;
 
     while let Some(task) = rx.recv().await {
@@ -87,7 +86,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             status = task_select(
                 &pool,
                 &mut task,
-                config.clone(),
             ) => {
                 let pool = pool.clone();
 
@@ -129,14 +127,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 async fn task_select(
     pool:   &PgPool,
     task:   &mut Task<WorkerMetric, WorkerMarketTask>,
-    config: Config,
 ) -> Result<()> {
     match task.task {
         WorkerMarketTask::Sync                  => {
             sync_task(
                 pool,
                 task,
-                config,
             ).await
         },
         WorkerMarketTask::Cleanup                  => {

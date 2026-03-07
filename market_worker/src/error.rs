@@ -45,6 +45,4 @@ pub enum Error {
     WorkerLibError(#[from] starfoundry_lib_worker::Error),
     #[error(transparent)]
     EveGatewayError(#[from] starfoundry_lib_eve_gateway::Error),
-    #[error(transparent)]
-    IndustryError(#[from] starfoundry_lib_industry::Error),
 }

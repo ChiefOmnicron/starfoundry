@@ -41,7 +41,7 @@ pub async fn api(
 ) -> Result<impl IntoResponse> {
     let entry = fetch_character_bulk(
         &state.postgres,
-        state.metric,
+        state.eve_api_metric,
         character_ids
     ).await?;
 

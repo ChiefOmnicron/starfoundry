@@ -1,65 +1,41 @@
+use chrono::{NaiveDateTime, Timelike, Utc};
 use sqlx::PgPool;
-use starfoundry_lib_industry::{IndustryApiClientInternal, IndustryClient, InternalStructureFilter, Structure};
-use starfoundry_lib_types::CharacterId;
+use starfoundry_lib_types::{CharacterId, StructureId};
 use starfoundry_lib_worker::Task;
 use std::collections::HashMap;
+use std::time::Duration;
 
-use crate::{SERVICE_NAME, WorkerMarketTask};
-use crate::config::Config;
 use crate::error::{Error, Result};
 use crate::metric::WorkerMetric;
+use crate::WorkerMarketTask;
 
 /// Ensures that all necessary tasks are in the queue and new structures
 /// are added into the rotation
 pub async fn sync_task(
     pool:   &PgPool,
     task:   &mut Task<WorkerMetric, WorkerMarketTask>,
-    config: Config,
 ) -> Result<()> {
-    for (host, config) in config.hosts {
-        let client = IndustryClient::new_with_address(
-            SERVICE_NAME.into(),
-            config.address,
-        )?;
-
-        let structure_response = match client
-            .list_structures(InternalStructureFilter {
-                service_id: Some(35892.into()),
-            })
-            .await {
-
-            Ok(x)  => x,
-            Err(e) => {
-                task.append_error(e.to_string());
-                HashMap::new()
+    match sync_player_stations(
+        pool,
+    ).await {
+        Ok(new_entries) => {
+            if new_entries > 0 {
+                task.append_log(format!("added {new_entries} player markets"))
             }
-        };
+        },
+        Err(e) => task.append_error(e.to_string()),
+    };
 
-        match sync_player_stations(
-            pool,
-            &structure_response,
-            host.clone(),
-        ).await {
-            Ok(new_entries) => {
-                if new_entries > 0 {
-                    task.append_log(format!("added {new_entries} player markets, host: {host}"))
-                }
-            },
-            Err(e) => task.append_error(e.to_string()),
-        };
-
-        match sync_npc_stations(
-            pool,
-            &structure_response,
-        ).await {
-            Ok(new_entries) => {
-                if new_entries > 0 {
-                    task.append_log(format!("added {new_entries} npc markets"))
-                }
-            },
-            Err(e) => task.append_error(e.to_string()),
-        };
-    }
+    /*match sync_npc_stations(
+        pool,
+    ).await {
+        Ok(new_entries) => {
+            if new_entries > 0 {
+                task.append_log(format!("added {new_entries} npc markets"))
+            }
+        },
+        Err(e) => task.append_error(e.to_string()),
+    };*/
 
     match sync_public_contract(
         pool,
@@ -86,43 +62,18 @@ pub async fn sync_task(
 /// are added into the rotation
 pub async fn sync(
     pool:   &PgPool,
-    config: Config,
 ) -> Result<()> {
-    for (host, config) in config.hosts {
-        let client = IndustryClient::new_with_address(
-            SERVICE_NAME.into(),
-            config.address,
-        )?;
+    sync_player_stations(
+        pool,
+    ).await?;
 
-        let structure_response = match client
-            .list_structures(InternalStructureFilter {
-                service_id: Some(35892.into()),
-            })
-            .await {
+    /*sync_private_orders(
+        pool,
+    ).await?;
 
-            Ok(x)  => x,
-            Err(e) => {
-                tracing::error!("{}", e);
-                HashMap::new()
-            }
-        };
-
-        sync_player_stations(
-            pool,
-            &structure_response,
-            host.clone(),
-        ).await?;
-
-        sync_private_orders(
-            pool,
-            host,
-        ).await?;
-
-        sync_npc_stations(
-            pool,
-            &structure_response,
-        ).await?;
-    }
+    sync_npc_stations(
+        pool,
+    ).await?;*/
 
     sync_public_contract(
         pool,
@@ -173,9 +124,8 @@ async fn sync_misc_tasks(
     Ok(())
 }
 
-async fn sync_npc_stations(
-    pool:               &PgPool,
-    structure_response: &HashMap<CharacterId, Vec<Structure>>,
+/*async fn sync_npc_stations(
+    pool: &PgPool,
 ) -> Result<usize> {
     let task_name: String = WorkerMarketTask::LatestNpc.into();
 
@@ -230,65 +180,118 @@ async fn sync_npc_stations(
         .await
         .map(|_| new_entries.len())
         .map_err(Error::SyncError)
-}
+}*/
 
 async fn sync_player_stations(
-    pool:               &PgPool,
-    structure_response: &HashMap<CharacterId, Vec<Structure>>,
-    host:               String,
+    pool: &PgPool,
 ) -> Result<usize> {
     let task_name: String = WorkerMarketTask::LatestPlayer.into();
 
-    let market_stations = sqlx::query!("
+    #[derive(Clone, Debug)]
+    struct TmpStructure {
+        main_character: CharacterId,
+        character_id:   CharacterId,
+        structure_id:   StructureId,
+        source:         String,
+    }
+
+    let mut registered_structures = HashMap::new();
+    sqlx::query!("
             SELECT
-                (additional_data ->> 'structure_id')::BIGINT AS structure_id,
-                (additional_data ->> 'character_id')::INTEGER AS character_id,
+                main_character,
+                character_id,
+                structure_id,
+                source
+            FROM structure
+        ")
+        .fetch_all(pool)
+        .await
+        .map_err(Error::SyncError)?
+        .into_iter()
+        .map(|x| TmpStructure {
+            main_character: x.main_character.into(),
+            character_id:   x.character_id.into(),
+            structure_id:   x.structure_id.into(),
+            source:         x.source,
+        })
+        .for_each(|x| {
+            registered_structures
+                .entry((x.main_character, x.structure_id))
+                .and_modify(|y: &mut Vec<TmpStructure>| y.push(x.clone()))
+                .or_insert(vec![x]);
+        });
+
+    let market_stations = sqlx::query!(r#"
+            SELECT
+                (additional_data ->> 'structure_id')::BIGINT AS "structure_id!",
+                (additional_data ->> 'character_id')::INTEGER AS "character_id!",
                 (additional_data ->> 'source')::VARCHAR AS source
             FROM worker_queue
             WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
             AND task = $1
-        ",
+        "#,
             &task_name,
         )
         .fetch_all(pool)
         .await
         .map_err(Error::SyncError)?;
 
+    // if there is at least one entry, skip it
+    if !market_stations.is_empty() {
+        return Ok(0usize);
+    }
+
+    #[derive(Clone, Debug)]
+    struct TaskInformation {
+        process_after:   NaiveDateTime,
+        additional_data: serde_json::Value,
+    }
+
+    let mut current_time_slot = Utc::now().naive_utc();
     let mut new_entries = Vec::new();
-    for (character_id, structures) in structure_response {
-        if **character_id == 0 {
-            continue;
-        }
+    for (_, structures) in registered_structures {
+        // 300 = 5 minutes in seconds
+        // at max 10 slots are available
+        let time_slot_diff = 300 / std::cmp::min(10, structures.len());
 
-        for structure in structures {
-            if let None = market_stations
-                .iter()
-                .find(|x| {
-                    x.character_id == Some(**character_id) &&
-                    x.structure_id == Some(structure.structure_id) &&
-                    x.source == Some(host.clone())
-                }) {
+        'outer: loop {
+            for structure in structures.iter() {
+                let date = current_time_slot;
+                if date.time().hour() == 11 && date.time().minute() < 30 {
+                    // during downtime new entries should be generated
+                    if new_entries.is_empty() {
+                        date
+                    } else {
+                        break 'outer;
+                    }
+                } else {
+                    date
+                };
 
-                let additional_data = serde_json::json!({
-                    "structure_id": structure.structure_id,
-                    "character_id": character_id,
-                    "region_id": structure.system.region_id,
-                    "source": host,
+                new_entries.push(TaskInformation {
+                    process_after: current_time_slot,
+                    additional_data: serde_json::json!({
+                        "character_id": structure.character_id,
+                        "structure_id": structure.structure_id,
+                        "source": structure.source,
+                    }),
                 });
-                new_entries.push(additional_data);
+                current_time_slot += Duration::from_secs(time_slot_diff as u64);
             }
         }
     }
 
     tracing::info!("Added {} new player market jobs", new_entries.len());
     sqlx::query!("
-            INSERT INTO worker_queue (task, additional_data)
+            INSERT INTO worker_queue (task, process_after, additional_data)
             SELECT $1, * FROM UNNEST(
-                $2::JSONB[]
+                $2::TIMESTAMP[],
+                $3::JSONB[]
             )
         ",
             &task_name,
-            &new_entries
+            &new_entries.iter().map(|x| x.process_after).collect::<Vec<_>>(),
+            &new_entries.iter().map(|x| x.additional_data.clone()).collect::<Vec<_>>(),
         )
         .execute(pool)
         .await
