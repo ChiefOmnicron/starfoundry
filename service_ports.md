@@ -10,7 +10,6 @@
 | industry        |                       | 9994 | App      |
 | industry        |                       | 9995 | Service  |
 | industry-worker |                       | 8995 | Service  |
-| industry        |                       | 8995 | Internal |
 | store           |                       | 9996 | App      |
 | store           |                       | 9997 | Service  |
 | eve-gateway     |                       | 9998 | App      |

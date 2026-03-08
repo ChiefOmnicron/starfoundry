@@ -10,7 +10,6 @@ pub struct Config {
 
     pub app_address:      TcpListener,
     pub service_address:  TcpListener,
-    pub internal_address: TcpListener,
 }
 
 impl Config {
@@ -28,7 +27,6 @@ impl From<ConfigEnv> for Config {
 
             app_address:        env.app_address,
             service_address:    env.service_address,
-            internal_address:   env.internal_address,
         }
     }
 }

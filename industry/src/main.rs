@@ -3,7 +3,6 @@ mod config;
 mod healthcheck;
 mod industry;
 mod industry_hub;
-mod internal;
 mod metrics;
 mod project_group;
 mod project;
@@ -61,7 +60,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     tracing::info!("Starting app server on {}", config.app_address.local_addr().unwrap());
     tracing::info!("Starting service server on {}", config.service_address.local_addr().unwrap());
-    tracing::info!("Starting internal server on {}", config.internal_address.local_addr().unwrap());
 
     select! {
         r = axum::serve(config.app_address, app(state.clone())) => {
@@ -75,11 +73,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         )) => {
             if r.is_err() {
                 tracing::error!("Error in service thread, error: {:?}", r);
-            }
-        },
-        r = axum::serve(config.internal_address, internal(state.clone())) => {
-            if r.is_err() {
-                tracing::error!("Error in internal thread, error: {:?}", r);
             }
         },
     }
@@ -124,17 +117,6 @@ fn service(
         .route("/metrics", axum::routing::get(|| async move {
             metrics::route(registry)
         }))
-}
-
-fn internal(
-    state: AppState,
-) -> Router {
-    let (router, _) = OpenApiRouter::with_openapi(ApiDoc::openapi())
-        .nest("/internal", internal::routes())
-        .with_state(state.clone())
-        .split_for_parts();
-
-    router
 }
 
 #[cfg(not(test))]
