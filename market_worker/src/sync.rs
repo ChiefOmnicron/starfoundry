@@ -203,6 +203,28 @@ async fn sync_npc_stations(
 async fn sync_npc_stations_authed(
     pool: &PgPool,
 ) -> Result<usize> {
+    let task_name: String = WorkerMarketTask::LatestNpcAuthed.into();
+
+    let market_stations = sqlx::query!(r#"
+            SELECT
+                (additional_data ->> 'structure_id')::BIGINT AS "structure_id!",
+                (additional_data ->> 'character_id')::INTEGER AS "character_id!",
+                (additional_data ->> 'source')::VARCHAR AS source
+            FROM worker_queue
+            WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
+            AND task = $1
+        "#,
+            &task_name,
+        )
+        .fetch_all(pool)
+        .await
+        .map_err(Error::SyncError)?;
+
+    // if there is at least one entry, skip it
+    if !market_stations.is_empty() {
+        return Ok(0usize);
+    }
+
     // authed requests
     let mut registered_structures = HashMap::new();
     sqlx::query!("
