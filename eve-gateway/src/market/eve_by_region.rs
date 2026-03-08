@@ -4,15 +4,11 @@ use axum::response::IntoResponse;
 use reqwest::StatusCode;
 use starfoundry_lib_eve_client::EveApiClient;
 use starfoundry_lib_eve_gateway::eve_market::Market;
-use starfoundry_lib_gateway::ExtractIdentity;
 use starfoundry_lib_types::RegionId;
 
 use crate::api_docs::{InternalServerError, NotFound};
 use crate::market::error::Result;
 use crate::state::AppState;
-use crate::utils::api_client_auth;
-
-const SCOPE: &str = "esi-markets.structure_markets.v1";
 
 /// Fetch Market for a region
 /// 
@@ -41,30 +37,10 @@ const SCOPE: &str = "esi-markets.structure_markets.v1";
     ),
 )]
 pub async fn api(
-    identity:        Option<ExtractIdentity>,
     State(state):    State<AppState>,
     Path(region_id): Path<RegionId>,
 ) -> Result<impl IntoResponse> {
-    let api_client = if let Some(x) = identity {
-        let client = api_client_auth(
-            &state.postgres,
-            state.eve_api_metric.clone(),
-            x.host()?,
-            x.character_id,
-            vec![
-                SCOPE.into(),
-            ],
-        )
-        .await?;
-
-        if let Some(y) = client {
-            y
-        } else {
-            EveApiClient::new(state.eve_api_metric.clone())?
-        }
-    } else {
-        EveApiClient::new(state.eve_api_metric)?
-    };
+    let api_client = EveApiClient::new(state.eve_api_metric)?;
 
     let path = format!("latest/markets/{region_id}/orders");
     let market_data = api_client

@@ -37,17 +37,6 @@ pub async fn sync_task(
         Err(e) => task.append_error(e.to_string()),
     };
 
-    match sync_npc_stations_authed(
-        pool,
-    ).await {
-        Ok(new_entries) => {
-            if new_entries > 0 {
-                task.append_log(format!("added {new_entries} npc markets"))
-            }
-        },
-        Err(e) => task.append_error(e.to_string()),
-    };
-
     match sync_public_contract(
         pool,
     ).await {
@@ -83,10 +72,6 @@ pub async fn sync(
     ).await?;*/
 
     sync_npc_stations(
-        pool,
-    ).await?;
-
-    sync_npc_stations_authed(
         pool,
     ).await?;
 
@@ -198,68 +183,6 @@ async fn sync_npc_stations(
         .await
         .map(|_| new_entries.len())
         .map_err(Error::SyncError)
-}
-
-async fn sync_npc_stations_authed(
-    pool: &PgPool,
-) -> Result<usize> {
-    let task_name: String = WorkerMarketTask::LatestNpcAuthed.into();
-
-    let market_stations = sqlx::query!(r#"
-            SELECT
-                (additional_data ->> 'structure_id')::BIGINT AS "structure_id!",
-                (additional_data ->> 'character_id')::INTEGER AS "character_id!",
-                (additional_data ->> 'source')::VARCHAR AS source
-            FROM worker_queue
-            WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
-            AND task = $1
-        "#,
-            &task_name,
-        )
-        .fetch_all(pool)
-        .await
-        .map_err(Error::SyncError)?;
-
-    // if there is at least one entry, skip it
-    if !market_stations.is_empty() {
-        return Ok(0usize);
-    }
-
-    // authed requests
-    let mut registered_structures = HashMap::new();
-    sqlx::query!("
-            SELECT
-                main_character,
-                character_id,
-                structure_id,
-                region_id,
-                source
-            FROM structure
-            WHERE structure_id < 1000000000000
-        ")
-        .fetch_all(pool)
-        .await
-        .map_err(Error::SyncError)?
-        .into_iter()
-        .map(|x| TimeSlottedMarketEntry {
-            main_character: x.main_character.into(),
-            character_id:   x.character_id.into(),
-            structure_id:   x.structure_id.into(),
-            region_id:      x.region_id.into(),
-            source:         x.source,
-        })
-        .for_each(|x| {
-            registered_structures
-                .entry((x.main_character, x.structure_id))
-                .and_modify(|y: &mut Vec<TimeSlottedMarketEntry>| y.push(x.clone()))
-                .or_insert(vec![x]);
-        });
-
-    time_slotted_market(
-        pool,
-        WorkerMarketTask::LatestNpcAuthed,
-        registered_structures,
-    ).await
 }
 
 async fn sync_player_stations(

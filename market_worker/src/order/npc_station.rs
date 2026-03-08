@@ -2,7 +2,7 @@ use serde::Deserialize;
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::EveGatewayClient;
 use starfoundry_lib_eve_gateway::eve_market::EveGatewayApiClientEveMarket;
-use starfoundry_lib_types::{CharacterId, RegionId, StructureId};
+use starfoundry_lib_types::{RegionId, StructureId};
 use starfoundry_lib_worker::Task;
 
 use crate::{SERVICE_NAME, WorkerMarketTask};
@@ -29,26 +29,12 @@ pub async fn by_npc_station_task(
     };
 
     let client = EveGatewayClient::new(SERVICE_NAME)?;
-    let entries = if let Some(character_id) = additional_data.character_id {
-        let source = additional_data.source.unwrap_or_default();
-        client
-            .fetch_market_by_region_auth(
-                source,
-                character_id,
-                additional_data.region_id
-            )
-            .await?
-            .into_iter()
-            .filter(|x| *x.location_id == *additional_data.structure_id)
-            .collect::<Vec<_>>()
-    } else {
-        client
-            .fetch_market_by_region(additional_data.region_id)
-            .await?
-            .into_iter()
-            .filter(|x| *x.location_id == *additional_data.structure_id)
-            .collect::<Vec<_>>()
-    };
+    let entries = client
+        .fetch_market_by_region(additional_data.region_id)
+        .await?
+        .into_iter()
+        .filter(|x| *x.location_id == *additional_data.structure_id)
+        .collect::<Vec<_>>();
 
     insert_structure_market(
         &pool,
@@ -62,8 +48,6 @@ pub async fn by_npc_station_task(
 
 #[derive(Debug, Deserialize)]
 struct AdditionalData {
-    character_id: Option<CharacterId>,
-    source:       Option<String>,
     structure_id: StructureId,
     region_id:    RegionId,
 }
