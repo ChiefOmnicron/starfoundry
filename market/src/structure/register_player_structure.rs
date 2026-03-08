@@ -4,7 +4,7 @@ use axum::Json;
 use axum::response::IntoResponse;
 use serde::Deserialize;
 use starfoundry_lib_gateway::ExtractIdentity;
-use starfoundry_lib_types::{CharacterId, StructureId};
+use starfoundry_lib_types::{CharacterId, RegionId, StructureId};
 use utoipa::ToSchema;
 
 use crate::api_docs::{BadRequest, InternalServerError, Unauthorized};
@@ -49,13 +49,15 @@ pub async fn api(
                 main_character,
                 character_id,
                 structure_id,
+                region_id,
                 source
             )
-            VALUES ($1, $2, $3, $4)
+            VALUES ($1, $2, $3, $4, $5)
         ",
             *structure.main_character,
             *structure.character_id,
             *structure.structure_id,
+            *structure.region_id,
             structure.source,
         )
         .execute(&state.postgres)
@@ -80,5 +82,6 @@ pub struct RegisterStructureRequest {
     main_character: CharacterId,
     character_id:   CharacterId,
     structure_id:   StructureId,
+    region_id:      RegionId,
     source:         String,
 }

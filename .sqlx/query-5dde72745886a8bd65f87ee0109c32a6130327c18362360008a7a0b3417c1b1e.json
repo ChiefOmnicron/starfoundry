@@ -1,0 +1,74 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                main_character,\n                character_id,\n                structure_id,\n                region_id,\n                source\n            FROM structure\n            WHERE structure_id < 1000000000000\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "main_character",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "main_character"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "character_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "character_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "structure_id",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "structure_id"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "region_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "region_id"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "source",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "source"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "5dde72745886a8bd65f87ee0109c32a6130327c18362360008a7a0b3417c1b1e"
+}

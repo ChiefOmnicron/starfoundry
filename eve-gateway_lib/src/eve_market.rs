@@ -26,6 +26,27 @@ pub trait EveGatewayApiClientEveMarket: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
+    async fn fetch_market_by_region_auth(
+        &self,
+        source:       String,
+        character_id: CharacterId,
+        region_id:    RegionId,
+    ) -> Result<Vec<Market>> {
+        let mut headers = HeaderMap::new();
+        headers.insert(HOST, HeaderValue::from_str(&source).unwrap_or(HeaderValue::from_static("invalid.header")));
+        headers.insert(HEADER_CHARACTER_ID, (*character_id).into());
+
+        self
+            .fetch_auth(
+                &format!("eve/market/region/{}", *region_id),
+                &(),
+                headers,
+            )
+            .await
+            .map_err(Into::into)
+    }
+
+    #[allow(async_fn_in_trait)]
     async fn fetch_market_by_player(
         &self,
         source:       String,

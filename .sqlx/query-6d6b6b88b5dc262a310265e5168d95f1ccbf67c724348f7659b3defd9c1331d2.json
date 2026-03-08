@@ -1,0 +1,30 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                (additional_data ->> 'structure_id')::BIGINT AS structure_id,\n                (additional_data ->> 'region_id')::INTEGER AS region_id\n            FROM worker_queue\n            WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')\n            AND task = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "structure_id",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 1,
+        "name": "region_id",
+        "type_info": "Int4",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      null,
+      null
+    ]
+  },
+  "hash": "6d6b6b88b5dc262a310265e5168d95f1ccbf67c724348f7659b3defd9c1331d2"
+}

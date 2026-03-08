@@ -1,4 +1,4 @@
-use axum::extract::FromRequestParts;
+use axum::extract::{FromRequestParts, OptionalFromRequestParts};
 use axum::http::request::Parts;
 use axum::http::StatusCode;
 use axum::Json;
@@ -159,5 +159,23 @@ where
             is_admin,
             service_name,
         })
+    }
+}
+
+impl<S> OptionalFromRequestParts<S> for ExtractIdentity
+where
+    S: Send + Sync,
+{
+    type Rejection = (StatusCode, Json<serde_json::Value>);
+
+    async fn from_request_parts(
+        parts: &mut Parts,
+        state: &S,
+    ) -> std::result::Result<Option<Self>, Self::Rejection> {
+        if let Ok(x) = <ExtractIdentity as FromRequestParts<S>>::from_request_parts(parts, state).await {
+            Ok(Some(x))
+        } else {
+            Ok(None)
+        }
     }
 }

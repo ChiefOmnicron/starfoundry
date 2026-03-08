@@ -14,6 +14,8 @@ pub enum WorkerMarketTask {
 
     /// fetches the latest NPC orders
     LatestNpc,
+    /// fetches the latest NPC orders with authenticated user
+    LatestNpcAuthed,
     /// fetches the latest player orders
     LatestPlayer,
     /// fetches the latest region orders
@@ -39,6 +41,7 @@ impl WorkerTask for WorkerMarketTask {
             Self::Sync                  => self.add_minutes(5),
             Self::Cleanup               => self.during_downtime(),
             Self::LatestNpc             => self.add_minutes(5),
+            Self::LatestNpcAuthed       => self.oneshot(),
             Self::LatestPlayer          => self.oneshot(),
             Self::LatestRegion          => self.add_minutes(5),
             Self::PublicContracts       => self.add_minutes(30),
@@ -58,6 +61,7 @@ impl TryFrom<String> for WorkerMarketTask {
             "SYNC"                  => Ok(Self::Sync),
             "CLEANUP"               => Ok(Self::Cleanup),
             "LATEST_NPC"            => Ok(Self::LatestNpc),
+            "LATEST_NPC_AUTHED"     => Ok(Self::LatestNpcAuthed),
             "LATEST_PLAYER"         => Ok(Self::LatestPlayer),
             "LATEST_REGION"         => Ok(Self::LatestRegion),
             "PRICES"                => Ok(Self::Prices),
@@ -76,6 +80,7 @@ impl Into<String> for WorkerMarketTask {
             Self::Sync                  => "SYNC",
             Self::Cleanup               => "CLEANUP",
             Self::LatestNpc             => "LATEST_NPC",
+            Self::LatestNpcAuthed       => "LATEST_NPC_AUTHED",
             Self::LatestPlayer          => "LATEST_PLAYER",
             Self::LatestRegion          => "LATEST_REGION",
             Self::PublicContracts       => "PUBLIC_CONTRACTS",

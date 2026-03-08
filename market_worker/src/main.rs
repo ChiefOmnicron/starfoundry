@@ -143,7 +143,8 @@ async fn task_select(
                 .await
                 .map_err(Into::into)
         },
-        WorkerMarketTask::LatestNpc             => {
+        WorkerMarketTask::LatestNpc |
+        WorkerMarketTask::LatestNpcAuthed       => {
             by_npc_station_task(
                     pool,
                     task,
