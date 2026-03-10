@@ -133,8 +133,6 @@ async fn sync_character_assets(
     pool: &PgPool,
 ) -> Result<usize> {
     let task_name: String = WorkerEveGatewayTask::CharacterAssets.into();
-    let mut new_tasks = 0;
-
     let entries = sqlx::query!("
             SELECT character_id, domain
             FROM eve_credential
@@ -148,55 +146,62 @@ async fn sync_character_assets(
         .await
         .map_err(Error::GenericSqlxError)?;
 
+    let tasks = sqlx::query!("
+            SELECT
+                (additional_data ->> 'character_id')::INTEGER AS character_id,
+                (additional_data ->> 'source')::VARCHAR AS source
+            FROM worker_queue
+            WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
+            AND task = $1
+        ",
+            &task_name,
+        )
+        .fetch_all(pool)
+        .await
+        .map_err(Error::SyncError)?;
+
+    let mut new_entries = Vec::new();
     for entry in entries {
-        let task = sqlx::query!("
-                SELECT
-                    (additional_data ->> 'character_id')::INTEGER AS character_id,
-                    (additional_data ->> 'source')::VARCHAR AS source
-                FROM worker_queue
-                WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
-                AND task = $1
-            ",
-                &task_name,
-            )
-            .fetch_optional(pool)
-            .await
-            .map_err(Error::SyncError)?;
-
-        if task.is_none() {
-            new_tasks += 1;
-
-            let result = sqlx::query!("
-                    INSERT INTO worker_queue (task, additional_data)
-                    SELECT $1, $2
-                ",
-                    &task_name,
-                    &serde_json::json!({
-                        "character_id": entry.character_id,
-                        "source": entry.domain,
-                    })
-                )
-                .execute(pool)
-                .await
-                .map_err(Error::SyncError);
-
-            if let Err(e) = result {
-                tracing::error!("{:?}", e);
+        if let None = tasks
+            .iter()
+            .find(|x| {
+                x.character_id == Some(entry.character_id) &&
+                x.source == Some(entry.domain.clone())
+            }) {
+                let additional_data = serde_json::json!({
+                    "character_id": entry.character_id,
+                    "source": entry.domain,
+                });
+                new_entries.push(additional_data);
             }
-        }
     }
 
-    Ok(new_tasks)
+    tracing::info!("Added {} new character assets jobs", new_entries.len());
+    sqlx::query!("
+            INSERT INTO worker_queue (task, additional_data)
+            SELECT $1, * FROM UNNEST(
+                $2::JSONB[]
+            )
+        ",
+            &task_name,
+            &new_entries
+        )
+        .execute(pool)
+        .await
+        .map(|_| new_entries.len())
+        .map_err(Error::SyncError)
 }
 
 async fn sync_corporation_assets(
     pool: &PgPool,
 ) -> Result<usize> {
     let task_name: String = WorkerEveGatewayTask::CorporationAssets.into();
-    let mut new_tasks = 0;
 
     let entries = sqlx::query!("
-            SELECT character_id, character_main, domain
+            SELECT
+                character_id,
+                character_main,
+                domain
             FROM eve_credential
             WHERE
                 scopes && $1::VARCHAR[] AND
@@ -208,55 +213,59 @@ async fn sync_corporation_assets(
         .await
         .map_err(Error::GenericSqlxError)?;
 
+    let tasks = sqlx::query!("
+            SELECT
+                (additional_data ->> 'character_id')::INTEGER AS character_id,
+                (additional_data ->> 'corporation_id')::INTEGER AS corporation_id,
+                (additional_data ->> 'source')::VARCHAR AS source
+            FROM worker_queue
+            WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
+            AND task = $1
+        ",
+            &task_name,
+        )
+        .fetch_all(pool)
+        .await
+        .map_err(Error::SyncError)?;
+
+    let mut new_entries = Vec::new();
     for entry in entries {
-        let task = sqlx::query!("
-                SELECT
-                    (additional_data ->> 'character_id')::INTEGER AS character_id,
-                    (additional_data ->> 'corporation_id')::INTEGER AS corporation_id,
-                    (additional_data ->> 'source')::VARCHAR AS source
-                FROM worker_queue
-                WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
-                AND task = $1
-            ",
-                &task_name,
-            )
-            .fetch_optional(pool)
-            .await
-            .map_err(Error::SyncError)?;
-
-        if task.is_none() {
-            new_tasks += 1;
-
-            let result = sqlx::query!("
-                    INSERT INTO worker_queue (task, additional_data)
-                    SELECT $1, $2
-                ",
-                    &task_name,
-                    &serde_json::json!({
-                        "character_id": entry.character_main,
-                        "corporation_id": entry.character_id,
-                        "source": entry.domain,
-                    })
-                )
-                .execute(pool)
-                .await
-                .map_err(Error::SyncError);
-
-            if let Err(e) = result {
-                tracing::error!("{:?}", e);
+        if let None = tasks
+            .iter()
+            .find(|x| {
+                x.corporation_id == Some(entry.character_id) &&
+                x.character_id == entry.character_main &&
+                x.source == Some(entry.domain.clone())
+            }) {
+                let additional_data = serde_json::json!({
+                    "character_id": entry.character_main,
+                    "corporation_id": entry.character_id,
+                    "source": entry.domain,
+                });
+                new_entries.push(additional_data);
             }
-        }
     }
 
-    Ok(new_tasks)
+    tracing::info!("Added {} new corporation assets jobs", new_entries.len());
+    sqlx::query!("
+            INSERT INTO worker_queue (task, additional_data)
+            SELECT $1, * FROM UNNEST(
+                $2::JSONB[]
+            )
+        ",
+            &task_name,
+            &new_entries
+        )
+        .execute(pool)
+        .await
+        .map(|_| new_entries.len())
+        .map_err(Error::SyncError)
 }
 
 async fn sync_character_blueprints(
     pool: &PgPool,
 ) -> Result<usize> {
     let task_name: String = WorkerEveGatewayTask::CharacterBlueprints.into();
-    let mut new_tasks = 0;
-
     let entries = sqlx::query!("
             SELECT character_id, domain
             FROM eve_credential
@@ -270,105 +279,118 @@ async fn sync_character_blueprints(
         .await
         .map_err(Error::GenericSqlxError)?;
 
+    let tasks = sqlx::query!("
+            SELECT
+                (additional_data ->> 'character_id')::INTEGER AS character_id,
+                (additional_data ->> 'source')::VARCHAR AS source
+            FROM worker_queue
+            WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
+            AND task = $1
+        ",
+            &task_name,
+        )
+        .fetch_all(pool)
+        .await
+        .map_err(Error::SyncError)?;
+
+    let mut new_entries = Vec::new();
     for entry in entries {
-        let task = sqlx::query!("
-                SELECT
-                    (additional_data ->> 'character_id')::INTEGER AS character_id,
-                    (additional_data ->> 'source')::VARCHAR AS source
-                FROM worker_queue
-                WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
-                AND task = $1
-            ",
-                &task_name,
-            )
-            .fetch_optional(pool)
-            .await
-            .map_err(Error::SyncError)?;
-
-        if task.is_none() {
-            new_tasks += 1;
-
-            let result = sqlx::query!("
-                    INSERT INTO worker_queue (task, additional_data)
-                    SELECT $1, $2
-                ",
-                    &task_name,
-                    &serde_json::json!({
-                        "character_id": entry.character_id,
-                        "source": entry.domain,
-                    })
-                )
-                .execute(pool)
-                .await
-                .map_err(Error::SyncError);
-
-            if let Err(e) = result {
-                tracing::error!("{:?}", e);
+        if let None = tasks
+            .iter()
+            .find(|x| {
+                x.character_id == Some(entry.character_id) &&
+                x.source == Some(entry.domain.clone())
+            }) {
+                let additional_data = serde_json::json!({
+                    "character_id": entry.character_id,
+                    "source": entry.domain,
+                });
+                new_entries.push(additional_data);
             }
-        }
     }
 
-    Ok(new_tasks)
+    tracing::info!("Added {} new character blueprint jobs", new_entries.len());
+    sqlx::query!("
+            INSERT INTO worker_queue (task, additional_data)
+            SELECT $1, * FROM UNNEST(
+                $2::JSONB[]
+            )
+        ",
+            &task_name,
+            &new_entries
+        )
+        .execute(pool)
+        .await
+        .map(|_| new_entries.len())
+        .map_err(Error::SyncError)
 }
 
 async fn sync_corporation_blueprints(
     pool: &PgPool,
 ) -> Result<usize> {
-    let task_name: String = WorkerEveGatewayTask::CorporationBlueprints.into();
-    let mut new_tasks = 0;
+    let task_name: String = WorkerEveGatewayTask::CorporationAssets.into();
 
     let entries = sqlx::query!("
-            SELECT character_id, character_main, domain
+            SELECT
+                character_id,
+                character_main,
+                domain
             FROM eve_credential
             WHERE
                 scopes && $1::VARCHAR[] AND
                 character_main IS NOT NULL
         ",
-            &vec!["esi-corporations.read_blueprints.v1".into()],
+            &vec!["esi-corporation.read_blueprints.v1".into()],
         )
         .fetch_all(pool)
         .await
         .map_err(Error::GenericSqlxError)?;
 
+    let tasks = sqlx::query!("
+            SELECT
+                (additional_data ->> 'character_id')::INTEGER AS character_id,
+                (additional_data ->> 'corporation_id')::INTEGER AS corporation_id,
+                (additional_data ->> 'source')::VARCHAR AS source
+            FROM worker_queue
+            WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
+            AND task = $1
+        ",
+            &task_name,
+        )
+        .fetch_all(pool)
+        .await
+        .map_err(Error::SyncError)?;
+
+    let mut new_entries = Vec::new();
     for entry in entries {
-        let task = sqlx::query!("
-                SELECT
-                    (additional_data ->> 'character_id')::INTEGER AS character_id,
-                    (additional_data ->> 'corporation_id')::INTEGER AS corporation_id,
-                    (additional_data ->> 'source')::VARCHAR AS source
-                FROM worker_queue
-                WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
-                AND task = $1
-            ",
-                &task_name,
-            )
-            .fetch_optional(pool)
-            .await
-            .map_err(Error::SyncError)?;
-
-        if task.is_none() {
-            new_tasks += 1;
-
-            let result = sqlx::query!("
-                    INSERT INTO worker_queue (task, additional_data)
-                    SELECT $1, $2
-                ",
-                    &task_name,
-                    &serde_json::json!({
-                        "character_id": entry.character_main,
-                        "corporation_id": entry.character_id,
-                        "source": entry.domain,
-                    })
-                )
-                .execute(pool)
-                .await
-                .map_err(Error::SyncError);
-
-            if let Err(e) = result {
-                tracing::error!("{:?}", e);
+        if let None = tasks
+            .iter()
+            .find(|x| {
+                x.corporation_id == Some(entry.character_id) &&
+                x.character_id == entry.character_main &&
+                x.source == Some(entry.domain.clone())
+            }) {
+                let additional_data = serde_json::json!({
+                    "character_id": entry.character_main,
+                    "corporation_id": entry.character_id,
+                    "source": entry.domain,
+                });
+                new_entries.push(additional_data);
             }
-        }
     }
 
-    Ok(new_tasks)
+    tracing::info!("Added {} new corporation blueprint jobs", new_entries.len());
+    sqlx::query!("
+            INSERT INTO worker_queue (task, additional_data)
+            SELECT $1, * FROM UNNEST(
+                $2::JSONB[]
+            )
+        ",
+            &task_name,
+            &new_entries
+        )
+        .execute(pool)
+        .await
+        .map(|_| new_entries.len())
+        .map_err(Error::SyncError)
 }

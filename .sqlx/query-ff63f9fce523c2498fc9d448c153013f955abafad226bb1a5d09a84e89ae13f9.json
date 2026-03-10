@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT character_id, character_main, domain\n            FROM eve_credential\n            WHERE\n                scopes && $1::VARCHAR[] AND\n                character_main IS NOT NULL\n        ",
+  "query": "\n            SELECT\n                character_id,\n                character_main,\n                domain\n            FROM eve_credential\n            WHERE\n                scopes && $1::VARCHAR[] AND\n                character_main IS NOT NULL\n        ",
   "describe": {
     "columns": [
       {
@@ -48,5 +48,5 @@
       false
     ]
   },
-  "hash": "7e711d207c6c853301d9d8ee2e750d33df899bebd7ce6166369ce6ed548cfb40"
+  "hash": "ff63f9fce523c2498fc9d448c153013f955abafad226bb1a5d09a84e89ae13f9"
 }

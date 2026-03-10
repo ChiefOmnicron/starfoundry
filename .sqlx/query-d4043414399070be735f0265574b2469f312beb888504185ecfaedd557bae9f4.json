@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n                SELECT\n                    (additional_data ->> 'character_id')::INTEGER AS character_id,\n                    (additional_data ->> 'corporation_id')::INTEGER AS corporation_id,\n                    (additional_data ->> 'source')::VARCHAR AS source\n                FROM worker_queue\n                WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')\n                AND task = $1\n            ",
+  "query": "\n            SELECT\n                (additional_data ->> 'character_id')::INTEGER AS character_id,\n                (additional_data ->> 'corporation_id')::INTEGER AS corporation_id,\n                (additional_data ->> 'source')::VARCHAR AS source\n            FROM worker_queue\n            WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')\n            AND task = $1\n        ",
   "describe": {
     "columns": [
       {
@@ -33,5 +33,5 @@
       null
     ]
   },
-  "hash": "c2e3fb0e01aee5c5aeff5000cf166012696854eea6d0a4e046af64f0ecbc4d5d"
+  "hash": "d4043414399070be735f0265574b2469f312beb888504185ecfaedd557bae9f4"
 }
