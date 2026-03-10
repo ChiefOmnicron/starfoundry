@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT refresh_token\n            FROM eve_credential\n            WHERE\n                domain = $1 AND\n                (\n                    character_main = $2 AND\n                    character_id = $3\n                ) AND\n                scopes && $4::VARCHAR[]\n        ",
+  "query": "\n            SELECT refresh_token\n            FROM eve_credential\n            WHERE\n                domain = $1 AND\n                character_main = $2 AND\n                character_id = $3 AND\n                scopes && $4::VARCHAR[]\n            LIMIT 1\n        ",
   "describe": {
     "columns": [
       {
@@ -27,5 +27,5 @@
       false
     ]
   },
-  "hash": "def96cd8d9cfa146f4cef73ca45c8ca764445c3e026ac8f9e203b24aec6c20b3"
+  "hash": "278b753d43ec1dc30783f061cefcc0a334af2cc565d0de925e2b6a6f11cc0f72"
 }

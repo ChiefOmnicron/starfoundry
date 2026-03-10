@@ -57,11 +57,10 @@ pub async fn api_client_corporation_auth(
             FROM eve_credential
             WHERE
                 domain = $1 AND
-                (
-                    character_main = $2 AND
-                    character_id = $3
-                ) AND
+                character_main = $2 AND
+                character_id = $3 AND
                 scopes && $4::VARCHAR[]
+            LIMIT 1
         ",
             host,
             *character_id,
@@ -81,7 +80,8 @@ pub async fn api_client_corporation_auth(
 
     EveApiClient::new_with_refresh_token(
         metric,
-        (*corporation_id).into(),
+        //(*corporation_id).into(),
+        character_id,
         refresh_token,
     )
     .map(|x| Some(x))
