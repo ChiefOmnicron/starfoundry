@@ -80,8 +80,7 @@ pub async fn api_client_corporation_auth(
 
     EveApiClient::new_with_refresh_token(
         metric,
-        //(*corporation_id).into(),
-        character_id,
+        (*corporation_id).into(),
         refresh_token,
     )
     .map(|x| Some(x))

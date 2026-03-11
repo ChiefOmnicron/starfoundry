@@ -33,7 +33,8 @@ export const useListProjectJobs = (
         queryFn: async ({
             signal
         }: AbortSignal) => listProjectJobs(projectId, signal),
-        initialData: [],
+        // 10 minutes (ms * s * m)
+        staleTime: 1000 * 60 * 10,
     })
 }
 
@@ -53,4 +54,5 @@ export type ProjectJob = {
     item:        Item;
     structure:   Structure;
     started_by?: number;
+    end_date?:   string;
 }

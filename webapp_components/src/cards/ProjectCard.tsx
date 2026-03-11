@@ -1,9 +1,8 @@
-import { InternalLink } from "@internal/links/InternalLink";
-import { LoadingAnimation } from "@internal/misc/LoadingAnimation";
-import { ProjectProgressBar } from "@internal/misc/ProgressBar";
-import type { ProjectList, ProjectStatus } from "@internal/services/projects/list";
-import { useListProjectJobs } from "@internal/services/projects/listJobs";
 import { Badge, Card, Flex, Group, Stack, Text, Title } from "@mantine/core";
+import { InternalLink } from "@internal/links/InternalLink";
+import { ProjectProgressBar } from "@internal/misc/ProgressBar";
+import { useListProjectJobs } from "@internal/services/projects/listJobs";
+import type { ProjectList, ProjectStatus } from "@internal/services/projects/list";
 
 export function ProjectCard({
     project,
@@ -11,23 +10,8 @@ export function ProjectCard({
     viewLink = undefined,
 }: ProjectCardProps) {
     const {
-        isPending,
-        isFetching,
         data: jobs
     } = useListProjectJobs(project.id);
-
-    if (isPending || isFetching) {
-        return <Card
-            key={ project.id }
-            style={{
-                padding: 0
-            }}
-        >
-            <Flex justify={'center'}>
-                <LoadingAnimation />
-            </Flex>
-        </Card>
-    }
 
     const status = (status: ProjectStatus) => {
         switch(status) {
@@ -43,7 +27,7 @@ export function ProjectCard({
     }
 
     const additionalMessage = () => {
-        const groupedJobs = jobs.flatMap(x => x.entries);
+        const groupedJobs = (jobs || []).flatMap(x => x.entries);
         const done = groupedJobs.filter(x => x.status === 'DONE');
         const building = groupedJobs.filter(x => x.status === 'BUILDING');
         const waiting = groupedJobs.filter(x => x.status === 'WAITING_FOR_MATERIALS');
@@ -58,19 +42,19 @@ export function ProjectCard({
     }
 
     const card = () => {
-        const waiting = jobs
+        const waiting = (jobs || [])
             .flatMap(x => x.entries)
             .filter(x => x.status === 'WAITING_FOR_MATERIALS' || x.status === 'READY_TO_START')
             .length;
-        const inProgress = jobs
+        const inProgress = (jobs || [])
             .flatMap(x => x.entries)
             .filter(x => x.status === 'BUILDING')
             .length;
-        const done = jobs
+        const done = (jobs || [])
             .flatMap(x => x.entries)
             .filter(x => x.status === 'DONE')
             .length;
-        const total = jobs
+        const total = (jobs || [])
             .flatMap(x => x.entries)
             .length;
 
@@ -182,7 +166,7 @@ export function ProjectCard({
                 }}
             >
                 <ProjectProgressBar
-                    jobs={jobs}
+                    jobs={jobs || []}
                 />
             </div>
         </Card>

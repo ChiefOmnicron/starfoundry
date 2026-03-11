@@ -41,12 +41,15 @@ function RouteComponent() {
                 <Tabs.Tab value="building">
                     Active jobs
                 </Tabs.Tab>
+                <Tabs.Tab value="all">
+                    All jobs
+                </Tabs.Tab>
             </Tabs.List>
 
             <Tabs.Panel value="ready_to_start">
                 {
                     content({
-                        jobs: jobs,
+                        jobs: jobs || [],
                         status: 'READY_TO_START',
                         checkable: true,
                     })
@@ -55,8 +58,21 @@ function RouteComponent() {
             <Tabs.Panel value="building">
                 {
                     content({
-                        jobs: jobs,
+                        jobs: jobs || [],
                         status: 'BUILDING',
+                        showCost: true,
+                        showRemaining: true,
+                    })
+                }
+            </Tabs.Panel>
+            <Tabs.Panel value="all">
+                {
+                    content({
+                        jobs: jobs || [],
+                        groupByHeader: true,
+                        editable: true,
+                        showStatus: true,
+                        showCost: true,
                     })
                 }
             </Tabs.Panel>

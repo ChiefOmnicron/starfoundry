@@ -10,6 +10,7 @@ use uuid::Uuid;
 use crate::project::error::{ProjectError, Result};
 use crate::project::ProjectUuid;
 use crate::structure::service::FetchStructureQuery;
+use chrono::NaiveDateTime;
 
 pub async fn list_jobs(
     pool:                   &PgPool,
@@ -17,17 +18,20 @@ pub async fn list_jobs(
     project_id:             ProjectUuid,
     eve_gateway_api_client: &impl EveGatewayApiClient,
 ) -> Result<Vec<ProjectJobGroup>> {
+    // TODO: merge end_date into project_job?
     let entries = sqlx::query!(r#"
             SELECT
-                id,
-                runs,
-                status AS "status: ProjectJobStatusDatabase",
-                cost,
-                job_id,
-                structure_id,
-                type_id,
-                started_by
-            FROM project_job
+                pj.id,
+                pj.runs,
+                pj.status AS "status: ProjectJobStatusDatabase",
+                pj.cost,
+                pj.job_id,
+                pj.structure_id,
+                pj.type_id,
+                pj.started_by,
+                ij.end_date
+            FROM project_job pj
+            LEFT JOIN industry_job ij ON pj.job_id = ij.job_id
             WHERE project_id = $1
         "#,
             *project_id,
@@ -83,6 +87,14 @@ pub async fn list_jobs(
             continue;
         };
 
+        let end_date = if let Some(x) = entry.end_date {
+            NaiveDateTime::parse_from_str(&x, "%Y-%m-%dT%H:%M:%SZ")
+                .map(|x| Some(x))
+                .unwrap_or(None)
+        } else {
+            None
+        };
+
         let project_group = ProjectJob {
             id:         entry.id.into(),
             job_id:     entry.job_id,
@@ -94,6 +106,8 @@ pub async fn list_jobs(
             item:       item.clone(),
             structure:  structure.clone(),
             started_by: entry.started_by.map(Into::into),
+
+            end_date:   end_date,
         };
         project_jobs.push(project_group);
     }
@@ -136,6 +150,11 @@ async fn determine_ready_to_start(
             project_id,
         )
         .await?;
+    let stock_data = used_stock(
+            pool,
+            project_id,
+        )
+        .await?;
 
     let mut done = entries
         .iter()
@@ -146,6 +165,7 @@ async fn determine_ready_to_start(
     // bought market data is considered as done, and qualifies for something
     // to be ready to start
     done.extend(market_data);
+    done.extend(stock_data);
 
     let building = entries
         .iter()
@@ -207,6 +227,29 @@ async fn bought_materials(
         .map_err(ProjectError::ListJobs)
 }
 
+async fn used_stock(
+    pool:      &PgPool,
+    project_id: ProjectUuid,
+) -> Result<Vec<TypeId>> {
+    sqlx::query!("
+            SELECT type_id
+            FROM project_stock
+            WHERE project_id = $1
+        ",
+            *project_id,
+        )
+        .fetch_all(pool)
+        .await
+        .map(|x| {
+            x
+                .into_iter()
+                .map(|y| y.type_id)
+                .map(Into::into)
+                .collect::<Vec<_>>()
+        })
+        .map_err(ProjectError::ListJobs)
+}
+
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 pub struct ProjectJob {
     pub id:         Uuid,
@@ -219,6 +262,8 @@ pub struct ProjectJob {
     pub item:       Item,
     pub structure:  Structure,
     pub started_by: Option<CharacterId>,
+
+    pub end_date:   Option<NaiveDateTime>,
 }
 
 #[derive(Debug, Deserialize, Serialize, ToSchema)]

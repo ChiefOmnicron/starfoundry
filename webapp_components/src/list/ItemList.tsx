@@ -50,8 +50,8 @@ export function ItemList({
             cell: props => <EveIcon
                 id={props.row.original.type_id}
             />,
-            size: 4,
-            maxSize: 4,
+            size: 1,
+            maxSize: 1,
         }),
         columnHelper.accessor('name', {
             id: 'name',

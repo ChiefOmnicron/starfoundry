@@ -160,13 +160,12 @@ async fn sync_npc_stations(
                 x.region_id == Some(region_id) &&
                 x.structure_id == Some(structure_id)
             }) {
-
-            let additional_data = serde_json::json!({
-                "structure_id": structure_id,
-                "region_id": region_id,
-            });
-            new_entries.push(additional_data);
-        }
+                let additional_data = serde_json::json!({
+                    "structure_id": structure_id,
+                    "region_id": region_id,
+                });
+                new_entries.push(additional_data);
+            }
     }
 
     tracing::info!("Added {} new npc market jobs", new_entries.len());

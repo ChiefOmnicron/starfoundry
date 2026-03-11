@@ -268,6 +268,56 @@ pub async fn migrate_project(
             .await?;
     }
 
+    let stock_entries = sqlx::query!(r#"
+            SELECT
+                project_id,
+                type_id,
+                quantity,
+                cost,
+                created_at,
+                updated_at
+            FROM project_stock
+        "#)
+        .fetch_all(postgres_source)
+        .await?;
+    sqlx::query!("
+            DELETE FROM project_stock
+        ")
+        .execute(&mut *transaction)
+        .await?;
+    for stock in stock_entries {
+        let timestamp = Timestamp::from_unix(NoContext, stock.created_at.timestamp() as u64, 0);
+        let stock_id = Uuid::new_v7(timestamp);
+        let project_id =  if let Some(x) = mappings.get(&stock.project_id) {
+            x
+        } else {
+            continue;
+        };
+
+        sqlx::query!("
+                INSERT INTO project_stock (
+                    project_id,
+                    id,
+                    type_id,
+                    quantity,
+                    cost,
+                    created_at,
+                    updated_at
+                )
+                VALUES ($1, $2, $3, $4, $5, $6, $7)
+            ",
+                project_id,
+                stock_id,
+                stock.type_id,
+                stock.quantity,
+                stock.cost,
+                stock.created_at,
+                stock.updated_at,
+            )
+            .execute(&mut *transaction)
+            .await?;
+    }
+
     transaction.commit().await?;
     dbg!("Done - project");
 

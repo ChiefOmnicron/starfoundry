@@ -39,7 +39,8 @@ export const useListProjects = (
         queryFn: async ({
             signal
         }: AbortSignal) => listProjects(filterParams, signal),
-        initialData: [],
+        // 10 minutes (ms * s * m)
+        staleTime: 1000 * 60 * 10,
     })
 }
 

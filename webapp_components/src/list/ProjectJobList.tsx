@@ -5,14 +5,23 @@ import { EveIcon } from "@internal/misc/EveIcon";
 import { useEffect, useMemo, useState } from "react";
 import { LIST_PROJECT_JOBS, type ProjectJob, type ProjectJobGroup, type ProjectJobStatus } from "@internal/services/projects/listJobs"
 import { useQueryClient } from "@tanstack/react-query";
+import { JobStatusBadge } from "@internal/project/JobStatusBadge";
+import { Nakamura } from "@internal/misc/Nakamura";
+import { Countdown } from "@internal/misc/Countdown";
 
 export function ProjectJobList({
     jobs,
 
     status,
 
+    showCost = false,
+    showStatus = false,
+    showRemaining = false,
+
     checkable = false,
     groupByHeader = false,
+
+    editable = false,
 }: ProjectJobListProps) {
     const queryClient = useQueryClient();
     const [hasSelected, setHasSelected] = useState<boolean>(false);
@@ -118,8 +127,15 @@ export function ProjectJobList({
                         <Title order={3}>{header(x.header)}</Title>
                         <ProjectJobListTable
                             jobs={entries}
+
                             checkable={checkable}
                             onSelect={onSelect}
+
+                            editable={editable}
+
+                            showCost={showCost}
+                            showStatus={showStatus}
+                            showRemaining={showRemaining}
                         />
                     </>
                 })
@@ -135,8 +151,15 @@ export function ProjectJobList({
                 });
             return <ProjectJobListTable
                 jobs={flattened}
+
                 checkable={checkable}
                 onSelect={onSelect}
+
+                editable={editable}
+
+                showCost={showCost}
+                showStatus={showStatus}
+                showRemaining={showRemaining}
             />;
         }
     }
@@ -153,8 +176,14 @@ export function ProjectJobList({
 function ProjectJobListTable({
     jobs,
 
+    showCost = false,
+    showStatus = false,
+    showRemaining = false,
+
     checkable = false,
     onSelect = () => {},
+
+    editable = false,
 }: ProjectJobListTableProps) {
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 
@@ -180,8 +209,8 @@ function ProjectJobListTable({
                 cell: props => <EveIcon
                     id={props.row.original.item.type_id}
                 />,
-                size: 4,
-                maxSize: 4,
+                size: 1,
+                maxSize: 1,
             }),
             columnHelper.display({
                 id: 'name',
@@ -189,7 +218,7 @@ function ProjectJobListTable({
                     value={props.row.original.item.name}
                 />,
                 header: () => 'Name',
-                size: 45,
+                size: 20,
             }),
             columnHelper.display({
                 id: 'runs',
@@ -197,7 +226,8 @@ function ProjectJobListTable({
                     value={props.row.original.runs}
                 />,
                 header: () => 'Runs',
-                size: 10,
+                size: 3,
+                maxSize: 3,
             }),
             columnHelper.display({
                 id: 'structure',
@@ -205,7 +235,54 @@ function ProjectJobListTable({
                     value={props.row.original.structure.name}
                 />,
                 header: () => 'Structure',
-                size: 45,
+                size: 15,
+            }),
+            columnHelper.display({
+                id: 'status',
+                cell: props => <JobStatusBadge
+                        jobStatus={props.row.original.status}
+                        size="md"
+                    />,
+                header: () => 'Status',
+                size: 8,
+                maxSize: 8,
+            }),
+            columnHelper.display({
+                id: 'cost',
+                cell: props => <CopyText
+                        value={props.row.original.cost}
+                        number
+                    />,
+                header: () => 'Cost',
+                size: 5,
+                maxSize: 5,
+            }),
+            columnHelper.display({
+                id: 'countdown',
+                cell: props => <Countdown
+                        endDate={props.row.original.end_date || ''}
+                    />,
+                header: () => 'Remaining',
+                size: 10,
+                maxSize: 10,
+            }),
+            columnHelper.display({
+                id: 'remaining',
+                cell: props => <Nakamura
+                        endDate={props.row.original.end_date || ''}
+                    />,
+                header: () => 'End date',
+                size: 10,
+                maxSize: 10,
+            }),
+            columnHelper.display({
+                id: 'edit',
+                cell: _ => <Button>
+                        Edit
+                    </Button>,
+                header: () => '',
+                size: 5,
+                maxSize: 5,
             }),
         ],
         []
@@ -221,6 +298,11 @@ function ProjectJobListTable({
         initialState: {
             columnVisibility: {
                 check: checkable,
+                edit: editable,
+                cost: showCost,
+                status: showStatus,
+                countdown: showRemaining,
+                remaining: showRemaining,
             }
         },
         state: {
@@ -297,14 +379,25 @@ export type ProjectJobListProps = {
     jobs: ProjectJobGroup[];
 
     status?:        ProjectJobStatus,
-    
+
+    showCost?:      boolean;
+    showStatus?:    boolean;
+    showRemaining?: boolean;
+
     groupByHeader?: boolean;
     checkable?:     boolean;
+    editable?:      boolean;
 }
 
 export type ProjectJobListTableProps = {
     jobs: ProjectJob[];
 
+    showCost?:      boolean;
+    showStatus?:    boolean;
+    showRemaining?: boolean;
+
     checkable?: boolean;
     onSelect?: (selected: { [key: string]: boolean }) => void;
+
+    editable?: boolean;
 }
