@@ -1,11 +1,14 @@
 use axum::extract::State;
-use axum::http::StatusCode;
-use axum::response::{IntoResponse, Redirect};
-use starfoundry_lib_eve_api::EveApiClient;
+use axum::http::{HeaderMap, StatusCode};
+use axum::Json;
+use axum::response::IntoResponse;
+use reqwest::header::HOST;
+use starfoundry_lib_eve_client::EveApiClient;
+use starfoundry_lib_gateway::ExtractIdentity;
 
 use crate::api_docs::InternalServerError;
-use crate::AppState;
 use crate::auth::error::{AuthError, Result};
+use crate::state::AppState;
 
 /// Login Alt
 /// 
@@ -33,30 +36,51 @@ use crate::auth::error::{AuthError, Result};
     ),
 )]
 pub async fn login_character(
+    identity:     ExtractIdentity,
     State(state): State<AppState>,
+    header:       HeaderMap,
 ) -> Result<impl IntoResponse> {
-    let pool = state.pool.clone();
+    let host = if let Some(x) = header.get(HOST) {
+        x.to_str().unwrap_or_default()
+    } else {
+        tracing::error!("{HOST} header not present");
+        return Ok((
+            StatusCode::BAD_REQUEST,
+        ).into_response())
+    };
+
+    let domain = if let Some(x) = state.auth_domains.get(host) {
+        x
+    } else {
+        tracing::error!("'{host}' is not in the list of valid domains");
+        return Ok((
+            StatusCode::BAD_REQUEST,
+        ).into_response())
+    };
 
     let token = sqlx::query!("
-            INSERT INTO credential (credential_type, character_id)
-            VALUES ('CHARACTER_ALT', $1)
+            INSERT INTO login_attempt (domain, character_id, credential_type)
+            VALUES ($1, $2, 'ALT_CHARACTER')
             RETURNING token
         ",
-            0, // TODO: replace with whatever the character_id is
+            host,
+            *identity.character_id,
         )
-        .fetch_one(&pool)
+        .fetch_one(&state.postgres)
         .await
-        .map_err(AuthError::InsertTokenError)?
+        .map_err(AuthError::InsertLoginAttempt)?
         .token;
 
     let url = EveApiClient::auth_uri(
             &token.to_string(),
-            &crate::auth::ESI_CHARACTER.join(" ")
+            &domain.character_scopes.join(" "),
         )?
         .to_string();
 
     Ok((
-        StatusCode::TEMPORARY_REDIRECT,
-        Redirect::temporary(&url),
-    ))
+        StatusCode::OK,
+        Json(serde_json::json!({
+            "url": url,
+        }))
+    ).into_response())
 }

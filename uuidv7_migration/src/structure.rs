@@ -58,7 +58,7 @@ pub async fn migrate_structure(
     // W-16DY No name
     coordinates.insert(1052306317493, StructurePosition { x: -4725768868665f32, y: -4132599747038f32, z: -5167912758491f32 });
 
-    dbg!("Start - structure");
+    tracing::info!("Start - structure");
     let structures = sqlx::query!(r#"
             SELECT
                 id,
@@ -157,6 +157,6 @@ pub async fn migrate_structure(
             .await?;
     }
     transaction.commit().await?;
-    dbg!("Done - structure");
+    tracing::info!("Done - structure");
     Ok(())
 }

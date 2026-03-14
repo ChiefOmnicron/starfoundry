@@ -38,7 +38,7 @@ use crate::state::AppState;
 pub async fn login_corporation(
     identity:     ExtractIdentity,
     State(state): State<AppState>,
-    header: HeaderMap,
+    header:       HeaderMap,
 ) -> Result<impl IntoResponse> {
     let host = if let Some(x) = header.get(HOST) {
         x.to_str().unwrap_or_default()
@@ -71,9 +71,12 @@ pub async fn login_corporation(
         .map_err(AuthError::InsertLoginAttempt)?
         .token;
 
+    let mut scopes = domain.character_scopes.clone();
+    scopes.extend(domain.corporation_scopes.clone());
+
     let url = EveApiClient::auth_uri(
             &token.to_string(),
-            &domain.corporation_scopes.join(" "),
+            &scopes.join(" "),
         )?
         .to_string();
 

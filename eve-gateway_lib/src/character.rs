@@ -13,3 +13,17 @@ pub struct CharacterInfo {
     pub alliance_name:    Option<String>,
     pub alliance_id:      Option<AllianceId>,
 }
+
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
+pub struct AuthedCharacterInfo {
+    pub character_name:   String,
+    pub character_id:     CharacterId,
+
+    pub corporation_name: String,
+    pub corporation_id:   CorporationId,
+
+    pub alliance_name:    Option<String>,
+    pub alliance_id:      Option<AllianceId>,
+
+    pub scopes:           Vec<String>,
+}

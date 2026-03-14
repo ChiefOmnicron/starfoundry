@@ -17,6 +17,16 @@ pub async fn catch_all_auth_login_callback(
         ).into_response()
     };
 
+    if let Some(_) = params.get("additional_character") {
+        return (
+            StatusCode::FOUND,
+            [(
+                LOCATION,
+                format!("https://{host}"),
+            )],
+        ).into_response()
+    }
+
     let refresh_token = if let Some(x) = params.get("refresh_token") {
         x.clone()
     } else {

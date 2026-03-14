@@ -100,20 +100,25 @@ pub async fn callback(
 
     let character_id = EveJwtToken::extract_character_id(&token_claims.claims)?;
 
-    if credential_type == "CORPORATION" {
-        let corporation_id = sqlx::query!("
-                SELECT corporation_id
-                FROM character
-                WHERE character_id = $1
-            ",
-                main_character_id,
-            )
-            .fetch_one(&state.postgres)
-            .await
-            .map_err(AuthError::UpdateLogin)?
-            .corporation_id;
+    let existing_entry = sqlx::query!("
+            SELECT character_id, scopes
+            FROM eve_credential
+            WHERE character_id = $1
+            AND domain = $2
+        ",
+            *character_id,
+            domain,
+        )
+        .fetch_optional(&state.postgres)
+        .await
+        .map_err(AuthError::InsertEveCredential)?;
 
-        sqlx::query!("
+    if let Some(x) = existing_entry {
+        let claims = &EveJwtToken::extract_scopes(&token_claims.claims);
+
+        if x.scopes.unwrap_or_default().len() < claims.len() {
+            // entry exists, but there are more scopes, update it
+            sqlx::query!("
                 INSERT INTO eve_credential (
                     character_id,
                     domain,
@@ -126,7 +131,7 @@ pub async fn callback(
                     refresh_token = EXCLUDED.refresh_token,
                     scopes        = EXCLUDED.scopes
             ",
-                corporation_id,
+                *character_id,
                 domain,
                 &token.refresh_token,
                 main_character_id,
@@ -135,36 +140,9 @@ pub async fn callback(
             .execute(&state.postgres)
             .await
             .map_err(AuthError::InsertEveCredential)?;
-
-        /*let corporation_id = sqlx::query!("
-                SELECT corporation_id
-                FROM character
-                WHERE character_id = $1
-            ",
-                main_character_id,
-            )
-            .fetch_one(&state.postgres)
-            .await
-            .map_err(AuthError::UpdateLogin)?
-            .corporation_id;
-
-        sqlx::query!("
-                INSERT INTO eve_credential (
-                    character_id,
-                    refresh_token,
-                    character_main,
-                    scopes
-                ) VALUES ($1, $2, $3, $4)
-            ",
-                corporation_id,
-                &token.refresh_token,
-                main_character_id,
-                &EveJwtToken::extract_scopes(&token_claims.claims),
-            )
-            .execute(&state.postgres)
-            .await
-            .map_err(AuthError::InsertEveCredential)?;*/
+        }
     } else {
+        // entry does not exist yet, insert it
         sqlx::query!("
             INSERT INTO eve_credential (
                 character_id,
@@ -173,10 +151,6 @@ pub async fn callback(
                 character_main,
                 scopes
             ) VALUES ($1, $2, $3, $4, $5)
-            ON CONFLICT (character_id, domain) DO UPDATE
-            SET
-                refresh_token = EXCLUDED.refresh_token,
-                scopes        = EXCLUDED.scopes
         ",
             *character_id,
             domain,
@@ -203,6 +177,20 @@ pub async fn callback(
             StatusCode::FORBIDDEN,
             Json(serde_json::json!({
                 "url": auth_domain.redirect,
+            }))
+        ).into_response());
+    }
+
+    // skip generating a new jwt token, if an alt is logging in
+    if
+        credential_type == "ALT_CHARACTER" ||
+        credential_type == "CORPORATION" {
+
+        return Ok((
+            StatusCode::OK,
+            Json(serde_json::json!({
+                "url": auth_domain.redirect,
+                "additional_character": true,
             }))
         ).into_response());
     }

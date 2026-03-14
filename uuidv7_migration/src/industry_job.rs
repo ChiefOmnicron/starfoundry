@@ -4,7 +4,7 @@ pub async fn migrate_industry_jobs(
     postgres_source:      &PgPool,
     postgres_destination: &PgPool,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    dbg!("Start - industry jobs");
+    tracing::info!("Start - industry jobs");
     let industry_jobs = sqlx::query!(r#"
             SELECT
                 blueprint_id,
@@ -68,7 +68,7 @@ pub async fn migrate_industry_jobs(
             .await?;
     }
     transaction.commit().await?;
-    dbg!("Done - industry jobs");
+    tracing::info!("Done - industry jobs");
 
     Ok(())
 }

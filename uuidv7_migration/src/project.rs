@@ -8,7 +8,7 @@ pub async fn migrate_project(
     postgres_destination:  &PgPool,
     mappings:              &mut Mapping,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    dbg!("Start - project");
+    tracing::info!("Start - project");
     // TODO: the field structure_group_id is no more, needs to be properly migrated
 
     let projects = sqlx::query!(r#"
@@ -319,7 +319,7 @@ pub async fn migrate_project(
     }
 
     transaction.commit().await?;
-    dbg!("Done - project");
+    tracing::info!("Done - project");
 
     Ok(())
 }

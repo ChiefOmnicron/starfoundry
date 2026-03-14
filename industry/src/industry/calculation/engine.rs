@@ -230,10 +230,6 @@ impl CalculationEngine {
                     1u32
                 );
 
-                if x.product_type_id == 57478.into() {
-                    dbg!(&self.config.max_runs, &self.config.max_runs.get(&x.product_type_id));
-                }
-
                 let max_bp_runs = if let Some(x) = self.config.max_runs.get(&x.product_type_id) {
                     *x
                 } else {

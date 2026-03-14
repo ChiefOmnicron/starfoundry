@@ -9,7 +9,7 @@ pub async fn migrate_project_group(
     postgres_destination: &PgPool,
     mappings:             &mut Mapping,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    dbg!("Start - project group");
+    tracing::info!("Start - project group");
 
     let project_groups = sqlx::query!(r#"
             SELECT
@@ -363,7 +363,7 @@ pub async fn migrate_project_group(
         }
     }
     transaction.commit().await?;
-    dbg!("Done - project group");
+    tracing::info!("Done - project group");
 
     Ok(())
 }

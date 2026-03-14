@@ -32,16 +32,29 @@ pub async fn catch_all_auth_callback(
         if response.status().is_success() {
             let body: AuthCallbackResponse = response.json().await?;
 
-            return Ok((
-                StatusCode::FOUND,
-                [(
-                    LOCATION,
-                    (&format!("{}?refresh_token={}", body.url, body.refresh_token.unwrap_or_default())),
-                ), (
-                    CONTENT_TYPE,
-                    &"application/json".to_string(),
-                )],
-            ).into_response())
+            return if let Some(x) = body.refresh_token {
+                Ok((
+                    StatusCode::FOUND,
+                    [(
+                        LOCATION,
+                        (&format!("{}?refresh_token={}", body.url, x)),
+                    ), (
+                        CONTENT_TYPE,
+                        &"application/json".to_string(),
+                    )],
+                ).into_response())
+            } else {
+                Ok((
+                    StatusCode::FOUND,
+                    [(
+                        LOCATION,
+                        (&format!("{}?additional_character=true", body.url)),
+                    ), (
+                        CONTENT_TYPE,
+                        &"application/json".to_string(),
+                    )],
+                ).into_response())
+            }
         } else {
             let body: AuthCallbackResponse = response.json().await?;
 

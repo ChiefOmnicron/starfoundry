@@ -10,16 +10,22 @@ pub use self::project_group::*;
 pub use self::structure::*;
 pub use self::structure_group::*;
 
-use sqlx::postgres::PgPoolOptions;
-use uuid::Uuid;
-use std::collections::HashMap;
 use sqlx::PgPool;
+use sqlx::postgres::PgPoolOptions;
+use std::collections::HashMap;
+use tracing_subscriber::EnvFilter;
+use uuid::Uuid;
 
 type Mapping = HashMap<Uuid, Uuid>;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenvy::dotenv()?;
+
+    tracing_subscriber::fmt()
+        .with_env_filter(EnvFilter::from_default_env())
+        .pretty()
+        .init();
 
     let environment = std::env::var("ENVIRONMENT").expect("'ENVIRONMENT' must be set");
 

@@ -8,7 +8,7 @@ pub async fn migrate_industry_hubs(
     postgres_destination: &PgPool,
     mappings:             &mut Mapping,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    dbg!("Start - structure group");
+    tracing::info!("Start - structure group");
     let structure_groups = sqlx::query!(r#"
             SELECT
                 id,
@@ -88,7 +88,7 @@ pub async fn migrate_industry_hubs(
         }
     }
     transaction.commit().await?;
-    dbg!("Done - structure group");
+    tracing::info!("Done - structure group");
 
     Ok(())
 }

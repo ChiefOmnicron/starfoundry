@@ -48,7 +48,7 @@ impl ApiClient for EveGatewayTestApiClient {
         where
             T: serde::de::DeserializeOwned {
 
-        let path = dbg!(path.into());
+        let path = path.into();
         let response = match path.as_ref() {
             "characters/1" |
             "characters/2" => {
@@ -332,7 +332,6 @@ impl ApiClient for EveGatewayTestApiClient {
                 }
             },
             _ => {
-                dbg!(path, data);
                 serde_json::json!({})
             }
         };

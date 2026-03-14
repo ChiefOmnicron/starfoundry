@@ -232,7 +232,6 @@ mod list_project_group_test {
                 &gateway_client,
             )
             .await;
-        dbg!(&result);
         assert!(result.is_ok());
         assert_eq!(result.unwrap().len(), 4);
 

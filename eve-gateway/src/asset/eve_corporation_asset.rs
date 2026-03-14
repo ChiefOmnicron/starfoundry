@@ -49,11 +49,6 @@ pub async fn api(
     State(state):         State<AppState>,
     Path(corporation_id): Path<CorporationId>,
 ) -> Result<impl IntoResponse> {
-    dbg!(corporation_id);
-    dbg!(identity.character_id);
-    dbg!(identity.corporation_id);
-    dbg!(identity.host());
-
     let api_client = api_client_corporation_auth(
             &state.postgres,
             state.eve_api_metric,

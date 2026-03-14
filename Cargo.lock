@@ -3493,6 +3493,8 @@ dependencies = [
  "dotenvy",
  "sqlx",
  "tokio",
+ "tracing",
+ "tracing-subscriber",
  "uuid",
 ]
 
