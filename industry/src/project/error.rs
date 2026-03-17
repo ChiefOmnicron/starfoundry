@@ -2,12 +2,13 @@ use axum::extract::rejection::JsonRejection;
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::{IntoResponse, Response};
+use starfoundry_lib_gateway::ErrorResponse;
 use starfoundry_lib_types::CharacterId;
 use thiserror::Error;
 
-use crate::api_docs::{format_json_errors, ErrorResponse};
-use crate::project::ProjectUuid;
+use crate::api_docs::format_json_errors;
 use crate::project_group::ProjectGroupError;
+use crate::project::ProjectUuid;
 
 pub type Result<T, E = ProjectError> = std::result::Result<T, E>;
 
@@ -40,6 +41,8 @@ pub enum ProjectError {
     ProjectGroupError(#[from] ProjectGroupError),
     #[error(transparent)]
     EveGatewayLibError(#[from] starfoundry_lib_eve_gateway::Error),
+    #[error(transparent)]
+    MarketLibError(#[from] starfoundry_lib_market::Error),
     #[error(transparent)]
     StructureError(#[from] crate::structure::StructureError),
 }

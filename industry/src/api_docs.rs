@@ -1,11 +1,11 @@
 use axum::extract::rejection::JsonRejection;
 use axum::http::header::AUTHORIZATION;
 use axum::http::StatusCode;
+use axum::Json;
 use axum::response::IntoResponse;
-use serde::Serialize;
+use starfoundry_lib_gateway::ErrorResponse;
 use utoipa::{Modify, OpenApi};
 use utoipa::openapi::security::{ApiKey, ApiKeyValue, SecurityScheme};
-use axum::Json;
 
 #[derive(OpenApi)]
 #[openapi(
@@ -156,15 +156,6 @@ pub struct UnsupportedMediaType {
     })
 )]
 pub struct UnprocessableEntity {
-    /// General error name
-    pub error: String,
-    /// Human description of the error
-    pub description: String,
-}
-
-/// Use in error types
-#[derive(Serialize)]
-pub struct ErrorResponse {
     /// General error name
     pub error: String,
     /// Human description of the error

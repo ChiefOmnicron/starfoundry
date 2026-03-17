@@ -7,6 +7,7 @@ export function CopyText({
     value,
     display,
 
+    disabled = false,
     number = false,
 }: CopyTextProps) {
     const [opened, setOpened] = useState<boolean>(false);
@@ -42,7 +43,8 @@ export function CopyText({
             <span
                 onClick={clickEvent}
                 style={{
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    color: disabled ? 'var(--mantine-color-disabled-color)' : '',
                 }}
             >
                 { formatValue() }
@@ -55,5 +57,6 @@ export type CopyTextProps = {
     value: string | number | undefined;
     display?: string | number | undefined;
 
+    disabled?: boolean;
     number?: boolean;
 }

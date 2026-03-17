@@ -1,11 +1,12 @@
+mod check_resources;
 mod create;
 mod fetch;
-
 mod list_jobs;
 mod list_market;
 mod list_misc;
 mod list;
 
+pub use self::check_resources::*;
 pub use self::create::*;
 pub use self::fetch::*;
 pub use self::list_jobs::*;

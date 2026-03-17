@@ -19,7 +19,7 @@ use crate::project::service::{CreateProject, create};
 /// 
 /// ---
 /// 
-/// Creates a new job assignemnt
+/// Creates a new job assignment
 /// 
 #[utoipa::path(
     post,

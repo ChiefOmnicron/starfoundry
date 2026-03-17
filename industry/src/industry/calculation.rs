@@ -4,6 +4,10 @@ mod project_config_builder;
 mod project_config;
 mod result;
 
+pub use self::engine::*;
+pub use self::models::*;
+pub use self::project_config_builder::*;
+
 use axum::extract::State;
 use axum::http::StatusCode;
 use axum::Json;
@@ -21,9 +25,6 @@ use uuid::Uuid;
 
 use crate::{AppState, eve_gateway_api_client, market_api_client};
 use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
-use crate::industry::calculation::engine::CalculationEngine;
-use crate::industry::calculation::models::{BlueprintBonus, BlueprintTyp, Dependency, StructureMapping};
-use crate::industry::calculation::project_config_builder::ProjectConfigBuilder;
 use crate::industry::error::Result;
 use crate::project_group::ProjectGroupUuid;
 use crate::project_group::service::{fetch, list_default_blacklist, list_default_blueprint_overwrite, list_default_job_splitting, list_industry_hubs};
@@ -120,24 +121,8 @@ pub async fn api(
         .structures
         .iter()
         .map(|x| {
-            let categories = x
-                .rigs
-                .iter()
-                .flat_map(|y| y.categories.clone())
-                .map(|y| *y.category_id)
-                .collect::<Vec<_>>();
-            let groups = x
-                .rigs
-                .iter()
-                .flat_map(|y| y.groups.clone())
-                .map(|y| *y.group_id)
-                .collect::<Vec<_>>();
-            let mut category_groups = Vec::new();
-            category_groups.extend(categories);
-            category_groups.extend(groups);
-
             StructureMapping {
-                category_group: category_groups,
+                category_group: x.joined_categories_groups(),
                 structure_uuid: x.id,
             }
         })

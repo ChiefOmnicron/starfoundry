@@ -3,6 +3,7 @@ import { fetchProjectQuery, useFetchProject } from '@starfoundry/components/serv
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 import { Stack, Title } from '@mantine/core'
+import { useDocumentTitle } from '@mantine/hooks';
 
 export const Route = createFileRoute('/projects_/$projectId')({
     beforeLoad: async ({ context }) => {
@@ -25,6 +26,8 @@ function RouteComponent() {
         isError,
         data: project,
     } = useFetchProject(projectId);
+
+    useDocumentTitle(project ? project.name : 'StarFoundry');
 
     if (isPending) {
         return LoadingAnimation();

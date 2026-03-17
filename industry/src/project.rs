@@ -1,3 +1,4 @@
+mod check_resources;
 mod create;
 mod error;
 mod fetch;
@@ -46,6 +47,9 @@ pub fn routes(
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
 
+    let check_resources = OpenApiRouter::new()
+        .routes(routes!(check_resources::api));
+
     OpenApiRouter::new()
         .merge(create)
         .merge(fetch)
@@ -53,6 +57,7 @@ pub fn routes(
         .merge(list_jobs)
         .merge(list_market)
         .merge(list_misc)
+        .merge(check_resources)
 }
 
 starfoundry_uuid!(ProjectUuid, "ProjectUuid");

@@ -5,7 +5,7 @@ pub use self::internal::*;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use starfoundry_lib_eve_gateway::{Item, StructurePosition, StructureRigResponse, StructureServiceResponse, StructureType, System};
-use starfoundry_lib_types::{TypeId, starfoundry_uuid};
+use starfoundry_lib_types::{CategoryId, GroupId, TypeId, starfoundry_uuid};
 use std::collections::HashMap;
 
 starfoundry_uuid!(StructureUuid, "StructureUuid");
@@ -78,4 +78,69 @@ pub struct Structure {
     #[serde(skip_deserializing)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub installable_services: Option<StructureServiceResponse>,
+}
+
+impl Structure {
+    pub fn categories(&self) -> Vec<CategoryId> {
+        self
+            .rigs
+            .iter()
+            .flat_map(|y| y.categories.clone())
+            .map(|y| y.category_id)
+            .collect::<Vec<_>>()
+    }
+
+    pub fn groups(&self) -> Vec<GroupId> {
+        self
+            .rigs
+            .iter()
+            .flat_map(|y| y.groups.clone())
+            .map(|y| y.group_id)
+            .collect::<Vec<_>>()
+    }
+
+    pub fn joined_categories_groups(&self) -> Vec<i32> {
+        let mut result = Vec::new();
+
+        let categories = self
+            .categories()
+            .into_iter()
+            .map(|x| *x);
+        let groups = self
+            .groups()
+            .into_iter()
+            .map(|x| *x);
+
+        result.extend(categories);
+        result.extend(groups);
+        result
+    }
+
+    pub fn rig_bonus_by_security(
+        &self
+    ) -> f32 {
+        match (self.system.security_str.as_ref(), &self.structure_type) {
+            // Refinery
+            ("HIGHSEC", StructureType::Athanor) |
+            ("HIGHSEC", StructureType::Tatara)  => 0f32,
+            ("LOWSEC",  StructureType::Athanor) |
+            ("LOWSEC",  StructureType::Tatara)  => 1.0f32,
+            ("NULLSEC", StructureType::Athanor) |
+            ("NULLSEC", StructureType::Tatara)  => 1.1f32,
+
+            // Engineering
+            ("HIGHSEC", StructureType::Raitaru) |
+            ("HIGHSEC", StructureType::Azbel)   |
+            ("HIGHSEC", StructureType::Sotiyo)  => 1.0f32,
+            ("LOWSEC",  StructureType::Raitaru) |
+            ("LOWSEC",  StructureType::Azbel)   |
+            ("LOWSEC",  StructureType::Sotiyo)  => 1.9f32,
+            ("NULLSEC", StructureType::Raitaru) |
+            ("NULLSEC", StructureType::Azbel)   |
+            ("NULLSEC", StructureType::Sotiyo)  => 2.1f32,
+
+            // Invalid
+            _                                           => 0f32,
+        }
+    }
 }

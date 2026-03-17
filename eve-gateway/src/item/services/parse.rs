@@ -26,7 +26,6 @@ pub fn parse(
 
     for line in content.lines() {
         let mut entry = None;
-        tracing::info!("Item parser {}", &line);
 
         let line = sanitize_name(line.to_lowercase())
             .trim()

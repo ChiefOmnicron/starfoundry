@@ -166,6 +166,11 @@ async fn determine_ready_to_start(
     // to be ready to start
     done.extend(market_data);
     done.extend(stock_data);
+    // TODO: remove when market is implemented
+    done.extend(vec![34, 35, 36, 37, 38, 39, 40].into_iter().map(Into::<TypeId>::into).collect::<Vec<_>>());
+    done.extend(vec![62402, 62404, 62406, 62399, 62405, 62397, 62398, 62403, 62400].into_iter().map(Into::<TypeId>::into).collect::<Vec<_>>());
+    done.extend(vec![62377, 62379, 62380, 62381, 62382, 62383, 62384, 62385].into_iter().map(Into::<TypeId>::into).collect::<Vec<_>>());
+    done.extend(vec![62396, 62386, 62387, 62390, 62391, 62392, 62393, 62394].into_iter().map(Into::<TypeId>::into).collect::<Vec<_>>());
 
     let building = entries
         .iter()

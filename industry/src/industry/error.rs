@@ -2,9 +2,10 @@ use axum::extract::rejection::JsonRejection;
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::{IntoResponse, Response};
+use starfoundry_lib_gateway::ErrorResponse;
 use thiserror::Error;
 
-use crate::api_docs::{format_json_errors, ErrorResponse};
+use crate::api_docs::format_json_errors;
 
 pub type Result<T, E = IndustryError> = std::result::Result<T, E>;
 

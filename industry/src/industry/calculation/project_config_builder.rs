@@ -103,7 +103,7 @@ impl ProjectConfigBuilder {
         self
     }
 
-    pub fn set_skip_chidren(
+    pub fn set_skip_children(
         mut self,
         skip_children: bool
     ) -> Self {

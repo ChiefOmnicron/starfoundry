@@ -789,7 +789,7 @@ impl CalculationEngine {
                     })
                     .map(|x| x.material) {
 
-                    x.unwrap_or_default()
+                    x.unwrap_or_default() * structure.rig_bonus_by_security()
                 } else {
                     0f32
                 };
@@ -856,14 +856,14 @@ impl CalculationEngine {
                 if let Some(me) = x.material {
                     self.apply_me_bonus(
                         blueprint.product_type_id,
-                        me,
+                        me  * structure.rig_bonus_by_security(),
                         x.item.type_id,
                     );
                 }
                 if let Some(te) = x.time {
                     self.apply_te_bonus(
                         blueprint.product_type_id,
-                        te,
+                        te  * structure.rig_bonus_by_security(),
                         x.item.type_id,
                     );
                 }

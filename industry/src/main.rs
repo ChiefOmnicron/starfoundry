@@ -1,11 +1,12 @@
 mod api_docs;
 mod config;
 mod healthcheck;
-mod industry;
 mod industry_hub;
+mod industry;
 mod metrics;
 mod project_group;
 mod project;
+mod sort;
 mod state;
 mod structure;
 

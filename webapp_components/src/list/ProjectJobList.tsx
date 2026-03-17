@@ -1,13 +1,16 @@
 import { Button, Checkbox, Flex, Group, Stack, Table, Text, Title } from "@mantine/core";
+import { CheckResourcesModal } from "@internal/project/CheckResourcesModal";
 import { CopyText } from "@internal/misc/CopyText";
+import { Countdown } from "@internal/misc/Countdown";
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable, type ColumnDef, type RowSelectionState } from "@tanstack/react-table";
 import { EveIcon } from "@internal/misc/EveIcon";
-import { useEffect, useMemo, useState } from "react";
-import { LIST_PROJECT_JOBS, type ProjectJob, type ProjectJobGroup, type ProjectJobStatus } from "@internal/services/projects/listJobs"
-import { useQueryClient } from "@tanstack/react-query";
 import { JobStatusBadge } from "@internal/project/JobStatusBadge";
+import { LIST_PROJECT_JOBS, type ProjectJob, type ProjectJobGroup, type ProjectJobStatus } from "@internal/services/projects/listJobs"
 import { Nakamura } from "@internal/misc/Nakamura";
-import { Countdown } from "@internal/misc/Countdown";
+import { useDisclosure } from "@mantine/hooks";
+import { useEffect, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { CreateBuildOrderModal } from "@internal/project/CreateBuildOrderModal";
 
 export function ProjectJobList({
     jobs,
@@ -24,7 +27,10 @@ export function ProjectJobList({
     editable = false,
 }: ProjectJobListProps) {
     const queryClient = useQueryClient();
-    const [hasSelected, setHasSelected] = useState<boolean>(false);
+    const [selectedRows, setSelectedRows] = useState<ProjectJob[]>([]);
+
+    const [checkResourcesModalOpened, { open: checkResourcesModalOpen, close: checkResourcesModalClose }] = useDisclosure(false);
+    const [createBuildOrderModalOpened, { open: createBuildOrderModalOpen, close: createBuildOrderModalClose }] = useDisclosure(false);
 
     const header = (
         header: string,
@@ -59,33 +65,45 @@ export function ProjectJobList({
         }
     }
 
-    const onSelect = (selected: { [key: string]: boolean }) => {
-        setHasSelected(Object.keys(selected).length > 0)
+    const onSelect = (projectJobs: ProjectJob[]) => {
+        setSelectedRows(projectJobs)
     }
 
-    const refreshJobs = () => {
+    const refreshJobsClick = () => {
         queryClient.invalidateQueries({ queryKey: [LIST_PROJECT_JOBS] })
     }
 
+    const createBuildOrder = () => {
+        createBuildOrderModalOpen();
+    }
+
+    const checkResourcesClick = () => {
+        checkResourcesModalOpen();
+    }
+
     const buttonGroup = () => {
+        const hasSelectedRows = selectedRows.length > 0;
+
         if (checkable) {
             return <>
                 <Group justify="flex-end">
                     <Button
-                        disabled={!hasSelected}
+                        disabled={!hasSelectedRows}
                         variant="outline"
+                        onClick={createBuildOrder}
                     >
                         Create Build order
                     </Button>
                     <Button
-                        disabled={!hasSelected}
+                        disabled={!hasSelectedRows}
                         variant="outline"
+                        onClick={checkResourcesClick}
                     >
                         Check Materials
                     </Button>
                     <Button
                         variant="outline"
-                        onClick={refreshJobs}
+                        onClick={refreshJobsClick}
                     >
                         Refresh
                     </Button>
@@ -96,7 +114,7 @@ export function ProjectJobList({
                 <Group justify="flex-end">
                     <Button
                         variant="outline"
-                        onClick={refreshJobs}
+                        onClick={refreshJobsClick}
                     >
                         Refresh
                     </Button>
@@ -165,6 +183,18 @@ export function ProjectJobList({
     }
 
     return <>
+        <CheckResourcesModal
+            jobIds={selectedRows.map(x => x.id)}
+            close={checkResourcesModalClose}
+            opened={checkResourcesModalOpened}
+        />
+
+        <CreateBuildOrderModal
+            jobIds={selectedRows.map(x => x.id)}
+            close={createBuildOrderModalClose}
+            opened={createBuildOrderModalOpened}
+        />
+
         <Stack>
             {buttonGroup()}
 
@@ -201,8 +231,8 @@ function ProjectJobListTable({
                     checked={row.getIsSelected()}
                     onChange={row.getToggleSelectedHandler()}
                 />,
-                size: 2,
-                maxSize: 2,
+                size: 1,
+                maxSize: 1,
             }),
             columnHelper.display({
                 id: 'icon',
@@ -311,7 +341,7 @@ function ProjectJobListTable({
     });
 
     useEffect(() => {
-        onSelect(rowSelection || {});
+        onSelect(table.getSelectedRowModel().rows.map(x => x.original));
     }, [rowSelection]);
 
     const emptyTable = () => {
@@ -397,7 +427,7 @@ export type ProjectJobListTableProps = {
     showRemaining?: boolean;
 
     checkable?: boolean;
-    onSelect?: (selected: { [key: string]: boolean }) => void;
+    onSelect?: (selected: ProjectJob[]) => void;
 
     editable?: boolean;
 }
