@@ -167,6 +167,20 @@ pub async fn insert_structure_market(
         .await
         .map_err(|e| Error::CleanupOrdersError(e, structure_id))?;
 
+    let order_update = sqlx::query!("
+            UPDATE market_order_info
+            SET removed_at = NOW()
+            WHERE order_id = ANY($1)
+        ",
+            &order_ids,
+        )
+        .execute(&mut *transaction)
+        .await
+        .map(drop);
+    if order_update.is_err() {
+        tracing::error!("Error while updating order_info");
+    }
+
     // TODO: refactor to `as_millis_f64()` when https://github.com/rust-lang/rust/issues/122451 is stable
     let delete_time = delete_start.elapsed().as_millis();
     task.metric.increase_market_order_rows_deleted(

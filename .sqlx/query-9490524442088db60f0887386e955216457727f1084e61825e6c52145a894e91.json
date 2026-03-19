@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE market_order_info\n            SET removed_at = NOW()\n            WHERE order_id = ANY($1)\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "9490524442088db60f0887386e955216457727f1084e61825e6c52145a894e91"
+}

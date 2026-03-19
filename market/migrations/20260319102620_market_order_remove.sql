@@ -1,0 +1,2 @@
+ALTER TABLE market_order_info ADD COLUMN IF NOT EXISTS removed_at TIMESTAMPTZ NOT NULL DEFAULT NOW();
+ALTER TABLE market_order_info ALTER COLUMN removed_at DROP DEFAULT;
