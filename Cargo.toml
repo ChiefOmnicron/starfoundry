@@ -37,10 +37,6 @@ members = [
   # needs rewrite to match new worker
   'worker-eve_sde_parser',
 
-  # deprecated
-  'libs/items',
-  'libs/structures',
-
   'uuidv7_migration',
 ]
 resolver = "2"
