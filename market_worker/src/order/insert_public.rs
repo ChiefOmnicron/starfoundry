@@ -170,7 +170,7 @@ pub async fn insert_structure_market(
     let order_update = sqlx::query!("
             UPDATE market_order_info
             SET removed_at = NOW()
-            WHERE order_id = ANY($1)
+            WHERE NOT order_id = ANY($1)
         ",
             &order_ids,
         )
