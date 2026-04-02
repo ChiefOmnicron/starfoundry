@@ -1,11 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { ProjectGroupDefaultsBlacklist } from '@/routes/project-groups_/-defaults/Blacklist';
-import { ProjectGroupDefaultsMarket } from '@/routes/project-groups_/-defaults/Market';
-import { Tabs } from '@mantine/core';
-import { ProjectGroupDefaultsBlueprintOverwrite } from '@/routes/project-groups_/-defaults/BlueprintOverwrite';
-import { ProjectGroupDefaultsJobSplitting } from '@/routes/project-groups_/-defaults/JobSplitting';
-import { useState } from 'react';
+import { ProjectGroupDefaultsBlacklist } from '@starfoundry/components/projectGroup/defaults/Blacklist';
+import { ProjectGroupDefaultsBlueprintOverwrite } from '@starfoundry/components/projectGroup/defaults/BlueprintOverwrite';
+import { ProjectGroupDefaultsJobSplitting } from '@starfoundry/components/projectGroup/defaults/JobSplitting';
+import { ProjectGroupDefaultsMarket } from '@starfoundry/components/projectGroup/defaults/Market';
+import { Route as StructureRoute } from '@/routes/structures';
 import { SaveDialog } from '@starfoundry/components/misc/SaveDialog';
+import { Tabs } from '@mantine/core';
+import { useState } from 'react';
 
 export const Route = createFileRoute(
     '/project-groups_/$projectGroupId/defaults',
@@ -48,7 +49,9 @@ function RouteComponent() {
 
             <Tabs.Panel value="market">
                 <ProjectGroupDefaultsMarket
+                    structureView={StructureRoute.to}
                     projectGroupId={projectGroupId}
+
                     onTouchChange={setIsDirtyMarket}
                     triggerSave={triggerSave}
                     triggerReset={triggerReset}

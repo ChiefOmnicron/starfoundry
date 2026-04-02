@@ -49,9 +49,6 @@ const routes: RouteDefinition[] = [{
             link: '/project-groups/$projectGroupId/overview',
             label: 'Overview'
         }, {
-            link: '/project-groups/$projectGroupId/projects',
-            label: 'Projects'
-        }, {
             link: '/project-groups/$projectGroupId/members',
             label: 'Members'
         }, {
@@ -160,8 +157,14 @@ function Shell() {
                                     />)
                                 });
 
-                            return (
-                                <CustomLink
+                            if (router.location.href.endsWith('/assistant')) {
+                                return <CustomLink
+                                    key={ route.label.toLowerCase() }
+                                    to={ route.link }
+                                    label={ route.label }
+                                />;
+                            } else {
+                                return <CustomLink
                                     key={ route.label.toLowerCase() }
                                     to={ route.link }
                                     label={ route.label }
@@ -169,16 +172,14 @@ function Shell() {
                                     opened
                                 >
                                     { subRoutes }
-                                </CustomLink>
-                            )
+                                </CustomLink>;
+                            }
                         } else {
-                            return (
-                                <CustomLink
-                                    key={ route.label.toLowerCase() }
-                                    to={ route.link }
-                                    label={ route.label }
-                                />
-                            );
+                            return <CustomLink
+                                key={ route.label.toLowerCase() }
+                                to={ route.link }
+                                label={ route.label }
+                            />
                         }
                     });
             });

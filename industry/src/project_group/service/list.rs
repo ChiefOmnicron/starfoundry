@@ -1,19 +1,16 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::EveGatewayApiClient;
 use starfoundry_lib_types::CharacterId;
 use utoipa::{IntoParams, ToSchema};
 
 use crate::project_group::error::{ProjectGroupError, Result};
 use crate::project_group::ProjectGroupUuid;
-use crate::project_group::service::{ProjectGroupMember, list_members};
 
 pub async fn list(
-    pool:                   &PgPool,
-    character_id:           CharacterId,
-    eve_gateway_api_client: &impl EveGatewayApiClient,
-    filter:                 ProjectGroupFilter,
-) -> Result<Vec<ProjectGroup>> {
+    pool:           &PgPool,
+    character_id:   CharacterId,
+    filter:         ProjectGroupFilter,
+) -> Result<Vec<ProjectGroupMinimal>> {
     let owner_filter = match filter.owner {
         Some(true)  => false,
         Some(false) |
@@ -59,113 +56,18 @@ pub async fn list(
 
     let mut project_groups = Vec::new();
     for entry in entries {
-        let project_group = ProjectGroup {
+        let project_group = ProjectGroupMinimal {
             id:             entry.id.into(),
             name:           entry.name,
             project_count:  entry.projects.unwrap_or(0),
             is_owner:       entry.is_owner.unwrap_or_default(),
             description:    entry.description,
             archived:       entry.archived,
-            members:        list_members(
-                pool,
-                eve_gateway_api_client,
-                entry.id.into()
-            ).await?,
         };
         project_groups.push(project_group);
     }
 
     Ok(project_groups)
-}
-
-#[cfg(test)]
-mod list_project_group_test {
-    use sqlx::PgPool;
-    use starfoundry_lib_types::CharacterId;
-
-    use crate::project_group::service::list::ProjectGroupFilter;
-    use crate::test_util::EveGatewayTestApiClient;
-
-    #[sqlx::test(
-        fixtures(
-            path = "../fixtures",
-            scripts("base")
-        ),
-    )]
-    async fn happy_path(
-        pool: PgPool,
-    ) {
-        let gateway_client = EveGatewayTestApiClient::new();
-        let result = super::list(
-                &pool,
-                CharacterId(1),
-                &gateway_client,
-                ProjectGroupFilter {
-                    name: None,
-                    owner: None,
-                    archived: Some(false),
-                }
-            )
-            .await;
-        assert!(result.is_ok());
-        assert_eq!(result.unwrap().len(), 4);
-
-        let result = super::list(
-                &pool,
-                CharacterId(1),
-                &gateway_client,
-                ProjectGroupFilter {
-                    name: Some(String::from("Filter")),
-                    owner: None,
-                    archived: Some(false),
-                }
-            )
-            .await;
-        assert!(result.is_ok());
-        assert_eq!(result.unwrap().len(), 2);
-
-        let result = super::list(
-                &pool,
-                CharacterId(1),
-                &gateway_client,
-                ProjectGroupFilter {
-                    name: Some(String::from("SomeGibberish")),
-                    owner: None,
-                    archived: Some(false),
-                }
-            )
-            .await;
-        assert!(result.is_ok());
-        assert_eq!(result.unwrap().len(), 0);
-
-        let result = super::list(
-                &pool,
-                CharacterId(2),
-                &gateway_client,
-                ProjectGroupFilter {
-                    name: None,
-                    owner: Some(true),
-                    archived: Some(false),
-                }
-            )
-            .await;
-        assert!(result.is_ok());
-        assert_eq!(result.unwrap().len(), 1);
-
-        let result = super::list(
-                &pool,
-                CharacterId(1),
-                &gateway_client,
-                ProjectGroupFilter {
-                    name: None,
-                    owner: Some(false),
-                    archived: Some(false),
-                }
-            )
-            .await;
-        assert!(result.is_ok());
-        assert_eq!(result.unwrap().len(), 4);
-    }
 }
 
 #[derive(Debug, Default, Deserialize, ToSchema, IntoParams)]
@@ -206,12 +108,94 @@ pub struct ProjectGroupFilter {
         }]
     })
 )]
-pub struct ProjectGroup {
+pub struct ProjectGroupMinimal {
     pub id:            ProjectGroupUuid,
     pub name:          String,
     pub project_count: i64,
     pub is_owner:      bool,
     pub description:   Option<String>,
-    pub members:       Vec<ProjectGroupMember>,
     pub archived:      bool,
+}
+
+#[cfg(test)]
+mod list_project_group_test {
+    use sqlx::PgPool;
+    use starfoundry_lib_types::CharacterId;
+
+    use crate::project_group::service::list::ProjectGroupFilter;
+
+    #[sqlx::test(
+        fixtures(
+            path = "../fixtures",
+            scripts("base")
+        ),
+    )]
+    async fn happy_path(
+        pool: PgPool,
+    ) {
+        let result = super::list(
+                &pool,
+                CharacterId(1),
+                ProjectGroupFilter {
+                    name: None,
+                    owner: None,
+                    archived: Some(false),
+                }
+            )
+            .await;
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap().len(), 4);
+
+        let result = super::list(
+                &pool,
+                CharacterId(1),
+                ProjectGroupFilter {
+                    name: Some(String::from("Filter")),
+                    owner: None,
+                    archived: Some(false),
+                }
+            )
+            .await;
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap().len(), 2);
+
+        let result = super::list(
+                &pool,
+                CharacterId(1),
+                ProjectGroupFilter {
+                    name: Some(String::from("SomeGibberish")),
+                    owner: None,
+                    archived: Some(false),
+                }
+            )
+            .await;
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap().len(), 0);
+
+        let result = super::list(
+                &pool,
+                CharacterId(2),
+                ProjectGroupFilter {
+                    name: None,
+                    owner: Some(true),
+                    archived: Some(false),
+                }
+            )
+            .await;
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap().len(), 1);
+
+        let result = super::list(
+                &pool,
+                CharacterId(1),
+                ProjectGroupFilter {
+                    name: None,
+                    owner: Some(false),
+                    archived: Some(false),
+                }
+            )
+            .await;
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap().len(), 4);
+    }
 }

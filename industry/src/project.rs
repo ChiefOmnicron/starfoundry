@@ -1,13 +1,19 @@
+mod add_excess;
+mod add_job;
+mod add_market;
 mod check_resources;
 mod create;
 mod error;
 mod fetch;
+mod initialize;
 mod list_jobs;
 mod list_market;
 mod list_misc;
 mod list;
 mod permission;
 mod service;
+mod split_job_check;
+mod update_job;
 
 use axum::middleware;
 use starfoundry_lib_types::starfoundry_uuid;
@@ -23,6 +29,13 @@ pub fn routes(
 ) -> OpenApiRouter<AppState> {
     let create = OpenApiRouter::new()
         .routes(routes!(create::api));
+
+    let add_excess = OpenApiRouter::new()
+        .routes(routes!(add_excess::api));
+    let add_job = OpenApiRouter::new()
+        .routes(routes!(add_job::api));
+    let add_market = OpenApiRouter::new()
+        .routes(routes!(add_market::api));
 
     let fetch = OpenApiRouter::new()
         .routes(routes!(fetch::api))
@@ -50,17 +63,33 @@ pub fn routes(
     let check_resources = OpenApiRouter::new()
         .routes(routes!(check_resources::api));
 
+    let split_job_check = OpenApiRouter::new()
+        .routes(routes!(split_job_check::api));
+
+    let update_job = OpenApiRouter::new()
+        .routes(routes!(update_job::api));
+
+    let initialize = OpenApiRouter::new()
+        .routes(routes!(initialize::api));
+
     OpenApiRouter::new()
         .merge(create)
+        .merge(add_excess)
+        .merge(add_job)
+        .merge(add_market)
         .merge(fetch)
         .merge(list)
         .merge(list_jobs)
         .merge(list_market)
         .merge(list_misc)
         .merge(check_resources)
+        .merge(split_job_check)
+        .merge(update_job)
+        .merge(initialize)
 }
 
 starfoundry_uuid!(ProjectUuid, "ProjectUuid");
+starfoundry_uuid!(SolutionUuid, "SolutionUuid");
 
 #[cfg(test)]
 pub async fn project_test_routes(

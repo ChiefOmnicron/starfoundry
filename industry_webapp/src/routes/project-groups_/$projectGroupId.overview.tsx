@@ -1,4 +1,4 @@
-import { Alert, Flex, Textarea, TextInput, Title } from '@mantine/core';
+import { Alert, Flex, Stack, Textarea, TextInput, Title } from '@mantine/core';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Route as ProjectGroupRoute } from '@/routes/project-groups/index';
 import { useForm } from '@tanstack/react-form';
@@ -15,6 +15,7 @@ import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 import { ArchiveResource } from '@starfoundry/components/misc/ArchiveResource';
 import { DeleteResource } from '@starfoundry/components/misc/DeleteResource';
 import { SaveDialog } from '@starfoundry/components/misc/SaveDialog';
+import { MarkdownEditor } from '@starfoundry/components/misc/MarkdownEditor';
 
 export interface QueryParams {
     created?: boolean;
@@ -265,89 +266,98 @@ function RouteComponent() {
                 form.handleSubmit();
             }}
         >
-            <form.Field
-                name="name"
-                validators={{
-                    onBlur: ({ value }) => {
-                        return (value.trimStart().length === 0 ? 'The field is required' : undefined) ||
-                            (value.length > 100 ? 'Maximum allowed chars is 100' : undefined)
-                    }
-                }}
-                children={(field) => {
-                    return <>
-                        <TextInput
-                            data-1p-ignore
-                            data-cy="name"
-                            label="Name"
-                            description="Name of the new project group"
-                            placeholder="My cool project group"
-                            id={field.name}
-                            name={field.name}
-                            value={field.state.value}
-                            error={
-                                !field.state.meta.isValid && field.state.meta.errors.join(', ')
-                            }
-                            onBlur={field.handleBlur}
-                            onChange={(e) => field.handleChange(e.target.value)}
-                            disabled={!canWrite()}
-                        />
-                    </>
-                }}
-            />
-            <form.Field
-                name="description"
-                validators={{
-                    onBlur: ({ value }) => {
-                        return (value.length > 10000 ? 'Maximum allowed chars is 10000' : undefined)
-                    }
-                }}
-                children={(field) => {
-                    return <>
-                        <Textarea
-                            data-1p-ignore
-                            data-cy="description"
-                            mt="sm"
-                            label="Description (optional)"
-                            description="Description of the project group"
-                            placeholder="Only cool projects in here"
-                            id={field.name}
-                            name={field.name}
-                            value={field.state.value}
-                            error={
-                                !field.state.meta.isValid && field.state.meta.errors.join(', ')
-                            }
-                            onBlur={field.handleBlur}
-                            onChange={(e) => field.handleChange(e.target.value)}
-                            autosize
-                            minRows={3}
-                            disabled={!canWrite()}
-                        />
-                    </>
-                }}
-            />
-
-            <form.Subscribe
-                selector={(state) => [state.canSubmit, state.isSubmitting]}
-                children={() => (
-                    <Flex
-                        justify="flex-end"
-                        gap="sm"
-                    >
-                        {
-                            canWrite()
-                                ? <SaveDialog
-                                    onReset={ () => {
-                                        form.reset();
-                                        setTouched(!form.state.isDefaultValue);
-                                    }}
-                                    onSave={ form.handleSubmit }
-                                    show={ touched }
-                                />
-                                : <></>
+            <Stack>
+                <form.Field
+                    name="name"
+                    validators={{
+                        onBlur: ({ value }) => {
+                            return (value.trimStart().length === 0 ? 'The field is required' : undefined) ||
+                                (value.length > 100 ? 'Maximum allowed chars is 100' : undefined)
                         }
-                    </Flex>
-                )}
-            />
+                    }}
+                    children={(field) => {
+                        return <>
+                            <TextInput
+                                data-1p-ignore
+                                data-cy="name"
+                                label="Name"
+                                description="Name of the new project group"
+                                placeholder="My cool project group"
+                                id={field.name}
+                                name={field.name}
+                                value={field.state.value}
+                                error={
+                                    !field.state.meta.isValid && field.state.meta.errors.join(', ')
+                                }
+                                onBlur={field.handleBlur}
+                                onChange={(e) => field.handleChange(e.target.value)}
+                                disabled={!canWrite()}
+                            />
+                        </>
+                    }}
+                />
+                <form.Field
+                    name="description"
+                    validators={{
+                        onBlur: ({ value }) => {
+                            return (value.length > 10000 ? 'Maximum allowed chars is 10000' : undefined)
+                        }
+                    }}
+                    children={(field) => {
+                        return <>
+                            <Textarea
+                                data-1p-ignore
+                                data-cy="description"
+                                mt="sm"
+                                label="Description (optional)"
+                                description="Description of the project group"
+                                placeholder="Only cool projects in here"
+                                id={field.name}
+                                name={field.name}
+                                value={field.state.value}
+                                error={
+                                    !field.state.meta.isValid && field.state.meta.errors.join(', ')
+                                }
+                                onBlur={field.handleBlur}
+                                onChange={(e) => field.handleChange(e.target.value)}
+                                autosize
+                                minRows={3}
+                                disabled={!canWrite()}
+                            />
+
+                            <MarkdownEditor
+                                title='Description'
+                                content={field.state.value}
+                                height='200px'
+                                onChange={(value) => field.handleChange(value)}
+                            />
+                        </>
+                    }}
+                />
+
+                <form.Subscribe
+                    selector={(state) => [state.canSubmit, state.isSubmitting]}
+                    children={() => (
+                        <Flex
+                            justify="flex-end"
+                            gap="sm"
+                        >
+                            {
+                                canWrite()
+                                    ? <SaveDialog
+                                        onReset={ () => {
+                                            form.reset();
+                                            setTouched(!form.state.isDefaultValue);
+                                        }}
+                                        onSave={ form.handleSubmit }
+                                        show={ touched }
+                                    />
+                                    : <></>
+                            }
+                        </Flex>
+                    )}
+                />
+            </Stack>
         </form>
 
         { dangerZone() }

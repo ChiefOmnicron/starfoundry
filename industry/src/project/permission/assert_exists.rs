@@ -35,7 +35,7 @@ async fn assert_exists_check(
         )
         .fetch_optional(pool)
         .await
-        .map_err(|e| ProjectError::FetchProject(e, project_id))?;
+        .map_err(|e| ProjectError::Fetch(e, project_id))?;
 
     if project.is_some() {
         Ok(())

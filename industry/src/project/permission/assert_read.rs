@@ -40,7 +40,7 @@ async fn assert_read_access_check(
         )
         .fetch_optional(pool)
         .await
-        .map_err(|e| ProjectError::FetchProject(e, project_id))?;
+        .map_err(|e| ProjectError::Fetch(e, project_id))?;
 
     let project_group_id = if let Some(x) = project {
         x.project_group_id

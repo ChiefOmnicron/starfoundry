@@ -180,58 +180,38 @@ async fn insert_into_database(
         }
     }
 
-    let mut transaction = pool
-        .begin()
-        .await
-        .map_err(Error::TransactionError)?;
-
     tracing::debug!("Clearing blueprint_json database");
     sqlx::query!("
             DELETE FROM blueprint_json
         ")
-        .execute(&mut *transaction)
+        .execute(pool)
         .await
         .map_err(Error::DeleteBlueprintJson)?;
     tracing::debug!("Clearing blueprint_json database done");
 
-    let mut blueprint_type_ids = Vec::new();
-    let mut product_type_ids = Vec::new();
-    let mut json      = Vec::new();
-
-    for (_, entry) in entries {
-        blueprint_type_ids.push(*entry.blueprint_type_id);
-        product_type_ids.push(*entry.product_type_id);
-        json.push(serde_json::to_value(&entry).unwrap());
-    }
-
+    // joining this into a transaction might cause an OOM on the db server
+    // to keep it save, do one at a time
     tracing::debug!("Inserting data");
-    sqlx::query!("
-            INSERT INTO blueprint_json
-            (
-                blueprint_type_id,
-                product_type_id,
-                data
+    for (index, (_, entry)) in entries.iter().enumerate() {
+        sqlx::query!("
+                INSERT INTO blueprint_json
+                (
+                    blueprint_type_id,
+                    product_type_id,
+                    data
+                ) VALUES ($1, $2, $3)
+            ",
+                &*entry.blueprint_type_id,
+                &*entry.product_type_id,
+                &serde_json::to_value(&entry).unwrap(),
             )
-            SELECT * FROM UNNEST(
-                $1::INTEGER[],
-                $2::INTEGER[],
-                $3::JSON[]
-            )
-        ",
-            &blueprint_type_ids,
-            &product_type_ids,
-            &json
-        )
-        .execute(&mut *transaction)
-        .await
-        .map_err(Error::InsertBlueprintJson)?;
+            .execute(pool)
+            .await
+            .map_err(Error::InsertBlueprintJson)?;
+        tracing::info!("[{:4} / {:4}] Blueprint json finished", index, entries.len() - 1);
+    }
     tracing::debug!("Inserting data done");
 
-    transaction
-        .commit()
-        .await
-        .map_err(Error::TransactionError)?;
-    tracing::debug!("Transaction commited");
     Ok(())
 }
 

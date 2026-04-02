@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use crate::industry::calculation::project_config_builder::ProjectConfigBuilder;
 use crate::industry::calculation::models::{BlueprintBonus, Dependency, StructureMapping};
 
-/// Configration for a new project.
+/// Configuration for a new project.
 /// Must be created with [ProjectConfigBuilder].
 /// 
 /// TODO: rename

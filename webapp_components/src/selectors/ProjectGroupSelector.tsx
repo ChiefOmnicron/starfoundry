@@ -5,9 +5,9 @@ import { faArrowsRotate } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useQueryClient } from "@tanstack/react-query";
 import type { ProjectGroup } from "@internal/services/project-group/fetch";
-import { LIST_PROJECT_GROUPS } from "@internal/services/project-group/list";
+import { LIST_PROJECT_GROUPS, type ProjectGroupMinimal } from "@internal/services/project-group/list";
 
-function SelectOption(projectGroup: ProjectGroup) {
+function SelectOption(projectGroup: ProjectGroup | ProjectGroupMinimal) {
     return (
         <Group key={projectGroup.id}>
             <div>
@@ -43,7 +43,7 @@ export function ProjectGroupSelector({
 
     const projectGroupById = (
         id: string | null
-    ): ProjectGroup | undefined => {
+    ): ProjectGroup | ProjectGroupMinimal | undefined => {
         if (id) {
             return (projectGroups || []).find(x => x.id === id)
         } else {
@@ -52,14 +52,14 @@ export function ProjectGroupSelector({
     }
 
     const options = (projectGroups || [])
-        .filter((x: ProjectGroup) => {
+        .filter((x: ProjectGroup | ProjectGroupMinimal) => {
             return x.name
                 .toLocaleLowerCase()
                 .indexOf(
                     search.toLocaleLowerCase()
                 ) >= 0
         })
-        .filter((x: ProjectGroup) => selected.indexOf(x.id) === -1)
+        .filter((x: ProjectGroup | ProjectGroupMinimal) => selected.indexOf(x.id) === -1)
         .map((item) => (
             <Combobox.Option
                 value={item.id}
@@ -72,7 +72,7 @@ export function ProjectGroupSelector({
     const refresh = () => {
         queryClient.invalidateQueries({
             queryKey: [LIST_PROJECT_GROUPS]
-        })
+        });
     }
 
     return (
@@ -162,10 +162,10 @@ export function ProjectGroupSelector({
 }
 
 export type ProjectGroupSelectorProp = {
-    onSelect: (entry: ProjectGroup) => void;
+    onSelect: (entry: ProjectGroup | ProjectGroupMinimal) => void;
 
     // list of values that are already selected, and filtered out
     selected?:      Uuid[],
 
-    projectGroups:  ProjectGroup[],
+    projectGroups:  ProjectGroup[] | ProjectGroupMinimal[],
 }

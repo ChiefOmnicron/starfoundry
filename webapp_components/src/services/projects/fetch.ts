@@ -1,15 +1,16 @@
 import { axiosClient, type AbortSignal } from "@internal/services/client";
 import { useQuery } from "@tanstack/react-query";
-import type { Structure } from "@internal/services/structure/list";
-import type { Uuid } from "@internal/services/utils";
 import type { GenericAbortSignal } from "axios";
+import type { ProjectStatus } from "@internal/services/projects/list";
+import type { Uuid } from "@internal/services/utils";
+import type { ProjectGroup } from "../project-group/fetch";
 
 export const FETCH_PROJECT = 'fetchProject';
 
 export const fetchProject = async (
     projectId: Uuid,
     signal?:   GenericAbortSignal,
-): Promise<Structure> => (await axiosClient())
+): Promise<ProjectList> => (await axiosClient())
     .get(
         `/api/projects/${projectId}`,
         {
@@ -36,3 +37,12 @@ export const fetchProjectQuery = (
     // ms * s * m
     staleTime: 1000 * 60 * 5,
 });
+
+export type ProjectList = {
+    id:            Uuid;
+    name:          string;
+    status:        ProjectStatus;
+    orderer:       string;
+    sell_price:    number;
+    project_group: ProjectGroup,
+}

@@ -129,6 +129,10 @@ pub trait EveGatewayApiClientItem: ApiClient {
         &self,
         type_ids: Vec<TypeId>,
     ) -> Result<Vec<Item>> {
+        let mut type_ids = type_ids;
+        type_ids.sort();
+        type_ids.dedup();
+
         self
             .post("items", type_ids)
             .await

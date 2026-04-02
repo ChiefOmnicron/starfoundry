@@ -57,61 +57,61 @@ pub async fn import_sde(
 
     write_system_json(systems.clone(), stars);
 
-    //blueprints_dependencies::run(
-    //        &pool,
-    //        &blueprints,
-    //        &type_ids
-    //    )
-    //    .await?;
-    //blueprints_json::run(
-    //        &pool,
-    //        &blueprints,
-    //        &categories,
-    //        &group_ids,
-    //        &type_ids,
-    //        &repackaged,
-    //    )
-    //    .await?;
+    blueprints_dependencies::run(
+            &pool,
+            &blueprints,
+            &type_ids
+        )
+        .await?;
+    blueprints_json::run(
+            &pool,
+            &blueprints,
+            &categories,
+            &group_ids,
+            &type_ids,
+            &repackaged,
+        )
+        .await?;
     blueprints::run(
             &pool,
             &blueprints,
             &type_ids,
         )
         .await?;
-    //dogma::run(
-    //        &pool,
-    //        &dogma_effects,
-    //        &industry_modifier_sources,
-    //        &industry_target_filters,
-    //        &type_dogma,
-    //    )
-    //    .await?;
-    //items::run(
-    //        &pool,
-    //        &categories,
-    //        &group_ids,
-    //        &type_ids,
-    //        &repackaged,
-    //    )
-    //    .await?;
-    //reprocessing::run(
-    //        &pool,
-    //        &type_material,
-    //    )
-    //    .await?;
-    //structure::run(
-    //        &pool,
-    //        &type_ids,
-    //        &type_dogma,
-    //    )
-    //    .await?;
-    //systems::run(
-    //        &pool,
-    //        regions,
-    //        constellations,
-    //        systems,
-    //    )
-    //    .await?;
+    dogma::run(
+            &pool,
+            &dogma_effects,
+            &industry_modifier_sources,
+            &industry_target_filters,
+            &type_dogma,
+        )
+        .await?;
+    items::run(
+            &pool,
+            &categories,
+            &group_ids,
+            &type_ids,
+            &repackaged,
+        )
+        .await?;
+    reprocessing::run(
+            &pool,
+            &type_material,
+        )
+        .await?;
+    structure::run(
+            &pool,
+            &type_ids,
+            &type_dogma,
+        )
+        .await?;
+    systems::run(
+            &pool,
+            regions,
+            constellations,
+            systems,
+        )
+        .await?;
 
     Ok(checksum)
 }

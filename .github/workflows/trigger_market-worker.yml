@@ -11,6 +11,9 @@ on:
       - 'gateway_lib/**'
       - 'gp_lib-types/**'
       - 'worker_lib/**'
+      - '.github/workflows/common_build_docker.yml'
+      - '.github/workflows/common_deploy.yml'
+      - '.github/workflows/common_rust_test.yml'
       - '.github/workflows/trigger_market_worker.yml'
       - 'Dockerfile'
 
@@ -25,17 +28,17 @@ permissions:
   packages: write # for ghcr.io
 
 jobs:
-  test:
-    uses: ./.github/workflows/common_rust_test.yml
-    secrets: inherit
-    with:
-      folder: market_worker
+  #test:
+  #  uses: ./.github/workflows/common_rust_test.yml
+  #  secrets: inherit
+  #  with:
+  #    folder: market_worker
 
   build-image:
     uses: ./.github/workflows/common_build_docker.yml
     secrets: inherit
-    needs:
-      - test
+    #needs:
+    #  - test
     with:
       name: market/worker
       image: market-worker

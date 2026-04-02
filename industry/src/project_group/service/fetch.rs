@@ -1,10 +1,12 @@
+use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::EveGatewayApiClient;
+use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item};
 use starfoundry_lib_types::CharacterId;
+use utoipa::ToSchema;
 
 use crate::project_group::error::{ProjectGroupError, Result};
 use crate::project_group::ProjectGroupUuid;
-use crate::project_group::service::{ProjectGroup, list_members};
+use crate::project_group::service::{BlueprintOverwrite, JobSplitting, ProjectGroupMember, list_members};
 
 pub async fn fetch(
     pool:                   &PgPool,
@@ -51,6 +53,78 @@ pub async fn fetch(
         Ok(Some(project_group))
     } else {
         Ok(None)
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
+#[schema(
+    example = json!({
+        "id": "b034c3a9-2f4d-487d-95bb-c66fc20148b3",
+        "name": "My cool group",
+        "project_count": 100,
+        "is_owner": true,
+        "description": "Bunch of cool projects",
+        "members": [{
+            "character_name": "SomeCharacterName",
+            "character_id": 1337,
+
+            "accepted": true,
+            "permission": [
+                "READ",
+                "WRITE_GROUP"
+            ],
+            "is_owner": false
+        }]
+    })
+)]
+pub struct ProjectGroup {
+    pub id:            ProjectGroupUuid,
+    pub name:          String,
+    pub project_count: i64,
+    pub is_owner:      bool,
+    pub description:   Option<String>,
+    pub members:       Vec<ProjectGroupMember>,
+    pub archived:      bool,
+}
+
+impl ProjectGroup {
+    pub async fn blacklist(
+        &self,
+        pool:                   &PgPool,
+        eve_gateway_api_client: &impl EveGatewayApiClient,
+    ) -> Result<Vec<Item>> {
+        crate::project_group::service::list_default_blacklist(
+            pool,
+            eve_gateway_api_client,
+            self.id,
+        )
+        .await
+    }
+
+    pub async fn overwrites(
+        &self,
+        pool:                   &PgPool,
+        eve_gateway_api_client: &impl EveGatewayApiClient,
+    ) -> Result<Vec<BlueprintOverwrite>> {
+        crate::project_group::service::list_default_blueprint_overwrite(
+            pool,
+            eve_gateway_api_client,
+            self.id,
+        )
+        .await
+    }
+
+    pub async fn job_splitting(
+        &self,
+        pool:                   &PgPool,
+        eve_gateway_api_client: &impl EveGatewayApiClient,
+    ) -> Result<JobSplitting> {
+        crate::project_group::service::list_default_job_splitting(
+            pool,
+            eve_gateway_api_client,
+            self.id,
+        )
+        .await
     }
 }
 

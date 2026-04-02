@@ -1,25 +1,14 @@
-import { ActionIcon, Flex, Table, Text, Tooltip } from "@mantine/core";
+import { CopyTable } from "@internal/misc/CopyTable";
 import { CopyText } from "../misc/CopyText";
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { EveIcon } from "@internal/misc/EveIcon";
-import { faCopy } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useClipboard } from "@mantine/hooks";
+import { Flex, Table, Text } from "@mantine/core";
 import type { Item } from "@internal/services/item/model";
-import {useEffect, useState, type ReactElement } from "react";
+import type { ReactElement } from "react";
 
 export function MaterialList({
     materials,
 }: MaterialListProp): ReactElement {
-    const clipboard = useClipboard();
-    const [tooltipOpened, setTooltipOpened] = useState<boolean>(false);
-
-    useEffect(() => {
-        if (tooltipOpened) {
-            setTimeout(() => setTooltipOpened(false), 1000);
-        }
-    }, [tooltipOpened]);
-
     const columnHelper = createColumnHelper<MaterialListItem>();
     const columns = [
         columnHelper.display({
@@ -50,33 +39,16 @@ export function MaterialList({
         }),
         columnHelper.display({
             id: 'action',
-            header: () => <Tooltip
-                    label="Copied!"
-                    position="top"
-                    opened={tooltipOpened}
-                >
-                    <ActionIcon
-                        color="gray"
-                        variant="transparent"
-                        onClick={copy}
-                    >
-                        <FontAwesomeIcon icon={faCopy} />
-                    </ActionIcon>
-                </Tooltip>,
+            header: () => <CopyTable
+                    value={materials.map(x => `${x.item.name}\t${x.quantity}`).join('\n')}
+                />,
             meta: {
                 align: 'right',
             },
-            size: 5,
+            size: 1,
+            maxSize: 1,
         }),
     ];
-
-    const copy = () => {
-        setTooltipOpened(true);
-        let content = materials
-            .map(x => `${x.item.name}\t${x.quantity}`)
-            .join('\n');
-        clipboard.copy(content);
-    }
 
     const emptyTable = () => {
         if (materials.length === 0) {

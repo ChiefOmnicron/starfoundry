@@ -12,6 +12,9 @@ on:
       - 'gp_lib-types/**'
       - 'industry_lib/**'
       - 'market_lib/**'
+      - '.github/workflows/common_build_docker.yml'
+      - '.github/workflows/common_deploy.yml'
+      - '.github/workflows/common_rust_test.yml'
       - '.github/workflows/trigger_industry-api.yml'
       - 'Dockerfile'
       # tmp

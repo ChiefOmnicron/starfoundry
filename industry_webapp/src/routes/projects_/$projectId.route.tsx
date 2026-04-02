@@ -1,7 +1,8 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { createFileRoute, Outlet, useNavigate } from '@tanstack/react-router'
 import { fetchProjectQuery, useFetchProject } from '@starfoundry/components/services/projects/fetch';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
+import { Route as ProjectAssistantRoute } from '@/routes/projects_/$projectId.assistant/index';
 import { Stack, Title } from '@mantine/core'
 import { useDocumentTitle } from '@mantine/hooks';
 
@@ -19,6 +20,7 @@ export const Route = createFileRoute('/projects_/$projectId')({
 })
 
 function RouteComponent() {
+    const navigation = useNavigate();
     const { projectId } = Route.useParams();
 
     const {
@@ -35,6 +37,15 @@ function RouteComponent() {
 
     if (isError) {
         return LoadingError();
+    }
+
+    if (project.status === 'DRAFT') {
+        navigation({
+            to: ProjectAssistantRoute.to,
+            params: {
+                projectId: project.id,
+            }
+        });
     }
 
     return <>

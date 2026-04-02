@@ -1,7 +1,8 @@
-import { Button, Flex, InputBase, Modal, Stack, UnstyledButton } from "@mantine/core";
+import { Button, Flex, InputBase, Stack, UnstyledButton } from "@mantine/core";
 import { type IndustryHub } from "@internal/services/industry-hub/list";
 import { useEffect, useState, type ReactElement } from "react";
 import { IndustryHubList } from "@internal/list/IndustryHubList";
+import { ModalWrapper } from "@internal/wrapper/Modal";
 
 export function IndustryHubSelectorModal({
     opened,
@@ -42,18 +43,10 @@ export function IndustryHubSelectorModal({
         setSearch(event.currentTarget.value);
     };
 
-    return <Modal
+    return <ModalWrapper
         opened={opened}
-        onClose={onClose}
+        close={onClose}
         title="Structures"
-        overlayProps={{
-            backgroundOpacity: 0.55,
-            blur: 3,
-        }}
-        size="70%"
-        centered
-        closeOnEscape
-        closeOnClickOutside
     >
         <Stack>
             <InputBase
@@ -81,7 +74,7 @@ export function IndustryHubSelectorModal({
                 </Button>
             </Flex>
         </Stack>
-    </Modal>
+    </ModalWrapper>
 }
 
 export type IndustryHubSelectorModalProp = {

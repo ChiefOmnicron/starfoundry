@@ -25,6 +25,7 @@ export function IndustryHubCard({
     onCloneSuccess = () => {},
     onCloneError = () => {},
 
+    allowUncheck = true,
     checkable = false,
     checked = [],
     onChange = () => {},
@@ -91,8 +92,12 @@ export function IndustryHubCard({
             return;
         }
 
-        setIsSelected(state);
+        // prevents from un-checking the card -> one card must always be checked
+        if (!allowUncheck && !state) {
+            return;
+        }
 
+        setIsSelected(state);
         if (state) {
             onChange('checked', industryHub);
         } else {
@@ -294,6 +299,8 @@ export type IndustryHubCardAdditionalProps = {
 
     // Determines if a checkbox is added or not
     checkable?: boolean,
+    // Allows to uncheck a hub
+    allowUncheck?: boolean;
     checked?: IndustryHub[];
     onChange?: (event: 'checked' | 'unchecked', industry: IndustryHub) => void;
 }

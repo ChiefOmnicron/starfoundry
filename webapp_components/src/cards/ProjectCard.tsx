@@ -1,28 +1,33 @@
-import { Badge, Card, Flex, Group, Stack, Text, Title } from "@mantine/core";
+import { BadgeWrapper } from "@internal/wrapper/Badge";
+import { Card, Flex, Group, Loader, Stack, Text, Title } from "@mantine/core";
 import { InternalLink } from "@internal/links/InternalLink";
 import { ProjectProgressBar } from "@internal/misc/ProgressBar";
 import { useListProjectJobs } from "@internal/services/projects/listJobs";
-import type { ProjectList, ProjectStatus } from "@internal/services/projects/list";
+import type { ProjectListMinimal, ProjectStatus } from "@internal/services/projects/list";
 
 export function ProjectCard({
     project,
 
-    viewLink = undefined,
+    viewLink        = undefined,
+    assistantLink   = undefined,
 }: ProjectCardProps) {
     const {
-        data: jobs
+        isPending,
+        data: jobs,
     } = useListProjectJobs(project.id);
 
     const status = (status: ProjectStatus) => {
         switch(status) {
             case 'DONE':
-                return <Badge color="green">Done</Badge>;
+                return <BadgeWrapper color="green">Done</BadgeWrapper>;
             case 'IN_PROGRESS':
-                return <Badge color="blue">In Progress</Badge>;
+                return <BadgeWrapper color="blue">In Progress</BadgeWrapper>;
+            case 'READY_TO_START':
+                return <BadgeWrapper color="orange">Pause</BadgeWrapper>;
             case 'PAUSED':
-                return <Badge color="yellow">Pause</Badge>;
+                return <BadgeWrapper color="yellow">Pause</BadgeWrapper>;
             default:
-                return <Badge color="gray">Initial</Badge>;
+                return <BadgeWrapper color="gray">Draft</BadgeWrapper>;
         }
     }
 
@@ -70,9 +75,16 @@ export function ProjectCard({
                         { project.name }
                     </Title>
 
-                    {
-                        status(project.status)
-                    }
+                    <Group>
+                        {
+                            status(project.status)
+                        }
+                        {
+                            isPending
+                            ?   <Loader color="blue" size="xs" />
+                            :   <></>
+                        }
+                    </Group>
                 </Group>
 
                 <Group
@@ -88,22 +100,6 @@ export function ProjectCard({
                         size='sm'
                     >
                         { project.orderer }
-                    </Text>
-                </Group>
-
-                <Group
-                    gap={'xs'}
-                >
-                    <Text
-                        size='sm'
-                        fw={700}
-                    >
-                        Estimated finish:
-                    </Text>
-                    <Text
-                        size='sm'
-                    >
-                        TODO
                     </Text>
                 </Group>
 
@@ -133,7 +129,7 @@ export function ProjectCard({
                     height: '100%'
                 }}
             >
-            { card() }
+                { card() }
             </Card.Section>
 
             <Group
@@ -150,13 +146,23 @@ export function ProjectCard({
                     align='flex-end'
                     justify='flex-end'
                 >
-                    <InternalLink
-                        to={viewLink}
-                        params={{
-                            projectId: project.id,
-                        } as any}
-                        content='Open'
-                    />
+                    {
+                        project.status === 'DRAFT'
+                        ?   <InternalLink
+                                to={assistantLink}
+                                params={{
+                                    projectId: project.id,
+                                } as any}
+                                content='Open'
+                            />
+                        :   <InternalLink
+                                to={viewLink}
+                                params={{
+                                    projectId: project.id,
+                                } as any}
+                                content='Open'
+                            />
+                    }
                 </Flex>
             </Group>
 
@@ -174,11 +180,12 @@ export function ProjectCard({
 }
 
 type ProjectRequiredCardProps = {
-    project: ProjectList;
+    project: ProjectListMinimal;
 }
 
 export type ProjectCardAdditionalProps = {
-    viewLink?: string;
+    viewLink?:      string;
+    assistantLink?: string;
 }
 
 export type ProjectCardProps = ProjectRequiredCardProps & ProjectCardAdditionalProps;

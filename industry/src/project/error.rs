@@ -7,8 +7,10 @@ use starfoundry_lib_types::CharacterId;
 use thiserror::Error;
 
 use crate::api_docs::format_json_errors;
+use crate::industry_hub::IndustryHubError;
 use crate::project_group::ProjectGroupError;
 use crate::project::ProjectUuid;
+use crate::project::service::ProjectJobUuid;
 
 pub type Result<T, E = ProjectError> = std::result::Result<T, E>;
 
@@ -17,28 +19,55 @@ pub type Result<T, E = ProjectError> = std::result::Result<T, E>;
 pub enum ProjectError {
     #[error("the character '{1}' is not allowed to access '{0}'")]
     Forbidden(ProjectUuid, CharacterId),
-    #[error("project group with id '{0}' not found")]
+    #[error("project with id '{0}' not found")]
     NotFound(ProjectUuid),
+    #[error("project job with id '{1}' not found in project '{0}'")]
+    JobNotFound(ProjectUuid, ProjectJobUuid),
     #[error("Validating the input data failed, '{0}'")]
     ValidationError(String),
+    #[error("No industry hub is set, but the operation requires it")]
+    NoIndustryHub,
+    #[error("The solution could not be found, but the operation requires it")]
+    SolutionNotFound,
+
+    #[error("error while adding market entries, error: '{0}'")]
+    AddExcessEntry(sqlx::Error),
+    #[error("error while adding market entries, error: '{0}'")]
+    AddJobEntry(sqlx::Error),
+    #[error("error while adding market entries, error: '{0}'")]
+    AddMarketEntry(sqlx::Error),
 
     #[error("error while listing projects, error: '{0}'")]
     List(sqlx::Error),
+    #[error("error while listing project excess, error: '{0}'")]
+    ListExcess(sqlx::Error),
+    #[error("error while listing project products, error: '{0}'")]
+    ListProduct(sqlx::Error),
     #[error("error while listing project jobs, error: '{0}'")]
     ListJobs(sqlx::Error),
     #[error("error while listing project misc, error: '{0}'")]
     ListMisc(sqlx::Error),
 
     #[error("error while fetching project '{1}', error: '{0}'")]
-    FetchProject(sqlx::Error, ProjectUuid),
+    Fetch(sqlx::Error, ProjectUuid),
 
     #[error("error while creating project, error: '{0}'")]
-    CreateProject(sqlx::Error),
+    Create(sqlx::Error),
+    #[error("error while initializing project, error: '{0}'")]
+    Initialize(sqlx::Error),
+
+    #[error("error while updating project, error: '{0}'")]
+    Update(sqlx::Error),
+
+    #[error("transaction error, '{0}'")]
+    TransactionError(sqlx::Error),
 
     #[error(transparent)]
     JsonExtractorRejection(#[from] JsonRejection),
     #[error(transparent)]
     ProjectGroupError(#[from] ProjectGroupError),
+    #[error(transparent)]
+    IndustryHubError(#[from] IndustryHubError),
     #[error(transparent)]
     EveGatewayLibError(#[from] starfoundry_lib_eve_gateway::Error),
     #[error(transparent)]

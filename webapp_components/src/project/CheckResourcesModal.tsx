@@ -1,11 +1,11 @@
 import { Alert, Button, Group, Stack, Textarea } from "@mantine/core";
-import { checkResources, type CheckMaterialsRequest, type CheckMaterialsResponse } from "@internal/services/projects/check_resources";
+import { checkResources, type CheckMaterialsRequest, type CheckMaterialsResponse } from "@internal/services/projects/checkResource";
 import { LoadingError } from "@internal/misc/LoadingError";
 import { MaterialList } from "@internal/list/MaterialList";
-import { ModalWrapper } from "@internal/wrapper/modal";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import type { Uuid } from "@internal/services/utils";
+import { ModalWrapper } from "@internal/wrapper/Modal";
 
 export function CheckResourcesModal({
     jobIds,
@@ -51,7 +51,6 @@ export function CheckResourcesModal({
                     />
                 </>
             } else {
-                console.log('Asdasd')
                 return <>
                     <Alert
                         color="green"

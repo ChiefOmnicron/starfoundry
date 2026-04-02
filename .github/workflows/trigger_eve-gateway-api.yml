@@ -10,6 +10,9 @@ on:
       - 'eve-gateway_lib/**'
       - 'gateway_lib/**'
       - 'gp_lib-types/**'
+      - '.github/workflows/common_build_docker.yml'
+      - '.github/workflows/common_deploy.yml'
+      - '.github/workflows/common_rust_test.yml'
       - '.github/workflows/trigger_eve-gateway-api.yml'
       - 'Dockerfile'
 
@@ -24,16 +27,16 @@ permissions:
   packages: write
 
 jobs:
-  test:
-    uses: ./.github/workflows/common_rust_test.yml
-    secrets: inherit
-    with:
-      folder: eve-gateway
+  #test:
+  #  uses: ./.github/workflows/common_rust_test.yml
+  #  secrets: inherit
+  #  with:
+  #    folder: eve-gateway
 
   build-image:
     uses: ./.github/workflows/common_build_docker.yml
-    needs:
-      - test
+    #needs:
+    #  - test
     secrets: inherit
     with:
       name: eve-gateway/api

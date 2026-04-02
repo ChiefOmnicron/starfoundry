@@ -1,4 +1,5 @@
-import { Badge, Text } from "@mantine/core"
+import { BadgeWrapper } from "@internal/wrapper/Badge";
+import { Text, type MantineSize } from "@mantine/core"
 import type { Item } from "@internal/services/item/model"
 
 export function StructureServiceBadge({
@@ -94,21 +95,19 @@ export function StructureServiceBadge({
             }
         })
         .sort((a, b) => a.sortKey.localeCompare(b.sortKey))
-        .map(x => <Badge
-                autoContrast
+        .map(x => <BadgeWrapper
                 key={x.content}
                 size={size}
                 color={x.color}
-                radius='xs'
             >
                 {x.content}
-            </Badge>
+            </BadgeWrapper>
         )
 
 }
 
 export type StructureServiceBadgeProps = {
-    services: Item[],
+    services: Item[];
 
-    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+    size?: MantineSize;
 }

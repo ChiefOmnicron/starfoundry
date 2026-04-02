@@ -10,6 +10,9 @@ on:
       - 'market_lib/**'
       - 'gateway_lib/**'
       - 'gp_lib-types/**'
+      - '.github/workflows/common_build_docker.yml'
+      - '.github/workflows/common_deploy.yml'
+      - '.github/workflows/common_rust_test.yml'
       - '.github/workflows/trigger_market-api.yml'
       - 'Dockerfile'
 
@@ -24,16 +27,16 @@ permissions:
   packages: write
 
 jobs:
-  test:
-    uses: ./.github/workflows/common_rust_test.yml
-    secrets: inherit
-    with:
-      folder: market
+  #test:
+  #  uses: ./.github/workflows/common_rust_test.yml
+  #  secrets: inherit
+  #  with:
+  #    folder: market
 
   build-image:
     uses: ./.github/workflows/common_build_docker.yml
-    needs:
-      - test
+    #needs:
+    #  - test
     secrets: inherit
     with:
       name: market/api

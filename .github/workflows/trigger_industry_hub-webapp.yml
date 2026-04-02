@@ -8,6 +8,9 @@ on:
     paths:
       - 'industry-hub_webapp/**'
       - 'webapp_components/**'
+      - '.github/workflows/common_build_docker.yml'
+      - '.github/workflows/common_deploy.yml'
+      - '.github/workflows/common_webapp_test.yml'
       - '.github/workflows/trigger_industry_hub-webapp.yml'
       - 'Dockerfile'
 

@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE project\n            SET\n                solution_id = $2,\n                status = 'READY_TO_START'\n            WHERE id = $1\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "3bb355dc4a08ab079194c95af4125e81e91e09ffe21bb19dd96b40f36e1df89b"
+}

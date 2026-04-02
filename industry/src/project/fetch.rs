@@ -8,7 +8,7 @@ use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
 use crate::{AppState, eve_gateway_api_client};
 use crate::project::error::Result;
 use crate::project::ProjectUuid;
-use crate::project::service::{ProjectList, fetch};
+use crate::project::service::{Project, fetch};
 
 /// Fetch Structure
 /// 
@@ -32,7 +32,7 @@ use crate::project::service::{ProjectList, fetch};
     ),
     responses(
         (
-            body = ProjectList,
+            body = Project,
             description = "Information about the structure",
             status = OK,
         ),

@@ -3,14 +3,13 @@ import { Alert, Button, Card, Center, Flex, Modal, Pill, Stack, Table, Tabs, Tit
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { createFileRoute } from '@tanstack/react-router';
 import { Filter, type FilterPropEntry, type SelectedFilter } from '@starfoundry/components/misc/Filter';
-import { Route as ProjectGroupRoute } from '@/routes/project-groups_/$projectGroupId.overview';
-import { useDisclosure } from '@mantine/hooks';
-import { useState } from 'react';
-import type { ProjectGroup } from '@starfoundry/components/services/project-group/fetch';
 import { InternalLink } from '@starfoundry/components/links/InternalLink';
-import { useListProjectGroup, type ProjectGroupFilter } from '@starfoundry/components/services/project-group/list';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
+import { Route as ProjectGroupRoute } from '@/routes/project-groups_/$projectGroupId.overview';
+import { useDisclosure } from '@mantine/hooks';
+import { useListProjectGroup, type ProjectGroupFilter, type ProjectGroupMinimal } from '@starfoundry/components/services/project-group/list';
+import { useState } from 'react';
 
 export interface QueryParams {
     deleted?: boolean;
@@ -38,7 +37,7 @@ const filters: FilterPropEntry[] = [{
     type: 'STRING',
 }];
 
-const columnHelper = createColumnHelper<ProjectGroup>();
+const columnHelper = createColumnHelper<ProjectGroupMinimal>();
 const columns = [
     columnHelper.accessor('name', {
         id: 'name',
@@ -64,11 +63,6 @@ const columns = [
             }
         },
         header: () => '',
-    }),
-    columnHelper.accessor('members', {
-        id: 'members',
-        cell: info => info.cell.row.original.members.length,
-        header: () => 'Members',
     }),
     columnHelper.accessor('project_count', {
         id: 'project_count',
@@ -101,7 +95,7 @@ function RouteComponent() {
         ...filterParams,
     });
 
-    const table = useReactTable<ProjectGroup>({
+    const table = useReactTable<ProjectGroupMinimal>({
         columns: columns,
         data: projectGroups,
         autoResetPageIndex: false,

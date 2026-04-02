@@ -1,7 +1,8 @@
-import { Badge, Flex, Table, Text } from "@mantine/core";
+import { BadgeWrapper } from "@internal/wrapper/Badge";
 import { CopyText } from "../misc/CopyText";
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
 import { EveIcon } from "@internal/misc/EveIcon";
+import { Flex, Table, Text } from "@mantine/core";
 import {useMemo, type ReactElement } from "react";
 import type { AuthedCharacterInfo } from "@internal/services/character/list";
 
@@ -51,8 +52,8 @@ export function CharacterList({
             columnHelper.display({
                 id: 'corporation',
                 cell: props => props.row.original.scopes.indexOf('esi-industry.read_corporation_jobs.v1') > -1
-                    ? <Badge color="green.9" radius="xs">Corporation authed</Badge>
-                    : <Badge color="gray.9" radius="xs">Corporation not authed</Badge>,
+                    ? <BadgeWrapper color="green.9">Corporation authed</BadgeWrapper>
+                    : <BadgeWrapper color="gray.9">Corporation not authed</BadgeWrapper>,
                 header: () => '',
                 size: 1,
                 maxSize: 10,

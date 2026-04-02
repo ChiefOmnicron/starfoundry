@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO solution_blueprint_overwrite\n            (\n                solution_id,\n                type_id,\n                material_efficiency\n            )\n            SELECT $1, * FROM UNNEST(\n                $2::INTEGER[],\n                $3::INTEGER[]\n            )\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4Array",
+        "Int4Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "b6e1761820a14c193acab31c148bceab5f7f59e404da58e343b52d4c1a1ef0a9"
+}

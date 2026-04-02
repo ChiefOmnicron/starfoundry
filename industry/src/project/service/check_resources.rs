@@ -257,5 +257,5 @@ pub struct JobToStart {
 
 starfoundry_uuid!(ProjectJobUuid, "ProjectJobUuid");
 
-sort_by_market_group_flat!(sort_materials, CheckMaterialsResponseMaterial, CheckMaterialsResponseMaterial);
-sort_by_job_flat!(sort_blueprints, CheckMaterialsResponseBlueprint, CheckMaterialsResponseBlueprint);
+sort_by_market_group_flat!(sort_materials, CheckMaterialsResponseMaterial);
+sort_by_job_flat!(sort_blueprints, CheckMaterialsResponseBlueprint);

@@ -1,5 +1,5 @@
+import { BadgeWrapper } from "@internal/wrapper/Badge";
 import { formatTime } from "@internal/utils";
-import { Badge } from "@mantine/core";
 import { useEffect, useState } from "react";
 
 export function Countdown({
@@ -29,13 +29,11 @@ export function Countdown({
         </>
     } else {
         return <>
-            <Badge
-                autoContrast
+            <BadgeWrapper
                 color="green.9"
-                radius='xs'
             >
                 Done
-            </Badge>
+            </BadgeWrapper>
         </>
     }
 }

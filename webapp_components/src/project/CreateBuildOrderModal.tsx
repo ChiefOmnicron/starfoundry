@@ -1,12 +1,12 @@
 import { Alert, Button, Group, Stack, Textarea, Title } from "@mantine/core";
-import { checkResources, type CheckMaterialsRequest, type CheckMaterialsResponse } from "@internal/services/projects/check_resources";
+import { BlueprintList } from "@internal/list/BlueprintList";
+import { checkResources, type CheckMaterialsRequest, type CheckMaterialsResponse } from "@internal/services/projects/checkResource";
 import { LoadingError } from "@internal/misc/LoadingError";
 import { MaterialList } from "@internal/list/MaterialList";
-import { ModalWrapper } from "@internal/wrapper/modal";
+import { ModalWrapper } from "@internal/wrapper/Modal";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import type { Uuid } from "@internal/services/utils";
-import { BlueprintList } from "@internal/list/BlueprintList";
 
 export function CreateBuildOrderModal({
     jobIds,

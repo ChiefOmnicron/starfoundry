@@ -14,7 +14,7 @@ macro_rules! sort_by_job {
 
             // First go through all entries, and sort them into the map
             for entry in entries.into_iter() {
-                match *entry.category_id {
+                match *entry.item.category.category_id {
                     6i32 => {
                         insert_into_map(6, entry);
                         continue;
@@ -26,7 +26,7 @@ macro_rules! sort_by_job {
                     _  => {}
                 }
 
-                match *entry.group_id {
+                match *entry.item.group.group_id {
                     332i32 => {
                         insert_into_map(332, entry);
                         continue;
@@ -62,7 +62,7 @@ macro_rules! sort_by_job {
                     _  => {}
                 }
 
-                if let Some(meta_group) = entry.meta_group_id {
+                if let Some(meta_group) = entry.item.meta_group {
                     match *meta_group {
                         1i32 => {
                             insert_into_map(1, entry);
@@ -99,15 +99,15 @@ macro_rules! sort_by_job {
                 ("UNKNOWN",                                     0),
             ] {
                 if let Some(entries) = grouped_entries.get_mut(&id) {
-                    entries.sort_by_key(|x| x.item_name.clone());
+                    entries.sort_by_key(|x| x.item.name.clone());
                     let mut entries = entries
-                        .chunk_by(|a, b| a.item_name == b.item_name)
+                        .chunk_by(|a, b| a.item.name == b.item.name)
                         .map(|x| x.into())
                         .collect::<Vec<Vec<$typ_in>>>();
                     let entries = entries
                         .iter_mut()
                         .map(|x| {
-                            x.sort_by_key(|y| y.runs);
+                            x.sort_by_key(|y| y.runs.clone());
                             x.reverse();
                             x.clone()
                         })

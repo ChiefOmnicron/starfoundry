@@ -26,8 +26,9 @@ impl EngineResult {
     /// Writes the current tree to disk
     /// 
     #[allow(unused)]
-    pub fn write_debug_file(&self) {
+    pub fn write_debug_file(&self) -> &Self {
         let mut file = File::create("FlatTreeDebug.json").unwrap();
         serde_json::to_writer_pretty(&mut file, &self).unwrap();
+        self
     }
 }

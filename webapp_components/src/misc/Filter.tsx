@@ -90,7 +90,7 @@ export function Filter(
 
     useEffect(() => {
         //resetOptions();
-        // TODO: add mutliselect into an array
+        // TODO: add multi select into an array
         onFilterChange(selectedFilters);
     }, [selectedFilters]);
 

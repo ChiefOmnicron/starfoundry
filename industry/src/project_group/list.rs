@@ -6,7 +6,6 @@ use starfoundry_lib_gateway::ExtractIdentity;
 
 use crate::api_docs::{BadRequest, InternalServerError, Unauthorized};
 use crate::AppState;
-use crate::eve_gateway_api_client;
 use crate::project_group::error::Result;
 use crate::project_group::service::{ProjectGroup, ProjectGroupFilter, list};
 
@@ -54,7 +53,6 @@ pub async fn api(
     let data = list(
             &state.postgres,
             identity.character_id,
-            &eve_gateway_api_client()?,
             filter,
         ).await?;
 
@@ -87,8 +85,8 @@ mod tests {
     use sqlx::PgPool;
     use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID, HEADER_SERVICE};
 
-    use crate::project_group::list::ProjectGroup;
     use crate::project_group::project_group_test_routes;
+    use crate::project_group::service::ProjectGroupMinimal;
 
     #[sqlx::test(
         fixtures("base"),
@@ -108,7 +106,7 @@ mod tests {
 
         let response = project_group_test_routes(pool.clone(), request).await;
         assert_eq!(response.status(), StatusCode::OK);
-        let body: Vec<ProjectGroup> = serde_json::from_slice(
+        let body: Vec<ProjectGroupMinimal> = serde_json::from_slice(
             &response.into_body().collect().await.unwrap().to_bytes()
         ).unwrap();
         assert_eq!(body.len(), 4);
@@ -133,7 +131,7 @@ mod tests {
 
         let response = project_group_test_routes(pool.clone(), request).await;
         assert_eq!(response.status(), StatusCode::OK);
-        let body: Vec<ProjectGroup> = serde_json::from_slice(
+        let body: Vec<ProjectGroupMinimal> = serde_json::from_slice(
             &response.into_body().collect().await.unwrap().to_bytes()
         ).unwrap();
         assert_eq!(body.len(), 2);
@@ -158,7 +156,7 @@ mod tests {
 
         let response = project_group_test_routes(pool.clone(), request).await;
         assert_eq!(response.status(), StatusCode::NO_CONTENT);
-        let body: Vec<ProjectGroup> = serde_json::from_slice(
+        let body: Vec<ProjectGroupMinimal> = serde_json::from_slice(
             &response.into_body().collect().await.unwrap().to_bytes()
         ).unwrap();
         assert_eq!(body.len(), 0);

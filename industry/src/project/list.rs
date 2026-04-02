@@ -4,10 +4,10 @@ use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_gateway::ExtractIdentity;
 
+use crate::AppState;
 use crate::api_docs::{BadRequest, InternalServerError, Unauthorized};
-use crate::{AppState, eve_gateway_api_client};
 use crate::project::error::Result;
-use crate::project::service::{ProjectList, ProjectFilter, list};
+use crate::project::service::{ProjectMinimal, ProjectFilter, list};
 
 /// List Projects
 /// 
@@ -29,7 +29,7 @@ use crate::project::service::{ProjectList, ProjectFilter, list};
     params(ProjectFilter),
     responses(
         (
-            body = Vec<ProjectList>,
+            body = Vec<ProjectMinimal>,
             description = "List all projects that match the given filters",
             status = OK,
         ),
@@ -54,7 +54,6 @@ pub async fn api(
             &state.postgres,
             identity.character_id,
             filter,
-            &eve_gateway_api_client()?,
         ).await?;
 
     if data.is_empty() {
@@ -87,7 +86,7 @@ mod tests {
     use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID, HEADER_SERVICE};
 
     use crate::project::project_test_routes;
-    use crate::project::service::ProjectList;
+    use crate::project::service::ProjectMinimal;
 
     #[sqlx::test(
         fixtures("base"),
@@ -107,7 +106,7 @@ mod tests {
 
         let response = project_test_routes(pool.clone(), request).await;
         assert_eq!(response.status(), StatusCode::OK);
-        let body: Vec<ProjectList> = serde_json::from_slice(
+        let body: Vec<ProjectMinimal> = serde_json::from_slice(
             &response.into_body().collect().await.unwrap().to_bytes()
         ).unwrap();
         assert_eq!(body.len(), 4);
@@ -132,7 +131,7 @@ mod tests {
 
         let response = project_test_routes(pool.clone(), request).await;
         assert_eq!(response.status(), StatusCode::OK);
-        let body: Vec<ProjectList> = serde_json::from_slice(
+        let body: Vec<ProjectMinimal> = serde_json::from_slice(
             &response.into_body().collect().await.unwrap().to_bytes()
         ).unwrap();
         assert_eq!(body.len(), 1);
@@ -157,7 +156,7 @@ mod tests {
 
         let response = project_test_routes(pool.clone(), request).await;
         assert_eq!(response.status(), StatusCode::NO_CONTENT);
-        let body: Vec<ProjectList> = serde_json::from_slice(
+        let body: Vec<ProjectMinimal> = serde_json::from_slice(
             &response.into_body().collect().await.unwrap().to_bytes()
         ).unwrap();
         assert_eq!(body.len(), 0);

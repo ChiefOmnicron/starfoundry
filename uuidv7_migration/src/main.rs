@@ -24,22 +24,27 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     tracing_subscriber::fmt()
         .with_env_filter(EnvFilter::from_default_env())
-        .pretty()
         .init();
+    tracing::info!("After init");
 
     let environment = std::env::var("ENVIRONMENT").expect("'ENVIRONMENT' must be set");
 
     let postgres_source = PgPoolOptions::new()
         .connect(&std::env::var("DATABASE_SOURCE").unwrap())
         .await?;
+    tracing::info!("postgres source connected");
     let postgres_destination_industry = PgPoolOptions::new()
         .connect(&std::env::var("DATABASE_DESTINATION_INDUSTRY").unwrap())
         .await?;
+    tracing::info!("postgres destination industry connected");
 
     let mut mappings = mappings(&postgres_source, environment.clone()).await;
+    tracing::info!("mappings loaded");
 
     cleanup(&postgres_destination_industry).await?;
     cleanup_mapping(&postgres_source, environment.clone()).await;
+    tracing::info!("cleanup done");
+
     migrate_structure(&postgres_source, &postgres_destination_industry, &mut mappings).await?;
     migrate_industry_hubs(&postgres_source, &postgres_destination_industry, &mut mappings).await?;
 
@@ -49,6 +54,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     migrate_industry_jobs(&postgres_source, &postgres_destination_industry).await?;
 
     save_mappings(&postgres_source, environment, mappings).await;
+    tracing::info!("mappings saved");
 
     Ok(())
 }

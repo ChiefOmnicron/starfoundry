@@ -1,6 +1,7 @@
-import { Badge, Text } from "@mantine/core"
+import { Text } from "@mantine/core"
 import { useState } from "react";
 import type { StructureRig } from "@internal/services/structure/list";
+import { BadgeWrapper } from "@internal/wrapper/Badge";
 
 export function StructureRigBadge({
     rigs,
@@ -23,13 +24,12 @@ export function StructureRigBadge({
     const badges = [];
     for (const rig of [...t1Rigs, ...t2Rigs]) {
         if (badges.length > 2 && !showAll) {
-            badges.push(<Badge
+            badges.push(<BadgeWrapper
                     onClick={() => setShowAll(true)}
                     size={size}
-                    radius='xs'
                 >
                     Show all
-                </Badge>
+                </BadgeWrapper>
             );
             break;
         }
@@ -42,36 +42,31 @@ export function StructureRigBadge({
             .replace('Standup XL-Set ', '');
 
         if (name.endsWith(' II')) {
-            badges.push(<Badge
-                autoContrast
+            badges.push(<BadgeWrapper
                 key={rig.item.type_id}
                 size={size}
                 color="orange.9"
-                radius='xs'
             >
                 { name }
-            </Badge>);
+            </BadgeWrapper>);
         } else {
-            badges.push(<Badge
-                autoContrast
+            badges.push(<BadgeWrapper
                 key={rig.item.type_id}
                 size={size}
                 color="gray"
-                radius='xs'
             >
                 { name }
-            </Badge>);
+            </BadgeWrapper>);
         }
     }
 
     if (badges.length > 2 && showAll) {
-        badges.push(<Badge
+        badges.push(<BadgeWrapper
                 onClick={() => setShowAll(false)}
                 size={size}
-                radius='xs'
             >
                 Show less
-            </Badge>
+            </BadgeWrapper>
         );
     }
 

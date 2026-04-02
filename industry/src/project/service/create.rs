@@ -34,7 +34,7 @@ pub async fn create(
         )
         .fetch_one(pool)
         .await
-        .map_err(ProjectError::CreateProject)?;
+        .map_err(ProjectError::Create)?;
 
     Ok(project_id.id.into())
 }

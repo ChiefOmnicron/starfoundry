@@ -1,4 +1,4 @@
-import { Badge } from "@mantine/core"
+import { BadgeWrapper } from "@internal/wrapper/Badge";
 import type { ProjectJobStatus } from "@internal/services/projects/listJobs";
 
 export function JobStatusBadge({
@@ -30,15 +30,13 @@ export function JobStatusBadge({
             break;
     }
 
-    return <Badge
-        autoContrast
+    return <BadgeWrapper
         key={content}
         size={size}
         color={color}
-        radius='xs'
     >
         {content}
-    </Badge>
+    </BadgeWrapper>
 }
 
 export type JobStatusBadgeProps = {

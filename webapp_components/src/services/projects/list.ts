@@ -1,15 +1,15 @@
 import { axiosClient, type AbortSignal } from "@internal/services/client";
 import { useQuery } from "@tanstack/react-query";
-import type { Uuid } from "@internal/services/utils";
 import type { GenericAbortSignal } from "axios";
-import type { ProjectGroup } from "../project-group/fetch";
+import type { ProjectGroupMinimal } from "../project-group/list";
+import type { Uuid } from "@internal/services/utils";
 
 export const LIST_PROJECT = 'listProject';
 
 export const listProjects = async (
     filter:  ProjectFilter,
     signal?: GenericAbortSignal,
-): Promise<ProjectList[]> => (await axiosClient())
+): Promise<ProjectListMinimal[]> => (await axiosClient())
     .get(
         '/api/projects',
         {
@@ -46,11 +46,11 @@ export const useListProjects = (
 
 export type ProjectStatus = 'DRAFT' | 'READY_TO_START' | 'IN_PROGRESS' | 'PAUSED' | 'DONE';
 
-export type ProjectList = {
+export type ProjectListMinimal = {
     id:            Uuid;
     name:          string;
     status:        ProjectStatus;
     orderer:       string;
     sell_price:    number;
-    project_group: ProjectGroup,
+    project_group: ProjectGroupMinimal,
 }

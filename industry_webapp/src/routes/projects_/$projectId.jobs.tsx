@@ -1,9 +1,9 @@
-import { Tabs } from '@mantine/core';
-import { ProjectJobList, type ProjectJobListProps } from '@starfoundry/components/list/ProjectJobList';
+import { createFileRoute } from '@tanstack/react-router'
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
+import { ProjectJobList, type ProjectJobListProps } from '@starfoundry/components/project/ProjectJobList';
+import { Tabs } from '@mantine/core';
 import { useListProjectJobs } from '@starfoundry/components/services/projects/listJobs'
-import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/projects_/$projectId/jobs')({
     component: RouteComponent,
@@ -49,15 +49,18 @@ function RouteComponent() {
             <Tabs.Panel value="ready_to_start">
                 {
                     content({
+                        projectId: projectId,
                         jobs: jobs || [],
                         status: 'READY_TO_START',
                         checkable: true,
+                        showQuickFix: true,
                     })
                 }
             </Tabs.Panel>
             <Tabs.Panel value="building">
                 {
                     content({
+                        projectId: projectId,
                         jobs: jobs || [],
                         status: 'BUILDING',
                         showCost: true,
@@ -68,6 +71,7 @@ function RouteComponent() {
             <Tabs.Panel value="all">
                 {
                     content({
+                        projectId: projectId,
                         jobs: jobs || [],
                         groupByHeader: true,
                         editable: true,

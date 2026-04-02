@@ -1,4 +1,4 @@
-import { Alert, Button, Flex, Group, Stack, Text, TextInput, Title } from '@mantine/core';
+import { Alert, Button, Flex, Group, Stack, TextInput, Title } from '@mantine/core';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { deleteIndustryHub } from '@starfoundry/components/services/industry-hub/delete';
 import { FETCH_INDUSTRY_HUB, useFetchIndustryHub } from '@starfoundry/components/services/industry-hub/fetch';
@@ -363,17 +363,15 @@ function RouteComponent() {
                         }}
                     />
 
-                    <Title order={2}>Description</Title>
-                    <Text>
-                        Additional information about the industry hub.<br />
-                        Markdown is supported.
-                    </Text>
                     <MarkdownEditor
+                        title='Description'
+                        description='Additional information about the industry hub. Markdown is supported'
                         content={description}
                         onChange={setDescription}
                     />
 
                     {
+                        // TODO: decide what to do with it
                         //<Title order={2}>Layout</Title>
                         //{ structureLayouts() }
                     }

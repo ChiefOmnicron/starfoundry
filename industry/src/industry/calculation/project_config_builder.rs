@@ -34,11 +34,7 @@ impl ProjectConfigBuilder {
         mut self,
         overwrites: HashMap<TypeId, BlueprintBonus>,
     ) -> Self {
-        overwrites
-            .into_iter()
-            .for_each(|(type_id, blueprint_bonus)| {
-                self.blueprint_overwrite.insert(type_id, blueprint_bonus);
-            });
+        self.blueprint_overwrite.extend(overwrites);
         self
     }
 
@@ -67,15 +63,6 @@ impl ProjectConfigBuilder {
         structure_mappings: Vec<StructureMapping>,
     ) -> Self {
         self.structure_mappings.extend(structure_mappings);
-        self
-    }
-
-    pub fn add_max_run(
-        mut self,
-        type_id: TypeId,
-        runs:    u32,
-    ) -> Self {
-        self.max_runs.insert(type_id, runs);
         self
     }
 

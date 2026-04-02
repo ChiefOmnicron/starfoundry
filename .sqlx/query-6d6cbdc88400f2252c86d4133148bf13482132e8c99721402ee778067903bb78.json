@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO project_market\n            (\n                project_id,\n                type_id,\n                quantity\n            )\n            SELECT $1, * FROM (\n                SELECT type_id, quantity\n                FROM solution_material\n                WHERE solution_id = $2\n            )\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "6d6cbdc88400f2252c86d4133148bf13482132e8c99721402ee778067903bb78"
+}

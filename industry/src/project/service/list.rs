@@ -1,25 +1,22 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::EveGatewayApiClient;
 use starfoundry_lib_types::CharacterId;
+use std::collections::HashMap;
 use utoipa::{IntoParams, ToSchema};
 
 use crate::project_group::ProjectGroupUuid;
 use crate::project::error::{ProjectError, Result};
 use crate::project::ProjectUuid;
-use crate::project_group::service::ProjectGroup;
-use std::collections::HashMap;
+use crate::project_group::service::{ProjectGroupFilter, ProjectGroupMinimal};
 
 pub async fn list(
-    pool:                   &PgPool,
-    character_id:           CharacterId,
-    filter:                 ProjectFilter,
-    eve_gateway_api_client: &impl EveGatewayApiClient,
-) -> Result<Vec<ProjectList>> {
+    pool:           &PgPool,
+    character_id:   CharacterId,
+    filter:         ProjectFilter,
+) -> Result<Vec<ProjectMinimal>> {
     let user_project_groups = crate::project_group::service::list(
             pool,
             character_id,
-            eve_gateway_api_client,
             Default::default()
         )
         .await?
@@ -83,32 +80,25 @@ pub async fn list(
         .await
         .map_err(ProjectError::List)?;
 
-    let mut project_group_cache: HashMap<ProjectGroupUuid, ProjectGroup> = HashMap::new();
+    let project_groups = crate::project_group::service::list(
+            pool,
+            character_id,
+            ProjectGroupFilter::default(),
+        )
+        .await?
+        .into_iter()
+        .map(|x| (x.id, x))
+        .collect::<HashMap<_, _>>();
 
     let mut projects = Vec::new();
     for entry in entries {
-        let project_group = if let Some(x) = project_group_cache.get(&entry.project_group_id.into()) {
+        let project_group = if let Some(x) = project_groups.get(&entry.project_group_id.into()) {
             x.clone()
         } else {
-            if let Ok(Some(x)) = crate::project_group::service::fetch(
-                pool,
-                eve_gateway_api_client,
-                character_id,
-                entry.project_group_id.into(),
-            ).await {
-
-                project_group_cache
-                    .insert(
-                        entry.project_group_id.into(),
-                        x.clone()
-                    );
-                x
-            } else {
-                continue
-            }
+            continue;
         };
 
-        let project_group = ProjectList {
+        let project_group = ProjectMinimal {
             id:            entry.id.into(),
             name:          entry.name,
             status:        entry.status,
@@ -168,12 +158,12 @@ fn default_status() -> Option<String> {
         "sell_price": 1337
     })
 )]
-pub struct ProjectList {
+pub struct ProjectMinimal {
     pub id:            ProjectUuid,
     pub name:          String,
     pub status:        ProjectStatus,
     pub orderer:       String,
-    pub project_group: ProjectGroup,
+    pub project_group: ProjectGroupMinimal,
 
     pub sell_price:    Option<f64>,
 }
@@ -213,7 +203,6 @@ mod list_project_group_test {
     use starfoundry_lib_types::CharacterId;
 
     use crate::project::service::list::ProjectFilter;
-    use crate::test_util::EveGatewayTestApiClient;
 
     #[sqlx::test(
         fixtures(
@@ -224,12 +213,10 @@ mod list_project_group_test {
     async fn happy_path(
         pool: PgPool,
     ) {
-        let gateway_client = EveGatewayTestApiClient::new();
         let result = super::list(
                 &pool,
                 CharacterId(1),
                 ProjectFilter::default(),
-                &gateway_client,
             )
             .await;
         assert!(result.is_ok());
@@ -242,7 +229,6 @@ mod list_project_group_test {
                     name: Some(String::from("Filter")),
                     ..Default::default()
                 },
-                &gateway_client,
             )
             .await;
         assert!(result.is_ok());
@@ -255,7 +241,6 @@ mod list_project_group_test {
                     name: Some(String::from("SomeGibberish")),
                     ..Default::default()
                 },
-                &gateway_client,
             )
             .await;
         assert!(result.is_ok());

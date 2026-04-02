@@ -9,7 +9,6 @@ pub async fn migrate_project(
     mappings:              &mut Mapping,
 ) -> Result<(), Box<dyn std::error::Error>> {
     tracing::info!("Start - project");
-    // TODO: the field structure_group_id is no more, needs to be properly migrated
 
     let projects = sqlx::query!(r#"
             SELECT
@@ -20,7 +19,7 @@ pub async fn migrate_project(
                 sell_price,
                 orderer,
                 note,
-                --structure_group_id,
+                structure_group_id,
                 project_group_id,
                 created_at,
                 updated_at
@@ -45,7 +44,28 @@ pub async fn migrate_project(
             continue;
         }
 
-        let project_group_id = mappings.get(&project.project_group_id).unwrap();
+        let project_group_id = mappings.get(&project.project_group_id).unwrap().clone();
+        let industry_hub_id = if let Some(x) = mappings.get(&project.structure_group_id) {
+            x.clone()
+        } else {
+            Uuid::default()
+        };
+
+        let solution_id = sqlx::query!("
+                INSERT INTO solution (
+                    industry_hub_id,
+                    project_group_id
+                )
+                VALUES($1, $2)
+                RETURNING id
+            ",
+                &industry_hub_id,
+                project_group_id,
+            )
+            .fetch_one(postgres_destination)
+            .await?
+            .id;
+        mappings.insert(project_id, solution_id);
 
         let status: String = match project.status {
             ProjectStatus::Done         => "DONE",
@@ -63,12 +83,12 @@ pub async fn migrate_project(
                     sell_price,
                     orderer,
                     note,
-                    --structure_group_id,
+                    solution_id,
                     project_group_id,
                     created_at,
                     updated_at
                 )
-                VALUES ($1, $2, $3, $4::PROJECT_STATUS, $5, $6, $7, $8, $9, $10)
+                VALUES ($1, $2, $3, $4::PROJECT_STATUS, $5, $6, $7, $8, $9, $10, $11)
                 ON CONFLICT (id)
                 DO UPDATE SET
                     name        = EXCLUDED.name,
@@ -85,14 +105,16 @@ pub async fn migrate_project(
                 project.sell_price,
                 project.orderer,
                 project.note,
-                //structure_group_id,
+                solution_id,
                 project_group_id,
                 project.created_at,
                 project.updated_at
             )
-            .execute(&mut *transaction)
+            //.execute(&mut *transaction)
+            .execute(postgres_destination)
             .await?;
     }
+    tracing::info!("[project] projects migrated");
 
     let jobs = sqlx::query!(r#"
             SELECT
@@ -161,6 +183,7 @@ pub async fn migrate_project(
             .execute(&mut *transaction)
             .await?;
     }
+    tracing::info!("[project] project jobs migrated");
 
     let misc_entries = sqlx::query!(r#"
             SELECT
@@ -214,6 +237,7 @@ pub async fn migrate_project(
             .execute(&mut *transaction)
             .await?;
     }
+    tracing::info!("[project] project misc migrated");
 
     let market_entries = sqlx::query!(r#"
             SELECT
@@ -230,6 +254,11 @@ pub async fn migrate_project(
         .await?;
     sqlx::query!("
             DELETE FROM project_market
+        ")
+        .execute(&mut *transaction)
+        .await?;
+    sqlx::query!("
+            DELETE FROM solution_material
         ")
         .execute(&mut *transaction)
         .await?;
@@ -266,7 +295,30 @@ pub async fn migrate_project(
             )
             .execute(&mut *transaction)
             .await?;
+
+        let solution_id = mappings.get(&project_id).unwrap();
+        sqlx::query!("
+                INSERT INTO solution_material (
+                    solution_id,
+                    id,
+                    type_id,
+                    quantity,
+                    created_at,
+                    updated_at
+                )
+                VALUES ($1, $2, $3, $4, $5, $6)
+            ",
+                solution_id,
+                market_id,
+                market.type_id,
+                market.quantity,
+                market.created_at,
+                market.updated_at,
+            )
+            .execute(&mut *transaction)
+            .await?;
     }
+    tracing::info!("[project] project market migrated");
 
     let stock_entries = sqlx::query!(r#"
             SELECT
@@ -282,6 +334,11 @@ pub async fn migrate_project(
         .await?;
     sqlx::query!("
             DELETE FROM project_stock
+        ")
+        .execute(&mut *transaction)
+        .await?;
+    sqlx::query!("
+            DELETE FROM solution_stock
         ")
         .execute(&mut *transaction)
         .await?;
@@ -316,7 +373,195 @@ pub async fn migrate_project(
             )
             .execute(&mut *transaction)
             .await?;
+
+        let solution_id = mappings.get(&project_id).unwrap();
+        sqlx::query!("
+                INSERT INTO solution_stock (
+                    solution_id,
+                    id,
+                    type_id,
+                    quantity,
+                    created_at,
+                    updated_at
+                )
+                VALUES ($1, $2, $3, $4, $5, $6)
+            ",
+                solution_id,
+                stock_id,
+                stock.type_id,
+                stock.quantity,
+                stock.created_at,
+                stock.updated_at,
+            )
+            .execute(&mut *transaction)
+            .await?;
     }
+    tracing::info!("[project] project stock migrated");
+
+    let excess_entries = sqlx::query!(r#"
+            SELECT
+                project_id,
+                type_id,
+                quantity,
+                cost,
+                created_at,
+                updated_at
+            FROM project_excess
+        "#)
+        .fetch_all(postgres_source)
+        .await?;
+    sqlx::query!("
+            DELETE FROM project_excess
+        ")
+        .execute(&mut *transaction)
+        .await?;
+    sqlx::query!("
+            DELETE FROM solution_excess
+        ")
+        .execute(&mut *transaction)
+        .await?;
+    for excess in excess_entries {
+        let project_id =  if let Some(x) = mappings.get(&excess.project_id) {
+            x
+        } else {
+            continue;
+        };
+
+        sqlx::query!("
+                INSERT INTO project_excess (
+                    project_id,
+                    type_id,
+                    quantity,
+                    cost,
+                    created_at,
+                    updated_at
+                )
+                VALUES ($1, $2, $3, $4, $5, $6)
+            ",
+                project_id,
+                excess.type_id,
+                excess.quantity,
+                excess.cost,
+                excess.created_at,
+                excess.updated_at,
+            )
+            .execute(&mut *transaction)
+            .await?;
+
+        let solution_id = mappings.get(&project_id).unwrap();
+        sqlx::query!("
+                INSERT INTO solution_excess (
+                    solution_id,
+                    type_id,
+                    quantity,
+                    created_at,
+                    updated_at
+                )
+                VALUES ($1, $2, $3, $4, $5)
+            ",
+                solution_id,
+                excess.type_id,
+                excess.quantity,
+                excess.created_at,
+                excess.updated_at,
+            )
+            .execute(&mut *transaction)
+            .await?;
+    }
+    tracing::info!("[project] project excess migrated");
+
+    let product_entries = sqlx::query!(r#"
+            SELECT
+                id,
+                project_id,
+                type_id,
+                quantity,
+                material_efficiency,
+                created_at,
+                updated_at
+            FROM project_product
+        "#)
+        .fetch_all(postgres_source)
+        .await?;
+    sqlx::query!("
+            DELETE FROM solution_product
+        ")
+        .execute(&mut *transaction)
+        .await?;
+    for product in product_entries {
+        let project_id = if let Some(x) = mappings.get(&product.project_id) {
+            x
+        } else {
+            continue;
+        };
+        let solution_id = mappings.get(&project_id).unwrap();
+
+        sqlx::query!("
+                INSERT INTO solution_product (
+                    id,
+                    solution_id,
+                    type_id,
+                    quantity,
+                    material_efficiency,
+                    created_at,
+                    updated_at
+                )
+                VALUES ($1, $2, $3, $4, $5, $6, $7)
+            ",
+                product.id,
+                solution_id,
+                product.type_id,
+                product.quantity,
+                product.material_efficiency,
+                product.created_at,
+                product.updated_at,
+            )
+            .execute(&mut *transaction)
+            .await?;
+    }
+
+    tracing::info!("[project] project blacklist migrated");
+    let product_entries = sqlx::query!(r#"
+            SELECT
+                project_id,
+                type_id,
+                created_at,
+                updated_at
+            FROM project_blacklist
+        "#)
+        .fetch_all(postgres_source)
+        .await?;
+    sqlx::query!("
+            DELETE FROM solution_blacklist
+        ")
+        .execute(&mut *transaction)
+        .await?;
+    for product in product_entries {
+        let project_id = if let Some(x) = mappings.get(&product.project_id) {
+            x
+        } else {
+            continue;
+        };
+        let solution_id = mappings.get(&project_id).unwrap();
+
+        sqlx::query!("
+                INSERT INTO solution_blacklist (
+                    solution_id,
+                    type_id,
+                    created_at,
+                    updated_at
+                )
+                VALUES ($1, $2, $3, $4)
+            ",
+                solution_id,
+                product.type_id,
+                product.created_at,
+                product.updated_at,
+            )
+            .execute(&mut *transaction)
+            .await?;
+    }
+    tracing::info!("[project] project blacklist migrated");
 
     transaction.commit().await?;
     tracing::info!("Done - project");
