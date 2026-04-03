@@ -75,6 +75,7 @@ export function Filter(
         selectedFilter = [],
     }: FilterProp,
 ): ReactElement {
+    console.warn('Usage of own Filter component, replace with mantine composite filters');
     const [search, setSearch] = useState('');
 
     const [currentSelected, setCurrentSelected] = useState<FilterPropEntry | undefined>(undefined);
@@ -187,21 +188,23 @@ export function Filter(
         ));
 
     // render for the values
-    const values = selectedFilters.map((item) => (
-        <Pill
-            key={`${item.key}_${item.value}`}
-            withRemoveButton
-            onRemove={() => handleValueRemove(item)}
-            size="md"
-            styles={{
-                root: {
-                    borderRadius: 0,
-                }
-            }}
-        >
-            <strong>{item.filterLabel}</strong>: {item.value}
-        </Pill>
-    ));
+    const values = () => {
+        return selectedFilters.map((item) => (
+            <Pill
+                key={`${item.key}_${item.value}`}
+                withRemoveButton
+                onRemove={() => handleValueRemove(item)}
+                size="md"
+                styles={{
+                    root: {
+                        borderRadius: 0,
+                    }
+                }}
+            >
+                <strong>{item.filterLabel}</strong>: {item.value}
+            </Pill>
+        ));
+    }
 
     const showDropdownEntries = () => {
         if (currentSelected && currentSelected.type === 'STRING') {
@@ -233,7 +236,7 @@ export function Filter(
                     }}
                 >
                     <Pill.Group data-cy="filterSelectedGroup">
-                        {values}
+                        {values()}
 
                         <Combobox.EventsTarget>
                             <PillsInput.Field

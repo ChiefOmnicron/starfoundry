@@ -1,4 +1,4 @@
-import { Grid, Input } from "@mantine/core";
+import { Grid, Input, InputWrapper } from "@mantine/core";
 import { langs } from "@uiw/codemirror-extensions-langs";
 import { MarkdownView } from "../detailView/MarkdownView";
 import { vscodeDark } from "@uiw/codemirror-theme-vscode";
@@ -34,7 +34,11 @@ export function MarkdownEditor({
             </Grid.Col>
 
             <Grid.Col span={6}>
-                <MarkdownView content={content} />
+                <InputWrapper
+                    label='Preview'
+                >
+                    <MarkdownView content={content} />
+                </InputWrapper>
             </Grid.Col>
         </Grid>
     </>

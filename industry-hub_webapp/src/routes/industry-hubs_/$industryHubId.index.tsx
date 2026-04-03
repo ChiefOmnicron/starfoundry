@@ -364,6 +364,8 @@ function RouteComponent() {
                         Markdown is supported.
                     </Text>
                     <MarkdownEditor
+                        title='Description'
+                        description='Additional information about the industry hub. Markdown is supported'
                         content={description}
                         onChange={setDescription}
                     />

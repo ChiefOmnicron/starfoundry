@@ -194,6 +194,7 @@ export function CreateProject({
                             <MarkdownEditor
                                 content={field.state.value}
                                 title='Notes'
+                                height='200px'
                                 onChange={(value) => field.handleChange(value)}
                             />
                         </>

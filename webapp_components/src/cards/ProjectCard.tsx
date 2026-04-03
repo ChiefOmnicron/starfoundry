@@ -23,7 +23,7 @@ export function ProjectCard({
             case 'IN_PROGRESS':
                 return <BadgeWrapper color="blue">In Progress</BadgeWrapper>;
             case 'READY_TO_START':
-                return <BadgeWrapper color="orange">Pause</BadgeWrapper>;
+                return <BadgeWrapper color="cyan">Ready to start</BadgeWrapper>;
             case 'PAUSED':
                 return <BadgeWrapper color="yellow">Pause</BadgeWrapper>;
             default:

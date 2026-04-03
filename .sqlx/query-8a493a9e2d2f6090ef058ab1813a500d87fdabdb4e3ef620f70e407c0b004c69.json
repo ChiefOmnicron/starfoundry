@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            INSERT INTO project\n            (\n                owner,\n                sell_price,\n                project_group_id,\n                orderer,\n                name\n            )\n            VALUES ($1, $2, $3, $4, $5)\n            RETURNING id\n        ",
+  "query": "\n            INSERT INTO project\n            (\n                owner,\n                sell_price,\n                project_group_id,\n                orderer,\n                name,\n                note\n            )\n            VALUES ($1, $2, $3, $4, $5, $6)\n            RETURNING id\n        ",
   "describe": {
     "columns": [
       {
@@ -21,6 +21,7 @@
         "Float8",
         "Uuid",
         "Varchar",
+        "Varchar",
         "Varchar"
       ]
     },
@@ -28,5 +29,5 @@
       false
     ]
   },
-  "hash": "c7c30276618315bd25600a53321ffd9cbbdd276ecce9ebdedee1f0abd647e268"
+  "hash": "8a493a9e2d2f6090ef058ab1813a500d87fdabdb4e3ef620f70e407c0b004c69"
 }

@@ -21,9 +21,10 @@ pub async fn create(
                 sell_price,
                 project_group_id,
                 orderer,
-                name
+                name,
+                note
             )
-            VALUES ($1, $2, $3, $4, $5)
+            VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING id
         "#,
             *character_id,
@@ -31,6 +32,7 @@ pub async fn create(
             *project_info.project_group_id,
             project_info.orderer,
             project_info.name,
+            project_info.notes,
         )
         .fetch_one(pool)
         .await
@@ -41,10 +43,12 @@ pub async fn create(
 
 #[derive(Debug, Deserialize, ToSchema)]
 pub struct CreateProject {
-    pub sell_price:       Option<f64>,
-    pub project_group_id: ProjectGroupUuid,
-    pub orderer:          String,
-    pub name:             String,
+    pub project_group_id:   ProjectGroupUuid,
+    pub orderer:            String,
+    pub name:               String,
+
+    pub sell_price:         Option<f64>,
+    pub notes:               Option<String>,
 }
 
 impl CreateProject {

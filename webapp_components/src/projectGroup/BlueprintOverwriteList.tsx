@@ -174,8 +174,7 @@ export function BlueprintOverwriteList({
 
     const table = useReactTable<BlueprintOverwrite>({
         columns: columns,
-        data: entries
-            .sort((a, b) => a.item.name.localeCompare(b.item.name)),
+        data: (entries || []).sort((a, b) => a.item.name.localeCompare(b.item.name)),
         autoResetPageIndex: false,
         getCoreRowModel: getCoreRowModel(),
         initialState: {

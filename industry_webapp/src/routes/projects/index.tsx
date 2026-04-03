@@ -7,8 +7,9 @@ import { ProjectList } from '@starfoundry/components/project/ProjectList';
 import { Route as ProjectAssistantRoute } from '@/routes/projects_/$projectId.assistant/index';
 import { Route as ProjectOverviewRoute } from '@/routes/projects_/$projectId.overview';
 import { useDisclosure, useIsFirstRender } from '@mantine/hooks';
+import { useEffect, useState } from 'react';
 import { useListProjects, type ProjectFilter } from '@starfoundry/components/services/projects/list';
-import { useState } from 'react';
+import { CompositeFiltersInput, useCompositeFilters, type ActiveFilter, type FilterDefinition } from 'mantine-composite-filters';
 import type { Uuid } from '@starfoundry/components/services/utils';
 
 export interface QueryParams {
@@ -26,33 +27,59 @@ export const Route = createFileRoute('/projects/')({
     }
 });
 
-//const filters: FilterPropEntry[] = [{
-//    label: 'Name',
-//    key: 'name',
-//    type: 'STRING',
-//}, {
-//    label: 'Status',
-//    key: 'status',
-//    type: 'SELECT',
-//    options: [{
-//        label: 'Draft',
-//        key: 'DRAFT'
-//    }, {
-//        label: 'Ready to start',
-//        key: 'READY_TO_START'
-//    }, {
-//        label: 'In Progress',
-//        key: 'IN_PROGRESS'
-//    }, {
-//        label: 'Paused',
-//        key: 'PAUSED'
-//    }, {
-//        label: 'Done',
-//        key: 'DONE'
-//    }]
-//}];
+const filterDefinitions: FilterDefinition[] = [{
+    label: 'Name',
+    key: 'name',
+    type: 'text',
+    placeholder: 'Search ...',
+    operators: ['contains']
+}, {
+    label: 'Status',
+    key: 'status',
+    type: 'select',
+    options: [{
+        label: 'Draft',
+        value: 'DRAFT'
+    }, {
+        label: 'Ready to start',
+        value: 'READY_TO_START'
+    }, {
+        label: 'In Progress',
+        value: 'IN_PROGRESS'
+    }, {
+        label: 'Paused',
+        value: 'PAUSED'
+    }, {
+        label: 'Done',
+        value: 'DONE'
+    }]
+}];
+
+const INITIAL_FILTER: ActiveFilter = {
+    displayValue: 'In Progress',
+    id: 'status',
+    key: 'status',
+    label: 'Status',
+    operator: '=',
+    type: 'select',
+    value: 'IN_PROGRESS',
+}
 
 function RouteComponent() {
+    const {
+        activeFilters,
+        setActiveFilters,
+
+        getFilterByKey,
+
+        resetFilters,
+        replaceFilter,
+    } = useCompositeFilters({
+        filterDefinitions,
+        onFiltersChange: (filters) => onFilterChange(filters),
+        initialFilters: [INITIAL_FILTER],
+    });
+
     const navigation = useNavigate();
     const { deleted: deletedResource } = Route.useSearch();
     const [opened, { open, close }] = useDisclosure(false);
@@ -64,24 +91,56 @@ function RouteComponent() {
     const [filterParams, setFilterParams] = useState<ProjectFilter>({
         status: 'IN_PROGRESS',
     });
-    //const [selectedFilters, setSelectedFilters] = useState<SelectedFilter[]>([{
-    //    filterKey: 'status',
-    //    filterLabel: 'Status',
-    //    key: 'IN_PROGRESS',
-    //    value: 'In Progress',
-    //}]);
 
-    //const filterChange = (filters: SelectedFilter[]) => {
-    //    if (filters.length === 0) {
-    //        return;
-    //    }
-//
-    //    setSelectedFilters(filters);
-    //    setFilterParams({
-    //        name: filters.find(x => x.filterKey === 'name')?.value as string,
-    //        status: filters.find(x => x.filterKey === 'status')?.key as string,
-    //    });
-    //};
+    const onFilterChange = (filters: ActiveFilter[]) => {
+        console.log(filters, filters.length, getFilterByKey('status'))
+        if (filters.length === 0) {
+            resetFilters();
+            filterByTab();
+            return;
+        }
+
+        console.log(filters)
+        setFilterParams({
+            name: filters.find(x => x.key === 'name')?.value as string,
+            status: filters.find(x => x.key === 'status')?.value as string,
+        });
+    };
+
+    useEffect(() => {
+        filterByTab();
+    }, [activeTab]);
+
+    const filterByTab = () => {
+        if (activeTab === 'in_progress') {
+            replaceFilter('status', {
+                key: 'status',
+                displayValue: 'In Progress',
+                label: 'Status',
+                operator: '=',
+                type: 'select',
+                value: 'IN_PROGRESS'
+            });
+        } else if (activeTab === 'drafts') {
+            replaceFilter('status', {
+                key: 'status',
+                displayValue: 'Drafts',
+                label: 'Status',
+                operator: '=',
+                type: 'select',
+                value: 'DRAFT'
+            });
+        } else if (activeTab === 'ready_to_start') {
+            replaceFilter('status', {
+                key: 'status',
+                displayValue: 'Ready to Start',
+                label: 'Status',
+                operator: '=',
+                type: 'select',
+                value: 'READY_TO_START'
+            });
+        }
+    }
 
     const {
         isPending,
@@ -113,6 +172,15 @@ function RouteComponent() {
 
         if (projects.length === 0) {
             return <>
+                <CompositeFiltersInput
+                    filters={filterDefinitions}
+                    value={activeFilters}
+                    onChange={(filter) => {
+                        setActiveFilters(filter);
+                        onFilterChange(filter);
+                    }}
+                />
+
                 <Center mt={50} data-cy="noData">
                     <Stack>
                         <Title order={4}>No projects yet</Title>
@@ -129,13 +197,14 @@ function RouteComponent() {
         }
 
         return <>
-            {
-                //<Filter
-                //    entries={filters}
-                //    onFilterChange={filterChange}
-                //    selectedFilter={selectedFilters}
-                ///>
-            }
+            <CompositeFiltersInput
+                filters={filterDefinitions}
+                value={activeFilters}
+                onChange={(filter) => {
+                    setActiveFilters(filter);
+                    onFilterChange(filter);
+                }}
+            />
 
             <ProjectList
                 projects={ projects }
@@ -156,12 +225,10 @@ function RouteComponent() {
                     setActiveTab(tab);
 
                     if (tab === 'in_progress') {
-                        console.log(tab)
                         setFilterParams({
                             status: 'IN_PROGRESS',
                         });
                     } else if (tab === 'drafts') {
-                        console.log(tab)
                         setFilterParams({
                             status: 'DRAFT',
                         });

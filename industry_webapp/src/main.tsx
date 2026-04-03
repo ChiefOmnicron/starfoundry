@@ -1,4 +1,5 @@
 import '@mantine/core/styles.css';
+import 'mantine-composite-filters/styles.css';
 import '@/style.css';
 
 import { StrictMode } from 'react';
