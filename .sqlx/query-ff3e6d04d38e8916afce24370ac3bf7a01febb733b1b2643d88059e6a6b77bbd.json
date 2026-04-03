@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n                SELECT\n                    group_id,\n                    character_id,\n                    accepted,\n                    created_at,\n                    updated_at\n                FROM project_group_member\n                WHERE group_id = $1\n            ",
+  "query": "\n                SELECT\n                    group_id,\n                    character_id,\n                    created_at,\n                    updated_at\n                FROM project_group_member\n                WHERE group_id = $1\n            ",
   "describe": {
     "columns": [
       {
@@ -27,17 +27,6 @@
       },
       {
         "ordinal": 2,
-        "name": "accepted",
-        "type_info": "Bool",
-        "origin": {
-          "Table": {
-            "table": "project_group_member",
-            "name": "accepted"
-          }
-        }
-      },
-      {
-        "ordinal": 3,
         "name": "created_at",
         "type_info": "Timestamptz",
         "origin": {
@@ -48,7 +37,7 @@
         }
       },
       {
-        "ordinal": 4,
+        "ordinal": 3,
         "name": "updated_at",
         "type_info": "Timestamptz",
         "origin": {
@@ -68,9 +57,8 @@
       false,
       false,
       false,
-      false,
       false
     ]
   },
-  "hash": "0a8789fa7f44a249b7c454df6bf2843e6b71353bea3a502ccccb54af41582ec3"
+  "hash": "ff3e6d04d38e8916afce24370ac3bf7a01febb733b1b2643d88059e6a6b77bbd"
 }

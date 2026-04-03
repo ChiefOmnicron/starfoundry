@@ -36,19 +36,16 @@ pub async fn create(
         .fetch_one(&mut *transaction)
         .await
         .map(|x| ProjectGroupUuid::new(x.id))
-        .map_err(|e| ProjectGroupError::CreateGroup(e))?;
+        .map_err(ProjectGroupError::CreateGroup)?;
 
     // add the owner as member of the group
     sqlx::query!("
             INSERT INTO project_group_member(
-                accepted,
                 project_group_id,
                 character_id,
                 permission
             )
-            VALUES (
-                TRUE, $1, $2, $3
-            )
+            VALUES ($1, $2, $3)
         ",
             *group_id,
             *character_id,
@@ -56,7 +53,7 @@ pub async fn create(
         )
         .execute(&mut *transaction)
         .await
-        .map_err(|e| ProjectGroupError::AcceptGroupMember(e, group_id))?;
+        .map_err(ProjectGroupError::CreateGroup)?;
 
     // add the defaults
     sqlx::query!("
@@ -73,7 +70,7 @@ pub async fn create(
         )
         .execute(&mut *transaction)
         .await
-        .map_err(|e| ProjectGroupError::AcceptGroupMember(e, group_id))?;
+        .map_err(ProjectGroupError::CreateGroup)?;
 
     transaction
         .commit()

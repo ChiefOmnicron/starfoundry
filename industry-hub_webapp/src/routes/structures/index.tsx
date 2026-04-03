@@ -1,7 +1,7 @@
 import { AddStructure } from './-modal/add';
 import { Alert, Button, Center, Flex, Modal, Stack, Title } from '@mantine/core';
 import { createFileRoute } from '@tanstack/react-router';
-import { Filter, type FilterPropEntry, type SelectedFilter } from '@starfoundry/components/misc/Filter';
+import { Filter, type FilterPropEntry, type SelectedFilter } from '@starfoundry/components/deprecated/Filter';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 import { Route as EditRoute } from '@/routes/structures_/$structureId.index';

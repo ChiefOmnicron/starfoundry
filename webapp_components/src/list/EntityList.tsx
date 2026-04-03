@@ -1,11 +1,19 @@
 import { EntityCard, type EntityAdditionalProps } from '@internal/cards/EntityCard';
-import { SimpleGrid } from '@mantine/core';
+import { Center, SimpleGrid, Stack, Title } from '@mantine/core';
 
 export function EntityList({
     entities,
 
     entityCardProps,
 }: EntityListProps) {
+    if (entities.length === 0) {
+        return <Center mt={50} data-cy="noData">
+            <Stack>
+                <Title order={4}>No members</Title>
+            </Stack>
+        </Center>
+    }
+
     return <>
         <SimpleGrid
             cols={{

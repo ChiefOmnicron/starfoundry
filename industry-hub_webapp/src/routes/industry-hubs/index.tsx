@@ -1,7 +1,7 @@
 import { AddIndustryHub } from '@/routes/industry-hubs/-modal/add';
 import { Alert, Button, Center, Flex, Modal, Stack, Tabs, Title } from '@mantine/core';
 import { createFileRoute } from '@tanstack/react-router';
-import { Filter, type FilterPropEntry, type SelectedFilter } from '@starfoundry/components/misc/Filter';
+import { Filter, type FilterPropEntry, type SelectedFilter } from '@starfoundry/components/deprecated/Filter';
 import { IndustryHubList } from '@starfoundry/components/list/IndustryHubList';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';

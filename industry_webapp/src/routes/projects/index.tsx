@@ -204,6 +204,9 @@ function RouteComponent() {
                     setActiveFilters(filter);
                     onFilterChange(filter);
                 }}
+                variant='minimal'
+                disablePresets
+                disableHistory
             />
 
             <ProjectList

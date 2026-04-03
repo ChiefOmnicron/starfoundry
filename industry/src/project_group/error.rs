@@ -47,12 +47,12 @@ pub enum ProjectGroupError {
     #[error("error while fetching permissions for project group '{1}', error: '{0}'")]
     FetchGroupPermissions(sqlx::Error, ProjectGroupUuid),
 
-    #[error("error while accepting member to project group '{1}', error: '{0}'")]
-    AcceptGroupMember(sqlx::Error, ProjectGroupUuid),
     #[error("error while fetching project group member self for group '{1}', error: '{0}'")]
-    FetchGroupMembersSelf(sqlx::Error, ProjectGroupUuid),
+    FetchMembersSelf(sqlx::Error, ProjectGroupUuid),
     #[error("error while fetching project group members for group '{1}', error: '{0}'")]
-    ListGroupMembers(sqlx::Error, ProjectGroupUuid),
+    ListMembers(sqlx::Error, ProjectGroupUuid),
+    #[error("error while updating project group members '{1}', error: '{0}'")]
+    UpdateMembers(sqlx::Error, ProjectGroupUuid),
 
     #[error("error while fetching project group industry hubs for group '{1}', error: '{0}'")]
     ListIndustryHubs(sqlx::Error, ProjectGroupUuid),

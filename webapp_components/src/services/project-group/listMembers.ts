@@ -1,4 +1,4 @@
-import { axiosClient, type AbortSignal } from "@internal/services/client";
+import { axiosClient, type AbortSignal, type CharacterInfo } from "@internal/services/client";
 import { useQuery } from "@tanstack/react-query";
 import type { Uuid } from "@internal/services/utils";
 import type { GenericAbortSignal } from "axios";
@@ -25,10 +25,8 @@ export type ProjectGroupPermission = 'OWNER' |
     'WRITE_MEMBER' |
     'WRITE_GROUP';
 export type ProjectGroupMember = {
-    character_name: string,
-    character_id:   number,
+    character:      CharacterInfo
 
-    accepted:       boolean,
     is_owner:       boolean,
     permissions:    ProjectGroupPermission[],
 }

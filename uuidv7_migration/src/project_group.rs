@@ -171,7 +171,6 @@ pub async fn migrate_project_group(
                 SELECT
                     group_id,
                     character_id,
-                    accepted,
                     created_at,
                     updated_at
                 FROM project_group_member
@@ -194,27 +193,21 @@ pub async fn migrate_project_group(
                 (
                     project_group_id,
                     character_id,
-                    accepted,
                     permission,
                     created_at,
                     updated_at
                 )
                 SELECT $1, * FROM UNNEST(
                     $2::INTEGER[],
-                    $3::BOOLEAN[],
-                    $4::INTEGER[],
-                    $5::TIMESTAMPTZ[],
-                    $6::TIMESTAMPTZ[]
+                    $3::INTEGER[],
+                    $4::TIMESTAMPTZ[],
+                    $5::TIMESTAMPTZ[]
                 )
             ",
                 project_group_id,
                 &member
                     .iter()
                     .map(|x| x.character_id)
-                    .collect::<Vec<_>>(),
-                &member
-                    .iter()
-                    .map(|x| x.accepted)
                     .collect::<Vec<_>>(),
                 &member
                     .iter()

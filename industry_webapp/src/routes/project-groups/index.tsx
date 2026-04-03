@@ -1,8 +1,8 @@
 import { AddProjectGroup } from '@/routes/project-groups/-modal/add';
-import { Alert, Button, Card, Center, Flex, Modal, Pill, Stack, Table, Tabs, Title } from '@mantine/core';
+import { Alert, Button, Card, Center, Flex, Pill, Stack, Table, Tabs, Title } from '@mantine/core';
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { createFileRoute } from '@tanstack/react-router';
-import { Filter, type FilterPropEntry, type SelectedFilter } from '@starfoundry/components/misc/Filter';
+import { Filter, type FilterPropEntry, type SelectedFilter } from '@starfoundry/components/deprecated/Filter';
 import { InternalLink } from '@starfoundry/components/links/InternalLink';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
@@ -10,6 +10,7 @@ import { Route as ProjectGroupRoute } from '@/routes/project-groups_/$projectGro
 import { useDisclosure } from '@mantine/hooks';
 import { useListProjectGroup, type ProjectGroupFilter, type ProjectGroupMinimal } from '@starfoundry/components/services/project-group/list';
 import { useState } from 'react';
+import { ModalWrapper } from '@starfoundry/components/wrapper/Modal';
 
 export interface QueryParams {
     deleted?: boolean;
@@ -111,23 +112,15 @@ function RouteComponent() {
     }
 
     const addProjectGroup = () => {
-        return <Modal
+        return <ModalWrapper
             opened={ opened }
-            onClose={ close }
+            close={ close }
             title="Add project group"
-            overlayProps={{
-                backgroundOpacity: 0.55,
-                blur: 3,
-            }}
-            size="70%"
-            centered
-            closeOnEscape
-            closeOnClickOutside
         >
             <AddProjectGroup
                 close={close}
             />
-        </Modal>
+        </ModalWrapper>
     }
 
     const notification = () => {

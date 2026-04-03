@@ -1,15 +1,15 @@
 import { AddIndustryHub } from '@/routes/industry-hubs/-modal/add';
 import { Alert, Button, Center, Flex, Modal, Stack, Tabs, Title } from '@mantine/core';
 import { createFileRoute } from '@tanstack/react-router';
-import { Filter, type FilterPropEntry, type SelectedFilter } from '@starfoundry/components/misc/Filter';
 import { IndustryHubList } from '@starfoundry/components/list/IndustryHubList';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
+import { normalizeRigServiceName } from '@starfoundry/components/services/structure/utils';
 import { Route as EditRoute } from '@/routes/industry-hubs_/$industryHubId.index';
 import { useDisclosure } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
 import { useListIndustryHub, type IndustryHubFilter } from '@starfoundry/components/services/industry-hub/list';
-import { normalizeRigServiceName } from '@starfoundry/components/services/structure/utils';
+import { Filter, type FilterPropEntry, type SelectedFilter } from '@starfoundry/components/deprecated/Filter';
 
 export interface QueryParams {
     deleted?: boolean;

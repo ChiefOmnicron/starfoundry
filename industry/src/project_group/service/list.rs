@@ -40,9 +40,7 @@ pub async fn list(
             WHERE pgm.character_id = $1 AND
                 NOT (LOWER(name) LIKE '%' || LOWER($2) || '%') IS FALSE AND
                 NOT (owner = $1 OR $3) IS FALSE AND
-                archived = $4 AND
-                -- make sure the user got accepted into the group
-                accepted = TRUE
+                archived = $4
             ORDER BY pg.name ASC
         ",
             *character_id,
@@ -99,7 +97,6 @@ pub struct ProjectGroupFilter {
             "character_name": "SomeCharacterName",
             "character_id": 1337,
 
-            "accepted": true,
             "permission": [
                 "READ",
                 "WRITE_GROUP"

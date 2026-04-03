@@ -16,7 +16,6 @@ pub async fn list_members(
         "
             SELECT
                 pgm.character_id,
-                accepted,
                 permission,
                 (pg.owner = pgm.character_id) AS is_owner
             FROM project_group_member pgm
@@ -27,7 +26,7 @@ pub async fn list_members(
         )
         .fetch_all(pool)
         .await
-        .map_err(|e| ProjectGroupError::ListGroupMembers(e, project_group_uuid))?;
+        .map_err(|e| ProjectGroupError::ListMembers(e, project_group_uuid))?;
 
     let mut members = Vec::new();
     for entry in entries {
@@ -40,7 +39,6 @@ pub async fn list_members(
 
         let member = ProjectGroupMember {
             character:      character,
-            accepted:       entry.accepted,
             permissions:    ProjectGroupPermission::new(entry.permission),
             is_owner:       entry.is_owner.unwrap_or(false),
         };
@@ -63,7 +61,6 @@ pub async fn list_members(
             "alliance_name": "SomeAlliance",
             "alliance_id": 69,
         },
-        "accepted": true,
         "permissions": [
             "READ",
             "WRITE_GROUP"
@@ -73,7 +70,6 @@ pub async fn list_members(
 )]
 pub struct ProjectGroupMember {
     pub character:      CharacterInfo,
-    pub accepted:       bool,
     pub permissions:    ProjectGroupPermission,
     pub is_owner:       bool,
 }

@@ -16,6 +16,7 @@ mod update_default_blueprint_overwrite;
 mod update_default_job_splitting;
 mod update_default_market;
 mod update_industry_hubs;
+mod update_member;
 mod update;
 
 pub mod permission;
@@ -121,6 +122,11 @@ pub fn routes(
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_write))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
 
+    let update_members = OpenApiRouter::new()
+        .routes(routes!(update_member::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_write))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+
     OpenApiRouter::new()
         .merge(archive)
         .merge(create)
@@ -140,6 +146,7 @@ pub fn routes(
         .merge(update_default_job_splitting)
         .merge(update_default_market)
         .merge(update_industry_hubs)
+        .merge(update_members)
 }
 
 starfoundry_uuid!(ProjectGroupUuid, "ProjectGroupUuid");

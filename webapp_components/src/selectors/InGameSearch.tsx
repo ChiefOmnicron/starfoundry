@@ -3,6 +3,7 @@ import { useDebouncedCallback } from "@mantine/hooks";
 import { useState, type ReactElement } from "react";
 import type { Category } from "@internal/services/utils";
 import { inGameSearch, type InGameSearchFilter, type InGameSearchResponse } from "@internal/services/inGameSearch";
+import { LoadingAnimation } from "@internal/misc/LoadingAnimation";
 
 function SelectOption(searchResult: InGameSearchResponse) {
     let category;
@@ -192,7 +193,9 @@ export function InGameSearch({
                     {
                         options.length > 0
                             ? options
-                            : <Combobox.Empty>Nothing found</Combobox.Empty>
+                            : loading 
+                                ? LoadingAnimation()
+                                : <Combobox.Empty>Nothing found</Combobox.Empty>
                     }
                 </Combobox.Options>
             </Combobox.Dropdown>

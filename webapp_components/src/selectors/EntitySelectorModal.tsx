@@ -1,12 +1,16 @@
-import { Button, Flex, Modal, Stack, UnstyledButton } from "@mantine/core";
+import { Button, Flex, Stack, UnstyledButton } from "@mantine/core";
 import { EntityList, type Entity } from "@internal/list/EntityList";
 import { InGameSearch, type InGameSearchRef } from "./InGameSearch";
 import { useEffect, useRef, useState, type ReactElement } from "react";
+import type { Category } from "@internal/services/utils";
+import { ModalWrapper } from "@internal/wrapper/Modal";
 
 export function EntitySelectorModal({
     opened,
     onClose,
     onSelect,
+
+    categories = ['character', 'corporation', 'alliance'],
 
     selected,
 }: EntitySelectorModalProp): ReactElement {
@@ -36,22 +40,14 @@ export function EntitySelectorModal({
         />
     }
 
-    return <Modal
+    return <ModalWrapper
         opened={opened}
-        onClose={onClose}
+        close={onClose}
         title="Characters / Corporations / Alliances"
-        overlayProps={{
-            backgroundOpacity: 0.55,
-            blur: 3,
-        }}
-        size="70%"
-        centered
-        closeOnEscape
-        closeOnClickOutside
     >
         <Stack>
             <InGameSearch
-                categories={['character', 'corporation', 'alliance']}
+                categories={categories}
                 ref={inGameSearchRef}
                 onSelect={(x) => {
                     setSelectedEntities([
@@ -82,7 +78,7 @@ export function EntitySelectorModal({
                 </Button>
             </Flex>
         </Stack>
-    </Modal>
+    </ModalWrapper>
 }
 
 export type EntitySelectorModalProp = {
@@ -90,6 +86,8 @@ export type EntitySelectorModalProp = {
     opened: boolean;
     onSelect: (entry: Entity[]) => void;
     onClose: () => void;
+
+    categories?: Category[],
 
     // list of entities that are selected
     selected: Entity[],

@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO project_group_member(\n                project_group_id,\n                character_id,\n                permission\n            )\n            VALUES ($1, $2, $3)\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "633ac92967ffb62dff6a4ca55ee5829f8ece2485b5fd57eec47465dd099891eb"
+}

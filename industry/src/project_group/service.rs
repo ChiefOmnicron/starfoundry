@@ -16,6 +16,7 @@ mod update_default_blueprint_overwrite;
 mod update_default_job_splitting;
 mod update_default_market;
 mod update_industry_hub;
+mod update_member;
 
 pub use self::archive::*;
 pub use self::create::*;
@@ -35,3 +36,4 @@ pub use self::update_default_blueprint_overwrite::*;
 pub use self::update_default_job_splitting::*;
 pub use self::update_default_market::*;
 pub use self::update_industry_hub::*;
+pub use self::update_member::*;

@@ -1,0 +1,36 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                permission,\n                (pg.owner = $2) AS is_owner\n            FROM project_group_member pgm\n            JOIN project_group pg ON pg.id = pgm.project_group_id\n            WHERE project_group_id = $1\n            AND character_id = $2\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "permission",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_group_member",
+            "name": "permission"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "is_owner",
+        "type_info": "Bool",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      null
+    ]
+  },
+  "hash": "0da478759f202847a2e6b589f0e69ac1cff6ed2569a7b325a9634c408f8e019d"
+}

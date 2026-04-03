@@ -57,6 +57,9 @@ const routes: RouteDefinition[] = [{
         }, {
             link: '/project-groups/$projectGroupId/defaults',
             label: 'Defaults'
+        }, {
+            link: '/project-groups/$projectGroupId/settings',
+            label: 'Settings'
         }]
     }]
 }, {

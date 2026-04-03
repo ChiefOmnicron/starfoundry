@@ -11,6 +11,7 @@ export function MarkdownEditor({
 
     description = 'Markdown is supported',
     height = '400px',
+    disabled = false,
 
     onChange,
 }: MarkdownEditorProps): ReactElement {
@@ -29,6 +30,7 @@ export function MarkdownEditor({
                             langs.markdown(),
                         ]}
                         theme={vscodeDark}
+                        disabled={disabled}
                     />
                 </Input.Wrapper>
             </Grid.Col>
@@ -50,6 +52,7 @@ export type MarkdownEditorProps = {
 
     description?: string;
     height?: string;
+    disabled?: boolean;
 
     onChange: (change: string) => void;
 }

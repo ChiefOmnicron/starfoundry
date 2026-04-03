@@ -68,7 +68,6 @@ pub async fn fetch(
             "character_name": "SomeCharacterName",
             "character_id": 1337,
 
-            "accepted": true,
             "permission": [
                 "READ",
                 "WRITE_GROUP"

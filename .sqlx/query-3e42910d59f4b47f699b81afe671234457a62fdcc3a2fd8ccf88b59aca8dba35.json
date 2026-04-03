@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                pgm.character_id,\n                accepted,\n                permission,\n                (pg.owner = pgm.character_id) AS is_owner\n            FROM project_group_member pgm\n            JOIN project_group pg ON pg.id = pgm.project_group_id\n            WHERE project_group_id = $1\n        ",
+  "query": "\n            SELECT\n                pgm.character_id,\n                permission,\n                (pg.owner = pgm.character_id) AS is_owner\n            FROM project_group_member pgm\n            JOIN project_group pg ON pg.id = pgm.project_group_id\n            WHERE project_group_id = $1\n        ",
   "describe": {
     "columns": [
       {
@@ -16,17 +16,6 @@
       },
       {
         "ordinal": 1,
-        "name": "accepted",
-        "type_info": "Bool",
-        "origin": {
-          "Table": {
-            "table": "project_group_member",
-            "name": "accepted"
-          }
-        }
-      },
-      {
-        "ordinal": 2,
         "name": "permission",
         "type_info": "Int4",
         "origin": {
@@ -37,7 +26,7 @@
         }
       },
       {
-        "ordinal": 3,
+        "ordinal": 2,
         "name": "is_owner",
         "type_info": "Bool",
         "origin": "Expression"
@@ -51,9 +40,8 @@
     "nullable": [
       false,
       false,
-      false,
       null
     ]
   },
-  "hash": "9fc25dc933318b80716940b8bace6fa6eb2f6065d6a62c4671742216017aca27"
+  "hash": "3e42910d59f4b47f699b81afe671234457a62fdcc3a2fd8ccf88b59aca8dba35"
 }

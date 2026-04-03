@@ -2,9 +2,9 @@ INSERT INTO project_group (id, owner, name, description) VALUES
 ('00000000-0000-0000-0000-000000000001', 1, 'First', 'Description'),
 ('00000000-0000-0000-0000-000000000002', 2, 'Second', 'Description');
 
-INSERT INTO project_group_member (project_group_id, character_id, accepted, permission) VALUES
-('00000000-0000-0000-0000-000000000001', 1, TRUE, 1),
-('00000000-0000-0000-0000-000000000002', 2, TRUE, 1);
+INSERT INTO project_group_member (project_group_id, character_id, permission) VALUES
+('00000000-0000-0000-0000-000000000001', 1, 1),
+('00000000-0000-0000-0000-000000000002', 2, 1);
 
 INSERT INTO project (id, owner, name, orderer, project_group_id) VALUES
 ('00000000-0000-0000-0000-000000000101', 1, 'Test', 'Test', '00000000-0000-0000-0000-000000000001'),

@@ -17,7 +17,6 @@ pub async fn fetch_members_self(
     let entry = sqlx::query!(
         "
             SELECT
-                accepted,
                 permission,
                 (pg.owner = $2) AS is_owner
             FROM project_group_member pgm
@@ -30,7 +29,7 @@ pub async fn fetch_members_self(
         )
         .fetch_one(pool)
         .await
-        .map_err(|e| ProjectGroupError::FetchGroupMembersSelf(e, project_group_uuid))?;
+        .map_err(|e| ProjectGroupError::FetchMembersSelf(e, project_group_uuid))?;
 
     let character = eve_gateway_api_client
         .fetch_character(
@@ -39,7 +38,6 @@ pub async fn fetch_members_self(
         .await?;
     Ok(ProjectGroupMember {
         character:      character,
-        accepted:       entry.accepted,
         permissions:    ProjectGroupPermission::new(entry.permission),
         is_owner:       entry.is_owner.unwrap_or(false),
     })
