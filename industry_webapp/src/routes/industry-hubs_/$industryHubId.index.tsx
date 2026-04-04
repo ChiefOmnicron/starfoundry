@@ -122,7 +122,6 @@ function RouteComponent() {
             description: description,
         },
         onSubmit: async ({ value }) => {
-            console.log(value)
             return await mutationUpdate
                 .mutateAsync({
                     ...value,

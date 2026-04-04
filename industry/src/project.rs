@@ -5,6 +5,7 @@ mod check_resources;
 mod create;
 mod error;
 mod fetch;
+mod delete;
 mod initialize;
 mod list_jobs;
 mod list_market;
@@ -13,7 +14,9 @@ mod list;
 mod permission;
 mod service;
 mod split_job_check;
+mod update;
 mod update_job;
+mod update_misc;
 
 use axum::middleware;
 use starfoundry_lib_types::starfoundry_uuid;
@@ -24,6 +27,7 @@ use crate::AppState;
 use crate::project::error::Result;
 use crate::project::permission::{assert_exists, assert_read};
 
+// TODO: check write permission
 pub fn routes(
     state: AppState,
 ) -> OpenApiRouter<AppState> {
@@ -42,19 +46,20 @@ pub fn routes(
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
 
+    let delete = OpenApiRouter::new()
+        .routes(routes!(delete::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+
     let list = OpenApiRouter::new()
         .routes(routes!(list::api));
-
     let list_jobs = OpenApiRouter::new()
         .routes(routes!(list_jobs::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
-
     let list_market = OpenApiRouter::new()
         .routes(routes!(list_market::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
-
     let list_misc = OpenApiRouter::new()
         .routes(routes!(list_misc::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
@@ -62,15 +67,21 @@ pub fn routes(
 
     let check_resources = OpenApiRouter::new()
         .routes(routes!(check_resources::api));
-
     let split_job_check = OpenApiRouter::new()
         .routes(routes!(split_job_check::api));
 
+    let update = OpenApiRouter::new()
+        .routes(routes!(update::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
     let update_job = OpenApiRouter::new()
-        .routes(routes!(update_job::api));
-
+        .routes(routes!(update_job::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+    let update_misc = OpenApiRouter::new()
+        .routes(routes!(update_misc::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
     let initialize = OpenApiRouter::new()
-        .routes(routes!(initialize::api));
+        .routes(routes!(initialize::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
 
     OpenApiRouter::new()
         .merge(create)
@@ -78,13 +89,16 @@ pub fn routes(
         .merge(add_job)
         .merge(add_market)
         .merge(fetch)
+        .merge(delete)
         .merge(list)
         .merge(list_jobs)
         .merge(list_market)
         .merge(list_misc)
         .merge(check_resources)
         .merge(split_job_check)
+        .merge(update)
         .merge(update_job)
+        .merge(update_misc)
         .merge(initialize)
 }
 

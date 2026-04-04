@@ -12,7 +12,7 @@ pub async fn update_default_blacklist(
     let mut transaction = pool
         .begin()
         .await
-        .map_err(ProjectGroupError::TransactionBeginError)?;
+        .map_err(ProjectGroupError::TransactionError)?;
 
     sqlx::query!("
             DELETE FROM project_group_default_blacklist
@@ -44,7 +44,7 @@ pub async fn update_default_blacklist(
     transaction
         .commit()
         .await
-        .map_err(ProjectGroupError::TransactionCommitError)
+        .map_err(ProjectGroupError::TransactionError)
 }
 
 #[cfg(test)]

@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                type_id,\n                quantity\n            FROM project_excess\n            WHERE project_id = $1\n        ",
+  "query": "\n            SELECT\n                type_id,\n                quantity,\n                cost\n            FROM project_excess\n            WHERE project_id = $1\n        ",
   "describe": {
     "columns": [
       {
@@ -24,6 +24,17 @@
             "name": "quantity"
           }
         }
+      },
+      {
+        "ordinal": 2,
+        "name": "cost",
+        "type_info": "Float8",
+        "origin": {
+          "Table": {
+            "table": "project_excess",
+            "name": "cost"
+          }
+        }
       }
     ],
     "parameters": {
@@ -33,8 +44,9 @@
     },
     "nullable": [
       false,
-      false
+      false,
+      true
     ]
   },
-  "hash": "f8804aec9c2c3a777bf43ff069f3225e99bc42c5265a2efac2c0ccb3dd5435a2"
+  "hash": "1fe4ee5bf93dca0052a2b6130ffb8e9c4ab4fc9007e470d54ed317fa430673b9"
 }

@@ -131,7 +131,6 @@ function RouteComponent() {
     }, [industryHubs]);
 
     const filterChange = (filters: SelectedFilter[]) => {
-        console.log(filters)
         setFilterParams({
             name: filters.find(x => x.filterKey === 'name')?.value as string,
             structure_type_id: filters.find(x => x.filterKey === 'structure_type_id')?.key as number,

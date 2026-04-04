@@ -8,17 +8,17 @@ use crate::project::error::{ProjectError, Result};
 use crate::project::ProjectUuid;
 use crate::sort_by_market_group_flat;
 
-pub async fn list_excess(
+pub async fn list_stock(
     pool:                   &PgPool,
     project_id:             ProjectUuid,
     eve_gateway_api_client: &impl EveGatewayApiClient,
-) -> Result<Vec<ProjectExcess>> {
+) -> Result<Vec<ProjectStock>> {
     let entries = sqlx::query!(r#"
             SELECT
                 type_id,
                 quantity,
                 cost
-            FROM project_excess
+            FROM project_stock
             WHERE project_id = $1
         "#,
             *project_id,
@@ -46,7 +46,7 @@ pub async fn list_excess(
             continue;
         };
 
-        let product = ProjectExcess {
+        let product = ProjectStock {
             item:       item,
             quantity:   entry.quantity,
             cost:       entry.cost,
@@ -57,10 +57,10 @@ pub async fn list_excess(
     Ok(sort_market(result))
 }
 
-sort_by_market_group_flat!(sort_market, ProjectExcess);
+sort_by_market_group_flat!(sort_market, ProjectStock);
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
-pub struct ProjectExcess {
+pub struct ProjectStock {
     pub item:       Item,
     pub quantity:   i32,
     pub cost:       Option<f64>,

@@ -34,6 +34,18 @@ export const formatNumber = (
     }
 };
 
+export const formatNumberUnit = (
+    numberToFormat: number,
+): string => {
+    if (numberToFormat / 1_000_000_000 > 1) {
+        return `${formatNumber(numberToFormat / 1_000_000_000, true)} bil`;
+    } else if (numberToFormat / 1_000_000 > 1) {
+        return `${formatNumber(numberToFormat / 1_000_000, true)} mil`;
+    }
+
+    return formatNumber(numberToFormat);
+}
+
 export const formatTime = (numberToFormat: number): string => {
     const WEEK = 60 * 60 * 24 * 7; // seconds * minutes * hours * days
     const DAY = 60 * 60 * 24; // seconds * minutes * hours

@@ -2,7 +2,7 @@ import { Table} from "@mantine/core";
 import { flexRender, type Table as ReactTable } from "@tanstack/react-table";
 
 export function TableWrapper<T>({
-    scrollable,
+    scrollable = false,
 
     table,
 }: TableWrapperProps<T>) {
@@ -78,7 +78,7 @@ export function TableWrapper<T>({
 }
 
 interface TableWrapperProps<T> {
-    scrollable: boolean;
+    scrollable?:    boolean;
 
-    table:      ReactTable<T>,
+    table:          ReactTable<T>,
 }

@@ -9,7 +9,7 @@ use crate::project::ProjectUuid;
 use crate::project::SolutionUuid;
 use crate::project::error::ProjectError;
 use crate::project::error::Result;
-use crate::project::service::ProjectExcess;
+use crate::project::service::{ProjectExcess, ProjectStock, list_stock};
 use crate::project::service::ProjectJobGroup;
 use crate::project::service::ProjectProduct;
 use crate::project::service::list_excess;
@@ -32,7 +32,8 @@ pub async fn fetch(
                 orderer,
                 sell_price,
                 project_group_id,
-                solution_id
+                solution_id,
+                note
             FROM project
             WHERE
                 (owner = $1 OR owner = 0) AND
@@ -57,14 +58,40 @@ pub async fn fetch(
             return Ok(None);
         };
 
+        let products = list_products(
+                pool,
+                project_id,
+                eve_gateway_api_client
+            )
+            .await?;
+
+        let stock = list_stock(
+                pool,
+                project_id,
+                eve_gateway_api_client
+            )
+            .await?;
+
+        let excess = list_excess(
+                pool,
+                project_id,
+                eve_gateway_api_client
+            )
+            .await?;
+
         let project = Project {
-            id:            x.id.into(),
-            name:          x.name,
-            status:        x.status,
-            orderer:       x.orderer,
-            sell_price:    x.sell_price,
-            project_group: project_group,
-            solution_id:   x.solution_id.map(Into::into),
+            id:             x.id.into(),
+            name:           x.name,
+            status:         x.status,
+            orderer:        x.orderer,
+            sell_price:     x.sell_price,
+            products:       products,
+            stock:          stock,
+            excess:         excess,
+
+            note:           x.note,
+            project_group:  project_group,
+            solution_id:    x.solution_id.map(Into::into),
         };
         Ok(Some(project))
     } else {
@@ -83,36 +110,44 @@ pub async fn fetch(
     })
 )]
 pub struct Project {
-    pub id:            ProjectUuid,
-    pub name:          String,
-    pub status:        ProjectStatus,
-    pub orderer:       String,
-    pub project_group: ProjectGroup,
+    pub id:             ProjectUuid,
+    pub name:           String,
+    pub status:         ProjectStatus,
+    pub orderer:        String,
+    pub project_group:  ProjectGroup,
+    pub products:       Vec<ProjectProduct>,
+    pub stock:          Vec<ProjectStock>,
+    pub excess:         Vec<ProjectExcess>,
 
-    pub sell_price:    Option<f64>,
+    pub note:           Option<String>,
+    pub sell_price:     Option<f64>,
     #[serde(skip)]
-    pub solution_id:   Option<SolutionUuid>,
+    pub solution_id:    Option<SolutionUuid>,
 }
 
 impl Project {
     pub async fn excess(
         &self,
-        pool: &PgPool,
+        pool:                   &PgPool,
+        eve_gateway_api_client: &impl EveGatewayApiClient,
     ) -> Result<Vec<ProjectExcess>> {
         list_excess(
                 pool,
                 self.id,
+                eve_gateway_api_client,
             )
             .await
     }
 
     pub async fn products(
         &self,
-        pool: &PgPool,
+        pool:                   &PgPool,
+        eve_gateway_api_client: &impl EveGatewayApiClient,
     ) -> Result<Vec<ProjectProduct>> {
         list_products(
                 pool,
                 self.id,
+                eve_gateway_api_client,
             )
             .await
     }

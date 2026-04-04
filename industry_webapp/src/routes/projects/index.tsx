@@ -70,8 +70,6 @@ function RouteComponent() {
         activeFilters,
         setActiveFilters,
 
-        getFilterByKey,
-
         resetFilters,
         replaceFilter,
     } = useCompositeFilters({
@@ -93,14 +91,12 @@ function RouteComponent() {
     });
 
     const onFilterChange = (filters: ActiveFilter[]) => {
-        console.log(filters, filters.length, getFilterByKey('status'))
         if (filters.length === 0) {
             resetFilters();
             filterByTab();
             return;
         }
 
-        console.log(filters)
         setFilterParams({
             name: filters.find(x => x.key === 'name')?.value as string,
             status: filters.find(x => x.key === 'status')?.value as string,

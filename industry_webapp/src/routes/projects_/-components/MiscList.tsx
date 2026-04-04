@@ -177,6 +177,10 @@ export function ProjectMiscList({
                                     description: description,
                                     quantity: quantity,
                                 });
+                                setCost('' as any);
+                                setDescription('');
+                                setItem('');
+                                setQuantity('' as any);
                             }
                         }}
                         style={{

@@ -15,7 +15,7 @@ pub async fn update_member(
     let mut transaction = pool
         .begin()
         .await
-        .map_err(ProjectGroupError::TransactionBeginError)?;
+        .map_err(ProjectGroupError::TransactionError)?;
 
     sqlx::query!("
             DELETE FROM project_group_member
@@ -51,7 +51,7 @@ pub async fn update_member(
     transaction
         .commit()
         .await
-        .map_err(ProjectGroupError::TransactionCommitError)
+        .map_err(ProjectGroupError::TransactionError)
 }
 
 #[derive(Debug, Deserialize, ToSchema)]

@@ -14,7 +14,7 @@ pub async fn update_default_job_splitting(
     let mut transaction = pool
         .begin()
         .await
-        .map_err(ProjectGroupError::TransactionBeginError)?;
+        .map_err(ProjectGroupError::TransactionError)?;
 
     sqlx::query!("
             DELETE FROM project_group_default_job_splitting_run
@@ -49,7 +49,7 @@ pub async fn update_default_job_splitting(
     transaction
         .commit()
         .await
-        .map_err(ProjectGroupError::TransactionCommitError)
+        .map_err(ProjectGroupError::TransactionError)
 }
 
 #[derive(Debug, Deserialize, Serialize, ToSchema)]

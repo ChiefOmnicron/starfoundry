@@ -65,7 +65,6 @@ export function TaxByService({
                     allowDecimal
                     defaultValue={entry.default}
                     onChange={(value) => {
-                        console.log(value)
                         taxes[x] = Number.parseFloat(value as string);
                         onChange(taxes);
                     }}

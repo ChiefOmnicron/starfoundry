@@ -1,4 +1,4 @@
-import { formatNumber } from "@internal/utils";
+import { formatNumber, formatNumberUnit } from "@internal/utils";
 import { Tooltip } from "@mantine/core";
 import { useClipboard } from "@mantine/hooks";
 import { useEffect, useState } from "react";
@@ -9,6 +9,7 @@ export function CopyText({
 
     disabled = false,
     number = false,
+    withUnit = false,
 }: CopyTextProps) {
     const [opened, setOpened] = useState<boolean>(false);
     const clipboard = useClipboard();
@@ -28,7 +29,11 @@ export function CopyText({
         if (number && value) {
             // using <NumberFormatter> from mantine has a problem with placing
             // the tooltip
-            return formatNumber(value as number);
+            if (withUnit) {
+                return `${formatNumber(value as number)} (${formatNumberUnit(value as number)})`;
+            } else {
+                return formatNumber(value as number);
+            }
         } else {
             return display || value;
         }
@@ -59,4 +64,5 @@ export type CopyTextProps = {
 
     disabled?: boolean;
     number?: boolean;
+    withUnit?: boolean;
 }

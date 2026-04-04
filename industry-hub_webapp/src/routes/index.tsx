@@ -11,7 +11,6 @@ async function IndexComponent() {
     const navigation = useNavigate();
     const context = useRouteContext({ from: '/' });
 
-    console.log(location.pathname, location.pathname === '/' && await context.auth.isAuthenticated())
     const isLoggedIn = await context.auth.isAuthenticated();
     if (location.pathname === '/' && isLoggedIn) {
         navigation({

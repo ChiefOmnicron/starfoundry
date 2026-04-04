@@ -19,7 +19,7 @@ pub async fn create(
     let mut transaction = pool
         .begin()
         .await
-        .map_err(ProjectGroupError::TransactionBeginError)?;
+        .map_err(ProjectGroupError::TransactionError)?;
 
     // create the group
     let group_id = sqlx::query!("
@@ -75,7 +75,7 @@ pub async fn create(
     transaction
         .commit()
         .await
-        .map_err(ProjectGroupError::TransactionCommitError)?;
+        .map_err(ProjectGroupError::TransactionError)?;
     Ok(group_id)
 }
 

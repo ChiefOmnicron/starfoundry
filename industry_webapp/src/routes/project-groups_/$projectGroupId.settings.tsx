@@ -25,13 +25,6 @@ export const Route = createFileRoute(
     '/project-groups_/$projectGroupId/settings',
 )({
     component: RouteComponent,
-    validateSearch: (params: {
-        created: boolean,
-    }): QueryParams => {
-        return {
-            created: (params.created) || undefined
-        };
-    }
 })
 
 function RouteComponent() {
@@ -39,7 +32,6 @@ function RouteComponent() {
     const queryClient = useQueryClient();
 
     const { projectGroupId } = Route.useParams();
-    const { created: createdResource } = Route.useSearch();
 
     const [successfulArchive, setSuccessfulArchive] = useState<boolean>();
     const [successfulUpdate, setSuccessfulUpdate] = useState<boolean>();
@@ -177,16 +169,6 @@ function RouteComponent() {
                     : 'The project group was unarchive'
                 }
             </Alert>;
-        } else if (createdResource) {
-            return <Alert
-                mt="sm"
-                variant='light'
-                color='green'
-                title='Create successful'
-                data-cy="createSuccessful"
-            >
-                The project group was successfully created
-            </Alert>;
         } else if (errorUpdate) {
             return <Alert
                 mt="sm"
@@ -258,11 +240,9 @@ function RouteComponent() {
 
         <form
             onChange={() => {
-                console.log('Asdasdasd')
                 setTouched(!form.state.isDefaultValue);
             }}
             onSubmit={(e) => {
-                console.log(e)
                 e.preventDefault();
                 e.stopPropagation();
                 form.handleSubmit();

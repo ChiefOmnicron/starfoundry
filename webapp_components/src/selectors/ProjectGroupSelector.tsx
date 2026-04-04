@@ -1,6 +1,6 @@
 import type { Uuid } from "@internal/services/utils";
 import { ActionIcon, Combobox, Flex, Group, Input, InputBase, Text, useCombobox } from "@mantine/core";
-import { useState, type ReactElement } from "react";
+import { useEffect, useState, type ReactElement } from "react";
 import { faArrowsRotate } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useQueryClient } from "@tanstack/react-query";
@@ -22,7 +22,7 @@ function SelectOption(projectGroup: ProjectGroup | ProjectGroupMinimal) {
 export function ProjectGroupSelector({
     onSelect,
     projectGroups,
-    selected = [],
+    selected,
 }: ProjectGroupSelectorProp): ReactElement {
     const queryClient = useQueryClient();
 
@@ -40,6 +40,13 @@ export function ProjectGroupSelector({
             combobox.focusSearchInput();
         },
     });
+
+    useEffect(() => {
+        if (selected) {
+            console.log(selected)
+            setValue(selected);
+        }
+    }, [selected]);
 
     const projectGroupById = (
         id: string | null
@@ -59,7 +66,7 @@ export function ProjectGroupSelector({
                     search.toLocaleLowerCase()
                 ) >= 0
         })
-        .filter((x: ProjectGroup | ProjectGroupMinimal) => selected.indexOf(x.id) === -1)
+        .filter((x: ProjectGroup | ProjectGroupMinimal) => selected !== x.id)
         .map((item) => (
             <Combobox.Option
                 value={item.id}
@@ -164,8 +171,8 @@ export function ProjectGroupSelector({
 export type ProjectGroupSelectorProp = {
     onSelect: (entry: ProjectGroup | ProjectGroupMinimal) => void;
 
-    // list of values that are already selected, and filtered out
-    selected?:      Uuid[],
+    // uuid of the selected entry
+    selected?:      Uuid,
 
     projectGroups:  ProjectGroup[] | ProjectGroupMinimal[],
 }

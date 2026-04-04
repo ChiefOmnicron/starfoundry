@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item};
+use starfoundry_lib_industry::StructureUuid;
 use starfoundry_lib_types::{CharacterId, TypeId};
 use std::collections::HashMap;
 use utoipa::ToSchema;
@@ -10,7 +11,6 @@ use crate::project::error::{ProjectError, Result};
 use crate::project::ProjectUuid;
 use crate::{sort_by_job_flat, sort_by_market_group_flat};
 use crate::project::service::ProjectJobStatus;
-use starfoundry_lib_industry::StructureUuid;
 
 pub async fn split_job_check(
     pool:                       &PgPool,
@@ -72,10 +72,10 @@ pub async fn split_job_check(
         .map(|x| (x.item.type_id, BlueprintBonus::new(x.item.type_id, x.material_efficiency as f32, 0f32)))
         .collect::<HashMap<_, _>>();
     let products = project
-        .products(pool)
+        .products(pool, eve_gateway_api_client)
         .await?
         .into_iter()
-        .map(|x| (x.type_id, BlueprintBonus::new(x.type_id, x.material_efficiency as f32, 0f32)))
+        .map(|x| (x.item.type_id, BlueprintBonus::new(x.item.type_id, x.material_efficiency as f32, 0f32)))
         .collect::<HashMap<_, _>>();
     overwrites.extend(products);
 
@@ -89,17 +89,24 @@ pub async fn split_job_check(
         .collect::<HashMap<_, _>>();
 
     let mut excess = project
-        .excess(pool)
+        .excess(
+            pool,
+            eve_gateway_api_client,
+        )
         .await?
         .into_iter()
         .map(|x| StockMinimal {
             quantity:   x.quantity,
-            type_id:    x.type_id,
+            type_id:    x.item.type_id,
         })
         .collect::<Vec<_>>();
 
     let jobs = project
-        .jobs(pool, character_id, eve_gateway_api_client)
+        .jobs(
+                pool,
+                character_id,
+                eve_gateway_api_client
+        )
         .await?
         .into_iter()
         .flat_map(|x| x.entries)

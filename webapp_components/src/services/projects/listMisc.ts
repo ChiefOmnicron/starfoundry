@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { GenericAbortSignal } from "axios";
 import type { Uuid } from "@internal/services/utils";
 
-export const LIST_PROJECT_JOBS = 'listProjectMisc';
+export const LIST_PROJECT_MISC = 'listProjectMisc';
 
 export const listProjectMisc = async (
     projectId: Uuid,
@@ -21,7 +21,7 @@ export const useListProjectMisc = (
     projectId: Uuid,
 ) => {
     return useQuery({
-        queryKey: [LIST_PROJECT_JOBS, projectId],
+        queryKey: [LIST_PROJECT_MISC, projectId],
         queryFn: async ({
             signal
         }: AbortSignal) => listProjectMisc(projectId, signal),

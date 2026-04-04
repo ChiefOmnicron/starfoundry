@@ -1,14 +1,16 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-use starfoundry_lib_types::TypeId;
+use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item};
+use std::collections::HashMap;
 use utoipa::ToSchema;
 
 use crate::project::error::{ProjectError, Result};
 use crate::project::ProjectUuid;
 
 pub async fn list_products(
-    pool:       &PgPool,
-    project_id: ProjectUuid,
+    pool:                   &PgPool,
+    project_id:             ProjectUuid,
+    eve_gateway_api_client: &impl EveGatewayApiClient,
 ) -> Result<Vec<ProjectProduct>> {
     let entries = sqlx::query!(r#"
             SELECT
@@ -23,22 +25,42 @@ pub async fn list_products(
         )
         .fetch_all(pool)
         .await
-        .map_err(ProjectError::ListProduct)?
-        .into_iter()
-        .map(|x| ProjectProduct {
-            type_id:                x.type_id.into(),
-            quantity:               x.quantity,
-            material_efficiency:    x.quantity,
-        })
-        .collect::<Vec<_>>();
+        .map_err(|e| ProjectError::Fetch(e, project_id))?;
 
-    Ok(entries)
+    let type_ids = entries
+        .iter()
+        .map(|x| x.type_id.into())
+        .collect::<Vec<_>>();
+    let items = eve_gateway_api_client
+        .fetch_item_bulk(type_ids)
+        .await?
+        .into_iter()
+        .map(|x| (x.type_id, x))
+        .collect::<HashMap<_, _>>();
+
+    let mut result = Vec::new();
+    for entry in entries {
+        let item = if let Some(x) = items.get(&entry.type_id.into()) {
+            x.clone()
+        } else {
+            continue;
+        };
+
+        let product = ProjectProduct {
+            item:                   item,
+            quantity:               entry.quantity,
+            material_efficiency:    entry.material_efficiency,
+        };
+        result.push(product);
+    }
+
+    Ok(result)
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 pub struct ProjectProduct {
-    pub type_id:             TypeId,
-    pub quantity:            i32,
-    pub material_efficiency: i32,
+    pub item:                   Item,
+    pub quantity:               i32,
+    pub material_efficiency:    i32,
 }
 

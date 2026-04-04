@@ -1,9 +1,11 @@
 import { axiosClient, type AbortSignal } from "@internal/services/client";
 import { useQuery } from "@tanstack/react-query";
 import type { GenericAbortSignal } from "axios";
+import type { ProjectGroup } from "@internal/services/project-group/fetch";
+import type { ProjectProduct } from "@internal/services/projects/listProduct";
 import type { ProjectStatus } from "@internal/services/projects/list";
 import type { Uuid } from "@internal/services/utils";
-import type { ProjectGroup } from "../project-group/fetch";
+import type { Item } from "../item/model";
 
 export const FETCH_PROJECT = 'fetchProject';
 
@@ -39,10 +41,28 @@ export const fetchProjectQuery = (
 });
 
 export type ProjectList = {
-    id:            Uuid;
-    name:          string;
-    status:        ProjectStatus;
-    orderer:       string;
-    sell_price:    number;
-    project_group: ProjectGroup,
+    id:             Uuid;
+    name:           string;
+    status:         ProjectStatus;
+    orderer:        string;
+    sell_price:     number;
+    project_group:  ProjectGroup;
+    products:       ProjectProduct[];
+    stock:          ProjectStock[];
+    excess:         ProjectExcess[];
+
+    note?:          string;
+}
+
+export type ProjectStock = {
+    item:       Item;
+    quantity:   number;
+    cost:       number;
+}
+
+
+export type ProjectExcess = {
+    item:       Item;
+    quantity:   number;
+    cost:       number;
 }

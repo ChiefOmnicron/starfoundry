@@ -61,10 +61,8 @@ pub enum ProjectGroupError {
     #[error("error while updating project group industry hubs for group '{1}', error: '{0}'")]
     UpdateIndustryHubs(sqlx::Error, ProjectGroupUuid),
 
-    #[error("error while beginning transaction, error: '{0}'")]
-    TransactionBeginError(sqlx::Error),
-    #[error("error while committing transaction, error: '{0}'")]
-    TransactionCommitError(sqlx::Error),
+    #[error("error while performing transaction, error: '{0}'")]
+    TransactionError(sqlx::Error),
 
     #[error("a project is assigned to the project group")]
     ProjectIsAssignedToGroup,

@@ -48,7 +48,7 @@ pub struct CreateProject {
     pub name:               String,
 
     pub sell_price:         Option<f64>,
-    pub notes:               Option<String>,
+    pub notes:              Option<String>,
 }
 
 impl CreateProject {

@@ -81,7 +81,6 @@ export function BlueprintList({
                 </Tooltip>,
             cell: props => <Button
                     onClick={() => {
-                        console.log(storedBlueprints, props.row.original.item.type_id)
                         setStoredBlueprints(Array.from(new Set([...storedBlueprints, props.row.original.item.type_id])))
                     }}
                     disabled={storedBlueprints.indexOf(props.row.original.item.type_id) > -1}

@@ -1,0 +1,18 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO project_misc\n            (\n                project_id,\n                item,\n                quantity,\n                description,\n                cost\n            )\n            SELECT $1, * FROM UNNEST(\n                $2::VARCHAR[],\n                $3::INTEGER[],\n                $4::VARCHAR[],\n                $5::DOUBLE PRECISION[]\n            )\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "VarcharArray",
+        "Int4Array",
+        "VarcharArray",
+        "Float8Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "28b9a5221ff2e3ec46816b6159c1ad7272456c1450517909e0e4db53f621ce6c"
+}

@@ -1,20 +1,27 @@
+import { Alert } from '@mantine/core';
 import { createFileRoute } from '@tanstack/react-router'
-import { ProjectMiscList } from './-components/MiscList'
-import { useEffect, useState } from 'react';
-import { useListProjectMisc, type ProjectMisc } from '@starfoundry/components/services/projects/listMisc';
+import { LIST_PROJECT_MISC, useListProjectMisc, type ProjectMisc } from '@starfoundry/components/services/projects/listMisc';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
+import { ProjectMiscList } from './-components/MiscList'
 import { SaveDialog } from '@starfoundry/components/misc/SaveDialog';
+import { updateMisc } from '@starfoundry/components/services/projects/updateMisc';
+import { useEffect, useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/projects_/$projectId/misc')({
-  component: RouteComponent,
+    component: RouteComponent,
 })
 
 function RouteComponent() {
+    const queryClient = useQueryClient();
     const { projectId } = Route.useParams();
 
     const [selectedProjectMiscOld, setSelectedProjectMiscOld] = useState<ProjectMisc[]>([]);
     const [selectedProjectMisc, setSelectedProjectMisc] = useState<ProjectMisc[]>([]);
+
+    const [successfulUpdate, setSuccessfulUpdate] = useState<boolean>();
+    const [errorUpdate, setErrorUpdate] = useState<string | undefined>();
 
     const {
         isError,
@@ -24,10 +31,39 @@ function RouteComponent() {
 
     useEffect(() => {
         if (projectMisc) {
+            console.log(projectMisc)
             setSelectedProjectMiscOld(projectMisc);
             setSelectedProjectMisc(projectMisc);
         }
     }, [projectMisc]);
+
+    const miscMutation = useMutation({
+        mutationFn: () => {
+            const entries = selectedProjectMisc
+                .map(x => {
+                    return {
+                        item: x.item,
+                        cost: x.cost,
+                        description: x.description ? x.description : undefined,
+                        quantity: x.quantity ? x.quantity : undefined,
+                    }
+                });
+
+            return updateMisc(
+                projectId,
+                entries,
+            )
+        },
+        onSuccess: () => {
+            setErrorUpdate(undefined);
+            setSuccessfulUpdate(true);
+            queryClient.invalidateQueries({ queryKey: [LIST_PROJECT_MISC] });
+        },
+        onError: (error) => {
+            setErrorUpdate(error as any);
+            setSuccessfulUpdate(false);
+        }
+    });
 
     if (isPending) {
         return LoadingAnimation();
@@ -38,7 +74,10 @@ function RouteComponent() {
     }
 
     const onSelect = (misc: ProjectMisc) => {
-        console.log(misc)
+        console.log(misc, selectedProjectMisc, [
+            misc,
+            ...selectedProjectMisc,
+        ])
         setSelectedProjectMisc([
             misc,
             ...selectedProjectMisc,
@@ -56,10 +95,40 @@ function RouteComponent() {
     }
 
     const saveChanges = () => {
+        miscMutation.mutate();
+    }
 
+    const notification = () => {
+        if (successfulUpdate) {
+            return <Alert
+                mt="sm"
+                variant='light'
+                color='green'
+                title='Update successful'
+                data-cy="updateSuccessful"
+            >
+                Updating the industry hubs was successful
+            </Alert>;
+        } else if (errorUpdate) {
+            return <Alert
+                mt="sm"
+                variant='light'
+                color='red'
+                title='Update error'
+                data-cy="errorUpdate"
+                onClose={ () => setErrorUpdate(undefined) }
+                withCloseButton
+            >
+                There was an error while updating. Please try again later.
+            </Alert>;
+        } else {
+            return <></>
+        }
     }
 
     return <>
+        { notification() }
+
         <ProjectMiscList
             selected={selectedProjectMisc}
             onSelect={onSelect}

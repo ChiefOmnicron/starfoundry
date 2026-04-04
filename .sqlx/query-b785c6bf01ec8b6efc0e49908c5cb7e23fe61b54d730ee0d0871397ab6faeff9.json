@@ -1,0 +1,33 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE project\n            SET\n                sell_price = $2,\n                project_group_id = $3,\n                orderer = $4,\n                name = $5,\n                note = $6,\n                status = $7\n            WHERE id = $1\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Float8",
+        "Uuid",
+        "Varchar",
+        "Varchar",
+        "Varchar",
+        {
+          "Custom": {
+            "name": "project_status",
+            "kind": {
+              "Enum": [
+                "DRAFT",
+                "READY_TO_START",
+                "IN_PROGRESS",
+                "PAUSED",
+                "DONE"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "b785c6bf01ec8b6efc0e49908c5cb7e23fe61b54d730ee0d0871397ab6faeff9"
+}
