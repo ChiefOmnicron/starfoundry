@@ -39,8 +39,6 @@ pub enum ProjectError {
 
     #[error("error while listing projects, error: '{0}'")]
     List(sqlx::Error),
-    #[error("error while listing project excess, error: '{0}'")]
-    ListExcess(sqlx::Error),
     #[error("error while listing project jobs, error: '{0}'")]
     ListJobs(sqlx::Error),
     #[error("error while listing project misc, error: '{0}'")]

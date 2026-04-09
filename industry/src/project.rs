@@ -9,6 +9,7 @@ mod delete;
 mod initialize;
 mod list_jobs;
 mod list_market;
+mod list_market_buy;
 mod list_misc;
 mod list;
 mod permission;
@@ -16,6 +17,7 @@ mod service;
 mod split_job_check;
 mod update;
 mod update_job;
+mod update_market_bulk;
 mod update_misc;
 
 use axum::middleware;
@@ -60,6 +62,10 @@ pub fn routes(
         .routes(routes!(list_market::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+    let list_market_buy = OpenApiRouter::new()
+        .routes(routes!(list_market_buy::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
     let list_misc = OpenApiRouter::new()
         .routes(routes!(list_misc::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
@@ -76,6 +82,9 @@ pub fn routes(
     let update_job = OpenApiRouter::new()
         .routes(routes!(update_job::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+    let update_market_bulk = OpenApiRouter::new()
+        .routes(routes!(update_market_bulk::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
     let update_misc = OpenApiRouter::new()
         .routes(routes!(update_misc::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
@@ -90,16 +99,18 @@ pub fn routes(
         .merge(add_market)
         .merge(fetch)
         .merge(delete)
+        .merge(initialize)
         .merge(list)
         .merge(list_jobs)
         .merge(list_market)
+        .merge(list_market_buy)
         .merge(list_misc)
         .merge(check_resources)
         .merge(split_job_check)
         .merge(update)
         .merge(update_job)
+        .merge(update_market_bulk)
         .merge(update_misc)
-        .merge(initialize)
 }
 
 starfoundry_uuid!(ProjectUuid, "ProjectUuid");

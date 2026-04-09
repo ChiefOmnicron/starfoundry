@@ -1,0 +1,65 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                order_id,\n                type_id,\n                structure_id,\n                virtual_remaining\n            FROM market_order_latest mol\n            WHERE mol.type_id = ANY($1)\n            AND mol.structure_id = ANY($2)\n            AND mol.is_buy = false\n            AND virtual_remaining > 0\n            ORDER BY mol.price ASC\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "order_id",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "market_order_latest",
+            "name": "order_id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "type_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "market_order_latest",
+            "name": "type_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "structure_id",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "market_order_latest",
+            "name": "structure_id"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "virtual_remaining",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "market_order_latest",
+            "name": "virtual_remaining"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4Array",
+        "Int8Array"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "5e77bb86e30aada568d91510d9e734e86e73af1e6b9ea0040bd3a5ec1db47b3e"
+}

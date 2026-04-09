@@ -1,11 +1,16 @@
-import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { createFileRoute } from '@tanstack/react-router'
-import { Table } from '@mantine/core';
-import { useListProjectMarket, type ProjectMarketEntry } from '@starfoundry/components/services/projects/listMarket';
+import { Alert, Button, Group, Stack, Table, Tabs, Title } from '@mantine/core';
+import { LIST_PROJECT_MARKET, useListProjectMarket, type ProjectMarketEntry } from '@starfoundry/components/services/projects/listMarket';
 import { EveIcon } from '@starfoundry/components/misc/EveIcon';
 import { CopyText } from '@starfoundry/components/misc/CopyText';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
+import { useDisclosure } from '@mantine/hooks';
+import { MultiBuyModal } from './-components/MultibuyModal';
+import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { updateMarketBulk, type UpdateMarketRequest } from '@starfoundry/components/services/projects/updateMarket';
+import { useListProjectMarketBuy, type ProjectMarketBuyEntry } from '@starfoundry/components/services/projects/listMarketBuy';
 
 export const Route = createFileRoute('/projects_/$projectId/market')({
     component: RouteComponent,
@@ -26,117 +31,33 @@ const source = (source: number): string => {
     }
 }
 
-const columnHelper = createColumnHelper<ProjectMarketEntry>();
-const columns = [
-    columnHelper.display({
-        id: 'icon',
-        cell: props => <EveIcon
-            id={props.row.original.item.type_id}
-        />,
-        size: 1,
-        maxSize: 1,
-    }),
-    columnHelper.display({
-        id: 'name',
-        cell: props => <CopyText
-            value={props.row.original.item.name}
-        />,
-        header: () => 'Name',
-        size: 20,
-    }),
-    columnHelper.display({
-        id: 'quantity',
-        cell: props => <CopyText
-            value={props.row.original.quantity}
-            number
-        />,
-        header: () => 'Quantity',
-        size: 10,
-    }),
-    columnHelper.display({
-        id: 'cost',
-        cell: props => <CopyText
-            value={props.row.original.cost}
-            number
-        />,
-        header: () => 'Cost',
-        size: 10,
-    }),
-    columnHelper.display({
-        id: 'cost_multi',
-        cell: props => <>
-            <CopyText
-                value={(props.row.original.cost_multi.price * props.row.original.cost_multi.quantity) + haulingCost(props.row.original.cost_multi.source, props.row.original.cost_multi.quantity, props.row.original.item.volume)}
-                number
-            />
-            <br />
-            {source(props.row.original.cost_multi.source)}
-        </>,
-        header: () => 'Cost Multi',
-        size: 10,
-    }),
-    columnHelper.display({
-        id: 'cost_smart',
-        cell: props => {
-            const a = props
-                .row
-                .original
-                .cost_smart
-                .map(x => {
-                    return <>
-                        <CopyText
-                            value={x.price * x.quantity}
-                            number
-                        />
-                        <br />
-                        {source(x.source)}
-                        <br />
-                    </>
-                });
-
-            return <>
-                {a}
-                <CopyText number value={props.row.original.cost_smart.map(x => x.price * x.quantity).reduce((prev, curr) => prev += curr, 0)} />
-                <br />
-                Total
-            </>
-        },
-        header: () => 'Cost Smart',
-        size: 10,
-    }),
-    columnHelper.display({
-        id: 'cost_smart2',
-        cell: _ => <></> /*{
-            const a = props
-                .row
-                .original
-                .cost_smart2
-                .map(x => {
-                    return <>
-                        <CopyText
-                            value={x.price * x.quantity}
-                            number
-                        />
-                        <br />
-                        {source(x.source)}
-                        <br />
-                    </>
-                });
-
-            return <>
-                {a}
-                <CopyText number value={props.row.original.cost_smart2.map(x => x.price * x.quantity).reduce((prev, curr) => prev += curr, 0)} />
-                <br />
-                Total
-            </>
-        },*/,
-        header: () => 'Cost Smart 2',
-        size: 10,
-    }),
-];
-
 function RouteComponent() {
+    const queryClient = useQueryClient();
     const { projectId } = Route.useParams();
+
+    const [marketItems, setMarketItems] = useState<ProjectMarketBuyEntry[]>([]);
+    const [marketSource, setMarketSource] = useState<string>('Unknown');
+    const [marketSourceId, setMarketSourceId] = useState<number>(0);
+
+    const [updateError, setUpdateError] = useState<boolean>(false);
+    const [updateSuccess, setUpdateSuccess] = useState<boolean>(false);
+
+    const [opened, { open, close }] = useDisclosure(false);
+
+    const {
+        isError: isErrorMulti,
+        isPending: isPendingMulti,
+        data: projectMarketMulti,
+    } = useListProjectMarketBuy(projectId, {
+        strategy: 'MULTI_BUY'
+    });
+    const {
+        isError: isErrorSmart,
+        isPending: isPendingSmart,
+        data: projectMarketSmart,
+    } = useListProjectMarketBuy(projectId, {
+        strategy: 'SMART_BUY'
+    });
 
     const {
         isError,
@@ -144,108 +65,365 @@ function RouteComponent() {
         data: projectMarket,
     } = useListProjectMarket(projectId);
 
-    if (isPending) {
+    const updateMarketMutation = useMutation({
+        mutationFn: async (data: UpdateMarketRequest) => {
+            return await updateMarketBulk(
+                projectId,
+                data,
+            )
+        },
+        onSuccess: () => {
+            setUpdateError(false);
+            setUpdateSuccess(true);
+            queryClient.invalidateQueries({
+                queryKey: [LIST_PROJECT_MARKET, projectId]
+            });
+        },
+        onError: () => {
+            setUpdateError(true);
+            setUpdateSuccess(false);
+        }
+    })
+
+    if (isPendingMulti || isPendingSmart || isPending) {
         return LoadingAnimation();
     }
 
-    if (isError) {
+    if (isErrorMulti || isErrorSmart || isError) {
         return LoadingError();
     }
 
-    const table = useReactTable<ProjectMarketEntry>({
-        columns: columns,
-        data: projectMarket.flatMap(x => x.entries),
-        autoResetPageIndex: false,
-        getCoreRowModel: getCoreRowModel(),
-    });
-
-    const findVolume = (type_id: number): number => {
-        const item = projectMarket
-            .flatMap(x => x.entries)
-            .find(x => x.item.type_id === type_id);
-
-        if (item) {
-            return item.item.volume;
-        } else {
-            return 0;
+    const showError = () => {
+        if (updateError) {
+            return <Alert
+                variant='light'
+                color='red'
+                data-cy="updateError"
+                onClose={ () => setUpdateError(false) }
+                withCloseButton
+            >
+                There was an error while updating
+            </Alert>;
         }
     }
 
-    const total_multi = projectMarket
-        .flatMap(x => x.entries)
-        .flatMap(x => x.cost_multi)
-        .map(x =>
-            (x.quantity * x.price) +
-            haulingCost(x.source, x.quantity, findVolume(x.type_id))
-        )
-        .reduce((prev, curr) => prev += curr, 0);
-    const total_smart = projectMarket
-        .flatMap(x => x.entries)
-        .flatMap(x => x.cost_smart)
-        .map(x => x.quantity * x.price)
-        .reduce((prev, curr) => prev += curr, 0);
-    const total_smart2 = 0/*projectMarket
-        .flatMap(x => x.entries)
-        .flatMap(x => x.cost_smart2)
-        .map(x => x.quantity * x.price)
-        .reduce((prev, curr) => prev += curr, 0);*/
+    const showUpdateSuccess = () => {
+        if (updateSuccess) {
+            return <Alert
+                variant='light'
+                color='green'
+                data-cy="updateSuccessful"
+                onClose={ () => setUpdateSuccess(false) }
+                withCloseButton
+            >
+                Market was successfully updated
+            </Alert>;
+        } else {
+            return <></>;
+        }
+    }
 
-    return <>
-        <>
-            <CopyText value={total_multi} number />
-            <br />
-            <CopyText value={total_smart} number />
-            <br />
-            <CopyText value={total_smart2} number />
-            <br />
-            <CopyText value={total_multi - total_smart} number />
-            <br />
-            <CopyText value={total_multi - total_smart2} number />
-        </>
+    const marketTable = (
+        marketData: ProjectMarketEntry[],
+    ) => {
+        const rows = marketData
+            .map(x => <Table.Tr>
+                <Table.Td>
+                    <EveIcon
+                        id={x.item.type_id}
+                    />
+                </Table.Td>
+                <Table.Td>
+                    <CopyText
+                        value={x.item.name}
+                    />
+                </Table.Td>
+                <Table.Td>
+                    <CopyText
+                        value={x.quantity}
+                        number
+                    />
+                </Table.Td>
+                <Table.Td>
+                    {
+                        x.source
+                        ?   <CopyText
+                                value={x.source}
+                            />
+                        :   <> -/- </>
+                    }
+                </Table.Td>
+                <Table.Td>
+                    {
+                        x.cost
+                        ?   <CopyText
+                                value={x.cost / x.quantity}
+                                number
+                            />
+                        :   <> -/- </>
+                    }
+                </Table.Td>
+                <Table.Td>
+                    {
+                        x.cost
+                        ?   <CopyText
+                                value={x.cost}
+                                number
+                            />
+                        :   <> -/- </>
+                    }
+                </Table.Td>
+            </Table.Tr>);
 
-        <Table striped data-cy="data">
-            <Table.Thead>
-            {table.getHeaderGroups().map(headerGroup => (
-                <Table.Tr key={headerGroup.id}>
-                    {headerGroup.headers.map(header => (
-                        <Table.Th
-                            key={header.id}
-                            style={{
-                                width: `${header.getSize()}%`
+        return <>
+            <Table>
+                <Table.Thead>
+                    <Table.Tr>
+                        <Table.Th w={32}></Table.Th>
+                        <Table.Th>Name</Table.Th>
+                        <Table.Th>Quantity</Table.Th>
+                        <Table.Th>Source</Table.Th>
+                        <Table.Th>Cost Per</Table.Th>
+                        <Table.Th>Cost Total</Table.Th>
+                    </Table.Tr>
+                </Table.Thead>
+
+                <Table.Tbody>
+                    {rows}
+                </Table.Tbody>
+            </Table>
+        </>;
+    }
+
+    const marketBuyTable = (
+        marketData: ProjectMarketBuyEntry[],
+    ) => {
+        const byMarket: { [key: number]: ProjectMarketBuyEntry[] } = {};
+
+        marketData
+            .filter(x => !x.cost)
+            .forEach(x => {
+                for (const entry of x.entries) {
+                    if (entry.type_id === 40) {
+                        console.log('c', entry, x);
+                    }
+                    if (x.cost) {
+                        console.log('a', x)
+                        continue;
+                    } else {
+                        if (entry.type_id === 40) {
+                            console.log('b', entry);
+                        }
+                    }
+
+                    if (!byMarket[entry.source]) {
+                        byMarket[entry.source] = [];
+                    }
+
+                    byMarket[entry.source].push({
+                        entries: [entry],
+                        item: x.item,
+                        quantity: x.quantity,
+                        cost: x.cost,
+                        source: x.source,
+                    });
+                }
+            });
+
+        const tables = Object
+            .keys(byMarket)
+            .map((x: any) => {
+                const data = byMarket[x];
+
+                const rows = data
+                    .map(x => <Table.Tr>
+                        <Table.Td>
+                            <EveIcon
+                                id={x.item.type_id}
+                            />
+                        </Table.Td>
+                        <Table.Td>
+                            <CopyText
+                                value={x.item.name}
+                            />
+                        </Table.Td>
+                        <Table.Td>
+                            <CopyText
+                                value={x.entries[0].quantity}
+                                number
+                            />
+                        </Table.Td>
+                        <Table.Td>
+                            <CopyText
+                                value={x.entries[0].price}
+                                number
+                            /> ISK
+                        </Table.Td>
+                        <Table.Td>
+                            <CopyText
+                                value={x.entries[0].price * x.entries[0].quantity}
+                                number
+                            /> ISK
+                        </Table.Td>
+                        <Table.Td>
+                            <CopyText
+                                value={x.item.volume * x.entries[0].quantity}
+                                number
+                            /> m3
+                        </Table.Td>
+                    </Table.Tr>);
+
+                const volume = data
+                    .map(x => x.item.volume * x.entries[0].quantity)
+                    .reduce((prev, curr) => prev += curr, 0);
+                const cost = data
+                    .map(x => x.entries[0].price * x.entries[0].quantity)
+                    .reduce((prev, curr) => prev += curr, 0);
+
+                return <>
+
+                    <Group justify='space-between'>
+                        <Title order={2}>{source(data[0].entries[0].source)}</Title>
+
+                        <Button
+                            onClick={() => {
+                                setMarketItems(data);
+                                setMarketSource(source(data[0].entries[0].source))
+                                setMarketSourceId(data[0].entries[0].source);
+                                open();
                             }}
                         >
-                            {flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                            )}
-                        </Table.Th>
-                    ))}
-                </Table.Tr>
-            ))}
-            </Table.Thead>
-            <Table.Tbody>
-                {table.getRowModel().rows.map(row => (
-                    <Table.Tr key={row.id}>
-                        {
-                            row.getVisibleCells().map(cell => (
-                                <Table.Td key={cell.id}>
-                                    {
-                                        flexRender(
-                                            cell.column.columnDef.cell,
-                                            cell.getContext()
-                                        )
-                                    }
+                            Buy
+                        </Button>
+                    </Group>
+
+                    <Table
+                        variant="vertical"
+                        layout="fixed"
+                    >
+                        <Table.Tbody>
+                            <Table.Tr>
+                                <Table.Th w={200}>Volume</Table.Th>
+                                <Table.Td>
+                                    <CopyText
+                                        value={volume}
+                                        number
+                                    /> m3
                                 </Table.Td>
-                            ))
+                            </Table.Tr>
+                            <Table.Tr>
+                                <Table.Th w={200}>Cost</Table.Th>
+                                <Table.Td>
+                                    <CopyText
+                                        value={cost}
+                                        number
+                                    /> ISK
+                                </Table.Td>
+                            </Table.Tr>
+                            <Table.Tr>
+                                <Table.Th w={200}>Last updated</Table.Th>
+                                <Table.Td>
+                                    <CopyText
+                                        value={data[0].entries[0].last_fetch}
+                                    />
+                                </Table.Td>
+                            </Table.Tr>
+                        </Table.Tbody>
+                    </Table>
+
+                    <Table.ScrollContainer
+                        minWidth={500}
+                        maxHeight={200}
+                    >
+                        <Table>
+                            <Table.Thead>
+                                <Table.Tr>
+                                    <Table.Th w={32}></Table.Th>
+                                    <Table.Th>Name</Table.Th>
+                                    <Table.Th>Quantity</Table.Th>
+                                    <Table.Th>Cost Per</Table.Th>
+                                    <Table.Th>Cost Total</Table.Th>
+                                    <Table.Th>Volume Total</Table.Th>
+                                </Table.Tr>
+                            </Table.Thead>
+
+                            <Table.Tbody>
+                                {rows}
+                            </Table.Tbody>
+                        </Table>
+                    </Table.ScrollContainer>
+                </>
+            });
+
+        return <Stack>
+            {tables}
+        </Stack>
+    }
+
+    return <>
+        {showError()}
+        {showUpdateSuccess()}
+
+        <MultiBuyModal
+            items={marketItems}
+            source={marketSource}
+            onSave={(x) => {
+                let entries = x
+                    .split(`\n`)
+                    .map(x => {
+                        let entries = x.split(`\t`);
+                        return {
+                            name:           entries[0],
+                            quantity:       Number.parseInt(entries[1]),
+                            cost:           Number.parseFloat(entries[3]),
+                            structure_id:   marketSourceId > 0 ? marketSourceId : undefined,
                         }
-                    </Table.Tr>
-                ))}
-            </Table.Tbody>
-        </Table>
+                    });
+
+                updateMarketMutation.mutate({
+                    source:             marketSource,
+                    entries:            entries,
+                    // FIXME: make it configurable
+                    gas_compression:    0.95,
+                });
+                close();
+            }}
+
+            opened={opened}
+            close={close}
+        />
+
+        <Tabs defaultValue="overview">
+            <Tabs.List>
+                <Tabs.Tab value="overview">
+                    Overview
+                </Tabs.Tab>
+                <Tabs.Tab value="multiBuy">
+                    MultiBuy
+                </Tabs.Tab>
+                <Tabs.Tab value="smartBuy">
+                    SmartBuy
+                </Tabs.Tab>
+            </Tabs.List>
+
+            <Tabs.Panel value="overview">
+                {marketTable(projectMarket)}
+            </Tabs.Panel>
+            <Tabs.Panel value="multiBuy">
+                {marketBuyTable(projectMarketMulti)}
+            </Tabs.Panel>
+            <Tabs.Panel value="smartBuy">
+                TODO: add gas compression, selector - needs to be send to the server when updating
+
+                TODO: add mineral compression
+
+                {marketBuyTable(projectMarketSmart)}
+            </Tabs.Panel>
+        </Tabs>
     </>
 }
 
-const haulingCost = (
+/*const haulingCost = (
     structure_id: number,
     quantity: number,
     volume: number,
@@ -266,3 +444,4 @@ const haulingCost = (
             return 0;
     }
 }
+*/

@@ -1,12 +1,14 @@
 use starfoundry_lib_market::{MarketBulkResponse, MarketItemList};
-use starfoundry_lib_types::TypeId;
+use starfoundry_lib_types::{StructureId, TypeId};
 use std::collections::HashMap;
 
 use crate::market::service::MarketEntry;
+use chrono::NaiveDateTime;
 
 pub fn multibuy(
     wanted_items:   Vec<MarketItemList>,
     market_entries: Vec<MarketEntry>,
+    last_fetched:   HashMap<StructureId, NaiveDateTime>,
 ) -> Vec<MarketBulkResponse> {
     let mut viable_markets: HashMap<TypeId, CalculationHelper> = HashMap::new();
 
@@ -112,6 +114,7 @@ pub fn multibuy(
             quantity:           x.quantity,
             source:             x.source.into(),
             type_id:            x.type_id,
+            last_fetch:         last_fetched.get(&x.source.into()).cloned(),
         })
         .collect::<Vec<_>>()
 }
@@ -132,6 +135,7 @@ mod bulk_multibuy_tests {
     use starfoundry_lib_market::MarketItemList;
     
     use crate::market::MarketEntry;
+    use std::collections::HashMap;
 
     #[test]
     fn no_overflow() {
@@ -161,7 +165,7 @@ mod bulk_multibuy_tests {
             }
         ];
 
-        let result = super::multibuy(wanted, market_entries);
+        let result = super::multibuy(wanted, market_entries, HashMap::new());
         assert_eq!(result.len(), 1);
         assert_eq!(result[0].price, 1f64);
         assert_eq!(result[0].quantity, 5);
@@ -197,7 +201,7 @@ mod bulk_multibuy_tests {
             }
         ];
 
-        let result = super::multibuy(wanted, market_entries);
+        let result = super::multibuy(wanted, market_entries, HashMap::new());
         assert_eq!(result.len(), 1);
         assert_eq!(result[0].price, 2f64);
         assert_eq!(result[0].quantity, 101);
@@ -233,7 +237,7 @@ mod bulk_multibuy_tests {
             }
         ];
 
-        let result = super::multibuy(wanted, market_entries);
+        let result = super::multibuy(wanted, market_entries, HashMap::new());
         assert_eq!(result.len(), 1);
         assert_eq!(result[0].price, 2f64);
         assert_eq!(result[0].quantity, 3);

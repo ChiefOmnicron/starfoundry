@@ -133,10 +133,11 @@ pub struct CompressedOreMarketEntry {
 
 #[cfg(test)]
 mod asteroid_lp_test {
-    use crate::lp::{Asteroid, AsteroidCompressionProblem, Mineral};
     use sqlx::postgres::PgPoolOptions;
     use starfoundry_lib_eve_gateway::EveGatewayApiClientItem;
     use std::collections::HashMap;
+    
+    use crate::lp::{Asteroid, AsteroidCompressionProblem, Mineral};
 
     use crate::eve_gateway_api_client;
     use crate::market::MarketEntry;

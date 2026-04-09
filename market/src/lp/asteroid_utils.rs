@@ -12,10 +12,6 @@ pub enum Asteroid {
     CompressedArkonorIIGrade,
     CompressedArkonorIIIGrade,
     CompressedArkonorIVGrade,
-    BatchCompressedArkonorIGrade,
-    BatchCompressedArkonorIIGrade,
-    BatchCompressedArkonorIIIGrade,
-    BatchCompressedArkonorIVGrade,
 
     BezdnacineIGrade,
     BezdnacineIIGrade,
@@ -32,10 +28,6 @@ pub enum Asteroid {
     CompressedBistotIIGrade,
     CompressedBistotIIIGrade,
     CompressedBistotIVGrade,
-    BatchCompressedBistotIGrade,
-    BatchCompressedBistotIIGrade,
-    BatchCompressedBistotIIIGrade,
-    BatchCompressedBistotIVGrade,
 
     CrokiteIGrade,
     CrokiteIIGrade,
@@ -45,10 +37,6 @@ pub enum Asteroid {
     CompressedCrokiteIIGrade,
     CompressedCrokiteIIIGrade,
     CompressedCrokiteIVGrade,
-    BatchCompressedCrokiteIGrade,
-    BatchCompressedCrokiteIIGrade,
-    BatchCompressedCrokiteIIIGrade,
-    BatchCompressedCrokiteIVGrade,
 
     DarkOchreIGrade,
     OchreIIGrade,
@@ -58,10 +46,6 @@ pub enum Asteroid {
     CompressedOchreIIGrade,
     CompressedOchreIIIGrade,
     CompressedOchreIVGrade,
-    BatchCompressedDarkOchreIGrade,
-    BatchCompressedOchreIIGrade,
-    BatchCompressedOchreIIIGrade,
-    BatchCompressedOchreIVGrade,
 
     DuciniumIGrade,
     DuciniumIIGrade,
@@ -89,10 +73,6 @@ pub enum Asteroid {
     CompressedGneissIIGrade,
     CompressedGneissIIIGrade,
     CompressedGneissIVGrade,
-    BatchCompressedGneissIGrade,
-    BatchCompressedGneissIIGrade,
-    BatchCompressedGneissIIIGrade,
-    BatchCompressedGneissIVGrade,
 
     GriemeerIGrade,
     GriemeerIIGrade,
@@ -111,10 +91,6 @@ pub enum Asteroid {
     CompressedHedbergiteIIGrade,
     CompressedHedbergiteIIIGrade,
     CompressedHedbergiteIVGrade,
-    BatchCompressedHedbergiteIGrade,
-    BatchCompressedHedbergiteIIGrade,
-    BatchCompressedHedbergiteIIIGrade,
-    BatchCompressedHedbergiteIVGrade,
 
     HemorphiteIGrade,
     HemorphiteIIGrade,
@@ -124,10 +100,6 @@ pub enum Asteroid {
     CompressedHemorphiteIIGrade,
     CompressedHemorphiteIIIGrade,
     CompressedHemorphiteIVGrade,
-    BatchCompressedHemorphiteIGrade,
-    BatchCompressedHemorphiteIIGrade,
-    BatchCompressedHemorphiteIIIGrade,
-    BatchCompressedHemorphiteIVGrade,
 
     HezorimeIGrade,
     HezorimeIIGrade,
@@ -146,10 +118,6 @@ pub enum Asteroid {
     CompressedJaspetIIGrade,
     CompressedJaspetIIIGrade,
     CompressedJaspetIVGrade,
-    BatchCompressedJaspetIGrade,
-    BatchCompressedJaspetIIGrade,
-    BatchCompressedJaspetIIIGrade,
-    BatchCompressedJaspetIVGrade,
 
     KerniteIGrade,
     KerniteIIGrade,
@@ -159,10 +127,6 @@ pub enum Asteroid {
     CompressedKerniteIIGrade,
     CompressedKerniteIIIGrade,
     CompressedKerniteIVGrade,
-    BatchCompressedKerniteIGrade,
-    BatchCompressedKerniteIIGrade,
-    BatchCompressedKerniteIIIGrade,
-    BatchCompressedKerniteIVGrade,
 
     KylixiumIGrade,
     KylixiumIIGrade,
@@ -173,143 +137,116 @@ pub enum Asteroid {
     CompressedKylixiumIIIGrade,
     CompressedKylixiumIVGrade,
 
-    Mercoxit,
-    MagmaMercoxit,
-    VitreousMercoxit,
-    CompressedMercoxit,
-    CompressedMagmaMercoxit,
-    CompressedVitreousMercoxit,
-    BatchCompressedMercoxit,
-    BatchCompressedMagmaMercoxit,
-    BatchCompressedVitreousMercoxit,
+    MercoxitIGrade,
+    MercoxitIIGrade,
+    MercoxitIIIGrade,
+    CompressedMercoxitIGrade,
+    CompressedMercoxitIIGrade,
+    CompressedMercoxitIIIGrade,
 
-    Mordunium,
-    PlumMordunium,
-    PrizeMordunium,
-    PlunderMordunium,
-    CompressedMordunium,
-    CompressedPlumMordunium,
-    CompressedPrizeMordunium,
-    CompressedPlunderMordunium,
+    MorduniumIGrade,
+    MorduniumIIGrade,
+    MorduniumIIIGrade,
+    MorduniumIVGrade,
+    CompressedMorduniumIGrade,
+    CompressedMorduniumIIGrade,
+    CompressedMorduniumIIIGrade,
+    CompressedMorduniumIVGrade,
 
-    Nocxite,
-    FragrantNocxite,
-    IntoxicatingNocxite,
-    AmbrosialNocxite,
-    CompressedNocxite,
-    CompressedFragrantNocxite,
-    CompressedIntoxicatingNocxite,
-    CompressedAmbrosialNocxite,
+    NocxiteIGrade,
+    NocxiteIIGrade,
+    NocxiteIIIGrade,
+    NocxiteIVGrade,
+    CompressedNocxiteIGrade,
+    CompressedNocxiteIIGrade,
+    CompressedNocxiteIIIGrade,
+    CompressedNocxiteIVGrade,
 
-    Omber,
-    SilveryOmber,
-    GoldenOmber,
-    PlatinoidOmber,
-    CompressedOmber,
-    CompressedSilveryOmber,
-    CompressedGoldenOmber,
-    CompressedPlatinoidOmber,
-    BatchCompressedOmber,
-    BatchCompressedSilveryOmber,
-    BatchCompressedGoldenOmber,
-    BatchCompressedPlatinoidOmber,
+    OmberIGrade,
+    OmberIIGrade,
+    OmberIIIGrade,
+    OmberIVGrade,
+    CompressedOmberIGrade,
+    CompressedOmberIIGrade,
+    CompressedOmberIIIGrade,
+    CompressedOmberIVGrade,
 
-    Plagioclase,
-    AzurePlagioclase,
-    RichPlagioclase,
-    SparklingPlagioclase,
-    CompressedPlagioclase,
-    CompressedAzurePlagioclase,
-    CompressedRichPlagioclase,
-    CompressedSparklingPlagioclase,
-    BatchCompressedPlagioclase,
-    BatchCompressedAzurePlagioclase,
-    BatchCompressedRichPlagioclase,
-    BatchCompressedSparklingPlagioclase,
+    PlagioclaseIGrade,
+    PlagioclaseIIGrade,
+    PlagioclaseIIIGrade,
+    PlagioclaseIVGrade,
+    CompressedPlagioclaseIGrade,
+    CompressedPlagioclaseIIGrade,
+    CompressedPlagioclaseIIIGrade,
+    CompressedPlagioclaseIVGrade,
 
-    Pyroxeres,
-    SolidPyroxeres,
-    ViscousPyroxeres,
-    OpulentPyroxeres,
-    CompressedPyroxeres,
-    CompressedSolidPyroxeres,
-    CompressedViscousPyroxeres,
-    CompressedOpulentPyroxeres,
-    BatchCompressedPyroxeres,
-    BatchCompressedSolidPyroxeres,
-    BatchCompressedViscousPyroxeres,
-    BatchCompressedOpulentPyroxeres,
+    PyroxeresIGrade,
+    PyroxeresIIGrade,
+    PyroxeresIIIGrade,
+    PyroxeresIVGrade,
+    CompressedPyroxeresIGrade,
+    CompressedPyroxeresIIGrade,
+    CompressedPyroxeresIIIGrade,
+    CompressedPyroxeresIVGrade,
 
-    Rakovene,
+    RakoveneIGrade,
     RakoveneIIGrade,
     RakoveneIIIGrade,
-    CompressedRakovene,
+    CompressedRakoveneIGrade,
     CompressedRakoveneIIGrade,
     CompressedRakoveneIIIGrade,
 
-    Scordite,
-    CondensedScordite,
-    MassiveScordite,
-    GlossyScordite,
-    CompressedScordite,
-    CompressedCondensedScordite,
-    CompressedMassiveScordite,
-    CompressedGlossyScordite,
-    BatchCompressedScordite,
-    BatchCompressedCondensedScordite,
-    BatchCompressedMassiveScordite,
-    BatchCompressedGlossyScordite,
+    ScorditeIGrade,
+    ScorditeIIGrade,
+    ScorditeIIIGrade,
+    ScorditeIVGrade,
+    CompressedScorditeIGrade,
+    CompressedScorditeIIGrade,
+    CompressedScorditeIIIGrade,
+    CompressedScorditeIVGrade,
 
-    Spodumain,
-    BrightSpodumain,
-    GleamingSpodumain,
-    DazzlingSpodumain,
-    CompressedSpodumain,
-    CompressedBrightSpodumain,
-    CompressedGleamingSpodumain,
-    CompressedDazzlingSpodumain,
-    BatchCompressedSpodumain,
-    BatchCompressedBrightSpodumain,
-    BatchCompressedGleamingSpodumain,
-    BatchCompressedDazzlingSpodumain,
+    SpodumainIGrade,
+    SpodumainIIGrade,
+    SpodumainIIIGrade,
+    SpodumainIVGrade,
+    CompressedSpodumainIGrade,
+    CompressedSpodumainIIGrade,
+    CompressedSpodumainIIIGrade,
+    CompressedSpodumainIVGrade,
 
-    Talassonite,
+    TalassoniteIGrade,
     TalassoniteIIGrade,
     TalassoniteIIIGrade,
-    CompressedTalassonite,
+    CompressedTalassoniteIGrade,
     CompressedTalassoniteIIGrade,
     CompressedTalassoniteIIIGrade,
 
-    Ueganite,
-    FoggyUeganite,
-    OvercastUeganite,
-    StormyUeganite,
-    CompressedUeganite,
-    CompressedFoggyUeganite,
-    CompressedOvercastUeganite,
-    CompressedStormyUeganite,
+    UeganiteIGrade,
+    UeganiteIIGrade,
+    UeganiteIIIGrade,
+    UeganiteIVGrade,
+    CompressedUeganiteIGrade,
+    CompressedUeganiteIIGrade,
+    CompressedUeganiteIIIGrade,
+    CompressedUeganiteIVGrade,
 
-    Veldspar,
-    ConcentratedVeldspar,
-    DenseVeldspar,
-    StableVeldspar,
-    CompressedVeldspar,
-    CompressedConcentratedVeldspar,
-    CompressedDenseVeldspar,
-    CompressedStableVeldspar,
-    BatchCompressedVeldspar,
-    BatchCompressedConcentratedVeldspar,
-    BatchCompressedDenseVeldspar,
-    BatchCompressedStableVeldspar,
+    VeldsparIGrade,
+    VeldsparIIGrade,
+    VeldsparIIIGrade,
+    VeldsparIVGrade,
+    CompressedVeldsparIGrade,
+    CompressedVeldsparIIGrade,
+    CompressedVeldsparIIIGrade,
+    CompressedVeldsparIVGrade,
 
-    Ytirium,
-    BootlegYtirium,
-    FirewaterYtirium,
-    MoonshineYtirium,
-    CompressedYtirium,
-    CompressedBootlegYtirium,
-    CompressedFirewaterYtirium,
-    CompressedMoonshineYtirium,
+    YtiriumIGrade,
+    YtiriumIIGrade,
+    YtiriumIIIGrade,
+    YtiriumIVGrade,
+    CompressedYtiriumIGrade,
+    CompressedYtiriumIIGrade,
+    CompressedYtiriumIIIGrade,
+    CompressedYtiriumIVGrade,
 
     // R4
     Bitumens,
@@ -659,116 +596,116 @@ impl Asteroid {
             Self::CompressedKylixiumIIIGrade.to_type_id(),
             Self::CompressedKylixiumIVGrade.to_type_id(),
 
-            Self::Mercoxit.to_type_id(),
-            Self::MagmaMercoxit.to_type_id(),
-            Self::VitreousMercoxit.to_type_id(),
-            Self::CompressedMercoxit.to_type_id(),
-            Self::CompressedMagmaMercoxit.to_type_id(),
-            Self::CompressedVitreousMercoxit.to_type_id(),
+            Self::MercoxitIGrade.to_type_id(),
+            Self::MercoxitIIGrade.to_type_id(),
+            Self::MercoxitIIIGrade.to_type_id(),
+            Self::CompressedMercoxitIGrade.to_type_id(),
+            Self::CompressedMercoxitIIGrade.to_type_id(),
+            Self::CompressedMercoxitIIIGrade.to_type_id(),
 
-            Self::Mordunium.to_type_id(),
-            Self::PlumMordunium.to_type_id(),
-            Self::PrizeMordunium.to_type_id(),
-            Self::PlunderMordunium.to_type_id(),
-            Self::CompressedMordunium.to_type_id(),
-            Self::CompressedPlumMordunium.to_type_id(),
-            Self::CompressedPrizeMordunium.to_type_id(),
-            Self::CompressedPlunderMordunium.to_type_id(),
+            Self::MorduniumIGrade.to_type_id(),
+            Self::MorduniumIIGrade.to_type_id(),
+            Self::MorduniumIIIGrade.to_type_id(),
+            Self::MorduniumIVGrade.to_type_id(),
+            Self::CompressedMorduniumIGrade.to_type_id(),
+            Self::CompressedMorduniumIIGrade.to_type_id(),
+            Self::CompressedMorduniumIIIGrade.to_type_id(),
+            Self::CompressedMorduniumIVGrade.to_type_id(),
 
-            Self::Nocxite.to_type_id(),
-            Self::FragrantNocxite.to_type_id(),
-            Self::IntoxicatingNocxite.to_type_id(),
-            Self::AmbrosialNocxite.to_type_id(),
-            Self::CompressedNocxite.to_type_id(),
-            Self::CompressedFragrantNocxite.to_type_id(),
-            Self::CompressedIntoxicatingNocxite.to_type_id(),
-            Self::CompressedAmbrosialNocxite.to_type_id(),
+            Self::NocxiteIGrade.to_type_id(),
+            Self::NocxiteIIGrade.to_type_id(),
+            Self::NocxiteIIIGrade.to_type_id(),
+            Self::NocxiteIVGrade.to_type_id(),
+            Self::CompressedNocxiteIGrade.to_type_id(),
+            Self::CompressedNocxiteIIGrade.to_type_id(),
+            Self::CompressedNocxiteIIIGrade.to_type_id(),
+            Self::CompressedNocxiteIVGrade.to_type_id(),
 
-            Self::Omber.to_type_id(),
-            Self::SilveryOmber.to_type_id(),
-            Self::GoldenOmber.to_type_id(),
-            Self::PlatinoidOmber.to_type_id(),
-            Self::CompressedOmber.to_type_id(),
-            Self::CompressedSilveryOmber.to_type_id(),
-            Self::CompressedGoldenOmber.to_type_id(),
-            Self::CompressedPlatinoidOmber.to_type_id(),
+            Self::OmberIGrade.to_type_id(),
+            Self::OmberIIGrade.to_type_id(),
+            Self::OmberIIIGrade.to_type_id(),
+            Self::OmberIVGrade.to_type_id(),
+            Self::CompressedOmberIGrade.to_type_id(),
+            Self::CompressedOmberIIGrade.to_type_id(),
+            Self::CompressedOmberIIIGrade.to_type_id(),
+            Self::CompressedOmberIVGrade.to_type_id(),
 
-            Self::Plagioclase.to_type_id(),
-            Self::AzurePlagioclase.to_type_id(),
-            Self::RichPlagioclase.to_type_id(),
-            Self::SparklingPlagioclase.to_type_id(),
-            Self::CompressedPlagioclase.to_type_id(),
-            Self::CompressedAzurePlagioclase.to_type_id(),
-            Self::CompressedRichPlagioclase.to_type_id(),
-            Self::CompressedSparklingPlagioclase.to_type_id(),
+            Self::PlagioclaseIGrade.to_type_id(),
+            Self::PlagioclaseIIGrade.to_type_id(),
+            Self::PlagioclaseIIIGrade.to_type_id(),
+            Self::PlagioclaseIVGrade.to_type_id(),
+            Self::CompressedPlagioclaseIGrade.to_type_id(),
+            Self::CompressedPlagioclaseIIGrade.to_type_id(),
+            Self::CompressedPlagioclaseIIIGrade.to_type_id(),
+            Self::CompressedPlagioclaseIVGrade.to_type_id(),
 
-            Self::Pyroxeres.to_type_id(),
-            Self::SolidPyroxeres.to_type_id(),
-            Self::ViscousPyroxeres.to_type_id(),
-            Self::OpulentPyroxeres.to_type_id(),
-            Self::CompressedPyroxeres.to_type_id(),
-            Self::CompressedSolidPyroxeres.to_type_id(),
-            Self::CompressedViscousPyroxeres.to_type_id(),
-            Self::CompressedOpulentPyroxeres.to_type_id(),
+            Self::PyroxeresIGrade.to_type_id(),
+            Self::PyroxeresIIGrade.to_type_id(),
+            Self::PyroxeresIIIGrade.to_type_id(),
+            Self::PyroxeresIVGrade.to_type_id(),
+            Self::CompressedPyroxeresIGrade.to_type_id(),
+            Self::CompressedPyroxeresIIGrade.to_type_id(),
+            Self::CompressedPyroxeresIIIGrade.to_type_id(),
+            Self::CompressedPyroxeresIVGrade.to_type_id(),
 
-            Self::Rakovene.to_type_id(),
+            Self::RakoveneIGrade.to_type_id(),
             Self::RakoveneIIGrade.to_type_id(),
             Self::RakoveneIIIGrade.to_type_id(),
-            Self::CompressedRakovene.to_type_id(),
+            Self::CompressedRakoveneIGrade.to_type_id(),
             Self::CompressedRakoveneIIGrade.to_type_id(),
             Self::CompressedRakoveneIIIGrade.to_type_id(),
 
-            Self::Scordite.to_type_id(),
-            Self::CondensedScordite.to_type_id(),
-            Self::MassiveScordite.to_type_id(),
-            Self::GlossyScordite.to_type_id(),
-            Self::CompressedScordite.to_type_id(),
-            Self::CompressedCondensedScordite.to_type_id(),
-            Self::CompressedMassiveScordite.to_type_id(),
-            Self::CompressedGlossyScordite.to_type_id(),
+            Self::ScorditeIGrade.to_type_id(),
+            Self::ScorditeIIGrade.to_type_id(),
+            Self::ScorditeIIIGrade.to_type_id(),
+            Self::ScorditeIVGrade.to_type_id(),
+            Self::CompressedScorditeIGrade.to_type_id(),
+            Self::CompressedScorditeIIGrade.to_type_id(),
+            Self::CompressedScorditeIIIGrade.to_type_id(),
+            Self::CompressedScorditeIVGrade.to_type_id(),
 
-            Self::Spodumain.to_type_id(),
-            Self::BrightSpodumain.to_type_id(),
-            Self::GleamingSpodumain.to_type_id(),
-            Self::DazzlingSpodumain.to_type_id(),
-            Self::CompressedSpodumain.to_type_id(),
-            Self::CompressedBrightSpodumain.to_type_id(),
-            Self::CompressedGleamingSpodumain.to_type_id(),
-            Self::CompressedDazzlingSpodumain.to_type_id(),
+            Self::SpodumainIGrade.to_type_id(),
+            Self::SpodumainIIGrade.to_type_id(),
+            Self::SpodumainIIIGrade.to_type_id(),
+            Self::SpodumainIVGrade.to_type_id(),
+            Self::CompressedSpodumainIGrade.to_type_id(),
+            Self::CompressedSpodumainIIGrade.to_type_id(),
+            Self::CompressedSpodumainIIIGrade.to_type_id(),
+            Self::CompressedSpodumainIVGrade.to_type_id(),
 
-            Self::Talassonite.to_type_id(),
+            Self::TalassoniteIGrade.to_type_id(),
             Self::TalassoniteIIGrade.to_type_id(),
             Self::TalassoniteIIIGrade.to_type_id(),
-            Self::CompressedTalassonite.to_type_id(),
+            Self::CompressedTalassoniteIGrade.to_type_id(),
             Self::CompressedTalassoniteIIGrade.to_type_id(),
             Self::CompressedTalassoniteIIIGrade.to_type_id(),
 
-            Self::Ueganite.to_type_id(),
-            Self::FoggyUeganite.to_type_id(),
-            Self::OvercastUeganite.to_type_id(),
-            Self::StormyUeganite.to_type_id(),
-            Self::CompressedUeganite.to_type_id(),
-            Self::CompressedFoggyUeganite.to_type_id(),
-            Self::CompressedOvercastUeganite.to_type_id(),
-            Self::CompressedStormyUeganite.to_type_id(),
+            Self::UeganiteIGrade.to_type_id(),
+            Self::UeganiteIIGrade.to_type_id(),
+            Self::UeganiteIIIGrade.to_type_id(),
+            Self::UeganiteIVGrade.to_type_id(),
+            Self::CompressedUeganiteIGrade.to_type_id(),
+            Self::CompressedUeganiteIIGrade.to_type_id(),
+            Self::CompressedUeganiteIIIGrade.to_type_id(),
+            Self::CompressedUeganiteIVGrade.to_type_id(),
 
-            Self::Veldspar.to_type_id(),
-            Self::ConcentratedVeldspar.to_type_id(),
-            Self::DenseVeldspar.to_type_id(),
-            Self::StableVeldspar.to_type_id(),
-            Self::CompressedVeldspar.to_type_id(),
-            Self::CompressedConcentratedVeldspar.to_type_id(),
-            Self::CompressedDenseVeldspar.to_type_id(),
-            Self::CompressedStableVeldspar.to_type_id(),
+            Self::VeldsparIGrade.to_type_id(),
+            Self::VeldsparIIGrade.to_type_id(),
+            Self::VeldsparIIIGrade.to_type_id(),
+            Self::VeldsparIVGrade.to_type_id(),
+            Self::CompressedVeldsparIGrade.to_type_id(),
+            Self::CompressedVeldsparIIGrade.to_type_id(),
+            Self::CompressedVeldsparIIIGrade.to_type_id(),
+            Self::CompressedVeldsparIVGrade.to_type_id(),
 
-            Self::Ytirium.to_type_id(),
-            Self::BootlegYtirium.to_type_id(),
-            Self::FirewaterYtirium.to_type_id(),
-            Self::MoonshineYtirium.to_type_id(),
-            Self::CompressedYtirium.to_type_id(),
-            Self::CompressedBootlegYtirium.to_type_id(),
-            Self::CompressedFirewaterYtirium.to_type_id(),
-            Self::CompressedMoonshineYtirium.to_type_id(),
+            Self::YtiriumIGrade.to_type_id(),
+            Self::YtiriumIIGrade.to_type_id(),
+            Self::YtiriumIIIGrade.to_type_id(),
+            Self::YtiriumIVGrade.to_type_id(),
+            Self::CompressedYtiriumIGrade.to_type_id(),
+            Self::CompressedYtiriumIIGrade.to_type_id(),
+            Self::CompressedYtiriumIIIGrade.to_type_id(),
+            Self::CompressedYtiriumIVGrade.to_type_id(),
 
             Self::Tritanium.to_type_id(),
             Self::Pyerite.to_type_id(),
@@ -969,312 +906,249 @@ impl Asteroid {
 
     pub fn to_type_id(&self) -> i32 {
         match self {
-            Self::ArkonorIGrade                                   => 22,
+            Self::ArkonorIGrade                             => 22,
             Self::ArkonorIIGrade                            => 17425,
-            Self::ArkonorIIIGrade                              => 17426,
-            Self::ArkonorIVGrade                           => 46678,
-            Self::CompressedArkonorIGrade                         => 62568,
+            Self::ArkonorIIIGrade                           => 17426,
+            Self::ArkonorIVGrade                            => 46678,
+            Self::CompressedArkonorIGrade                   => 62568,
             Self::CompressedArkonorIIGrade                  => 62569,
-            Self::CompressedArkonorIIIGrade                    => 62570,
-            Self::CompressedArkonorIVGrade                 => 62571,
-            Self::BatchCompressedArkonorIGrade                    => 28367,
-            Self::BatchCompressedArkonorIIGrade             => 28385,
-            Self::BatchCompressedArkonorIIIGrade               => 28387,
-            Self::BatchCompressedArkonorIVGrade            => 46691,
+            Self::CompressedArkonorIIIGrade                 => 62570,
+            Self::CompressedArkonorIVGrade                  => 62571,
 
-            Self::BezdnacineIGrade                                => 52316,
+            Self::BezdnacineIGrade                          => 52316,
             Self::BezdnacineIIGrade                         => 56627,
-            Self::BezdnacineIIIGrade                           => 56628,
-            Self::CompressedBezdnacineIGrade                      => 62576,
+            Self::BezdnacineIIIGrade                        => 56628,
+            Self::CompressedBezdnacineIGrade                => 62576,
             Self::CompressedBezdnacineIIGrade               => 62577,
-            Self::CompressedBezdnacineIIIGrade                 => 62578,
+            Self::CompressedBezdnacineIIIGrade              => 62578,
 
-            Self::BistotIGrade                                    => 1223,
-            Self::BistotIIGrade                           => 17428,
-            Self::BistotIIIGrade                          => 17429,
-            Self::BistotIVGrade                               => 46676,
-            Self::CompressedBistotIGrade                          => 62564,
-            Self::CompressedBistotIIGrade                 => 62565,
-            Self::CompressedBistotIIIGrade                => 62566,
-            Self::CompressedBistotIVGrade                     => 62567,
-            Self::BatchCompressedBistotIGrade                     => 28388,
-            Self::BatchCompressedBistotIIGrade            => 28390,
-            Self::BatchCompressedBistotIIIGrade           => 28389,
-            Self::BatchCompressedBistotIVGrade                => 46692,
+            Self::BistotIGrade                              => 1223,
+            Self::BistotIIGrade                             => 17428,
+            Self::BistotIIIGrade                            => 17429,
+            Self::BistotIVGrade                             => 46676,
+            Self::CompressedBistotIGrade                    => 62564,
+            Self::CompressedBistotIIGrade                   => 62565,
+            Self::CompressedBistotIIIGrade                  => 62566,
+            Self::CompressedBistotIVGrade                   => 62567,
 
-            Self::CrokiteIGrade                                   => 1225,
-            Self::CrokiteIIGrade                              => 17432,
-            Self::CrokiteIIIGrade                        => 17433,
-            Self::CrokiteIVGrade                           => 46677,
-            Self::CompressedCrokiteIGrade                         => 62560,
-            Self::CompressedCrokiteIIGrade                    => 62561,
-            Self::CompressedCrokiteIIIGrade              => 62562,
-            Self::CompressedCrokiteIVGrade                 => 62563,
-            Self::BatchCompressedCrokiteIGrade                    => 28391,
-            Self::BatchCompressedCrokiteIIGrade               => 28392,
-            Self::BatchCompressedCrokiteIIIGrade         => 28393,
-            Self::BatchCompressedCrokiteIVGrade            => 46693,
+            Self::CrokiteIGrade                             => 1225,
+            Self::CrokiteIIGrade                            => 17432,
+            Self::CrokiteIIIGrade                           => 17433,
+            Self::CrokiteIVGrade                            => 46677,
+            Self::CompressedCrokiteIGrade                   => 62560,
+            Self::CompressedCrokiteIIGrade                  => 62561,
+            Self::CompressedCrokiteIIIGrade                 => 62562,
+            Self::CompressedCrokiteIVGrade                  => 62563,
 
-            Self::DarkOchreIGrade                                 => 1232,
-            Self::OchreIIGrade                                 => 17436,
+            Self::DarkOchreIGrade                           => 1232,
+            Self::OchreIIGrade                              => 17436,
             Self::OchreIIIGrade                             => 17437,
-            Self::OchreIVGrade                                  => 46675,
-            Self::CompressedDarkOchreIGrade                       => 62556,
-            Self::CompressedOchreIIGrade                       => 62557,
+            Self::OchreIVGrade                              => 46675,
+            Self::CompressedDarkOchreIGrade                 => 62556,
+            Self::CompressedOchreIIGrade                    => 62557,
             Self::CompressedOchreIIIGrade                   => 62558,
-            Self::CompressedOchreIVGrade                        => 62559,
-            Self::BatchCompressedDarkOchreIGrade                  => 28394,
-            Self::BatchCompressedOchreIIGrade                  => 28396,
-            Self::BatchCompressedOchreIIIGrade              => 28395,
-            Self::BatchCompressedOchreIVGrade                   => 46694,
+            Self::CompressedOchreIVGrade                    => 62559,
 
-            Self::DuciniumIGrade                                  => 74533,
-            Self::DuciniumIIGrade                             => 74534,
-            Self::DuciniumIIIGrade                             => 74535,
-            Self::DuciniumIVGrade                          => 74536,
-            Self::CompressedDuciniumIGrade                        => 75287,
-            Self::CompressedDuciniumIIGrade                   => 75288,
-            Self::CompressedDuciniumIIIGrade                   => 75289,
-            Self::CompressedDuciniumIVGrade                => 75290,
+            Self::DuciniumIGrade                            => 74533,
+            Self::DuciniumIIGrade                           => 74534,
+            Self::DuciniumIIIGrade                          => 74535,
+            Self::DuciniumIVGrade                           => 74536,
+            Self::CompressedDuciniumIGrade                  => 75287,
+            Self::CompressedDuciniumIIGrade                 => 75288,
+            Self::CompressedDuciniumIIIGrade                => 75289,
+            Self::CompressedDuciniumIVGrade                 => 75290,
 
-            Self::EifyriumIGrade                                  => 74529,
-            Self::EifyriumIIGrade                             => 74530,
-            Self::EifyriumIIIGrade                           => 74531,
-            Self::EifyriumIVGrade                         => 74532,
-            Self::CompressedEifyriumIGrade                        => 75283,
-            Self::CompressedEifyriumIIGrade                   => 75284,
-            Self::CompressedEifyriumIIIGrade                 => 75285,
-            Self::CompressedEifyriumIVGrade               => 75286,
+            Self::EifyriumIGrade                            => 74529,
+            Self::EifyriumIIGrade                           => 74530,
+            Self::EifyriumIIIGrade                          => 74531,
+            Self::EifyriumIVGrade                           => 74532,
+            Self::CompressedEifyriumIGrade                  => 75283,
+            Self::CompressedEifyriumIIGrade                 => 75284,
+            Self::CompressedEifyriumIIIGrade                => 75285,
+            Self::CompressedEifyriumIVGrade                 => 75286,
 
-            Self::GneissIGrade                                    => 1229,
-            Self::GneissIIGrade                          => 17865,
-            Self::GneissIIIGrade                           => 17866,
-            Self::GneissIVGrade                           => 46679,
-            Self::CompressedGneissIGrade                          => 62552,
-            Self::CompressedGneissIIGrade                => 62553,
-            Self::CompressedGneissIIIGrade                 => 62554,
-            Self::CompressedGneissIVGrade                 => 62555,
-            Self::BatchCompressedGneissIGrade                     => 28397,
-            Self::BatchCompressedGneissIIGrade           => 28398,
-            Self::BatchCompressedGneissIIIGrade            => 28399,
-            Self::BatchCompressedGneissIVGrade            => 46695,
+            Self::GneissIGrade                              => 1229,
+            Self::GneissIIGrade                             => 17865,
+            Self::GneissIIIGrade                            => 17866,
+            Self::GneissIVGrade                             => 46679,
+            Self::CompressedGneissIGrade                    => 62552,
+            Self::CompressedGneissIIGrade                   => 62553,
+            Self::CompressedGneissIIIGrade                  => 62554,
+            Self::CompressedGneissIVGrade                   => 62555,
 
-            Self::GriemeerIGrade                                  => 81975,
-            Self::GriemeerIIGrade                             => 81976,
-            Self::GriemeerIIIGrade                              => 81977,
-            Self::GriemeerIVGrade                            => 81978,
-            Self::CompressedGriemeerIGrade                        => 82316,
-            Self::CompressedGriemeerIIGrade                   => 82317,
-            Self::CompressedGriemeerIIIGrade                    => 82318,
-            Self::CompressedGriemeerIVGrade                  => 82319,
+            Self::GriemeerIGrade                            => 81975,
+            Self::GriemeerIIGrade                           => 81976,
+            Self::GriemeerIIIGrade                          => 81977,
+            Self::GriemeerIVGrade                           => 81978,
+            Self::CompressedGriemeerIGrade                  => 82316,
+            Self::CompressedGriemeerIIGrade                 => 82317,
+            Self::CompressedGriemeerIIIGrade                => 82318,
+            Self::CompressedGriemeerIVGrade                 => 82319,
 
-            Self::HedbergiteIGrade                                => 21,
-            Self::HedbergiteIIGrade                          => 17440,
-            Self::HedbergiteIIIGrade                          => 17441,
-            Self::HedbergiteIVGrade                        => 46680,
-            Self::CompressedHedbergiteIGrade                      => 62548,
-            Self::CompressedHedbergiteIIGrade                => 62549,
-            Self::CompressedHedbergiteIIIGrade                => 62550,
-            Self::CompressedHedbergiteIVGrade              => 62551,
-            Self::BatchCompressedHedbergiteIGrade                 => 28401,
-            Self::BatchCompressedHedbergiteIIGrade           => 28402,
-            Self::BatchCompressedHedbergiteIIIGrade           => 28400,
-            Self::BatchCompressedHedbergiteIVGrade         => 46696,
+            Self::HedbergiteIGrade                          => 21,
+            Self::HedbergiteIIGrade                         => 17440,
+            Self::HedbergiteIIIGrade                        => 17441,
+            Self::HedbergiteIVGrade                         => 46680,
+            Self::CompressedHedbergiteIGrade                => 62548,
+            Self::CompressedHedbergiteIIGrade               => 62549,
+            Self::CompressedHedbergiteIIIGrade              => 62550,
+            Self::CompressedHedbergiteIVGrade               => 62551,
 
-            Self::HemorphiteIGrade                                => 1231,
-            Self::HemorphiteIIGrade                           => 17444,
-            Self::HemorphiteIIIGrade                         => 17445,
-            Self::HemorphiteIVGrade                   => 46681,
-            Self::CompressedHemorphiteIGrade                      => 62544,
-            Self::CompressedHemorphiteIIGrade                 => 62545,
-            Self::CompressedHemorphiteIIIGrade               => 62546,
-            Self::CompressedHemorphiteIVGrade         => 62547,
-            Self::BatchCompressedHemorphiteIGrade                 => 28403,
-            Self::BatchCompressedHemorphiteIIGrade            => 28405,
-            Self::BatchCompressedHemorphiteIIIGrade          => 28404,
-            Self::BatchCompressedHemorphiteIVGrade    => 46697,
+            Self::HemorphiteIGrade                          => 1231,
+            Self::HemorphiteIIGrade                         => 17444,
+            Self::HemorphiteIIIGrade                        => 17445,
+            Self::HemorphiteIVGrade                         => 46681,
+            Self::CompressedHemorphiteIGrade                => 62544,
+            Self::CompressedHemorphiteIIGrade               => 62545,
+            Self::CompressedHemorphiteIIIGrade              => 62546,
+            Self::CompressedHemorphiteIVGrade               => 62547,
 
-            Self::HezorimeIGrade                                  => 82163,
-            Self::HezorimeIIGrade                              => 82164,
+            Self::HezorimeIGrade                            => 82163,
+            Self::HezorimeIIGrade                           => 82164,
             Self::HezorimeIIIGrade                          => 82165,
-            Self::HezorimeIVGrade                             => 82166,
-            Self::CompressedHezorimeIGrade                        => 82312,
-            Self::CompressedHezorimeIIGrade                    => 82313,
+            Self::HezorimeIVGrade                           => 82166,
+            Self::CompressedHezorimeIGrade                  => 82312,
+            Self::CompressedHezorimeIIGrade                 => 82313,
             Self::CompressedHezorimeIIIGrade                => 82314,
-            Self::CompressedHezorimeIVGrade                   => 82315,
+            Self::CompressedHezorimeIVGrade                 => 82315,
 
-            Self::JaspetIGrade                                    => 1226,
-            Self::JaspetIIGrade                                => 17448,
+            Self::JaspetIGrade                              => 1226,
+            Self::JaspetIIGrade                             => 17448,
             Self::JaspetIIIGrade                            => 17449,
-            Self::JaspetIVGrade                          => 46682,
-            Self::CompressedJaspetIGrade                          => 62540,
-            Self::CompressedJaspetIIGrade                      => 62541,
+            Self::JaspetIVGrade                             => 46682,
+            Self::CompressedJaspetIGrade                    => 62540,
+            Self::CompressedJaspetIIGrade                   => 62541,
             Self::CompressedJaspetIIIGrade                  => 62542,
-            Self::CompressedJaspetIVGrade                => 62543,
-            Self::BatchCompressedJaspetIGrade                     => 28406,
-            Self::BatchCompressedJaspetIIGrade                 => 28408,
-            Self::BatchCompressedJaspetIIIGrade             => 28407,
-            Self::BatchCompressedJaspetIVGrade           => 46698,
+            Self::CompressedJaspetIVGrade                   => 62543,
 
-            Self::KerniteIGrade                                   => 20,
-            Self::KerniteIIGrade                           => 17452,
-            Self::KerniteIIIGrade                              => 17453,
-            Self::KerniteIVGrade                        => 46683,
-            Self::CompressedKerniteIGrade                         => 62536,
-            Self::CompressedKerniteIIGrade                 => 62537,
-            Self::CompressedKerniteIIIGrade                    => 62538,
-            Self::CompressedKerniteIVGrade              => 62539,
-            Self::BatchCompressedKerniteIGrade                    => 28410,
-            Self::BatchCompressedKerniteIIGrade            => 28411,
-            Self::BatchCompressedKerniteIIIGrade               => 28409,
-            Self::BatchCompressedKerniteIVGrade         => 46699,
+            Self::KerniteIGrade                             => 20,
+            Self::KerniteIIGrade                            => 17452,
+            Self::KerniteIIIGrade                           => 17453,
+            Self::KerniteIVGrade                            => 46683,
+            Self::CompressedKerniteIGrade                   => 62536,
+            Self::CompressedKerniteIIGrade                  => 62537,
+            Self::CompressedKerniteIIIGrade                 => 62538,
+            Self::CompressedKerniteIVGrade                  => 62539,
 
-            Self::KylixiumIGrade                                  => 81900,
-            Self::KylixiumIIGrade                            => 81901,
-            Self::KylixiumIIIGrade                             => 81902,
-            Self::KylixiumIVGrade                             => 81903,
-            Self::CompressedKylixiumIGrade                        => 82300,
-            Self::CompressedKylixiumIIGrade                  => 82301,
-            Self::CompressedKylixiumIIIGrade                   => 82302,
-            Self::CompressedKylixiumIVGrade                   => 82303,
+            Self::KylixiumIGrade                            => 81900,
+            Self::KylixiumIIGrade                           => 81901,
+            Self::KylixiumIIIGrade                          => 81902,
+            Self::KylixiumIVGrade                           => 81903,
+            Self::CompressedKylixiumIGrade                  => 82300,
+            Self::CompressedKylixiumIIGrade                 => 82301,
+            Self::CompressedKylixiumIIIGrade                => 82302,
+            Self::CompressedKylixiumIVGrade                 => 82303,
 
-            Self::Mercoxit                                  => 11396,
-            Self::MagmaMercoxit                             => 17869,
-            Self::VitreousMercoxit                          => 17870,
-            Self::CompressedMercoxit                        => 62586,
-            Self::CompressedMagmaMercoxit                   => 62587,
-            Self::CompressedVitreousMercoxit                => 62588,
-            Self::BatchCompressedMercoxit                   => 28413,
-            Self::BatchCompressedMagmaMercoxit              => 28412,
-            Self::BatchCompressedVitreousMercoxit           => 28414,
+            Self::MercoxitIGrade                            => 11396,
+            Self::MercoxitIIGrade                           => 17869,
+            Self::MercoxitIIIGrade                          => 17870,
+            Self::CompressedMercoxitIGrade                  => 62586,
+            Self::CompressedMercoxitIIGrade                 => 62587,
+            Self::CompressedMercoxitIIIGrade                => 62588,
 
-            Self::Mordunium                                 => 74521,
-            Self::PlumMordunium                             => 74522,
-            Self::PrizeMordunium                            => 74523,
-            Self::PlunderMordunium                          => 74524,
-            Self::CompressedMordunium                       => 75275,
-            Self::CompressedPlumMordunium                   => 75276,
-            Self::CompressedPrizeMordunium                  => 75277,
-            Self::CompressedPlunderMordunium                => 75278,
+            Self::MorduniumIGrade                           => 74521,
+            Self::MorduniumIIGrade                          => 74522,
+            Self::MorduniumIIIGrade                         => 74523,
+            Self::MorduniumIVGrade                          => 74524,
+            Self::CompressedMorduniumIGrade                 => 75275,
+            Self::CompressedMorduniumIIGrade                => 75276,
+            Self::CompressedMorduniumIIIGrade               => 75277,
+            Self::CompressedMorduniumIVGrade                => 75278,
 
-            Self::Nocxite                                   => 82016,
-            Self::FragrantNocxite                           => 82017,
-            Self::IntoxicatingNocxite                       => 82018,
-            Self::AmbrosialNocxite                          => 82019,
-            Self::CompressedNocxite                         => 82304,
-            Self::CompressedFragrantNocxite                 => 82305,
-            Self::CompressedIntoxicatingNocxite             => 82306,
-            Self::CompressedAmbrosialNocxite                => 82307,
+            Self::NocxiteIGrade                             => 82016,
+            Self::NocxiteIIGrade                            => 82017,
+            Self::NocxiteIIIGrade                           => 82018,
+            Self::NocxiteIVGrade                            => 82019,
+            Self::CompressedNocxiteIGrade                   => 82304,
+            Self::CompressedNocxiteIIGrade                  => 82305,
+            Self::CompressedNocxiteIIIGrade                 => 82306,
+            Self::CompressedNocxiteIVGrade                  => 82307,
 
-            Self::Omber                                     => 1227,
-            Self::SilveryOmber                              => 17867,
-            Self::GoldenOmber                               => 17868,
-            Self::PlatinoidOmber                            => 46684,
-            Self::CompressedOmber                           => 62532,
-            Self::CompressedSilveryOmber                    => 62533,
-            Self::CompressedGoldenOmber                     => 62534,
-            Self::CompressedPlatinoidOmber                  => 62535,
-            Self::BatchCompressedOmber                      => 28416,
-            Self::BatchCompressedSilveryOmber               => 28417,
-            Self::BatchCompressedGoldenOmber                => 28415,
-            Self::BatchCompressedPlatinoidOmber             => 46700,
+            Self::OmberIGrade                               => 1227,
+            Self::OmberIIGrade                              => 17867,
+            Self::OmberIIIGrade                             => 17868,
+            Self::OmberIVGrade                              => 46684,
+            Self::CompressedOmberIGrade                     => 62532,
+            Self::CompressedOmberIIGrade                    => 62533,
+            Self::CompressedOmberIIIGrade                   => 62534,
+            Self::CompressedOmberIVGrade                    => 62535,
 
-            Self::Plagioclase                               => 18,
-            Self::AzurePlagioclase                          => 17455,
-            Self::RichPlagioclase                           => 17456,
-            Self::SparklingPlagioclase                      => 46685,
-            Self::CompressedPlagioclase                     => 62528,
-            Self::CompressedAzurePlagioclase                => 62529,
-            Self::CompressedRichPlagioclase                 => 62530,
-            Self::CompressedSparklingPlagioclase            => 62531,
-            Self::BatchCompressedPlagioclase                => 28422,
-            Self::BatchCompressedAzurePlagioclase           => 28421,
-            Self::BatchCompressedRichPlagioclase            => 28423,
-            Self::BatchCompressedSparklingPlagioclase       => 46701,
+            Self::PlagioclaseIGrade                         => 18,
+            Self::PlagioclaseIIGrade                        => 17455,
+            Self::PlagioclaseIIIGrade                       => 17456,
+            Self::PlagioclaseIVGrade                        => 46685,
+            Self::CompressedPlagioclaseIGrade               => 62528,
+            Self::CompressedPlagioclaseIIGrade              => 62529,
+            Self::CompressedPlagioclaseIIIGrade             => 62530,
+            Self::CompressedPlagioclaseIVGrade              => 62531,
 
-            Self::Pyroxeres                                 => 1224,
-            Self::SolidPyroxeres                            => 17459,
-            Self::ViscousPyroxeres                          => 17460,
-            Self::OpulentPyroxeres                          => 46686,
-            Self::CompressedPyroxeres                       => 62524,
-            Self::CompressedSolidPyroxeres                  => 62525,
-            Self::CompressedViscousPyroxeres                => 62526,
-            Self::CompressedOpulentPyroxeres                => 62527,
-            Self::BatchCompressedPyroxeres                  => 28424,
-            Self::BatchCompressedSolidPyroxeres             => 28425,
-            Self::BatchCompressedViscousPyroxeres           => 28426,
-            Self::BatchCompressedOpulentPyroxeres           => 46702,
+            Self::PyroxeresIGrade                           => 1224,
+            Self::PyroxeresIIGrade                          => 17459,
+            Self::PyroxeresIIIGrade                         => 17460,
+            Self::PyroxeresIVGrade                          => 46686,
+            Self::CompressedPyroxeresIGrade                 => 62524,
+            Self::CompressedPyroxeresIIGrade                => 62525,
+            Self::CompressedPyroxeresIIIGrade               => 62526,
+            Self::CompressedPyroxeresIVGrade                => 62527,
 
-            Self::Rakovene                                  => 52315,
+            Self::RakoveneIGrade                            => 52315,
             Self::RakoveneIIGrade                           => 56629,
-            Self::RakoveneIIIGrade                             => 56630,
-            Self::CompressedRakovene                        => 62579,
+            Self::RakoveneIIIGrade                          => 56630,
+            Self::CompressedRakoveneIGrade                  => 62579,
             Self::CompressedRakoveneIIGrade                 => 62580,
-            Self::CompressedRakoveneIIIGrade                   => 62581,
+            Self::CompressedRakoveneIIIGrade                => 62581,
 
-            Self::Scordite                                  => 1228,
-            Self::CondensedScordite                         => 17463,
-            Self::MassiveScordite                           => 17464,
-            Self::GlossyScordite                            => 46687,
-            Self::CompressedScordite                        => 62520,
-            Self::CompressedCondensedScordite               => 62521,
-            Self::CompressedMassiveScordite                 => 62522,
-            Self::CompressedGlossyScordite                  => 62523,
-            Self::BatchCompressedScordite                   => 28429,
-            Self::BatchCompressedCondensedScordite          => 28427,
-            Self::BatchCompressedMassiveScordite            => 28428,
-            Self::BatchCompressedGlossyScordite             => 46703,
+            Self::ScorditeIGrade                            => 1228,
+            Self::ScorditeIIGrade                           => 17463,
+            Self::ScorditeIIIGrade                          => 17464,
+            Self::ScorditeIVGrade                           => 46687,
+            Self::CompressedScorditeIGrade                  => 62520,
+            Self::CompressedScorditeIIGrade                 => 62521,
+            Self::CompressedScorditeIIIGrade                => 62522,
+            Self::CompressedScorditeIVGrade                 => 62523,
 
-            Self::Spodumain                                 => 19,
-            Self::BrightSpodumain                           => 17466,
-            Self::GleamingSpodumain                         => 17467,
-            Self::DazzlingSpodumain                         => 46688,
-            Self::CompressedSpodumain                       => 62572,
-            Self::CompressedBrightSpodumain                 => 62573,
-            Self::CompressedGleamingSpodumain               => 62574,
-            Self::CompressedDazzlingSpodumain               => 62575,
-            Self::BatchCompressedSpodumain                  => 28420,
-            Self::BatchCompressedBrightSpodumain            => 28418,
-            Self::BatchCompressedGleamingSpodumain          => 28419,
-            Self::BatchCompressedDazzlingSpodumain          => 46704,
+            Self::SpodumainIGrade                           => 19,
+            Self::SpodumainIIGrade                          => 17466,
+            Self::SpodumainIIIGrade                         => 17467,
+            Self::SpodumainIVGrade                          => 46688,
+            Self::CompressedSpodumainIGrade                 => 62572,
+            Self::CompressedSpodumainIIGrade                => 62573,
+            Self::CompressedSpodumainIIIGrade               => 62574,
+            Self::CompressedSpodumainIVGrade                => 62575,
 
-            Self::Talassonite                               => 52306,
+            Self::TalassoniteIGrade                         => 52306,
             Self::TalassoniteIIGrade                        => 56625,
-            Self::TalassoniteIIIGrade                          => 56626,
-            Self::CompressedTalassonite                     => 62582,
+            Self::TalassoniteIIIGrade                       => 56626,
+            Self::CompressedTalassoniteIGrade               => 62582,
             Self::CompressedTalassoniteIIGrade              => 62583,
-            Self::CompressedTalassoniteIIIGrade                => 62584,
+            Self::CompressedTalassoniteIIIGrade             => 62584,
 
-            Self::Ueganite                                  => 82205,
-            Self::FoggyUeganite                             => 82206,
-            Self::OvercastUeganite                          => 82207,
-            Self::StormyUeganite                            => 82208,
-            Self::CompressedUeganite                        => 82308,
-            Self::CompressedFoggyUeganite                   => 82309,
-            Self::CompressedOvercastUeganite                => 82310,
-            Self::CompressedStormyUeganite                  => 82311,
+            Self::UeganiteIGrade                            => 82205,
+            Self::UeganiteIIGrade                           => 82206,
+            Self::UeganiteIIIGrade                          => 82207,
+            Self::UeganiteIVGrade                           => 82208,
+            Self::CompressedUeganiteIGrade                  => 82308,
+            Self::CompressedUeganiteIIGrade                 => 82309,
+            Self::CompressedUeganiteIIIGrade                => 82310,
+            Self::CompressedUeganiteIVGrade                 => 82311,
 
-            Self::Veldspar                                  => 1230,
-            Self::ConcentratedVeldspar                      => 17470,
-            Self::DenseVeldspar                             => 17471,
-            Self::StableVeldspar                            => 46689,
-            Self::CompressedVeldspar                        => 62516,
-            Self::CompressedConcentratedVeldspar            => 62517,
-            Self::CompressedDenseVeldspar                   => 62518,
-            Self::CompressedStableVeldspar                  => 62519,
-            Self::BatchCompressedVeldspar                   => 28432,
-            Self::BatchCompressedConcentratedVeldspar       => 28430,
-            Self::BatchCompressedDenseVeldspar              => 28431,
-            Self::BatchCompressedStableVeldspar             => 46705,
+            Self::VeldsparIGrade                            => 1230,
+            Self::VeldsparIIGrade                           => 17470,
+            Self::VeldsparIIIGrade                          => 17471,
+            Self::VeldsparIVGrade                           => 46689,
+            Self::CompressedVeldsparIGrade                  => 62516,
+            Self::CompressedVeldsparIIGrade                 => 62517,
+            Self::CompressedVeldsparIIIGrade                => 62518,
+            Self::CompressedVeldsparIVGrade                 => 62519,
 
-            Self::Ytirium                                   => 74525,
-            Self::BootlegYtirium                            => 74526,
-            Self::FirewaterYtirium                          => 74527,
-            Self::MoonshineYtirium                          => 74528,
-            Self::CompressedYtirium                         => 75279,
-            Self::CompressedBootlegYtirium                  => 75280,
-            Self::CompressedFirewaterYtirium                => 75281,
-            Self::CompressedMoonshineYtirium                => 75282,
+            Self::YtiriumIGrade                             => 74525,
+            Self::YtiriumIIGrade                            => 74526,
+            Self::YtiriumIIIGrade                           => 74527,
+            Self::YtiriumIVGrade                            => 74528,
+            Self::CompressedYtiriumIGrade                   => 75279,
+            Self::CompressedYtiriumIIGrade                  => 75280,
+            Self::CompressedYtiriumIIIGrade                 => 75281,
+            Self::CompressedYtiriumIVGrade                  => 75282,
 
             // MoonGoo
             Self::Bitumens                                  => 45492,
@@ -1451,10 +1325,10 @@ impl Asteroid {
             Self::BlueIceIVGrade                            => 17975,
             Self::CompressedBlueIce                         => 28433,
             Self::CompressedBlueIceIVGrade                  => 28443,
-            Self::IcicleIIGrade                               => 16262,
-            Self::IcicleIVGradeIIGrade                        => 17978,
-            Self::CompressedIcicleIIGrade                     => 28434,
-            Self::CompressedIcicleIVGradeIIGrade              => 28436,
+            Self::IcicleIIGrade                             => 16262,
+            Self::IcicleIVGradeIIGrade                      => 17978,
+            Self::CompressedIcicleIIGrade                   => 28434,
+            Self::CompressedIcicleIVGradeIIGrade            => 28436,
             Self::GlacialMass                               => 16263,
             Self::GlacialMassIVGrade                        => 17977,
             Self::CompressedGlacialMass                     => 28438,
@@ -1484,10 +1358,6 @@ impl Asteroid {
             62569 => Self::CompressedArkonorIIGrade,
             62570 => Self::CompressedArkonorIIIGrade,
             62571 => Self::CompressedArkonorIVGrade,
-            28367 => Self::BatchCompressedArkonorIGrade,
-            28385 => Self::BatchCompressedArkonorIIGrade,
-            28387 => Self::BatchCompressedArkonorIIIGrade,
-            46691 => Self::BatchCompressedArkonorIVGrade,
 
             52316 => Self::BezdnacineIGrade,
             56627 => Self::BezdnacineIIGrade,
@@ -1504,10 +1374,6 @@ impl Asteroid {
             62565 => Self::CompressedBistotIIGrade,
             62566 => Self::CompressedBistotIIIGrade,
             62567 => Self::CompressedBistotIVGrade,
-            28388 => Self::BatchCompressedBistotIGrade,
-            28390 => Self::BatchCompressedBistotIIGrade,
-            28389 => Self::BatchCompressedBistotIIIGrade,
-            46692 => Self::BatchCompressedBistotIVGrade,
 
             1225  => Self::CrokiteIGrade,
             17432 => Self::CrokiteIIGrade,
@@ -1517,10 +1383,6 @@ impl Asteroid {
             62561 => Self::CompressedCrokiteIIGrade,
             62562 => Self::CompressedCrokiteIIIGrade,
             62563 => Self::CompressedCrokiteIVGrade,
-            28391 => Self::BatchCompressedCrokiteIGrade,
-            28392 => Self::BatchCompressedCrokiteIIGrade,
-            28393 => Self::BatchCompressedCrokiteIIIGrade,
-            46693 => Self::BatchCompressedCrokiteIVGrade,
 
             1232  => Self::DarkOchreIGrade,
             17436 => Self::OchreIIGrade,
@@ -1530,10 +1392,6 @@ impl Asteroid {
             62557 => Self::CompressedOchreIIGrade,
             62558 => Self::CompressedOchreIIIGrade,
             62559 => Self::CompressedOchreIVGrade,
-            28394 => Self::BatchCompressedDarkOchreIGrade,
-            28396 => Self::BatchCompressedOchreIIGrade,
-            28395 => Self::BatchCompressedOchreIIIGrade,
-            46694 => Self::BatchCompressedOchreIVGrade,
 
             74533 => Self::DuciniumIGrade,
             74534 => Self::DuciniumIIGrade,
@@ -1561,10 +1419,6 @@ impl Asteroid {
             62553 => Self::CompressedGneissIIGrade,
             62554 => Self::CompressedGneissIIIGrade,
             62555 => Self::CompressedGneissIVGrade,
-            28397 => Self::BatchCompressedGneissIGrade,
-            28398 => Self::BatchCompressedGneissIIGrade,
-            28399 => Self::BatchCompressedGneissIIIGrade,
-            46695 => Self::BatchCompressedGneissIVGrade,
 
 
             81975 => Self::GriemeerIGrade,
@@ -1584,10 +1438,6 @@ impl Asteroid {
             62549 => Self::CompressedHedbergiteIIGrade,
             62550 => Self::CompressedHedbergiteIIIGrade,
             62551 => Self::CompressedHedbergiteIVGrade,
-            28401 => Self::BatchCompressedHedbergiteIGrade,
-            28402 => Self::BatchCompressedHedbergiteIIGrade,
-            28400 => Self::BatchCompressedHedbergiteIIIGrade,
-            46696 => Self::BatchCompressedHedbergiteIVGrade,
 
             1231  => Self::HemorphiteIGrade,
             17444 => Self::HemorphiteIIGrade,
@@ -1597,10 +1447,6 @@ impl Asteroid {
             62545 => Self::CompressedHemorphiteIIGrade,
             62546 => Self::CompressedHemorphiteIIIGrade,
             62547 => Self::CompressedHemorphiteIVGrade,
-            28403 => Self::BatchCompressedHemorphiteIGrade,
-            28405 => Self::BatchCompressedHemorphiteIIGrade,
-            28404 => Self::BatchCompressedHemorphiteIIIGrade,
-            46697 => Self::BatchCompressedHemorphiteIVGrade,
 
             82163 => Self::HezorimeIGrade,
             82164 => Self::HezorimeIIGrade,
@@ -1619,10 +1465,6 @@ impl Asteroid {
             62541 => Self::CompressedJaspetIIGrade,
             62542 => Self::CompressedJaspetIIIGrade,
             62543 => Self::CompressedJaspetIVGrade,
-            28406 => Self::BatchCompressedJaspetIGrade,
-            28408 => Self::BatchCompressedJaspetIIGrade,
-            28407 => Self::BatchCompressedJaspetIIIGrade,
-            46698 => Self::BatchCompressedJaspetIVGrade,
 
 
             20    => Self::KerniteIGrade,
@@ -1633,10 +1475,6 @@ impl Asteroid {
             62537 => Self::CompressedKerniteIIGrade,
             62538 => Self::CompressedKerniteIIIGrade,
             62539 => Self::CompressedKerniteIVGrade,
-            28410 => Self::BatchCompressedKerniteIGrade,
-            28411 => Self::BatchCompressedKerniteIIGrade,
-            28409 => Self::BatchCompressedKerniteIIIGrade,
-            46699 => Self::BatchCompressedKerniteIVGrade,
 
             81900 => Self::KylixiumIGrade,
             81901 => Self::KylixiumIIGrade,
@@ -1647,143 +1485,116 @@ impl Asteroid {
             82302 => Self::CompressedKylixiumIIIGrade,
             82303 => Self::CompressedKylixiumIVGrade,
 
-            11396 => Self::Mercoxit,
-            17869 => Self::MagmaMercoxit,
-            17870 => Self::VitreousMercoxit,
-            62586 => Self::CompressedMercoxit,
-            62587 => Self::CompressedMagmaMercoxit,
-            62588 => Self::CompressedVitreousMercoxit,
-            28413 => Self::BatchCompressedMercoxit,
-            28412 => Self::BatchCompressedMagmaMercoxit,
-            28414 => Self::BatchCompressedVitreousMercoxit,
+            11396 => Self::MercoxitIGrade,
+            17869 => Self::MercoxitIIGrade,
+            17870 => Self::MercoxitIIIGrade,
+            62586 => Self::CompressedMercoxitIGrade,
+            62587 => Self::CompressedMercoxitIIGrade,
+            62588 => Self::CompressedMercoxitIIIGrade,
 
-            74521 => Self::Mordunium,
-            74522 => Self::PlumMordunium,
-            74523 => Self::PrizeMordunium,
-            74524 => Self::PlunderMordunium,
-            75275 => Self::CompressedMordunium,
-            75276 => Self::CompressedPlumMordunium,
-            75277 => Self::CompressedPrizeMordunium,
-            75278 => Self::CompressedPlunderMordunium,
+            74521 => Self::MorduniumIGrade,
+            74522 => Self::MorduniumIIGrade,
+            74523 => Self::MorduniumIIIGrade,
+            74524 => Self::MorduniumIVGrade,
+            75275 => Self::CompressedMorduniumIGrade,
+            75276 => Self::CompressedMorduniumIIGrade,
+            75277 => Self::CompressedMorduniumIIIGrade,
+            75278 => Self::CompressedMorduniumIVGrade,
 
-            82016 => Self::Nocxite,
-            82017 => Self::FragrantNocxite,
-            82018 => Self::IntoxicatingNocxite,
-            82019 => Self::AmbrosialNocxite,
-            82304 => Self::CompressedNocxite,
-            82305 => Self::CompressedFragrantNocxite,
-            82306 => Self::CompressedIntoxicatingNocxite,
-            82307 => Self::CompressedAmbrosialNocxite,
+            82016 => Self::NocxiteIGrade,
+            82017 => Self::NocxiteIIGrade,
+            82018 => Self::NocxiteIIIGrade,
+            82019 => Self::NocxiteIVGrade,
+            82304 => Self::CompressedNocxiteIGrade,
+            82305 => Self::CompressedNocxiteIIGrade,
+            82306 => Self::CompressedNocxiteIIIGrade,
+            82307 => Self::CompressedNocxiteIVGrade,
 
-            1227  => Self::Omber,
-            17867 => Self::SilveryOmber,
-            17868 => Self::GoldenOmber,
-            46684 => Self::PlatinoidOmber,
-            62532 => Self::CompressedOmber,
-            62533 => Self::CompressedSilveryOmber,
-            62534 => Self::CompressedGoldenOmber,
-            62535 => Self::CompressedPlatinoidOmber,
-            28416 => Self::BatchCompressedOmber,
-            28417 => Self::BatchCompressedSilveryOmber,
-            28415 => Self::BatchCompressedGoldenOmber,
-            46700 => Self::BatchCompressedPlatinoidOmber,
+            1227  => Self::OmberIGrade,
+            17867 => Self::OmberIIGrade,
+            17868 => Self::OmberIIIGrade,
+            46684 => Self::OmberIVGrade,
+            62532 => Self::CompressedOmberIGrade,
+            62533 => Self::CompressedOmberIIGrade,
+            62534 => Self::CompressedOmberIIIGrade,
+            62535 => Self::CompressedOmberIVGrade,
 
-            18    => Self::Plagioclase,
-            17455 => Self::AzurePlagioclase,
-            17456 => Self::RichPlagioclase,
-            46685 => Self::SparklingPlagioclase,
-            62528 => Self::CompressedPlagioclase,
-            62529 => Self::CompressedAzurePlagioclase,
-            62530 => Self::CompressedRichPlagioclase,
-            62531 => Self::CompressedSparklingPlagioclase,
-            28422 => Self::BatchCompressedPlagioclase,
-            28421 => Self::BatchCompressedAzurePlagioclase,
-            28423 => Self::BatchCompressedRichPlagioclase,
-            46701 => Self::BatchCompressedSparklingPlagioclase,
+            18    => Self::PlagioclaseIGrade,
+            17455 => Self::PlagioclaseIIGrade,
+            17456 => Self::PlagioclaseIIIGrade,
+            46685 => Self::PlagioclaseIVGrade,
+            62528 => Self::CompressedPlagioclaseIGrade,
+            62529 => Self::CompressedPlagioclaseIIGrade,
+            62530 => Self::CompressedPlagioclaseIIIGrade,
+            62531 => Self::CompressedPlagioclaseIVGrade,
 
-            1224  => Self::Pyroxeres,
-            17459 => Self::SolidPyroxeres,
-            17460 => Self::ViscousPyroxeres,
-            46686 => Self::OpulentPyroxeres,
-            62524 => Self::CompressedPyroxeres,
-            62525 => Self::CompressedSolidPyroxeres,
-            62526 => Self::CompressedViscousPyroxeres,
-            62527 => Self::CompressedOpulentPyroxeres,
-            28424 => Self::BatchCompressedPyroxeres,
-            28425 => Self::BatchCompressedSolidPyroxeres,
-            28426 => Self::BatchCompressedViscousPyroxeres,
-            46702 => Self::BatchCompressedOpulentPyroxeres,
+            1224  => Self::PyroxeresIGrade,
+            17459 => Self::PyroxeresIIGrade,
+            17460 => Self::PyroxeresIIIGrade,
+            46686 => Self::PyroxeresIVGrade,
+            62524 => Self::CompressedPyroxeresIGrade,
+            62525 => Self::CompressedPyroxeresIIGrade,
+            62526 => Self::CompressedPyroxeresIIIGrade,
+            62527 => Self::CompressedPyroxeresIVGrade,
 
-            52315 => Self::Rakovene,
+            52315 => Self::RakoveneIGrade,
             56629 => Self::RakoveneIIGrade,
             56630 => Self::RakoveneIIIGrade,
-            62579 => Self::CompressedRakovene,
+            62579 => Self::CompressedRakoveneIGrade,
             62580 => Self::CompressedRakoveneIIGrade,
             62581 => Self::CompressedRakoveneIIIGrade,
 
-            1228  => Self::Scordite,
-            17463 => Self::CondensedScordite,
-            17464 => Self::MassiveScordite,
-            46687 => Self::GlossyScordite,
-            62520 => Self::CompressedScordite,
-            62521 => Self::CompressedCondensedScordite,
-            62522 => Self::CompressedMassiveScordite,
-            62523 => Self::CompressedGlossyScordite,
-            28429 => Self::BatchCompressedScordite,
-            28427 => Self::BatchCompressedCondensedScordite,
-            28428 => Self::BatchCompressedMassiveScordite,
-            46703 => Self::BatchCompressedGlossyScordite,
+            1228  => Self::ScorditeIGrade,
+            17463 => Self::ScorditeIIGrade,
+            17464 => Self::ScorditeIIIGrade,
+            46687 => Self::ScorditeIVGrade,
+            62520 => Self::CompressedScorditeIGrade,
+            62521 => Self::CompressedScorditeIIGrade,
+            62522 => Self::CompressedScorditeIIIGrade,
+            62523 => Self::CompressedScorditeIVGrade,
 
-            19    => Self::Spodumain,
-            17466 => Self::BrightSpodumain,
-            17467 => Self::GleamingSpodumain,
-            46688 => Self::DazzlingSpodumain,
-            62572 => Self::CompressedSpodumain,
-            62573 => Self::CompressedBrightSpodumain,
-            62574 => Self::CompressedGleamingSpodumain,
-            62575 => Self::CompressedDazzlingSpodumain,
-            28420 => Self::BatchCompressedSpodumain,
-            28418 => Self::BatchCompressedBrightSpodumain,
-            28419 => Self::BatchCompressedGleamingSpodumain,
-            46704 => Self::BatchCompressedDazzlingSpodumain,
+            19    => Self::SpodumainIGrade,
+            17466 => Self::SpodumainIIGrade,
+            17467 => Self::SpodumainIIIGrade,
+            46688 => Self::SpodumainIVGrade,
+            62572 => Self::CompressedSpodumainIGrade,
+            62573 => Self::CompressedSpodumainIIGrade,
+            62574 => Self::CompressedSpodumainIIIGrade,
+            62575 => Self::CompressedSpodumainIVGrade,
 
-            52306 => Self::Talassonite,
+            52306 => Self::TalassoniteIGrade,
             56625 => Self::TalassoniteIIGrade,
             56626 => Self::TalassoniteIIIGrade,
-            62582 => Self::CompressedTalassonite,
+            62582 => Self::CompressedTalassoniteIGrade,
             62583 => Self::CompressedTalassoniteIIGrade,
             62584 => Self::CompressedTalassoniteIIIGrade,
 
-            82205 => Self::Ueganite,
-            82206 => Self::FoggyUeganite,
-            82207 => Self::OvercastUeganite,
-            82208 => Self::StormyUeganite,
-            82308 => Self::CompressedUeganite,
-            82309 => Self::CompressedFoggyUeganite,
-            82310 => Self::CompressedOvercastUeganite,
-            82311 => Self::CompressedStormyUeganite,
+            82205 => Self::UeganiteIGrade,
+            82206 => Self::UeganiteIIGrade,
+            82207 => Self::UeganiteIIIGrade,
+            82208 => Self::UeganiteIVGrade,
+            82308 => Self::CompressedUeganiteIGrade,
+            82309 => Self::CompressedUeganiteIIGrade,
+            82310 => Self::CompressedUeganiteIIIGrade,
+            82311 => Self::CompressedUeganiteIVGrade,
 
-            1230  => Self::Veldspar,
-            17470 => Self::ConcentratedVeldspar,
-            17471 => Self::DenseVeldspar,
-            46689 => Self::StableVeldspar,
-            62516 => Self::CompressedVeldspar,
-            62517 => Self::CompressedConcentratedVeldspar,
-            62518 => Self::CompressedDenseVeldspar,
-            62519 => Self::CompressedStableVeldspar,
-            28432 => Self::BatchCompressedVeldspar,
-            28430 => Self::BatchCompressedConcentratedVeldspar,
-            28431 => Self::BatchCompressedDenseVeldspar,
-            46705 => Self::BatchCompressedStableVeldspar,
+            1230  => Self::VeldsparIGrade,
+            17470 => Self::VeldsparIIGrade,
+            17471 => Self::VeldsparIIIGrade,
+            46689 => Self::VeldsparIVGrade,
+            62516 => Self::CompressedVeldsparIGrade,
+            62517 => Self::CompressedVeldsparIIGrade,
+            62518 => Self::CompressedVeldsparIIIGrade,
+            62519 => Self::CompressedVeldsparIVGrade,
 
-            74525 => Self::Ytirium,
-            74526 => Self::BootlegYtirium,
-            74527 => Self::FirewaterYtirium,
-            74528 => Self::MoonshineYtirium,
-            75279 => Self::CompressedYtirium,
-            75280 => Self::CompressedBootlegYtirium,
-            75281 => Self::CompressedFirewaterYtirium,
-            75282 => Self::CompressedMoonshineYtirium,
+            74525 => Self::YtiriumIGrade,
+            74526 => Self::YtiriumIIGrade,
+            74527 => Self::YtiriumIIIGrade,
+            74528 => Self::YtiriumIVGrade,
+            75279 => Self::CompressedYtiriumIGrade,
+            75280 => Self::CompressedYtiriumIIGrade,
+            75281 => Self::CompressedYtiriumIIIGrade,
+            75282 => Self::CompressedYtiriumIVGrade,
 
             // MoonGoo
             45492 => Self::Bitumens,
@@ -2009,18 +1820,14 @@ impl Asteroid {
         };
 
         match self {
-            Self::ArkonorIGrade                                   |
+            Self::ArkonorIGrade                             |
             Self::ArkonorIIGrade                            |
-            Self::ArkonorIIIGrade                              |
-            Self::ArkonorIVGrade                           |
-            Self::CompressedArkonorIGrade                         |
+            Self::ArkonorIIIGrade                           |
+            Self::ArkonorIVGrade                            |
+            Self::CompressedArkonorIGrade                   |
             Self::CompressedArkonorIIGrade                  |
-            Self::CompressedArkonorIIIGrade                    |
-            Self::CompressedArkonorIVGrade                 |
-            Self::BatchCompressedArkonorIGrade                    |
-            Self::BatchCompressedArkonorIIGrade             |
-            Self::BatchCompressedArkonorIIIGrade               |
-            Self::BatchCompressedArkonorIVGrade            => {
+            Self::CompressedArkonorIIIGrade                 |
+            Self::CompressedArkonorIVGrade                  => {
                 mineral_init(
                     vec![
                         Mineral::Pyerite,
@@ -2035,12 +1842,12 @@ impl Asteroid {
                 )
             },
 
-            Self::BezdnacineIGrade                                |
+            Self::BezdnacineIGrade                          |
             Self::BezdnacineIIGrade                         |
-            Self::BezdnacineIIIGrade                           |
-            Self::CompressedBezdnacineIGrade                      |
+            Self::BezdnacineIIIGrade                        |
+            Self::CompressedBezdnacineIGrade                |
             Self::CompressedBezdnacineIIGrade               |
-            Self::CompressedBezdnacineIIIGrade                 => {
+            Self::CompressedBezdnacineIIIGrade              => {
                 mineral_init(
                     vec![
                         Mineral::Tritanium,
@@ -2055,18 +1862,14 @@ impl Asteroid {
                 )
             },
 
-            Self::BistotIGrade                                    |
-            Self::BistotIIGrade                           |
-            Self::BistotIIIGrade                          |
-            Self::BistotIVGrade                               |
-            Self::CompressedBistotIGrade                          |
-            Self::CompressedBistotIIGrade                 |
-            Self::CompressedBistotIIIGrade                |
-            Self::CompressedBistotIVGrade                     |
-            Self::BatchCompressedBistotIGrade                     |
-            Self::BatchCompressedBistotIIGrade            |
-            Self::BatchCompressedBistotIIIGrade           |
-            Self::BatchCompressedBistotIVGrade                => {
+            Self::BistotIGrade                              |
+            Self::BistotIIGrade                             |
+            Self::BistotIIIGrade                            |
+            Self::BistotIVGrade                             |
+            Self::CompressedBistotIGrade                    |
+            Self::CompressedBistotIIGrade                   |
+            Self::CompressedBistotIIIGrade                  |
+            Self::CompressedBistotIVGrade                   => {
                 mineral_init(
                     vec![
                         Mineral::Pyerite,
@@ -2081,18 +1884,14 @@ impl Asteroid {
                 )
             },
 
-            Self::CrokiteIGrade                                   |
-            Self::CrokiteIIGrade                              |
-            Self::CrokiteIIIGrade                        |
-            Self::CrokiteIVGrade                           |
-            Self::CompressedCrokiteIGrade                         |
-            Self::CompressedCrokiteIIGrade                    |
-            Self::CompressedCrokiteIIIGrade              |
-            Self::CompressedCrokiteIVGrade                 |
-            Self::BatchCompressedCrokiteIGrade                    |
-            Self::BatchCompressedCrokiteIIGrade               |
-            Self::BatchCompressedCrokiteIIIGrade         |
-            Self::BatchCompressedCrokiteIVGrade            => {
+            Self::CrokiteIGrade                             |
+            Self::CrokiteIIGrade                            |
+            Self::CrokiteIIIGrade                           |
+            Self::CrokiteIVGrade                            |
+            Self::CompressedCrokiteIGrade                   |
+            Self::CompressedCrokiteIIGrade                  |
+            Self::CompressedCrokiteIIIGrade                 |
+            Self::CompressedCrokiteIVGrade                  => {
                 mineral_init(
                     vec![
                         Mineral::Pyerite,
@@ -2107,18 +1906,14 @@ impl Asteroid {
                 )
             },
 
-            Self::DarkOchreIGrade                                 |
-            Self::OchreIIGrade                                 |
+            Self::DarkOchreIGrade                           |
+            Self::OchreIIGrade                              |
             Self::OchreIIIGrade                             |
-            Self::OchreIVGrade                                  |
-            Self::CompressedDarkOchreIGrade                       |
-            Self::CompressedOchreIIGrade                       |
+            Self::OchreIVGrade                              |
+            Self::CompressedDarkOchreIGrade                 |
+            Self::CompressedOchreIIGrade                    |
             Self::CompressedOchreIIIGrade                   |
-            Self::CompressedOchreIVGrade                        |
-            Self::BatchCompressedDarkOchreIGrade                  |
-            Self::BatchCompressedOchreIIGrade                  |
-            Self::BatchCompressedOchreIIIGrade              |
-            Self::BatchCompressedOchreIVGrade                   => {
+            Self::CompressedOchreIVGrade                    => {
                 mineral_init(
                     vec![
                         Mineral::Mexallon,
@@ -2133,14 +1928,14 @@ impl Asteroid {
                 )
             },
 
-            Self::DuciniumIGrade                                  |
-            Self::DuciniumIIGrade                             |
-            Self::DuciniumIIIGrade                             |
-            Self::DuciniumIVGrade                          |
-            Self::CompressedDuciniumIGrade                        |
-            Self::CompressedDuciniumIIGrade                   |
-            Self::CompressedDuciniumIIIGrade                   |
-            Self::CompressedDuciniumIVGrade                => {
+            Self::DuciniumIGrade                            |
+            Self::DuciniumIIGrade                           |
+            Self::DuciniumIIIGrade                          |
+            Self::DuciniumIVGrade                           |
+            Self::CompressedDuciniumIGrade                  |
+            Self::CompressedDuciniumIIGrade                 |
+            Self::CompressedDuciniumIIIGrade                |
+            Self::CompressedDuciniumIVGrade                 => {
                 mineral_init(
                     vec![
                         Mineral::Megacyte,
@@ -2151,14 +1946,14 @@ impl Asteroid {
                 )
             },
 
-            Self::EifyriumIGrade                                  |
-            Self::EifyriumIIGrade                             |
-            Self::EifyriumIIIGrade                           |
-            Self::EifyriumIVGrade                         |
-            Self::CompressedEifyriumIGrade                        |
-            Self::CompressedEifyriumIIGrade                   |
-            Self::CompressedEifyriumIIIGrade                 |
-            Self::CompressedEifyriumIVGrade               => {
+            Self::EifyriumIGrade                            |
+            Self::EifyriumIIGrade                           |
+            Self::EifyriumIIIGrade                          |
+            Self::EifyriumIVGrade                           |
+            Self::CompressedEifyriumIGrade                  |
+            Self::CompressedEifyriumIIGrade                 |
+            Self::CompressedEifyriumIIIGrade                |
+            Self::CompressedEifyriumIVGrade                 => {
                 mineral_init(
                     vec![
                         Mineral::Zydrine,
@@ -2169,18 +1964,14 @@ impl Asteroid {
                 )
             },
 
-            Self::GneissIGrade                                    |
-            Self::GneissIIGrade                          |
-            Self::GneissIIIGrade                           |
-            Self::GneissIVGrade                           |
-            Self::CompressedGneissIGrade                          |
-            Self::CompressedGneissIIGrade                |
-            Self::CompressedGneissIIIGrade                 |
-            Self::CompressedGneissIVGrade                 |
-            Self::BatchCompressedGneissIGrade                     |
-            Self::BatchCompressedGneissIIGrade           |
-            Self::BatchCompressedGneissIIIGrade            |
-            Self::BatchCompressedGneissIVGrade            => {
+            Self::GneissIGrade                              |
+            Self::GneissIIGrade                             |
+            Self::GneissIIIGrade                            |
+            Self::GneissIVGrade                             |
+            Self::CompressedGneissIGrade                    |
+            Self::CompressedGneissIIGrade                   |
+            Self::CompressedGneissIIIGrade                  |
+            Self::CompressedGneissIVGrade                   => {
                 mineral_init(
                     vec![
                         Mineral::Pyerite,
@@ -2195,14 +1986,14 @@ impl Asteroid {
                 )
             },
 
-            Self::GriemeerIGrade                                  |
-            Self::GriemeerIIGrade                             |
-            Self::GriemeerIIIGrade                              |
-            Self::GriemeerIVGrade                            |
-            Self::CompressedGriemeerIGrade                        |
-            Self::CompressedGriemeerIIGrade                   |
-            Self::CompressedGriemeerIIIGrade                    |
-            Self::CompressedGriemeerIVGrade                  => {
+            Self::GriemeerIGrade                            |
+            Self::GriemeerIIGrade                           |
+            Self::GriemeerIIIGrade                          |
+            Self::GriemeerIVGrade                           |
+            Self::CompressedGriemeerIGrade                  |
+            Self::CompressedGriemeerIIGrade                 |
+            Self::CompressedGriemeerIIIGrade                |
+            Self::CompressedGriemeerIVGrade                 => {
                 mineral_init(
                     vec![
                         Mineral::Tritanium,
@@ -2215,18 +2006,14 @@ impl Asteroid {
                 )
             },
 
-            Self::HedbergiteIGrade                                |
-            Self::HedbergiteIIGrade                          |
-            Self::HedbergiteIIIGrade                          |
-            Self::HedbergiteIVGrade                        |
-            Self::CompressedHedbergiteIGrade                      |
-            Self::CompressedHedbergiteIIGrade                |
-            Self::CompressedHedbergiteIIIGrade                |
-            Self::CompressedHedbergiteIVGrade              |
-            Self::BatchCompressedHedbergiteIGrade                 |
-            Self::BatchCompressedHedbergiteIIGrade           |
-            Self::BatchCompressedHedbergiteIIIGrade           |
-            Self::BatchCompressedHedbergiteIVGrade         => {
+            Self::HedbergiteIGrade                          |
+            Self::HedbergiteIIGrade                         |
+            Self::HedbergiteIIIGrade                        |
+            Self::HedbergiteIVGrade                         |
+            Self::CompressedHedbergiteIGrade                |
+            Self::CompressedHedbergiteIIGrade               |
+            Self::CompressedHedbergiteIIIGrade              |
+            Self::CompressedHedbergiteIVGrade               => {
                 mineral_init(
                     vec![
                         Mineral::Pyerite,
@@ -2239,18 +2026,14 @@ impl Asteroid {
                 )
             },
 
-            Self::HemorphiteIGrade                                |
-            Self::HemorphiteIIGrade                           |
-            Self::HemorphiteIIIGrade                         |
-            Self::HemorphiteIVGrade                   |
-            Self::CompressedHemorphiteIGrade                      |
-            Self::CompressedHemorphiteIIGrade                 |
-            Self::CompressedHemorphiteIIIGrade               |
-            Self::CompressedHemorphiteIVGrade         |
-            Self::BatchCompressedHemorphiteIGrade                 |
-            Self::BatchCompressedHemorphiteIIGrade            |
-            Self::BatchCompressedHemorphiteIIIGrade          |
-            Self::BatchCompressedHemorphiteIVGrade    => {
+            Self::HemorphiteIGrade                          |
+            Self::HemorphiteIIGrade                         |
+            Self::HemorphiteIIIGrade                        |
+            Self::HemorphiteIVGrade                         |
+            Self::CompressedHemorphiteIGrade                |
+            Self::CompressedHemorphiteIIGrade               |
+            Self::CompressedHemorphiteIIIGrade              |
+            Self::CompressedHemorphiteIVGrade               => {
                 mineral_init(
                     vec![
                         Mineral::Tritanium,
@@ -2265,14 +2048,14 @@ impl Asteroid {
                 )
             },
 
-            Self::HezorimeIGrade                                  |
-            Self::HezorimeIIGrade                              |
+            Self::HezorimeIGrade                            |
+            Self::HezorimeIIGrade                           |
             Self::HezorimeIIIGrade                          |
-            Self::HezorimeIVGrade                             |
-            Self::CompressedHezorimeIGrade                        |
-            Self::CompressedHezorimeIIGrade                    |
+            Self::HezorimeIVGrade                           |
+            Self::CompressedHezorimeIGrade                  |
+            Self::CompressedHezorimeIIGrade                 |
             Self::CompressedHezorimeIIIGrade                |
-            Self::CompressedHezorimeIVGrade                   => {
+            Self::CompressedHezorimeIVGrade                 => {
                 mineral_init(
                     vec![
                         Mineral::Tritanium,
@@ -2287,18 +2070,14 @@ impl Asteroid {
                 )
             },
 
-            Self::JaspetIGrade                                    |
-            Self::JaspetIIGrade                                |
+            Self::JaspetIGrade                              |
+            Self::JaspetIIGrade                             |
             Self::JaspetIIIGrade                            |
-            Self::JaspetIVGrade                          |
-            Self::CompressedJaspetIGrade                          |
-            Self::CompressedJaspetIIGrade                      |
+            Self::JaspetIVGrade                             |
+            Self::CompressedJaspetIGrade                    |
+            Self::CompressedJaspetIIGrade                   |
             Self::CompressedJaspetIIIGrade                  |
-            Self::CompressedJaspetIVGrade                |
-            Self::BatchCompressedJaspetIGrade                     |
-            Self::BatchCompressedJaspetIIGrade                 |
-            Self::BatchCompressedJaspetIIIGrade             |
-            Self::BatchCompressedJaspetIVGrade           => {
+            Self::CompressedJaspetIVGrade                   => {
                 mineral_init(
                     vec![
                         Mineral::Mexallon,
@@ -2311,18 +2090,14 @@ impl Asteroid {
                 )
             },
 
-            Self::KerniteIGrade                                   |
-            Self::KerniteIIGrade                           |
-            Self::KerniteIIIGrade                              |
-            Self::KerniteIVGrade                        |
-            Self::CompressedKerniteIGrade                         |
-            Self::CompressedKerniteIIGrade                 |
-            Self::CompressedKerniteIIIGrade                    |
-            Self::CompressedKerniteIVGrade              |
-            Self::BatchCompressedKerniteIGrade                    |
-            Self::BatchCompressedKerniteIIGrade            |
-            Self::BatchCompressedKerniteIIIGrade               |
-            Self::BatchCompressedKerniteIVGrade         => {
+            Self::KerniteIGrade                             |
+            Self::KerniteIIGrade                            |
+            Self::KerniteIIIGrade                           |
+            Self::KerniteIVGrade                            |
+            Self::CompressedKerniteIGrade                   |
+            Self::CompressedKerniteIIGrade                  |
+            Self::CompressedKerniteIIIGrade                 |
+            Self::CompressedKerniteIVGrade                  => {
                 mineral_init(
                     vec![
                         Mineral::Mexallon,
@@ -2335,14 +2110,14 @@ impl Asteroid {
                 )
             },
 
-            Self::KylixiumIGrade                                  |
-            Self::KylixiumIIGrade                            |
-            Self::KylixiumIIIGrade                             |
-            Self::KylixiumIVGrade                             |
-            Self::CompressedKylixiumIGrade                        |
-            Self::CompressedKylixiumIIGrade                  |
-            Self::CompressedKylixiumIIIGrade                   |
-            Self::CompressedKylixiumIVGrade                   => {
+            Self::KylixiumIGrade                            |
+            Self::KylixiumIIGrade                           |
+            Self::KylixiumIIIGrade                          |
+            Self::KylixiumIVGrade                           |
+            Self::CompressedKylixiumIGrade                  |
+            Self::CompressedKylixiumIIGrade                 |
+            Self::CompressedKylixiumIIIGrade                |
+            Self::CompressedKylixiumIVGrade                 => {
                 mineral_init(
                     vec![
                         Mineral::Tritanium,
@@ -2357,15 +2132,12 @@ impl Asteroid {
                 )
             },
 
-            Self::Mercoxit                                  |
-            Self::MagmaMercoxit                             |
-            Self::VitreousMercoxit                          |
-            Self::CompressedMercoxit                        |
-            Self::CompressedMagmaMercoxit                   |
-            Self::CompressedVitreousMercoxit                |
-            Self::BatchCompressedMercoxit                   |
-            Self::BatchCompressedMagmaMercoxit              |
-            Self::BatchCompressedVitreousMercoxit           => {
+            Self::MercoxitIGrade                            |
+            Self::MercoxitIIGrade                           |
+            Self::MercoxitIIIGrade                          |
+            Self::CompressedMercoxitIGrade                  |
+            Self::CompressedMercoxitIIGrade                 |
+            Self::CompressedMercoxitIIIGrade                => {
                 mineral_init(
                     vec![
                         Mineral::Morphite,
@@ -2376,14 +2148,14 @@ impl Asteroid {
                 )
             },
 
-            Self::Mordunium                                 |
-            Self::PlumMordunium                             |
-            Self::PrizeMordunium                            |
-            Self::PlunderMordunium                          |
-            Self::CompressedMordunium                       |
-            Self::CompressedPlumMordunium                   |
-            Self::CompressedPrizeMordunium                  |
-            Self::CompressedPlunderMordunium                => {
+            Self::MorduniumIGrade                           |
+            Self::MorduniumIIGrade                          |
+            Self::MorduniumIIIGrade                         |
+            Self::MorduniumIVGrade                          |
+            Self::CompressedMorduniumIGrade                 |
+            Self::CompressedMorduniumIIGrade                |
+            Self::CompressedMorduniumIIIGrade               |
+            Self::CompressedMorduniumIVGrade                => {
                 mineral_init(
                     vec![
                         Mineral::Pyerite,
@@ -2394,14 +2166,14 @@ impl Asteroid {
                 )
             },
 
-            Self::Nocxite                                   |
-            Self::FragrantNocxite                           |
-            Self::IntoxicatingNocxite                       |
-            Self::AmbrosialNocxite                          |
-            Self::CompressedNocxite                         |
-            Self::CompressedFragrantNocxite                 |
-            Self::CompressedIntoxicatingNocxite             |
-            Self::CompressedAmbrosialNocxite                => {
+            Self::NocxiteIGrade                             |
+            Self::NocxiteIIGrade                            |
+            Self::NocxiteIIIGrade                           |
+            Self::NocxiteIVGrade                            |
+            Self::CompressedNocxiteIGrade                   |
+            Self::CompressedNocxiteIIGrade                  |
+            Self::CompressedNocxiteIIIGrade                 |
+            Self::CompressedNocxiteIVGrade                  => {
                 mineral_init(
                     vec![
                         Mineral::Tritanium,
@@ -2416,18 +2188,14 @@ impl Asteroid {
                 )
             },
 
-            Self::Omber                                     |
-            Self::SilveryOmber                              |
-            Self::GoldenOmber                               |
-            Self::PlatinoidOmber                            |
-            Self::CompressedOmber                           |
-            Self::CompressedSilveryOmber                    |
-            Self::CompressedGoldenOmber                     |
-            Self::CompressedPlatinoidOmber                  |
-            Self::BatchCompressedOmber                      |
-            Self::BatchCompressedSilveryOmber               |
-            Self::BatchCompressedGoldenOmber                |
-            Self::BatchCompressedPlatinoidOmber             => {
+            Self::OmberIGrade                               |
+            Self::OmberIIGrade                              |
+            Self::OmberIIIGrade                             |
+            Self::OmberIVGrade                              |
+            Self::CompressedOmberIGrade                     |
+            Self::CompressedOmberIIGrade                    |
+            Self::CompressedOmberIIIGrade                   |
+            Self::CompressedOmberIVGrade                    => {
                 mineral_init(
                     vec![
                         Mineral::Pyerite,
@@ -2440,18 +2208,14 @@ impl Asteroid {
                 )
             },
 
-            Self::Plagioclase                               |
-            Self::AzurePlagioclase                          |
-            Self::RichPlagioclase                           |
-            Self::SparklingPlagioclase                      |
-            Self::CompressedPlagioclase                     |
-            Self::CompressedAzurePlagioclase                |
-            Self::CompressedRichPlagioclase                 |
-            Self::CompressedSparklingPlagioclase            |
-            Self::BatchCompressedPlagioclase                |
-            Self::BatchCompressedAzurePlagioclase           |
-            Self::BatchCompressedRichPlagioclase            |
-            Self::BatchCompressedSparklingPlagioclase       => {
+            Self::PlagioclaseIGrade                         |
+            Self::PlagioclaseIIGrade                        |
+            Self::PlagioclaseIIIGrade                       |
+            Self::PlagioclaseIVGrade                        |
+            Self::CompressedPlagioclaseIGrade               |
+            Self::CompressedPlagioclaseIIGrade              |
+            Self::CompressedPlagioclaseIIIGrade             |
+            Self::CompressedPlagioclaseIVGrade              => {
                 mineral_init(
                     vec![
                         Mineral::Tritanium,
@@ -2464,18 +2228,14 @@ impl Asteroid {
                 )
             },
 
-            Self::Pyroxeres                                 |
-            Self::SolidPyroxeres                            |
-            Self::ViscousPyroxeres                          |
-            Self::OpulentPyroxeres                          |
-            Self::CompressedPyroxeres                       |
-            Self::CompressedSolidPyroxeres                  |
-            Self::CompressedViscousPyroxeres                |
-            Self::CompressedOpulentPyroxeres                |
-            Self::BatchCompressedPyroxeres                  |
-            Self::BatchCompressedSolidPyroxeres             |
-            Self::BatchCompressedViscousPyroxeres           |
-            Self::BatchCompressedOpulentPyroxeres           => {
+            Self::PyroxeresIGrade                           |
+            Self::PyroxeresIIGrade                          |
+            Self::PyroxeresIIIGrade                         |
+            Self::PyroxeresIVGrade                          |
+            Self::CompressedPyroxeresIGrade                 |
+            Self::CompressedPyroxeresIIGrade                |
+            Self::CompressedPyroxeresIIIGrade               |
+            Self::CompressedPyroxeresIVGrade                => {
                 mineral_init(
                     vec![
                         Mineral::Pyerite,
@@ -2488,12 +2248,12 @@ impl Asteroid {
                 )
             },
 
-            Self::Rakovene                                  |
+            Self::RakoveneIGrade                            |
             Self::RakoveneIIGrade                           |
-            Self::RakoveneIIIGrade                             |
-            Self::CompressedRakovene                        |
+            Self::RakoveneIIIGrade                          |
+            Self::CompressedRakoveneIGrade                  |
             Self::CompressedRakoveneIIGrade                 |
-            Self::CompressedRakoveneIIIGrade                   => {
+            Self::CompressedRakoveneIIIGrade                => {
                 mineral_init(
                     vec![
                         Mineral::Tritanium,
@@ -2508,18 +2268,14 @@ impl Asteroid {
                 )
             },
 
-            Self::Scordite                                  |
-            Self::CondensedScordite                         |
-            Self::MassiveScordite                           |
-            Self::GlossyScordite                            |
-            Self::CompressedScordite                        |
-            Self::CompressedCondensedScordite               |
-            Self::CompressedMassiveScordite                 |
-            Self::CompressedGlossyScordite                  |
-            Self::BatchCompressedScordite                   |
-            Self::BatchCompressedCondensedScordite          |
-            Self::BatchCompressedMassiveScordite            |
-            Self::BatchCompressedGlossyScordite             => {
+            Self::ScorditeIGrade                            |
+            Self::ScorditeIIGrade                           |
+            Self::ScorditeIIIGrade                          |
+            Self::ScorditeIVGrade                           |
+            Self::CompressedScorditeIGrade                  |
+            Self::CompressedScorditeIIGrade                 |
+            Self::CompressedScorditeIIIGrade                |
+            Self::CompressedScorditeIVGrade                 => {
                 mineral_init(
                     vec![
                         Mineral::Tritanium,
@@ -2532,18 +2288,14 @@ impl Asteroid {
                 )
             },
 
-            Self::Spodumain                                 |
-            Self::BrightSpodumain                           |
-            Self::GleamingSpodumain                         |
-            Self::DazzlingSpodumain                         |
-            Self::CompressedSpodumain                       |
-            Self::CompressedBrightSpodumain                 |
-            Self::CompressedGleamingSpodumain               |
-            Self::CompressedDazzlingSpodumain               |
-            Self::BatchCompressedSpodumain                  |
-            Self::BatchCompressedBrightSpodumain            |
-            Self::BatchCompressedGleamingSpodumain          |
-            Self::BatchCompressedDazzlingSpodumain          => {
+            Self::SpodumainIGrade                           |
+            Self::SpodumainIIGrade                          |
+            Self::SpodumainIIIGrade                         |
+            Self::SpodumainIVGrade                          |
+            Self::CompressedSpodumainIGrade                 |
+            Self::CompressedSpodumainIIGrade                |
+            Self::CompressedSpodumainIIIGrade               |
+            Self::CompressedSpodumainIVGrade                => {
                 mineral_init(
                     vec![
                         Mineral::Tritanium,
@@ -2562,12 +2314,12 @@ impl Asteroid {
                 )
             },
 
-            Self::Talassonite                               |
+            Self::TalassoniteIGrade                         |
             Self::TalassoniteIIGrade                        |
-            Self::TalassoniteIIIGrade                          |
-            Self::CompressedTalassonite                     |
+            Self::TalassoniteIIIGrade                       |
+            Self::CompressedTalassoniteIGrade               |
             Self::CompressedTalassoniteIIGrade              |
-            Self::CompressedTalassoniteIIIGrade                => {
+            Self::CompressedTalassoniteIIIGrade             => {
                 mineral_init(
                     vec![
                         Mineral::Tritanium,
@@ -2582,14 +2334,14 @@ impl Asteroid {
                 )
             },
 
-            Self::Ueganite                                  |
-            Self::FoggyUeganite                             |
-            Self::OvercastUeganite                          |
-            Self::StormyUeganite                            |
-            Self::CompressedUeganite                        |
-            Self::CompressedFoggyUeganite                   |
-            Self::CompressedOvercastUeganite                |
-            Self::CompressedStormyUeganite                  => {
+            Self::UeganiteIGrade                            |
+            Self::UeganiteIIGrade                           |
+            Self::UeganiteIIIGrade                          |
+            Self::UeganiteIVGrade                           |
+            Self::CompressedUeganiteIGrade                  |
+            Self::CompressedUeganiteIIGrade                 |
+            Self::CompressedUeganiteIIIGrade                |
+            Self::CompressedUeganiteIVGrade                 => {
                 mineral_init(
                     vec![
                         Mineral::Tritanium,
@@ -2602,18 +2354,14 @@ impl Asteroid {
                 )
             },
 
-            Self::Veldspar                                  |
-            Self::ConcentratedVeldspar                      |
-            Self::DenseVeldspar                             |
-            Self::StableVeldspar                            |
-            Self::CompressedVeldspar                        |
-            Self::CompressedConcentratedVeldspar            |
-            Self::CompressedDenseVeldspar                   |
-            Self::CompressedStableVeldspar                  |
-            Self::BatchCompressedVeldspar                   |
-            Self::BatchCompressedConcentratedVeldspar       |
-            Self::BatchCompressedDenseVeldspar              |
-            Self::BatchCompressedStableVeldspar             => {
+            Self::VeldsparIGrade                            |
+            Self::VeldsparIIGrade                           |
+            Self::VeldsparIIIGrade                          |
+            Self::VeldsparIVGrade                           |
+            Self::CompressedVeldsparIGrade                  |
+            Self::CompressedVeldsparIIGrade                 |
+            Self::CompressedVeldsparIIIGrade                |
+            Self::CompressedVeldsparIVGrade                 => {
                 mineral_init(
                     vec![
                         Mineral::Tritanium,
@@ -2624,14 +2372,14 @@ impl Asteroid {
                 )
             },
 
-            Self::Ytirium                                   |
-            Self::BootlegYtirium                            |
-            Self::FirewaterYtirium                          |
-            Self::MoonshineYtirium                          |
-            Self::CompressedYtirium                         |
-            Self::CompressedBootlegYtirium                  |
-            Self::CompressedFirewaterYtirium                |
-            Self::CompressedMoonshineYtirium                => {
+            Self::YtiriumIGrade                             |
+            Self::YtiriumIIGrade                            |
+            Self::YtiriumIIIGrade                           |
+            Self::YtiriumIVGrade                            |
+            Self::CompressedYtiriumIGrade                   |
+            Self::CompressedYtiriumIIGrade                  |
+            Self::CompressedYtiriumIIIGrade                 |
+            Self::CompressedYtiriumIVGrade                  => {
                 mineral_init(
                     vec![
                         Mineral::Isogen,
@@ -3269,225 +3017,225 @@ impl Asteroid {
 
     pub fn ore_modifier(&self) -> f64 {
         match self {
-            Self::ArkonorIGrade                                   |
-            Self::CompressedArkonorIGrade                         |
-            Self::BezdnacineIGrade                                |
-            Self::CompressedBezdnacineIGrade                      |
-            Self::BistotIGrade                                    |
-            Self::CompressedBistotIGrade                          |
-            Self::CrokiteIGrade                                   |
-            Self::CompressedCrokiteIGrade                         |
-            Self::DarkOchreIGrade                                 |
-            Self::CompressedDarkOchreIGrade                       |
-            Self::DuciniumIGrade                                  |
-            Self::CompressedDuciniumIGrade                        |
-            Self::EifyriumIGrade                                  |
-            Self::CompressedEifyriumIGrade                        |
-            Self::GneissIGrade                                    |
-            Self::CompressedGneissIGrade                          |
-            Self::GriemeerIGrade                                  |
-            Self::CompressedGriemeerIGrade                        |
-            Self::HedbergiteIGrade                                |
-            Self::CompressedHedbergiteIGrade                      |
-            Self::HemorphiteIGrade                                |
-            Self::CompressedHemorphiteIGrade                      |
-            Self::HezorimeIGrade                                  |
-            Self::CompressedHezorimeIGrade                        |
-            Self::JaspetIGrade                                    |
-            Self::CompressedJaspetIGrade                          |
-            Self::KerniteIGrade                                   |
-            Self::CompressedKerniteIGrade                         |
-            Self::KylixiumIGrade                                  |
-            Self::CompressedKylixiumIGrade                        |
-            Self::Mercoxit                                  |
-            Self::CompressedMercoxit                        |
-            Self::Mordunium                                 |
-            Self::CompressedMordunium                       |
-            Self::Nocxite                                   |
-            Self::CompressedNocxite                         |
-            Self::Omber                                     |
-            Self::CompressedOmber                           |
-            Self::Plagioclase                               |
-            Self::CompressedPlagioclase                     |
-            Self::Pyroxeres                                 |
-            Self::CompressedPyroxeres                       |
-            Self::Rakovene                                  |
-            Self::CompressedRakovene                        |
-            Self::Scordite                                  |
-            Self::CompressedScordite                        |
-            Self::Spodumain                                 |
-            Self::CompressedSpodumain                       |
-            Self::Talassonite                               |
-            Self::CompressedTalassonite                     |
-            Self::Ueganite                                  |
-            Self::CompressedUeganite                        |
-            Self::Veldspar                                  |
-            Self::CompressedVeldspar                        |
-            Self::Ytirium                                   |
-            Self::CompressedYtirium                         => 1.00,
+            Self::ArkonorIGrade                             |
+            Self::CompressedArkonorIGrade                   |
+            Self::BezdnacineIGrade                          |
+            Self::CompressedBezdnacineIGrade                |
+            Self::BistotIGrade                              |
+            Self::CompressedBistotIGrade                    |
+            Self::CrokiteIGrade                             |
+            Self::CompressedCrokiteIGrade                   |
+            Self::DarkOchreIGrade                           |
+            Self::CompressedDarkOchreIGrade                 |
+            Self::DuciniumIGrade                            |
+            Self::CompressedDuciniumIGrade                  |
+            Self::EifyriumIGrade                            |
+            Self::CompressedEifyriumIGrade                  |
+            Self::GneissIGrade                              |
+            Self::CompressedGneissIGrade                    |
+            Self::GriemeerIGrade                            |
+            Self::CompressedGriemeerIGrade                  |
+            Self::HedbergiteIGrade                          |
+            Self::CompressedHedbergiteIGrade                |
+            Self::HemorphiteIGrade                          |
+            Self::CompressedHemorphiteIGrade                |
+            Self::HezorimeIGrade                            |
+            Self::CompressedHezorimeIGrade                  |
+            Self::JaspetIGrade                              |
+            Self::CompressedJaspetIGrade                    |
+            Self::KerniteIGrade                             |
+            Self::CompressedKerniteIGrade                   |
+            Self::KylixiumIGrade                            |
+            Self::CompressedKylixiumIGrade                  |
+            Self::MercoxitIGrade                            |
+            Self::CompressedMercoxitIGrade                  |
+            Self::MorduniumIGrade                           |
+            Self::CompressedMorduniumIGrade                 |
+            Self::NocxiteIGrade                             |
+            Self::CompressedNocxiteIGrade                   |
+            Self::OmberIGrade                               |
+            Self::CompressedOmberIGrade                     |
+            Self::PlagioclaseIGrade                         |
+            Self::CompressedPlagioclaseIGrade               |
+            Self::PyroxeresIGrade                           |
+            Self::CompressedPyroxeresIGrade                 |
+            Self::RakoveneIGrade                            |
+            Self::CompressedRakoveneIGrade                  |
+            Self::ScorditeIGrade                            |
+            Self::CompressedScorditeIGrade                  |
+            Self::SpodumainIGrade                           |
+            Self::CompressedSpodumainIGrade                 |
+            Self::TalassoniteIGrade                         |
+            Self::CompressedTalassoniteIGrade               |
+            Self::UeganiteIGrade                            |
+            Self::CompressedUeganiteIGrade                  |
+            Self::VeldsparIGrade                            |
+            Self::CompressedVeldsparIGrade                  |
+            Self::YtiriumIGrade                             |
+            Self::CompressedYtiriumIGrade                   => 1.00,
 
             Self::ArkonorIIGrade                            |
             Self::CompressedArkonorIIGrade                  |
             Self::BezdnacineIIGrade                         |
             Self::CompressedBezdnacineIIGrade               |
-            Self::BistotIIGrade                           |
-            Self::CompressedBistotIIGrade                 |
-            Self::CrokiteIIGrade                              |
-            Self::CompressedCrokiteIIGrade                    |
-            Self::OchreIIGrade                                 |
-            Self::CompressedOchreIIGrade                       |
-            Self::DuciniumIIGrade                             |
-            Self::CompressedDuciniumIIGrade                   |
-            Self::EifyriumIIGrade                             |
-            Self::CompressedEifyriumIIGrade                   |
-            Self::GneissIIGrade                          |
-            Self::CompressedGneissIIGrade                |
-            Self::GriemeerIIGrade                             |
-            Self::CompressedGriemeerIIGrade                   |
-            Self::HedbergiteIIGrade                          |
-            Self::CompressedHedbergiteIIGrade                |
-            Self::HemorphiteIIGrade                           |
-            Self::CompressedHemorphiteIIGrade                 |
-            Self::HezorimeIIGrade                              |
-            Self::CompressedHezorimeIIGrade                    |
-            Self::JaspetIIGrade                                |
-            Self::CompressedJaspetIIGrade                      |
-            Self::KerniteIIGrade                           |
-            Self::CompressedKerniteIIGrade                 |
-            Self::KylixiumIIGrade                            |
-            Self::CompressedKylixiumIIGrade                  |
-            Self::MagmaMercoxit                             |
-            Self::CompressedMagmaMercoxit                   |
-            Self::PlumMordunium                             |
-            Self::CompressedPlumMordunium                   |
-            Self::FragrantNocxite                           |
-            Self::CompressedFragrantNocxite                 |
-            Self::SilveryOmber                              |
-            Self::CompressedSilveryOmber                    |
-            Self::AzurePlagioclase                          |
-            Self::CompressedAzurePlagioclase                |
-            Self::SolidPyroxeres                            |
-            Self::CompressedSolidPyroxeres                  |
+            Self::BistotIIGrade                             |
+            Self::CompressedBistotIIGrade                   |
+            Self::CrokiteIIGrade                            |
+            Self::CompressedCrokiteIIGrade                  |
+            Self::OchreIIGrade                              |
+            Self::CompressedOchreIIGrade                    |
+            Self::DuciniumIIGrade                           |
+            Self::CompressedDuciniumIIGrade                 |
+            Self::EifyriumIIGrade                           |
+            Self::CompressedEifyriumIIGrade                 |
+            Self::GneissIIGrade                             |
+            Self::CompressedGneissIIGrade                   |
+            Self::GriemeerIIGrade                           |
+            Self::CompressedGriemeerIIGrade                 |
+            Self::HedbergiteIIGrade                         |
+            Self::CompressedHedbergiteIIGrade               |
+            Self::HemorphiteIIGrade                         |
+            Self::CompressedHemorphiteIIGrade               |
+            Self::HezorimeIIGrade                           |
+            Self::CompressedHezorimeIIGrade                 |
+            Self::JaspetIIGrade                             |
+            Self::CompressedJaspetIIGrade                   |
+            Self::KerniteIIGrade                            |
+            Self::CompressedKerniteIIGrade                  |
+            Self::KylixiumIIGrade                           |
+            Self::CompressedKylixiumIIGrade                 |
+            Self::MercoxitIIGrade                           |
+            Self::CompressedMercoxitIIGrade                 |
+            Self::MorduniumIIGrade                          |
+            Self::CompressedMorduniumIIGrade                |
+            Self::NocxiteIIGrade                            |
+            Self::CompressedNocxiteIIGrade                  |
+            Self::OmberIIGrade                              |
+            Self::CompressedOmberIIGrade                    |
+            Self::PlagioclaseIIGrade                        |
+            Self::CompressedPlagioclaseIIGrade              |
+            Self::PyroxeresIIGrade                          |
+            Self::CompressedPyroxeresIIGrade                |
             Self::RakoveneIIGrade                           |
             Self::CompressedRakoveneIIGrade                 |
-            Self::CondensedScordite                         |
-            Self::CompressedCondensedScordite               |
-            Self::BrightSpodumain                           |
-            Self::CompressedBrightSpodumain                 |
+            Self::ScorditeIIGrade                           |
+            Self::CompressedScorditeIIGrade                 |
+            Self::SpodumainIIGrade                          |
+            Self::CompressedSpodumainIIGrade                |
             Self::TalassoniteIIGrade                        |
             Self::CompressedTalassoniteIIGrade              |
-            Self::FoggyUeganite                             |
-            Self::CompressedFoggyUeganite                   |
-            Self::ConcentratedVeldspar                      |
-            Self::CompressedConcentratedVeldspar            |
-            Self::BootlegYtirium                            |
-            Self::CompressedBootlegYtirium                  => 1.05,
+            Self::UeganiteIIGrade                           |
+            Self::CompressedUeganiteIIGrade                 |
+            Self::VeldsparIIGrade                           |
+            Self::CompressedVeldsparIIGrade                 |
+            Self::YtiriumIIGrade                            |
+            Self::CompressedYtiriumIIGrade                  => 1.05,
 
-            Self::ArkonorIIIGrade                              |
-            Self::CompressedArkonorIIIGrade                    |
-            Self::BezdnacineIIIGrade                           |
-            Self::CompressedBezdnacineIIIGrade                 |
-            Self::BistotIIIGrade                          |
-            Self::CompressedBistotIIIGrade                |
-            Self::CrokiteIIIGrade                        |
-            Self::CompressedCrokiteIIIGrade              |
+            Self::ArkonorIIIGrade                           |
+            Self::CompressedArkonorIIIGrade                 |
+            Self::BezdnacineIIIGrade                        |
+            Self::CompressedBezdnacineIIIGrade              |
+            Self::BistotIIIGrade                            |
+            Self::CompressedBistotIIIGrade                  |
+            Self::CrokiteIIIGrade                           |
+            Self::CompressedCrokiteIIIGrade                 |
             Self::OchreIIIGrade                             |
             Self::CompressedOchreIIIGrade                   |
-            Self::DuciniumIIIGrade                             |
-            Self::CompressedDuciniumIIIGrade                   |
-            Self::EifyriumIIIGrade                           |
-            Self::CompressedEifyriumIIIGrade                 |
-            Self::GneissIIIGrade                           |
-            Self::CompressedGneissIIIGrade                 |
-            Self::GriemeerIIIGrade                              |
-            Self::CompressedGriemeerIIIGrade                    |
-            Self::HedbergiteIIIGrade                          |
-            Self::CompressedHedbergiteIIIGrade                |
-            Self::HemorphiteIIIGrade                         |
-            Self::CompressedHemorphiteIIIGrade               |
+            Self::DuciniumIIIGrade                          |
+            Self::CompressedDuciniumIIIGrade                |
+            Self::EifyriumIIIGrade                          |
+            Self::CompressedEifyriumIIIGrade                |
+            Self::GneissIIIGrade                            |
+            Self::CompressedGneissIIIGrade                  |
+            Self::GriemeerIIIGrade                          |
+            Self::CompressedGriemeerIIIGrade                |
+            Self::HedbergiteIIIGrade                        |
+            Self::CompressedHedbergiteIIIGrade              |
+            Self::HemorphiteIIIGrade                        |
+            Self::CompressedHemorphiteIIIGrade              |
             Self::HezorimeIIIGrade                          |
             Self::CompressedHezorimeIIIGrade                |
             Self::JaspetIIIGrade                            |
             Self::CompressedJaspetIIIGrade                  |
-            Self::KerniteIIIGrade                              |
-            Self::CompressedKerniteIIIGrade                    |
-            Self::KylixiumIIIGrade                             |
-            Self::CompressedKylixiumIIIGrade                   |
-            Self::VitreousMercoxit                          |
-            Self::CompressedVitreousMercoxit                |
-            Self::PrizeMordunium                            |
-            Self::CompressedPrizeMordunium                  |
-            Self::IntoxicatingNocxite                       |
-            Self::CompressedIntoxicatingNocxite             |
-            Self::GoldenOmber                               |
-            Self::CompressedGoldenOmber                     |
-            Self::RichPlagioclase                           |
-            Self::CompressedRichPlagioclase                 |
-            Self::ViscousPyroxeres                          |
-            Self::CompressedViscousPyroxeres                |
-            Self::RakoveneIIIGrade                             |
-            Self::CompressedRakoveneIIIGrade                   |
-            Self::MassiveScordite                           |
-            Self::CompressedMassiveScordite                 |
-            Self::GleamingSpodumain                         |
-            Self::CompressedGleamingSpodumain               |
-            Self::TalassoniteIIIGrade                          |
-            Self::CompressedTalassoniteIIIGrade                |
-            Self::OvercastUeganite                          |
-            Self::CompressedOvercastUeganite                |
-            Self::DenseVeldspar                             |
-            Self::CompressedDenseVeldspar                   |
-            Self::FirewaterYtirium                          |
-            Self::CompressedFirewaterYtirium                => 1.10,
+            Self::KerniteIIIGrade                           |
+            Self::CompressedKerniteIIIGrade                 |
+            Self::KylixiumIIIGrade                          |
+            Self::CompressedKylixiumIIIGrade                |
+            Self::MercoxitIIIGrade                          |
+            Self::CompressedMercoxitIIIGrade                |
+            Self::MorduniumIIIGrade                         |
+            Self::CompressedMorduniumIIIGrade               |
+            Self::NocxiteIIIGrade                           |
+            Self::CompressedNocxiteIIIGrade                 |
+            Self::OmberIIIGrade                             |
+            Self::CompressedOmberIIIGrade                   |
+            Self::PlagioclaseIIIGrade                       |
+            Self::CompressedPlagioclaseIIIGrade             |
+            Self::PyroxeresIIIGrade                         |
+            Self::CompressedPyroxeresIIIGrade               |
+            Self::RakoveneIIIGrade                          |
+            Self::CompressedRakoveneIIIGrade                |
+            Self::ScorditeIIIGrade                          |
+            Self::CompressedScorditeIIIGrade                |
+            Self::SpodumainIIIGrade                         |
+            Self::CompressedSpodumainIIIGrade               |
+            Self::TalassoniteIIIGrade                       |
+            Self::CompressedTalassoniteIIIGrade             |
+            Self::UeganiteIIIGrade                          |
+            Self::CompressedUeganiteIIIGrade                |
+            Self::VeldsparIIIGrade                          |
+            Self::CompressedVeldsparIIIGrade                |
+            Self::YtiriumIIIGrade                           |
+            Self::CompressedYtiriumIIIGrade                 => 1.10,
 
-            Self::ArkonorIVGrade                           |
-            Self::CompressedArkonorIVGrade                 |
-            Self::BistotIVGrade                               |
-            Self::CompressedBistotIVGrade                     |
-            Self::CrokiteIVGrade                           |
-            Self::CompressedCrokiteIVGrade                 |
-            Self::OchreIVGrade                                  |
-            Self::CompressedOchreIVGrade                        |
-            Self::DuciniumIVGrade                          |
-            Self::CompressedDuciniumIVGrade                |
-            Self::EifyriumIVGrade                         |
-            Self::CompressedEifyriumIVGrade               |
-            Self::GneissIVGrade                           |
-            Self::CompressedGneissIVGrade                 |
-            Self::GriemeerIVGrade                            |
-            Self::CompressedGriemeerIVGrade                  |
-            Self::HedbergiteIVGrade                        |
-            Self::CompressedHedbergiteIVGrade              |
-            Self::HemorphiteIVGrade                   |
-            Self::CompressedHemorphiteIVGrade         |
-            Self::HezorimeIVGrade                             |
-            Self::CompressedHezorimeIVGrade                   |
-            Self::JaspetIVGrade                          |
-            Self::CompressedJaspetIVGrade                |
-            Self::KerniteIVGrade                        |
-            Self::CompressedKerniteIVGrade              |
-            Self::KylixiumIVGrade                             |
-            Self::CompressedKylixiumIVGrade                   |
-            Self::PlunderMordunium                          |
-            Self::CompressedPlunderMordunium                |
-            Self::AmbrosialNocxite                          |
-            Self::CompressedAmbrosialNocxite                |
-            Self::PlatinoidOmber                            |
-            Self::CompressedPlatinoidOmber                  |
-            Self::SparklingPlagioclase                      |
-            Self::CompressedSparklingPlagioclase            |
-            Self::OpulentPyroxeres                          |
-            Self::CompressedOpulentPyroxeres                |
-            Self::GlossyScordite                            |
-            Self::CompressedGlossyScordite                  |
-            Self::DazzlingSpodumain                         |
-            Self::CompressedDazzlingSpodumain               |
-            Self::StormyUeganite                            |
-            Self::CompressedStormyUeganite                  |
-            Self::StableVeldspar                            |
-            Self::CompressedStableVeldspar                  |
-            Self::MoonshineYtirium                          |
-            Self::CompressedMoonshineYtirium                => 1.15,
+            Self::ArkonorIVGrade                            |
+            Self::CompressedArkonorIVGrade                  |
+            Self::BistotIVGrade                             |
+            Self::CompressedBistotIVGrade                   |
+            Self::CrokiteIVGrade                            |
+            Self::CompressedCrokiteIVGrade                  |
+            Self::OchreIVGrade                              |
+            Self::CompressedOchreIVGrade                    |
+            Self::DuciniumIVGrade                           |
+            Self::CompressedDuciniumIVGrade                 |
+            Self::EifyriumIVGrade                           |
+            Self::CompressedEifyriumIVGrade                 |
+            Self::GneissIVGrade                             |
+            Self::CompressedGneissIVGrade                   |
+            Self::GriemeerIVGrade                           |
+            Self::CompressedGriemeerIVGrade                 |
+            Self::HedbergiteIVGrade                         |
+            Self::CompressedHedbergiteIVGrade               |
+            Self::HemorphiteIVGrade                         |
+            Self::CompressedHemorphiteIVGrade               |
+            Self::HezorimeIVGrade                           |
+            Self::CompressedHezorimeIVGrade                 |
+            Self::JaspetIVGrade                             |
+            Self::CompressedJaspetIVGrade                   |
+            Self::KerniteIVGrade                            |
+            Self::CompressedKerniteIVGrade                  |
+            Self::KylixiumIVGrade                           |
+            Self::CompressedKylixiumIVGrade                 |
+            Self::MorduniumIVGrade                          |
+            Self::CompressedMorduniumIVGrade                |
+            Self::NocxiteIVGrade                            |
+            Self::CompressedNocxiteIVGrade                  |
+            Self::OmberIVGrade                              |
+            Self::CompressedOmberIVGrade                    |
+            Self::PlagioclaseIVGrade                        |
+            Self::CompressedPlagioclaseIVGrade              |
+            Self::PyroxeresIVGrade                          |
+            Self::CompressedPyroxeresIVGrade                |
+            Self::ScorditeIVGrade                           |
+            Self::CompressedScorditeIVGrade                 |
+            Self::SpodumainIVGrade                          |
+            Self::CompressedSpodumainIVGrade                |
+            Self::UeganiteIVGrade                           |
+            Self::CompressedUeganiteIVGrade                 |
+            Self::VeldsparIVGrade                           |
+            Self::CompressedVeldsparIVGrade                 |
+            Self::YtiriumIVGrade                            |
+            Self::CompressedYtiriumIVGrade                  => 1.15,
 
             // moon
             Self::Bitumens                                  |
@@ -3642,81 +3390,18 @@ impl Asteroid {
             Self::Dysprosium                                |
             Self::Thulium                                   => 1.00,
 
-            Self::BatchCompressedArkonorIGrade                    |
-            Self::BatchCompressedBistotIGrade                     |
-            Self::BatchCompressedCrokiteIGrade                    |
-            Self::BatchCompressedDarkOchreIGrade                  |
-            Self::BatchCompressedGneissIGrade                     |
-            Self::BatchCompressedHedbergiteIGrade                 |
-            Self::BatchCompressedHemorphiteIGrade                 |
-            Self::BatchCompressedJaspetIGrade                     |
-            Self::BatchCompressedKerniteIGrade                    |
-            Self::BatchCompressedMercoxit                   |
-            Self::BatchCompressedOmber                      |
-            Self::BatchCompressedPlagioclase                |
-            Self::BatchCompressedPyroxeres                  |
-            Self::BatchCompressedScordite                   |
-            Self::BatchCompressedSpodumain                  |
-            Self::BatchCompressedVeldspar                   => 100.00,
 
-            Self::BatchCompressedArkonorIIGrade             |
-            Self::BatchCompressedBistotIIGrade            |
-            Self::BatchCompressedCrokiteIIGrade               |
-            Self::BatchCompressedOchreIIGrade                  |
-            Self::BatchCompressedGneissIIGrade           |
-            Self::BatchCompressedHedbergiteIIGrade           |
-            Self::BatchCompressedHemorphiteIIGrade            |
-            Self::BatchCompressedJaspetIIGrade                 |
-            Self::BatchCompressedKerniteIIGrade            |
-            Self::BatchCompressedMagmaMercoxit              |
-            Self::BatchCompressedSilveryOmber               |
-            Self::BatchCompressedAzurePlagioclase           |
-            Self::BatchCompressedSolidPyroxeres             |
-            Self::BatchCompressedCondensedScordite          |
-            Self::BatchCompressedBrightSpodumain            |
-            Self::BatchCompressedConcentratedVeldspar       => 105.00,
 
-            Self::BatchCompressedArkonorIIIGrade               |
-            Self::BatchCompressedBistotIIIGrade           |
-            Self::BatchCompressedCrokiteIIIGrade         |
-            Self::BatchCompressedOchreIIIGrade              |
-            Self::BatchCompressedGneissIIIGrade            |
-            Self::BatchCompressedHedbergiteIIIGrade           |
-            Self::BatchCompressedHemorphiteIIIGrade          |
-            Self::BatchCompressedJaspetIIIGrade             |
-            Self::BatchCompressedKerniteIIIGrade               |
-            Self::BatchCompressedVitreousMercoxit           |
-            Self::BatchCompressedGoldenOmber                |
-            Self::BatchCompressedRichPlagioclase            |
-            Self::BatchCompressedViscousPyroxeres           |
-            Self::BatchCompressedMassiveScordite            |
-            Self::BatchCompressedGleamingSpodumain          |
-            Self::BatchCompressedDenseVeldspar              => 110.00,
 
-            Self::BatchCompressedArkonorIVGrade            |
-            Self::BatchCompressedBistotIVGrade                |
-            Self::BatchCompressedCrokiteIVGrade            |
-            Self::BatchCompressedOchreIVGrade                   |
-            Self::BatchCompressedGneissIVGrade            |
-            Self::BatchCompressedHedbergiteIVGrade         |
-            Self::BatchCompressedHemorphiteIVGrade    |
-            Self::BatchCompressedJaspetIVGrade           |
-            Self::BatchCompressedKerniteIVGrade         |
-            Self::BatchCompressedPlatinoidOmber             |
-            Self::BatchCompressedSparklingPlagioclase       |
-            Self::BatchCompressedOpulentPyroxeres           |
-            Self::BatchCompressedGlossyScordite             |
-            Self::BatchCompressedDazzlingSpodumain          |
-            Self::BatchCompressedStableVeldspar             => 115.00,
 
             Self::BlueIce                                   |
             Self::BlueIceIVGrade                            |
             Self::CompressedBlueIce                         |
             Self::CompressedBlueIceIVGrade                  |
-            Self::IcicleIIGrade                               |
-            Self::IcicleIVGradeIIGrade                        |
-            Self::CompressedIcicleIIGrade                     |
-            Self::CompressedIcicleIVGradeIIGrade              |
+            Self::IcicleIIGrade                             |
+            Self::IcicleIVGradeIIGrade                      |
+            Self::CompressedIcicleIIGrade                   |
+            Self::CompressedIcicleIVGradeIIGrade            |
             Self::GlacialMass                               |
             Self::GlacialMassIVGrade                        |
             Self::CompressedGlacialMass                     |
@@ -4071,67 +3756,67 @@ impl Asteroid {
             Self::KylixiumIIIGrade |
             Self::KylixiumIVGrade |
 
-            Self::Mercoxit |
-            Self::MagmaMercoxit |
-            Self::VitreousMercoxit |
+            Self::MercoxitIGrade |
+            Self::MercoxitIIGrade |
+            Self::MercoxitIIIGrade |
 
-            Self::Mordunium |
-            Self::PlumMordunium |
-            Self::PrizeMordunium |
-            Self::PlunderMordunium |
+            Self::MorduniumIGrade |
+            Self::MorduniumIIGrade |
+            Self::MorduniumIIIGrade |
+            Self::MorduniumIVGrade |
 
-            Self::Nocxite |
-            Self::FragrantNocxite |
-            Self::IntoxicatingNocxite |
-            Self::AmbrosialNocxite |
+            Self::NocxiteIGrade |
+            Self::NocxiteIIGrade |
+            Self::NocxiteIIIGrade |
+            Self::NocxiteIVGrade |
 
-            Self::Omber |
-            Self::SilveryOmber |
-            Self::GoldenOmber |
-            Self::PlatinoidOmber |
+            Self::OmberIGrade |
+            Self::OmberIIGrade |
+            Self::OmberIIIGrade |
+            Self::OmberIVGrade |
 
-            Self::Plagioclase |
-            Self::AzurePlagioclase |
-            Self::RichPlagioclase |
-            Self::SparklingPlagioclase |
+            Self::PlagioclaseIGrade |
+            Self::PlagioclaseIIGrade |
+            Self::PlagioclaseIIIGrade |
+            Self::PlagioclaseIVGrade |
 
-            Self::Pyroxeres |
-            Self::SolidPyroxeres |
-            Self::ViscousPyroxeres |
-            Self::OpulentPyroxeres |
+            Self::PyroxeresIGrade |
+            Self::PyroxeresIIGrade |
+            Self::PyroxeresIIIGrade |
+            Self::PyroxeresIVGrade |
 
-            Self::Rakovene |
+            Self::RakoveneIGrade |
             Self::RakoveneIIGrade |
             Self::RakoveneIIIGrade |
 
-            Self::Scordite |
-            Self::CondensedScordite |
-            Self::MassiveScordite |
-            Self::GlossyScordite |
+            Self::ScorditeIGrade |
+            Self::ScorditeIIGrade |
+            Self::ScorditeIIIGrade |
+            Self::ScorditeIVGrade |
 
-            Self::Spodumain |
-            Self::BrightSpodumain |
-            Self::GleamingSpodumain |
-            Self::DazzlingSpodumain |
+            Self::SpodumainIGrade |
+            Self::SpodumainIIGrade |
+            Self::SpodumainIIIGrade |
+            Self::SpodumainIVGrade |
 
-            Self::Talassonite |
+            Self::TalassoniteIGrade |
             Self::TalassoniteIIGrade |
             Self::TalassoniteIIIGrade |
 
-            Self::Ueganite |
-            Self::FoggyUeganite |
-            Self::OvercastUeganite |
-            Self::StormyUeganite |
+            Self::UeganiteIGrade |
+            Self::UeganiteIIGrade |
+            Self::UeganiteIIIGrade |
+            Self::UeganiteIVGrade |
 
-            Self::Veldspar |
-            Self::ConcentratedVeldspar |
-            Self::DenseVeldspar |
-            Self::StableVeldspar |
+            Self::VeldsparIGrade |
+            Self::VeldsparIIGrade |
+            Self::VeldsparIIIGrade |
+            Self::VeldsparIVGrade |
 
-            Self::Ytirium |
-            Self::BootlegYtirium |
-            Self::FirewaterYtirium |
-            Self::MoonshineYtirium => true,
+            Self::YtiriumIGrade |
+            Self::YtiriumIIGrade |
+            Self::YtiriumIIIGrade |
+            Self::YtiriumIVGrade => true,
             _ => false,
         }
     }

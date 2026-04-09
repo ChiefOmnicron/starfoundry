@@ -18,11 +18,11 @@ import { useEffect, useState } from 'react';
 import { useListProjectGroupDefaultBlacklist } from '@starfoundry/components/services/project-group/listDefaultBlacklist';
 import { useListProjectGroupDefaultBlueprintOverwrites, type BlueprintOverwrite } from '@starfoundry/components/services/project-group/listDefaultBlueprintOverwrites';
 import { useListProjectGroupDefaultJobSplitting, type JobSplittingRun } from '@starfoundry/components/services/project-group/listDefaultJobSplitting';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import type { IndustryHub } from '@starfoundry/components/services/industry-hub/list';
 import type { Item } from '@starfoundry/components/services/item/model';
-import type { ProjectList } from '@starfoundry/components/services/projects/fetch';
+import { FETCH_PROJECT, type ProjectList } from '@starfoundry/components/services/projects/fetch';
 
 const columnHelperMaterial = createColumnHelper<SolutionMaterial>();
 const columnsMaterial = [
@@ -141,6 +141,7 @@ export function Solution({
     project,
 }: SolutionProps) {
     const navigation = useNavigate();
+    const queryClient = useQueryClient();
 
     const [selectedBlacklist, setSelectedBlacklist] = useState<Item[]>([]);
     const [selectedBlueprintOverwrite, setSelectedBlueprintOverwrite] = useState<BlueprintOverwrite[]>([]);
@@ -204,6 +205,7 @@ export function Solution({
             );
         },
         onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [FETCH_PROJECT] });
             navigation({
                 to: ProjectView.to,
                 params: {

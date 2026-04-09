@@ -5,12 +5,18 @@ use axum::response::{IntoResponse, Response};
 use thiserror::Error;
 
 use crate::api_docs::{format_json_errors, ErrorResponse};
+use starfoundry_lib_types::StructureId;
 
 pub type Result<T, E = MarketError> = std::result::Result<T, E>;
 
 #[derive(Debug, Error)]
 #[non_exhaustive]
 pub enum MarketError {
+    #[error("error while fetching latest market fetch, '{0}'")]
+    LatestFetch(sqlx::Error),
+    #[error("structure not found, structureId '{0}'")]
+    NotFound(StructureId),
+
     #[error(transparent)]
     JsonExtractorRejection(#[from] JsonRejection),
     #[error(transparent)]
@@ -20,6 +26,18 @@ pub enum MarketError {
 impl IntoResponse for MarketError {
     fn into_response(self) -> Response {
         match self {
+            Self::NotFound(_) => {
+                (
+                    StatusCode::NOT_FOUND,
+                    Json(
+                        ErrorResponse {
+                            error: "NOT_FOUND".into(),
+                            description: self.to_string(),
+                        }
+                    )
+                ).into_response()
+            }
+
             Self::JsonExtractorRejection(x) => {
                 format_json_errors(x).into_response()
             },

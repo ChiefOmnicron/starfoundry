@@ -1,21 +1,10 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT *\n            FROM market_order_latest mol\n            WHERE mol.type_id = ANY($1)\n            AND mol.structure_id = ANY($2)\n            AND mol.is_buy = false\n            ORDER BY mol.price ASC\n        ",
+  "query": "\n            SELECT\n                order_id,\n                structure_id,\n                price,\n                remaining,\n                virtual_remaining,\n                type_id\n            FROM market_order_latest mol\n            WHERE mol.type_id = ANY($1)\n            AND mol.structure_id = ANY($2)\n            AND mol.is_buy = false\n            ORDER BY mol.price ASC\n        ",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
-        "name": "structure_id",
-        "type_info": "Int8",
-        "origin": {
-          "Table": {
-            "table": "market_order_latest",
-            "name": "structure_id"
-          }
-        }
-      },
-      {
-        "ordinal": 1,
         "name": "order_id",
         "type_info": "Int8",
         "origin": {
@@ -26,51 +15,18 @@
         }
       },
       {
+        "ordinal": 1,
+        "name": "structure_id",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "market_order_latest",
+            "name": "structure_id"
+          }
+        }
+      },
+      {
         "ordinal": 2,
-        "name": "region_id",
-        "type_info": "Int4",
-        "origin": {
-          "Table": {
-            "table": "market_order_latest",
-            "name": "region_id"
-          }
-        }
-      },
-      {
-        "ordinal": 3,
-        "name": "is_buy",
-        "type_info": "Bool",
-        "origin": {
-          "Table": {
-            "table": "market_order_latest",
-            "name": "is_buy"
-          }
-        }
-      },
-      {
-        "ordinal": 4,
-        "name": "type_id",
-        "type_info": "Int4",
-        "origin": {
-          "Table": {
-            "table": "market_order_latest",
-            "name": "type_id"
-          }
-        }
-      },
-      {
-        "ordinal": 5,
-        "name": "remaining",
-        "type_info": "Int4",
-        "origin": {
-          "Table": {
-            "table": "market_order_latest",
-            "name": "remaining"
-          }
-        }
-      },
-      {
-        "ordinal": 6,
         "name": "price",
         "type_info": "Float8",
         "origin": {
@@ -81,13 +37,35 @@
         }
       },
       {
-        "ordinal": 7,
-        "name": "expires",
-        "type_info": "Timestamp",
+        "ordinal": 3,
+        "name": "remaining",
+        "type_info": "Int4",
         "origin": {
           "Table": {
             "table": "market_order_latest",
-            "name": "expires"
+            "name": "remaining"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "virtual_remaining",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "market_order_latest",
+            "name": "virtual_remaining"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "type_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "market_order_latest",
+            "name": "type_id"
           }
         }
       }
@@ -104,10 +82,8 @@
       false,
       false,
       false,
-      false,
-      false,
       false
     ]
   },
-  "hash": "cef5b6f7c16030f4dbf862682fd80755cfb34e24bf0b3b28347028f0839e22eb"
+  "hash": "a0e86e1c24e566c490f9616ad876ab524dcf5c5d78c615f55d085928001326ee"
 }

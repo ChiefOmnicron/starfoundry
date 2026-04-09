@@ -90,6 +90,17 @@
             "name": "expires"
           }
         }
+      },
+      {
+        "ordinal": 8,
+        "name": "virtual_remaining",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "market_order_latest",
+            "name": "virtual_remaining"
+          }
+        }
       }
     ],
     "parameters": {
@@ -98,6 +109,7 @@
       ]
     },
     "nullable": [
+      false,
       false,
       false,
       false,

@@ -62,6 +62,7 @@ pub async fn insert_structure_market(
 
                 type_id,
                 remaining,
+                virtual_remaining,
                 price,
                 expires,
                 is_buy
@@ -70,13 +71,15 @@ pub async fn insert_structure_market(
                 $3::BIGINT[],
                 $4::INTEGER[],
                 $5::INTEGER[],
-                $6::FLOAT[],
-                $7::TIMESTAMP[],
-                $8::BOOLEAN[]
+                $6::INTEGER[],
+                $7::FLOAT[],
+                $8::TIMESTAMP[],
+                $9::BOOLEAN[]
             )
             ON CONFLICT (order_id)
             DO UPDATE SET
                 remaining = EXCLUDED.remaining,
+                virtual_remaining = EXCLUDED.virtual_remaining,
                 expires = EXCLUDED.expires,
                 price = EXCLUDED.price
             WHERE mol.remaining != EXCLUDED.remaining
@@ -88,6 +91,7 @@ pub async fn insert_structure_market(
             &order_ids,
 
             &type_id,
+            &remaining,
             &remaining,
             &price,
             &expires,

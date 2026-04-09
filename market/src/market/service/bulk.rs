@@ -1,20 +1,20 @@
 mod multibuy;
+mod smartbuy;
 
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::EveGatewayApiClientItem;
-use starfoundry_lib_market::{BuyStrategy, MarketBulkRequest, MarketBulkResponse};
+use starfoundry_lib_market::{BuyStrategy, Gas, MarketBulkRequest, MarketBulkResponse};
 use starfoundry_lib_types::{StructureId, TypeId};
 use std::collections::HashMap;
 
-use crate::lp::MarketProblem;
 use crate::market::error::Result;
 use crate::eve_gateway_api_client;
+use crate::market::last_fetched;
 
 pub async fn bulk(
     pool:    &PgPool,
     request: MarketBulkRequest,
 ) -> Result<Vec<MarketBulkResponse>> {
-    let mut market_data: HashMap<TypeId, Vec<MarketEntry>> = HashMap::new();
     let market_items = if let Some(items) = request.item_list {
         items
     } else {
@@ -25,7 +25,9 @@ pub async fn bulk(
         .iter()
         .map(|x| x.type_id)
         .collect::<Vec<_>>();
-    type_ids.push(62402.into()); // Compressed Fullerite-C28
+    // FIXME: only add them if compression is active
+    // SmartBuyConfig maybe general config?
+    type_ids.extend(Gas::compressed_type_ids());
 
     let items = eve_gateway_api_client()
         .unwrap()
@@ -37,7 +39,13 @@ pub async fn bulk(
         .collect::<HashMap<_, _>>();
 
     let market_entries = sqlx::query!("
-            SELECT *
+            SELECT
+                order_id,
+                structure_id,
+                price,
+                remaining,
+                virtual_remaining,
+                type_id
             FROM market_order_latest mol
             WHERE mol.type_id = ANY($1)
             AND mol.structure_id = ANY($2)
@@ -51,69 +59,68 @@ pub async fn bulk(
         .await
         .unwrap()
         .into_iter()
-        .map(|x| MarketEntry {
-            order_id:     x.order_id,
-            structure_id: x.structure_id.into(),
-            price:        x.price,
-            quantity:     x.remaining,
-            item_volume:  items.get(&x.type_id.into()).unwrap().volume as f64,
-            type_id:      x.type_id.into(),
+        .map(|x| {
+            let quantity = if request.virtual_market {
+                x.virtual_remaining
+            } else {
+                x.remaining
+            };
+
+            MarketEntry {
+                order_id:     x.order_id,
+                structure_id: x.structure_id.into(),
+                price:        x.price,
+                quantity:     quantity,
+                item_volume:  items.get(&x.type_id.into()).unwrap().volume as f64,
+                type_id:      x.type_id.into(),
+            }
         })
         .collect::<Vec<_>>();
 
-    if request.strategy == BuyStrategy::SmartBuy {
-        // TODO: add compression
-        let start = std::time::Instant::now();
-        let mut results: Vec<MarketBulkResponse> = Vec::new();
+    let mut market_last_fetch = HashMap::new();
+    let mut structure_ids = market_entries
+        .iter()
+        .map(|x| x.structure_id)
+        .collect::<Vec<_>>();
+    structure_ids.sort();
+    structure_ids.dedup();
 
-        market_entries
-            .into_iter()
-            .for_each(|x| {
-                market_data
-                    .entry(x.type_id.into())
-                    .and_modify(|y: &mut Vec<MarketEntry>| y.push(x.clone()))
-                    .or_insert(vec![x]);
-            });
+    for structure_id in market_entries.iter().map(|x| x.structure_id) {
+        if let Ok(x) = last_fetched(
+                pool,
+                structure_id,
+            )
+            .await {
 
-        for item in market_items {
-            if !market_data.contains_key(&item.type_id) {
-                continue;
-            }
-
-            let mut data = market_data.get(&item.type_id).unwrap().clone();
-
-            if item.type_id == TypeId(30375) {
-                data.extend(market_data.get(&TypeId(62402)).unwrap().clone());
-                data.sort_by(|a, b| a.price.total_cmp(&b.price));
-            }
-
-            let mut lp = MarketProblem::new();
-            lp.calculate_market(data.clone());
-            let result = lp.solve(item.quantity);
-
-            let result = result
-                .into_iter()
-                .map(|(structure_id, x)| MarketBulkResponse {
-                    insufficient_data: false,
-                    price: x.price,
-                    quantity: x.quantity as u64,
-                    source: structure_id.into(),
-                    type_id: *x.type_id,
-                })
-                .collect::<Vec<_>>();
-            results.extend(result);
+            market_last_fetch.insert(structure_id, x);
+        } else {
+            continue;
         }
-        dbg!("smart", start.elapsed().as_millis());
-        return Ok(results);
-    } else if request.strategy == BuyStrategy::MultiBuy {
-        let entries = self::multibuy::multibuy(
+    }
+
+    let result = if request.strategy == BuyStrategy::SmartBuy {
+        let config = if let Some(x) = request.smart_buy_config {
+            x
+        } else {
+            return Ok(Vec::new());
+        };
+
+        self::smartbuy::smartbuy(
             market_items,
             market_entries,
-        );
-        return Ok(entries);
+            market_last_fetch,
+            config,
+        )
+    } else if request.strategy == BuyStrategy::MultiBuy {
+        self::multibuy::multibuy(
+            market_items,
+            market_entries,
+            market_last_fetch,
+        )
     } else {
-        return Ok(Vec::new());
-    }
+        Vec::new()
+    };
+    Ok(result)
 }
 
 #[derive(Clone, Debug)]

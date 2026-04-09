@@ -1,25 +1,7 @@
+use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
-use starfoundry_lib_gateway::ApiClient;
 use starfoundry_lib_types::{StructureId, TypeId};
 use utoipa::{IntoParams, ToSchema};
-
-use crate::Result;
-
-pub trait MarketApiClientOrder: ApiClient {
-    #[allow(async_fn_in_trait)]
-    async fn bulk_latest_orders(
-        &self,
-        request: MarketBulkRequest,
-    ) -> Result<Vec<MarketBulkResponse>> {
-        self
-            .post(
-                "markets/bulk",
-                request,
-            )
-            .await
-            .map_err(Into::into)
-    }
-}
 
 /// Bulk request for resolving prices
 /// 
@@ -27,11 +9,14 @@ pub trait MarketApiClientOrder: ApiClient {
 /// 
 #[derive(Debug, Default, Deserialize, Serialize, ToSchema, IntoParams)]
 pub struct MarketBulkRequest {
-    pub strategy: BuyStrategy,
-    pub markets:  Vec<StructureId>,
+    pub strategy:           BuyStrategy,
+    pub markets:            Vec<StructureId>,
+    #[serde(default)]
+    pub virtual_market:     bool,
 
-    pub appraisal: Option<String>,
-    pub item_list: Option<Vec<MarketItemList>>,
+    pub appraisal:          Option<String>,
+    pub item_list:          Option<Vec<MarketItemList>>,
+    pub smart_buy_config:   Option<SmartBuyConfig>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
@@ -44,6 +29,8 @@ pub struct MarketBulkResponse {
     pub price:              f64,
     /// if set to true, then there is no market to fulfill the request
     pub insufficient_data:  bool,
+    /// time when the market was last fetched
+    pub last_fetch:         Option<NaiveDateTime>,
 }
 
 #[derive(Debug, Deserialize, Serialize, ToSchema, IntoParams)]
@@ -89,4 +76,10 @@ impl Default for BuyStrategy {
     fn default() -> Self {
         Self::MultiBuy
     }
+}
+
+#[derive(Debug, Default, Deserialize, Serialize, ToSchema, IntoParams)]
+pub struct SmartBuyConfig {
+    pub gas_compression: bool,
+    pub ore_compression: bool,
 }

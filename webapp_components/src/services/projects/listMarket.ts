@@ -9,7 +9,7 @@ export const LIST_PROJECT_MARKET = 'listProjectMarket';
 export const listProjectMarket = async (
     projectId: Uuid,
     signal?:   GenericAbortSignal,
-): Promise<ProjectMarketGroup[]> => (await axiosClient())
+): Promise<ProjectMarketEntry[]> => (await axiosClient())
     .get(
         `/api/projects/${projectId}/market`,
         {
@@ -30,28 +30,10 @@ export const useListProjectMarket = (
     })
 }
 
-export type ProjectMarketGroup = {
-    header:     string;
-    entries:    ProjectMarketEntry[];
-}
-
 export type ProjectMarketEntry = {
     item:       Item;
     quantity:   number;
 
     cost?:      number;
     source?:    string;
-
-    cost_multi: MarketBulkResponse;
-    cost_smart: MarketBulkResponse[];
-    cost_smart2: MarketBulkResponse[];
-}
-
-export type MarketBulkResponse = {
-    source:             number;
-    type_id:            number;
-    quantity:           number;
-    remaining:          number;
-    price:              number;
-    insufficient_data:  boolean;
 }

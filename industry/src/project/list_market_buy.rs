@@ -1,19 +1,22 @@
-use axum::extract::{Path, State};
+use axum::extract::{Path, Query, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_gateway::ExtractIdentity;
+use starfoundry_lib_market::BuyStrategy;
+use serde::Deserialize;
+use utoipa::{IntoParams, ToSchema};
 
 use crate::{AppState, eve_gateway_api_client};
 use crate::api_docs::{BadRequest, InternalServerError, NotFound, Unauthorized};
 use crate::project::error::Result;
 use crate::project::ProjectUuid;
-use crate::project::service::{ProjectMarketBuy, list_market};
+use crate::project::service::{ProjectMarket, list_market_buy};
 
 /// List Market
 /// 
-/// - Alternative route: `/latest/projects/{ProjectUuid}/market`
-/// - Alternative route: `/v1/projects/{ProjectUuid}/market`
+/// - Alternative route: `/latest/projects/{ProjectUuid}/market/buy`
+/// - Alternative route: `/v1/projects/{ProjectUuid}/market/buy`
 /// 
 /// ---
 /// 
@@ -25,14 +28,15 @@ use crate::project::service::{ProjectMarketBuy, list_market};
 /// 
 #[utoipa::path(
     get,
-    path = "/{ProjectUuid}/market",
+    path = "/{ProjectUuid}/market/buy",
     tag = "projects",
     params(
         ProjectUuid,
+        ListMarketBuyQuery,
     ),
     responses(
         (
-            body = Vec<ProjectMarketBuy>,
+            body = Vec<ProjectMarket>,
             description = "List all materials for a project",
             status = OK,
         ),
@@ -53,11 +57,13 @@ pub async fn api(
     _identity:        ExtractIdentity,
     State(state):     State<AppState>,
     Path(project_id): Path<ProjectUuid>,
+    Query(config):    Query<ListMarketBuyQuery>,
 ) -> Result<impl IntoResponse> {
-    let data = list_market(
+    let data = list_market_buy(
             &state.postgres,
             project_id,
             &eve_gateway_api_client()?,
+            config,
         ).await?;
 
     if data.is_empty() {
@@ -77,4 +83,10 @@ pub async fn api(
             .into_response()
         )
     }
+}
+
+#[derive(Debug, Default, Deserialize, ToSchema, IntoParams)]
+#[into_params(parameter_in = Query)]
+pub struct ListMarketBuyQuery {
+    pub strategy: BuyStrategy,
 }
