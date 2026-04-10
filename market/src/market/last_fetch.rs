@@ -43,7 +43,7 @@ pub async fn api(
 ) -> Result<impl IntoResponse> {
     let finished_at = last_fetched(
             &state.postgres,
-            structure_id,
+            &structure_id,
         )
         .await?;
 

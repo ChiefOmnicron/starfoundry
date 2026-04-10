@@ -29,8 +29,7 @@ pub async fn bulk(
     // SmartBuyConfig maybe general config?
     type_ids.extend(Gas::compressed_type_ids());
 
-    let items = eve_gateway_api_client()
-        .unwrap()
+    let items = eve_gateway_api_client()?
         .fetch_item_bulk(type_ids.clone())
         .await
         .unwrap()
@@ -85,14 +84,18 @@ pub async fn bulk(
     structure_ids.sort();
     structure_ids.dedup();
 
-    for structure_id in market_entries.iter().map(|x| x.structure_id) {
+    for structure_id in request.markets.iter() {
+        if market_last_fetch.contains_key(structure_id) {
+            continue;
+        }
+
         if let Ok(x) = last_fetched(
                 pool,
                 structure_id,
             )
             .await {
 
-            market_last_fetch.insert(structure_id, x);
+            market_last_fetch.insert(*structure_id, x);
         } else {
             continue;
         }
