@@ -54,5 +54,5 @@ export type MarketBulkResponse = {
     remaining:          number;
     price:              number;
     insufficient_data:  boolean;
-    last_fetch:       string;
+    last_fetch:         string;
 }

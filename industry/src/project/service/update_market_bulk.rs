@@ -1,5 +1,6 @@
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use sqlx::PgPool;
+use starfoundry_lib_market::{Gas, GasDecompressionEfficiency, MarketApiClient, MarketVirtualRequest, OreReprocessingEfficiency};
 use starfoundry_lib_types::{StructureId, TypeId};
 use std::collections::HashMap;
 use utoipa::ToSchema;
@@ -7,7 +8,6 @@ use uuid::Uuid;
 
 use crate::project::error::{ProjectError, Result};
 use crate::project::ProjectUuid;
-use starfoundry_lib_market::{Gas, MarketApiClient, MarketVirtualRequest};
 
 pub async fn update_market_bulk(
     pool:               &PgPool,
@@ -55,8 +55,12 @@ pub async fn update_market_bulk(
                 if gas.is_compressed() {
                     let uncompressed = Gas::from(entry.type_id).to_uncompressed_type_id();
 
+                    let compression_efficiency = entry
+                        .gas_decompression
+                        .unwrap_or(GasDecompressionEfficiency::default())
+                        .efficiency();
                     let original_amount = (
-                        entry.quantity as f64 * entry.gas_compression.unwrap_or(0.95f64)
+                        entry.quantity as f64 * compression_efficiency
                     ).floor();
                     // adds the compressed amount
                     new_entries.push(entry);
@@ -201,17 +205,19 @@ pub async fn update_market_bulk(
     Ok(())
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
+#[derive(Clone, Debug, Deserialize, ToSchema)]
 pub struct UpdateProjectMarket {
-    pub type_id:            TypeId,
-    pub cost:               f32,
-    pub source:             String,
-    pub quantity:           i32,
+    pub type_id:                TypeId,
+    pub cost:                   f32,
+    pub source:                 String,
+    pub quantity:               i32,
 
     // if the structure id is known
-    pub structure_id:       Option<StructureId>,
-    // gas compression is active
-    pub gas_compression:    Option<f64>,
+    pub structure_id:           Option<StructureId>,
+    // gas decompression is active
+    pub gas_decompression:      Option<GasDecompressionEfficiency>,
+    // mineral compression is active
+    pub mineral_compression:    Option<OreReprocessingEfficiency>,
 }
 
 #[derive(Debug)]

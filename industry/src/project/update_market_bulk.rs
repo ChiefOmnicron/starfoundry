@@ -12,6 +12,7 @@ use utoipa::ToSchema;
 use serde::Deserialize;
 use starfoundry_lib_types::{StructureId, TypeId};
 use starfoundry_lib_eve_gateway::EveGatewayApiClientItem;
+use starfoundry_lib_market::{GasDecompressionEfficiency, OreReprocessingEfficiency};
 
 /// Update Market
 /// 
@@ -69,12 +70,13 @@ pub async fn api(
         .map(|x| {
             UpdateProjectMarket {
                 // unwrap is safe at this point, as it's validated above
-                type_id:            x.type_id.unwrap(),
-                cost:               x.cost,
-                quantity:           x.quantity,
-                source:             update.source.clone(),
-                structure_id:       x.structure_id,
-                gas_compression:    update.gas_compression,
+                type_id:                x.type_id.unwrap(),
+                cost:                   x.cost,
+                quantity:               x.quantity,
+                source:                 update.source.clone(),
+                structure_id:           x.structure_id,
+                gas_decompression:      update.gas_decompression,
+                mineral_compression:    update.mineral_compression,
             }
         })
         .collect::<Vec<_>>();
@@ -104,12 +106,13 @@ pub async fn api(
         };
 
         entries_with_type_id.push(UpdateProjectMarket {
-            type_id:            parsed_item.type_id,
-            cost:               entry.cost,
-            quantity:           entry.quantity,
-            source:             update.source.clone(),
-            structure_id:       entry.structure_id,
-            gas_compression:    update.gas_compression,
+            type_id:                parsed_item.type_id,
+            cost:                   entry.cost,
+            quantity:               entry.quantity,
+            source:                 update.source.clone(),
+            structure_id:           entry.structure_id,
+            gas_decompression:      update.gas_decompression,
+            mineral_compression:    update.mineral_compression,
         });
     }
 
@@ -127,9 +130,10 @@ pub async fn api(
 
 #[derive(Clone, Debug, Deserialize, ToSchema)]
 pub struct UpdateProjectMarketRequest {
-    pub source:             String,
-    pub entries:            Vec<UpdateProjectMarketEntry>,
-    pub gas_compression:    Option<f64>,
+    pub source:                 String,
+    pub entries:                Vec<UpdateProjectMarketEntry>,
+    pub gas_decompression:      Option<GasDecompressionEfficiency>,
+    pub mineral_compression:    Option<OreReprocessingEfficiency>,
 }
 
 #[derive(Clone, Debug, Deserialize, ToSchema)]

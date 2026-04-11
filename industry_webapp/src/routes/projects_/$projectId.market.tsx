@@ -11,6 +11,7 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateMarketBulk, type UpdateMarketRequest } from '@starfoundry/components/services/projects/updateMarket';
 import { useListProjectMarketBuy, type ProjectMarketBuyEntry } from '@starfoundry/components/services/projects/listMarketBuy';
+import { CompressionMinimal, DEFAULT_GAS_BONUS } from '@starfoundry/components/misc/CompressionMinimal';
 
 export const Route = createFileRoute('/projects_/$projectId/market')({
     component: RouteComponent,
@@ -38,6 +39,9 @@ function RouteComponent() {
     const [marketItems, setMarketItems] = useState<ProjectMarketBuyEntry[]>([]);
     const [marketSource, setMarketSource] = useState<string>('Unknown');
     const [marketSourceId, setMarketSourceId] = useState<number>(0);
+
+    const [gasBonus, setGasBonus] = useState<string>(DEFAULT_GAS_BONUS);
+    const [mineralBonus, setMineralBonus] = useState<string>(DEFAULT_GAS_BONUS);
 
     const [updateError, setUpdateError] = useState<boolean>(false);
     const [updateSuccess, setUpdateSuccess] = useState<boolean>(false);
@@ -85,11 +89,11 @@ function RouteComponent() {
         }
     })
 
-    if (isPendingMulti || isPendingSmart || isPending) {
+    if (isPending) {
         return LoadingAnimation();
     }
 
-    if (isErrorMulti || isErrorSmart || isError) {
+    if (isError) {
         return LoadingError();
     }
 
@@ -204,16 +208,8 @@ function RouteComponent() {
             .filter(x => !x.cost)
             .forEach(x => {
                 for (const entry of x.entries) {
-                    if (entry.type_id === 40) {
-                        console.log('c', entry, x);
-                    }
                     if (x.cost) {
-                        console.log('a', x)
                         continue;
-                    } else {
-                        if (entry.type_id === 40) {
-                            console.log('b', entry);
-                        }
                     }
 
                     if (!byMarket[entry.source]) {
@@ -381,10 +377,10 @@ function RouteComponent() {
                     });
 
                 updateMarketMutation.mutate({
-                    source:             marketSource,
-                    entries:            entries,
-                    // FIXME: make it configurable
-                    gas_compression:    0.95,
+                    source:                 marketSource,
+                    entries:                entries,
+                    gas_decompression:      gasBonus,
+                    mineral_compression:    mineralBonus,
                 });
                 close();
             }}
@@ -410,14 +406,33 @@ function RouteComponent() {
                 {marketTable(projectMarket)}
             </Tabs.Panel>
             <Tabs.Panel value="multiBuy">
-                {marketBuyTable(projectMarketMulti)}
+                {
+                    isPendingMulti
+                    ?   LoadingAnimation()
+                    :   isErrorMulti
+                        ?   LoadingError()
+                        : marketBuyTable(projectMarketMulti)
+                }
             </Tabs.Panel>
             <Tabs.Panel value="smartBuy">
                 TODO: add gas compression, selector - needs to be send to the server when updating
 
                 TODO: add mineral compression
 
-                {marketBuyTable(projectMarketSmart)}
+                <Stack>
+                    <CompressionMinimal
+                        onGasUpdate={setGasBonus}
+                        onMineralUpdate={setMineralBonus}
+                    />
+
+                    {
+                        isPendingSmart
+                        ?   LoadingAnimation()
+                        :   isErrorSmart
+                            ?   LoadingError()
+                            : marketBuyTable(projectMarketSmart)
+                    }
+                </Stack>
             </Tabs.Panel>
         </Tabs>
     </>

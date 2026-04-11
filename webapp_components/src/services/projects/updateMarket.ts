@@ -14,10 +14,11 @@ export const updateMarketBulk = async (
     });
 
 export type UpdateMarketRequest = {
-    source:             string;
-    entries:            UpdateMarketEntry[];
+    source:                 string;
+    entries:                UpdateMarketEntry[];
 
-    gas_compression?:   number;
+    gas_decompression?:     string;
+    mineral_compression?:   string;
 }
 
 export type UpdateMarketEntry = {

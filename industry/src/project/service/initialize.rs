@@ -90,6 +90,27 @@ pub async fn initialize(
         .await
         .map_err(ProjectError::Initialize)?;
 
+    sqlx::query!("
+            INSERT INTO project_job
+            (
+                project_id,
+                type_id,
+                runs,
+                structure_id
+            )
+            SELECT $1, * FROM (
+                SELECT type_id, runs, structure_id
+                FROM solution_manufacturing
+                WHERE solution_id = $2
+            )
+        ",
+            *project_id,
+            *solution_id,
+        )
+        .execute(&mut *transaction)
+        .await
+        .map_err(ProjectError::Initialize)?;
+
     transaction
         .commit()
         .await
