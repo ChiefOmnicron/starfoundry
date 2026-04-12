@@ -1,6 +1,6 @@
 use std::collections::HashMap;
-use crate::lp::Mineral;
 use starfoundry_lib_types::TypeId;
+use crate::Mineral;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Asteroid {
@@ -461,7 +461,7 @@ pub enum Asteroid {
 }
 
 impl Asteroid {
-    pub fn type_ids() -> Vec<i32> {
+    pub fn type_ids() -> Vec<TypeId> {
         vec![
             Self::ArkonorIGrade.to_type_id(),
             Self::ArkonorIIGrade.to_type_id(),
@@ -592,7 +592,7 @@ impl Asteroid {
             Self::KylixiumIIIGrade.to_type_id(),
             Self::KylixiumIVGrade.to_type_id(),
             Self::CompressedKylixiumIGrade.to_type_id(),
-            Self::KylixiumIIGrade.to_type_id(),
+            Self::CompressedKylixiumIIGrade.to_type_id(),
             Self::CompressedKylixiumIIIGrade.to_type_id(),
             Self::CompressedKylixiumIVGrade.to_type_id(),
 
@@ -904,7 +904,7 @@ impl Asteroid {
         ]
     }
 
-    pub fn to_type_id(&self) -> i32 {
+    pub fn to_type_id(&self) -> TypeId {
         match self {
             Self::ArkonorIGrade                             => 22,
             Self::ArkonorIIGrade                            => 17425,
@@ -1345,7 +1345,7 @@ impl Asteroid {
             Self::CompressedGlareCrust                      => 28439,
             Self::Krystallos                                => 16269,
             Self::CompressedKrystallos                      => 28440,
-        }
+        }.into()
     }
 
     pub fn from_type_id(value: TypeId) -> Self {
@@ -1803,7 +1803,7 @@ impl Asteroid {
 
     pub fn mineral(
         &self,
-        mineral: Mineral
+        mineral: Mineral,
     ) -> f64 {
         self.minerals()
             .get(&mineral)
@@ -3680,7 +3680,7 @@ impl Asteroid {
         }
     }
 
-    pub fn is_ore(&self) -> bool {
+    pub fn is_asteroid(&self) -> bool {
         match self {
             Self::ArkonorIGrade |
             Self::ArkonorIIGrade |
@@ -3817,6 +3817,147 @@ impl Asteroid {
             Self::YtiriumIIGrade |
             Self::YtiriumIIIGrade |
             Self::YtiriumIVGrade => true,
+            _ => false,
+        }
+    }
+
+    pub fn is_compressed_asteroid(&self) -> bool {
+        match self {
+            Self::CompressedArkonorIGrade |
+            Self::CompressedArkonorIIGrade |
+            Self::CompressedArkonorIIIGrade |
+            Self::CompressedArkonorIVGrade |
+
+            Self::CompressedBezdnacineIGrade |
+            Self::CompressedBezdnacineIIGrade |
+            Self::CompressedBezdnacineIIIGrade |
+
+            Self::CompressedBistotIGrade |
+            Self::CompressedBistotIIGrade |
+            Self::CompressedBistotIIIGrade |
+            Self::CompressedBistotIVGrade |
+
+            Self::CompressedCrokiteIGrade |
+            Self::CompressedCrokiteIIGrade |
+            Self::CompressedCrokiteIIIGrade |
+            Self::CompressedCrokiteIVGrade |
+
+            Self::CompressedDarkOchreIGrade |
+            Self::CompressedOchreIIGrade |
+            Self::CompressedOchreIIIGrade |
+            Self::CompressedOchreIVGrade |
+
+            Self::CompressedDuciniumIGrade |
+            Self::CompressedDuciniumIIGrade |
+            Self::CompressedDuciniumIIIGrade |
+            Self::CompressedDuciniumIVGrade |
+
+            Self::CompressedEifyriumIGrade |
+            Self::CompressedEifyriumIIGrade |
+            Self::CompressedEifyriumIIIGrade |
+            Self::CompressedEifyriumIVGrade |
+
+            Self::CompressedGneissIGrade |
+            Self::CompressedGneissIIGrade |
+            Self::CompressedGneissIIIGrade |
+            Self::CompressedGneissIVGrade |
+
+            Self::CompressedGriemeerIGrade |
+            Self::CompressedGriemeerIIGrade |
+            Self::CompressedGriemeerIIIGrade |
+            Self::CompressedGriemeerIVGrade |
+
+            Self::CompressedHedbergiteIGrade |
+            Self::CompressedHedbergiteIIGrade |
+            Self::CompressedHedbergiteIIIGrade |
+            Self::CompressedHedbergiteIVGrade |
+
+            Self::CompressedHemorphiteIGrade |
+            Self::CompressedHemorphiteIIGrade |
+            Self::CompressedHemorphiteIIIGrade |
+            Self::CompressedHemorphiteIVGrade |
+
+            Self::CompressedHezorimeIGrade |
+            Self::CompressedHezorimeIIGrade |
+            Self::CompressedHezorimeIIIGrade |
+            Self::CompressedHezorimeIVGrade |
+
+            Self::CompressedJaspetIGrade |
+            Self::CompressedJaspetIIGrade |
+            Self::CompressedJaspetIIIGrade |
+            Self::CompressedJaspetIVGrade |
+
+            Self::CompressedKerniteIGrade |
+            Self::CompressedKerniteIIGrade |
+            Self::CompressedKerniteIIIGrade |
+            Self::CompressedKerniteIVGrade |
+
+            Self::CompressedKylixiumIGrade |
+            Self::CompressedKylixiumIIGrade |
+            Self::CompressedKylixiumIIIGrade |
+            Self::CompressedKylixiumIVGrade |
+
+            Self::CompressedMercoxitIGrade |
+            Self::CompressedMercoxitIIGrade |
+            Self::CompressedMercoxitIIIGrade |
+
+            Self::CompressedMorduniumIGrade |
+            Self::CompressedMorduniumIIGrade |
+            Self::CompressedMorduniumIIIGrade |
+            Self::CompressedMorduniumIVGrade |
+
+            Self::CompressedNocxiteIGrade |
+            Self::CompressedNocxiteIIGrade |
+            Self::CompressedNocxiteIIIGrade |
+            Self::CompressedNocxiteIVGrade |
+
+            Self::CompressedOmberIGrade |
+            Self::CompressedOmberIIGrade |
+            Self::CompressedOmberIIIGrade |
+            Self::CompressedOmberIVGrade |
+
+            Self::CompressedPlagioclaseIGrade |
+            Self::CompressedPlagioclaseIIGrade |
+            Self::CompressedPlagioclaseIIIGrade |
+            Self::CompressedPlagioclaseIVGrade |
+
+            Self::CompressedPyroxeresIGrade |
+            Self::CompressedPyroxeresIIGrade |
+            Self::CompressedPyroxeresIIIGrade |
+            Self::CompressedPyroxeresIVGrade |
+
+            Self::CompressedRakoveneIGrade |
+            Self::CompressedRakoveneIIGrade |
+            Self::CompressedRakoveneIIIGrade |
+
+            Self::CompressedScorditeIGrade |
+            Self::CompressedScorditeIIGrade |
+            Self::CompressedScorditeIIIGrade |
+            Self::CompressedScorditeIVGrade |
+
+            Self::CompressedSpodumainIGrade |
+            Self::CompressedSpodumainIIGrade |
+            Self::CompressedSpodumainIIIGrade |
+            Self::CompressedSpodumainIVGrade |
+
+            Self::CompressedTalassoniteIGrade |
+            Self::CompressedTalassoniteIIGrade |
+            Self::CompressedTalassoniteIIIGrade |
+
+            Self::CompressedUeganiteIGrade |
+            Self::CompressedUeganiteIIGrade |
+            Self::CompressedUeganiteIIIGrade |
+            Self::CompressedUeganiteIVGrade |
+
+            Self::CompressedVeldsparIGrade |
+            Self::CompressedVeldsparIIGrade |
+            Self::CompressedVeldsparIIIGrade |
+            Self::CompressedVeldsparIVGrade |
+
+            Self::CompressedYtiriumIGrade |
+            Self::CompressedYtiriumIIGrade |
+            Self::CompressedYtiriumIIIGrade |
+            Self::CompressedYtiriumIVGrade => true,
             _ => false,
         }
     }
@@ -3988,6 +4129,394 @@ impl Asteroid {
             Self::CompressedBountifulYtterbite |
             Self::CompressedShiningYtterbite => true,
             _ => false,
+        }
+    }
+
+    pub fn asteroid_type_ids() -> Vec<TypeId> {
+        vec![
+            Self::ArkonorIGrade.to_type_id(),
+            Self::ArkonorIIGrade.to_type_id(),
+            Self::ArkonorIIIGrade.to_type_id(),
+            Self::ArkonorIVGrade.to_type_id(),
+
+            Self::BezdnacineIGrade.to_type_id(),
+            Self::BezdnacineIIGrade.to_type_id(),
+            Self::BezdnacineIIIGrade.to_type_id(),
+
+            Self::BistotIGrade.to_type_id(),
+            Self::BistotIIGrade.to_type_id(),
+            Self::BistotIIIGrade.to_type_id(),
+            Self::BistotIVGrade.to_type_id(),
+
+            Self::CrokiteIGrade.to_type_id(),
+            Self::CrokiteIIGrade.to_type_id(),
+            Self::CrokiteIIIGrade.to_type_id(),
+            Self::CrokiteIVGrade.to_type_id(),
+
+            Self::DarkOchreIGrade.to_type_id(),
+            Self::OchreIIGrade.to_type_id(),
+            Self::OchreIIIGrade.to_type_id(),
+            Self::OchreIVGrade.to_type_id(),
+
+            Self::DuciniumIGrade.to_type_id(),
+            Self::DuciniumIIGrade.to_type_id(),
+            Self::DuciniumIIIGrade.to_type_id(),
+            Self::DuciniumIVGrade.to_type_id(),
+
+            Self::EifyriumIGrade.to_type_id(),
+            Self::EifyriumIIGrade.to_type_id(),
+            Self::EifyriumIIIGrade.to_type_id(),
+            Self::EifyriumIVGrade.to_type_id(),
+
+            Self::GneissIGrade.to_type_id(),
+            Self::GneissIIGrade.to_type_id(),
+            Self::GneissIIIGrade.to_type_id(),
+            Self::GneissIVGrade.to_type_id(),
+
+            Self::GriemeerIGrade.to_type_id(),
+            Self::GriemeerIIGrade.to_type_id(),
+            Self::GriemeerIIIGrade.to_type_id(),
+            Self::GriemeerIVGrade.to_type_id(),
+
+            Self::HedbergiteIGrade.to_type_id(),
+            Self::HedbergiteIIGrade.to_type_id(),
+            Self::HedbergiteIIIGrade.to_type_id(),
+            Self::HedbergiteIVGrade.to_type_id(),
+
+            Self::HemorphiteIGrade.to_type_id(),
+            Self::HemorphiteIIGrade.to_type_id(),
+            Self::HemorphiteIIIGrade.to_type_id(),
+            Self::HemorphiteIVGrade.to_type_id(),
+
+            Self::HezorimeIGrade.to_type_id(),
+            Self::HezorimeIIGrade.to_type_id(),
+            Self::HezorimeIIIGrade.to_type_id(),
+            Self::HezorimeIVGrade.to_type_id(),
+
+            Self::JaspetIGrade.to_type_id(),
+            Self::JaspetIIGrade.to_type_id(),
+            Self::JaspetIIIGrade.to_type_id(),
+            Self::JaspetIVGrade.to_type_id(),
+
+            Self::KerniteIGrade.to_type_id(),
+            Self::KerniteIIGrade.to_type_id(),
+            Self::KerniteIIIGrade.to_type_id(),
+            Self::KerniteIVGrade.to_type_id(),
+
+            Self::KylixiumIGrade.to_type_id(),
+            Self::KylixiumIIGrade.to_type_id(),
+            Self::KylixiumIIIGrade.to_type_id(),
+            Self::KylixiumIVGrade.to_type_id(),
+
+            Self::MercoxitIGrade.to_type_id(),
+            Self::MercoxitIIGrade.to_type_id(),
+            Self::MercoxitIIIGrade.to_type_id(),
+
+            Self::MorduniumIGrade.to_type_id(),
+            Self::MorduniumIIGrade.to_type_id(),
+            Self::MorduniumIIIGrade.to_type_id(),
+            Self::MorduniumIVGrade.to_type_id(),
+
+            Self::NocxiteIGrade.to_type_id(),
+            Self::NocxiteIIGrade.to_type_id(),
+            Self::NocxiteIIIGrade.to_type_id(),
+            Self::NocxiteIVGrade.to_type_id(),
+
+            Self::OmberIGrade.to_type_id(),
+            Self::OmberIIGrade.to_type_id(),
+            Self::OmberIIIGrade.to_type_id(),
+            Self::OmberIVGrade.to_type_id(),
+
+            Self::PlagioclaseIGrade.to_type_id(),
+            Self::PlagioclaseIIGrade.to_type_id(),
+            Self::PlagioclaseIIIGrade.to_type_id(),
+            Self::PlagioclaseIVGrade.to_type_id(),
+
+            Self::PyroxeresIGrade.to_type_id(),
+            Self::PyroxeresIIGrade.to_type_id(),
+            Self::PyroxeresIIIGrade.to_type_id(),
+            Self::PyroxeresIVGrade.to_type_id(),
+
+            Self::RakoveneIGrade.to_type_id(),
+            Self::RakoveneIIGrade.to_type_id(),
+            Self::RakoveneIIIGrade.to_type_id(),
+
+            Self::ScorditeIGrade.to_type_id(),
+            Self::ScorditeIIGrade.to_type_id(),
+            Self::ScorditeIIIGrade.to_type_id(),
+            Self::ScorditeIVGrade.to_type_id(),
+
+            Self::SpodumainIGrade.to_type_id(),
+            Self::SpodumainIIGrade.to_type_id(),
+            Self::SpodumainIIIGrade.to_type_id(),
+            Self::SpodumainIVGrade.to_type_id(),
+
+            Self::TalassoniteIGrade.to_type_id(),
+            Self::TalassoniteIIGrade.to_type_id(),
+            Self::TalassoniteIIIGrade.to_type_id(),
+
+            Self::UeganiteIGrade.to_type_id(),
+            Self::UeganiteIIGrade.to_type_id(),
+            Self::UeganiteIIIGrade.to_type_id(),
+            Self::UeganiteIVGrade.to_type_id(),
+
+            Self::VeldsparIGrade.to_type_id(),
+            Self::VeldsparIIGrade.to_type_id(),
+            Self::VeldsparIIIGrade.to_type_id(),
+            Self::VeldsparIVGrade.to_type_id(),
+
+            Self::YtiriumIGrade.to_type_id(),
+            Self::YtiriumIIGrade.to_type_id(),
+            Self::YtiriumIIIGrade.to_type_id(),
+            Self::YtiriumIVGrade.to_type_id(),
+        ]
+    }
+
+    pub fn compressed_asteroid_type_ids() -> Vec<TypeId> {
+        vec![
+            Self::CompressedArkonorIGrade.to_type_id(),
+            Self::CompressedArkonorIIGrade.to_type_id(),
+            Self::CompressedArkonorIIIGrade.to_type_id(),
+            Self::CompressedArkonorIVGrade.to_type_id(),
+
+            Self::CompressedBezdnacineIGrade.to_type_id(),
+            Self::CompressedBezdnacineIIGrade.to_type_id(),
+            Self::CompressedBezdnacineIIIGrade.to_type_id(),
+
+            Self::CompressedBistotIGrade.to_type_id(),
+            Self::CompressedBistotIIGrade.to_type_id(),
+            Self::CompressedBistotIIIGrade.to_type_id(),
+            Self::CompressedBistotIVGrade.to_type_id(),
+
+            Self::CompressedCrokiteIGrade.to_type_id(),
+            Self::CompressedCrokiteIIGrade.to_type_id(),
+            Self::CompressedCrokiteIIIGrade.to_type_id(),
+            Self::CompressedCrokiteIVGrade.to_type_id(),
+
+            Self::CompressedDarkOchreIGrade.to_type_id(),
+            Self::CompressedOchreIIGrade.to_type_id(),
+            Self::CompressedOchreIIIGrade.to_type_id(),
+            Self::CompressedOchreIVGrade.to_type_id(),
+
+            Self::CompressedDuciniumIGrade.to_type_id(),
+            Self::CompressedDuciniumIIGrade.to_type_id(),
+            Self::CompressedDuciniumIIIGrade.to_type_id(),
+            Self::CompressedDuciniumIVGrade.to_type_id(),
+
+            Self::CompressedEifyriumIGrade.to_type_id(),
+            Self::CompressedEifyriumIIGrade.to_type_id(),
+            Self::CompressedEifyriumIIIGrade.to_type_id(),
+            Self::CompressedEifyriumIVGrade.to_type_id(),
+
+            Self::CompressedGneissIGrade.to_type_id(),
+            Self::CompressedGneissIIGrade.to_type_id(),
+            Self::CompressedGneissIIIGrade.to_type_id(),
+            Self::CompressedGneissIVGrade.to_type_id(),
+
+            Self::CompressedGriemeerIGrade.to_type_id(),
+            Self::CompressedGriemeerIIGrade.to_type_id(),
+            Self::CompressedGriemeerIIIGrade.to_type_id(),
+            Self::CompressedGriemeerIVGrade.to_type_id(),
+
+            Self::CompressedHedbergiteIGrade.to_type_id(),
+            Self::CompressedHedbergiteIIGrade.to_type_id(),
+            Self::CompressedHedbergiteIIIGrade.to_type_id(),
+            Self::CompressedHedbergiteIVGrade.to_type_id(),
+
+            Self::CompressedHemorphiteIGrade.to_type_id(),
+            Self::CompressedHemorphiteIIGrade.to_type_id(),
+            Self::CompressedHemorphiteIIIGrade.to_type_id(),
+            Self::CompressedHemorphiteIVGrade.to_type_id(),
+
+            Self::CompressedHezorimeIGrade.to_type_id(),
+            Self::CompressedHezorimeIIGrade.to_type_id(),
+            Self::CompressedHezorimeIIIGrade.to_type_id(),
+            Self::CompressedHezorimeIVGrade.to_type_id(),
+
+            Self::CompressedJaspetIGrade.to_type_id(),
+            Self::CompressedJaspetIIGrade.to_type_id(),
+            Self::CompressedJaspetIIIGrade.to_type_id(),
+            Self::CompressedJaspetIVGrade.to_type_id(),
+
+            Self::CompressedKerniteIGrade.to_type_id(),
+            Self::CompressedKerniteIIGrade.to_type_id(),
+            Self::CompressedKerniteIIIGrade.to_type_id(),
+            Self::CompressedKerniteIVGrade.to_type_id(),
+
+            Self::CompressedKylixiumIGrade.to_type_id(),
+            Self::CompressedKylixiumIIGrade.to_type_id(),
+            Self::CompressedKylixiumIIIGrade.to_type_id(),
+            Self::CompressedKylixiumIVGrade.to_type_id(),
+
+            Self::CompressedMercoxitIGrade.to_type_id(),
+            Self::CompressedMercoxitIIGrade.to_type_id(),
+            Self::CompressedMercoxitIIIGrade.to_type_id(),
+
+            Self::CompressedMorduniumIGrade.to_type_id(),
+            Self::CompressedMorduniumIIGrade.to_type_id(),
+            Self::CompressedMorduniumIIIGrade.to_type_id(),
+            Self::CompressedMorduniumIVGrade.to_type_id(),
+
+            Self::CompressedNocxiteIGrade.to_type_id(),
+            Self::CompressedNocxiteIIGrade.to_type_id(),
+            Self::CompressedNocxiteIIIGrade.to_type_id(),
+            Self::CompressedNocxiteIVGrade.to_type_id(),
+
+            Self::CompressedOmberIGrade.to_type_id(),
+            Self::CompressedOmberIIGrade.to_type_id(),
+            Self::CompressedOmberIIIGrade.to_type_id(),
+            Self::CompressedOmberIVGrade.to_type_id(),
+
+            Self::CompressedPlagioclaseIGrade.to_type_id(),
+            Self::CompressedPlagioclaseIIGrade.to_type_id(),
+            Self::CompressedPlagioclaseIIIGrade.to_type_id(),
+            Self::CompressedPlagioclaseIVGrade.to_type_id(),
+
+            Self::CompressedPyroxeresIGrade.to_type_id(),
+            Self::CompressedPyroxeresIIGrade.to_type_id(),
+            Self::CompressedPyroxeresIIIGrade.to_type_id(),
+            Self::CompressedPyroxeresIVGrade.to_type_id(),
+
+            Self::CompressedRakoveneIGrade.to_type_id(),
+            Self::CompressedRakoveneIIGrade.to_type_id(),
+            Self::CompressedRakoveneIIIGrade.to_type_id(),
+
+            Self::CompressedScorditeIGrade.to_type_id(),
+            Self::CompressedScorditeIIGrade.to_type_id(),
+            Self::CompressedScorditeIIIGrade.to_type_id(),
+            Self::CompressedScorditeIVGrade.to_type_id(),
+
+            Self::CompressedSpodumainIGrade.to_type_id(),
+            Self::CompressedSpodumainIIGrade.to_type_id(),
+            Self::CompressedSpodumainIIIGrade.to_type_id(),
+            Self::CompressedSpodumainIVGrade.to_type_id(),
+
+            Self::CompressedTalassoniteIGrade.to_type_id(),
+            Self::CompressedTalassoniteIIGrade.to_type_id(),
+            Self::CompressedTalassoniteIIIGrade.to_type_id(),
+
+            Self::CompressedUeganiteIGrade.to_type_id(),
+            Self::CompressedUeganiteIIGrade.to_type_id(),
+            Self::CompressedUeganiteIIIGrade.to_type_id(),
+            Self::CompressedUeganiteIVGrade.to_type_id(),
+
+            Self::CompressedVeldsparIGrade.to_type_id(),
+            Self::CompressedVeldsparIIGrade.to_type_id(),
+            Self::CompressedVeldsparIIIGrade.to_type_id(),
+            Self::CompressedVeldsparIVGrade.to_type_id(),
+
+            Self::CompressedYtiriumIGrade.to_type_id(),
+            Self::CompressedYtiriumIIGrade.to_type_id(),
+            Self::CompressedYtiriumIIIGrade.to_type_id(),
+            Self::CompressedYtiriumIVGrade.to_type_id(),
+        ]
+    }
+
+    pub fn compressed_moon_type_ids() -> Vec<TypeId> {
+        vec![
+            Self::CompressedBitumens.to_type_id(),
+            Self::CompressedBrimfulBitumens.to_type_id(),
+            Self::CompressedGlisteningBitumens.to_type_id(),
+
+            Self::CompressedCoesite.to_type_id(),
+            Self::CompressedBrimfulCoesite.to_type_id(),
+            Self::CompressedGlisteningCoesite.to_type_id(),
+
+            Self::CompressedSylvite.to_type_id(),
+            Self::CompressedBrimfulSylvite.to_type_id(),
+            Self::CompressedGlisteningSylvite.to_type_id(),
+
+            Self::CompressedZeolites.to_type_id(),
+            Self::CompressedBrimfulZeolites.to_type_id(),
+            Self::CompressedGlisteningZeolites.to_type_id(),
+
+            Self::CompressedCobaltite.to_type_id(),
+            Self::CompressedCopiousCobaltite.to_type_id(),
+            Self::CompressedTwinklingCobaltite.to_type_id(),
+
+            Self::CompressedEuxenite.to_type_id(),
+            Self::CompressedCopiousEuxenite.to_type_id(),
+            Self::CompressedTwinklingEuxenite.to_type_id(),
+
+            Self::CompressedScheelite.to_type_id(),
+            Self::CompressedCopiousScheelite.to_type_id(),
+            Self::CompressedTwinklingScheelite.to_type_id(),
+
+            Self::CompressedTitanite.to_type_id(),
+            Self::CompressedCopiousTitanite.to_type_id(),
+            Self::CompressedTwinklingTitanite.to_type_id(),
+
+            Self::CompressedChromite.to_type_id(),
+            Self::CompressedLavishChromite.to_type_id(),
+            Self::CompressedShimmeringChromite.to_type_id(),
+
+            Self::CompressedOtavite.to_type_id(),
+            Self::CompressedLavishOtavite.to_type_id(),
+            Self::CompressedShimmeringOtavite.to_type_id(),
+
+            Self::CompressedSperrylite.to_type_id(),
+            Self::CompressedLavishSperrylite.to_type_id(),
+            Self::CompressedShimmeringSperrylite.to_type_id(),
+
+            Self::CompressedVanadinite.to_type_id(),
+            Self::CompressedLavishVanadinite.to_type_id(),
+            Self::CompressedShimmeringVanadinite.to_type_id(),
+
+            Self::CompressedCarnotite.to_type_id(),
+            Self::CompressedRepleteCarnotite.to_type_id(),
+            Self::CompressedGlowingCarnotite.to_type_id(),
+
+            Self::CompressedCinnabar.to_type_id(),
+            Self::CompressedRepleteCinnabar.to_type_id(),
+            Self::CompressedGlowingCinnabar.to_type_id(),
+
+            Self::CompressedPollucite.to_type_id(),
+            Self::CompressedRepletePollucite.to_type_id(),
+            Self::CompressedGlowingPollucite.to_type_id(),
+
+            Self::CompressedZircon.to_type_id(),
+            Self::CompressedRepleteZircon.to_type_id(),
+            Self::CompressedGlowingZircon.to_type_id(),
+
+            Self::CompressedLoparite.to_type_id(),
+            Self::CompressedBountifulLoparite.to_type_id(),
+            Self::CompressedShiningLoparite.to_type_id(),
+
+            Self::CompressedMonazite.to_type_id(),
+            Self::CompressedBountifulMonazite.to_type_id(),
+            Self::CompressedShiningMonazite.to_type_id(),
+
+            Self::CompressedXenotime.to_type_id(),
+            Self::CompressedBountifulXenotime.to_type_id(),
+            Self::CompressedShiningXenotime.to_type_id(),
+
+            Self::CompressedYtterbite.to_type_id(),
+            Self::CompressedBountifulYtterbite.to_type_id(),
+            Self::CompressedShiningYtterbite.to_type_id(),
+        ]
+    }
+
+    pub fn mineral_type_ids() -> Vec<TypeId> {
+        vec![
+            Self::Tritanium.to_type_id(),
+            Self::Pyerite.to_type_id(),
+            Self::Mexallon.to_type_id(),
+            Self::Isogen.to_type_id(),
+            Self::Nocxium.to_type_id(),
+            Self::Zydrine.to_type_id(),
+            Self::Megacyte.to_type_id(),
+        ]
+    }
+
+    pub fn is_any_asteroid(
+        &self,
+    ) -> bool {
+        if self.is_asteroid() ||
+            self.is_compressed_moon() ||
+            self.is_compressed_asteroid() {
+            true
+        } else {
+            false
         }
     }
 }

@@ -1,17 +1,20 @@
-import { createFileRoute } from '@tanstack/react-router'
 import { Alert, Button, Group, Stack, Table, Tabs, Title } from '@mantine/core';
-import { LIST_PROJECT_MARKET, useListProjectMarket, type ProjectMarketEntry } from '@starfoundry/components/services/projects/listMarket';
-import { EveIcon } from '@starfoundry/components/misc/EveIcon';
 import { CopyText } from '@starfoundry/components/misc/CopyText';
+import { createFileRoute } from '@tanstack/react-router'
+import { DEFAULT_GAS_BONUS } from '@starfoundry/components/misc/CompressionMinimal';
+import { EveIcon } from '@starfoundry/components/misc/EveIcon';
+import { LIST_PROJECT_MARKET, useListProjectMarket, type ProjectMarketEntry } from '@starfoundry/components/services/projects/listMarket';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
-import { useDisclosure } from '@mantine/hooks';
-import { MultiBuyModal } from './-components/MultibuyModal';
-import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { MultiBuyModal } from '@/routes/projects_/-components/MultibuyModal';
+import { SmartBuySettingsModal } from '@/routes/projects_/-components/SmartBuySettingsModal';
 import { updateMarketBulk, type UpdateMarketRequest } from '@starfoundry/components/services/projects/updateMarket';
+import { useDisclosure } from '@mantine/hooks';
 import { useListProjectMarketBuy, type ProjectMarketBuyEntry } from '@starfoundry/components/services/projects/listMarketBuy';
-import { CompressionMinimal, DEFAULT_GAS_BONUS } from '@starfoundry/components/misc/CompressionMinimal';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import { useListStructure, type Structure } from '@starfoundry/components/services/structure/list';
+import { useListProjectMarketStructures } from '@starfoundry/components/services/projects/listMarketStructure';
 
 export const Route = createFileRoute('/projects_/$projectId/market')({
     component: RouteComponent,
@@ -27,6 +30,8 @@ const source = (source: number): string => {
             return 'Jita'
         case 60008494:
             return 'Amarr'
+        case 0:
+            return 'Not enough resources'
         default:
             return 'Unknown ' + source
     }
@@ -39,6 +44,7 @@ function RouteComponent() {
     const [marketItems, setMarketItems] = useState<ProjectMarketBuyEntry[]>([]);
     const [marketSource, setMarketSource] = useState<string>('Unknown');
     const [marketSourceId, setMarketSourceId] = useState<number>(0);
+    const [selectedMarkets, setSelectedMarkets] = useState<Structure[]>([]);
 
     const [gasBonus, setGasBonus] = useState<string>(DEFAULT_GAS_BONUS);
     const [mineralBonus, setMineralBonus] = useState<string>(DEFAULT_GAS_BONUS);
@@ -46,21 +52,45 @@ function RouteComponent() {
     const [updateError, setUpdateError] = useState<boolean>(false);
     const [updateSuccess, setUpdateSuccess] = useState<boolean>(false);
 
-    const [opened, { open, close }] = useDisclosure(false);
+    const [buyMaterialModalOpened, {
+        open: openBuyMaterialModal,
+        close: closeBuyMaterialModal,
+    }] = useDisclosure(false);
+    const [smartBuySettingsModalOpened, {
+        open: openSmartBuySettingsModal,
+        close: closeSmartBuySettingsModal,
+    }] = useDisclosure(false);
+
+    const {
+        isPending: isPendingDefaultMarkets,
+        isError: isErrorDefaultMarkets,
+        data: defaultMarkets
+    } = useListProjectMarketStructures(projectId);
 
     const {
         isError: isErrorMulti,
         isPending: isPendingMulti,
         data: projectMarketMulti,
     } = useListProjectMarketBuy(projectId, {
-        strategy: 'MULTI_BUY'
+        strategy: 'MULTI_BUY',
+        structure_ids: selectedMarkets.map(x => x.structure_id),
     });
     const {
         isError: isErrorSmart,
         isPending: isPendingSmart,
         data: projectMarketSmart,
     } = useListProjectMarketBuy(projectId, {
-        strategy: 'SMART_BUY'
+        strategy: 'SMART_BUY',
+        structure_ids: selectedMarkets.map(x => x.structure_id),
+    });
+
+    const {
+        isPending: isPendingMarkets,
+        isError: isErrorMarkets,
+        data: markets,
+    } = useListStructure({
+        service_id: 35892,
+        include_npc: true,
     });
 
     const {
@@ -87,13 +117,19 @@ function RouteComponent() {
             setUpdateError(true);
             setUpdateSuccess(false);
         }
-    })
+    });
 
-    if (isPending) {
+    useEffect(() => {
+        if (defaultMarkets) {
+            setSelectedMarkets(defaultMarkets);
+        }
+    }, [defaultMarkets]);
+
+    if (isPending || isPendingMarkets || isPendingDefaultMarkets) {
         return LoadingAnimation();
     }
 
-    if (isError) {
+    if (isError || isErrorMarkets || isErrorDefaultMarkets) {
         return LoadingError();
     }
 
@@ -212,6 +248,10 @@ function RouteComponent() {
                         continue;
                     }
 
+                    if (entry.insufficient_data) {
+                        continue;
+                    }
+
                     if (!byMarket[entry.source]) {
                         byMarket[entry.source] = [];
                     }
@@ -286,7 +326,7 @@ function RouteComponent() {
                                 setMarketItems(data);
                                 setMarketSource(source(data[0].entries[0].source))
                                 setMarketSourceId(data[0].entries[0].source);
-                                open();
+                                openBuyMaterialModal();
                             }}
                         >
                             Buy
@@ -356,6 +396,67 @@ function RouteComponent() {
         </Stack>
     }
 
+    const insufficientData = (
+        marketData: ProjectMarketBuyEntry[],
+    ) => {
+        const rows = marketData
+            .map(marketData =>
+                marketData.entries
+                    .filter(y => y.insufficient_data)
+                    .map(x =>
+                        <Table.Tr>
+                            <Table.Td>
+                                <EveIcon
+                                    id={marketData.item.type_id}
+                                />
+                            </Table.Td>
+                            <Table.Td>
+                                <CopyText
+                                    value={marketData.item.name}
+                                />
+                            </Table.Td>
+                            <Table.Td>
+                                <CopyText
+                                    value={x.quantity}
+                                    number
+                                />
+                            </Table.Td>
+                        </Table.Tr>
+                    )
+            )
+            .filter(x => x.length > 0);
+
+        console.log(rows)
+        if (rows.length === 0) {
+            return <></>;
+        }
+
+        return <>
+            <Stack>
+                <Title order={2}>Insufficient materials</Title>
+
+                <Table.ScrollContainer
+                    minWidth={500}
+                    maxHeight={200}
+                >
+                    <Table>
+                        <Table.Thead>
+                            <Table.Tr>
+                                <Table.Th w={32}></Table.Th>
+                                <Table.Th>Name</Table.Th>
+                                <Table.Th>Quantity</Table.Th>
+                            </Table.Tr>
+                        </Table.Thead>
+
+                        <Table.Tbody>
+                            {rows}
+                        </Table.Tbody>
+                    </Table>
+                </Table.ScrollContainer>
+            </Stack>
+        </>
+    }
+
     return <>
         {showError()}
         {showUpdateSuccess()}
@@ -382,11 +483,11 @@ function RouteComponent() {
                     gas_decompression:      gasBonus,
                     mineral_compression:    mineralBonus,
                 });
-                close();
+                closeBuyMaterialModal();
             }}
 
-            opened={opened}
-            close={close}
+            opened={buyMaterialModalOpened}
+            close={closeBuyMaterialModal}
         />
 
         <Tabs defaultValue="overview">
@@ -415,48 +516,39 @@ function RouteComponent() {
                 }
             </Tabs.Panel>
             <Tabs.Panel value="smartBuy">
-                TODO: add gas compression, selector - needs to be send to the server when updating
-
-                TODO: add mineral compression
-
                 <Stack>
-                    <CompressionMinimal
+                    <SmartBuySettingsModal
+                        close={closeSmartBuySettingsModal}
+                        opened={smartBuySettingsModalOpened}
+
+                        markets={markets}
+                        selectedMarkets={selectedMarkets}
+                        onMarketUpdate={setSelectedMarkets}
+
                         onGasUpdate={setGasBonus}
                         onMineralUpdate={setMineralBonus}
                     />
+
+                    <Group justify='flex-end'>
+                        <Button
+                            onClick={openSmartBuySettingsModal}
+                        >
+                            Settings
+                        </Button>
+                    </Group>
 
                     {
                         isPendingSmart
                         ?   LoadingAnimation()
                         :   isErrorSmart
                             ?   LoadingError()
-                            : marketBuyTable(projectMarketSmart)
+                            :   <>
+                                    {insufficientData(projectMarketSmart)}
+                                    {marketBuyTable(projectMarketSmart)}
+                                </>
                     }
                 </Stack>
             </Tabs.Panel>
         </Tabs>
     </>
 }
-
-/*const haulingCost = (
-    structure_id: number,
-    quantity: number,
-    volume: number,
-) => {
-    switch (structure_id) {
-        case 1046664001931:
-            return (quantity * volume) * (19_816_099 / 370_000);
-        // C-J
-        case 1049588174021:
-            return (quantity * volume) * (113_886_795 / 370_000);
-        // Jita
-        case 60003760:
-            return (quantity * volume) * 475
-        // Amarr
-        case 60008494:
-            return (quantity * volume) * (173_566_003 / 370_000)
-        default:
-            return 0;
-    }
-}
-*/

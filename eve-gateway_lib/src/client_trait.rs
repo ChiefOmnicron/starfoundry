@@ -131,6 +131,10 @@ pub trait EveGatewayApiClient:
         &self,
         system_ids: Vec<SystemId>,
     ) -> Result<Vec<System>> {
+        let mut system_ids = system_ids;
+        system_ids.sort();
+        system_ids.dedup();
+
         self
             .post("universe/systems", system_ids)
             .await

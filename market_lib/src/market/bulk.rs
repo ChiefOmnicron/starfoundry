@@ -22,7 +22,7 @@ pub struct MarketBulkRequest {
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 pub struct MarketBulkResponse {
     pub source:             StructureId,
-    pub type_id:            i32,
+    pub type_id:            TypeId,
     /// number of units that should be bought
     pub quantity:           u64,
     /// price per units

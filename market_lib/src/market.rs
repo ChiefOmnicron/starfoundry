@@ -1,9 +1,13 @@
+mod asteroid_utils;
 mod bulk;
 mod gas_utils;
+mod mineral_utils;
 mod virtual_market;
 use starfoundry_lib_gateway::ApiClient;
 
+pub use self::asteroid_utils::*;
 pub use self::bulk::*;
+pub use self::mineral_utils::*;
 pub use self::gas_utils::*;
 pub use self::virtual_market::*;
 

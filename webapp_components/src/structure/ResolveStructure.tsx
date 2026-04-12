@@ -20,7 +20,7 @@ export function ResolveStructure(
     const [structureInput, setStructureInput] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const structure = useMutation({
+    const resolveStructureMutation = useMutation({
         mutationFn: async (structureId: number) => {
             setIsLoading(true);
             onLoad(true);
@@ -48,7 +48,7 @@ export function ResolveStructure(
             structureId = parseInt(structureInput);
         }
 
-        structure.mutate(structureId);
+        resolveStructureMutation.mutate(structureId);
     }
 
     return <>

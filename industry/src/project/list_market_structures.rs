@@ -2,47 +2,40 @@ use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
-use serde::Deserialize;
-use starfoundry_lib_market::BuyStrategy;
-use starfoundry_lib_types::StructureId;
-use utoipa::{IntoParams, ToSchema};
+use starfoundry_lib_gateway::ExtractIdentity;
+use starfoundry_lib_industry::Structure;
 
 use crate::{AppState, eve_gateway_api_client};
 use crate::api_docs::{BadRequest, InternalServerError, NotFound, Unauthorized};
 use crate::project::error::Result;
 use crate::project::ProjectUuid;
-use crate::project::service::{ProjectMarket, list_market_buy};
+use crate::project::service::list_market_structures;
 
 /// List Market
 /// 
-/// - Alternative route: `/latest/projects/{ProjectUuid}/market/buy`
-/// - Alternative route: `/v1/projects/{ProjectUuid}/market/buy`
+/// - Alternative route: `/latest/projects/{ProjectUuid}/market/structures`
+/// - Alternative route: `/v1/projects/{ProjectUuid}/market/structures`
 /// 
 /// ---
 /// 
-/// Lists all materials that need to be bought
+/// Lists all default markets for a project
 /// 
 /// ## Security
 /// - authenticated
 /// - project:read
 /// 
 #[utoipa::path(
-    post,
-    path = "/{ProjectUuid}/market/buy",
+    get,
+    path = "/{ProjectUuid}/market/structures",
     tag = "projects",
     params(
         ProjectUuid,
-        ListMarketBuyQuery,
     ),
     responses(
         (
-            body = Vec<ProjectMarket>,
-            description = "List all materials for a project",
+            body = Vec<Structure>,
+            description = "List all market structures for a project",
             status = OK,
-        ),
-        (
-            description = "There aren't any materials required for the project",
-            status = NO_CONTENT,
         ),
         NotFound,
         BadRequest,
@@ -54,15 +47,15 @@ use crate::project::service::{ProjectMarket, list_market_buy};
     ),
 )]
 pub async fn api(
+    identity:         ExtractIdentity,
     State(state):     State<AppState>,
     Path(project_id): Path<ProjectUuid>,
-    Json(config):     Json<ListMarketBuyQuery>,
 ) -> Result<impl IntoResponse> {
-    let data = list_market_buy(
+    let data = list_market_structures(
             &state.postgres,
-            project_id,
+            identity.character_id,
             &eve_gateway_api_client()?,
-            config,
+            project_id,
         ).await?;
 
     if data.is_empty() {
@@ -82,11 +75,4 @@ pub async fn api(
             .into_response()
         )
     }
-}
-
-#[derive(Debug, Default, Deserialize, ToSchema, IntoParams)]
-#[into_params(parameter_in = Query)]
-pub struct ListMarketBuyQuery {
-    pub strategy:       BuyStrategy,
-    pub structure_ids:  Vec<StructureId>,
 }

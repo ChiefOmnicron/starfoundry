@@ -68,20 +68,16 @@ pub async fn fetch_bulk(
 
     let mut result = Vec::new();
 
-    let mut type_ids = structures
+    let type_ids = structures
         .iter()
         .map(|x| x.type_id)
         .map(Into::into)
         .collect::<Vec<_>>();
-    type_ids.sort();
-    type_ids.dedup();
-    let mut system_ids = structures
+    let system_ids = structures
         .iter()
         .map(|x| x.system_id)
         .map(Into::into)
         .collect::<Vec<_>>();
-    system_ids.sort();
-    system_ids.dedup();
 
     let items = eve_gateway_api_client
         .fetch_item_bulk(type_ids)

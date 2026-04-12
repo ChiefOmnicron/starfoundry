@@ -8,33 +8,35 @@ export const LIST_PROJECT_MARKET = 'listProjectMarket';
 
 export const listProjectMarketBuy = async (
     projectId: Uuid,
-    query:     ProjectMarketBuyQuery,
+    config:    ProjectMarketBuyQuery,
     signal?:   GenericAbortSignal,
 ): Promise<ProjectMarketBuyEntry[]> => (await axiosClient())
-    .get(
+    .post(
         `/api/projects/${projectId}/market/buy`,
+        config,
         {
             signal,
-            params: query,
         }
     )
     .then(x => x.data);
 
 export const useListProjectMarketBuy = (
     projectId: Uuid,
-    query:     ProjectMarketBuyQuery,
+    config:    ProjectMarketBuyQuery,
 ) => {
     return useQuery({
-        queryKey: [LIST_PROJECT_MARKET, projectId, query.strategy],
+        queryKey: [LIST_PROJECT_MARKET, projectId, config],
         queryFn: async ({
             signal
-        }: AbortSignal) => listProjectMarketBuy(projectId, query, signal),
+        }: AbortSignal) => listProjectMarketBuy(projectId, config, signal),
         initialData: [],
     })
 }
 
 export type ProjectMarketBuyQuery = {
     strategy: 'MULTI_BUY' | 'SMART_BUY';
+
+    structure_ids: number[];
 }
 
 export type ProjectMarketBuyEntry = {

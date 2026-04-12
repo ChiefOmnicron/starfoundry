@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{EveGatewayApiClientItem, Item};
-use starfoundry_lib_market::{BuyStrategy, Gas, MarketApiClientOrder, MarketBulkRequest, MarketBulkResponse, MarketItemList, SmartBuyConfig};
+use starfoundry_lib_market::{Asteroid, BuyStrategy, Gas, MarketApiClientOrder, MarketBulkRequest, MarketBulkResponse, MarketItemList, SmartBuyConfig};
 use std::collections::HashMap;
 use utoipa::ToSchema;
 use uuid::Uuid;
@@ -41,6 +41,9 @@ pub async fn list_market_buy(
         .map(Into::into)
         .collect::<Vec<_>>();
     // TODO: better solution
+    // TODO: make them configurable
+    type_ids.extend(Asteroid::compressed_asteroid_type_ids());
+    type_ids.extend(Asteroid::compressed_moon_type_ids());
     type_ids.extend(Gas::compressed_type_ids());
 
     let items = eve_gateway_api_client
@@ -61,8 +64,7 @@ pub async fn list_market_buy(
                     })
                     .collect::<Vec<_>>()
                 ),
-                markets: vec![1046664001931i64, 1049588174021i64, 60003760i64, 60008494i64].into_iter().map(Into::into).collect::<Vec<_>>(),
-                //markets: vec![1046664001931i64, 60003760i64, 60008494i64].into_iter().map(Into::into).collect::<Vec<_>>(),
+                markets: config.structure_ids,
                 strategy: BuyStrategy::MultiBuy,
                 ..Default::default()
             })
@@ -79,11 +81,11 @@ pub async fn list_market_buy(
                     })
                     .collect::<Vec<_>>()
                 ),
-                markets: vec![1046664001931i64, 1049588174021i64, 60003760i64, 60008494i64].into_iter().map(Into::into).collect::<Vec<_>>(),
-                //markets: vec![1046664001931i64, 60003760i64, 60008494i64].into_iter().map(Into::into).collect::<Vec<_>>(),
+                markets: config.structure_ids,
                 strategy: BuyStrategy::SmartBuy,
                 smart_buy_config: Some(SmartBuyConfig {
                     gas_compression: true,
+                    ore_compression: true,
                     ..Default::default()
                 }),
                 ..Default::default()
@@ -105,7 +107,7 @@ pub async fn list_market_buy(
         let market_entry = market_entries
             .iter()
             .cloned()
-            .filter(|x| x.type_id == entry.type_id)
+            .filter(|x| x.type_id == entry.type_id.into())
             .collect::<Vec<_>>();
 
         let project_group = ProjectMarketBuy {
@@ -139,7 +141,7 @@ pub async fn list_market_buy(
         let market_entry = market_entries
             .iter()
             .cloned()
-            .filter(|x| x.type_id == *compressed_gas)
+            .filter(|x| x.type_id == compressed_gas)
             .collect::<Vec<_>>();
 
         let project_group = ProjectMarketBuy {
@@ -149,6 +151,42 @@ pub async fn list_market_buy(
 
             cost:       entry.cost,
             source:     entry.source.clone(),
+
+            entries:    market_entry,
+        };
+        project_market.push(project_group);
+    }
+
+    // TODO: make them configurable
+    let asteroid_type_ids = vec![
+            Asteroid::compressed_asteroid_type_ids(),
+            Asteroid::compressed_moon_type_ids(),
+        ]
+        .into_iter()
+        .flatten()
+        .collect::<Vec<_>>();
+
+    for type_id in asteroid_type_ids {
+        let item = if let Some(x) = items.get(&type_id) {
+            x
+        } else {
+            continue;
+        };
+
+        let market_entry = market_entries
+            .iter()
+            .cloned()
+            .filter(|x| x.type_id == type_id)
+            .collect::<Vec<_>>();
+
+        let project_group = ProjectMarketBuy {
+            // UUID type doesn't matter
+            id:         Uuid::now_v7(),
+            item:       item.clone(),
+            quantity:   0,
+
+            cost:       None,
+            source:     None,
 
             entries:    market_entry,
         };

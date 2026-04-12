@@ -11,6 +11,7 @@ export function ServiceSelector({
     readonly = false,
 }: Props) {
     const [value, setValue] = useState<string[]>([]);
+
     useEffect(() => {
         setValue(selected.map(x => x.toString()));
     }, [selected]);
@@ -36,7 +37,7 @@ export function ServiceSelector({
             value={value}
             maxValues={services.slots}
             onChange={(value) => {
-                setValue(value)
+                setValue(value);
                 onSelect(value.map(x => parseInt(x)));
             }}
             placeholder="Select Service"
@@ -52,7 +53,7 @@ export type Props = {
     // list of all rigs
     services:  StructureService;
     // selected value
-    selected?: TypeId[];
+    selected: TypeId[];
     // event that fires when an element was selected
     onSelect:  (selected: TypeId[]) => void,
     // will make all inputs readonly

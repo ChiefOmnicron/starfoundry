@@ -2,10 +2,11 @@ use axum::extract::rejection::JsonRejection;
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::{IntoResponse, Response};
+use starfoundry_lib_types::StructureId;
 use thiserror::Error;
 
 use crate::api_docs::{format_json_errors, ErrorResponse};
-use starfoundry_lib_types::StructureId;
+use crate::lp::LpError;
 
 pub type Result<T, E = MarketError> = std::result::Result<T, E>;
 
@@ -19,6 +20,8 @@ pub enum MarketError {
 
     #[error(transparent)]
     JsonExtractorRejection(#[from] JsonRejection),
+    #[error(transparent)]
+    LpError(#[from] LpError),
     #[error(transparent)]
     EveGatewayLibError(#[from] starfoundry_lib_eve_gateway::Error),
 }

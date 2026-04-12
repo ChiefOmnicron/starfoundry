@@ -1,9 +1,9 @@
 use chrono::NaiveDateTime;
-use starfoundry_lib_market::{Gas, MarketBulkResponse, MarketItemList, SmartBuyConfig};
+use starfoundry_lib_market::{Asteroid, Gas, MarketBulkResponse, MarketItemList, Mineral, SmartBuyConfig};
 use starfoundry_lib_types::{StructureId, TypeId};
 use std::collections::HashMap;
 
-use crate::lp::MarketProblem;
+use crate::lp::{AsteroidCompressionProblem, MarketProblem};
 use crate::market::MarketEntry;
 
 pub fn smartbuy(
@@ -27,8 +27,68 @@ pub fn smartbuy(
                 .or_insert(vec![x.clone()]);
         });
 
+    if config.ore_compression {
+        let market_entries = market_data
+            .iter()
+            .filter(|(type_id, _)|
+                // TODO: make them configurable
+                Asteroid::mineral_type_ids().contains(&type_id) ||
+                Asteroid::asteroid_type_ids().contains(&type_id) ||
+                Asteroid::compressed_asteroid_type_ids().contains(&type_id) ||
+                Asteroid::compressed_moon_type_ids().contains(&type_id)
+            )
+            .flat_map(|(_, x)| x)
+            .cloned()
+            .collect::<Vec<_>>();
+
+        let minerals = market_items
+            .iter()
+            .filter(|x| Asteroid::mineral_type_ids().contains(&x.type_id))
+            .map(|x| (Mineral::from(x.type_id), x.quantity as f64))
+            .collect::<HashMap<_, _>>();
+
+        let mut lp = AsteroidCompressionProblem::new();
+        lp.define_problem(market_entries);
+        let result = lp.solve(minerals.clone());
+
+        if let Ok(x) = result {
+            let result = x.into_iter()
+                .map(|((structure_id, _), x)| MarketBulkResponse {
+                    insufficient_data:  false,
+                    price:              x.price,
+                    quantity:           x.quantity as u64,
+                    source:             structure_id,
+                    type_id:            x.type_id,
+                    last_fetch:         last_fetched.get(&structure_id.into()).cloned(),
+                })
+                .collect::<Vec<_>>();
+            results.extend(result);
+        } else {
+            for mineral_type_id in Asteroid::mineral_type_ids() {
+                let quantity = minerals
+                    .get(&Mineral::from(mineral_type_id))
+                    .unwrap_or(&0f64);
+
+                results.push(MarketBulkResponse {
+                    insufficient_data:  true,
+                    price:              0f64,
+                    quantity:           *quantity as u64,
+                    source:             StructureId(0),
+                    type_id:            mineral_type_id,
+                    last_fetch:         None,
+                });
+            }
+        }
+    }
+
     for item in market_items.iter() {
         if !market_data.contains_key(&item.type_id) {
+            continue;
+        }
+
+        if config.ore_compression &&
+            Asteroid::mineral_type_ids().contains(&item.type_id) {
+
             continue;
         }
 
@@ -53,23 +113,35 @@ pub fn smartbuy(
 
         // increase required amount
         let result = if Gas::is_gas(item.type_id) && config.gas_compression {
+            // TODO the 95 should be configurable
             lp.solve(compression_quantity_modifier(item.quantity as f64, 95f64))
         } else {
             lp.solve(item.quantity)
         };
 
-        let result = result
-            .into_iter()
-            .map(|(structure_id, x)| MarketBulkResponse {
-                insufficient_data:  false,
-                price:              x.price,
-                quantity:           x.quantity as u64,
-                source:             structure_id.into(),
-                type_id:            *x.type_id,
-                last_fetch:         last_fetched.get(&structure_id.into()).cloned(),
-            })
-            .collect::<Vec<_>>();
-        results.extend(result);
+        if let Ok(x) = result {
+            let result = x.into_iter()
+                .map(|(structure_id, x)| MarketBulkResponse {
+                    insufficient_data:  false,
+                    price:              x.price,
+                    quantity:           x.quantity as u64,
+                    source:             structure_id.into(),
+                    type_id:            x.type_id,
+                    last_fetch:         last_fetched.get(&structure_id.into()).cloned(),
+                })
+                .collect::<Vec<_>>();
+            results.extend(result);
+        } else {
+            results.push(MarketBulkResponse {
+                insufficient_data:  true,
+                price:              0f64,
+                quantity:           item.quantity as u64,
+                source:             StructureId(0),
+                type_id:            item.type_id,
+                last_fetch:         None,
+            });
+        }
+
     }
     dbg!("smart", start.elapsed().as_millis());
     results

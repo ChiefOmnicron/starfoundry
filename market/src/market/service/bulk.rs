@@ -3,7 +3,7 @@ mod smartbuy;
 
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::EveGatewayApiClientItem;
-use starfoundry_lib_market::{BuyStrategy, Gas, MarketBulkRequest, MarketBulkResponse};
+use starfoundry_lib_market::{Asteroid, BuyStrategy, Gas, MarketBulkRequest, MarketBulkResponse};
 use starfoundry_lib_types::{StructureId, TypeId};
 use std::collections::HashMap;
 
@@ -25,8 +25,11 @@ pub async fn bulk(
         .iter()
         .map(|x| x.type_id)
         .collect::<Vec<_>>();
+
     // FIXME: only add them if compression is active
-    // SmartBuyConfig maybe general config?
+    // TODO: make them configurable
+    type_ids.extend(Asteroid::compressed_asteroid_type_ids());
+    type_ids.extend(Asteroid::compressed_moon_type_ids());
     type_ids.extend(Gas::compressed_type_ids());
 
     let items = eve_gateway_api_client()?

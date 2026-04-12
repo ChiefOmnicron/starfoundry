@@ -3,6 +3,7 @@ import { BlueprintOverwriteList } from '@starfoundry/components/projectGroup/Blu
 import { CopyText } from '@starfoundry/components/misc/CopyText';
 import { createColumnHelper, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { EveIcon } from '@starfoundry/components/misc/EveIcon';
+import { FETCH_PROJECT, type ProjectList } from '@starfoundry/components/services/projects/fetch';
 import { generateSolution, type GenerateSolutionResponse, type SolutionManufacturing, type SolutionMaterial } from '@starfoundry/components/services/projects/generateSolution';
 import { IndustryHubList } from '@starfoundry/components/list/IndustryHubList';
 import { InitializeProject } from '@starfoundry/components/services/projects/initialize';
@@ -22,7 +23,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import type { IndustryHub } from '@starfoundry/components/services/industry-hub/list';
 import type { Item } from '@starfoundry/components/services/item/model';
-import { FETCH_PROJECT, type ProjectList } from '@starfoundry/components/services/projects/fetch';
 
 const columnHelperMaterial = createColumnHelper<SolutionMaterial>();
 const columnsMaterial = [

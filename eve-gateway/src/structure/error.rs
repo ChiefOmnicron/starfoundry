@@ -24,6 +24,8 @@ pub enum StructureError {
 
     #[error("error performing eve api call, error: '{0}'")]
     EveApiError(#[from] EveApiError),
+    #[error("gateway error, error: '{0:?}'")]
+    GatewayError(#[from] starfoundry_lib_gateway::Error),
 
     #[error("error while fetching structure rigs, type_id: '{1}', error: '{0}'")]
     FetchStructureRigs(sqlx::Error, TypeId),

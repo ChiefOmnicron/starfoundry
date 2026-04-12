@@ -2,6 +2,7 @@ use good_lp::{Constraint, Expression, ProblemVariables, Solution, SolverModel, V
 use std::collections::HashMap;
 use starfoundry_lib_types::{StructureId, TypeId};
 
+use crate::lp::{LpError, Result};
 use crate::market::MarketEntry;
 
 pub struct MarketProblem {
@@ -100,7 +101,7 @@ impl MarketProblem {
     pub fn solve(
         mut self,
         want: i32,
-    ) -> HashMap<StructureId, MarketProblemResult> {
+    ) -> Result<HashMap<StructureId, MarketProblemResult>> {
         self.constraints.push(constraint!(self.want == want));
 
         let mapping = self.variables
@@ -113,7 +114,7 @@ impl MarketProblem {
             .using(default_solver)
             .with_all(self.constraints)
             .solve()
-            .unwrap();
+            .map_err(|_| LpError::NoSolution)?;
 
         let mut result = HashMap::new();
         for (var, definition) in mapping.iter() {
@@ -146,7 +147,7 @@ impl MarketProblem {
             }
         }
 
-        result
+        Ok(result)
     }
 }
 

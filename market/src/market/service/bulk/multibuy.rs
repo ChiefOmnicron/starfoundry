@@ -113,7 +113,7 @@ pub fn multibuy(
             price:              x.price,
             quantity:           x.quantity,
             source:             x.source.into(),
-            type_id:            x.type_id,
+            type_id:            x.type_id.into(),
             last_fetch:         last_fetched.get(&x.source.into()).cloned(),
         })
         .collect::<Vec<_>>()

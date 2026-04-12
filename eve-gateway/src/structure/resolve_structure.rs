@@ -2,16 +2,18 @@ use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
-use starfoundry_lib_eve_client::EveApiError;
 use starfoundry_lib_eve_gateway::ResolveStructureResponse;
+use starfoundry_lib_gateway::ExtractIdentity;
 use starfoundry_lib_types::StructureId;
 
 use crate::api_docs::{InternalServerError, NotFound};
 use crate::state::AppState;
 
-use crate::auth::ExtractIdentity;
 use crate::structure::error::Result;
 use crate::structure::services::resolve_structure;
+use crate::utils::api_client_auth;
+
+const SCOPE: &str = "esi-universe.read_structures.v1";
 
 /// Resolve Structure
 /// 
@@ -47,21 +49,35 @@ use crate::structure::services::resolve_structure;
 )]
 #[axum::debug_handler]
 pub async fn api(
-    State(state):       State<AppState>,
     identity:           ExtractIdentity,
+    State(state):       State<AppState>,
     Path(structure_id): Path<StructureId>,
 ) -> Result<impl IntoResponse> {
-    let eve_api_client = identity
-        .eve_api_client(
+    let api_client = api_client_auth(
             &state.postgres,
             state.eve_api_metric,
+            identity.host()?,
+            identity.character_id,
+            vec![
+                SCOPE.into(),
+            ],
         )
-        .await?
-        .ok_or(EveApiError::ClientNotAuthenticated)?;
+        .await?;
+
+    let api_client = if let Some(x) = api_client {
+        x
+    } else {
+        return Ok(
+            (
+                StatusCode::UNAUTHORIZED,
+            )
+            .into_response()
+        )
+    };
 
     let entry = resolve_structure(
         &state.postgres,
-        eve_api_client,
+        api_client,
         structure_id,
     ).await?;
 

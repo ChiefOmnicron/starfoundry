@@ -24,7 +24,7 @@ export function AddStructure({
 
     const [resolvedStructure, setResolvedStructure] = useState<ResolveStructureResponse | undefined>();
     const [selectedRigs, setSelectedRigs] = useState<TypeId[]>([]);
-    const [selectedServices, setSelectedServices] = useState<(TypeId | null)[]>([]);
+    const [selectedServices, setSelectedServices] = useState<TypeId[]>([]);
 
     const mutation = useMutation({
         mutationFn: async (value: CreateStructure) => {
@@ -111,6 +111,7 @@ export function AddStructure({
 
             <ServiceSelector
                 services={resolvedStructure.installable_services}
+                selected={selectedServices}
                 onSelect={(selected: TypeId[]) => {
                     setSelectedServices(selected)
                 }}
