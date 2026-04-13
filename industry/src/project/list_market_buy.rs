@@ -3,7 +3,7 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use serde::Deserialize;
-use starfoundry_lib_market::BuyStrategy;
+use starfoundry_lib_market::{BuyStrategy, GasDecompressionEfficiency, OreReprocessingEfficiency};
 use starfoundry_lib_types::StructureId;
 use utoipa::{IntoParams, ToSchema};
 
@@ -87,6 +87,11 @@ pub async fn api(
 #[derive(Debug, Default, Deserialize, ToSchema, IntoParams)]
 #[into_params(parameter_in = Query)]
 pub struct ListMarketBuyQuery {
-    pub strategy:       BuyStrategy,
-    pub structure_ids:  Vec<StructureId>,
+    pub strategy:               BuyStrategy,
+    pub structure_ids:          Vec<StructureId>,
+
+    // gas decompression is active
+    pub gas_decompression:      Option<GasDecompressionEfficiency>,
+    // mineral compression is active
+    pub mineral_compression:    Option<OreReprocessingEfficiency>,
 }

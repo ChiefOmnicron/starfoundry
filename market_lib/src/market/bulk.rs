@@ -2,6 +2,7 @@ use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use starfoundry_lib_types::{StructureId, TypeId};
 use utoipa::{IntoParams, ToSchema};
+use crate::{GasDecompressionEfficiency, OreReprocessingEfficiency};
 
 /// Bulk request for resolving prices
 /// 
@@ -80,6 +81,8 @@ impl Default for BuyStrategy {
 
 #[derive(Debug, Default, Deserialize, Serialize, ToSchema, IntoParams)]
 pub struct SmartBuyConfig {
-    pub gas_compression: bool,
-    pub ore_compression: bool,
+    // gas decompression is active
+    pub gas_decompression:      Option<GasDecompressionEfficiency>,
+    // mineral compression is active
+    pub mineral_compression:    Option<OreReprocessingEfficiency>,
 }

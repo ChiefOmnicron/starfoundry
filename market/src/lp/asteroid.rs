@@ -1,5 +1,5 @@
 use good_lp::{Constraint, Expression, ProblemVariables, Solution, SolverModel, Variable, WithTimeLimit, constraint, default_solver, variable, variables};
-use starfoundry_lib_market::{Asteroid, Mineral};
+use starfoundry_lib_market::{Asteroid, Mineral, OreReprocessingEfficiency};
 use starfoundry_lib_types::{StructureId, TypeId};
 use std::collections::HashMap;
 
@@ -12,28 +12,30 @@ pub struct AsteroidCompressionProblem {
     constraints: Vec<Constraint>,
 
     total_price: Expression,
-    total_units: HashMap<TypeId, Expression>,
 
     mapping_order_id_market:    HashMap<i64, MarketEntry>,
     max_price_per_entry:        HashMap<Asteroid, f64>,
-    total_units_per_entry:      HashMap<Asteroid, f64>,
     minerals:                   HashMap<Mineral, Expression>,
+
+    mineral_compression:        Option<OreReprocessingEfficiency>,
 }
 
 impl AsteroidCompressionProblem {
-    pub fn new() -> Self {
+    pub fn new(
+        mineral_compression: Option<OreReprocessingEfficiency>,
+    ) -> Self {
         Self {
             vars: variables!(),
             variables: Vec::new(),
             constraints: Vec::new(),
 
             total_price: 0f64.into(),
-            total_units: HashMap::new(),
 
             mapping_order_id_market: HashMap::new(),
             max_price_per_entry: HashMap::new(),
-            total_units_per_entry: HashMap::new(),
             minerals: HashMap::new(),
+
+            mineral_compression: mineral_compression,
         }
     }
 
@@ -67,8 +69,12 @@ impl AsteroidCompressionProblem {
             }
 
             for (mineral, quantity) in asteroid.minerals() {
+                let efficiency = self.mineral_compression
+                    .unwrap_or(OreReprocessingEfficiency::default())
+                    .efficiency();
+
                 let quantity = if asteroid.is_any_asteroid() {
-                    (var * quantity) * 0.9063
+                    (var * quantity) * efficiency
                 } else {
                     var * quantity
                 };

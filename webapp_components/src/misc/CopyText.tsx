@@ -1,4 +1,4 @@
-import { formatNumber, formatNumberUnit } from "@internal/utils";
+import { formatDate, formatNumber, formatNumberUnit } from "@internal/utils";
 import { Tooltip } from "@mantine/core";
 import { useClipboard } from "@mantine/hooks";
 import { useEffect, useState } from "react";
@@ -7,6 +7,8 @@ export function CopyText({
     value,
     display,
 
+    date = false,
+    dateUtc = false,
     disabled = false,
     number = false,
     withUnit = false,
@@ -34,6 +36,10 @@ export function CopyText({
             } else {
                 return formatNumber(value as number);
             }
+        } else if (date && value) {
+            return `${formatDate(value as number)} (local)`;
+        } else if (dateUtc && value) {
+            return `${formatDate(value as number)} (UTC)`;
         } else {
             return display || value;
         }
@@ -62,6 +68,8 @@ export type CopyTextProps = {
     value: string | number | undefined;
     display?: string | number | undefined;
 
+    date?: boolean;
+    dateUtc?: boolean;
     disabled?: boolean;
     number?: boolean;
     withUnit?: boolean;

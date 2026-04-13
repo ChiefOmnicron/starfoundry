@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{EveGatewayApiClientItem, Item};
 use starfoundry_lib_market::{Asteroid, BuyStrategy, Gas, MarketApiClientOrder, MarketBulkRequest, MarketBulkResponse, MarketItemList, SmartBuyConfig};
+use starfoundry_lib_types::TypeId;
 use std::collections::HashMap;
 use utoipa::ToSchema;
 use uuid::Uuid;
@@ -10,7 +11,6 @@ use crate::project::error::{ProjectError, Result};
 use crate::project::ProjectUuid;
 use crate::{market_api_client, sort_by_market_group_flat};
 use crate::project::list_market_buy::ListMarketBuyQuery;
-use starfoundry_lib_types::TypeId;
 
 pub async fn list_market_buy(
     pool:                   &PgPool,
@@ -84,8 +84,8 @@ pub async fn list_market_buy(
                 markets: config.structure_ids,
                 strategy: BuyStrategy::SmartBuy,
                 smart_buy_config: Some(SmartBuyConfig {
-                    gas_compression: true,
-                    ore_compression: true,
+                    gas_decompression: config.gas_decompression,
+                    mineral_compression: config.mineral_compression,
                     ..Default::default()
                 }),
                 ..Default::default()

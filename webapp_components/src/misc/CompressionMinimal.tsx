@@ -1,25 +1,191 @@
 import { InputWrapper, SegmentedControl, Stack, Title } from "@mantine/core";
-import { useState, type ReactElement } from "react";
+import { useEffect, useState, type ReactElement } from "react";
 
 // can be used for initializing states
-export const DEFAULT_GAS_BONUS: string = 'TataraLvl5';
-export const DEFAULT_MINERAL_BONUS: string = 'NsTataraT2';
+export const DEFAULT_GAS_BONUS: GasDecompression = 'TataraLvl5';
+export const DEFAULT_MINERAL_BONUS: MineralCompression = 'NsTataraT2';
 
 type StructureType = 'Athanor' | 'Tatara';
-type SecurityType = 'HS' | 'LS' | 'NS';
+type SecurityType = 'Hs' | 'Ls' | 'Ns';
 type RigType = 'NoRig' | 'T1' | 'T2';
 type SkillLevelType = '0' | '1' | '2' | '3' | '4' | '5';
 
+export type GasDecompression = 'AthanorLvl0' | 'AthanorLvl1' | 'AthanorLvl2' | 'AthanorLvl3' | 'AthanorLvl4' | 'AthanorLvl5' | 'TataraLvl0' | 'TataraLvl1' | 'TataraLvl2' | 'TataraLvl3' | 'TataraLvl4' | 'TataraLvl5';
+export type MineralCompression = 'HsAthanorNoRig' | 'HsAthanorT1' | 'HsAthanorT2' | 'HsTataraNoRig' | 'HsTataraT1' | 'HsTataraT2' | 'LsAthanorNoRig' | 'LsAthanorT1' | 'LsAthanorT2' | 'LsTataraNoRig' | 'LsTataraT1' | 'LsTataraT2' | 'NsAthanorNoRig' | 'NsAthanorT1' | 'NsAthanorT2' | 'NsTataraNoRig' | 'NsTataraT1' | 'NsTataraT2';
+
 export function CompressionMinimal({
+    gasDecompression,
+    mineralCompression,
+
     onGasUpdate,
     onMineralUpdate,
 }: CompressionMinimalProp): ReactElement {
     const [mineralStructure, setMineralStructure] = useState<StructureType>('Tatara');
-    const [mineralSecurity,  setMineralSecurity] = useState<SecurityType>('NS');
+    const [mineralSecurity,  setMineralSecurity] = useState<SecurityType>('Ns');
     const [mineralRig,  setMineralRig] = useState<RigType>('T2');
 
     const [gasStructure, setGasStructure] = useState<StructureType>('Tatara');
     const [gasSkill, setGasSkill] = useState<SkillLevelType>('5');
+
+    useEffect(() => {
+        switch (gasDecompression) {
+            case "AthanorLvl0":
+                setGasStructure('Athanor');
+                setGasSkill('0');
+                break;
+            case "AthanorLvl1":
+                setGasStructure('Athanor');
+                setGasSkill('1');
+                break;
+            case "AthanorLvl2":
+                setGasStructure('Athanor');
+                setGasSkill('2');
+                break;
+            case "AthanorLvl3":
+                setGasStructure('Athanor');
+                setGasSkill('3');
+                break;
+            case "AthanorLvl4":
+                setGasStructure('Athanor');
+                setGasSkill('4');
+                break;
+            case "AthanorLvl5":
+                setGasStructure('Athanor');
+                setGasSkill('5');
+                break;
+
+            case "TataraLvl0":
+                setGasStructure('Tatara');
+                setGasSkill('0');
+                break;
+            case "TataraLvl1":
+                setGasStructure('Tatara');
+                setGasSkill('1');
+                break;
+            case "TataraLvl2":
+                setGasStructure('Tatara');
+                setGasSkill('2');
+                break;
+            case "TataraLvl3":
+                setGasStructure('Tatara');
+                setGasSkill('3');
+                break;
+            case "TataraLvl4":
+                setGasStructure('Tatara');
+                setGasSkill('4');
+                break;
+            case "TataraLvl5":
+                setGasStructure('Tatara');
+                setGasSkill('5');
+                break;
+
+            default:
+                setGasStructure('Tatara');
+                setGasSkill('5');
+        }
+    }, [gasDecompression]);
+
+    useEffect(() => {
+        switch(mineralCompression) {
+            case "HsAthanorNoRig":
+                setMineralStructure('Athanor');
+                setMineralSecurity('Hs');
+                setMineralRig('NoRig');
+                break;
+            case "HsAthanorT1":
+                setMineralStructure('Athanor');
+                setMineralSecurity('Hs');
+                setMineralRig('T1');
+                break;
+            case "HsAthanorT2":
+                setMineralStructure('Athanor');
+                setMineralSecurity('Hs');
+                setMineralRig('T2');
+                break;
+            case "HsTataraNoRig":
+                setMineralStructure('Tatara');
+                setMineralSecurity('Hs');
+                setMineralRig('NoRig');
+                break;
+            case "HsTataraT1":
+                setMineralStructure('Tatara');
+                setMineralSecurity('Hs');
+                setMineralRig('T1');
+                break;
+            case "HsTataraT2":
+                setMineralStructure('Tatara');
+                setMineralSecurity('Hs');
+                setMineralRig('T2');
+                break;
+
+            case "LsAthanorNoRig":
+                setMineralStructure('Athanor');
+                setMineralSecurity('Ls');
+                setMineralRig('NoRig');
+                break;
+            case "LsAthanorT1":
+                setMineralStructure('Athanor');
+                setMineralSecurity('Ls');
+                setMineralRig('T1');
+                break;
+            case "LsAthanorT2":
+                setMineralStructure('Athanor');
+                setMineralSecurity('Ls');
+                setMineralRig('T2');
+                break;
+            case "LsTataraNoRig":
+                setMineralStructure('Tatara');
+                setMineralSecurity('Ls');
+                setMineralRig('NoRig');
+                break;
+            case "LsTataraT1":
+                setMineralStructure('Tatara');
+                setMineralSecurity('Ls');
+                setMineralRig('T1');
+                break;
+            case "LsTataraT2":
+                setMineralStructure('Tatara');
+                setMineralSecurity('Ls');
+                setMineralRig('T2');
+                break;
+
+            case "NsAthanorNoRig":
+                setMineralStructure('Athanor');
+                setMineralSecurity('Ns');
+                setMineralRig('NoRig');
+                break;
+            case "NsAthanorT1":
+                setMineralStructure('Athanor');
+                setMineralSecurity('Ns');
+                setMineralRig('T1');
+                break;
+            case "NsAthanorT2":
+                setMineralStructure('Athanor');
+                setMineralSecurity('Ns');
+                setMineralRig('T2');
+                break;
+            case "NsTataraNoRig":
+                setMineralStructure('Tatara');
+                setMineralSecurity('Ns');
+                setMineralRig('NoRig');
+                break;
+            case "NsTataraT1":
+                setMineralStructure('Tatara');
+                setMineralSecurity('Ns');
+                setMineralRig('T1');
+                break;
+            case "NsTataraT2":
+                setMineralStructure('Tatara');
+                setMineralSecurity('Ns');
+                setMineralRig('T2');
+                break;
+
+            default:
+                setMineralStructure('Tatara');
+                setMineralSecurity('Ns');
+                setMineralRig('T2');
+        }
+    }, [mineralCompression]);
 
     const mineralCode = (
         structure:  StructureType,
@@ -68,9 +234,9 @@ export function CompressionMinimal({
                         mineralCode(mineralStructure, v as SecurityType, mineralRig);
                     }}
                     data={[
-                        { label: 'Highsec', value: 'HS' },
-                        { label: 'Lowsec', value: 'LS' },
-                        { label: 'Nullsec', value: 'NS' },
+                        { label: 'Highsec', value: 'Hs' },
+                        { label: 'Lowsec', value: 'Ls' },
+                        { label: 'Nullsec', value: 'Ns' },
                     ]}
                     fullWidth
                 />
@@ -140,6 +306,9 @@ export function CompressionMinimal({
 }
 
 export type CompressionMinimalProp = {
+    gasDecompression: GasDecompression;
+    mineralCompression: MineralCompression;
+
     onGasUpdate(value: string): void;
     onMineralUpdate(value: string): void;
 }

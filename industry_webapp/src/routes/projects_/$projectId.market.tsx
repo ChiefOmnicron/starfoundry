@@ -1,7 +1,7 @@
 import { Alert, Button, Group, Stack, Table, Tabs, Title } from '@mantine/core';
 import { CopyText } from '@starfoundry/components/misc/CopyText';
 import { createFileRoute } from '@tanstack/react-router'
-import { DEFAULT_GAS_BONUS } from '@starfoundry/components/misc/CompressionMinimal';
+import { DEFAULT_GAS_BONUS, DEFAULT_MINERAL_BONUS, type GasDecompression, type MineralCompression } from '@starfoundry/components/misc/CompressionMinimal';
 import { EveIcon } from '@starfoundry/components/misc/EveIcon';
 import { LIST_PROJECT_MARKET, useListProjectMarket, type ProjectMarketEntry } from '@starfoundry/components/services/projects/listMarket';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
@@ -30,8 +30,6 @@ const source = (source: number): string => {
             return 'Jita'
         case 60008494:
             return 'Amarr'
-        case 0:
-            return 'Not enough resources'
         default:
             return 'Unknown ' + source
     }
@@ -46,8 +44,8 @@ function RouteComponent() {
     const [marketSourceId, setMarketSourceId] = useState<number>(0);
     const [selectedMarkets, setSelectedMarkets] = useState<Structure[]>([]);
 
-    const [gasBonus, setGasBonus] = useState<string>(DEFAULT_GAS_BONUS);
-    const [mineralBonus, setMineralBonus] = useState<string>(DEFAULT_GAS_BONUS);
+    const [gasBonus, setGasBonus] = useState<GasDecompression>(DEFAULT_GAS_BONUS);
+    const [mineralBonus, setMineralBonus] = useState<MineralCompression>(DEFAULT_MINERAL_BONUS);
 
     const [updateError, setUpdateError] = useState<boolean>(false);
     const [updateSuccess, setUpdateSuccess] = useState<boolean>(false);
@@ -74,6 +72,7 @@ function RouteComponent() {
     } = useListProjectMarketBuy(projectId, {
         strategy: 'MULTI_BUY',
         structure_ids: selectedMarkets.map(x => x.structure_id),
+        virtual_market: true,
     });
     const {
         isError: isErrorSmart,
@@ -82,6 +81,9 @@ function RouteComponent() {
     } = useListProjectMarketBuy(projectId, {
         strategy: 'SMART_BUY',
         structure_ids: selectedMarkets.map(x => x.structure_id),
+        gas_decompression: gasBonus,
+        mineral_compression: mineralBonus,
+        virtual_market: true,
     });
 
     const {
@@ -361,6 +363,7 @@ function RouteComponent() {
                                 <Table.Td>
                                     <CopyText
                                         value={data[0].entries[0].last_fetch}
+                                        date
                                     />
                                 </Table.Td>
                             </Table.Tr>
@@ -426,7 +429,6 @@ function RouteComponent() {
             )
             .filter(x => x.length > 0);
 
-        console.log(rows)
         if (rows.length === 0) {
             return <></>;
         }
@@ -520,6 +522,9 @@ function RouteComponent() {
                     <SmartBuySettingsModal
                         close={closeSmartBuySettingsModal}
                         opened={smartBuySettingsModalOpened}
+
+                        gasDecompression={gasBonus}
+                        mineralCompression={mineralBonus}
 
                         markets={markets}
                         selectedMarkets={selectedMarkets}

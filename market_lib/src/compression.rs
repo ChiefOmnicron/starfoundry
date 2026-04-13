@@ -1,7 +1,7 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
-#[derive(Copy, Clone, Debug, Deserialize, ToSchema)]
+#[derive(Copy, Clone, Debug, Deserialize, Serialize, ToSchema)]
 pub enum OreReprocessingEfficiency {
     HsAthanorNoRig,
     HsAthanorT1,
@@ -58,7 +58,7 @@ impl OreReprocessingEfficiency {
     }
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, ToSchema)]
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, ToSchema)]
 pub enum GasDecompressionEfficiency {
     AthanorLvl0,
     AthanorLvl1,

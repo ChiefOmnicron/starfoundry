@@ -27,7 +27,8 @@ pub fn smartbuy(
                 .or_insert(vec![x.clone()]);
         });
 
-    if config.ore_compression {
+    dbg!(config.mineral_compression);
+    if config.mineral_compression.is_some() {
         let market_entries = market_data
             .iter()
             .filter(|(type_id, _)|
@@ -47,7 +48,9 @@ pub fn smartbuy(
             .map(|x| (Mineral::from(x.type_id), x.quantity as f64))
             .collect::<HashMap<_, _>>();
 
-        let mut lp = AsteroidCompressionProblem::new();
+        let mut lp = AsteroidCompressionProblem::new(
+            config.mineral_compression,
+        );
         lp.define_problem(market_entries);
         let result = lp.solve(minerals.clone());
 
@@ -86,14 +89,14 @@ pub fn smartbuy(
             continue;
         }
 
-        if config.ore_compression &&
+        if config.mineral_compression.is_some() &&
             Asteroid::mineral_type_ids().contains(&item.type_id) {
 
             continue;
         }
 
         let mut data = market_data.get(&item.type_id).unwrap().clone();
-        if config.gas_compression {
+        if config.gas_decompression.is_some() {
             if Gas::is_gas(item.type_id) {
                 let gas = Gas::from(item.type_id);
                 if gas.is_uncompressed() {
@@ -112,9 +115,9 @@ pub fn smartbuy(
         lp.calculate_market(data.clone());
 
         // increase required amount
-        let result = if Gas::is_gas(item.type_id) && config.gas_compression {
+        let result = if Gas::is_gas(item.type_id) && let Some(x) = config.gas_decompression {
             // TODO the 95 should be configurable
-            lp.solve(compression_quantity_modifier(item.quantity as f64, 95f64))
+            lp.solve(compression_quantity_modifier(item.quantity as f64, x.efficiency()))
         } else {
             lp.solve(item.quantity)
         };

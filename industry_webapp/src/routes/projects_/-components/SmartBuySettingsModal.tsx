@@ -1,4 +1,4 @@
-import { CompressionMinimal } from "@starfoundry/components/misc/CompressionMinimal";
+import { CompressionMinimal, type GasDecompression, type MineralCompression } from "@starfoundry/components/misc/CompressionMinimal";
 import { ModalWrapper } from "@starfoundry/components/wrapper/Modal";
 import { Stack, Title } from "@mantine/core";
 import { StructureList } from "@starfoundry/components/list/StructureList";
@@ -8,6 +8,9 @@ import type { Structure } from "@starfoundry/components/services/structure/list"
 export function SmartBuySettingsModal({
     opened,
     close,
+
+    gasDecompression,
+    mineralCompression,
 
     markets,
     selectedMarkets,
@@ -25,6 +28,9 @@ export function SmartBuySettingsModal({
         >
             <Stack>
                 <CompressionMinimal
+                    gasDecompression={gasDecompression}
+                    mineralCompression={mineralCompression}
+
                     onGasUpdate={onGasUpdate}
                     onMineralUpdate={onMineralUpdate}
                 />
@@ -56,10 +62,13 @@ export type SmartBuySettingsModalProp = {
     opened: boolean;
     close: () => void;
 
+    gasDecompression: GasDecompression;
+    mineralCompression: MineralCompression;
+
     markets: Structure[];
     selectedMarkets: Structure[];
     onMarketUpdate(structures: Structure[]): void;
 
-    onGasUpdate(value: string): void;
-    onMineralUpdate(value: string): void;
+    onGasUpdate(value: GasDecompression): void;
+    onMineralUpdate(value: MineralCompression): void;
 }

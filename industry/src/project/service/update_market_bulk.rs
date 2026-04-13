@@ -1,6 +1,6 @@
 use serde::Deserialize;
 use sqlx::PgPool;
-use starfoundry_lib_market::{Gas, GasDecompressionEfficiency, MarketApiClient, MarketVirtualRequest, OreReprocessingEfficiency};
+use starfoundry_lib_market::{Asteroid, Gas, GasDecompressionEfficiency, MarketApiClient, MarketVirtualRequest, OreReprocessingEfficiency};
 use starfoundry_lib_types::{StructureId, TypeId};
 use std::collections::HashMap;
 use utoipa::ToSchema;
@@ -44,9 +44,35 @@ pub async fn update_market_bulk(
     // only updates the quantity and nothing else
     let mut update_quantity = Vec::new();
     // deletes the order_id
-    let mut delete_entry = Vec::new();
+    let mut delete_entries = Vec::new();
+    // adds the entries as excess
+    let mut excess_entries = Vec::new();
+
+    let mut mineral_updates: HashMap<TypeId, i32> = HashMap::new();
 
     for entry in entries.iter() {
+        if let Ok(asteroid) = Asteroid::try_from(entry.type_id) {
+            let compression_efficiency = entry
+                .mineral_compression
+                .unwrap_or(OreReprocessingEfficiency::default())
+                .efficiency();
+
+            asteroid
+                .minerals()
+                .into_iter()
+                .map(|(mineral, x)| (mineral.to_type_id(), ((x * (entry.quantity as f64 / 100f64)) * compression_efficiency).floor() as i32))
+                .collect::<HashMap<_, _>>()
+                .into_iter()
+                .for_each(|(type_id, x)| {
+                    mineral_updates
+                        .entry(type_id)
+                        .and_modify(|y: &mut i32| *y += x)
+                        .or_insert(x);
+                });
+
+            new_entries.push(entry);
+        }
+
         let market_entry = if let Some(x) = market_entries.get(&entry.type_id) {
             x
         } else {
@@ -55,19 +81,19 @@ pub async fn update_market_bulk(
                 if gas.is_compressed() {
                     let uncompressed = Gas::from(entry.type_id).to_uncompressed_type_id();
 
-                    let compression_efficiency = entry
+                    let decompression_efficiency = entry
                         .gas_decompression
                         .unwrap_or(GasDecompressionEfficiency::default())
                         .efficiency();
                     let original_amount = (
-                        entry.quantity as f64 * compression_efficiency
+                        entry.quantity as f64 * decompression_efficiency
                     ).floor();
                     // adds the compressed amount
                     new_entries.push(entry);
 
                     if let Some(x) = market_entries.get(&uncompressed) {
                         if original_amount as i32 >= x.quantity {
-                            delete_entry.push(x.id);
+                            delete_entries.push(x.id);
                         } else {
                             update_quantity.push(TmpMarketEntry {
                                 id:         x.id,
@@ -97,6 +123,32 @@ pub async fn update_market_bulk(
             });
         }
     }
+
+    for (type_id, quantity) in mineral_updates {
+        let market_entry = if let Some(x) = market_entries.get(&type_id) {
+            x
+        } else {
+            continue;
+        };
+
+        if quantity < market_entry.quantity {
+            update_quantity.push(TmpMarketEntry {
+                id:         market_entry.id,
+                quantity:   market_entry.quantity - quantity,
+            });
+        } else if quantity >= market_entry.quantity {
+            excess_entries.push(TmpExcessEntry {
+                type_id:    type_id,
+                quantity:   quantity - market_entry.quantity,
+            });
+            delete_entries.push(market_entry.id);
+        }
+    }
+
+    let mut transaction = pool
+        .begin()
+        .await
+        .map_err(ProjectError::TransactionError)?;
 
     if !new_entries.is_empty() {
         let type_ids = new_entries
@@ -137,7 +189,7 @@ pub async fn update_market_bulk(
                 &costs,
                 &sources,
             )
-            .execute(pool)
+            .execute(&mut *transaction)
             .await
             .map_err(ProjectError::Update)?;
     }
@@ -155,7 +207,7 @@ pub async fn update_market_bulk(
                 &update_quantity.iter().map(|x| x.id).collect::<Vec<_>>(),
                 &update_quantity.iter().map(|x| x.quantity).collect::<Vec<_>>(),
             )
-            .execute(pool)
+            .execute(&mut *transaction)
             .await
             .map_err(ProjectError::Update)?;
     }
@@ -180,10 +232,34 @@ pub async fn update_market_bulk(
                 &update_entries.iter().map(|x| x.quantity).collect::<Vec<_>>(),
                 &update_entries.iter().map(|x| x.cost as f64).collect::<Vec<_>>(),
             )
-            .execute(pool)
+            .execute(&mut *transaction)
             .await
             .map_err(ProjectError::Update)?;
     }
+
+    if !excess_entries.is_empty() {
+        sqlx::query!("
+                INSERT INTO project_excess (
+                    type_id,
+                    quantity
+                )
+                SELECT * FROM UNNEST(
+                    $1::INTEGER[],
+                    $2::INTEGER[]
+                )
+            ",
+                &excess_entries.iter().map(|x| *x.type_id).collect::<Vec<_>>(),
+                &excess_entries.iter().map(|x| x.quantity).collect::<Vec<_>>(),
+            )
+            .execute(&mut *transaction)
+            .await
+            .map_err(ProjectError::Update)?;
+    }
+
+    transaction
+        .commit()
+        .await
+        .map_err(ProjectError::TransactionError)?;
 
     let virtual_updates = entries
         .iter()
@@ -223,6 +299,12 @@ pub struct UpdateProjectMarket {
 #[derive(Debug)]
 struct TmpMarketEntry {
     id:         Uuid,
+    quantity:   i32,
+}
+
+#[derive(Debug)]
+struct TmpExcessEntry {
+    type_id:    TypeId,
     quantity:   i32,
 }
 
