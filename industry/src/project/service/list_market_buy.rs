@@ -66,6 +66,7 @@ pub async fn list_market_buy(
                 ),
                 markets: config.structure_ids,
                 strategy: BuyStrategy::MultiBuy,
+                virtual_market: true,
                 ..Default::default()
             })
             .await
@@ -83,6 +84,7 @@ pub async fn list_market_buy(
                 ),
                 markets: config.structure_ids,
                 strategy: BuyStrategy::SmartBuy,
+                virtual_market: true,
                 smart_buy_config: Some(SmartBuyConfig {
                     gas_decompression: config.gas_decompression,
                     mineral_compression: config.mineral_compression,
@@ -126,7 +128,7 @@ pub async fn list_market_buy(
     for compressed_gas in Gas::compressed_type_ids() {
         let entry = if let Some(x) = entries
             .iter()
-            .find(|x| TypeId(x.type_id) == Gas::from(compressed_gas).to_uncompressed_type_id()) {
+            .find(|x| TypeId(x.type_id) == Gas::try_from(compressed_gas).unwrap().to_uncompressed_type_id()) {
             x
         } else {
             continue;

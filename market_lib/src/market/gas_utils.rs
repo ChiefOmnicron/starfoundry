@@ -408,8 +408,63 @@ impl Gas {
     }
 }
 
-impl From<TypeId> for Gas {
-    fn from(value: TypeId) -> Self {
-        Gas::from_type_id(value)
+impl TryFrom<TypeId> for Gas {
+    type Error = String;
+
+    fn try_from(value: TypeId) -> Result<Self, Self::Error> {
+        match *value {
+            25268 => Ok(Self::AmberCytoserocin),
+            28694 => Ok(Self::AmberMykoserocin),
+            62396 => Ok(Self::CompressedAmberCytoserocin),
+            62377 => Ok(Self::CompressedAmberMykoserocin),
+            25279 => Ok(Self::AzureCytoserocin),
+            28695 => Ok(Self::AzureMykoserocin),
+            62386 => Ok(Self::CompressedAzureCytoserocin),
+            62379 => Ok(Self::CompressedAzureMykoserocin),
+            25275 => Ok(Self::CeladonCytoserocin),
+            28696 => Ok(Self::CeladonMykoserocin),
+            62387 => Ok(Self::CompressedCeladonCytoserocin),
+            62380 => Ok(Self::CompressedCeladonMykoserocin),
+            25273 => Ok(Self::GoldenCytoserocin),
+            28697 => Ok(Self::GoldenMykoserocin),
+            62390 => Ok(Self::CompressedGoldenCytoserocin),
+            62381 => Ok(Self::CompressedGoldenMykoserocin),
+            25277 => Ok(Self::LimeCytoserocin),
+            28698 => Ok(Self::LimeMykoserocin),
+            62391 => Ok(Self::CompressedLimeCytoserocin),
+            62382 => Ok(Self::CompressedLimeMykoserocin),
+            25276 => Ok(Self::MalachiteCytoserocin),
+            28699 => Ok(Self::MalachiteMykoserocin),
+            62392 => Ok(Self::CompressedMalachiteCytoserocin),
+            62383 => Ok(Self::CompressedMalachiteMykoserocin),
+            25278 => Ok(Self::VermillionCytoserocin),
+            28700 => Ok(Self::VermillionMykoserocin),
+            62393 => Ok(Self::CompressedVermillionCytoserocin),
+            62384 => Ok(Self::CompressedVermillionMykoserocin),
+            25274 => Ok(Self::ViridianCytoserocin),
+            28701 => Ok(Self::ViridianMykoserocin),
+            62394 => Ok(Self::CompressedViridianCytoserocin),
+            62385 => Ok(Self::CompressedViridianMykoserocin),
+            30375 => Ok(Self::FulleriteC28),
+            62402 => Ok(Self::CompressedFulleriteC28),
+            30376 => Ok(Self::FulleriteC32),
+            62404 => Ok(Self::CompressedFulleriteC32),
+            30377 => Ok(Self::FulleriteC320),
+            62406 => Ok(Self::CompressedFulleriteC320),
+            30370 => Ok(Self::FulleriteC50),
+            62399 => Ok(Self::CompressedFulleriteC50),
+            30378 => Ok(Self::FulleriteC540),
+            62405 => Ok(Self::CompressedFulleriteC540),
+            30371 => Ok(Self::FulleriteC60),
+            62397 => Ok(Self::CompressedFulleriteC60),
+            30372 => Ok(Self::FulleriteC70),
+            62398 => Ok(Self::CompressedFulleriteC70),
+            30373 => Ok(Self::FulleriteC72),
+            62403 => Ok(Self::CompressedFulleriteC72),
+            30374 => Ok(Self::FulleriteC84),
+            62400 => Ok(Self::CompressedFulleriteC84),
+
+            _ => Err(format!("invalid gas type_id: {}", value))
+        }
     }
 }

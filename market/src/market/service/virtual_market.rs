@@ -71,7 +71,7 @@ pub async fn virtual_market(
                     remaining:  0
                 });
                 remaining -= market_entry.virtual_remaining;
-            } else if market_entry.virtual_remaining > remaining {
+            } else if market_entry.virtual_remaining >= remaining {
                 updates.push(Update {
                     order_id:   market_entry.order_id,
                     remaining:  market_entry.virtual_remaining - remaining,

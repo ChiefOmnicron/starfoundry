@@ -27,7 +27,6 @@ pub fn smartbuy(
                 .or_insert(vec![x.clone()]);
         });
 
-    dbg!(config.mineral_compression);
     if config.mineral_compression.is_some() {
         let market_entries = market_data
             .iter()
@@ -97,8 +96,7 @@ pub fn smartbuy(
 
         let mut data = market_data.get(&item.type_id).unwrap().clone();
         if config.gas_decompression.is_some() {
-            if Gas::is_gas(item.type_id) {
-                let gas = Gas::from(item.type_id);
+            if let Ok(gas) = Gas::try_from(item.type_id) {
                 if gas.is_uncompressed() {
                     let market_data = market_data
                         .get(&gas.to_compressed_type_id())

@@ -51,7 +51,7 @@ pub async fn update_market_bulk(
     let mut mineral_updates: HashMap<TypeId, i32> = HashMap::new();
 
     for entry in entries.iter() {
-        if let Ok(asteroid) = Asteroid::try_from(entry.type_id) {
+        if let Ok(asteroid) = Asteroid::try_from_asteroid(entry.type_id) {
             let compression_efficiency = entry
                 .mineral_compression
                 .unwrap_or(OreReprocessingEfficiency::default())
@@ -71,33 +71,33 @@ pub async fn update_market_bulk(
                 });
 
             new_entries.push(entry);
+            continue;
         }
 
         let market_entry = if let Some(x) = market_entries.get(&entry.type_id) {
             x
         } else {
-            if Gas::is_gas(entry.type_id) {
-                let gas = Gas::from(entry.type_id);
+            if let Ok(gas) = Gas::try_from(entry.type_id) {
                 if gas.is_compressed() {
-                    let uncompressed = Gas::from(entry.type_id).to_uncompressed_type_id();
+                    let uncompressed_type_id = gas.to_uncompressed_type_id();
 
                     let decompression_efficiency = entry
                         .gas_decompression
                         .unwrap_or(GasDecompressionEfficiency::default())
                         .efficiency();
-                    let original_amount = (
+                    let decompressed_amount = (
                         entry.quantity as f64 * decompression_efficiency
                     ).floor();
                     // adds the compressed amount
                     new_entries.push(entry);
 
-                    if let Some(x) = market_entries.get(&uncompressed) {
-                        if original_amount as i32 >= x.quantity {
+                    if let Some(x) = market_entries.get(&uncompressed_type_id) {
+                        if decompressed_amount as i32 >= x.quantity {
                             delete_entries.push(x.id);
                         } else {
                             update_quantity.push(TmpMarketEntry {
                                 id:         x.id,
-                                quantity:   x.quantity - original_amount as i32,
+                                quantity:   x.quantity - decompressed_amount as i32,
                             });
                         }
                     }
@@ -237,17 +237,34 @@ pub async fn update_market_bulk(
             .map_err(ProjectError::Update)?;
     }
 
+    if !delete_entries.is_empty() {
+        sqlx::query!("
+                DELETE FROM project_market
+                WHERE id = ANY($1)
+            ",
+                &delete_entries,
+            )
+            .execute(&mut *transaction)
+            .await
+            .map_err(ProjectError::Update)?;
+    }
+
     if !excess_entries.is_empty() {
         sqlx::query!("
                 INSERT INTO project_excess (
+                    project_id,
                     type_id,
                     quantity
                 )
-                SELECT * FROM UNNEST(
-                    $1::INTEGER[],
-                    $2::INTEGER[]
+                SELECT $1, * FROM UNNEST(
+                    $2::INTEGER[],
+                    $3::INTEGER[]
                 )
+                ON CONFLICT (project_id, type_id)
+                DO UPDATE SET
+                    quantity = project_excess.quantity + EXCLUDED.quantity
             ",
+                *project_id,
                 &excess_entries.iter().map(|x| *x.type_id).collect::<Vec<_>>(),
                 &excess_entries.iter().map(|x| x.quantity).collect::<Vec<_>>(),
             )
