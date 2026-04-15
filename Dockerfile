@@ -58,6 +58,8 @@ COPY        ./market_worker ./market_worker
 COPY        ./meta_webserver ./meta_webserver
 COPY        ./worker_lib ./worker_lib
 COPY        ./worker-eve_sde_parser ./worker-eve_sde_parser
+# tmp
+COPY        ./uuidv7_migration ./uuidv7_migration
 
 ###############################################################################
 #           eve_gateway_api

@@ -20,12 +20,13 @@ type Mapping = HashMap<Uuid, Uuid>;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    tracing::info!("migration start");
-    dbg!(dotenvy::dotenv())?;
-
+    print!("asdasd");
     tracing_subscriber::fmt()
         .with_env_filter(EnvFilter::from_default_env())
         .init();
+    tracing::info!("migration start");
+    dbg!(dotenvy::dotenv())?;
+
     tracing::info!("after init");
 
     let environment = std::env::var("ENVIRONMENT").expect("'ENVIRONMENT' must be set");
