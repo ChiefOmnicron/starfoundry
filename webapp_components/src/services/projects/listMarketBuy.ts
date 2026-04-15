@@ -37,7 +37,6 @@ export type ProjectMarketBuyQuery = {
     strategy: 'MULTI_BUY' | 'SMART_BUY';
 
     structure_ids: number[];
-    virtual_market: boolean;
 
     gas_decompression?: string;
     mineral_compression?: string;

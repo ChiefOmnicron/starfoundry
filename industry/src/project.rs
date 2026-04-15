@@ -6,6 +6,7 @@ mod create;
 mod error;
 mod fetch;
 mod delete;
+mod delete_market;
 mod initialize;
 mod list_jobs;
 mod list_market;
@@ -52,6 +53,8 @@ pub fn routes(
     let delete = OpenApiRouter::new()
         .routes(routes!(delete::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+    let delete_market_entry = OpenApiRouter::new()
+        .routes(routes!(delete_market::api));
 
     let list = OpenApiRouter::new()
         .routes(routes!(list::api));
@@ -104,6 +107,7 @@ pub fn routes(
         .merge(add_market)
         .merge(fetch)
         .merge(delete)
+        .merge(delete_market_entry)
         .merge(initialize)
         .merge(list)
         .merge(list_jobs)
@@ -121,6 +125,7 @@ pub fn routes(
 
 starfoundry_uuid!(ProjectUuid, "ProjectUuid");
 starfoundry_uuid!(SolutionUuid, "SolutionUuid");
+starfoundry_uuid!(MarketUuid, "MarketUuid");
 
 #[cfg(test)]
 pub async fn project_test_routes(

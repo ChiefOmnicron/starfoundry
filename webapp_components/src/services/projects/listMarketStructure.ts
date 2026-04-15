@@ -26,6 +26,5 @@ export const useListProjectMarketStructures = (
         queryFn: async ({
             signal
         }: AbortSignal) => listProjectMarketStructures(projectId, signal),
-        initialData: [],
     })
 }

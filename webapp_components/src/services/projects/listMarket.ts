@@ -31,6 +31,7 @@ export const useListProjectMarket = (
 }
 
 export type ProjectMarketEntry = {
+    id:         Uuid;
     item:       Item;
     quantity:   number;
 

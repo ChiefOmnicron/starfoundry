@@ -88,6 +88,7 @@ pub async fn catch_all_generic_delete(
             .send()
             .await?;
 
+        tracing::info!("[DELETE] - path: '{}'. Status: {}", path, response.status());
         if response.status().is_success() {
             let status = response.status();
             let body = response.text().await?;

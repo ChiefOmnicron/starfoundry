@@ -1,18 +1,21 @@
 use sqlx::PgPool;
 
-use crate::project::ProjectUuid;
+use crate::project::{MarketUuid, ProjectUuid};
 use crate::project::error::ProjectError;
 use crate::project::error::Result;
 
-pub async fn delete(
+pub async fn delete_market_entry(
     pool:           &PgPool,
     project_id:     ProjectUuid,
+    market_id:      MarketUuid,
 ) -> Result<()> {
     sqlx::query!(r#"
-            DELETE FROM project
-            WHERE id = $1
+            DELETE FROM project_market
+            WHERE project_id = $1
+            AND id = $2
         "#,
             *project_id,
+            *market_id,
         )
         .execute(pool)
         .await
