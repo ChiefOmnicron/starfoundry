@@ -20,6 +20,7 @@ mod split_job_check;
 mod update;
 mod update_job;
 mod update_market_bulk;
+mod update_market_entry;
 mod update_misc;
 
 pub use self::add_excess::*;
@@ -44,4 +45,5 @@ pub use self::split_job_check::*;
 pub use self::update::*;
 pub use self::update_job::*;
 pub use self::update_market_bulk::*;
+pub use self::update_market_entry::*;
 pub use self::update_misc::*;

@@ -13,6 +13,9 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Uuid } from '@starfoundry/components/services/utils';
 import { deleteMarketEntry } from '@starfoundry/components/services/projects/deleteMarket';
+import { useDisclosure } from '@mantine/hooks';
+import { EditMarketEntryModal } from './-components/EditMarketEntryModal';
+import { updateMarketEntry } from '@starfoundry/components/services/projects/updateMarketEntry';
 
 export const Route = createFileRoute('/projects_/$projectId/market')({
     component: RouteComponent,
@@ -21,6 +24,13 @@ export const Route = createFileRoute('/projects_/$projectId/market')({
 function RouteComponent() {
     const queryClient = useQueryClient();
     const { projectId } = Route.useParams();
+
+    const [updateEntry, setUpdateEntry] = useState<ProjectMarketEntry | undefined>(undefined);
+
+    const [updateEntryModalOpened, {
+        open: openUpdateEntryModal,
+        close: closeUpdateEntryModal,
+    }] = useDisclosure(false);
 
     const [updateError, setUpdateError] = useState<boolean>(false);
     const [updateSuccess, setUpdateSuccess] = useState<boolean>(false);
@@ -65,6 +75,58 @@ function RouteComponent() {
         onError: () => {
             setDeleteError(true);
             setDeleteSuccess(false);
+        }
+    });
+
+    const updateEntryMutation = useMutation({
+        mutationFn: async (update: ProjectMarketEntry) => {
+            return await updateMarketEntry(
+                projectId,
+                update.id,
+                {
+                    quantity: update.quantity,
+                    cost: update.cost,
+                    source: update.source,
+                }
+            );
+        },
+        onMutate: async (updatedEntry, context) => {
+            await context
+                .client
+                .cancelQueries({ queryKey: [LIST_PROJECT_MARKET, projectId]});
+            const previous = context
+                .client
+                .getQueryData([LIST_PROJECT_MARKET, projectId]);
+
+            context
+                .client
+                .setQueryData(
+                    [LIST_PROJECT_MARKET, projectId],
+                    (old: ProjectMarketEntry[]) => {
+                        const updated = old
+                            .map(x => {
+                                if (x.id === updatedEntry.id) {
+                                    return updatedEntry;
+                                } else {
+                                    return x;
+                                }
+                            });
+                        return updated;
+                    }
+                );
+            return { previous }
+        },
+        onError: (_err, _updateEntry, onMutationResult, context) => {
+            context.client.setQueryData([LIST_PROJECT_MARKET, projectId], onMutationResult?.previous);
+            setUpdateSuccess(false);
+            setUpdateError(true);
+        },
+        onSuccess: () => {
+            setUpdateSuccess(true);
+            setUpdateError(false);
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: [LIST_PROJECT_MARKET, projectId] });
         }
     })
 
@@ -181,6 +243,10 @@ function RouteComponent() {
                         <Button
                             color="blue.9"
                             variant="subtle"
+                            onClick={() => {
+                                openUpdateEntryModal();
+                                setUpdateEntry(x);
+                            }}
                         >
                             Edit
                         </Button>
@@ -218,6 +284,22 @@ function RouteComponent() {
     }
 
     return <>
+        {
+            updateEntry
+            ?   <EditMarketEntryModal
+                    entry={updateEntry || {} as ProjectMarketEntry}
+
+                    onSave={(entry: ProjectMarketEntry) => {
+                        updateEntryMutation.mutate(entry);
+                        setUpdateEntry(undefined);
+                    }}
+
+                    opened={updateEntryModalOpened}
+                    close={closeUpdateEntryModal}
+                />
+            :   <></>
+        }
+
         {showError()}
         {showUpdateSuccess()}
 

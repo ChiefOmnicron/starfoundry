@@ -29,6 +29,7 @@ export function SmartBuyTab({
     const {
         isError,
         isPending,
+        isFetching,
         data: marketData,
     } = useListProjectMarketBuy(projectId, {
         strategy: 'SMART_BUY',
@@ -43,15 +44,42 @@ export function SmartBuyTab({
         }
     }, [defaultMarkets]);
 
-    if (
-        marketData.filter(x => x.quantity > 0).length === 0 &&
-        !isPending
-    ) {
-        return <Center mt={50} data-cy="noData">
-            <Stack>
-                <Title order={4}>All materials bought</Title>
-            </Stack>
-        </Center>;
+    const showTable = () => {
+        if (isFetching || isPending) {
+            return LoadingAnimation();
+        }
+
+        if (isError) {
+            return LoadingError();
+        }
+
+        if (
+            marketData.filter(x => x.quantity > 0).length === 0 &&
+            !isFetching
+        ) {
+            return <Center mt={50} data-cy="noData">
+                <Stack>
+                    <Title order={4}>All materials bought</Title>
+                </Stack>
+            </Center>;
+        }
+
+        return <>
+            <Group justify='flex-end'>
+                <Button
+                    onClick={openSettingsModal}
+                >
+                    Settings
+                </Button>
+            </Group>
+
+            <MarketBuy
+                marketData={marketData}
+                projectId={projectId}
+
+                structures={selectedMarkets}
+            />
+        </>
     }
 
     return <>
@@ -71,29 +99,7 @@ export function SmartBuyTab({
                 onMineralUpdate={setMineralBonus}
             />
 
-            <Group justify='flex-end'>
-                <Button
-                    onClick={openSettingsModal}
-                >
-                    Settings
-                </Button>
-            </Group>
-
-            {
-                isPending
-                ?   LoadingAnimation()
-                :   isError
-                    ?   LoadingError()
-                    :   <MarketBuy
-                            marketData={marketData}
-                            projectId={projectId}
-
-                            structures={selectedMarkets}
-
-                            gasDecompression={gasBonus}
-                            mineralCompression={mineralBonus}
-                        />
-            }
+            {showTable()}
         </Stack>
     </>
 }

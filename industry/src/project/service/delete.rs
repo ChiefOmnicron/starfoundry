@@ -17,5 +17,5 @@ pub async fn delete(
         .execute(pool)
         .await
         .map(drop)
-        .map_err(|e| ProjectError::Fetch(e, project_id))
+        .map_err(|e| ProjectError::Delete(e, project_id))
 }

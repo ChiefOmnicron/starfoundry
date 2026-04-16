@@ -20,6 +20,7 @@ mod split_job_check;
 mod update;
 mod update_job;
 mod update_market_bulk;
+mod update_market_entry;
 mod update_misc;
 
 use axum::middleware;
@@ -93,6 +94,8 @@ pub fn routes(
     let update_market_bulk = OpenApiRouter::new()
         .routes(routes!(update_market_bulk::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+    let update_market_entry = OpenApiRouter::new()
+        .routes(routes!(update_market_entry::api));
     let update_misc = OpenApiRouter::new()
         .routes(routes!(update_misc::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
@@ -120,6 +123,7 @@ pub fn routes(
         .merge(update)
         .merge(update_job)
         .merge(update_market_bulk)
+        .merge(update_market_entry)
         .merge(update_misc)
 }
 

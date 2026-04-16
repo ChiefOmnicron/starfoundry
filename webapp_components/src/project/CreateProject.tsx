@@ -1,4 +1,4 @@
-import { Alert, Button, Flex, InputBase, NumberInput, Stack } from '@mantine/core';
+import { Alert, Button, Group, InputBase, NumberInput, Stack } from '@mantine/core';
 import { createProject, type CreateProject, type CreateProjectResponse } from '@internal/services/projects/create';
 import { LoadingAnimation } from '@internal/misc/LoadingAnimation';
 import { LoadingError } from '@internal/misc/LoadingError';
@@ -204,7 +204,7 @@ export function CreateProject({
                 <form.Subscribe
                     selector={(state) => [state.canSubmit, state.isSubmitting]}
                     children={([canSubmit, isSubmitting]) => (
-                        <Flex
+                        <Group
                             justify="flex-end"
                             gap="sm"
                         >
@@ -225,7 +225,7 @@ export function CreateProject({
                             >
                                 Create
                             </Button>
-                        </Flex>
+                        </Group>
                     )}
                 />
             </Stack>

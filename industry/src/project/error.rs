@@ -47,6 +47,9 @@ pub enum ProjectError {
     #[error("error while fetching project '{1}', error: '{0}'")]
     Fetch(sqlx::Error, ProjectUuid),
 
+    #[error("error while deleting project '{1}', error: '{0}'")]
+    Delete(sqlx::Error, ProjectUuid),
+
     #[error("error while creating project, error: '{0}'")]
     Create(sqlx::Error),
     #[error("error while initializing project, error: '{0}'")]
