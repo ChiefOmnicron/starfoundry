@@ -39,10 +39,8 @@ pub enum IndustryHubError {
     #[error("error while cloning industry hub '{1}', error: '{0}'")]
     CloneIndustryHub(sqlx::Error, IndustryHubUuid),
 
-    #[error("BeginTransactionError, error: '{0}'")]
-    BeginTransactionError(sqlx::Error),
-    #[error("CommitTransactionError, error: '{0}'")]
-    CommitTransactionError(sqlx::Error),
+    #[error("error during transaction: '{0}'")]
+    TransactionError(sqlx::Error),
 
     #[error(transparent)]
     JsonExtractorRejection(#[from] JsonRejection),

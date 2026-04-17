@@ -16,7 +16,7 @@ pub async fn update(
     let mut transaction = pool
         .begin()
         .await
-        .map_err(StructureError::BeginTransaction)?;
+        .map_err(StructureError::TransactionError)?;
 
     sqlx::query!("
             DELETE FROM structure_tax
@@ -77,7 +77,7 @@ pub async fn update(
     transaction
         .commit()
         .await
-        .map_err(StructureError::CommitTransaction)?;
+        .map_err(StructureError::TransactionError)?;
 
     Ok(structure_id)
 }

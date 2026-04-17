@@ -19,7 +19,7 @@ pub async fn create(
     let mut transaction = pool
         .begin()
         .await
-        .map_err(StructureError::BeginTransaction)?;
+        .map_err(StructureError::TransactionError)?;
 
     let structure_id = sqlx::query!("
             INSERT INTO structure
@@ -57,7 +57,7 @@ pub async fn create(
     transaction
         .commit()
         .await
-        .map_err(StructureError::CommitTransaction)?;
+        .map_err(StructureError::TransactionError)?;
 
     Ok(structure_id)
 }

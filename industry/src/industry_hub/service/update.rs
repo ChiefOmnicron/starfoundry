@@ -17,7 +17,7 @@ pub async fn update(
     let mut transaction = pool
         .begin()
         .await
-        .map_err(IndustryHubError::BeginTransactionError)?;
+        .map_err(IndustryHubError::TransactionError)?;
 
     sqlx::query!("
             UPDATE industry_hub
@@ -102,7 +102,7 @@ pub async fn update(
         .commit()
         .await
         .map(drop)
-        .map_err(IndustryHubError::CommitTransactionError)
+        .map_err(IndustryHubError::TransactionError)
 }
 
 #[cfg(test)]

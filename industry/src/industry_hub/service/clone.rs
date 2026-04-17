@@ -13,7 +13,7 @@ pub async fn clone(
     let mut transaction = pool
         .begin()
         .await
-        .map_err(IndustryHubError::BeginTransactionError)?;
+        .map_err(IndustryHubError::TransactionError)?;
 
     let cloned_id: IndustryHubUuid = sqlx::query!("
             INSERT INTO industry_hub
@@ -111,7 +111,7 @@ pub async fn clone(
     transaction
         .commit()
         .await
-        .map_err(IndustryHubError::CommitTransactionError)?;
+        .map_err(IndustryHubError::TransactionError)?;
 
     Ok(cloned_id)
 }

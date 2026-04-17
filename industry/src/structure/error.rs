@@ -14,10 +14,8 @@ pub type Result<T, E = StructureError> = std::result::Result<T, E>;
 #[derive(Debug, Error)]
 #[non_exhaustive]
 pub enum StructureError {
-    #[error("error creating transaction, '{0}'")]
-    BeginTransaction(sqlx::Error),
-    #[error("error committing transaction, '{0}'")]
-    CommitTransaction(sqlx::Error),
+    #[error("error during transaction, error: '{0}'")]
+    TransactionError(sqlx::Error),
 
     #[error("the character '{1}' is not allowed to access '{0}'")]
     Forbidden(StructureUuid, CharacterId),

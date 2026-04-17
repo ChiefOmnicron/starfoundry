@@ -4,10 +4,8 @@ pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 #[derive(Error, Debug)]
 pub enum Error {
-    #[error("error creating transaction, '{0}'")]
-    BeginTransaction(sqlx::Error),
-    #[error("error committing transaction, '{0}'")]
-    CommitTransaction(sqlx::Error),
+    #[error("error during transaction, '{0}'")]
+    Transaction(sqlx::Error),
 
     #[error("could not parse additional data")]
     ParseAdditionalData,

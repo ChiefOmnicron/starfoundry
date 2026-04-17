@@ -132,14 +132,19 @@ pub async fn api(
 pub struct UpdateProjectMarketRequest {
     pub source:                 String,
     pub entries:                Vec<UpdateProjectMarketEntry>,
+    #[serde(default)]
     pub gas_decompression:      Option<GasDecompressionEfficiency>,
+    #[serde(default)]
     pub mineral_compression:    Option<OreReprocessingEfficiency>,
 }
 
 #[derive(Clone, Debug, Deserialize, ToSchema)]
 pub struct UpdateProjectMarketEntry {
+    #[serde(default)]
     pub type_id:        Option<TypeId>,
+    #[serde(default)]
     pub name:           Option<String>,
+    #[serde(default)]
     pub structure_id:   Option<StructureId>,
 
     pub cost:           f32,

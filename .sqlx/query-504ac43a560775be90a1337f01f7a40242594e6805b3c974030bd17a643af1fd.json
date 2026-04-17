@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                pj.id,\n                pj.runs,\n                pj.status AS \"status: ProjectJobStatusDatabase\",\n                pj.cost,\n                pj.job_id,\n                pj.structure_id,\n                pj.type_id,\n                pj.started_by,\n                ij.end_date\n            FROM project_job pj\n            LEFT JOIN industry_job ij ON pj.job_id = ij.job_id\n            WHERE project_id = $1\n        ",
+  "query": "\n            SELECT\n                pj.id,\n                pj.runs,\n                pj.status AS \"status: ProjectJobStatusDatabase\",\n                pj.cost,\n                pj.job_id,\n                pj.structure_id,\n                pj.type_id,\n                pj.started_by,\n                ij.end_date AS \"end_date?\"\n            FROM project_job pj\n            LEFT JOIN industry_job ij ON pj.job_id = ij.job_id\n            WHERE project_id = $1\n        ",
   "describe": {
     "columns": [
       {
@@ -104,7 +104,7 @@
       },
       {
         "ordinal": 8,
-        "name": "end_date",
+        "name": "end_date?",
         "type_info": "Varchar",
         "origin": {
           "Table": {
@@ -128,8 +128,8 @@
       false,
       false,
       true,
-      true
+      false
     ]
   },
-  "hash": "9f4c6f6478e4680c84baa45fbaa842644f3d37f3965fe90f4d25ef5e72c626df"
+  "hash": "504ac43a560775be90a1337f01f7a40242594e6805b3c974030bd17a643af1fd"
 }

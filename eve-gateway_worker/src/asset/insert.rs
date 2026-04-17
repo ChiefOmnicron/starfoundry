@@ -48,7 +48,7 @@ pub async fn insert_assets(
     let mut transaction = pool
         .begin()
         .await
-        .map_err(Error::BeginTransaction)?;
+        .map_err(Error::Transaction)?;
 
     let update_start = std::time::Instant::now();
     let result = sqlx::query!("
@@ -136,7 +136,7 @@ pub async fn insert_assets(
     transaction
         .commit()
         .await
-        .map_err(Error::CommitTransaction)?;
+        .map_err(Error::Transaction)?;
 
     Ok(())
 }

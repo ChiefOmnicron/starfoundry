@@ -107,7 +107,7 @@ pub async fn system_index_compress(
         .await
         .map_err(|e| {
             task.append_error(format!("{e}"));
-            Error::BeginTransaction(e)
+            Error::Transaction(e)
         })?;
 
     sqlx::query!("
@@ -172,7 +172,7 @@ pub async fn system_index_compress(
         .await
         .map_err(|e| {
             task.append_error(format!("{e}"));
-            Error::CommitTransaction(e)
+            Error::Transaction(e)
         })?;
 
     Ok(())

@@ -1,32 +1,28 @@
 mod config;
-mod contract;
 mod error;
+mod jobs;
 mod metric;
-mod order;
-mod prices;
 mod sync;
 mod tasks;
 
 use prometheus_client::registry::Registry;
 use sqlx::PgPool;
 use sqlx::postgres::PgPoolOptions;
-use starfoundry_lib_worker::{Task, TaskStatus, Worker, cleanup_task};
+use starfoundry_lib_worker::{Task, TaskStatus, Worker};
 use std::time::Duration;
 use tokio::sync::mpsc;
 use tracing_subscriber::EnvFilter;
 
 pub use self::tasks::*;
 
-use self::prices::prices;
 use self::sync::{sync, sync_task};
 
 use crate::config::Config;
-use crate::contract::*;
 use crate::error::Result;
 use crate::metric::WorkerMetric;
-use crate::order::*;
+use crate::jobs::corporation_jobs;
 
-pub const SERVICE_NAME: &str = "SF_MARKET_WORKER";
+pub const SERVICE_NAME: &str = "SF_INDUSTRY_WORKER";
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -50,12 +46,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?;
     sqlx::migrate!().run(&pool).await?;
 
-    let mut metric_registry = Registry::with_prefix("starfoundry_market_worker");
+    let mut metric_registry = Registry::with_prefix("starfoundry_industry_worker");
     let metric = WorkerMetric::new();
 
-    let (tx, mut rx) = mpsc::channel(1);
+    let (tx, mut rx) = mpsc::channel(5);
 
-    let worker: Worker<WorkerMetric, WorkerMarketTask> = Worker::init(
+    let worker: Worker<WorkerMetric, WorkerIndustryTask> = Worker::init(
             pool.clone(),
             tx,
 
@@ -77,8 +73,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     ).await?;
 
     while let Some(task) = rx.recv().await {
-        // 10 Minutes
-        let task_timeout = tokio::time::sleep(Duration::from_secs(60 * 10));
+        // 15 Minutes
+        let task_timeout = tokio::time::sleep(Duration::from_secs(60 * 15));
         tokio::pin!(task_timeout);
 
         let mut task = task.clone();
@@ -126,78 +122,35 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 async fn task_select(
     pool:   &PgPool,
-    task:   &mut Task<WorkerMetric, WorkerMarketTask>,
+    task:   &mut Task<WorkerMetric, WorkerIndustryTask>,
 ) -> Result<()> {
     match task.task {
-        WorkerMarketTask::Sync                  => {
+        WorkerIndustryTask::Sync            => {
             sync_task(
                 pool,
                 task,
             ).await
         },
-        WorkerMarketTask::Cleanup                  => {
-            cleanup_task(
-                    pool,
-                    task,
-                )
-                .await
-                .map_err(Into::into)
-        },
-        WorkerMarketTask::LatestNpc             => {
-            by_npc_station_task(
+        WorkerIndustryTask::JobCharacter    => {
+            corporation_jobs(
                     pool,
                     task,
                 )
                 .await
         },
-        WorkerMarketTask::LatestPlayer          => {
+        WorkerIndustryTask::JobCorporation  => {
             by_player_station_task(
                     pool,
                     task,
                 )
                 .await
         },
-        WorkerMarketTask::LatestRegion          => {
-            by_region_task(
-                    pool,
-                    task,
-                )
-                .await
-        },
-        WorkerMarketTask::Prices                => {
-            prices(
-                    pool,
-                    task,
-                )
-                .await
-        },
-        WorkerMarketTask::PublicContracts       => {
-            public_contracts(
-                    pool,
-                    task,
-                )
-                .await
-        },
-        WorkerMarketTask::PublicContractItems   => {
-            public_contract_items(
-                    pool,
-                    task,
-                )
-                .await
-        },
-        WorkerMarketTask::CharacterOrders       => {
-            character_orders(
-                    pool,
-                    task,
-                )
-                .await
-        },
-        WorkerMarketTask::CorporationOrders     => {
-            corporation_orders(
-                    pool,
-                    task,
-                )
-                .await
-        },
     }
+}
+
+async fn _dummy(
+    _pool: &PgPool,
+    _task: &mut Task<WorkerMetric, WorkerIndustryTask>,
+) -> Result<()> {
+    Ok(())
 }

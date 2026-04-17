@@ -29,7 +29,7 @@ pub async fn list_jobs(
                 pj.structure_id,
                 pj.type_id,
                 pj.started_by,
-                ij.end_date
+                ij.end_date AS "end_date?"
             FROM project_job pj
             LEFT JOIN industry_job ij ON pj.job_id = ij.job_id
             WHERE project_id = $1

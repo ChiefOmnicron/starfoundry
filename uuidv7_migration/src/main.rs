@@ -40,14 +40,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut mappings = mappings(&postgres_source, environment.clone()).await;
     tracing::info!("mappings loaded");
 
-    cleanup(&postgres_destination_industry).await?;
-    cleanup_mapping(&postgres_source, environment.clone()).await;
+    //cleanup(&postgres_destination_industry).await?;
+    //cleanup_mapping(&postgres_source, environment.clone()).await;
     tracing::info!("cleanup done");
 
-    migrate_structure(&postgres_source, &postgres_destination_industry, &mut mappings).await?;
-    migrate_industry_hubs(&postgres_source, &postgres_destination_industry, &mut mappings).await?;
+    //migrate_structure(&postgres_source, &postgres_destination_industry, &mut mappings).await?;
+    //migrate_industry_hubs(&postgres_source, &postgres_destination_industry, &mut mappings).await?;
 
-    migrate_project_group(&postgres_source, &postgres_destination_industry, &mut mappings).await?;
+    //migrate_project_group(&postgres_source, &postgres_destination_industry, &mut mappings).await?;
     migrate_project(&postgres_source, &postgres_destination_industry, &mut mappings).await?;
 
     migrate_industry_jobs(&postgres_source, &postgres_destination_industry).await?;

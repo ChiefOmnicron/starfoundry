@@ -77,6 +77,9 @@ export function SmartBuyTab({
                 marketData={marketData}
                 projectId={projectId}
 
+                gasDecompression={gasBonus}
+                mineralCompression={mineralBonus}
+
                 structures={selectedMarkets}
             />
         </>
