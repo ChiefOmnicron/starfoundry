@@ -39,7 +39,7 @@ pub async fn public_contracts(
     let mut transaction = pool
         .begin()
         .await
-        .map_err(Error::BeginTransaction)?;
+        .map_err(Error::TransactionError)?;
 
     if contracts.is_empty() {
         return Ok(());
@@ -218,7 +218,7 @@ pub async fn public_contracts(
     transaction
         .commit()
         .await
-        .map_err(Error::BeginTransaction)?;
+        .map_err(Error::TransactionError)?;
 
     Ok(())
 }

@@ -46,7 +46,7 @@ pub async fn insert_private_orders(
     let mut transaction = pool
         .begin()
         .await
-        .map_err(Error::BeginTransaction)?;
+        .map_err(Error::TransactionError)?;
 
     let update_start = std::time::Instant::now();
     let result = sqlx::query!("
@@ -127,7 +127,7 @@ pub async fn insert_private_orders(
     transaction
         .commit()
         .await
-        .map_err(Error::CommitTransaction)?;
+        .map_err(Error::TransactionError)?;
 
     Ok(())
 }

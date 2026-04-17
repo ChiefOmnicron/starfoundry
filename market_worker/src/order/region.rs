@@ -67,7 +67,7 @@ pub async fn by_region_task(
     let mut transaction = pool
         .begin()
         .await
-        .map_err(Error::BeginTransaction)?;
+        .map_err(Error::TransactionError)?;
 
     sqlx::query!("
             INSERT INTO market_order_latest AS mol
@@ -133,7 +133,7 @@ pub async fn by_region_task(
     transaction
         .commit()
         .await
-        .map_err(Error::CommitTransaction)?;
+        .map_err(Error::TransactionError)?;
 
     Ok(())
 }

@@ -5,10 +5,8 @@ pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 #[derive(Error, Debug)]
 pub enum Error {
-    #[error("error creating transaction, '{0}'")]
-    BeginTransaction(sqlx::Error),
-    #[error("error committing transaction, '{0}'")]
-    CommitTransaction(sqlx::Error),
+    #[error("error creating transaction, error: '{0}'")]
+    TransactionError(sqlx::Error),
 
     #[error("insert orders for structure '{1}', error: '{0}'")]
     InsertStationOrdersError(sqlx::Error, StructureId),

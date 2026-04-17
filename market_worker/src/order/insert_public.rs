@@ -50,7 +50,7 @@ pub async fn insert_structure_market(
     let mut transaction = pool
         .begin()
         .await
-        .map_err(Error::BeginTransaction)?;
+        .map_err(Error::TransactionError)?;
 
     let update_start = std::time::Instant::now();
     let result = sqlx::query!("
@@ -197,7 +197,7 @@ pub async fn insert_structure_market(
     );
     task.append_log(format!("Deletes: {}", result.rows_affected()));
 
-    sqlx::query!("
+    /*sqlx::query!("
             INSERT INTO market_order_history (
                 order_id,
                 remaining
@@ -214,12 +214,12 @@ pub async fn insert_structure_market(
         )
         .execute(&mut *transaction)
         .await
-        .map_err(Error::InsertHistoryOrders)?;
+        .map_err(Error::InsertHistoryOrders)?;*/
 
     transaction
         .commit()
         .await
-        .map_err(Error::CommitTransaction)?;
+        .map_err(Error::TransactionError)?;
 
     Ok(())
 }
