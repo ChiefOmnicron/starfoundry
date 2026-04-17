@@ -1,9 +1,9 @@
-import { ModalWrapper } from "@starfoundry/components/wrapper/Modal";
-import { useEffect, useState, type ReactElement } from "react";
-import type { ProjectMarketEntry } from "@starfoundry/components/services/projects/listMarket";
-import { Button, Group, InputBase, InputWrapper, NumberInput, Stack, TextInput } from "@mantine/core";
+import { Button, Group, InputBase, InputWrapper, NumberInput, Stack } from "@mantine/core";
 import { EveIcon } from "@starfoundry/components/misc/EveIcon";
+import { ModalWrapper } from "@starfoundry/components/wrapper/Modal";
 import { useForm } from "@tanstack/react-form";
+import type { ProjectMarketEntry } from "@starfoundry/components/services/projects/listMarket";
+import type { ReactElement } from "react";
 
 export function EditMarketEntryModal({
     entry,
@@ -13,18 +13,6 @@ export function EditMarketEntryModal({
     opened,
     close,
 }: EditMarketEntryModalProps): ReactElement {
-    /*const createProjectMutation = useMutation({
-        mutationFn: async (value: CreateProject) => {
-            return await createProject(value)
-        },
-        onSuccess: (data: CreateProjectResponse) => {
-            onCreate(data.id);
-        },
-        onError: (error) => {
-            setErrorCreate(error.message);
-        }
-    });*/
-
     const form = useForm({
         defaultValues: {
             buyPrice: entry.cost,
