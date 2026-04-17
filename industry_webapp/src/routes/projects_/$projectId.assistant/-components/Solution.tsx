@@ -186,7 +186,8 @@ export function Solution({
             setGeneratedSolutions(data);
             setSelectedSolution(data[0]);
         },
-        onError: () => {
+        onError: (e) => {
+            console.error(e);
             setShowError(true);
         },
     });
