@@ -201,10 +201,3 @@ async fn task_select(
         },
     }
 }
-
-async fn _dummy(
-    _pool: &PgPool,
-    _task: &mut Task<WorkerMetric, WorkerMarketTask>,
-) -> Result<()> {
-    Ok(())
-}

@@ -23,7 +23,7 @@ pub async fn register_worker(
         tracing::warn!("failed deleting dead workers, {e}");
     }
 
-    tracing::info!("worker registered");
+    tracing::info!("worker registered, id: '{}'", worker_id);
 
     Ok(worker_id)
 }

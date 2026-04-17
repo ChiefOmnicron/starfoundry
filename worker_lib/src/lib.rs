@@ -94,6 +94,12 @@ impl<M, WT> Worker<M, WT>
         &self,
     ) {
         loop {
+            let permit = if self.mpsc_sender.capacity() > 0 {
+                self.mpsc_sender.reserve().await.unwrap()
+            } else {
+                continue;
+            };
+
             match fetch_task(
                     &self.pool,
                     &self.self_uuid,
@@ -109,7 +115,7 @@ impl<M, WT> Worker<M, WT>
                 },
                 Ok(Some(x)) => {
                     tracing::info!("new task {:?}", x.task);
-                    self.mpsc_sender.send(x).await.unwrap();
+                    permit.send(x);
                     continue;
                 },
                 _ => {
