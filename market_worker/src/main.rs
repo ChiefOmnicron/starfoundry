@@ -53,7 +53,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut metric_registry = Registry::with_prefix("starfoundry_market_worker");
     let metric = WorkerMetric::new();
 
-    let (tx, mut rx) = mpsc::channel(5);
+    let (tx, mut rx) = mpsc::channel(1);
 
     let worker: Worker<WorkerMetric, WorkerMarketTask> = Worker::init(
             pool.clone(),
