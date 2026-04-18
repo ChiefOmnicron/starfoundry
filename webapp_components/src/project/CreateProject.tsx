@@ -41,7 +41,7 @@ export function CreateProject({
         defaultValues: {
             name: '',
             orderer: '',
-            sellPrice: 0,
+            sell_price: 0,
             notes: '',
 
             project_group_id: '',
@@ -160,7 +160,7 @@ export function CreateProject({
                 />
 
                 <form.Field
-                    name="sellPrice"
+                    name="sell_price"
                     children={(field) => {
                         return <>
                             <NumberInput
