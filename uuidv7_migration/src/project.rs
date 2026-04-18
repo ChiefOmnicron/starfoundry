@@ -131,9 +131,11 @@ pub async fn migrate_project(
                 pj.character_id,
                 pj.created_at,
                 pj.updated_at,
-                p.name AS project_name
+                p.name AS project_name,
+                s.name AS structure_name
             FROM project_job pj
             JOIN project p ON p.id = pj.project_id
+            JOIN structure s ON s.id = pj.structure_id
         "#)
         .fetch_all(postgres_source)
         .await?;
@@ -187,7 +189,7 @@ pub async fn migrate_project(
             continue
         }
 
-        let id = &sqlx::query!("
+        let project_id = &sqlx::query!("
                 SELECT id
                 FROM project
                 WHERE name = $1
@@ -198,8 +200,104 @@ pub async fn migrate_project(
             .await
             .unwrap()
             .id;
-        mappings.insert(job.project_id, id.clone());
+
+        dbg!(&job.structure_name);
+        let structure_id = if job.structure_name.starts_with("K7D-II") {
+            &Uuid::default()
+        } else if job.structure_name.starts_with("UVHO") {
+            &Uuid::default()
+        } else if job.structure_name.starts_with("A3-LOG") {
+            &Uuid::default()
+        } else if job.structure_name.starts_with("E3OI") {
+            &Uuid::default()
+        } else if job.structure_name.starts_with("A4B") {
+            &Uuid::default()
+        } else if job.structure_name.starts_with("RCI") {
+            &Uuid::default()
+        } else if job.structure_name.starts_with("31X") {
+            &Uuid::default()
+        } else if job.structure_name.starts_with("IGE") {
+            &Uuid::default()
+        } else if job.structure_name.starts_with("39P") {
+            &Uuid::default()
+        } else if job.structure_name.starts_with("SPBS") {
+            &Uuid::default()
+        } else if job.structure_name.starts_with("Q-0") {
+            &Uuid::default()
+        } else if job.structure_name == "UALX-3 - The Science Lounge" {
+            &sqlx::query!("
+                    SELECT id
+                    FROM structure
+                    WHERE id = '019d9e07-912f-708a-ae51-e89762d034e7'
+                    AND owner = 2117441999
+                ")
+                .fetch_one(postgres_destination)
+                .await
+                .unwrap()
+                .id
+        } else if job.structure_name == "UALX-3 - GEZ T2 React Reproc" {
+            &sqlx::query!("
+                    SELECT id
+                    FROM structure
+                    WHERE id = '019da0ac-c5f8-734c-a9fe-a26af17ab2ee'
+                    AND owner = 2117441999
+                ")
+                .fetch_one(postgres_destination)
+                .await
+                .unwrap()
+                .id
+        } else if job.structure_name == "ABE-M2 - Advanced Components" {
+            &sqlx::query!("
+                    SELECT id
+                    FROM structure
+                    WHERE id = '01980544-fcc0-7646-9831-24dd4f78073b'
+                    AND owner = 2117441999
+                ")
+                .fetch_one(postgres_destination)
+                .await
+                .unwrap()
+                .id
+        } else if job.structure_name == "ABE-M2 - Caution Reactor" {
+            &sqlx::query!("
+                    SELECT id
+                    FROM structure
+                    WHERE id = '019814b5-9020-7a4c-8890-de895a69f736'
+                    AND owner = 2117441999
+                ")
+                .fetch_one(postgres_destination)
+                .await
+                .unwrap()
+                .id
+        }else if job.structure_name == "ABE-M2 - Caution Reactor -Rami" {
+            &sqlx::query!("
+                    SELECT id
+                    FROM structure
+                    WHERE id = '019814b5-9020-7a4c-8890-de895a69f736'
+                    AND owner = 2117441999
+                ")
+                .fetch_one(postgres_destination)
+                .await
+                .unwrap()
+                .id
+        } else {
+            &sqlx::query!("
+                    SELECT id
+                    FROM structure
+                    WHERE name = $1
+                    AND owner = 2117441999
+                ",
+                    job.structure_name,
+                )
+                .fetch_one(postgres_destination)
+                .await
+                .unwrap()
+                .id
+        };
+
+        mappings.insert(job.project_id, project_id.clone());
+        mappings.insert(job.structure_id, structure_id.clone());
         visited_names.insert(job.project_name.clone());
+        visited_names.insert(job.structure_name.clone());
     }
 
     for (index, job) in jobs.iter().enumerate() {
@@ -209,12 +307,14 @@ pub async fn migrate_project(
         let project_id =  if let Some(x) = mappings.get(&job.project_id) {
             x.clone()
         } else {
+            tracing::error!("type id not found");
             continue;
         };
         let structure_id =  if let Some(x) = mappings.get(&job.structure_id) {
             x
         } else {
-            &Uuid::default()
+            tracing::error!("structure id not found");
+            continue;
         };
 
         sqlx::query!("
@@ -250,7 +350,7 @@ pub async fn migrate_project(
     }
     tracing::info!("[project] project jobs migrated");
 
-    /*let misc_entries = sqlx::query!(r#"
+    let misc_entries = sqlx::query!(r#"
             SELECT
                 project_id,
                 item,
@@ -563,49 +663,6 @@ pub async fn migrate_project(
             .execute(&mut *transaction)
             .await?;
     }
-
-    tracing::info!("[project] project blacklist migrated");
-    let product_entries = sqlx::query!(r#"
-            SELECT
-                project_id,
-                type_id,
-                created_at,
-                updated_at
-            FROM project_blacklist
-        "#)
-        .fetch_all(postgres_source)
-        .await?;
-    sqlx::query!("
-            DELETE FROM solution_blacklist
-        ")
-        .execute(&mut *transaction)
-        .await?;
-    for product in product_entries {
-        let project_id = if let Some(x) = mappings.get(&product.project_id) {
-            x
-        } else {
-            continue;
-        };
-        let solution_id = mappings.get(&project_id).unwrap();
-
-        sqlx::query!("
-                INSERT INTO solution_blacklist (
-                    solution_id,
-                    type_id,
-                    created_at,
-                    updated_at
-                )
-                VALUES ($1, $2, $3, $4)
-            ",
-                solution_id,
-                product.type_id,
-                product.created_at,
-                product.updated_at,
-            )
-            .execute(&mut *transaction)
-            .await?;
-    }
-    tracing::info!("[project] project blacklist migrated");*/
 
     transaction.commit().await?;
 
