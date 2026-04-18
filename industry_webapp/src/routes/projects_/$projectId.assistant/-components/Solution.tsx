@@ -163,16 +163,16 @@ export function Solution({
                 products_str: products,
                 stocks_str: stocks,
 
-                blacklist:              selectedBlacklist
+                blacklist:              (selectedBlacklist || [])
                                             .map(x => x.type_id),
-                blueprint_overwrite:    selectedBlueprintOverwrite
+                blueprint_overwrite:    (selectedBlueprintOverwrite || [])
                                             .map(x => {
                                                 return {
                                                     material_efficiency: x.material_efficiency,
                                                     type_id:             x.item.type_id,
                                                 }
                                             }),
-                job_splitting:          selectedJobSplittingRun
+                job_splitting:          (selectedJobSplittingRun || [])
                                             .map(x => {
                                                 return {
                                                     runs:       x.max_runs,
