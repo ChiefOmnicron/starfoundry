@@ -16,7 +16,13 @@ export const listProjectGroupDefaultJobSplitting = async (
             signal,
         }
     )
-    .then(x => x.data);
+    .then(x => {
+        if (x.status === 204) {
+            return [];
+        } else {
+            return x.data;
+        }
+    });
 
 export type JobSplitting = {
     general: JobSplittingGeneral,

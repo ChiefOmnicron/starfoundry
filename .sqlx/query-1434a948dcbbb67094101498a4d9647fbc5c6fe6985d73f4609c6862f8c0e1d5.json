@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO solution_product\n            (\n                solution_id,\n                type_id,\n                quantity,\n                material_efficiency\n            )\n            VALUES ($1, $2, $3, $4)\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4",
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "1434a948dcbbb67094101498a4d9647fbc5c6fe6985d73f4609c6862f8c0e1d5"
+}

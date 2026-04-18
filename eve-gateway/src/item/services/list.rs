@@ -79,6 +79,7 @@ async fn blueprint(
     pool:  &PgPool,
     filter: ListItemFilter,
 ) -> Result<Vec<Item>> {
+    // TODO: fix query
     let items = sqlx::query!(r#"
             SELECT
                 type_id,
@@ -95,15 +96,15 @@ async fn blueprint(
             JOIN category c ON i.category_id = c.category_id
             JOIN groups g ON i.group_id = g.group_id
             WHERE
-                (LOWER(i.name) LIKE '%' || LOWER($1) || '%blueprint') IS FALSE AND
-                NOT ($2::INTEGER[] IS NULL OR i.group_id = ANY($2)) IS FALSE AND
-                NOT ($3::INTEGER[] IS NULL OR i.category_id = ANY($3)) IS FALSE
+                (LOWER(i.name) LIKE '%' || LOWER($1) || '%blueprint')-- IS FALSE AND
+                --NOT ($2::INTEGER[] IS NULL OR i.group_id = ANY($2)) IS FALSE
+                --NOT ($3::INTEGER[] IS NULL OR i.category_id = ANY($3)) IS FALSE
             ORDER BY i.name ASC
-            LIMIT $4
+            LIMIT $2
         "#,
             filter.name,
-            &filter.groups.map(|x| x.into_iter().map(|y| *y).collect::<Vec<_>>()) as _,
-            &filter.categories.map(|x| x.into_iter().map(|y| *y).collect::<Vec<_>>()) as _,
+            //&filter.groups.map(|x| x.into_iter().map(|y| *y).collect::<Vec<_>>()).unwrap_or_default() as _,
+            //&filter.categories.map(|x| x.into_iter().map(|y| *y).collect::<Vec<_>>()) as _,
             filter.limit,
         )
         .fetch_all(pool)
@@ -111,6 +112,7 @@ async fn blueprint(
         .map_err(ItemError::List)?
         .into_iter()
         .map(|x| {
+            dbg!("asdasd", &x);
             Item {
                 category:      Category {
                     category_id: x.category_id.into(),
@@ -121,12 +123,12 @@ async fn blueprint(
                     category_id: x.category_id.into(),
                     name:        x.group_name,
                 },
-                name:          x.name,
-                type_id:       x.type_id.into(),
-                volume:        x.volume,
+                name:           x.name,
+                type_id:        x.type_id.into(),
+                volume:         x.volume,
 
-                meta_group: x.meta_group_id.map(Into::into),
-                repackaged:    x.repackaged,
+                meta_group:     x.meta_group_id.map(Into::into),
+                repackaged:     x.repackaged,
             }
         })
         .collect::<Vec<_>>();

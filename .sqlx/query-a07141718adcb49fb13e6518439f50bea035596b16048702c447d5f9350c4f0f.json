@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                project_id,\n                type_id,\n                runs,\n                status AS \"status: ProjectJobStatus\",\n                cost,\n                id,\n                job_id,\n                structure_id,\n                character_id,\n                created_at,\n                updated_at\n            FROM project_job\n        ",
+  "query": "\n            SELECT\n                pj.project_id,\n                pj.type_id,\n                pj.runs,\n                pj.status AS \"status: ProjectJobStatus\",\n                pj.cost,\n                pj.id,\n                pj.job_id,\n                pj.structure_id,\n                pj.character_id,\n                pj.created_at,\n                pj.updated_at,\n                p.name AS project_name\n            FROM project_job pj\n            JOIN project p ON p.id = pj.project_id\n        ",
   "describe": {
     "columns": [
       {
@@ -134,6 +134,17 @@
             "name": "updated_at"
           }
         }
+      },
+      {
+        "ordinal": 11,
+        "name": "project_name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "project",
+            "name": "name"
+          }
+        }
       }
     ],
     "parameters": {
@@ -150,8 +161,9 @@
       false,
       true,
       false,
+      false,
       false
     ]
   },
-  "hash": "94ba43e16b9861957e239e025c96cdf2e3ce4b1d7fcee1391383e2c3f42f4dab"
+  "hash": "a07141718adcb49fb13e6518439f50bea035596b16048702c447d5f9350c4f0f"
 }

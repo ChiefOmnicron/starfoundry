@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                type_id,\n                volume,\n                meta_group_id,\n                repackaged,\n                i.category_id,\n                i.group_id,\n                i.name,\n                c.name AS \"category_name\",\n                g.name AS \"group_name\"\n            FROM blueprint_json bsjon\n            JOIN item i ON i.type_id = bsjon.blueprint_type_id\n            JOIN category c ON i.category_id = c.category_id\n            JOIN groups g ON i.group_id = g.group_id\n            WHERE\n                (LOWER(i.name) LIKE '%' || LOWER($1) || '%blueprint') IS FALSE AND\n                NOT ($2::INTEGER[] IS NULL OR i.group_id = ANY($2)) IS FALSE AND\n                NOT ($3::INTEGER[] IS NULL OR i.category_id = ANY($3)) IS FALSE\n            ORDER BY i.name ASC\n            LIMIT $4\n        ",
+  "query": "\n            SELECT\n                type_id,\n                volume,\n                meta_group_id,\n                repackaged,\n                i.category_id,\n                i.group_id,\n                i.name,\n                c.name AS \"category_name\",\n                g.name AS \"group_name\"\n            FROM blueprint_json bsjon\n            JOIN item i ON i.type_id = bsjon.blueprint_type_id\n            JOIN category c ON i.category_id = c.category_id\n            JOIN groups g ON i.group_id = g.group_id\n            WHERE\n                (LOWER(i.name) LIKE '%' || LOWER($1) || '%blueprint')-- IS FALSE AND\n                --NOT ($2::INTEGER[] IS NULL OR i.group_id = ANY($2)) IS FALSE\n                --NOT ($3::INTEGER[] IS NULL OR i.category_id = ANY($3)) IS FALSE\n            ORDER BY i.name ASC\n            LIMIT $2\n        ",
   "describe": {
     "columns": [
       {
@@ -106,8 +106,6 @@
     "parameters": {
       "Left": [
         "Text",
-        "Int4Array",
-        "Int4Array",
         "Int8"
       ]
     },
@@ -123,5 +121,5 @@
       false
     ]
   },
-  "hash": "2aff221a7dcdedc392c33639c5f532253b5c045ad365193ce8cbd66b57d64b1d"
+  "hash": "3f30fb10e746f313119b485f5705c0ed31e0324447daf632795f5c9c6f7db27c"
 }

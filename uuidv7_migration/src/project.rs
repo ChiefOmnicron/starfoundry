@@ -2,6 +2,8 @@ use sqlx::PgPool;
 use uuid::{NoContext, Timestamp, Uuid};
 
 use crate::Mapping;
+use std::str::FromStr;
+use std::collections::HashSet;
 
 pub async fn migrate_project(
     postgres_source:       &PgPool,
@@ -118,18 +120,20 @@ pub async fn migrate_project(
 
     let jobs = sqlx::query!(r#"
             SELECT
-                project_id,
-                type_id,
-                runs,
-                status AS "status: ProjectJobStatus",
-                cost,
-                id,
-                job_id,
-                structure_id,
-                character_id,
-                created_at,
-                updated_at
-            FROM project_job
+                pj.project_id,
+                pj.type_id,
+                pj.runs,
+                pj.status AS "status: ProjectJobStatus",
+                pj.cost,
+                pj.id,
+                pj.job_id,
+                pj.structure_id,
+                pj.character_id,
+                pj.created_at,
+                pj.updated_at,
+                p.name AS project_name
+            FROM project_job pj
+            JOIN project p ON p.id = pj.project_id
         "#)
         .fetch_all(postgres_source)
         .await?;
@@ -138,11 +142,72 @@ pub async fn migrate_project(
         ")
         .execute(&mut *transaction)
         .await?;
-    for job in jobs {
+
+    let mut visited_names = HashSet::new();
+    for (index, job) in jobs.iter().enumerate() {
+        if visited_names.contains(&job.project_name) {
+            continue;
+        }
+
+        tracing::info!("[{:6} / {:6}] Mapping - {}", index, jobs.len(), job.project_name);
+        if job.project_name == "Pips Internal Order - Small Ancillary Current Routers" {
+            continue
+        }
+        if job.project_name == "RCI Azbel fighters" {
+            continue
+        }
+        if job.project_name == "X2- Rokhs" {
+            continue
+        }
+        if job.project_name == "Fighters" {
+            continue
+        }
+        if job.project_name == "Fighters 2" {
+            continue
+        }
+        if job.project_name == "_aself" {
+            continue
+        }
+        if job.project_name == "asdasd" {
+            continue
+        }
+        if job.project_name == "_test_rag" {
+            continue
+        }
+        if job.project_name == "_test_hel" {
+            continue
+        }
+        if job.project_name == "_test_rni" {
+            continue
+        }
+        if job.project_name == "asd" {
+            continue
+        }
+        if job.project_name == "Alcatraz202 Enhanced Neurolink Protection Cell" {
+            continue
+        }
+
+        let id = &sqlx::query!("
+                SELECT id
+                FROM project
+                WHERE name = $1
+            ",
+                job.project_name,
+            )
+            .fetch_one(postgres_destination)
+            .await
+            .unwrap()
+            .id;
+        mappings.insert(job.project_id, id.clone());
+        visited_names.insert(job.project_name.clone());
+    }
+
+    for (index, job) in jobs.iter().enumerate() {
+        tracing::info!("[{:6} / {:6}] Copying", index, jobs.len());
         let timestamp = Timestamp::from_unix(NoContext, job.created_at.timestamp() as u64, 0);
         let job_id = Uuid::new_v7(timestamp);
         let project_id =  if let Some(x) = mappings.get(&job.project_id) {
-            x
+            x.clone()
         } else {
             continue;
         };
@@ -185,7 +250,7 @@ pub async fn migrate_project(
     }
     tracing::info!("[project] project jobs migrated");
 
-    let misc_entries = sqlx::query!(r#"
+    /*let misc_entries = sqlx::query!(r#"
             SELECT
                 project_id,
                 item,
@@ -209,6 +274,7 @@ pub async fn migrate_project(
         let project_id =  if let Some(x) = mappings.get(&misc.project_id) {
             x
         } else {
+            tracing::info!("project_id not found - project_misc");
             continue;
         };
 
@@ -268,6 +334,7 @@ pub async fn migrate_project(
         let project_id =  if let Some(x) = mappings.get(&market.project_id.unwrap()) {
             x
         } else {
+            tracing::info!("project_id not found - project_market");
             continue;
         };
 
@@ -348,6 +415,7 @@ pub async fn migrate_project(
         let project_id =  if let Some(x) = mappings.get(&stock.project_id) {
             x
         } else {
+            tracing::info!("project_id not found - project_stock");
             continue;
         };
 
@@ -415,15 +483,11 @@ pub async fn migrate_project(
         ")
         .execute(&mut *transaction)
         .await?;
-    sqlx::query!("
-            DELETE FROM solution_excess
-        ")
-        .execute(&mut *transaction)
-        .await?;
     for excess in excess_entries {
         let project_id =  if let Some(x) = mappings.get(&excess.project_id) {
             x
         } else {
+            tracing::info!("project_id not found - project_excess");
             continue;
         };
 
@@ -447,26 +511,6 @@ pub async fn migrate_project(
             )
             .execute(&mut *transaction)
             .await?;
-
-        let solution_id = mappings.get(&project_id).unwrap();
-        sqlx::query!("
-                INSERT INTO solution_excess (
-                    solution_id,
-                    type_id,
-                    quantity,
-                    created_at,
-                    updated_at
-                )
-                VALUES ($1, $2, $3, $4, $5)
-            ",
-                solution_id,
-                excess.type_id,
-                excess.quantity,
-                excess.created_at,
-                excess.updated_at,
-            )
-            .execute(&mut *transaction)
-            .await?;
     }
     tracing::info!("[project] project excess migrated");
 
@@ -484,7 +528,7 @@ pub async fn migrate_project(
         .fetch_all(postgres_source)
         .await?;
     sqlx::query!("
-            DELETE FROM solution_product
+            DELETE FROM project_product
         ")
         .execute(&mut *transaction)
         .await?;
@@ -494,12 +538,12 @@ pub async fn migrate_project(
         } else {
             continue;
         };
-        let solution_id = mappings.get(&project_id).unwrap();
+        let project_id = mappings.get(&project_id).unwrap();
 
         sqlx::query!("
-                INSERT INTO solution_product (
+                INSERT INTO project_product (
                     id,
-                    solution_id,
+                    project_id,
                     type_id,
                     quantity,
                     material_efficiency,
@@ -509,7 +553,7 @@ pub async fn migrate_project(
                 VALUES ($1, $2, $3, $4, $5, $6, $7)
             ",
                 product.id,
-                solution_id,
+                project_id,
                 product.type_id,
                 product.quantity,
                 product.material_efficiency,
@@ -561,12 +605,96 @@ pub async fn migrate_project(
             .execute(&mut *transaction)
             .await?;
     }
-    tracing::info!("[project] project blacklist migrated");
+    tracing::info!("[project] project blacklist migrated");*/
 
     transaction.commit().await?;
+
+    let fix_new_projects = vec![
+        (Uuid::from_str("019d9cf2-fba8-7548-a11b-63d947e327bb").unwrap(), 23919),
+        (Uuid::from_str("019d9d0b-b55f-7a7f-bad5-45938d4e7eb0").unwrap(), 20183),
+        (Uuid::from_str("019d9d0c-7dc1-7bb9-bcbe-0a6c8d30aa76").unwrap(), 20183),
+        (Uuid::from_str("019d9d0d-0387-7902-a35f-1a5b32dd9a33").unwrap(), 28606),
+        (Uuid::from_str("019d9d0d-5424-7d51-9787-be38e3052639").unwrap(), 28606),
+        (Uuid::from_str("019d9d0d-dfcd-7204-90ca-eb69aa3962f2").unwrap(), 28606),
+        (Uuid::from_str("019d9d0e-9065-7b41-b2df-471a549ed70a").unwrap(), 37605),
+        (Uuid::from_str("019d9d0f-0001-7469-a191-a6920eff4705").unwrap(), 73790),
+        (Uuid::from_str("019d9d0f-9a70-7e6c-aa4a-a2b55d75c63e").unwrap(), 37604),
+        (Uuid::from_str("019d9d10-042c-776a-aecf-5ece1ff8ea29").unwrap(), 52907),
+        (Uuid::from_str("019d9d10-5a82-732a-95e0-a01719e62590").unwrap(), 23911),
+        (Uuid::from_str("019d9d10-a839-7a05-ad05-c8483a978cb0").unwrap(), 23911),
+        (Uuid::from_str("019d9d10-efae-793c-aad5-b9ca9e72fa9d").unwrap(), 73793),
+        (Uuid::from_str("019d9d11-5712-7eeb-abc0-6917a0412fd7").unwrap(), 19726),
+        (Uuid::from_str("019d9d11-adcd-7ad9-a972-387f53791585").unwrap(), 19726),
+    ];
+    for (project_id, product) in fix_new_projects {
+        restore_new_jobs(postgres_destination, project_id).await;
+        restore_product(postgres_destination, project_id, product).await;
+    }
     tracing::info!("Done - project");
 
     Ok(())
+}
+
+async fn restore_new_jobs(
+    pool:       &PgPool,
+    project_id: Uuid,
+) {
+    sqlx::query!("
+            INSERT INTO project_job
+            (
+                project_id,
+                type_id,
+                runs,
+                structure_id
+            )
+            SELECT $1, * FROM (
+                SELECT type_id, runs, structure_id
+                FROM solution_manufacturing
+                WHERE solution_id = (SELECT solution_id FROM project WHERE id = $1)
+            );
+        ",
+            project_id,
+        )
+        .execute(pool)
+        .await
+        .unwrap();
+}
+
+async fn restore_product(
+    pool:           &PgPool,
+    project_id:     Uuid,
+    type_id:        i32,
+) {
+    let solution_id = sqlx::query!("
+            SELECT solution_id
+            FROM project
+            WHERE id = $1
+        ",
+            project_id,
+        )
+        .fetch_one(pool)
+        .await
+        .unwrap()
+        .solution_id;
+
+    sqlx::query!("
+            INSERT INTO solution_product
+            (
+                solution_id,
+                type_id,
+                quantity,
+                material_efficiency
+            )
+            VALUES ($1, $2, $3, $4)
+        ",
+            solution_id,
+            type_id,
+            1,
+            8,
+        )
+        .execute(pool)
+        .await
+        .unwrap();
 }
 
 #[derive(

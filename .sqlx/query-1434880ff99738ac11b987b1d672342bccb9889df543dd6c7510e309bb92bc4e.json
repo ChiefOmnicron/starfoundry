@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO project_job\n            (\n                project_id,\n                type_id,\n                runs,\n                structure_id\n            )\n            SELECT $1, * FROM (\n                SELECT type_id, runs, structure_id\n                FROM solution_manufacturing\n                WHERE solution_id = (SELECT solution_id FROM project WHERE id = $1)\n            );\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "1434880ff99738ac11b987b1d672342bccb9889df543dd6c7510e309bb92bc4e"
+}

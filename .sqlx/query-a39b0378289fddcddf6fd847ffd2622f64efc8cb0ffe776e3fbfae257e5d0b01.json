@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT solution_id\n            FROM project\n            WHERE id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "solution_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "project",
+            "name": "solution_id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "a39b0378289fddcddf6fd847ffd2622f64efc8cb0ffe776e3fbfae257e5d0b01"
+}
