@@ -325,6 +325,7 @@ export function MarketBuy({
             onSave={(x) => {
                 let entries = x
                     .split(`\n`)
+                    .filter(y => !y.startsWith('Total:'))
                     .map(x => {
                         let entries = x.split(`\t`);
                         return {
