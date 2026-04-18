@@ -19,7 +19,7 @@ export function SmartBuyTab({
     const [selectedMarkets, setSelectedMarkets] = useState<Structure[]>([]);
 
     const [gasBonus, setGasBonus] = useState<GasDecompression>(DEFAULT_GAS_BONUS);
-    const [mineralBonus, setMineralBonus] = useState<MineralCompression>(DEFAULT_MINERAL_BONUS);
+    const [mineralBonus, setMineralBonus] = useState<MineralCompression>('NsTataraT1');
 
     const [settingsModalOpened, {
         open: openSettingsModal,
