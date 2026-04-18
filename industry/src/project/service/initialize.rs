@@ -78,6 +78,7 @@ pub async fn initialize(
                 SELECT type_id, quantity
                 FROM solution_excess
                 WHERE solution_id = $2
+                AND quantity > 0
             )
             ON CONFLICT (project_id, type_id)
             DO UPDATE SET
