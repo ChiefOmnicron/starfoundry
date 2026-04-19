@@ -5,7 +5,7 @@ use crate::error::{Error, Result};
 use crate::metric::WorkerMetric;
 use crate::WorkerIndustryTask;
 
-const SOURCE: &str = "industry.dev.starfoundry.space";
+const SOURCE: &str = "industry.alpha.starfoundry.space";
 
 /// Ensures that all necessary tasks are in the queue and new structures
 /// are added into the rotation
@@ -118,7 +118,7 @@ async fn sync_corporation_jobs(
         // Flanders
         (98748294, 2117848811, 2117441999),
         // RCI
-        //(98024275, 2117441999),
+        (98024275, 2117441999, 2117441999),
     ];
 
     let market_stations = sqlx::query!(r#"
