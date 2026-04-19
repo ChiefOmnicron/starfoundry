@@ -5,6 +5,7 @@ mod fetch_system_index;
 mod service;
 
 pub mod eve_character_industry_jobs;
+pub mod eve_corporation_industry_jobs;
 pub mod eve_system_index;
 
 use utoipa_axum::router::OpenApiRouter;

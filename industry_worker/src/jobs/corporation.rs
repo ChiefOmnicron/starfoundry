@@ -90,7 +90,7 @@ pub async fn corporation_jobs(
 
     let startable_jobs = match fetch_startable_jobs(
         pool,
-        additional_data.character_id,
+        additional_data.main_character_id,
     ).await {
 
         Ok(x)  => x,
@@ -228,7 +228,8 @@ pub async fn corporation_jobs(
 
 #[derive(Debug, Deserialize)]
 struct AdditionalData {
-    source:         String,
-    corporation_id: CorporationId,
-    character_id:   CharacterId,
+    source:             String,
+    corporation_id:     CorporationId,
+    character_id:       CharacterId,
+    main_character_id:  CharacterId,
 }

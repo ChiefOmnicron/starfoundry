@@ -13,11 +13,15 @@ pub fn routes() -> OpenApiRouter<AppState> {
         .routes(routes!(crate::asset::eve_corporation_asset::api));
     let corporation_blueprints = OpenApiRouter::new()
         .routes(routes!(crate::asset::eve_corporation_blueprint::api));
+    let resolve_character_asset = OpenApiRouter::new()
+        .routes(routes!(crate::asset::eve_resolve_character_asset::api));
     let resolve_corporation_asset = OpenApiRouter::new()
         .routes(routes!(crate::asset::eve_resolve_corporation_asset::api));
 
-    let corporation_jobs = OpenApiRouter::new()
+    let character_jobs = OpenApiRouter::new()
         .routes(routes!(crate::industry::eve_character_industry_jobs::api));
+    let corporation_jobs = OpenApiRouter::new()
+        .routes(routes!(crate::industry::eve_corporation_industry_jobs::api));
     let system_index = OpenApiRouter::new()
         .routes(routes!(crate::industry::eve_system_index::api));
 
@@ -38,11 +42,13 @@ pub fn routes() -> OpenApiRouter<AppState> {
         .merge(character_blueprints)
         .merge(corporation_asset)
         .merge(corporation_blueprints)
+        .merge(resolve_character_asset)
         .merge(resolve_corporation_asset)
 
         // industry
-        .merge(system_index)
+        .merge(character_jobs)
         .merge(corporation_jobs)
+        .merge(system_index)
 
         // market
         .merge(by_player_station)

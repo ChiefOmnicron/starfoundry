@@ -5,7 +5,7 @@ export function Nakamura({
     endDate
 }: NakamuraProps) {
     const milliseconds = new Date(endDate).valueOf();
-    const nakamuraLink = `https://time.nakamura-labs.com/?#${milliseconds}`;
+    const nakamuraLink = `https://time.nakamura-labs.com/?#${milliseconds / 1000}`;
 
     return <>
         <InternalLink

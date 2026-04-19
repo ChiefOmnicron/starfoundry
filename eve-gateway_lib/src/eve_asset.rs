@@ -100,6 +100,27 @@ pub trait EveGatewayApiClientEveAsset: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
+    async fn eve_resolve_character_asset(
+        &self,
+        source:         &String,
+        character_id:   &CharacterId,
+        assets:         Vec<ItemId>,
+    ) -> Result<Vec<ResolvedItem>> {
+        let mut headers = HeaderMap::new();
+        headers.insert(HOST, HeaderValue::from_str(&source).unwrap_or(HeaderValue::from_static("invalid.header")));
+        headers.insert(HEADER_CHARACTER_ID, (**character_id).into());
+
+        self
+            .post_auth(
+                &format!("eve/characters/{}/assets", character_id),
+                assets,
+                headers,
+            )
+            .await
+            .map_err(Into::into)
+    }
+
+    #[allow(async_fn_in_trait)]
     async fn eve_resolve_corporation_asset(
         &self,
         source:         &String,

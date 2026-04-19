@@ -4,35 +4,31 @@ use axum::response::IntoResponse;
 use reqwest::StatusCode;
 use starfoundry_lib_eve_gateway::IndustryJob;
 use starfoundry_lib_gateway::ExtractIdentity;
-use starfoundry_lib_types::CorporationId;
 
 use crate::api_docs::{InternalServerError, NotFound};
 use crate::market::error::Result;
 use crate::state::AppState;
-use crate::utils::api_client_corporation_auth;
+use crate::utils::api_client_auth;
 
-const SCOPE: &str = "esi-industry.read_corporation_jobs.v1";
+const SCOPE: &str = "esi-industry.read_character_jobs.v1";
 
 /// Fetch Player Market
 /// 
-/// - Alternative route: `/latest/eve/industry/corporation`
-/// - Alternative route: `/v1/eve/industry/corporation`
+/// - Alternative route: `/latest/eve/industry/character`
+/// - Alternative route: `/v1/eve/industry/character`
 /// 
 /// ---
 /// 
-/// Fetches the running corporation industry jobs
+/// Fetches the running character industry jobs
 /// 
 #[utoipa::path(
     get,
-    path = "/industry/jobs/corporation",
+    path = "/industry/jobs/character",
     tag = "Industry",
-    params(
-        CorporationId,
-    ),
     responses(
         (
             body = Vec<IndustryJob>,
-            description = "Corporation market data",
+            description = "Character industry jobs",
             status = OK,
         ),
         NotFound,
@@ -43,12 +39,11 @@ pub async fn api(
     identity:       ExtractIdentity,
     State(state):   State<AppState>,
 ) -> Result<impl IntoResponse> {
-    let api_client = api_client_corporation_auth(
+    let api_client = api_client_auth(
             &state.postgres,
             state.eve_api_metric,
             identity.host()?,
             identity.character_id,
-            identity.corporation_id.unwrap_or(CorporationId(0)),
             vec![
                 SCOPE.into(),
             ],
@@ -67,9 +62,8 @@ pub async fn api(
     };
 
     let path = format!(
-        "latest/corporations/{}/industry_jobs",
-        // TODO: refactor
-        *identity.corporation_id.unwrap_or(CorporationId(0)),
+        "latest/character/{}/industry/jobs",
+        identity.character_id,
     );
     let job_data = api_client
         .fetch_page_auth::<IndustryJob>(&path)

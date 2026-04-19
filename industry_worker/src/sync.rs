@@ -5,7 +5,7 @@ use crate::error::{Error, Result};
 use crate::metric::WorkerMetric;
 use crate::WorkerIndustryTask;
 
-const SOURCE: &str = "industry.alpha.starfoundry.space";
+const SOURCE: &str = "industry.dev.starfoundry.space";
 
 /// Ensures that all necessary tasks are in the queue and new structures
 /// are added into the rotation
@@ -13,16 +13,16 @@ pub async fn sync_task(
     pool:   &PgPool,
     task:   &mut Task<WorkerMetric, WorkerIndustryTask>,
 ) -> Result<()> {
-    match sync_character_jobs(
-        pool,
-    ).await {
-        Ok(new_entries) => {
-            if new_entries > 0 {
-                task.append_log(format!("added {new_entries} character jobs"))
-            }
-        },
-        Err(e) => task.append_error(e.to_string()),
-    };
+    //match sync_character_jobs(
+    //    pool,
+    //).await {
+    //    Ok(new_entries) => {
+    //        if new_entries > 0 {
+    //            task.append_log(format!("added {new_entries} character jobs"))
+    //        }
+    //    },
+    //    Err(e) => task.append_error(e.to_string()),
+    //};
 
     match sync_corporation_jobs(
         pool,
@@ -43,9 +43,9 @@ pub async fn sync_task(
 pub async fn sync(
     pool:   &PgPool,
 ) -> Result<()> {
-    sync_character_jobs(
-        pool,
-    ).await?;
+    //sync_character_jobs(
+    //    pool,
+    //).await?;
 
     sync_corporation_jobs(
         pool,
@@ -113,12 +113,12 @@ async fn sync_corporation_jobs(
     let task_name: String = WorkerIndustryTask::JobCorporation.into();
 
     // FIXME: only tmp
-    // (corporation_id, character_id)
+    // (corporation_id, character_id, main_character_id)
     let corporations = vec![
         // Flanders
-        (2117848811, 2120743400),
+        (98748294, 2117848811, 2117441999),
         // RCI
-        (559029287, 2117441999),
+        //(98024275, 2117441999),
     ];
 
     let market_stations = sqlx::query!(r#"
@@ -142,7 +142,7 @@ async fn sync_corporation_jobs(
 
     // ensure that non authed structures are in the queue
     let mut new_entries = Vec::new();
-    for (corporation, character) in corporations {
+    for (corporation, character, main_character) in corporations {
         if let None = market_stations
             .iter()
             .find(|x| {
@@ -151,7 +151,8 @@ async fn sync_corporation_jobs(
             }) {
                 let additional_data = serde_json::json!({
                     "corporation_id": corporation,
-                    "character_id": corporation,
+                    "character_id": character,
+                    "main_character_id": main_character,
                     "source": SOURCE,
                 });
                 new_entries.push(additional_data);

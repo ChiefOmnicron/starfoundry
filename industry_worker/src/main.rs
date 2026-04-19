@@ -132,19 +132,14 @@ async fn task_select(
             ).await
         },
         WorkerIndustryTask::JobCharacter    => {
+            unimplemented!()
+        },
+        WorkerIndustryTask::JobCorporation  => {
             corporation_jobs(
                     pool,
                     task,
                 )
                 .await
-        },
-        WorkerIndustryTask::JobCorporation  => {
-            unimplemented!()
-            //by_player_station_task(
-            //        pool,
-            //        task,
-            //    )
-            //    .await
         },
     }
 }

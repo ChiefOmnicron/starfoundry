@@ -22,6 +22,7 @@ COPY        ./gp_lib-eve_client ./gp_lib-eve_client
 COPY        ./gp_lib-types ./gp_lib-types
 COPY        ./industry ./industry
 COPY        ./industry_lib ./industry_lib
+COPY        ./industry_worker ./industry_worker
 COPY        ./market ./market
 COPY        ./market_lib ./market_lib
 COPY        ./market_worker ./market_worker
@@ -52,6 +53,7 @@ COPY        ./gp_lib-eve_client ./gp_lib-eve_client
 COPY        ./gp_lib-types ./gp_lib-types
 COPY        ./industry ./industry
 COPY        ./industry_lib ./industry_lib
+COPY        ./industry_worker ./industry_worker
 COPY        ./market ./market
 COPY        ./market_lib ./market_lib
 COPY        ./market_worker ./market_worker
@@ -159,6 +161,22 @@ RUN         apt-get update && \
 
 COPY        --from=industry-api-builder /app/target/release/starfoundry_bin-industry /usr/local/bin/app
 COPY        --from=industry-api-builder /app/target/release/uuidv7_migration /usr/local/bin/migration
+CMD         ["/usr/local/bin/app"]
+
+###############################################################################
+#           industry_worker
+###############################################################################
+FROM builder AS industry-worker-builder
+RUN         cargo build --bin starfoundry_bin-industry_worker --release
+
+FROM ubuntu:26.04 AS industry-worker
+WORKDIR     /usr/local/bin
+
+RUN         apt-get update && \
+            apt-get install -y ca-certificates curl && \
+            apt-get clean
+
+COPY        --from=industry-worker-builder /app/target/release/starfoundry_bin-industry_worker /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
 ###############################################################################

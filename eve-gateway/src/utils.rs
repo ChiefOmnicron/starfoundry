@@ -57,14 +57,12 @@ pub async fn api_client_corporation_auth(
             FROM eve_credential
             WHERE
                 domain = $1 AND
-                character_main = $2 AND
-                character_id = $3 AND
-                scopes && $4::VARCHAR[]
+                character_id = $2 AND
+                scopes && $3::VARCHAR[]
             LIMIT 1
         ",
             host,
             *character_id,
-            *corporation_id,
             &min_scopes,
         )
         .fetch_optional(pool)

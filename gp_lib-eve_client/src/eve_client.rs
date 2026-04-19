@@ -771,7 +771,7 @@ impl EveApiClient {
             #[allow(clippy::unwrap_used)]
             self.access_token.lock().unwrap().clone()
         };
-        let mut access_token = if access_token.is_none() {
+        let access_token = if access_token.is_none() {
             self.get_access_token().await?;
             #[allow(clippy::unwrap_used)]
             self.access_token.lock().unwrap().clone()
@@ -812,22 +812,29 @@ impl EveApiClient {
                     request_uri.clone().to_string(),
                 );
 
-            if response.status() == StatusCode::FORBIDDEN ||
-               response.status() == StatusCode::UNAUTHORIZED {
-
-                last_status = response.status();
-                last_text   = response
-                    .text()
-                    .await
-                    .unwrap_or_default();
-
-                retry_counter += 1;
-                access_token = Some(self.get_access_token().await?);
-
-                // Wait a second before trying again
-                std::thread::sleep(std::time::Duration::from_secs(1));
-                continue;
-            }
+            match response.status() {
+                StatusCode::NOT_FOUND => {
+                    return Err(EveApiError::NotFound(request_uri));
+                },
+                StatusCode::TOO_MANY_REQUESTS => {
+                    return Err(EveApiError::RateLimit(request_uri));
+                },
+                StatusCode::NOT_MODIFIED => {
+                    return Err(EveApiError::NotModified(request_uri));
+                },
+                StatusCode::FORBIDDEN |
+                StatusCode::UNAUTHORIZED => {
+                    let content = response.text().await.unwrap_or_default();
+                    return Err(EveApiError::Unauthorized(request_uri, content));
+                },
+                StatusCode::BAD_GATEWAY => {
+                    return Err(EveApiError::BadGateway);
+                },
+                StatusCode::SERVICE_UNAVAILABLE => {
+                    return Err(EveApiError::ServiceUnavailable);
+                },
+                _ => {}
+            };
 
             let response_status = response.status();
             if !response_status.is_success() {

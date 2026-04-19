@@ -1,56 +1,54 @@
-use axum::extract::{Path, State};
+use axum::extract::State;
 use axum::Json;
 use axum::response::IntoResponse;
 use reqwest::StatusCode;
-use starfoundry_lib_eve_gateway::ResolvedItem;
+use starfoundry_lib_eve_gateway::IndustryJob;
 use starfoundry_lib_gateway::ExtractIdentity;
-use starfoundry_lib_types::{CorporationId, LocationId};
+use starfoundry_lib_types::CorporationId;
 
-use crate::api_docs::{InternalServerError, Unauthorized};
+use crate::api_docs::{InternalServerError, NotFound};
 use crate::market::error::Result;
 use crate::state::AppState;
 use crate::utils::api_client_corporation_auth;
 
-const SCOPE: &str = "esi-assets.read_corporation_assets.v1";
+const SCOPE: &str = "esi-industry.read_corporation_jobs.v1";
 
 /// Fetch Player Market
 /// 
-/// - Alternative route: `/latest/eve/corporations/{CorporationId}/assets`
-/// - Alternative route: `/v1/eve/corporations/{CorporationId}/assets`
+/// - Alternative route: `/latest/eve/industry/corporation`
+/// - Alternative route: `/v1/eve/industry/corporation`
 /// 
 /// ---
 /// 
-/// Resolves the market data for the given region
+/// Fetches the running corporation industry jobs
 /// 
 #[utoipa::path(
-    post,
-    path = "/corporations/{CorporationId}/assets",
-    tag = "Assets",
+    get,
+    path = "/industry/jobs/corporation",
+    tag = "Industry",
     params(
         CorporationId,
     ),
     responses(
         (
-            body = Vec<ResolvedItem>,
-            description = "Resolved asset names",
+            body = Vec<IndustryJob>,
+            description = "Corporation market data",
             status = OK,
         ),
-        Unauthorized,
+        NotFound,
         InternalServerError,
     ),
 )]
 pub async fn api(
-    identity:               ExtractIdentity,
-    State(state):           State<AppState>,
-    Path(corporation_id):   Path<CorporationId>,
-    Json(assets):           Json<Vec<LocationId>>,
+    identity:       ExtractIdentity,
+    State(state):   State<AppState>,
 ) -> Result<impl IntoResponse> {
     let api_client = api_client_corporation_auth(
             &state.postgres,
             state.eve_api_metric,
             identity.host()?,
             identity.character_id,
-            corporation_id,
+            identity.corporation_id.unwrap_or(CorporationId(0)),
             vec![
                 SCOPE.into(),
             ],
@@ -68,16 +66,20 @@ pub async fn api(
         )
     };
 
-    let path = format!("latest/corporations/{corporation_id}/assets/names");
-    let asset_names:  Vec<ResolvedItem> = api_client
-        .post::<_, Vec<ResolvedItem>>(&path, assets)
+    let path = format!(
+        "latest/corporations/{}/industry/jobs",
+        // TODO: refactor
+        *identity.corporation_id.unwrap_or(CorporationId(0)),
+    );
+    let job_data = api_client
+        .fetch_page_auth::<IndustryJob>(&path)
         .await?;
 
-    if asset_names.is_empty() {
+    if job_data.is_empty() {
         Ok(
             (
                 StatusCode::NO_CONTENT,
-                Json(asset_names)
+                Json(job_data),
             )
             .into_response()
         )
@@ -85,7 +87,7 @@ pub async fn api(
         Ok(
             (
                 StatusCode::OK,
-                Json(asset_names),
+                Json(job_data),
             )
             .into_response()
         )

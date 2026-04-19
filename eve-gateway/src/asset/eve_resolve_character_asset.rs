@@ -4,19 +4,19 @@ use axum::response::IntoResponse;
 use reqwest::StatusCode;
 use starfoundry_lib_eve_gateway::ResolvedItem;
 use starfoundry_lib_gateway::ExtractIdentity;
-use starfoundry_lib_types::{CorporationId, LocationId};
+use starfoundry_lib_types::{CharacterId, LocationId};
 
 use crate::api_docs::{InternalServerError, Unauthorized};
 use crate::market::error::Result;
 use crate::state::AppState;
-use crate::utils::api_client_corporation_auth;
+use crate::utils::api_client_auth;
 
-const SCOPE: &str = "esi-assets.read_corporation_assets.v1";
+const SCOPE: &str = "esi-assets.read_assets.v1";
 
 /// Fetch Player Market
 /// 
-/// - Alternative route: `/latest/eve/corporations/{CorporationId}/assets`
-/// - Alternative route: `/v1/eve/corporations/{CorporationId}/assets`
+/// - Alternative route: `/latest/eve/corporations/{CharacterId}/assets`
+/// - Alternative route: `/v1/eve/corporations/{CharacterId}/assets`
 /// 
 /// ---
 /// 
@@ -24,10 +24,10 @@ const SCOPE: &str = "esi-assets.read_corporation_assets.v1";
 /// 
 #[utoipa::path(
     post,
-    path = "/corporations/{CorporationId}/assets",
+    path = "/characters/{CharacterId}/assets",
     tag = "Assets",
     params(
-        CorporationId,
+        CharacterId,
     ),
     responses(
         (
@@ -42,15 +42,14 @@ const SCOPE: &str = "esi-assets.read_corporation_assets.v1";
 pub async fn api(
     identity:               ExtractIdentity,
     State(state):           State<AppState>,
-    Path(corporation_id):   Path<CorporationId>,
+    Path(character_id):     Path<CharacterId>,
     Json(assets):           Json<Vec<LocationId>>,
 ) -> Result<impl IntoResponse> {
-    let api_client = api_client_corporation_auth(
+    let api_client = api_client_auth(
             &state.postgres,
             state.eve_api_metric,
             identity.host()?,
             identity.character_id,
-            corporation_id,
             vec![
                 SCOPE.into(),
             ],
@@ -68,7 +67,7 @@ pub async fn api(
         )
     };
 
-    let path = format!("latest/corporations/{corporation_id}/assets/names");
+    let path = format!("latest/characters/{character_id}/assets/names");
     let asset_names:  Vec<ResolvedItem> = api_client
         .post::<_, Vec<ResolvedItem>>(&path, assets)
         .await?;

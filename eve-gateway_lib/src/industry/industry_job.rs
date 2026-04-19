@@ -1,4 +1,4 @@
-use serde::{Deserialize, Deserializer, Serialize};
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use utoipa::ToSchema;
 use starfoundry_lib_types::{CharacterId, CorporationId, ItemId, JobId, LocationId, TypeId};
 
@@ -7,6 +7,7 @@ use starfoundry_lib_types::{CharacterId, CorporationId, ItemId, JobId, LocationI
 pub struct IndustryJob {
     /// Activity of the job
     #[serde(deserialize_with = "IndustryActivity::from")]
+    #[serde(serialize_with = "IndustryActivity::to_number")]
     #[serde(rename = "activity_id")]
     pub activity:               IndustryActivity,
     /// Asset ID of the blueprint
@@ -30,7 +31,7 @@ pub struct IndustryJob {
     pub job_id:                 JobId,
     /// ID of the facility the job was started in
     pub facility_id:            i64,
-    /// CharacterId of the character that strted the job
+    /// CharacterId of the character that started the job
     pub installer_id:           CharacterId,
     /// Status of the manufacturing entry
     pub status:                 String,
@@ -45,7 +46,6 @@ pub struct IndustryJob {
 
 /// List of all industry activities
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, ToSchema, sqlx::Type)]
-#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 #[sqlx(type_name = "INDUSTRY_ACTIVITY")]
 #[sqlx(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum IndustryActivity {
@@ -66,7 +66,7 @@ pub enum IndustryActivity {
 }
 
 impl IndustryActivity {
-    /// deserializes industry activity ids into their actual activitiy name
+    /// deserializes industry activity ids into their actual activity name
     fn from<'de, D>(d: D) -> Result<Self, D::Error>
     where
         D: Deserializer<'de>,
@@ -80,5 +80,26 @@ impl IndustryActivity {
             9 => Self::Reactions,
             _ => Self::Unknown,
         })
+    }
+
+    /// serialize industry activity
+    fn to_number<S>(
+        &self,
+        serializer: S,
+    ) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer {
+
+        let result = match self {
+            Self::Manufacturing                 => 1,
+            Self::MaterialEfficiencyResearch    => 3,
+            Self::TimeEfficiencyResearch        => 4,
+            Self::Copying                       => 5,
+            Self::Invention                     => 8,
+            Self::Reactions                     => 9,
+            Self::Unknown                       => 99,
+        };
+
+        serializer.serialize_u8(result)
     }
 }

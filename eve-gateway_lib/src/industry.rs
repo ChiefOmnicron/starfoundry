@@ -73,4 +73,5 @@ pub trait EveGatewayApiClientIndustry: ApiClient {
             .await
             .map_err(Into::into)
     }
+
 }
