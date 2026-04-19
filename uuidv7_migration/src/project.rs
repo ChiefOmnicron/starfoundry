@@ -153,39 +153,51 @@ pub async fn migrate_project(
 
         tracing::info!("[{:6} / {:6}] Mapping - {}", index, jobs.len(), job.project_name);
         if job.project_name == "Pips Internal Order - Small Ancillary Current Routers" {
+            visited_names.insert("Pips Internal Order - Small Ancillary Current Routers".to_string());
             continue
         }
         if job.project_name == "RCI Azbel fighters" {
+            visited_names.insert("RCI Azbel fighters".to_string());
             continue
         }
         if job.project_name == "X2- Rokhs" {
+            visited_names.insert("X2- Rokhs".to_string());
             continue
         }
         if job.project_name == "Fighters" {
+            visited_names.insert("Fighters".to_string());
             continue
         }
         if job.project_name == "Fighters 2" {
+            visited_names.insert("Fighters 2".to_string());
             continue
         }
         if job.project_name == "_aself" {
+            visited_names.insert("_aself".to_string());
             continue
         }
         if job.project_name == "asdasd" {
+            visited_names.insert("asdasd".to_string());
             continue
         }
         if job.project_name == "_test_rag" {
+            visited_names.insert("_test_rag".to_string());
             continue
         }
         if job.project_name == "_test_hel" {
+            visited_names.insert("_test_hel".to_string());
             continue
         }
         if job.project_name == "_test_rni" {
+            visited_names.insert("_test_rni".to_string());
             continue
         }
         if job.project_name == "asd" {
+            visited_names.insert("asd".to_string());
             continue
         }
         if job.project_name == "Alcatraz202 Enhanced Neurolink Protection Cell" {
+            visited_names.insert("Alcatraz202 Enhanced Neurolink Protection Cell".to_string());
             continue
         }
 
@@ -201,7 +213,6 @@ pub async fn migrate_project(
             .unwrap()
             .id;
 
-        dbg!(&job.structure_name);
         let structure_id = if job.structure_name.starts_with("K7D-II") {
             &Uuid::default()
         } else if job.structure_name.starts_with("UVHO") {
@@ -301,7 +312,7 @@ pub async fn migrate_project(
     }
 
     for (index, job) in jobs.iter().enumerate() {
-        tracing::info!("[{:6} / {:6}] Copying", index, jobs.len());
+        tracing::info!("[{:6} / {:6}] Copying Jobs", index, jobs.len());
         let timestamp = Timestamp::from_unix(NoContext, job.created_at.timestamp() as u64, 0);
         let job_id = Uuid::new_v7(timestamp);
         let project_id =  if let Some(x) = mappings.get(&job.project_id) {
@@ -350,16 +361,18 @@ pub async fn migrate_project(
     }
     tracing::info!("[project] project jobs migrated");
 
-    let misc_entries = sqlx::query!(r#"
+    /*let misc_entries = sqlx::query!(r#"
             SELECT
-                project_id,
-                item,
-                cost,
-                quantity,
-                description,
-                created_at,
-                updated_at
-            FROM project_misc
+                pm.project_id,
+                pm.item,
+                pm.cost,
+                pm.quantity,
+                pm.description,
+                pm.created_at,
+                pm.updated_at,
+                p.name AS project_name
+            FROM project_misc pm
+            JOIN project p ON p.id = pm.project_id
         "#)
         .fetch_all(postgres_source)
         .await?;
@@ -368,14 +381,28 @@ pub async fn migrate_project(
         ")
         .execute(&mut *transaction)
         .await?;
-    for misc in misc_entries {
+    for (index, misc) in misc_entries.iter().enumerate() {
+        tracing::info!("[{:6} / {:6}] Copying Misc", index, misc_entries.len());
         let timestamp = Timestamp::from_unix(NoContext, misc.created_at.timestamp() as u64, 0);
         let misc_id = Uuid::new_v7(timestamp);
         let project_id =  if let Some(x) = mappings.get(&misc.project_id) {
             x
         } else {
-            tracing::info!("project_id not found - project_misc");
-            continue;
+            if visited_names.contains(&misc.project_name) {
+                continue;
+            }
+
+            &sqlx::query!("
+                    SELECT id
+                    FROM project
+                    WHERE name = $1
+                ",
+                    misc.project_name,
+                )
+                .fetch_one(postgres_destination)
+                .await
+                .unwrap()
+                .id
         };
 
         sqlx::query!("
@@ -463,13 +490,15 @@ pub async fn migrate_project(
 
     let stock_entries = sqlx::query!(r#"
             SELECT
-                project_id,
-                type_id,
-                quantity,
-                cost,
-                created_at,
-                updated_at
-            FROM project_stock
+                ps.project_id,
+                ps.type_id,
+                ps.quantity,
+                ps.cost,
+                ps.created_at,
+                ps.updated_at,
+                p.name AS project_name
+            FROM project_stock ps
+            JOIN project p ON p.id = ps.project_id
         "#)
         .fetch_all(postgres_source)
         .await?;
@@ -478,14 +507,28 @@ pub async fn migrate_project(
         ")
         .execute(&mut *transaction)
         .await?;
-    for stock in stock_entries {
+    for (index, stock) in stock_entries.iter().enumerate() {
+        tracing::info!("[{:6} / {:6}] Copying Stock", index, stock_entries.len());
         let timestamp = Timestamp::from_unix(NoContext, stock.created_at.timestamp() as u64, 0);
         let stock_id = Uuid::new_v7(timestamp);
         let project_id =  if let Some(x) = mappings.get(&stock.project_id) {
             x
         } else {
-            tracing::info!("project_id not found - project_stock");
-            continue;
+            if visited_names.contains(&stock.project_name) {
+                continue;
+            }
+
+            &sqlx::query!("
+                    SELECT id
+                    FROM project
+                    WHERE name = $1
+                ",
+                    stock.project_name,
+                )
+                .fetch_one(postgres_destination)
+                .await
+                .unwrap()
+                .id
         };
 
         sqlx::query!("
@@ -515,13 +558,15 @@ pub async fn migrate_project(
 
     let excess_entries = sqlx::query!(r#"
             SELECT
-                project_id,
-                type_id,
-                quantity,
-                cost,
-                created_at,
-                updated_at
-            FROM project_excess
+                pe.project_id,
+                pe.type_id,
+                pe.quantity,
+                pe.cost,
+                pe.created_at,
+                pe.updated_at,
+                p.name AS project_name
+            FROM project_excess pe
+            JOIN project p ON p.id = pe.project_id
         "#)
         .fetch_all(postgres_source)
         .await?;
@@ -530,12 +575,26 @@ pub async fn migrate_project(
         ")
         .execute(&mut *transaction)
         .await?;
-    for excess in excess_entries {
+    for (index, excess) in excess_entries.iter().enumerate() {
+        tracing::info!("[{:6} / {:6}] Copying Excess", index, excess_entries.len());
         let project_id =  if let Some(x) = mappings.get(&excess.project_id) {
             x
         } else {
-            tracing::info!("project_id not found - project_excess");
-            continue;
+            if visited_names.contains(&excess.project_name) {
+                continue;
+            }
+
+            &sqlx::query!("
+                    SELECT id
+                    FROM project
+                    WHERE name = $1
+                ",
+                    excess.project_name,
+                )
+                .fetch_one(postgres_destination)
+                .await
+                .unwrap()
+                .id
         };
 
         sqlx::query!("
@@ -563,14 +622,16 @@ pub async fn migrate_project(
 
     let product_entries = sqlx::query!(r#"
             SELECT
-                id,
-                project_id,
-                type_id,
-                quantity,
-                material_efficiency,
-                created_at,
-                updated_at
-            FROM project_product
+                pp.id,
+                pp.project_id,
+                pp.type_id,
+                pp.quantity,
+                pp.material_efficiency,
+                pp.created_at,
+                pp.updated_at,
+                p.name AS project_name
+            FROM project_product pp
+            JOIN project p ON p.id = pp.project_id
         "#)
         .fetch_all(postgres_source)
         .await?;
@@ -579,11 +640,26 @@ pub async fn migrate_project(
         ")
         .execute(&mut *transaction)
         .await?;
-    for product in product_entries {
+    for (index, product) in product_entries.iter().enumerate() {
+        tracing::info!("[{:6} / {:6}] Copying Product", index, misc_entries.len());
         let project_id = if let Some(x) = mappings.get(&product.project_id) {
             x
         } else {
-            continue;
+            if visited_names.contains(&product.project_name) {
+                continue;
+            }
+
+            &sqlx::query!("
+                    SELECT id
+                    FROM project
+                    WHERE name = $1
+                ",
+                    product.project_name,
+                )
+                .fetch_one(postgres_destination)
+                .await
+                .unwrap()
+                .id
         };
         let project_id = mappings.get(&project_id).unwrap();
 
@@ -609,7 +685,7 @@ pub async fn migrate_project(
             )
             .execute(&mut *transaction)
             .await?;
-    }
+    }*/
 
     transaction.commit().await?;
 
