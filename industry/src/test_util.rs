@@ -172,9 +172,9 @@ impl ApiClient for EveGatewayTestApiClient {
         path: impl Into<String>,
         data: D,
     ) -> starfoundry_lib_gateway::error::Result<T>
-        where
-            D: std::fmt::Debug + serde::Serialize + Send + Sync,
-            T: serde::de::DeserializeOwned {
+    where
+        D: std::fmt::Debug + serde::Serialize + Send + Sync,
+        T: serde::de::DeserializeOwned {
 
         let path = path.into();
         let response = match path.as_ref() {
@@ -340,6 +340,18 @@ impl ApiClient for EveGatewayTestApiClient {
             serde_json::from_value(response).unwrap(),
         )
     }
+
+    async fn post_auth<D, T>(
+        &self,
+        _path:      impl Into<String>,
+        _data:      D,
+        _headers:   HeaderMap,
+    ) -> starfoundry_lib_gateway::error::Result<T>
+    where
+        D: std::fmt::Debug + serde::Serialize + Send + Sync,
+        T: serde::de::DeserializeOwned {
+        unimplemented!()
+    }
 }
 
 impl ApiClient for MarketTestApiClient {
@@ -372,6 +384,18 @@ impl ApiClient for MarketTestApiClient {
         where
             D: std::fmt::Debug + Serialize + Send + Sync,
             T: serde::de::DeserializeOwned {
+        unimplemented!()
+    }
+
+    async fn post_auth<D, T>(
+        &self,
+        _path:      impl Into<String>,
+        _data:      D,
+        _headers:   HeaderMap,
+    ) -> starfoundry_lib_gateway::error::Result<T>
+    where
+        D: std::fmt::Debug + serde::Serialize + Send + Sync,
+        T: serde::de::DeserializeOwned {
         unimplemented!()
     }
 }

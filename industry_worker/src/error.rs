@@ -2,10 +2,17 @@ use thiserror::Error;
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
-#[derive(Error, Debug)]
+#[derive(Debug, Error)]
+#[non_exhaustive]
 pub enum Error {
     #[error("error while fetching jobs, error: '{0}'")]
     ListJobs(sqlx::Error),
+    #[error("error while inserting jobs, error: '{0}'")]
+    InsertJobs(sqlx::Error),
+    #[error("error while updating jobs, error: '{0}'")]
+    UpdateJob(sqlx::Error),
+    #[error("error while cleaning jobs, error: '{0}'")]
+    Cleanup(sqlx::Error),
 
     #[error("error during transaction, error: '{0}'")]
     TransactionError(sqlx::Error),

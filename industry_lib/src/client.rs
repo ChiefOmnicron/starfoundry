@@ -89,6 +89,22 @@ impl ApiClient for IndustryClient {
             .await
             .map_err(Into::into)
     }
+
+    async fn post_auth<D, T>(
+        &self,
+        path:       impl Into<String>,
+        data:       D,
+        header_map: HeaderMap,
+    ) -> GatewayResult<T>
+    where
+        D: Debug + Serialize + Send + Sync,
+        T: Default + DeserializeOwned {
+
+        self.0
+            .post_auth(path, data, header_map)
+            .await
+            .map_err(Into::into)
+    }
 }
 
 impl IndustryApiClient for IndustryClient {}

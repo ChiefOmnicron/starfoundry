@@ -1,13 +1,14 @@
 use serde::Deserialize;
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{EveGatewayApiClientIndustry, EveGatewayClient, IndustryActivity};
-use starfoundry_lib_types::{CharacterId, CorporationId};
+use starfoundry_lib_types::{CharacterId, CorporationId, ItemId};
 use starfoundry_lib_worker::Task;
 use std::collections::HashMap;
 
 use crate::error::{Error, Result};
 use crate::{SERVICE_NAME, WorkerIndustryTask};
 use crate::metric::WorkerMetric;
+use crate::jobs::{cleanup_delivered_jobs, fetch_done_job_ids, fetch_ignored_jobs, fetch_startable_jobs, job_detection, resolve_corporation_asset_name, update_finished_jobs, update_industry_jobs};
 
 pub async fn corporation_jobs(
     pool:        &PgPool,
@@ -30,7 +31,7 @@ pub async fn corporation_jobs(
     let client = EveGatewayClient::new(SERVICE_NAME)?;
     let entries = match client
         .fetch_corporation_jobs(
-            additional_data.source,
+            additional_data.source.clone(),
             additional_data.character_id,
             additional_data.corporation_id
         )
@@ -57,22 +58,25 @@ pub async fn corporation_jobs(
 
     let mut location_ids = entries
         .iter()
-        .map(|x| x.location_id)
+        .map(|x| ItemId(*x.location_id))
         .collect::<Vec<_>>();
     location_ids.sort();
     location_ids.dedup();
 
     let mut output_location_ids = entries
         .iter()
-        .map(|x| x.output_location_id)
+        .map(|x| ItemId(*x.output_location_id))
         .collect::<Vec<_>>();
     output_location_ids.sort();
     output_location_ids.dedup();
 
     // resolve all container ids
-    let container_names = match resolve_container_names(
+    let container_names = match resolve_corporation_asset_name(
         &pool,
         &client,
+        &additional_data.source.clone(),
+        &additional_data.character_id,
+        &additional_data.corporation_id,
         &location_ids,
         &output_location_ids,
     ).await {
@@ -91,7 +95,7 @@ pub async fn corporation_jobs(
 
         Ok(x)  => x,
         Err(e) => {
-            task.append_error(e);
+            task.append_error(e.to_string());
             Vec::new()
         }
     };
@@ -99,7 +103,7 @@ pub async fn corporation_jobs(
     let finished_job_ids = match fetch_done_job_ids(pool, job_ids).await {
         Ok(x)  => x,
         Err(e) => {
-            task.append_error(e);
+            task.append_error(e.to_string());
             Vec::new()
         }
     };
@@ -107,7 +111,7 @@ pub async fn corporation_jobs(
     let ignored_job_ids = match fetch_ignored_jobs(pool).await {
         Ok(x)  => x,
         Err(e) => {
-            task.append_error(e);
+            task.append_error(e.to_string());
             Vec::new()
         }
     };
@@ -165,7 +169,7 @@ pub async fn corporation_jobs(
     //if let Err(e) = cleanup_delivered_jobs(pool, *additional_data.corporation_id).await {
     if let Err(e) = cleanup_delivered_jobs(pool).await {
         tracing::warn!("{}", e);
-        task.add_log(e.to_string());
+        task.append_log(e.to_string());
     }
 
     sqlx::query!("
@@ -213,11 +217,11 @@ pub async fn corporation_jobs(
         .execute(pool)
         .await
         .map(drop)
-        .map_err(Error::InsertIndustryJob)?;
+        .map_err(Error::InsertJobs)?;
 
     update_industry_jobs(pool, &updates).await?;
     update_finished_jobs(pool).await?;
-    insert_job_detection_log(pool, &updates, &unmatched).await?;
+    //insert_job_detection_log(pool, &updates, &unmatched).await?;
 
     Ok(())
 }

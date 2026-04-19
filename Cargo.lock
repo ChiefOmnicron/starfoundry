@@ -2671,6 +2671,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "starfoundry_bin-industry_worker"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "dotenvy",
+ "prometheus-client",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "starfoundry_lib-eve_gateway",
+ "starfoundry_lib-gateway",
+ "starfoundry_lib-types",
+ "starfoundry_lib-worker",
+ "thiserror 2.0.18",
+ "tokio",
+ "toml 0.9.11+spec-1.1.0",
+ "tracing",
+ "tracing-subscriber",
+ "utoipa",
+ "uuid",
+]
+
+[[package]]
 name = "starfoundry_bin-market"
 version = "0.1.0"
 dependencies = [
@@ -2745,6 +2768,7 @@ dependencies = [
  "reqwest",
  "serde",
  "serde_json",
+ "sqlx",
  "starfoundry_lib-gateway",
  "starfoundry_lib-types",
  "thiserror 2.0.18",

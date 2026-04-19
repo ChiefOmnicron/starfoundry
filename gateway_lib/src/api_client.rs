@@ -110,8 +110,26 @@ impl StarFoundryApiClient {
 
     pub async fn post<D, T>(
         &self,
-        path: impl Into<String>,
-        data: D,
+        path:   impl Into<String>,
+        data:   D,
+    ) -> Result<T>
+    where
+        D: Debug + Serialize + Send + Sync,
+        T: Default + DeserializeOwned,
+    {
+        self.post_auth(
+                path,
+                data,
+                HeaderMap::new(),
+            )
+            .await
+    }
+
+    pub async fn post_auth<D, T>(
+        &self,
+        path:       impl Into<String>,
+        data:       D,
+        headers:    HeaderMap,
     ) -> Result<T>
     where
         D: Debug + Serialize + Send + Sync,
@@ -128,7 +146,7 @@ impl StarFoundryApiClient {
                 api_url.clone(),
                 serde_json::to_value(&data)?,
                 &(),
-                None,
+                Some(headers),
             )
             .await?;
 
@@ -284,8 +302,19 @@ pub trait ApiClient {
     #[allow(async_fn_in_trait)]
     async fn post<D, T>(
         &self,
-        path: impl Into<String>,
-        data: D,
+        path:   impl Into<String>,
+        data:   D,
+    ) -> Result<T>
+    where
+        D: Debug + Serialize + Send + Sync,
+        T: Default + DeserializeOwned;
+
+    #[allow(async_fn_in_trait)]
+    async fn post_auth<D, T>(
+        &self,
+        path:       impl Into<String>,
+        data:       D,
+        headers:    HeaderMap,
     ) -> Result<T>
     where
         D: Debug + Serialize + Send + Sync,

@@ -1,24 +1,47 @@
 use chrono::NaiveDateTime;
-use starfoundry_libs_eve_api::IndustryJobEntry;
-use starfoundry_libs_projects::ProjectJobStatus;
-use starfoundry_libs_types::JobId;
 use std::collections::HashMap;
 use uuid::Uuid;
+use starfoundry_lib_types::{ItemId, JobId};
+use starfoundry_lib_eve_gateway::IndustryJob;
 
-use super::{StartableIndustryJobs, UpdateJobRequest};
+use crate::jobs::{ProjectJobStatusDatabase, StartableIndustryJobs, UpdateJobRequest};
+use serde::Serialize;
 
 /// Attempts to match an industry job retrieved from the eve api, to a industry
 /// job that needs to be done in order to complete a project.
 /// 
 pub fn job_detection(
-    eve_jobs:        &Vec<IndustryJobEntry>,
+    eve_jobs:        &Vec<IndustryJob>,
     startable_jobs:  &Vec<StartableIndustryJobs>,
     finished_jobs:   &Vec<JobId>,
     ignored_jobs:    &Vec<JobId>,
-    container_names: &HashMap<i64, String>,
+    container_names: &HashMap<ItemId, String>,
     used_ids:        &mut Vec<Uuid>,
     used_job_ids:    &mut Vec<JobId>,
-) -> (HashMap<Uuid, Vec<UpdateJobRequest>>, Vec<IndustryJobEntry>) {
+) -> (HashMap<Uuid, Vec<UpdateJobRequest>>, Vec<IndustryJob>) {
+    #[derive(Debug, Serialize)]
+    struct TestA {
+        eve_jobs:        Vec<IndustryJob>,
+        startable_jobs:  Vec<StartableIndustryJobs>,
+        finished_jobs:   Vec<JobId>,
+        ignored_jobs:    Vec<JobId>,
+        container_names: HashMap<ItemId, String>,
+        used_ids:        Vec<Uuid>,
+        used_job_ids:    Vec<JobId>,
+    }
+    let a = TestA {
+        eve_jobs: eve_jobs.clone(),
+        startable_jobs: startable_jobs.clone(),
+        finished_jobs: finished_jobs.clone(),
+        ignored_jobs: ignored_jobs.clone(),
+        container_names: container_names.clone(),
+        used_ids: used_ids.clone(),
+        used_job_ids: used_job_ids.clone(),
+    };
+    use std::io::prelude::*;
+    let mut file = std::fs::File::create("a.json").unwrap();
+    file.write_all(serde_json::to_string_pretty(&a).unwrap().as_bytes()).unwrap();
+
     let now = chrono::Utc::now().naive_utc();
 
     // List of entries that need to be updated
@@ -42,7 +65,7 @@ pub fn job_detection(
 
         // 3. Try to find already existing jobs tagged with the job_id
         //    we can assume that the status is either Building or Done
-        //    - if its Done, we are finsihed
+        //    - if its Done, we are finished
         //    - if its Building we need to check if the job has changed its
         //      status and update it
         // 
@@ -54,14 +77,14 @@ pub fn job_detection(
             ) {
             // The job changed its status from Building to done
             // TODO: this can probably be replaced by just checking the eve status
-            if job.status == ProjectJobStatus::Building && now > end_date {
+            if job.status == ProjectJobStatusDatabase::Building && now > end_date {
                 let update = UpdateJobRequest {
                     id:           job.id,
                     character_id: Some(entry.installer_id),
                     project_id:   Some(job.project_id),
                     type_id:      entry.product_type_id,
                     cost:         entry.cost,
-                    status:       ProjectJobStatus::Done,
+                    status:       ProjectJobStatusDatabase::Done,
                     job_id:       Some(*entry.job_id),
                 };
                 updates
@@ -74,7 +97,7 @@ pub fn job_detection(
         }
 
         // 4. Try to find the project based on its output location
-        if let Some(container) = container_names.get(&*entry.output_location_id) {
+        if let Some(container) = container_names.get(&ItemId(*entry.output_location_id)) {
             if let Some(job) = startable_jobs
                 .iter()
                 .find(|x|
@@ -91,7 +114,7 @@ pub fn job_detection(
                         project_id:   Some(job.project_id),
                         type_id:      entry.product_type_id,
                         cost:         entry.cost,
-                        status:       ProjectJobStatus::Building,
+                        status:       ProjectJobStatusDatabase::Building,
                         job_id:       Some(*entry.job_id),
                 };
 
@@ -132,7 +155,7 @@ pub fn job_detection(
                 project_id:   Some(job.project_id),
                 type_id:      unmatched.product_type_id,
                 cost:         unmatched.cost,
-                status:       ProjectJobStatus::Building,
+                status:       ProjectJobStatusDatabase::Building,
                 job_id:       Some(*unmatched.job_id),
             };
 
@@ -157,13 +180,13 @@ pub fn job_detection(
 #[cfg(test)]
 mod industry_tests {
     use chrono::Utc;
-    use starfoundry_libs_eve_api::{IndustryJobEntry, IndustryActivity};
-    use starfoundry_libs_types::{JobId, TypeId, LocationId, ItemId, CorporationId};
+    use starfoundry_lib_eve_gateway::{IndustryActivity, IndustryJob};
+    use starfoundry_lib_types::{CorporationId, ItemId, JobId, LocationId, TypeId};
     use std::{str::FromStr, collections::HashMap};
     use uuid::Uuid;
 
-    use super::{job_detection, ProjectJobStatus};
-    use crate::industry::StartableIndustryJobs;
+    use super::{job_detection, ProjectJobStatusDatabase};
+    use crate::jobs::StartableIndustryJobs;
 
     const DEFAULT_CORPORATION: CorporationId = CorporationId(0);
 
@@ -181,8 +204,8 @@ mod industry_tests {
             eve_job(TypeId(1), "2099-01-01T01:01:01Z".into(), 100f32, 1, JobId(2), LocationId(0), DEFAULT_CORPORATION)
         ];
         let active_jobs = vec![
-            active_job(project_name.clone(), project_id, db_id_1, TypeId(0), 1, ProjectJobStatus::WaitingForMaterials, None),
-            active_job(project_name, project_id, db_id_2, TypeId(1), 1, ProjectJobStatus::WaitingForMaterials, None),
+            active_job(project_name.clone(), project_id, db_id_1, TypeId(0), 1, ProjectJobStatusDatabase::WaitingForMaterials, None),
+            active_job(project_name, project_id, db_id_2, TypeId(1), 1, ProjectJobStatusDatabase::WaitingForMaterials, None),
         ];
         let mut used_ids = Vec::new();
         let mut used_job_ids = Vec::new();
@@ -200,8 +223,8 @@ mod industry_tests {
         assert_eq!(used_ids.len(), 2);
         assert_eq!(detected_jobs.0.len(), 1);
         assert_eq!(detected_jobs.0.get(&project_id).unwrap().len(), 2);
-        assert_eq!(detected_jobs.0.get(&project_id).unwrap()[0].status, ProjectJobStatus::Building);
-        assert_eq!(detected_jobs.0.get(&project_id).unwrap()[1].status, ProjectJobStatus::Building);
+        assert_eq!(detected_jobs.0.get(&project_id).unwrap()[0].status, ProjectJobStatusDatabase::Building);
+        assert_eq!(detected_jobs.0.get(&project_id).unwrap()[1].status, ProjectJobStatusDatabase::Building);
     }
 
     #[test]
@@ -218,8 +241,8 @@ mod industry_tests {
             eve_job(TypeId(1), "2099-01-01T01:01:01Z".into(), 100f32, 1, JobId(2), LocationId(0), DEFAULT_CORPORATION)
         ];
         let active_jobs = vec![
-            active_job(project_name.clone(), project_id, db_id_1, TypeId(0), 1, ProjectJobStatus::Building, Some(JobId(1))),
-            active_job(project_name, project_id, db_id_2, TypeId(1), 1, ProjectJobStatus::WaitingForMaterials, None),
+            active_job(project_name.clone(), project_id, db_id_1, TypeId(0), 1, ProjectJobStatusDatabase::Building, Some(JobId(1))),
+            active_job(project_name, project_id, db_id_2, TypeId(1), 1, ProjectJobStatusDatabase::WaitingForMaterials, None),
         ];
         let mut used_ids = Vec::new();
         let mut used_job_ids = Vec::new();
@@ -237,7 +260,7 @@ mod industry_tests {
         assert_eq!(used_job_ids.len(), 1);
         assert_eq!(detected_jobs.0.len(), 1);
         assert_eq!(detected_jobs.0.get(&project_id).unwrap().len(), 1);
-        assert_eq!(detected_jobs.0.get(&project_id).unwrap()[0].status, ProjectJobStatus::Building);
+        assert_eq!(detected_jobs.0.get(&project_id).unwrap()[0].status, ProjectJobStatusDatabase::Building);
     }
 
     #[test]
@@ -255,8 +278,8 @@ mod industry_tests {
             eve_job(TypeId(0), "2099-01-01T01:01:01Z".into(), 100f32, 1, JobId(1), LocationId(0), DEFAULT_CORPORATION),
         ];
         let active_jobs = vec![
-            active_job(project_name_1, project_id_1, db_id_1, TypeId(0), 1, ProjectJobStatus::WaitingForMaterials, None),
-            active_job(project_name_2, project_id_2, db_id_2, TypeId(0), 1, ProjectJobStatus::WaitingForMaterials, None),
+            active_job(project_name_1, project_id_1, db_id_1, TypeId(0), 1, ProjectJobStatusDatabase::WaitingForMaterials, None),
+            active_job(project_name_2, project_id_2, db_id_2, TypeId(0), 1, ProjectJobStatusDatabase::WaitingForMaterials, None),
         ];
         let mut used_ids = Vec::new();
         let mut used_job_ids = Vec::new();
@@ -274,7 +297,7 @@ mod industry_tests {
         assert_eq!(used_job_ids.len(), 1);
         assert_eq!(detected_jobs.0.len(), 1);
         assert_eq!(detected_jobs.0.get(&project_id_1).unwrap().len(), 1);
-        assert_eq!(detected_jobs.0.get(&project_id_1).unwrap()[0].status, ProjectJobStatus::Building);
+        assert_eq!(detected_jobs.0.get(&project_id_1).unwrap()[0].status, ProjectJobStatusDatabase::Building);
     }
 
     #[test]
@@ -293,8 +316,8 @@ mod industry_tests {
             eve_job(TypeId(0), "2099-01-01T01:01:01Z".into(), 100f32, 1, JobId(1), LocationId(0), DEFAULT_CORPORATION),
         ];
         let active_jobs = vec![
-            active_job(project_name_1, project_id_1, db_id_1, TypeId(0), 1, ProjectJobStatus::Building, Some(JobId(0))),
-            active_job(project_name_2, project_id_2, db_id_2, TypeId(0), 1, ProjectJobStatus::WaitingForMaterials, None),
+            active_job(project_name_1, project_id_1, db_id_1, TypeId(0), 1, ProjectJobStatusDatabase::Building, Some(JobId(0))),
+            active_job(project_name_2, project_id_2, db_id_2, TypeId(0), 1, ProjectJobStatusDatabase::WaitingForMaterials, None),
         ];
         let mut used_ids = Vec::new();
         let mut used_job_ids = Vec::new();
@@ -312,7 +335,7 @@ mod industry_tests {
         assert_eq!(used_job_ids.len(), 1);
         assert_eq!(detected_jobs.0.len(), 1);
         assert_eq!(detected_jobs.0.get(&project_id_2).unwrap().len(), 1);
-        assert_eq!(detected_jobs.0.get(&project_id_2).unwrap()[0].status, ProjectJobStatus::Building);
+        assert_eq!(detected_jobs.0.get(&project_id_2).unwrap()[0].status, ProjectJobStatusDatabase::Building);
     }
 
     #[test]
@@ -330,8 +353,8 @@ mod industry_tests {
             eve_job(TypeId(0), "2099-01-01T01:01:01Z".into(), 100f32, 1, JobId(0), LocationId(0), DEFAULT_CORPORATION),
         ];
         let active_jobs = vec![
-            active_job(project_name_1, project_id_1, db_id_1, TypeId(0), 1, ProjectJobStatus::WaitingForMaterials, None),
-            active_job(project_name_2, project_id_2, db_id_2, TypeId(0), 1, ProjectJobStatus::WaitingForMaterials, None),
+            active_job(project_name_1, project_id_1, db_id_1, TypeId(0), 1, ProjectJobStatusDatabase::WaitingForMaterials, None),
+            active_job(project_name_2, project_id_2, db_id_2, TypeId(0), 1, ProjectJobStatusDatabase::WaitingForMaterials, None),
         ];
         let mut used_ids = Vec::new();
         let mut used_job_ids = Vec::new();
@@ -358,7 +381,7 @@ mod industry_tests {
         assert_eq!(used_job_ids.len(), 1);
         assert_eq!(detected_jobs_1.0.len(), 1);
         assert_eq!(detected_jobs_1.0.get(&project_id_1).unwrap().len(), 1);
-        assert_eq!(detected_jobs_1.0.get(&project_id_1).unwrap()[0].status, ProjectJobStatus::Building);
+        assert_eq!(detected_jobs_1.0.get(&project_id_1).unwrap()[0].status, ProjectJobStatusDatabase::Building);
         assert_eq!(used_job_ids[0], JobId(0));
         assert_eq!(detected_jobs_2.0.len(), 0);
         assert!(detected_jobs_1.0.get(&project_id_2).is_none());
@@ -387,11 +410,11 @@ mod industry_tests {
             eve_job(TypeId(0), "2099-01-01T01:01:01Z".into(), 100f32, 1, JobId(1), LocationId(1), DEFAULT_CORPORATION),
         ];
         let active_jobs = vec![
-            active_job(project_name_1, project_id_1, db_id_1, TypeId(0), 1, ProjectJobStatus::WaitingForMaterials, None),
-            active_job(project_name_2.clone(), project_id_2, db_id_2, TypeId(0), 1, ProjectJobStatus::WaitingForMaterials, None),
+            active_job(project_name_1, project_id_1, db_id_1, TypeId(0), 1, ProjectJobStatusDatabase::WaitingForMaterials, None),
+            active_job(project_name_2.clone(), project_id_2, db_id_2, TypeId(0), 1, ProjectJobStatusDatabase::WaitingForMaterials, None),
         ];
-        let mut container_names: HashMap<i64, String> = HashMap::new();
-        container_names.insert(0, project_name_2);
+        let mut container_names: HashMap<ItemId, String> = HashMap::new();
+        container_names.insert(0i64.into(), project_name_2);
 
         let mut used_ids = Vec::new();
         let mut used_job_ids = Vec::new();
@@ -409,11 +432,11 @@ mod industry_tests {
         assert_eq!(used_job_ids.len(), 2);
         assert_eq!(detected_jobs.0.len(), 2);
         assert_eq!(detected_jobs.0.get(&project_id_1).unwrap().len(), 1);
-        assert_eq!(detected_jobs.0.get(&project_id_1).unwrap()[0].status, ProjectJobStatus::Building);
+        assert_eq!(detected_jobs.0.get(&project_id_1).unwrap()[0].status, ProjectJobStatusDatabase::Building);
         assert_eq!(detected_jobs.0.get(&project_id_1).unwrap()[0].id, Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap());
 
         assert_eq!(detected_jobs.0.get(&project_id_2).unwrap().len(), 1);
-        assert_eq!(detected_jobs.0.get(&project_id_2).unwrap()[0].status, ProjectJobStatus::Building);
+        assert_eq!(detected_jobs.0.get(&project_id_2).unwrap()[0].status, ProjectJobStatusDatabase::Building);
         assert_eq!(detected_jobs.0.get(&project_id_2).unwrap()[0].id, Uuid::from_str("00000000-0000-0000-0000-000000000001").unwrap());
     }
 
@@ -433,13 +456,13 @@ mod industry_tests {
             eve_job(TypeId(0), "2099-01-01T01:01:01Z".into(), 100f32, 2, JobId(0), LocationId(0), DEFAULT_CORPORATION),
         ];
         let active_jobs = vec![
-            active_job(project_name_1.clone(), project_id_1, db_id_1, TypeId(0), 1, ProjectJobStatus::WaitingForMaterials, None),
-            active_job(project_name_1.clone(), project_id_1, db_id_2, TypeId(0), 1, ProjectJobStatus::WaitingForMaterials, None),
-            active_job(project_name_2, project_id_2, db_id_3, TypeId(0), 2, ProjectJobStatus::WaitingForMaterials, None),
+            active_job(project_name_1.clone(), project_id_1, db_id_1, TypeId(0), 1, ProjectJobStatusDatabase::WaitingForMaterials, None),
+            active_job(project_name_1.clone(), project_id_1, db_id_2, TypeId(0), 1, ProjectJobStatusDatabase::WaitingForMaterials, None),
+            active_job(project_name_2, project_id_2, db_id_3, TypeId(0), 2, ProjectJobStatusDatabase::WaitingForMaterials, None),
         ];
         // Assign the LocationId(0) to project_1 which has no such job
-        let mut container_names: HashMap<i64, String> = HashMap::new();
-        container_names.insert(0, project_name_1);
+        let mut container_names: HashMap<ItemId, String> = HashMap::new();
+        container_names.insert(0i64.into(), project_name_1);
 
         let mut used_ids = Vec::new();
         let mut used_job_ids = Vec::new();
@@ -459,7 +482,7 @@ mod industry_tests {
         assert_eq!(detected_jobs.0.get(&project_id_1).is_none(), true);
 
         assert_eq!(detected_jobs.0.get(&project_id_2).unwrap().len(), 1);
-        assert_eq!(detected_jobs.0.get(&project_id_2).unwrap()[0].status, ProjectJobStatus::Building);
+        assert_eq!(detected_jobs.0.get(&project_id_2).unwrap()[0].status, ProjectJobStatusDatabase::Building);
         assert_eq!(detected_jobs.0.get(&project_id_2).unwrap()[0].id, Uuid::from_str("00000000-0000-0000-0000-000000000002").unwrap());
     }
 
@@ -477,8 +500,8 @@ mod industry_tests {
             eve_job(TypeId(1), "2099-01-01T01:01:01Z".into(), 100f32, 1, JobId(2), LocationId(0), DEFAULT_CORPORATION),
         ];
         let active_jobs = vec![
-            active_job(project_name.clone(), project_id, db_id_1, TypeId(0), 1, ProjectJobStatus::WaitingForMaterials, None),
-            active_job(project_name, project_id, db_id_2, TypeId(1), 1, ProjectJobStatus::WaitingForMaterials, None),
+            active_job(project_name.clone(), project_id, db_id_1, TypeId(0), 1, ProjectJobStatusDatabase::WaitingForMaterials, None),
+            active_job(project_name, project_id, db_id_2, TypeId(1), 1, ProjectJobStatusDatabase::WaitingForMaterials, None),
         ];
         let mut used_ids = Vec::new();
         let mut used_job_ids = Vec::new();
@@ -496,7 +519,7 @@ mod industry_tests {
         assert_eq!(used_ids.len(), 1);
         assert_eq!(detected_jobs.0.len(), 1);
         assert_eq!(detected_jobs.0.get(&project_id).unwrap().len(), 1);
-        assert_eq!(detected_jobs.0.get(&project_id).unwrap()[0].status, ProjectJobStatus::Building);
+        assert_eq!(detected_jobs.0.get(&project_id).unwrap()[0].status, ProjectJobStatusDatabase::Building);
         assert_eq!(detected_jobs.1.len(), 1);
     }
 
@@ -514,8 +537,8 @@ mod industry_tests {
             eve_job(TypeId(1), "2099-01-01T01:01:01Z".into(), 100f32, 1, JobId(2), LocationId(0), DEFAULT_CORPORATION)
         ];
         let active_jobs = vec![
-            active_job(project_name.clone(), project_id, db_id_1, TypeId(0), 1, ProjectJobStatus::WaitingForMaterials, None),
-            active_job(project_name, project_id, db_id_2, TypeId(1), 1, ProjectJobStatus::WaitingForMaterials, None),
+            active_job(project_name.clone(), project_id, db_id_1, TypeId(0), 1, ProjectJobStatusDatabase::WaitingForMaterials, None),
+            active_job(project_name, project_id, db_id_2, TypeId(1), 1, ProjectJobStatusDatabase::WaitingForMaterials, None),
         ];
         let mut used_ids = Vec::new();
         let mut used_job_ids = Vec::new();
@@ -535,7 +558,7 @@ mod industry_tests {
         assert_eq!(used_ids.len(), 1);
         assert_eq!(detected_jobs.0.len(), 1);
         assert_eq!(detected_jobs.0.get(&project_id).unwrap().len(), 1);
-        assert_eq!(detected_jobs.0.get(&project_id).unwrap()[0].status, ProjectJobStatus::Building);
+        assert_eq!(detected_jobs.0.get(&project_id).unwrap()[0].status, ProjectJobStatusDatabase::Building);
     }
 
     fn eve_job(
@@ -546,8 +569,8 @@ mod industry_tests {
         job_id:         JobId,
         location_id:    LocationId,
         corporation_id: CorporationId,
-    ) -> IndustryJobEntry {
-        IndustryJobEntry {
+    ) -> IndustryJob {
+        IndustryJob {
             activity:              IndustryActivity::Reactions,
             blueprint_id:          ItemId(0),
             blueprint_type_id:     0.into(),
@@ -573,7 +596,7 @@ mod industry_tests {
         id:           Uuid,
         type_id:      TypeId,
         runs:         i32,
-        status:       ProjectJobStatus,
+        status:       ProjectJobStatusDatabase,
         job_id:       Option<JobId>,
     ) -> StartableIndustryJobs {
         StartableIndustryJobs {

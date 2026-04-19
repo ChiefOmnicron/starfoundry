@@ -1,45 +1,23 @@
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-use starfoundry_libs_eve_api::{EveApiClient, IndustryJobEntry};
-use starfoundry_libs_projects::ProjectJobStatus;
-use starfoundry_libs_types::{CharacterId, CorporationId, ItemId, JobId, LocationId};
+use starfoundry_lib_eve_gateway::EveGatewayApiClient;
+use starfoundry_lib_types::{CharacterId, CorporationId, ItemId, JobId, TypeId};
 use std::collections::HashMap;
+use utoipa::ToSchema;
 use uuid::Uuid;
 
 use crate::error::{Error, Result};
-use super::{StartableIndustryJobs, UpdateJobRequest};
 
 /// Fetches both the default group and the specific group jobs and joins them
 /// together.
 /// The jobs are sorted by the date the project was created
 /// 
 pub async fn fetch_startable_jobs(
-    pool:          &PgPool,
-    character_ids: Vec<CharacterId>,
+    pool:           &PgPool,
+    character_id:   CharacterId,
 ) -> Result<Vec<StartableIndustryJobs>> {
-    let mut default_group = fetch_startable_default_group_jobs(
-            pool,
-            character_ids.clone(),
-        )
-        .await?;
-
-    let specific_group = fetch_startable_specific_group_jobs(
-            pool,
-            character_ids,
-        )
-        .await?;
-
-    default_group.extend(specific_group);
-    default_group.sort_by_key(|x| x.created_at);
-
-    Ok(default_group)
-}
-
-/// Fetches all startable jobs, were the project is in the default group
-/// 
-pub async fn fetch_startable_default_group_jobs(
-    pool:          &PgPool,
-    character_ids: Vec<CharacterId>,
-) -> Result<Vec<StartableIndustryJobs>> {
+    // TODO: consider introducing the READY_TO_START flag
     sqlx::query_as!(
             StartableIndustryJobs,
             r#"
@@ -49,57 +27,21 @@ pub async fn fetch_startable_default_group_jobs(
                     pj.id,
                     type_id,
                     runs,
-                    pj.status AS "status!: ProjectJobStatus",
+                    pj.status AS "status!: ProjectJobStatusDatabase",
                     job_id AS "job_id: JobId",
                     pj.created_at
                 FROM project_job pj
                 JOIN project p ON p.id = pj.project_id
+                JOIN project_group_member pgm ON pgm.project_group_id = p.project_group_id
                 WHERE p.status = 'IN_PROGRESS'
                 AND (
                     pj.status = 'WAITING_FOR_MATERIALS' OR
                     pj.status = 'BUILDING'
                 )
-                AND p.owner = ANY($1)
-                AND p.project_group_id = '00000000-0000-0000-0000-000000000000'
+                AND pgm.character_id = $1
                 ORDER BY p.created_at ASC
             "#,
-            &character_ids.into_iter().map(|x| *x).collect::<Vec<_>>(),
-        )
-        .fetch_all(pool)
-        .await
-        .map_err(Error::ListJobs)
-}
-
-/// Fetches all startable jobs, were a project is in a user created group
-/// 
-pub async fn fetch_startable_specific_group_jobs(
-    pool:          &PgPool,
-    character_ids: Vec<CharacterId>,
-) -> Result<Vec<StartableIndustryJobs>> {
-    sqlx::query_as!(
-            StartableIndustryJobs,
-            r#"
-                SELECT
-                    p.name AS "project_name",
-                    project_id,
-                    pj.id,
-                    type_id,
-                    runs,
-                    pj.status AS "status!: ProjectJobStatus",
-                    job_id AS "job_id: JobId",
-                    pj.created_at
-                FROM project_job pj
-                JOIN project p ON p.id = pj.project_id
-                JOIN project_group_member pgm ON pgm.group_id = p.project_group_id
-                WHERE p.status = 'IN_PROGRESS'
-                AND (
-                    pj.status = 'WAITING_FOR_MATERIALS' OR
-                    pj.status = 'BUILDING'
-                )
-                AND pgm.character_id = ANY($1)
-                ORDER BY p.created_at ASC
-            "#,
-            &character_ids.into_iter().map(|x| *x).collect::<Vec<_>>(),
+            *character_id,
         )
         .fetch_all(pool)
         .await
@@ -128,90 +70,47 @@ pub async fn fetch_done_job_ids(
         })
 }
 
-pub async fn resolve_container_names(
-    _pool:               &PgPool,
-    client:              &EveApiClient,
-    location_ids:        &Vec<LocationId>,
-    output_location_ids: &Vec<LocationId>,
-) -> Result<HashMap<i64, String>> {
+pub async fn resolve_corporation_asset_name(
+    _pool:                  &PgPool,
+    eve_gateway_api_client: &impl EveGatewayApiClient,
+    source:                 &String,
+    character_id:           &CharacterId,
+    corporation_id:         &CorporationId,
+    location_ids:           &Vec<ItemId>,
+    output_location_ids:    &Vec<ItemId>,
+) -> Result<HashMap<ItemId, String>> {
     let mut containers = HashMap::new();
 
     let mut item_ids = output_location_ids
-        .iter()
+        .into_iter()
         .filter(|x| !location_ids.contains(&x))
-        .map(|x| ItemId(**x))
         .collect::<Vec<_>>();
     item_ids.sort();
     item_ids.dedup();
 
     for item_id in item_ids {
-        let name = match client
-            .asset_names(vec![item_id])
-            .await {
+        let result = match eve_gateway_api_client
+                .eve_resolve_corporation_asset(
+                    source,
+                    character_id,
+                    corporation_id,
+                    vec![*item_id],
+                )
+                .await {
 
-            // # is an accepted special character, why? because I say so
-            Ok(x)  => x.into_iter().map(|x| x.name.replace("#", "")).collect::<Vec<_>>(),
-            Err(_) => {
-                // ignore errors
-                continue;
+                Ok(x)  => x,
+                Err(_) => {
+                    // ignore errors
+                    continue;
+                }
             }
-        };
-        let name = name.first().unwrap();
-        containers.insert(*item_id, name.clone());
+            .into_iter()
+            .map(|x| (x.item_id, x.name))
+            .collect::<HashMap<_, _>>();
+        containers.extend(result);
     }
 
     Ok(containers)
-}
-
-pub async fn resolve_main_character_from_character(
-    pool:         &PgPool,
-    character_id: CharacterId,
-) -> Result<CharacterId> {
-    sqlx::query!("
-            SELECT character_main
-            FROM credential
-            WHERE character_id = $1
-        ",
-            *character_id,
-        )
-        .fetch_optional(pool)
-        .await
-        .map_err(|e| Error::FetchMainCharacterByCharacter(e, character_id))
-        .map(|x| {
-            if let Some(x) = x {
-                if let Some(x) = x.character_main {
-                    x.into()
-                } else {
-                    character_id
-                }
-            } else {
-                character_id
-            }
-        })
-}
-
-pub async fn resolve_main_character_from_corporation(
-    pool:           &PgPool,
-    corporation_id: CorporationId,
-) -> Result<Vec<CharacterId>> {
-    sqlx::query!("
-            SELECT character_main
-            FROM credential
-            WHERE character_id = $1
-        ",
-            *corporation_id,
-        )
-        .fetch_all(pool)
-        .await
-        .map_err(|e| Error::FetchMainCharacterByCorporation(e, corporation_id))
-        .map(|x| {
-            x.into_iter()
-                .filter(|x| x.character_main.is_some())
-                // unwrap is safe, as we remove all none values and corporations
-                // will always have the character_main field set
-                .map(|x| x.character_main.unwrap().into())
-                .collect::<Vec<_>>()
-        })
 }
 
 pub async fn update_industry_jobs(
@@ -239,24 +138,18 @@ pub async fn update_industry_jobs(
             .iter()
             .map(|x| x.job_id.clone())
             .collect::<Vec<_>>();
-        let character_ids = updates
-            .iter()
-            .map(|x| x.character_id.map(|x| *x))
-            .collect::<Vec<_>>();
 
         sqlx::query!("
                 UPDATE project_job
                 SET cost   =       data.cost,
                     status =       data.status,
-                    job_id =       data.job_id,
-                    character_id = data.character_id
+                    job_id =       data.job_id
                 FROM (
                     SELECT
                         UNNEST($2::UUID[]) AS id,
                         UNNEST($3::REAL[]) AS cost,
                         UNNEST($4::PROJECT_JOB_STATUS[]) AS status,
-                        UNNEST($5::INTEGER[]) AS job_id,
-                        UNNEST($6::INTEGER[]) AS character_id
+                        UNNEST($5::INTEGER[]) AS job_id
                 ) AS data
                 WHERE project_id = $1
                 AND project_job.id = data.id
@@ -266,12 +159,11 @@ pub async fn update_industry_jobs(
                 &costs as _,
                 &status as _,
                 &job_ids as _,
-                &character_ids as _,
             )
             .execute(pool)
             .await
             .map(drop)
-            .map_err(Error::UpdateCorporationJobEntry)?;
+            .map_err(Error::UpdateJob)?;
 
         // TODO: implement a better solution
         // resets entries that don't have a cost, but a job id
@@ -313,10 +205,12 @@ pub async fn update_finished_jobs(
         .execute(pool)
         .await
         .map(drop)
-        .map_err(Error::UpdateAlreadyDoneJobs)
+        .map_err(Error::UpdateJob)
 }
 
-pub async fn insert_job_detection_log(
+// TODO: check if this is still necessary, or if this can be optimized to the new
+// methods
+/*pub async fn insert_job_detection_log(
     pool:     &PgPool,
     updates:  &HashMap<Uuid, Vec<UpdateJobRequest>>,
     umatched: &Vec<IndustryJobEntry>,
@@ -367,7 +261,7 @@ pub async fn insert_job_detection_log(
         .await
         .map(drop)
         .map_err(Error::UpdateCorporationJobEntry)
-}
+}*/
 
 pub async fn cleanup_delivered_jobs(
     pool:                     &PgPool,
@@ -383,7 +277,7 @@ pub async fn cleanup_delivered_jobs(
         .fetch_all(pool)
         .await
         .map(drop)
-        .map_err(Error::UpdateDeliveredJobs)
+        .map_err(Error::Cleanup)
 }
 
 pub async fn fetch_ignored_jobs(
@@ -402,4 +296,42 @@ pub async fn fetch_ignored_jobs(
         .map(|x| x.job_id.into())
         .collect::<Vec<_>>();
     Ok(ignored_jobs)
+}
+
+#[derive(
+    Clone, Debug, Copy, Hash,
+    PartialEq, Eq, PartialOrd, Ord,
+    sqlx::Type, Deserialize, Serialize, ToSchema,
+)]
+#[sqlx(type_name = "PROJECT_JOB_STATUS")]
+#[sqlx(rename_all = "SCREAMING_SNAKE_CASE")]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum ProjectJobStatusDatabase {
+    WaitingForMaterials,
+    Building,
+    Done,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub struct StartableIndustryJobs {
+    pub project_name: String,
+    pub project_id:   Uuid,
+    pub id:           Uuid,
+    pub type_id:      TypeId,
+    pub runs:         i32,
+    pub status:       ProjectJobStatusDatabase,
+    /// JobId from CCP
+    pub job_id:       Option<JobId>,
+    pub created_at:   DateTime<Utc>,
+}
+
+#[derive(Clone, Debug)]
+pub struct UpdateJobRequest {
+    pub id:             Uuid,
+    pub character_id:   Option<CharacterId>,
+    pub project_id:     Option<Uuid>,
+    pub type_id:        TypeId,
+    pub status:         ProjectJobStatusDatabase,
+    pub cost:           Option<f32>,
+    pub job_id:         Option<i32>,
 }

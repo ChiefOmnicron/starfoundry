@@ -407,8 +407,8 @@ impl EveApiClient {
     ///
     pub async fn post<D, T>(
         &self,
-        data: D,
         path: impl Into<String>,
+        data: D,
     ) -> Result<T>
     where
         D: Debug + Serialize + Send + Sync,

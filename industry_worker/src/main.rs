@@ -139,18 +139,12 @@ async fn task_select(
                 .await
         },
         WorkerIndustryTask::JobCorporation  => {
-            by_player_station_task(
-                    pool,
-                    task,
-                )
-                .await
+            unimplemented!()
+            //by_player_station_task(
+            //        pool,
+            //        task,
+            //    )
+            //    .await
         },
     }
-}
-
-async fn _dummy(
-    _pool: &PgPool,
-    _task: &mut Task<WorkerMetric, WorkerIndustryTask>,
-) -> Result<()> {
-    Ok(())
 }

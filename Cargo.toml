@@ -26,7 +26,7 @@ members = [
   # industry
   'industry',
   'industry_lib',
-  #'industry_worker',
+  'industry_worker',
 
   # market
   'market',
