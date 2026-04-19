@@ -51,4 +51,4 @@ jobs:
     with:
       image: ${{ needs.build-image.outputs.IMAGE }}
       image-name: industry-worker
-      folder: industry
+      folder: industry-alpha
