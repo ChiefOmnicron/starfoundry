@@ -109,8 +109,8 @@ pub async fn api(
 
     let entries = api_client
         .post::<Vec<i64>, Vec<IdToName>>(
+            "/universe/names",
             ids,
-            "/universe/names"
         )
         .await?;
 

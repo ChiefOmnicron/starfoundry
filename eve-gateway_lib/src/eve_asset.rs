@@ -1,14 +1,16 @@
 mod asset;
 mod blueprint;
 mod location_flag;
+mod resolved_item;
 
 pub use self::asset::*;
 pub use self::blueprint::*;
 pub use self::location_flag::*;
+pub use self::resolved_item::*;
 
 use starfoundry_lib_gateway::{ApiClient, HEADER_CHARACTER_ID};
 
-use starfoundry_lib_types::{CharacterId, CorporationId};
+use starfoundry_lib_types::{CharacterId, CorporationId, ItemId};
 use axum::http::{HeaderMap, HeaderValue};
 use reqwest::header::HOST;
 
@@ -91,6 +93,28 @@ pub trait EveGatewayApiClientEveAsset: ApiClient {
             .fetch_auth(
                 &format!("eve/corporations/{}/assets/blueprints", corporation_id),
                 &(),
+                headers,
+            )
+            .await
+            .map_err(Into::into)
+    }
+
+    #[allow(async_fn_in_trait)]
+    async fn eve_resolve_corporation_asset(
+        &self,
+        source:         &String,
+        character_id:   &CharacterId,
+        corporation_id: &CorporationId,
+        assets:         Vec<ItemId>,
+    ) -> Result<Vec<ResolvedItem>> {
+        let mut headers = HeaderMap::new();
+        headers.insert(HOST, HeaderValue::from_str(&source).unwrap_or(HeaderValue::from_static("invalid.header")));
+        headers.insert(HEADER_CHARACTER_ID, (**character_id).into());
+
+        self
+            .post_auth(
+                &format!("eve/corporations/{}/assets", corporation_id),
+                assets,
                 headers,
             )
             .await

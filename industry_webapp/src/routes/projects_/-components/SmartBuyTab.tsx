@@ -1,5 +1,5 @@
 import { Button, Center, Group, Stack, Title } from '@mantine/core';
-import { DEFAULT_GAS_BONUS, DEFAULT_MINERAL_BONUS, type GasDecompression, type MineralCompression } from '@starfoundry/components/misc/CompressionMinimal';
+import { DEFAULT_GAS_BONUS, type GasDecompression, type MineralCompression } from '@starfoundry/components/misc/CompressionMinimal';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 import { MarketBuy } from './MarketBuy';

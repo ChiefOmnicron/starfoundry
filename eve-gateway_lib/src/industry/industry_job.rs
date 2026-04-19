@@ -44,8 +44,10 @@ pub struct IndustryJob {
 }
 
 /// List of all industry activities
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, ToSchema)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, ToSchema, sqlx::Type)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+#[sqlx(type_name = "INDUSTRY_ACTIVITY")]
+#[sqlx(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum IndustryActivity {
     /// Manufacturing of things
     Manufacturing,

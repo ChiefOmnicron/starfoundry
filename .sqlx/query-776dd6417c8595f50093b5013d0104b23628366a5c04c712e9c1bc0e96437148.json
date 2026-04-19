@@ -1,0 +1,26 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                    SELECT id\n                    FROM structure\n                    WHERE id = '019814b5-9020-7a4c-8890-de895a69f736'\n                    AND owner = 2117441999\n                ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "776dd6417c8595f50093b5013d0104b23628366a5c04c712e9c1bc0e96437148"
+}

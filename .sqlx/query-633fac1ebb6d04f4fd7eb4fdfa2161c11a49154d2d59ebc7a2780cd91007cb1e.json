@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM solution_material\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "633fac1ebb6d04f4fd7eb4fdfa2161c11a49154d2d59ebc7a2780cd91007cb1e"
+}

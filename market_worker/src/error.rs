@@ -3,7 +3,8 @@ use starfoundry_lib_types::{RegionId, StructureId};
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
-#[derive(Error, Debug)]
+#[derive(Debug, Error)]
+#[non_exhaustive]
 pub enum Error {
     #[error("error creating transaction, error: '{0}'")]
     TransactionError(sqlx::Error),
