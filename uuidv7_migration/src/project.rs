@@ -423,11 +423,7 @@ pub async fn migrate_project(
         ")
         .execute(&mut *transaction)
         .await?;
-    sqlx::query!("
-            DELETE FROM solution_material
-        ")
-        .execute(&mut *transaction)
-        .await?;
+
     for market in market_entries {
         let timestamp = Timestamp::from_unix(NoContext, market.created_at.timestamp() as u64, 0);
         let market_id = Uuid::new_v7(timestamp);
@@ -462,28 +458,6 @@ pub async fn migrate_project(
             )
             .execute(&mut *transaction)
             .await?;
-
-        let solution_id = mappings.get(&project_id).unwrap();
-        sqlx::query!("
-                INSERT INTO solution_material (
-                    solution_id,
-                    id,
-                    type_id,
-                    quantity,
-                    created_at,
-                    updated_at
-                )
-                VALUES ($1, $2, $3, $4, $5, $6)
-            ",
-                solution_id,
-                market_id,
-                market.type_id,
-                market.quantity,
-                market.created_at,
-                market.updated_at,
-            )
-            .execute(&mut *transaction)
-            .await?;
     }
     tracing::info!("[project] project market migrated");
 
@@ -501,11 +475,6 @@ pub async fn migrate_project(
         .await?;
     sqlx::query!("
             DELETE FROM project_stock
-        ")
-        .execute(&mut *transaction)
-        .await?;
-    sqlx::query!("
-            DELETE FROM solution_stock
         ")
         .execute(&mut *transaction)
         .await?;
@@ -536,28 +505,6 @@ pub async fn migrate_project(
                 stock.type_id,
                 stock.quantity,
                 stock.cost,
-                stock.created_at,
-                stock.updated_at,
-            )
-            .execute(&mut *transaction)
-            .await?;
-
-        let solution_id = mappings.get(&project_id).unwrap();
-        sqlx::query!("
-                INSERT INTO solution_stock (
-                    solution_id,
-                    id,
-                    type_id,
-                    quantity,
-                    created_at,
-                    updated_at
-                )
-                VALUES ($1, $2, $3, $4, $5, $6)
-            ",
-                solution_id,
-                stock_id,
-                stock.type_id,
-                stock.quantity,
                 stock.created_at,
                 stock.updated_at,
             )
