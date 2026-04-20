@@ -1,7 +1,8 @@
-import { Card, Checkbox, Flex, Group, Stack, Text, Title, UnstyledButton } from "@mantine/core";
+import { BaseCard } from "./BaseCard";
 import { CopyText } from "@internal/misc/CopyText";
 import { Dotlan } from "@internal/misc/Dotlan";
 import { EveIcon } from "@internal/misc/EveIcon";
+import { Flex, Group, Stack, Text, Title, UnstyledButton } from "@mantine/core";
 import { InternalLink } from "@internal/links/InternalLink";
 import { StructureRigBadge } from "@internal/structure/StructureRigBadge";
 import { StructureServiceBadge } from "@internal/structure/StructureServiceBadge";
@@ -34,38 +35,40 @@ export function StructureCard({
         .replace(`${structure.system.system_name} - `, '');
 
     const selectStructure = (
-        state: boolean,
+        state: 'checked' | 'unchecked',
     ) => {
         if (!checkable) {
             return;
         }
 
-        setIsSelected(state);
+        // TODO: properly wrap the state
+        setIsSelected(state === 'checked');
 
-        if (state) {
+        if (state === 'checked') {
             onChange('checked', structure);
         } else {
             onChange('unchecked', structure);
         }
     }
 
-    const checkbox = () => {
-        if (!checkable) {
-            return <></>
-        }
-
+    const header = () => {
         return <>
-            <Checkbox
-                checked={isSelected}
-                size='xs'
-                onChange={(event) => {
-                    selectStructure(event.currentTarget.checked);
-                }}
-            />
+            <Group>
+                <EveIcon
+                    id={structure.item.type_id}
+                />
+
+                <Title order={3}>
+                    <CopyText
+                        display={structureName}
+                        value={structure.name}
+                    />
+                </Title>
+            </Group>
         </>
     }
 
-    const card = () => {
+    const body = () => {
         return <>
             <Stack
                 gap="xs"
@@ -74,25 +77,6 @@ export function StructureCard({
                     width: '100%'
                 }}
             >
-                <Group
-                    justify='space-between'
-                >
-                    <Group>
-                        <EveIcon
-                            id={structure.item.type_id}
-                        />
-
-                        <Title order={3}>
-                            <CopyText
-                                display={structureName}
-                                value={structure.name}
-                            />
-                        </Title>
-                    </Group>
-
-                    { checkbox() }
-                </Group>
-
                 <Group
                     gap={'xs'}
                 >
@@ -150,7 +134,7 @@ export function StructureCard({
         </>
     }
 
-    const actionBar = () => {
+    const footer = () => {
         const edit = editLink
             ?   <InternalLink
                     to={editLink}
@@ -204,27 +188,16 @@ export function StructureCard({
             showBlueprintBonus
         />
 
-        <Card
-            key={ structure.id }
-            style={{
-                padding: 0,
-                border: isSelected ? '1px solid var(--mantine-color-blue-9)' : '',
-            }}
-        >
-            <Card.Section
-                onClick={ () => {
-                    selectStructure(!isSelected);
-                }}
-                style={{
-                    margin: '10px',
-                    height: '100%'
-                }}
-            >
-                { card() }
-            </Card.Section>
+        <BaseCard
+            header={header()}
+            footer={footer()}
 
-            { actionBar() }
-        </Card>
+            checkable={checkable}
+            selected={isSelected}
+            onCheckChange={selectStructure}
+        >
+            {body()}
+        </BaseCard>
     </>
 }
 

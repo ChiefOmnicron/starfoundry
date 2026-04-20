@@ -1,9 +1,10 @@
 import { BadgeWrapper } from "@internal/wrapper/Badge";
-import { Card, Flex, Group, Loader, Stack, Text, Title } from "@mantine/core";
+import { Flex, Group, Stack, Text, Title } from "@mantine/core";
 import { InternalLink } from "@internal/links/InternalLink";
 import { ProjectProgressBar } from "@internal/misc/ProgressBar";
 import { useListProjectJobs } from "@internal/services/projects/listJobs";
 import type { ProjectListMinimal, ProjectStatus } from "@internal/services/projects/list";
+import { BaseCard } from "@internal/cards/BaseCard";
 
 export function ProjectCard({
     project,
@@ -46,11 +47,21 @@ export function ProjectCard({
         }
     }
 
-    const card = () => {
+    const header = () => {
+        return <>
+            <Title order={3}>
+                { project.name }
+            </Title>
+
+            {status(project.status)}
+        </>
+    }
+
+    const body = () => {
         const waiting = (jobs || [])
             .flatMap(x => x.entries)
             .filter(x => x.status === 'WAITING_FOR_MATERIALS' || x.status === 'READY_TO_START')
-            .length;
+            .length;            
         const inProgress = (jobs || [])
             .flatMap(x => x.entries)
             .filter(x => x.status === 'BUILDING')
@@ -63,119 +74,95 @@ export function ProjectCard({
             .flatMap(x => x.entries)
             .length;
 
-        return <>
-            <Stack
-                gap="xs"
+        return <Stack
+            gap="xs"
+        >
+            <Group
+                gap={'xs'}
             >
-                <Group
-                    justify='space-between'
-                    gap={'xs'}
+                <Text
+                    size='sm'
+                    fw={700}
                 >
-                    <Title order={3}>
-                        { project.name }
-                    </Title>
-
-                    <Group>
-                        {
-                            status(project.status)
-                        }
-                        {
-                            isPending
-                            ?   <Loader color="blue" size="xs" />
-                            :   <></>
-                        }
-                    </Group>
-                </Group>
-
-                <Group
-                    gap={'xs'}
+                    Orderer:
+                </Text>
+                <Text
+                    size='sm'
                 >
-                    <Text
-                        size='sm'
-                        fw={700}
-                    >
-                        Orderer:
-                    </Text>
-                    <Text
-                        size='sm'
-                    >
-                        { project.orderer }
-                    </Text>
-                </Group>
+                    { project.orderer }
+                </Text>
+            </Group>
 
-                <Group
-                    gap={'xs'}
-                >
-                    <Text size='sm' fw={700}>Progress: </Text>
-                    <Text size='sm' c="red.9">{ waiting }</Text> /
-                    <Text size='sm' c="blue.9">{ inProgress }</Text> /
-                    <Text size='sm' c="green.9">{ done }</Text> /
-                    <Text size='sm'>{ total }</Text>
-                </Group>
-            </Stack>
-        </>
+            <Group
+                gap={'xs'}
+            >
+                <Text size='sm' fw={700}>Progress: </Text>
+                <Text size='sm' c="red.9">{ waiting }</Text> /
+                <Text size='sm' c="blue.9">{ inProgress }</Text> /
+                <Text size='sm' c="green.9">{ done }</Text> /
+                <Text size='sm'>{ total }</Text>
+            </Group>
+        </Stack>
+    }
+
+    const footer = () => {
+        return <Group
+            justify='space-between'
+            gap={'xs'}
+            style={{
+                backgroundColor: 'rgba(93,93,104, 0.1)',
+                padding: '5px',
+            }}
+        >
+            { additionalMessage() }
+
+            <Flex
+                align='flex-end'
+                justify='flex-end'
+            >
+                {
+                    project.status === 'DRAFT'
+                    ?   <InternalLink
+                            to={assistantLink}
+                            params={{
+                                projectId: project.id,
+                            } as any}
+                            content='Open'
+                        />
+                    :   <InternalLink
+                            to={viewLink}
+                            params={{
+                                projectId: project.id,
+                            } as any}
+                            content='Open'
+                        />
+                }
+            </Flex>
+        </Group>
+    }
+
+    const bottom = () => {
+        return <div
+            style={{
+                width: '100%'
+            }}
+        >
+            <ProjectProgressBar
+                jobs={jobs || []}
+            />
+        </div>
     }
 
     return <>
-        <Card 
-            key={ project.id }
-            style={{
-                padding: 0
-            }}
+        <BaseCard
+            header={header()}
+            footer={footer()}
+            bottom={bottom()}
+
+            loading={isPending}
         >
-            <Card.Section
-                style={{
-                    margin: '10px',
-                    height: '100%'
-                }}
-            >
-                { card() }
-            </Card.Section>
-
-            <Group
-                justify='space-between'
-                gap={'xs'}
-                style={{
-                    backgroundColor: 'rgba(93,93,104, 0.1)',
-                    padding: '5px',
-                }}
-            >
-                { additionalMessage() }
-
-                <Flex
-                    align='flex-end'
-                    justify='flex-end'
-                >
-                    {
-                        project.status === 'DRAFT'
-                        ?   <InternalLink
-                                to={assistantLink}
-                                params={{
-                                    projectId: project.id,
-                                } as any}
-                                content='Open'
-                            />
-                        :   <InternalLink
-                                to={viewLink}
-                                params={{
-                                    projectId: project.id,
-                                } as any}
-                                content='Open'
-                            />
-                    }
-                </Flex>
-            </Group>
-
-            <div
-                style={{
-                    width: '100%'
-                }}
-            >
-                <ProjectProgressBar
-                    jobs={jobs || []}
-                />
-            </div>
-        </Card>
+            {body()}
+        </BaseCard>
     </>
 }
 

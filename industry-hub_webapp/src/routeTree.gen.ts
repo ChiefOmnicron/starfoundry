@@ -94,9 +94,9 @@ export interface FileRoutesByFullPath {
   '/industry-hubs/$industryHubId': typeof IndustryHubsIndustryHubIdRouteRouteWithChildren
   '/structures/$structureId': typeof StructuresStructureIdRouteRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
-  '/about': typeof AboutIndexRoute
+  '/about/': typeof AboutIndexRoute
   '/industry-hubs/': typeof IndustryHubsIndexRoute
-  '/legal': typeof LegalIndexRoute
+  '/legal/': typeof LegalIndexRoute
   '/structures/': typeof StructuresIndexRoute
   '/industry-hubs/$industryHubId/': typeof IndustryHubsIndustryHubIdIndexRoute
   '/structures/$structureId/': typeof StructuresStructureIdIndexRoute
@@ -135,9 +135,9 @@ export interface FileRouteTypes {
     | '/industry-hubs/$industryHubId'
     | '/structures/$structureId'
     | '/auth/login'
-    | '/about'
+    | '/about/'
     | '/industry-hubs/'
-    | '/legal'
+    | '/legal/'
     | '/structures/'
     | '/industry-hubs/$industryHubId/'
     | '/structures/$structureId/'
@@ -211,7 +211,7 @@ declare module '@tanstack/react-router' {
     '/legal/': {
       id: '/legal/'
       path: '/legal'
-      fullPath: '/legal'
+      fullPath: '/legal/'
       preLoaderRoute: typeof LegalIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -225,7 +225,7 @@ declare module '@tanstack/react-router' {
     '/about/': {
       id: '/about/'
       path: '/about'
-      fullPath: '/about'
+      fullPath: '/about/'
       preLoaderRoute: typeof AboutIndexRouteImport
       parentRoute: typeof rootRouteImport
     }

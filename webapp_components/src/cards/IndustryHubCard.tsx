@@ -1,7 +1,8 @@
-import { Card, Checkbox, Flex, Group, Stack, Text, Title, UnstyledButton } from "@mantine/core";
+import { BaseCard } from "./BaseCard";
 import { cloneIndustryHub } from "@internal/services/industry-hub/clone";
 import { CopyText } from "@internal/misc/CopyText";
 import { Dotlan } from "@internal/misc/Dotlan";
+import { Flex, Group, Stack, Text, Title, UnstyledButton } from "@mantine/core";
 import { IndustryHubViewModal } from "@internal/detailView/IndustryHubView";
 import { InternalLink } from "@internal/links/InternalLink";
 import { StructureRigBadge } from "@internal/structure/StructureRigBadge";
@@ -86,42 +87,37 @@ export function IndustryHubCard({
         });
 
     const selectIndustryHub = (
-        state: boolean,
+        state: 'checked' | 'unchecked',
     ) => {
+        console.log(state)
         if (!checkable) {
             return;
         }
 
         // prevents from un-checking the card -> one card must always be checked
-        if (!allowUncheck && !state) {
+        if (!allowUncheck && state === 'unchecked') {
             return;
         }
 
-        setIsSelected(state);
-        if (state) {
+        // TODO: properly wrap the state
+        setIsSelected(state === 'checked');
+
+        if (state === 'checked') {
             onChange('checked', industryHub);
         } else {
             onChange('unchecked', industryHub);
         }
     }
 
-    const checkbox = () => {
-        if (!checkable) {
-            return <></>
-        }
-
-        return <>
-            <Checkbox
-                checked={isSelected}
-                size='xs'
-                onChange={(event) => {
-                    selectIndustryHub(event.currentTarget.checked);
-                }}
+    const header = () => {
+        return <Title order={3}>
+            <CopyText
+                value={industryHub.name}
             />
-        </>
+        </Title>
     }
 
-    const card = () => {
+    const body = () => {
         return <>
             <Stack
                 gap="xs"
@@ -130,18 +126,6 @@ export function IndustryHubCard({
                     width: '100%'
                 }}
             >
-                <Group
-                    justify='space-between'
-                >
-                    <Title order={3}>
-                        <CopyText
-                            value={industryHub.name}
-                        />
-                    </Title>
-
-                    { checkbox() }
-                </Group>
-
                 <Group
                     gap={'xs'}
                 >
@@ -191,7 +175,7 @@ export function IndustryHubCard({
         </>
     }
 
-    const actionBar = () => {
+    const footer = () => {
         const clone = cloneLink
             ?   <UnstyledButton
                     onClick={() => {
@@ -259,27 +243,16 @@ export function IndustryHubCard({
             industryHub={industryHub}
         />
 
-        <Card
-            key={ industryHub.id }
-            style={{
-                padding: 0,
-                border: isSelected ? '1px solid var(--mantine-color-blue-9)' : '',
-            }}
-        >
-            <Card.Section
-                onClick={ () => {
-                    selectIndustryHub(!isSelected);
-                }}
-                style={{
-                    margin: '10px',
-                    height: '100%'
-                }}
-            >
-                { card() }
-            </Card.Section>
+        <BaseCard
+            header={header()}
+            footer={footer()}
 
-            { actionBar() }
-        </Card>
+            checkable={checkable}
+            selected={isSelected}
+            onCheckChange={selectIndustryHub}
+        >
+            {body()}
+        </BaseCard>
     </>
 }
 

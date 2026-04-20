@@ -31,7 +31,7 @@ pub async fn migrate_project(
         .await?;
 
     let mut transaction = postgres_destination.begin().await?;
-    for project in projects {
+    /*for project in projects {
         let project_id = if let Some(x) = mappings.get(&project.id) {
             x.clone()
         } else {
@@ -143,63 +143,28 @@ pub async fn migrate_project(
             DELETE FROM project_job
         ")
         .execute(&mut *transaction)
-        .await?;
+        .await?;*/
 
     let mut visited_names = HashSet::new();
-    for (index, job) in jobs.iter().enumerate() {
+    visited_names.insert("Pips Internal Order - Small Ancillary Current Routers".to_string());
+    visited_names.insert("RCI Azbel fighters".to_string());
+    visited_names.insert("X2- Rokhs".to_string());
+    visited_names.insert("Fighters".to_string());
+    visited_names.insert("Fighters 2".to_string());
+    visited_names.insert("_aself".to_string());
+    visited_names.insert("asdasd".to_string());
+    visited_names.insert("_test_rag".to_string());
+    visited_names.insert("_test_hel".to_string());
+    visited_names.insert("_test_rni".to_string());
+    visited_names.insert("asd".to_string());
+    visited_names.insert("Alcatraz202 Enhanced Neurolink Protection Cell".to_string());
+
+    /*for (index, job) in jobs.iter().enumerate() {
         if visited_names.contains(&job.project_name) {
             continue;
         }
 
         tracing::info!("[{:6} / {:6}] Mapping - {}", index, jobs.len(), job.project_name);
-        if job.project_name == "Pips Internal Order - Small Ancillary Current Routers" {
-            visited_names.insert("Pips Internal Order - Small Ancillary Current Routers".to_string());
-            continue
-        }
-        if job.project_name == "RCI Azbel fighters" {
-            visited_names.insert("RCI Azbel fighters".to_string());
-            continue
-        }
-        if job.project_name == "X2- Rokhs" {
-            visited_names.insert("X2- Rokhs".to_string());
-            continue
-        }
-        if job.project_name == "Fighters" {
-            visited_names.insert("Fighters".to_string());
-            continue
-        }
-        if job.project_name == "Fighters 2" {
-            visited_names.insert("Fighters 2".to_string());
-            continue
-        }
-        if job.project_name == "_aself" {
-            visited_names.insert("_aself".to_string());
-            continue
-        }
-        if job.project_name == "asdasd" {
-            visited_names.insert("asdasd".to_string());
-            continue
-        }
-        if job.project_name == "_test_rag" {
-            visited_names.insert("_test_rag".to_string());
-            continue
-        }
-        if job.project_name == "_test_hel" {
-            visited_names.insert("_test_hel".to_string());
-            continue
-        }
-        if job.project_name == "_test_rni" {
-            visited_names.insert("_test_rni".to_string());
-            continue
-        }
-        if job.project_name == "asd" {
-            visited_names.insert("asd".to_string());
-            continue
-        }
-        if job.project_name == "Alcatraz202 Enhanced Neurolink Protection Cell" {
-            visited_names.insert("Alcatraz202 Enhanced Neurolink Protection Cell".to_string());
-            continue
-        }
 
         let project_id = &sqlx::query!("
                 SELECT id
@@ -359,7 +324,7 @@ pub async fn migrate_project(
             .execute(&mut *transaction)
             .await?;
     }
-    tracing::info!("[project] project jobs migrated");
+    tracing::info!("[project] project jobs migrated");*/
 
     /*let misc_entries = sqlx::query!(r#"
             SELECT
@@ -618,7 +583,7 @@ pub async fn migrate_project(
             .execute(&mut *transaction)
             .await?;
     }
-    tracing::info!("[project] project excess migrated");
+    tracing::info!("[project] project excess migrated");*/
 
     let product_entries = sqlx::query!(r#"
             SELECT
@@ -636,21 +601,23 @@ pub async fn migrate_project(
         .fetch_all(postgres_source)
         .await?;
     sqlx::query!("
-            DELETE FROM project_product
+            DELETE FROM solution_product
         ")
         .execute(&mut *transaction)
         .await?;
     for (index, product) in product_entries.iter().enumerate() {
-        tracing::info!("[{:6} / {:6}] Copying Product", index, misc_entries.len());
-        let project_id = if let Some(x) = mappings.get(&product.project_id) {
+        tracing::info!("[{:6} / {:6}] Copying Product", index, product_entries.len());
+        let solution_id = if let Some(x) = mappings.get(&product.project_id) {
             x
         } else {
             if visited_names.contains(&product.project_name) {
                 continue;
             }
 
+            dbg!(&product.project_name);
+
             &sqlx::query!("
-                    SELECT id
+                    SELECT solution_id
                     FROM project
                     WHERE name = $1
                 ",
@@ -659,14 +626,15 @@ pub async fn migrate_project(
                 .fetch_one(postgres_destination)
                 .await
                 .unwrap()
-                .id
+                .solution_id
+                .unwrap()
         };
-        let project_id = mappings.get(&project_id).unwrap();
+        //let project_id = mappings.get(&project_id).unwrap();
 
         sqlx::query!("
-                INSERT INTO project_product (
+                INSERT INTO solution_product (
                     id,
-                    project_id,
+                    solution_id,
                     type_id,
                     quantity,
                     material_efficiency,
@@ -676,7 +644,7 @@ pub async fn migrate_project(
                 VALUES ($1, $2, $3, $4, $5, $6, $7)
             ",
                 product.id,
-                project_id,
+                solution_id,
                 product.type_id,
                 product.quantity,
                 product.material_efficiency,
@@ -685,7 +653,7 @@ pub async fn migrate_project(
             )
             .execute(&mut *transaction)
             .await?;
-    }*/
+    }
 
     transaction.commit().await?;
 
@@ -707,7 +675,7 @@ pub async fn migrate_project(
         (Uuid::from_str("019d9d11-adcd-7ad9-a972-387f53791585").unwrap(), 19726),
     ];
     for (project_id, product) in fix_new_projects {
-        restore_new_jobs(postgres_destination, project_id).await;
+        //restore_new_jobs(postgres_destination, project_id).await;
         restore_product(postgres_destination, project_id, product).await;
     }
     tracing::info!("Done - project");

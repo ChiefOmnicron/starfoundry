@@ -38,7 +38,7 @@ export function ProjectList({
 
                 <SimpleGrid cols={{
                     base: 1,
-                    sm: 4,
+                    sm: 2,
                 }}>
                     { groupCards(x.id) }
                 </SimpleGrid>
