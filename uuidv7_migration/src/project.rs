@@ -116,7 +116,7 @@ pub async fn migrate_project(
             .execute(postgres_destination)
             .await?;
     }
-    tracing::info!("[project] projects migrated");
+    tracing::info!("[project] projects migrated");*/
 
     let jobs = sqlx::query!(r#"
             SELECT
@@ -143,7 +143,7 @@ pub async fn migrate_project(
             DELETE FROM project_job
         ")
         .execute(&mut *transaction)
-        .await?;*/
+        .await?;
 
     let mut visited_names = HashSet::new();
     visited_names.insert("Pips Internal Order - Small Ancillary Current Routers".to_string());
@@ -159,7 +159,7 @@ pub async fn migrate_project(
     visited_names.insert("asd".to_string());
     visited_names.insert("Alcatraz202 Enhanced Neurolink Protection Cell".to_string());
 
-    /*for (index, job) in jobs.iter().enumerate() {
+    for (index, job) in jobs.iter().enumerate() {
         if visited_names.contains(&job.project_name) {
             continue;
         }
@@ -324,7 +324,7 @@ pub async fn migrate_project(
             .execute(&mut *transaction)
             .await?;
     }
-    tracing::info!("[project] project jobs migrated");*/
+    tracing::info!("[project] project jobs migrated");
 
     /*let misc_entries = sqlx::query!(r#"
             SELECT
@@ -585,7 +585,7 @@ pub async fn migrate_project(
     }
     tracing::info!("[project] project excess migrated");*/
 
-    let product_entries = sqlx::query!(r#"
+    /*let product_entries = sqlx::query!(r#"
             SELECT
                 pp.id,
                 pp.project_id,
@@ -653,7 +653,7 @@ pub async fn migrate_project(
             )
             .execute(&mut *transaction)
             .await?;
-    }
+    }*/
 
     transaction.commit().await?;
 
@@ -675,8 +675,8 @@ pub async fn migrate_project(
         (Uuid::from_str("019d9d11-adcd-7ad9-a972-387f53791585").unwrap(), 19726),
     ];
     for (project_id, product) in fix_new_projects {
-        //restore_new_jobs(postgres_destination, project_id).await;
-        restore_product(postgres_destination, project_id, product).await;
+        restore_new_jobs(postgres_destination, project_id).await;
+        //restore_product(postgres_destination, project_id, product).await;
     }
     tracing::info!("Done - project");
 
