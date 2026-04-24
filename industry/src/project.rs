@@ -89,8 +89,7 @@ pub fn routes(
         .routes(routes!(update::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
     let update_job = OpenApiRouter::new()
-        .routes(routes!(update_job::api))
-        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+        .routes(routes!(update_job::api));
     let update_market_bulk = OpenApiRouter::new()
         .routes(routes!(update_market_bulk::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));

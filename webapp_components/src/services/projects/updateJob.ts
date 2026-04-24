@@ -16,6 +16,6 @@ export const updateProjectJob = async (
     });
 
 export type UpdateProjectJob = {
-    cost:   number;
+    cost?:  number;
     status: ProjectJobStatus;
 }

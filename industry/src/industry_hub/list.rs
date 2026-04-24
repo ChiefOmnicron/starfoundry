@@ -17,10 +17,12 @@ use crate::industry_hub::service::IndustryHub;
 /// 
 /// ---
 /// 
-/// Lists all available industry hubs
+/// Lists all available industry hubs the logged in user has access to.
+/// This includes shared industry hubs.
 /// 
 /// ## Security
 /// - authenticated
+/// - read
 /// 
 #[utoipa::path(
     get,

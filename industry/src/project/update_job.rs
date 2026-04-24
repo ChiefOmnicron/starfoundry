@@ -9,10 +9,10 @@ use crate::project::service::{ProjectJobUuid, UpdateProjectJob, update_job};
 use crate::project::ProjectUuid;
 use crate::project::error::Result;
 
-/// Update Default Blacklist
+/// Update Project Job
 /// 
-/// - Alternative route: `/v1/project/{ProjectUuid}/jobs/{ProjectJobUuid}`
-/// - Alternative route: `/latest/project/{ProjectUuid}/jobs/{ProjectJobUuid}`
+/// - Alternative route: `/v1/projects/{ProjectUuid}/jobs/{ProjectJobUuid}`
+/// - Alternative route: `/latest/projects/{ProjectUuid}/jobs/{ProjectJobUuid}`
 /// 
 /// ---
 /// 
@@ -33,7 +33,7 @@ use crate::project::error::Result;
     ),
     responses(
         (
-            description = "The group was updated",
+            description = "The job was updated",
             status = NO_CONTENT,
         ),
         Unauthorized,

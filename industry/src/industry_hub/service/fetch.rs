@@ -151,48 +151,6 @@ mod tests {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
-#[schema(
-    example = json!({
-        "id": "019a462f-c4f1-7513-93ce-0362741dacbf",
-        "name": "My cool structure group",
-        "structures": [{
-            "id": "019a462f-dd0a-7d07-9516-df377ae11395",
-            "name": "1DQ1-A - RIP",
-            "structure_id": 1337,
-            "system": {
-                "constellation_id": 20000696,
-                "constellation_name": "O-EIMK",
-                "region_id": 10000060,
-                "region_name": "Delve",
-                "system_id": 30004759,
-                "system_name": "1DQ1-A",
-                "security": -0.38578233,
-                "security_group": "NULLSEC",
-            },
-            "item": {
-                "base_price": null,
-                "category_id": 65,
-                "group_id": 1657,
-                "meta_group_id": 1,
-                "name": "Keepstar",
-                "repackaged": null,
-                "type_id": 35834,
-                "volume": 800000
-            },
-            "rigs": [],
-            "service": [{
-                "base_price": null,
-                "category_id": 66,
-                "group_id": 1321,
-                "meta_group_id": 54,
-                "name": "Standup Market Hub I",
-                "repackaged": null,
-                "type_id": 35892,
-                "volume": 32000
-            }]
-        }]
-    })
-)]
 pub struct IndustryHub {
     pub id:          IndustryHubUuid,
     pub name:        String,
@@ -202,6 +160,15 @@ pub struct IndustryHub {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
+#[schema(
+    examples(
+        json!({
+            "name": "Rational Chaos Inc.",
+            "share_id": 98024275,
+            "share_type": "CORPORATION"
+        })
+    )
+)]
 pub struct IndustryHubShare {
     pub name:       String,
     /// either a character id, corporation id or alliance id

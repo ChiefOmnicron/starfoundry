@@ -24,7 +24,7 @@ export function IndustryHubList({
         <SimpleGrid
             cols={{
                 base: 1,
-                sm: 2,
+                sm: 4,
             }}
         >
             { industryHubCard() }

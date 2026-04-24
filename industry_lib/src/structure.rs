@@ -16,7 +16,7 @@ starfoundry_uuid!(StructureUuid, "StructureUuid");
         "id": "15bd47e3-6b38-4cc1-887b-94924fff30a1",
         "name": "1DQ1-A - RIP",
         "structure_id": 1337,
-        "structure_type": "AZBEL",
+        "structure_type": "KEEPSTAR",
         "system": {
             "constellation_id": 20000696,
             "constellation_name": "O-EIMK",
@@ -37,7 +37,62 @@ starfoundry_uuid!(StructureUuid, "StructureUuid");
             "type_id": 35834,
             "volume": 800000
         },
-        "rigs": [],
+        "rigs": [{
+            "item": {
+                "type_id": 46496,
+                "category": {
+                    "category_id": 66,
+                    "name": "Structure Module"
+                },
+                "group": {
+                    "group_id": 1939,
+                    "category_id": 66,
+                    "name": "Structure Reactor Rig L - Efficiency"
+                },
+                "volume": 20,
+                "name": "Standup L-Set Reactor Efficiency I",
+                "meta_group": 54,
+                "repackaged": null
+            },
+            "excludes": [
+                46497
+            ],
+            "material": 2,
+            "time": 20,
+            "categories": [],
+            "groups": [
+                {
+                    "group_id": 428,
+                    "category_id": 4,
+                    "name": "Intermediate Materials"
+                },
+                {
+                    "group_id": 429,
+                    "category_id": 4,
+                    "name": "Composite"
+                },
+                {
+                    "group_id": 712,
+                    "category_id": 4,
+                    "name": "Biochemical Material"
+                },
+                {
+                    "group_id": 974,
+                    "category_id": 4,
+                    "name": "Hybrid Polymers"
+                },
+                {
+                    "group_id": 4096,
+                    "category_id": 4,
+                    "name": "Molecular-Forged Materials"
+                },
+                {
+                    "group_id": 4932,
+                    "category_id": 4,
+                    "name": "Unrefined Mineral"
+                }
+            ]
+        }],
         "service": [{
             "base_price": null,
             "category_id": 66,
@@ -47,7 +102,10 @@ starfoundry_uuid!(StructureUuid, "StructureUuid");
             "repackaged": null,
             "type_id": 35892,
             "volume": 32000
-        }]
+        }],
+        "taxes": {
+            "35878": 1
+        }
     })
 )]
 pub struct Structure {
@@ -70,7 +128,7 @@ pub struct Structure {
     /// Type of the structure
     pub structure_type:       StructureType,
     /// Taxes by service type id
-    pub taxes:                 HashMap<TypeId, f32>,
+    pub taxes:                HashMap<TypeId, f32>,
 
     #[serde(skip_deserializing)]
     #[serde(skip_serializing_if = "Option::is_none")]

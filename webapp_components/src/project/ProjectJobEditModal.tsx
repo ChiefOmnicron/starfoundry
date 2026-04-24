@@ -143,7 +143,7 @@ export function ProjectJobEditModal({
 
     const updateJob = () => {
         saveJobMutation.mutate({
-            cost:   cost,
+            cost:   cost ? cost : undefined,
             status: status,
         });
     }
