@@ -305,7 +305,7 @@ function ProjectJobListTable({
                 maxSize: 8,
             }),
             columnHelper.display({
-                id: 'countdown',
+                id: 'remaining',
                 cell: ({ row }) => <Countdown
                         endDate={row.original.end_date || ''}
                     />,
@@ -314,11 +314,11 @@ function ProjectJobListTable({
                 maxSize: 10,
             }),
             columnHelper.display({
-                id: 'remaining',
+                id: 'endDate',
                 cell: ({ row }) => <Nakamura
                         endDate={row.original.end_date || ''}
                     />,
-                header: () => 'End date',
+                header: () => 'End date (local)',
                 size: 10,
                 maxSize: 10,
             }),
@@ -377,8 +377,8 @@ function ProjectJobListTable({
                 quickFix: showQuickFix,
                 cost: showCost,
                 status: showStatus,
-                countdown: showRemaining,
                 remaining: showRemaining,
+                endDate: showRemaining,
             }
         },
         state: {

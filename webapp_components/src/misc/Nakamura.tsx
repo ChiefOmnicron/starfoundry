@@ -1,17 +1,17 @@
 import { InternalLink } from "@internal/links/InternalLink";
-import { formatDateUTC } from "@internal/utils";
+import { formatDate } from "@internal/utils";
 
 export function Nakamura({
     endDate
 }: NakamuraProps) {
-    const milliseconds = new Date(endDate).valueOf();
+    const milliseconds = new Date(endDate + 'Z').valueOf();
     const nakamuraLink = `https://time.nakamura-labs.com/?#${milliseconds / 1000}`;
 
     return <>
         <InternalLink
             to={nakamuraLink}
             target="_blank"
-            content={formatDateUTC(milliseconds)}
+            content={formatDate(milliseconds)}
         />
     </>
 }

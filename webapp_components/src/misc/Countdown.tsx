@@ -9,7 +9,7 @@ export function Countdown({
 
     const updateTime = () => {
         const start: any = new Date();
-        const end: any = new Date(endDate);
+        const end: any = new Date(endDate + 'Z');
         const remaining = Math.floor((end - start) / 1000);
 
         setRemaining(remaining > 0 ? remaining : 0);
