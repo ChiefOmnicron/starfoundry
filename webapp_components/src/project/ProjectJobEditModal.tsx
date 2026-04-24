@@ -37,7 +37,8 @@ export function ProjectJobEditModal({
     const [hasError, setHasError] = useState<boolean>(false);
     const [updateSuccess, setUpdateSuccess] = useState<boolean>(false);
 
-    const [cost, setCost] = useState<number>(0);
+    const [cost, setCost] = useState<number | undefined>(undefined);
+    const [jobId, setJobId] = useState<number | undefined>(undefined);
     const [status, setStatus] = useState<ProjectJobStatus>('WAITING_FOR_MATERIALS');
 
     const [currentRuns, setCurrentRuns] = useState<number>(0);
@@ -134,7 +135,8 @@ export function ProjectJobEditModal({
     });
 
     useEffect(() => {
-        setCost(job.cost || 0);
+        setCost(job.cost || undefined);
+        setJobId(job.job_id || undefined);
         setStatus(job.status);
 
         setCurrentRuns(job.runs);
@@ -143,8 +145,9 @@ export function ProjectJobEditModal({
 
     const updateJob = () => {
         saveJobMutation.mutate({
-            cost:   cost ? cost : undefined,
-            status: status,
+            cost:       cost ? cost : undefined,
+            status:     status,
+            job_id:     jobId ? jobId : undefined,
         });
     }
 

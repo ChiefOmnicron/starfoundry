@@ -5,7 +5,6 @@ use starfoundry_lib_types::{ItemId, JobId};
 use starfoundry_lib_eve_gateway::IndustryJob;
 
 use crate::jobs::{ProjectJobStatusDatabase, StartableIndustryJobs, UpdateJobRequest};
-use serde::Serialize;
 
 /// Attempts to match an industry job retrieved from the eve api, to a industry
 /// job that needs to be done in order to complete a project.
@@ -19,29 +18,6 @@ pub fn job_detection(
     used_ids:        &mut Vec<Uuid>,
     used_job_ids:    &mut Vec<JobId>,
 ) -> (HashMap<Uuid, Vec<UpdateJobRequest>>, Vec<IndustryJob>) {
-    #[derive(Debug, Serialize)]
-    struct TestA {
-        eve_jobs:        Vec<IndustryJob>,
-        startable_jobs:  Vec<StartableIndustryJobs>,
-        finished_jobs:   Vec<JobId>,
-        ignored_jobs:    Vec<JobId>,
-        container_names: HashMap<ItemId, String>,
-        used_ids:        Vec<Uuid>,
-        used_job_ids:    Vec<JobId>,
-    }
-    let a = TestA {
-        eve_jobs: eve_jobs.clone(),
-        startable_jobs: startable_jobs.clone(),
-        finished_jobs: finished_jobs.clone(),
-        ignored_jobs: ignored_jobs.clone(),
-        container_names: container_names.clone(),
-        used_ids: used_ids.clone(),
-        used_job_ids: used_job_ids.clone(),
-    };
-    use std::io::prelude::*;
-    let mut file = std::fs::File::create("a.json").unwrap();
-    file.write_all(serde_json::to_string_pretty(&a).unwrap().as_bytes()).unwrap();
-
     let now = chrono::Utc::now().naive_utc();
 
     // List of entries that need to be updated

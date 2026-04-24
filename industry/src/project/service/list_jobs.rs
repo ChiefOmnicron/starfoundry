@@ -180,6 +180,10 @@ async fn determine_ready_to_start(
         .collect::<Vec<TypeId>>();
 
     for entry in entries.iter_mut() {
+        if entry.status == ProjectJobStatus::Done {
+            continue;
+        }
+
         let dependency = if let Some(dependency) = dependencies.get(&entry.item.type_id) {
             dependency
         } else {
