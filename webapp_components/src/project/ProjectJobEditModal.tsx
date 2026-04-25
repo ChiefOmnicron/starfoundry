@@ -114,8 +114,11 @@ export function ProjectJobEditModal({
         mutationFn: async (data: AddJobEntryRequest[]) => {
             return await addJobEntry(projectId, data);
         },
-        onSuccess: () => {
+        onSuccess: (_data, _vars, _result, context) => {
             setHasError(false);
+            context.client.invalidateQueries({
+                queryKey: [LIST_PROJECT_JOBS],
+            });
         },
         onError: () => {
             setHasError(true);
@@ -195,9 +198,22 @@ export function ProjectJobEditModal({
                     }
                 });
 
-        addExcessMutation.mutate(excess);
+        // adds new jobs that are required for the final product
         addJobMutation.mutate(jobs);
+        addExcessMutation.mutate(excess);
         addMarketMutation.mutate(market);
+
+        // add the split runs
+        addJobMutation.mutate([{
+            runs:           splitRuns,
+            structure_id:   job.structure.id,
+            type_id:        job.item.type_id
+        }]);
+        // update the amount of runs
+        saveJobMutation.mutate({
+            status: "WAITING_FOR_MATERIALS",
+            runs: job.runs - splitRuns,
+        });
     }
 
     const showJobChange = () => {

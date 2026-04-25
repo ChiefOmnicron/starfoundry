@@ -25,7 +25,8 @@ pub async fn update_job(
             SET
                 cost = $3,
                 status = $4,
-                job_id = $5
+                job_id = $5,
+                runs = COALESCE($6, runs)
             WHERE project_id = $1
             AND id = $2
         ",
@@ -34,6 +35,7 @@ pub async fn update_job(
             update.cost,
             update.status as _,
             job_id,
+            update.runs,
         )
         .execute(pool)
         .await
@@ -50,5 +52,6 @@ pub async fn update_job(
 pub struct UpdateProjectJob {
     pub cost:   Option<f64>,
     pub job_id: Option<i32>,
+    pub runs:   Option<i32>,
     pub status: ProjectJobStatusDatabase,
 }

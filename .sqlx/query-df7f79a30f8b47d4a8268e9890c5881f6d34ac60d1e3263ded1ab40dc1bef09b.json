@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            UPDATE project_job\n            SET\n                cost = $3,\n                status = $4,\n                job_id = $5\n            WHERE project_id = $1\n            AND id = $2\n        ",
+  "query": "\n            UPDATE project_job\n            SET\n                cost = $3,\n                status = $4,\n                job_id = $5,\n                runs = COALESCE($6, runs)\n            WHERE project_id = $1\n            AND id = $2\n        ",
   "describe": {
     "columns": [],
     "parameters": {
@@ -20,10 +20,11 @@
             }
           }
         },
+        "Int4",
         "Int4"
       ]
     },
     "nullable": []
   },
-  "hash": "74d46ef3d3fd88bdd7b63c7811284a092985022e909c9c3340efa58480801269"
+  "hash": "df7f79a30f8b47d4a8268e9890c5881f6d34ac60d1e3263ded1ab40dc1bef09b"
 }
