@@ -23,6 +23,8 @@ export const Route = createFileRoute('/jobs/')({
 });
 
 function RouteComponent() {
+    const isFirstRender = useIsFirstRender();
+
     const {
         isPending,
         isError,
@@ -32,13 +34,17 @@ function RouteComponent() {
         status: 'IN_PROGRESS',
     });
 
-    if (isPending || isFetching) {
+    if ((isPending || isFetching) && isFirstRender) {
         return LoadingAnimation();
     } else if (isError) {
         return LoadingError();
     }
 
     const entries = () => {
+        if (!projects) {
+            return <></>;
+        }
+
         return projects
             .map(x => <>
                     <ProjectJobListWrapper
@@ -50,7 +56,7 @@ function RouteComponent() {
 
     return <>
         <Accordion
-            defaultValue={projects.map(x => x.id)}
+            defaultValue={(projects || []).map(x => x.id)}
             variant="contained"
             multiple
         >
