@@ -13,6 +13,14 @@ export const splitJobCheck = async (
         data,
     )
     .then(x => {
+        if (x.status === 204) {
+            return {
+                excess: [],
+                jobs: [],
+                materials: [],
+            };
+        }
+
         return x.data;
     });
 

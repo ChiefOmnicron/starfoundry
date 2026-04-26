@@ -1,0 +1,29 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT sell_price\n            FROM project\n            WHERE\n                (owner = $1 OR owner = 0) AND\n                id = $2\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "sell_price",
+        "type_info": "Float8",
+        "origin": {
+          "Table": {
+            "table": "project",
+            "name": "sell_price"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "3cce5e110fbca3805a59a5fd8eb9a472889fbecdd7d2f3b6c49ae14dea77988b"
+}

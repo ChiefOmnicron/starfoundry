@@ -5,6 +5,7 @@ mod check_resources;
 mod create;
 mod error;
 mod fetch;
+mod fetch_cost;
 mod delete;
 mod delete_market;
 mod initialize;
@@ -48,6 +49,10 @@ pub fn routes(
 
     let fetch = OpenApiRouter::new()
         .routes(routes!(fetch::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+    let fetch_cost = OpenApiRouter::new()
+        .routes(routes!(fetch_cost::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
 
@@ -108,6 +113,7 @@ pub fn routes(
         .merge(add_job)
         .merge(add_market)
         .merge(fetch)
+        .merge(fetch_cost)
         .merge(delete)
         .merge(delete_market_entry)
         .merge(initialize)
