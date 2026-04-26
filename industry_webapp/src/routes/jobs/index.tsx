@@ -4,7 +4,7 @@ import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 import { ProjectJobList } from '@starfoundry/components/project/ProjectJobList';
 import { Stack, Title } from '@mantine/core';
 import { useIsFirstRender } from '@mantine/hooks';
-import { useListProjectJobs } from '@starfoundry/components/services/projects/listJobs';
+import { useListProjectJobsRefresh } from '@starfoundry/components/services/projects/listJobs';
 import { useListProjects, type ProjectListMinimal } from '@starfoundry/components/services/projects/list';
 
 export interface QueryParams {
@@ -65,7 +65,7 @@ function ProjectJobListWrapper({
         isPending,
         isFetching,
         data: jobs,
-    } = useListProjectJobs(
+    } = useListProjectJobsRefresh(
         project.id,
         {
             startable: true,

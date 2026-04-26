@@ -3,7 +3,7 @@ import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation'
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 import { ProjectJobList, type ProjectJobListProps } from '@starfoundry/components/project/ProjectJobList';
 import { Tabs } from '@mantine/core';
-import { useListProjectJobs } from '@starfoundry/components/services/projects/listJobs'
+import { useListProjectJobsRefresh } from '@starfoundry/components/services/projects/listJobs'
 import { useIsFirstRender } from '@mantine/hooks';
 
 export const Route = createFileRoute('/projects_/$projectId/jobs')({
@@ -19,7 +19,7 @@ function RouteComponent() {
         isError,
         isFetching,
         data: jobs,
-    } = useListProjectJobs(projectId, {});
+    } = useListProjectJobsRefresh(projectId, {});
 
     const content = (props: ProjectJobListProps) => {
         if ((isPending || isFetching) && isFirstRender) {
