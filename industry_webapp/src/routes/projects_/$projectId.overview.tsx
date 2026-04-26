@@ -5,7 +5,7 @@ import { CopyText } from '@starfoundry/components/misc/CopyText';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 import { useFetchProject } from '@starfoundry/components/services/projects/fetch';
-import { useFetchProjectCost } from '@starfoundry/components/services/projects/fetch_cost';
+import { useFetchProjectCost } from '@starfoundry/components/services/projects/fetchCost';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/projects_/$projectId/overview')({

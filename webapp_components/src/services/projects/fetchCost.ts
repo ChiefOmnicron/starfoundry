@@ -19,19 +19,19 @@ export const fetchProjectCost = async (
 
 // For general use
 export const useFetchProjectCost = (
-    id: Uuid,
+    projectId: Uuid,
 ) => {
-    return useQuery(fetchProjectCostQuery(id));
+    return useQuery(fetchProjectCostQuery(projectId));
 }
 
 // For pre-fetching
 export const fetchProjectCostQuery = (
-    id: Uuid,
+    projectId: Uuid,
 ) => ({
-    queryKey: [FETCH_PROJECT_COST, id],
+    queryKey: [FETCH_PROJECT_COST, projectId],
     queryFn: async ({
         signal
-    }: AbortSignal) => fetchProjectCost(id, signal),
+    }: AbortSignal) => fetchProjectCost(projectId, signal),
     // ms * s * m
     staleTime: 1000 * 60 * 5,
 });

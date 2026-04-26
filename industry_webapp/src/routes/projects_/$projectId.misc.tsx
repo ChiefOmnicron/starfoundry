@@ -1,5 +1,6 @@
 import { Alert } from '@mantine/core';
 import { createFileRoute } from '@tanstack/react-router'
+import { FETCH_PROJECT_COST } from '@starfoundry/components/services/projects/fetchCost';
 import { LIST_PROJECT_MISC, useListProjectMisc, type ProjectMisc } from '@starfoundry/components/services/projects/listMisc';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
@@ -31,7 +32,6 @@ function RouteComponent() {
 
     useEffect(() => {
         if (projectMisc) {
-            console.log(projectMisc)
             setSelectedProjectMiscOld(projectMisc);
             setSelectedProjectMisc(projectMisc);
         }
@@ -57,7 +57,8 @@ function RouteComponent() {
         onSuccess: () => {
             setErrorUpdate(undefined);
             setSuccessfulUpdate(true);
-            queryClient.invalidateQueries({ queryKey: [LIST_PROJECT_MISC] });
+            queryClient.invalidateQueries({ queryKey: [LIST_PROJECT_MISC, projectId] });
+            queryClient.invalidateQueries({ queryKey: [FETCH_PROJECT_COST, projectId] });
         },
         onError: (error) => {
             setErrorUpdate(error as any);

@@ -16,6 +16,7 @@ import { deleteMarketEntry } from '@starfoundry/components/services/projects/del
 import { useDisclosure } from '@mantine/hooks';
 import { EditMarketEntryModal } from './-components/EditMarketEntryModal';
 import { updateMarketEntry } from '@starfoundry/components/services/projects/updateMarketEntry';
+import { FETCH_PROJECT_COST } from '@starfoundry/components/services/projects/fetchCost';
 
 export const Route = createFileRoute('/projects_/$projectId/market')({
     component: RouteComponent,
@@ -71,6 +72,7 @@ function RouteComponent() {
             queryClient.invalidateQueries({
                 queryKey: [LIST_PROJECT_MARKET, projectId]
             });
+            queryClient.invalidateQueries({ queryKey: [FETCH_PROJECT_COST, projectId] });
         },
         onError: () => {
             setDeleteError(true);
