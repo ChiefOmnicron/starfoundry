@@ -52,11 +52,11 @@ export const useListProjectJobsRefresh = (
         queryFn: async ({
             signal
         }: AbortSignal) => listProjectJobs(projectId, filter, signal),
-        // 10 minutes (ms * s * m)
-        staleTime: 1000 * 60 * 10,
+        staleTime: Infinity,
         // refetch it every 60 seconds
         refetchInterval: 60_000,
-    })
+        refetchOnWindowFocus: false,
+    });
 }
 
 export type ProjectJobStatus = 'WAITING_FOR_MATERIALS' | 'READY_TO_START' | 'BUILDING' | 'DONE';
