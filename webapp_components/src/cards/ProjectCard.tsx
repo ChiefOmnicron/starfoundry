@@ -1,10 +1,10 @@
 import { BadgeWrapper } from "@internal/wrapper/Badge";
+import { BaseCard } from "@internal/cards/BaseCard";
 import { Flex, Group, Stack, Text, Title } from "@mantine/core";
 import { InternalLink } from "@internal/links/InternalLink";
 import { ProjectProgressBar } from "@internal/misc/ProgressBar";
 import { useListProjectJobs } from "@internal/services/projects/listJobs";
 import type { ProjectListMinimal, ProjectStatus } from "@internal/services/projects/list";
-import { BaseCard } from "@internal/cards/BaseCard";
 
 export function ProjectCard({
     project,
@@ -15,7 +15,7 @@ export function ProjectCard({
     const {
         isPending,
         data: jobs,
-    } = useListProjectJobs(project.id);
+    } = useListProjectJobs(project.id, {});
 
     const status = (status: ProjectStatus) => {
         switch(status) {

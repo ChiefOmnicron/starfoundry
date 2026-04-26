@@ -32,6 +32,7 @@ export function MaterialList({
             cell: props => <>
                 <CopyText
                     value={props.row.original.quantity}
+                    number
                 />
             </>,
             header: () => 'Quantity',

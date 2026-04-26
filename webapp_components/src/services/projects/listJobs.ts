@@ -8,13 +8,17 @@ import type { Uuid } from "@internal/services/utils";
 export const LIST_PROJECT_JOBS = 'listProjectJobs';
 
 export const listProjectJobs = async (
-    projectId: Uuid,
-    signal?:   GenericAbortSignal,
+    projectId:  Uuid,
+    filter:     ProjectJobFilter,
+    signal?:    GenericAbortSignal,
 ): Promise<ProjectJobGroup[]> => (await axiosClient())
     .get(
         `/api/projects/${projectId}/jobs`,
         {
             signal,
+            params: {
+                ...filter,
+            }
         }
     )
     .then(x => {
@@ -26,15 +30,18 @@ export const listProjectJobs = async (
     });
 
 export const useListProjectJobs = (
-    projectId: Uuid,
+    projectId:  Uuid,
+    filter:     ProjectJobFilter,
 ) => {
     return useQuery({
         queryKey: [LIST_PROJECT_JOBS, projectId],
         queryFn: async ({
             signal
-        }: AbortSignal) => listProjectJobs(projectId, signal),
+        }: AbortSignal) => listProjectJobs(projectId, filter, signal),
         // 10 minutes (ms * s * m)
         staleTime: 1000 * 60 * 10,
+        // refetch it every 60 seconds
+        refetchInterval: 60_000,
     })
 }
 
@@ -55,4 +62,8 @@ export type ProjectJob = {
     structure:   Structure;
     started_by?: number;
     end_date?:   string;
+}
+
+export type ProjectJobFilter = {
+    startable?: boolean;
 }

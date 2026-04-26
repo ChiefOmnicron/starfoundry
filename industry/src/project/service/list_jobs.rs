@@ -1,22 +1,24 @@
+use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item};
 use starfoundry_lib_industry::Structure;
 use starfoundry_lib_types::{CharacterId, TypeId};
 use std::collections::HashMap;
-use utoipa::ToSchema;
+use utoipa::{IntoParams, ToSchema};
 use uuid::Uuid;
 
 use crate::project::error::{ProjectError, Result};
 use crate::project::ProjectUuid;
 use crate::structure::service::FetchStructureQuery;
-use chrono::NaiveDateTime;
+use crate::sort_by_job;
 
 pub async fn list_jobs(
     pool:                   &PgPool,
     character_id:           CharacterId,
     project_id:             ProjectUuid,
     eve_gateway_api_client: &impl EveGatewayApiClient,
+    filter:                 ProjectJobFilter,
 ) -> Result<Vec<ProjectJobGroup>> {
     // TODO: merge end_date into project_job?
     let entries = sqlx::query!(r#"
@@ -120,8 +122,19 @@ pub async fn list_jobs(
         )
         .await?;
 
+    let project_jobs = if let Some(_) = filter.startable {
+        project_jobs
+            .into_iter()
+            .filter(|y| y.status == ProjectJobStatus::ReadyToStart)
+            .collect::<Vec<_>>()
+    } else {
+        project_jobs
+    };
+
     Ok(sort_jobs(project_jobs))
 }
+
+sort_by_job!(sort_jobs, ProjectJob, ProjectJobGroup);
 
 async fn determine_ready_to_start(
     pool:                   &PgPool,
@@ -318,130 +331,9 @@ pub enum ProjectJobStatusDatabase {
     Done,
 }
 
-fn sort_jobs(
-    entries: Vec<ProjectJob>,
-) -> Vec<ProjectJobGroup> {
-    let mut job_lists       = Vec::new();
-    let mut grouped_entries = std::collections::HashMap::new();
-
-    let mut insert_into_map = |id: i32, entry: ProjectJob| {
-        grouped_entries
-            .entry(id)
-            .and_modify(|x: &mut Vec<ProjectJob>| x.push(entry.clone()))
-            .or_insert(vec![entry]);
-    };
-
-    // First go through all entries, and sort them into the map
-    for entry in entries.into_iter() {
-        match *entry.item.category.category_id {
-            6i32 => {
-                insert_into_map(6, entry);
-                continue;
-            },
-            8i32 => {
-                insert_into_map(8, entry);
-                continue;
-            },
-            _  => {}
-        }
-
-        match *entry.item.group.group_id {
-            332i32 => {
-                insert_into_map(332, entry);
-                continue;
-            },
-            334i32 => {
-                insert_into_map(334, entry);
-                continue;
-            },
-            428i32 => {
-                insert_into_map(428, entry);
-                continue;
-            },
-            429i32 => {
-                insert_into_map(429, entry);
-                continue;
-            },
-            873i32 => {
-                insert_into_map(873, entry);
-                continue;
-            },
-            913i32 => {
-                insert_into_map(913, entry);
-                continue;
-            },
-            974i32 => {
-                insert_into_map(974, entry);
-                continue;
-            },
-            4096i32 => {
-                insert_into_map(4096, entry);
-                continue;
-            },
-            _  => {}
-        }
-
-        if let Some(ref meta_group) = entry.item.meta_group {
-            match **meta_group {
-                1i32 => {
-                    insert_into_map(1, entry);
-                    continue;
-                },
-                2i32 => {
-                    insert_into_map(2, entry);
-                    continue;
-                },
-                8i32 => {
-                    insert_into_map(8, entry);
-                    continue;
-                },
-                _  => {}
-            }
-        }
-
-        insert_into_map(0, entry.clone());
-    }
-
-    for (header, id) in vec![
-        ("INTERMEDIATE_REACTIONS",                    428),
-        ("COMPOSITE_REACTIONS",                       429),
-        ("BIOCHEM_REACTIONS",                        4096),
-        ("HYBRID_REACTIONS",                          974),
-        ("CONSTRUCTION_COMPONENTS",                   334),
-        ("ADVANCED_CAPITAL_CONSTRUCTION_COMPONENTS",  913),
-        ("CAPITAL_CONSTRUCTION_COMPONENTS",           873),
-        ("TOOLS",                                     332),
-        ("T1_STUFF",                                    1),
-        ("T2_STUFF",                                    2),
-        ("CHARGES",                                     8),
-        ("SHIPS",                                       6),
-        ("UNKNOWN",                                     0),
-    ] {
-        if let Some(entries) = grouped_entries.get_mut(&id) {
-            entries.sort_by_key(|x| x.item.name.clone());
-            let mut entries = entries
-                .chunk_by(|a, b| a.item.name == b.item.name)
-                .map(|x| x.into())
-                .collect::<Vec<Vec<ProjectJob>>>();
-            let entries = entries
-                .iter_mut()
-                .map(|x| {
-                    x.sort_by_key(|y| y.runs);
-                    x.reverse();
-                    x.clone()
-                })
-                .collect::<Vec<_>>()
-                .into_iter()
-                .flatten()
-                .collect::<Vec<_>>();
-            job_lists.push(
-                ProjectJobGroup {
-                    header:  header.into(),
-                    entries: entries.clone(),
-                }
-            );
-        }
-    }
-
-    job_lists
+#[derive(Debug, Default, Deserialize, ToSchema, IntoParams)]
+#[into_params(parameter_in = Query)]
+pub struct ProjectJobFilter {
+    #[serde(default)]
+    pub startable: Option<bool>,
 }

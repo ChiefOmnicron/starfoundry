@@ -4,13 +4,13 @@ import { CopyTable } from "@internal/misc/CopyTable";
 import { CopyText } from "@internal/misc/CopyText";
 import { Countdown } from "@internal/misc/Countdown";
 import { CreateBuildOrderModal } from "@internal/project/CreateBuildOrderModal";
-import { createColumnHelper, flexRender, getCoreRowModel, useReactTable, type ColumnDef, type RowSelectionState } from "@tanstack/react-table";
+import { createColumnHelper, flexRender, getCoreRowModel, useReactTable, type RowSelectionState } from "@tanstack/react-table";
 import { EveIcon } from "@internal/misc/EveIcon";
 import { JobStatusBadge } from "@internal/project/JobStatusBadge";
 import { LIST_PROJECT_JOBS, type ProjectJob, type ProjectJobGroup, type ProjectJobStatus } from "@internal/services/projects/listJobs"
 import { Nakamura } from "@internal/misc/Nakamura";
 import { useDisclosure } from "@mantine/hooks";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { ProjectJobEditModal } from "./ProjectJobEditModal";
 import type { Uuid } from "@internal/services/utils";
@@ -24,6 +24,7 @@ export function ProjectJobList({
     showCost = false,
     showStatus = false,
     showRemaining = false,
+    showStarted = false,
 
     checkable = false,
     groupByHeader = false,
@@ -187,6 +188,7 @@ export function ProjectJobList({
                 showCost={showCost}
                 showStatus={showStatus}
                 showRemaining={showRemaining}
+                showStarted={showStarted}
             />;
         }
     }
@@ -219,6 +221,7 @@ function ProjectJobListTable({
     showCost = false,
     showStatus = false,
     showRemaining = false,
+    showStarted = false,
 
     checkable = false,
     onSelect = () => {},
@@ -231,136 +234,139 @@ function ProjectJobListTable({
     const [editJobModalOpened, { open: editJobModalOpen, close: editJobModalClose }] = useDisclosure(false);
     const [editJob, setEditJob] = useState<ProjectJob>({} as ProjectJob);
 
+    const [started, setStarted] = useState<Uuid[]>([]);
+
     const columnHelper = createColumnHelper<ProjectJob>();
-    const columns = useMemo<ColumnDef<ProjectJob>[]>(
-        () => [
-            columnHelper.display({
-                id: 'check',
-                header: ({table}) => <Checkbox
-                    checked={table.getIsAllRowsSelected()}
-                    indeterminate={table.getIsSomeRowsSelected()}
-                    onChange={table.getToggleAllRowsSelectedHandler()}
+    const columns = [
+        columnHelper.display({
+            id: 'check',
+            header: ({table}) => <Checkbox
+                checked={table.getIsAllRowsSelected()}
+                indeterminate={table.getIsSomeRowsSelected()}
+                onChange={table.getToggleAllRowsSelectedHandler()}
+            />,
+            cell: ({row}) => <Checkbox
+                checked={row.getIsSelected()}
+                onChange={row.getToggleSelectedHandler()}
+            />,
+            size: 1,
+            maxSize: 1,
+        }),
+        columnHelper.display({
+            id: 'icon',
+            cell: ({ row }) => <EveIcon
+                id={row.original.item.type_id}
+            />,
+            size: 1,
+            maxSize: 1,
+        }),
+        columnHelper.display({
+            id: 'name',
+            cell: ({ row }) => <CopyText
+                value={row.original.item.name}
+                disabled={started.indexOf(row.original.id) > -1}
+            />,
+            header: () => 'Name',
+            size: 20,
+        }),
+        columnHelper.display({
+            id: 'runs',
+            cell: ({ row }) => <CopyText
+                value={row.original.runs}
+                disabled={started.indexOf(row.original.id) > -1}
+            />,
+            header: () => 'Runs',
+            size: 3,
+            maxSize: 3,
+        }),
+        columnHelper.display({
+            id: 'structure',
+            cell: ({ row }) => <CopyText
+                value={row.original.structure.name}
+                disabled={started.indexOf(row.original.id) > -1}
+            />,
+            header: () => 'Structure',
+            size: 10,
+        }),
+        columnHelper.display({
+            id: 'status',
+            cell: ({ row }) => <JobStatusBadge
+                    jobStatus={row.original.status}
+                    size="md"
                 />,
-                cell: ({row}) => <Checkbox
-                    checked={row.getIsSelected()}
-                    onChange={row.getToggleSelectedHandler()}
+            header: () => 'Status',
+            size: 8,
+            maxSize: 8,
+        }),
+        columnHelper.display({
+            id: 'cost',
+            cell: ({ row }) => 
+                row.original.cost
+                    ?   <CopyText
+                            value={row.original.cost}
+                            number
+                        />
+                    : '-/-',
+            header: () => 'Cost',
+            size: 8,
+            maxSize: 8,
+        }),
+        columnHelper.display({
+            id: 'remaining',
+            cell: ({ row }) => <Countdown
+                    endDate={row.original.end_date || ''}
                 />,
-                size: 1,
-                maxSize: 1,
-            }),
-            columnHelper.display({
-                id: 'icon',
-                cell: ({ row }) => <EveIcon
-                    id={row.original.item.type_id}
+            header: () => 'Remaining',
+            size: 10,
+            maxSize: 10,
+        }),
+        columnHelper.display({
+            id: 'endDate',
+            cell: ({ row }) => <Nakamura
+                    endDate={row.original.end_date || ''}
                 />,
-                size: 1,
-                maxSize: 1,
-            }),
-            columnHelper.display({
-                id: 'name',
-                cell: ({ row }) => <CopyText
-                    value={row.original.item.name}
+            header: () => 'End date (local)',
+            size: 10,
+            maxSize: 10,
+        }),
+        columnHelper.display({
+            id: 'action',
+            header: () => <CopyTable
+                    value={jobs.map(x => `${x.item.name}\t${x.runs}\t${x.structure.name}`).join('\n')}
                 />,
-                header: () => 'Name',
-                size: 20,
-            }),
-            columnHelper.display({
-                id: 'runs',
-                cell: ({ row }) => <CopyText
-                    value={row.original.runs}
-                />,
-                header: () => 'Runs',
-                size: 3,
-                maxSize: 3,
-            }),
-            columnHelper.display({
-                id: 'structure',
-                cell: ({ row }) => <CopyText
-                    value={row.original.structure.name}
-                />,
-                header: () => 'Structure',
-                size: 10,
-            }),
-            columnHelper.display({
-                id: 'status',
-                cell: ({ row }) => <JobStatusBadge
-                        jobStatus={row.original.status}
-                        size="md"
-                    />,
-                header: () => 'Status',
-                size: 8,
-                maxSize: 8,
-            }),
-            columnHelper.display({
-                id: 'cost',
-                cell: ({ row }) => 
-                    row.original.cost
-                        ?   <CopyText
-                                value={row.original.cost}
-                                number
-                            />
-                        : '-/-',
-                header: () => 'Cost',
-                size: 8,
-                maxSize: 8,
-            }),
-            columnHelper.display({
-                id: 'remaining',
-                cell: ({ row }) => <Countdown
-                        endDate={row.original.end_date || ''}
-                    />,
-                header: () => 'Remaining',
-                size: 10,
-                maxSize: 10,
-            }),
-            columnHelper.display({
-                id: 'endDate',
-                cell: ({ row }) => <Nakamura
-                        endDate={row.original.end_date || ''}
-                    />,
-                header: () => 'End date (local)',
-                size: 10,
-                maxSize: 10,
-            }),
-            columnHelper.display({
-                id: 'quickFix',
-                cell: _ => <Button
+            cell: ({ row }) => {
+                if (showQuickFix) {
+                    return <Button
                         variant="outline"
                     >
                         Quick Fix
-                    </Button>,
-                header: () => '',
-                size: 1,
-                maxSize: 1,
-            }),
-            columnHelper.display({
-                id: 'edit',
-                cell: ({ row }) => <Button
+                    </Button>;
+                } else if (editable) {
+                    return <Button
                         onClick={() => {
                             setEditJob(row.original);
                             editJobModalOpen();
                         }}
                     >
                         Edit
-                    </Button>,
-                header: () => '',
-                size: 1,
-                maxSize: 1,
-            }),
-            columnHelper.display({
-                id: 'action',
-                header: () => <CopyTable
-                        value={jobs.map(x => `${x.item.name}\t${x.runs}\t${x.structure.name}`).join('\n')}
-                    />,
-                meta: {
-                    align: 'right',
-                },
-                size: 1,
-                maxSize: 1,
-            }),
-        ],
-        []
-    );
+                    </Button>;
+                } else if (showStarted) {
+                    return <Button
+                        onClick={() => {
+                            setStarted([...started, row.original.id]);
+                        }}
+                    >
+                        Started
+                    </Button>;
+                }
+            },
+            meta: {
+                align: 'right',
+            },
+            size: 1,
+            maxSize: 1,
+        }),
+    ];
 
     const table = useReactTable<ProjectJob>({
         columns: columns,
@@ -374,7 +380,6 @@ function ProjectJobListTable({
             columnVisibility: {
                 check: checkable,
                 edit: editable,
-                quickFix: showQuickFix,
                 cost: showCost,
                 status: showStatus,
                 remaining: showRemaining,
@@ -475,6 +480,7 @@ export type ProjectJobListProps = {
     showCost?:      boolean;
     showStatus?:    boolean;
     showRemaining?: boolean;
+    showStarted?:   boolean;
 
     groupByHeader?: boolean;
     checkable?:     boolean;
@@ -489,6 +495,7 @@ export type ProjectJobListTableProps = {
     showCost?:      boolean;
     showStatus?:    boolean;
     showRemaining?: boolean;
+    showStarted?:   boolean;
 
     checkable?: boolean;
     onSelect?: (selected: ProjectJob[]) => void;

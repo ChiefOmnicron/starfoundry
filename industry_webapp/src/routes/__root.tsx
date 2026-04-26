@@ -51,6 +51,10 @@ const routes: RouteDefinition[] = [{
             label: 'Settings'
         }]
     }, {
+        link: '/jobs',
+        label: 'Industry Jobs',
+        paths: [],
+    }, {
         link: '/project-groups',
         label: 'Project Groups',
         subpath: '/project-groups/$projectGroupId',

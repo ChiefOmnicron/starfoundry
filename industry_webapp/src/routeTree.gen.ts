@@ -12,12 +12,14 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as StructuresRouteRouteImport } from './routes/structures/route'
 import { Route as ProjectsRouteRouteImport } from './routes/projects/route'
 import { Route as ProjectGroupsRouteRouteImport } from './routes/project-groups/route'
+import { Route as JobsRouteRouteImport } from './routes/jobs/route'
 import { Route as IndustryHubsRouteRouteImport } from './routes/industry-hubs/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StructuresIndexRouteImport } from './routes/structures/index'
 import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
 import { Route as ProjectGroupsIndexRouteImport } from './routes/project-groups/index'
 import { Route as LegalIndexRouteImport } from './routes/legal/index'
+import { Route as JobsIndexRouteImport } from './routes/jobs/index'
 import { Route as IndustryHubsIndexRouteImport } from './routes/industry-hubs/index'
 import { Route as CharactersIndexRouteImport } from './routes/characters/index'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
@@ -58,6 +60,11 @@ const ProjectGroupsRouteRoute = ProjectGroupsRouteRouteImport.update({
   path: '/project-groups',
   getParentRoute: () => rootRouteImport,
 } as any)
+const JobsRouteRoute = JobsRouteRouteImport.update({
+  id: '/jobs',
+  path: '/jobs',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndustryHubsRouteRoute = IndustryHubsRouteRouteImport.update({
   id: '/industry-hubs',
   path: '/industry-hubs',
@@ -87,6 +94,11 @@ const LegalIndexRoute = LegalIndexRouteImport.update({
   id: '/legal/',
   path: '/legal/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const JobsIndexRoute = JobsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => JobsRouteRoute,
 } as any)
 const IndustryHubsIndexRoute = IndustryHubsIndexRouteImport.update({
   id: '/',
@@ -226,6 +238,7 @@ const ProjectsProjectIdAssistantIndexRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/industry-hubs': typeof IndustryHubsRouteRouteWithChildren
+  '/jobs': typeof JobsRouteRouteWithChildren
   '/project-groups': typeof ProjectGroupsRouteRouteWithChildren
   '/projects': typeof ProjectsRouteRouteWithChildren
   '/structures': typeof StructuresRouteRouteWithChildren
@@ -237,6 +250,7 @@ export interface FileRoutesByFullPath {
   '/about/': typeof AboutIndexRoute
   '/characters/': typeof CharactersIndexRoute
   '/industry-hubs/': typeof IndustryHubsIndexRoute
+  '/jobs/': typeof JobsIndexRoute
   '/legal/': typeof LegalIndexRoute
   '/project-groups/': typeof ProjectGroupsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
@@ -266,6 +280,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutIndexRoute
   '/characters': typeof CharactersIndexRoute
   '/industry-hubs': typeof IndustryHubsIndexRoute
+  '/jobs': typeof JobsIndexRoute
   '/legal': typeof LegalIndexRoute
   '/project-groups': typeof ProjectGroupsIndexRoute
   '/projects': typeof ProjectsIndexRoute
@@ -290,6 +305,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/industry-hubs': typeof IndustryHubsRouteRouteWithChildren
+  '/jobs': typeof JobsRouteRouteWithChildren
   '/project-groups': typeof ProjectGroupsRouteRouteWithChildren
   '/projects': typeof ProjectsRouteRouteWithChildren
   '/structures': typeof StructuresRouteRouteWithChildren
@@ -301,6 +317,7 @@ export interface FileRoutesById {
   '/about/': typeof AboutIndexRoute
   '/characters/': typeof CharactersIndexRoute
   '/industry-hubs/': typeof IndustryHubsIndexRoute
+  '/jobs/': typeof JobsIndexRoute
   '/legal/': typeof LegalIndexRoute
   '/project-groups/': typeof ProjectGroupsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
@@ -327,6 +344,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/industry-hubs'
+    | '/jobs'
     | '/project-groups'
     | '/projects'
     | '/structures'
@@ -338,6 +356,7 @@ export interface FileRouteTypes {
     | '/about/'
     | '/characters/'
     | '/industry-hubs/'
+    | '/jobs/'
     | '/legal/'
     | '/project-groups/'
     | '/projects/'
@@ -367,6 +386,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/characters'
     | '/industry-hubs'
+    | '/jobs'
     | '/legal'
     | '/project-groups'
     | '/projects'
@@ -390,6 +410,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/industry-hubs'
+    | '/jobs'
     | '/project-groups'
     | '/projects'
     | '/structures'
@@ -401,6 +422,7 @@ export interface FileRouteTypes {
     | '/about/'
     | '/characters/'
     | '/industry-hubs/'
+    | '/jobs/'
     | '/legal/'
     | '/project-groups/'
     | '/projects/'
@@ -426,6 +448,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   IndustryHubsRouteRoute: typeof IndustryHubsRouteRouteWithChildren
+  JobsRouteRoute: typeof JobsRouteRouteWithChildren
   ProjectGroupsRouteRoute: typeof ProjectGroupsRouteRouteWithChildren
   ProjectsRouteRoute: typeof ProjectsRouteRouteWithChildren
   StructuresRouteRoute: typeof StructuresRouteRouteWithChildren
@@ -460,6 +483,13 @@ declare module '@tanstack/react-router' {
       path: '/project-groups'
       fullPath: '/project-groups'
       preLoaderRoute: typeof ProjectGroupsRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/jobs': {
+      id: '/jobs'
+      path: '/jobs'
+      fullPath: '/jobs'
+      preLoaderRoute: typeof JobsRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/industry-hubs': {
@@ -503,6 +533,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/legal/'
       preLoaderRoute: typeof LegalIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/jobs/': {
+      id: '/jobs/'
+      path: '/'
+      fullPath: '/jobs/'
+      preLoaderRoute: typeof JobsIndexRouteImport
+      parentRoute: typeof JobsRouteRoute
     }
     '/industry-hubs/': {
       id: '/industry-hubs/'
@@ -686,6 +723,18 @@ const IndustryHubsRouteRouteChildren: IndustryHubsRouteRouteChildren = {
 const IndustryHubsRouteRouteWithChildren =
   IndustryHubsRouteRoute._addFileChildren(IndustryHubsRouteRouteChildren)
 
+interface JobsRouteRouteChildren {
+  JobsIndexRoute: typeof JobsIndexRoute
+}
+
+const JobsRouteRouteChildren: JobsRouteRouteChildren = {
+  JobsIndexRoute: JobsIndexRoute,
+}
+
+const JobsRouteRouteWithChildren = JobsRouteRoute._addFileChildren(
+  JobsRouteRouteChildren,
+)
+
 interface ProjectGroupsRouteRouteChildren {
   ProjectGroupsIndexRoute: typeof ProjectGroupsIndexRoute
 }
@@ -822,6 +871,7 @@ const StructuresStructureIdRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   IndustryHubsRouteRoute: IndustryHubsRouteRouteWithChildren,
+  JobsRouteRoute: JobsRouteRouteWithChildren,
   ProjectGroupsRouteRoute: ProjectGroupsRouteRouteWithChildren,
   ProjectsRouteRoute: ProjectsRouteRouteWithChildren,
   StructuresRouteRoute: StructuresRouteRouteWithChildren,

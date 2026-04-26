@@ -9,7 +9,7 @@ use crate::project::ProjectUuid;
 use crate::project::SolutionUuid;
 use crate::project::error::ProjectError;
 use crate::project::error::Result;
-use crate::project::service::{ProjectExcess, ProjectStock, list_stock};
+use crate::project::service::{ProjectExcess, ProjectJobFilter, ProjectStock, list_stock};
 use crate::project::service::ProjectJobGroup;
 use crate::project::service::ProjectProduct;
 use crate::project::service::list_excess;
@@ -163,6 +163,7 @@ impl Project {
                 character_id,
                 self.id,
                 eve_gateway_api_client,
+                ProjectJobFilter::default(),
             )
             .await
     }

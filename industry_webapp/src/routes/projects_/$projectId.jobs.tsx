@@ -4,6 +4,7 @@ import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 import { ProjectJobList, type ProjectJobListProps } from '@starfoundry/components/project/ProjectJobList';
 import { Tabs } from '@mantine/core';
 import { useListProjectJobs } from '@starfoundry/components/services/projects/listJobs'
+import { useIsFirstRender } from '@mantine/hooks';
 
 export const Route = createFileRoute('/projects_/$projectId/jobs')({
     component: RouteComponent,
@@ -11,16 +12,17 @@ export const Route = createFileRoute('/projects_/$projectId/jobs')({
 
 function RouteComponent() {
     const { projectId } = Route.useParams();
+    const isFirstRender = useIsFirstRender();
 
     const {
         isPending,
         isError,
         isFetching,
         data: jobs,
-    } = useListProjectJobs(projectId);
+    } = useListProjectJobs(projectId, {});
 
     const content = (props: ProjectJobListProps) => {
-        if (isPending || isFetching) {
+        if ((isPending || isFetching) && isFirstRender) {
             return <LoadingAnimation />;
         }
         if (isError) {
@@ -53,7 +55,8 @@ function RouteComponent() {
                         jobs: jobs || [],
                         status: 'READY_TO_START',
                         checkable: true,
-                        showQuickFix: true,
+                        //showQuickFix: true,
+                        showStarted: true,
                     })
                 }
             </Tabs.Panel>
