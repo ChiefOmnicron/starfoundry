@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 import { ProjectJobList } from '@starfoundry/components/project/ProjectJobList';
-import { Stack, Title } from '@mantine/core';
+import { Accordion } from '@mantine/core';
 import { useIsFirstRender } from '@mantine/hooks';
 import { useListProjectJobsRefresh } from '@starfoundry/components/services/projects/listJobs';
 import { useListProjects, type ProjectListMinimal } from '@starfoundry/components/services/projects/list';
@@ -49,9 +49,13 @@ function RouteComponent() {
     }
 
     return <>
-        <Stack>
+        <Accordion
+            defaultValue={projects.map(x => x.id)}
+            variant="contained"
+            multiple
+        >
             {entries()}
-        </Stack>
+        </Accordion>
     </>
 }
 
@@ -77,21 +81,28 @@ function ProjectJobListWrapper({
     }
 
     if (jobs) {
-        console.log(jobs)
         if (jobs.length === 0) {
             return <></>;
         }
 
         return <>
-            <Title order={2}>{project.name}</Title>
-
-            <ProjectJobList
-                projectId={project.id}
-                jobs={jobs}
-                status='READY_TO_START'
-                checkable={true}
-                showStarted={true}
-            />
+            <Accordion.Item
+                key={project.id}
+                value={project.id}
+            >
+                <Accordion.Control>
+                    {project.name}
+                </Accordion.Control>
+                <Accordion.Panel>
+                    <ProjectJobList
+                        projectId={project.id}
+                        jobs={jobs}
+                        status='READY_TO_START'
+                        checkable={true}
+                        showStarted={true}
+                    />
+                </Accordion.Panel>
+            </Accordion.Item>
         </>
     }
 }
