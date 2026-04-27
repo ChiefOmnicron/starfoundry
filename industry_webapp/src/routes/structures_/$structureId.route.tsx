@@ -3,6 +3,7 @@ import { fetchStructureQuery, useFetchStructure } from '@starfoundry/components/
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 import { Title } from '@mantine/core'
+import { useDocumentTitle } from '@mantine/hooks';
 
 export const Route = createFileRoute('/structures_/$structureId')({
     beforeLoad: async ({ context }) => {
@@ -33,6 +34,8 @@ function RouteComponent() {
     if (isError) {
         return LoadingError();
     }
+
+    useDocumentTitle(`StarFoundry - ${structure.name}`);
 
     return <>
         <Title

@@ -272,16 +272,20 @@ function RouteComponent() {
             opened={opened}
             close={close}
 
-            onCreate={(projectId: Uuid) => {
-                return navigation({
-                    to: ProjectAssistantRoute.to,
-                    params: {
-                        projectId: projectId,
-                    },
-                    search: {
-                        created: true,
-                    },
-                });
+            onCreate={(createMore: boolean, projectId: Uuid) => {
+                if (!createMore) {
+                    return navigation({
+                        to: ProjectAssistantRoute.to,
+                        params: {
+                            projectId: projectId,
+                        },
+                        search: {
+                            created: true,
+                        },
+                    });
+                } else {
+                    return;
+                }
             }}
         />
 

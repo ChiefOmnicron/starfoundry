@@ -1,4 +1,5 @@
 import { Text, Title } from '@mantine/core'
+import { useDocumentTitle } from '@mantine/hooks';
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/projects')({
@@ -11,6 +12,8 @@ export const Route = createFileRoute('/projects')({
 })
 
 function RouteComponent() {
+    useDocumentTitle('StarFoundry - Projects');
+
     return <>
         <Title
             data-cy="header"

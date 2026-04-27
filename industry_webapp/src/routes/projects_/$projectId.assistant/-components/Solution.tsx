@@ -2,6 +2,8 @@ import { Accordion, Alert, Button, Grid, Group, Stack, Text, Textarea, Title } f
 import { BlueprintOverwriteList } from '@starfoundry/components/projectGroup/BlueprintOverwriteList';
 import { CopyText } from '@starfoundry/components/misc/CopyText';
 import { createColumnHelper, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { deleteProject } from '@starfoundry/components/services/projects/delete';
+import { DeleteResource } from '@starfoundry/components/misc/DeleteResource';
 import { EveIcon } from '@starfoundry/components/misc/EveIcon';
 import { FETCH_PROJECT, type ProjectList } from '@starfoundry/components/services/projects/fetch';
 import { generateSolution, type GenerateSolutionResponse, type SolutionManufacturing, type SolutionMaterial } from '@starfoundry/components/services/projects/generateSolution';
@@ -10,9 +12,11 @@ import { InitializeProject } from '@starfoundry/components/services/projects/ini
 import { InternalLink } from '@starfoundry/components/links/InternalLink';
 import { ItemList } from '@starfoundry/components/list/ItemList';
 import { JobSplittingRunList } from '@starfoundry/components/projectGroup/JobSplittingRunList';
+import { LIST_PROJECT } from '@starfoundry/components/services/projects/list';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 import { Route as ProjectGroupDefaultsRoute } from '@/routes/project-groups_/$projectGroupId.defaults';
+import { Route as ProjectRoute } from '@/routes/projects/index';
 import { Route as ProjectView } from '@/routes/projects_/$projectId.overview';
 import { TableWrapper } from '@starfoundry/components/wrapper/Table';
 import { useEffect, useState } from 'react';
@@ -215,6 +219,24 @@ export function Solution({
             });
         },
         onError: () => {
+            setShowError(true);
+        },
+    });
+
+    const deleteMutation = useMutation({
+        mutationFn: () => deleteProject(project.id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [FETCH_PROJECT] });
+            queryClient.invalidateQueries({ queryKey: [LIST_PROJECT] });
+
+            navigation({
+                to: ProjectRoute.to,
+                search: {
+                    deleted: true,
+                }
+            });
+        },
+        onError: (_) => {
             setShowError(true);
         },
     });
@@ -523,6 +545,13 @@ export function Solution({
         {showSolution()}
 
         {initializeProjectView()}
+
+        <DeleteResource
+            resource={project.name}
+            onConfirm={() => {
+                deleteMutation.mutate();
+            }}
+        />
     </>
 }
 

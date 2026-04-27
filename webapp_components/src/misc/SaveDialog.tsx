@@ -9,7 +9,7 @@ export function SaveDialog({
     onReset,
 }: Props) {
     const [shakeDialog, setShakeDialog] = useState<boolean>(false);
-        const isMobile = useMediaQuery('(max-width: 50em)');
+    const isMobile = useMediaQuery('(max-width: 50em)');
 
     useBlocker({
         shouldBlockFn: () => {
@@ -23,7 +23,7 @@ export function SaveDialog({
 
             return show;
         },
-        enableBeforeUnload: true,
+        disabled: !show,
     });
 
     return <>

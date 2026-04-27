@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 import { ProjectJobList } from '@starfoundry/components/project/ProjectJobList';
-import { Accordion } from '@mantine/core';
+import { Accordion, Title } from '@mantine/core';
 import { useIsFirstRender } from '@mantine/hooks';
 import { useListProjectJobsRefresh } from '@starfoundry/components/services/projects/listJobs';
 import { useListProjects, type ProjectListMinimal } from '@starfoundry/components/services/projects/list';
@@ -48,6 +48,7 @@ function RouteComponent() {
         return projects
             .map(x => <>
                     <ProjectJobListWrapper
+                        key={x.id}
                         project={x}
                     />
                 </>
@@ -74,6 +75,7 @@ function ProjectJobListWrapper({
     const {
         isPending,
         isFetching,
+        isError,
         data: jobs,
     } = useListProjectJobsRefresh(
         project.id,
@@ -83,7 +85,14 @@ function ProjectJobListWrapper({
     );
 
     if ((isPending || isFetching) && isFirstRender) {
-        return <LoadingAnimation />;
+        return <>
+            <Title order={2}>{project.name}</Title>
+            {LoadingAnimation()}
+        </>
+    }
+
+    if (isError) {
+        return LoadingError();
     }
 
     if (jobs) {

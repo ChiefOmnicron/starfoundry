@@ -3,6 +3,7 @@ import { Title } from '@mantine/core'
 import { fetchIndustryHubQuery, useFetchIndustryHub } from '@starfoundry/components/services/industry-hub/fetch';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
+import { useDocumentTitle } from '@mantine/hooks';
 
 export const Route = createFileRoute('/industry-hubs_/$industryHubId')({
     beforeLoad: async ({ context }) => {
@@ -33,6 +34,8 @@ function RouteComponent() {
     if (isError) {
         return LoadingError();
     }
+
+    useDocumentTitle(`Industry Hub - ${industryHub.name}`);
 
     return <>
         <Title

@@ -1,4 +1,5 @@
-import { Button, Card, Flex, Grid, Modal, Stack, Text, TextInput } from "@mantine/core";
+import { ModalWrapper } from "@internal/wrapper/Modal";
+import { Button, Card, Flex, Grid, Stack, Text, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useEffect, useState, type ReactElement } from "react";
 
@@ -15,19 +16,12 @@ export function DeleteResource({
     }, [opened]);
 
     return <>
-        <Modal
+        <ModalWrapper
             data-cy="modalConfirmDelete"
             opened={ opened }
-            onClose={ close }
+            close={ close }
             title="Confirm delete"
-            overlayProps={{
-                backgroundOpacity: 0.55,
-                blur: 3,
-            }}
             size='xl'
-            centered
-            closeOnEscape
-            closeOnClickOutside
         >
             <Stack>
                 <Text>
@@ -55,7 +49,7 @@ export function DeleteResource({
                     I know what I am doing, delete it
                 </Button>
             </Stack>
-        </Modal>
+        </ModalWrapper>
 
         <Card
             data-cy="danger-zone-card"

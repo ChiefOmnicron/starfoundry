@@ -3,10 +3,10 @@ import { Route as LoginRoute } from '@/routes/auth/login';
 import { Route as ProjectRoute } from '@/routes/projects/index';
 
 export const Route = createFileRoute('/')({
-    component: IndexComponent,
+    component: RouteComponent,
 });
 
-async function IndexComponent() {
+async function RouteComponent() {
     const location = useLocation();
     const navigation = useNavigate();
     const context = useRouteContext({ from: '/' });

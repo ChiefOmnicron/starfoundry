@@ -15,7 +15,9 @@ export function CreateProject({
     onCreate,
 }: CreateProjectProps) {
 
+    const [successCreate, setSuccessCreate] = useState<string | undefined>();
     const [errorCreate, setErrorCreate] = useState<string | undefined>();
+    const [createMore, setCreateMore] = useState<boolean>(false);
 
     const {
         isError: projectGroupError,
@@ -30,9 +32,12 @@ export function CreateProject({
             return await createProject(value)
         },
         onSuccess: (data: CreateProjectResponse) => {
-            onCreate(data.id);
+            setSuccessCreate('success');
+            setErrorCreate(undefined);
+            onCreate(createMore, data.id);
         },
         onError: (error) => {
+            setSuccessCreate(undefined);
             setErrorCreate(error.message);
         }
     });
@@ -49,7 +54,7 @@ export function CreateProject({
         onSubmit: async ({ value }) => {
             await createProjectMutation.mutateAsync(value);
             form.reset();
-        }
+        },
     });
 
     if (projectGroupPending) {
@@ -74,6 +79,17 @@ export function CreateProject({
                 There was an error while creating. Please try again later.
             </Alert>;
         }
+        if (successCreate) {
+            return <Alert
+                mt="sm"
+                variant='light'
+                color='green'
+                title='Create success'
+                data-cy="successCreate"
+            >
+                The project was successfully created.
+            </Alert>;
+        }
     };
 
     return <>
@@ -83,7 +99,6 @@ export function CreateProject({
             onSubmit={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                form.handleSubmit();
             }}
         >
             <Stack>
@@ -124,6 +139,7 @@ export function CreateProject({
                             <ProjectGroupSelector
                                 projectGroups={ projectGroups }
                                 onSelect={(e) => field.handleChange(e.id)}
+                                selected={field.state.value}
                             />
                         </>
                     }}
@@ -217,11 +233,28 @@ export function CreateProject({
                                 Close
                             </Button>
                             <Button
+                                data-cy="createAnotherProject"
+                                variant='subtle'
+                                mt="sm"
+                                disabled={!canSubmit}
+                                loading={isSubmitting}
+                                onClick={() => {
+                                    setCreateMore(true);
+                                    form.handleSubmit({submitAction: 'createAnotherProject'})
+                                }}
+                            >
+                                Create Another Project
+                            </Button>
+                            <Button
                                 data-cy="create"
                                 mt="sm"
                                 type="submit"
                                 disabled={!canSubmit}
                                 loading={isSubmitting}
+                                onClick={() => {
+                                    setCreateMore(false);
+                                    form.handleSubmit({submitAction: 'create'})
+                                }}
                             >
                                 Create
                             </Button>
@@ -251,12 +284,12 @@ export function CreateProjectModal({
 }
 
 export type CreateProjectProps = {
-    onCreate: (projectId: Uuid) => void;
+    onCreate: (createMore: boolean, projectId: Uuid) => void;
 }
 
 export type CreateProjectModalProps = {
     opened: boolean;
     close: () => void;
 
-    onCreate: (projectId: Uuid) => void;
+    onCreate: (createMore: boolean, projectId: Uuid) => void;
 }

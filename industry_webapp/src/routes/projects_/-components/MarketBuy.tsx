@@ -201,8 +201,9 @@ export function MarketBuy({
                                 <Table.Td>
                                     <CopyText
                                         value={volume}
+                                        suffix=' m3'
                                         number
-                                    /> m3
+                                    />
                                 </Table.Td>
                             </Table.Tr>
                             <Table.Tr>
@@ -210,8 +211,9 @@ export function MarketBuy({
                                 <Table.Td>
                                     <CopyText
                                         value={cost}
+                                        suffix=' ISK'
                                         number
-                                    /> ISK
+                                    />
                                 </Table.Td>
                             </Table.Tr>
                             <Table.Tr>

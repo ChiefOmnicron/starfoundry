@@ -7,6 +7,8 @@ export function CopyText({
     value,
     display,
 
+    suffix = '',
+
     date = false,
     dateUtc = false,
     disabled = false,
@@ -32,9 +34,9 @@ export function CopyText({
             // using <NumberFormatter> from mantine has a problem with placing
             // the tooltip
             if (withUnit) {
-                return `${formatNumber(value as number)} (${formatNumberUnit(value as number)})`;
+                return `${formatNumber(value as number)} ${suffix} (${formatNumberUnit(value as number)})`;
             } else {
-                return formatNumber(value as number);
+                return `${formatNumber(value as number)} ${suffix}`;
             }
         } else if (date && value) {
             return `${formatDate(value as number)} (local)`;
@@ -67,6 +69,8 @@ export function CopyText({
 export type CopyTextProps = {
     value: string | number | undefined;
     display?: string | number | undefined;
+
+    suffix?: string;
 
     date?: boolean;
     dateUtc?: boolean;

@@ -6,6 +6,7 @@ use utoipa::ToSchema;
 
 use crate::project_group::error::{ProjectGroupError, Result};
 use crate::project_group::ProjectGroupUuid;
+use crate::sort_by_job_flat;
 
 /// 3 days in seconds
 const DEFAULT_TIME_JOB_SPLITTING: i32 = 259_200i32;
@@ -68,8 +69,9 @@ pub async fn list_default_job_splitting(
     for entry in run_entries {
         if let Some(x) = items.get(&entry.type_id.into()) {
             runs.push(JobSplittingRun {
-                max_runs: entry.max_runs,
-                item:     x.clone(),
+                max_runs:   entry.max_runs,
+                item:       x.clone(),
+                runs:       1i32,
             })
         } else {
             // silently ignore errors
@@ -78,11 +80,15 @@ pub async fn list_default_job_splitting(
         }
     }
 
+    let runs = sort_entries(runs);
+
     Ok(JobSplitting {
         general,
         runs,
     })
 }
+
+sort_by_job_flat!(sort_entries, JobSplittingRun);
 
 #[derive(Debug, Deserialize, Serialize, ToSchema)]
 pub struct JobSplitting {
@@ -102,7 +108,7 @@ pub struct JobSplittingGeneral {
     pub reaction:      i32,
 }
 
-#[derive(Debug, Deserialize, Serialize, ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 #[schema(
     example = json!({
         "max_runs": 40,
@@ -126,8 +132,11 @@ pub struct JobSplittingGeneral {
     })
 )]
 pub struct JobSplittingRun {
-    pub max_runs: i32,
-    pub item:     Item,
+    pub max_runs:   i32,
+    pub item:       Item,
+    // for sorting
+    #[serde(skip)]
+    pub runs:       i32,
 }
 
 #[cfg(test)]

@@ -1,4 +1,4 @@
-import { Button, Divider, Group, Stack, Textarea, Tooltip } from "@mantine/core";
+import { Button, Divider, Group, NumberFormatter, Stack, Textarea, Tooltip } from "@mantine/core";
 import { ModalWrapper } from "@starfoundry/components/wrapper/Modal";
 import { useClipboard } from "@mantine/hooks";
 import { useEffect, useState, type ReactElement } from "react";
@@ -45,6 +45,11 @@ export function MultiBuyModal({
         })
         .join(`\n`);
 
+    let expectedCost = items
+        .flatMap(x => x.entries.map(y => y.quantity * y.price))
+        .reduce((prev, curr) => prev += curr, 0)
+        .toFixed(0);
+
     return <>
         <ModalWrapper
             opened={opened}
@@ -53,6 +58,10 @@ export function MultiBuyModal({
             size="50%"
         >
             <Stack>
+                <Group>
+                    Expected cost: <NumberFormatter suffix=" ISK" value={expectedCost} thousandSeparator />
+                </Group>
+
                 <Textarea
                     label="For Multibuy"
                     description="Paste this into multibuy"
