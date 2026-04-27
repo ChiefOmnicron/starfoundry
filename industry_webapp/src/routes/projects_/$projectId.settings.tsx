@@ -221,7 +221,6 @@ function RouteComponent() {
                                 selected={field.state.value}
                                 projectGroups={projectGroups}
                                 onSelect={(e) => {
-                                    console.log(e)
                                     field.handleChange(e.id);
                                     setTouched(true);
                                 }}

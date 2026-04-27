@@ -56,7 +56,6 @@ export function ProjectGroupDefaultsBlueprintOverwrite({
     });
 
     useEffect(() => {
-        console.log(defaultBlueprintOverwrites)
         if (defaultBlueprintOverwrites) {
             setSelectedBlueprintOverwriteOld(defaultBlueprintOverwrites);
             setSelectedBlueprintOverwrite(defaultBlueprintOverwrites);

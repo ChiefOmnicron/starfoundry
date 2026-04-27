@@ -1,18 +1,22 @@
 import { Alert, Button, Group, Stack, Textarea, Title } from "@mantine/core";
 import { BlueprintList } from "@internal/list/BlueprintList";
 import { checkResources, type CheckMaterialsRequest, type CheckMaterialsResponse } from "@internal/services/projects/checkResource";
+import { createJobOrder } from "@internal/services/projects/createJobOrder";
 import { LoadingError } from "@internal/misc/LoadingError";
 import { MaterialList } from "@internal/list/MaterialList";
 import { ModalWrapper } from "@internal/wrapper/Modal";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
+import type { ProjectJobMinimal } from "./ProjectJobAction";
 import type { Uuid } from "@internal/services/utils";
 
 export function CreateBuildOrderModal({
-    jobIds,
+    jobs,
 
     opened,
     close,
+
+    onCreated,
 }: CreateBuildOrderModalProps) {
     const [hasError, setHasError] = useState<boolean>(false);
     const [checkResult, setCheckResult] = useState<CheckMaterialsResponse | undefined>(undefined);
@@ -30,9 +34,19 @@ export function CreateBuildOrderModal({
         },
     });
 
+    const createJobOrderMutation = useMutation({
+        mutationFn: async () => {
+            return await createJobOrder(jobs);
+        },
+        onSuccess: (data) => {
+            setHasError(false);
+            onCreated(data.id);
+        },
+    });
+
     const checkResourcesClick = () => {
         checkResourceMutation.mutate({
-            job_ids:        jobIds,
+            job_ids:        jobs.map(x => x.job_id),
             materials_str:  existingMaterials,
         });
     }
@@ -63,6 +77,16 @@ export function CreateBuildOrderModal({
                     <BlueprintList
                         blueprints={checkResult.blueprints}
                     />
+
+                    <Group
+                        justify="flex-end"
+                    >
+                        <Button
+                            onClick={() => createJobOrderMutation.mutate()}
+                        >
+                            Create
+                        </Button>
+                    </Group>
                 </>
             }
         } else {
@@ -117,8 +141,10 @@ export function CreateBuildOrderModal({
 }
 
 export type CreateBuildOrderModalProps = {
-    jobIds: Uuid[];
+    jobs: ProjectJobMinimal[];
 
     opened: boolean;
     close: () => void;
+
+    onCreated: (id: Uuid) => void;
 }

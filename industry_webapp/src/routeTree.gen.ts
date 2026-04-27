@@ -29,6 +29,7 @@ import { Route as ProjectsProjectIdRouteRouteImport } from './routes/projects_/$
 import { Route as ProjectGroupsProjectGroupIdRouteRouteImport } from './routes/project-groups_/$projectGroupId.route'
 import { Route as IndustryHubsIndustryHubIdRouteRouteImport } from './routes/industry-hubs_/$industryHubId.route'
 import { Route as StructuresStructureIdIndexRouteImport } from './routes/structures_/$structureId.index'
+import { Route as JobsAssignmentIdIndexRouteImport } from './routes/jobs_/$assignmentId.index'
 import { Route as IndustryHubsIndustryHubIdIndexRouteImport } from './routes/industry-hubs_/$industryHubId.index'
 import { Route as ProjectsProjectIdStockRouteImport } from './routes/projects_/$projectId.stock'
 import { Route as ProjectsProjectIdSettingsRouteImport } from './routes/projects_/$projectId.settings'
@@ -149,6 +150,11 @@ const StructuresStructureIdIndexRoute =
     path: '/',
     getParentRoute: () => StructuresStructureIdRouteRoute,
   } as any)
+const JobsAssignmentIdIndexRoute = JobsAssignmentIdIndexRouteImport.update({
+  id: '/jobs_/$assignmentId/',
+  path: '/jobs/$assignmentId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndustryHubsIndustryHubIdIndexRoute =
   IndustryHubsIndustryHubIdIndexRouteImport.update({
     id: '/',
@@ -269,6 +275,7 @@ export interface FileRoutesByFullPath {
   '/projects/$projectId/settings': typeof ProjectsProjectIdSettingsRoute
   '/projects/$projectId/stock': typeof ProjectsProjectIdStockRoute
   '/industry-hubs/$industryHubId/': typeof IndustryHubsIndustryHubIdIndexRoute
+  '/jobs/$assignmentId/': typeof JobsAssignmentIdIndexRoute
   '/structures/$structureId/': typeof StructuresStructureIdIndexRoute
   '/projects/$projectId/assistant/': typeof ProjectsProjectIdAssistantIndexRoute
 }
@@ -298,6 +305,7 @@ export interface FileRoutesByTo {
   '/projects/$projectId/settings': typeof ProjectsProjectIdSettingsRoute
   '/projects/$projectId/stock': typeof ProjectsProjectIdStockRoute
   '/industry-hubs/$industryHubId': typeof IndustryHubsIndustryHubIdIndexRoute
+  '/jobs/$assignmentId': typeof JobsAssignmentIdIndexRoute
   '/structures/$structureId': typeof StructuresStructureIdIndexRoute
   '/projects/$projectId/assistant': typeof ProjectsProjectIdAssistantIndexRoute
 }
@@ -336,6 +344,7 @@ export interface FileRoutesById {
   '/projects_/$projectId/settings': typeof ProjectsProjectIdSettingsRoute
   '/projects_/$projectId/stock': typeof ProjectsProjectIdStockRoute
   '/industry-hubs_/$industryHubId/': typeof IndustryHubsIndustryHubIdIndexRoute
+  '/jobs_/$assignmentId/': typeof JobsAssignmentIdIndexRoute
   '/structures_/$structureId/': typeof StructuresStructureIdIndexRoute
   '/projects_/$projectId/assistant/': typeof ProjectsProjectIdAssistantIndexRoute
 }
@@ -375,6 +384,7 @@ export interface FileRouteTypes {
     | '/projects/$projectId/settings'
     | '/projects/$projectId/stock'
     | '/industry-hubs/$industryHubId/'
+    | '/jobs/$assignmentId/'
     | '/structures/$structureId/'
     | '/projects/$projectId/assistant/'
   fileRoutesByTo: FileRoutesByTo
@@ -404,6 +414,7 @@ export interface FileRouteTypes {
     | '/projects/$projectId/settings'
     | '/projects/$projectId/stock'
     | '/industry-hubs/$industryHubId'
+    | '/jobs/$assignmentId'
     | '/structures/$structureId'
     | '/projects/$projectId/assistant'
   id:
@@ -441,6 +452,7 @@ export interface FileRouteTypes {
     | '/projects_/$projectId/settings'
     | '/projects_/$projectId/stock'
     | '/industry-hubs_/$industryHubId/'
+    | '/jobs_/$assignmentId/'
     | '/structures_/$structureId/'
     | '/projects_/$projectId/assistant/'
   fileRoutesById: FileRoutesById
@@ -460,6 +472,7 @@ export interface RootRouteChildren {
   AboutIndexRoute: typeof AboutIndexRoute
   CharactersIndexRoute: typeof CharactersIndexRoute
   LegalIndexRoute: typeof LegalIndexRoute
+  JobsAssignmentIdIndexRoute: typeof JobsAssignmentIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -603,6 +616,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/structures/$structureId/'
       preLoaderRoute: typeof StructuresStructureIdIndexRouteImport
       parentRoute: typeof StructuresStructureIdRouteRoute
+    }
+    '/jobs_/$assignmentId/': {
+      id: '/jobs_/$assignmentId/'
+      path: '/jobs/$assignmentId'
+      fullPath: '/jobs/$assignmentId/'
+      preLoaderRoute: typeof JobsAssignmentIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/industry-hubs_/$industryHubId/': {
       id: '/industry-hubs_/$industryHubId/'
@@ -885,6 +905,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutIndexRoute: AboutIndexRoute,
   CharactersIndexRoute: CharactersIndexRoute,
   LegalIndexRoute: LegalIndexRoute,
+  JobsAssignmentIdIndexRoute: JobsAssignmentIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

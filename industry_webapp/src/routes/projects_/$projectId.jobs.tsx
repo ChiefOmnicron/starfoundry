@@ -1,16 +1,19 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 import { ProjectJobList, type ProjectJobListProps } from '@starfoundry/components/project/ProjectJobList';
+import { Route as AssignmentOverview } from '@/routes/jobs_/$assignmentId.index';
 import { Tabs } from '@mantine/core';
-import { useListProjectJobsRefresh } from '@starfoundry/components/services/projects/listJobs'
 import { useIsFirstRender } from '@mantine/hooks';
+import { useListProjectJobsRefresh } from '@starfoundry/components/services/projects/listJobs'
+import type { Uuid } from '@starfoundry/components/services/utils';
 
 export const Route = createFileRoute('/projects_/$projectId/jobs')({
     component: RouteComponent,
 })
 
 function RouteComponent() {
+    const navigation = useNavigate();
     const { projectId } = Route.useParams();
     const isFirstRender = useIsFirstRender();
 
@@ -32,6 +35,15 @@ function RouteComponent() {
         return <ProjectJobList
             {...props}
         />
+    }
+
+    const onCreated = (id: Uuid) => {
+        navigation({
+            to: AssignmentOverview.to,
+            params: {
+                assignmentId: id
+            },
+        })
     }
 
     return <>
@@ -57,6 +69,7 @@ function RouteComponent() {
                         checkable: true,
                         //showQuickFix: true,
                         showStarted: true,
+                        onCreated,
                     })
                 }
             </Tabs.Panel>
@@ -68,6 +81,7 @@ function RouteComponent() {
                         status: 'BUILDING',
                         showCost: true,
                         showRemaining: true,
+                        onCreated,
                     })
                 }
             </Tabs.Panel>
@@ -80,6 +94,7 @@ function RouteComponent() {
                         editable: true,
                         showStatus: true,
                         showCost: true,
+                        onCreated,
                     })
                 }
             </Tabs.Panel>

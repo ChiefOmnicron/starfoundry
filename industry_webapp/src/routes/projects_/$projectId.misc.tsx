@@ -75,10 +75,6 @@ function RouteComponent() {
     }
 
     const onSelect = (misc: ProjectMisc) => {
-        console.log(misc, selectedProjectMisc, [
-            misc,
-            ...selectedProjectMisc,
-        ])
         setSelectedProjectMisc([
             misc,
             ...selectedProjectMisc,

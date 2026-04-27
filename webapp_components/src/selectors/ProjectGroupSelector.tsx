@@ -42,7 +42,6 @@ export function ProjectGroupSelector({
     });
 
     useEffect(() => {
-        console.log(selected)
         if (selected) {
             setValue(selected);
         } else {

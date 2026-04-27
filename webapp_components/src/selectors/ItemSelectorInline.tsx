@@ -84,7 +84,6 @@ export function ItemSelector({
     ref.current.reset = resetValue;
 
     const fetchData = useDebouncedCallback(async (query: string) => {
-        console.log(query)
         setLoading(true);
 
         let filter: ItemFilter = {

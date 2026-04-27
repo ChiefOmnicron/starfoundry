@@ -21,7 +21,6 @@ export function EditMarketEntryModal({
         },
         onSubmit: async ({ value }) => {
             form.reset();
-            console.log(value)
             onSave({
                 ...entry,
                 cost: value.buyPrice,

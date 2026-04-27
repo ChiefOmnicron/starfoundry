@@ -89,7 +89,6 @@ export function IndustryHubCard({
     const selectIndustryHub = (
         state: 'checked' | 'unchecked',
     ) => {
-        console.log(state)
         if (!checkable) {
             return;
         }

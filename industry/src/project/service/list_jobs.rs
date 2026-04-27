@@ -6,12 +6,12 @@ use starfoundry_lib_industry::Structure;
 use starfoundry_lib_types::{CharacterId, TypeId};
 use std::collections::HashMap;
 use utoipa::{IntoParams, ToSchema};
-use uuid::Uuid;
 
 use crate::project::error::{ProjectError, Result};
 use crate::project::ProjectUuid;
 use crate::structure::service::FetchStructureQuery;
 use crate::sort_by_job;
+use crate::project::service::ProjectJobUuid;
 
 pub async fn list_jobs(
     pool:                   &PgPool,
@@ -99,6 +99,7 @@ pub async fn list_jobs(
 
         let project_group = ProjectJob {
             id:         entry.id.into(),
+            project_id: project_id,
             job_id:     entry.job_id,
             status:     entry.status.into(),
 
@@ -274,7 +275,8 @@ async fn used_stock(
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 pub struct ProjectJob {
-    pub id:         Uuid,
+    pub id:         ProjectJobUuid,
+    pub project_id: ProjectUuid,
     pub job_id:     Option<i32>,
     pub status:     ProjectJobStatus,
 

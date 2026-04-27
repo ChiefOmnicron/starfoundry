@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO project_job_assignment\n            (\n                id,\n                project_id,\n                job_id\n            )\n            SELECT $1, * FROM UNNEST(\n                $2::UUID[],\n                $3::UUID[]\n            )\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "UuidArray",
+        "UuidArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "28ebbcbdffe3243591fccfc39ee3c40ce3452ddefe03d9423ce7f7b3e6c677d6"
+}

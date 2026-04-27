@@ -1,0 +1,100 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                pja.id AS \"id!\",\n                pja.job_id AS \"job_id!\",\n                pja.project_id AS \"project_id!\",\n                pja.started AS \"started!\",\n                pj.runs,\n                pj.structure_id,\n                pj.type_id\n            FROM project_job_assignment pja\n            JOIN project_job pj ON pja.job_id = pj.id\n            WHERE pja.id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id!",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "project_job_assignment",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "job_id!",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "project_job_assignment",
+            "name": "job_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "project_id!",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "project_job_assignment",
+            "name": "project_id"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "started!",
+        "type_info": "Bool",
+        "origin": {
+          "Table": {
+            "table": "project_job_assignment",
+            "name": "started"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "runs",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "runs"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "structure_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "structure_id"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "type_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_job",
+            "name": "type_id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "bbbc6300d66282a98d92de5ecbc23a9d59d7d233b04b96b7224153f810989b83"
+}

@@ -68,6 +68,7 @@ export type ProjectJobGroup = {
 
 export type ProjectJob = {
     id:          Uuid;
+    project_id:  Uuid;
     job_id?:     number;
     status:      ProjectJobStatus;
     runs:        number;

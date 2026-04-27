@@ -112,7 +112,6 @@ async fn blueprint(
         .map_err(ItemError::List)?
         .into_iter()
         .map(|x| {
-            dbg!("asdasd", &x);
             Item {
                 category:      Category {
                     category_id: x.category_id.into(),

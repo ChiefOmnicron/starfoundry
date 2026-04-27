@@ -294,7 +294,7 @@ function Shell() {
 
                 <AppShell.Main
                     style={{
-                        paddingBottom: '50px'
+                        paddingBottom: '125px'
                     }}
                 >
                     <Outlet />

@@ -29,7 +29,6 @@ export function BaseCard({
     }
 
     const showCheckbox = () => {
-        //console.log(selected)
         if (!checkable) {
             return <></>
         }
