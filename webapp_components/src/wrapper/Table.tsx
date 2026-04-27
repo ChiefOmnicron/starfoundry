@@ -66,7 +66,7 @@ export function TableWrapper<T>({
 
     if (scrollable) {
         return <>
-            <Table.ScrollContainer minWidth={100} maxHeight={300}>
+            <Table.ScrollContainer minWidth={100} maxHeight={500}>
                 {tableView}
             </Table.ScrollContainer>
         </>
