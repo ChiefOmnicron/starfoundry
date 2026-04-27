@@ -397,6 +397,16 @@ impl Gas {
             .collect::<Vec<_>>()
     }
 
+    pub fn uncompressed_type_ids() -> Vec<TypeId> {
+        Gas::type_ids()
+            .into_iter()
+            .map(|x| Gas::from_type_id(x.into()))
+            .filter(|x| x.is_uncompressed())
+            .map(|x| x.to_type_id())
+            .map(Into::into)
+            .collect::<Vec<_>>()
+    }
+
     pub fn is_gas(
         type_id: TypeId,
     ) -> bool {
