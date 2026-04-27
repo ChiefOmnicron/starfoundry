@@ -1,5 +1,6 @@
-import { axiosClient, type AbortSignal } from "@internal/services/client";
 import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import type { AbortSignal } from "@internal/services/client";
 import type { GenericAbortSignal } from "axios";
 import type { Item } from "@internal/services/item/model";
 import type { Uuid } from "@internal/services/utils";
@@ -9,7 +10,7 @@ export const LIST_JOB_ASSIGNMENT = 'listJobAssignment';
 export const listJobAssignments = async (
     assignment_id:  Uuid,
     signal?:        GenericAbortSignal,
-): Promise<ProjectJobAssignmentGroup[]> => (await axiosClient())
+): Promise<ProjectJobAssignmentGroup[]> => axios
     .get(
         `/api/projects/job-assignments/${assignment_id}`,
         {
