@@ -1,29 +1,21 @@
-import { Accordion, Title } from '@mantine/core';
+import { Accordion, Button, Checkbox, Table } from '@mantine/core';
+import { CopyText } from '@starfoundry/components/misc/CopyText';
+import { createColumnHelper, flexRender, getCoreRowModel, useReactTable, type RowSelectionState } from '@tanstack/react-table';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { EveIcon } from '@starfoundry/components/misc/EveIcon';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
+import { useEffect, useState } from 'react';
 import { ProjectJobAction, type ProjectJobMinimal } from '@starfoundry/components/project/ProjectJobAction';
-import { ProjectJobListTable } from '@starfoundry/components/project/ProjectJobListTable';
-import { Route as AssignmentOverview } from '@/routes/jobs_/$assignmentId.index';
+import { Route as AssignmentOverviewRoute } from '@/routes/jobs_/$assignmentId.index';
 import { useIsFirstRender } from '@mantine/hooks';
-import { useListProjectJobsRefresh, type ProjectJob } from '@starfoundry/components/services/projects/listJobs';
-import { useListProjects, type ProjectListMinimal } from '@starfoundry/components/services/projects/list';
-import { useState } from 'react';
+import { useListProjectAllJobs } from '@starfoundry/components/services/projects/listAllJobs';
+import type { ProjectJob } from '@starfoundry/components/services/projects/listJobs';
 import type { Uuid } from '@starfoundry/components/services/utils';
 
-export interface QueryParams {
-    deleted?: boolean;
-}
 
 export const Route = createFileRoute('/jobs/')({
     component: RouteComponent,
-    validateSearch: (params: {
-        deleted: boolean,
-    }): QueryParams => {
-        return {
-            deleted: (params.deleted) || undefined
-        };
-    }
 });
 
 function RouteComponent() {
@@ -35,10 +27,8 @@ function RouteComponent() {
         isPending,
         isError,
         isFetching,
-        data: projects
-    } = useListProjects({
-        status: 'IN_PROGRESS',
-    });
+        data: projects,
+    } = useListProjectAllJobs();
 
     if ((isPending || isFetching) && isFirstRender) {
         return LoadingAnimation();
@@ -46,16 +36,9 @@ function RouteComponent() {
         return LoadingError();
     }
 
-    const onSelect = (projectId: Uuid, projectJobs: ProjectJob[]) => {
+    const onSelect = (projectId: Uuid, projectJobs: ProjectJobMinimal[]) => {
         let tmp = selectedRows.filter(x => x.project_id !== projectId);
-        let jobs = projectJobs
-            .map(x => {
-                return {
-                    job_id:     x.id,
-                    project_id: x.project_id,
-                }
-            })
-        setSelectedRows([...tmp, ...jobs]);
+        setSelectedRows([...tmp, ...projectJobs]);
     }
 
     const entries = () => {
@@ -65,13 +48,24 @@ function RouteComponent() {
 
         return projects
             .map(x => <>
-                    <ProjectJobListWrapper
-                        key={x.id}
-                        project={x}
-                        onSelect={(y: ProjectJob[]) => {
-                            onSelect(x.id, y);
-                        }}
-                    />
+                    <Accordion.Item
+                        key={x.project_id}
+                        value={x.project_id}
+                    >
+                        <Accordion.Control>
+                            {x.header}
+                        </Accordion.Control>
+                        <Accordion.Panel>
+                            <ProjectJobListWrapper
+                                key={x.header}
+                                jobs={x.entries}
+                                onSelect={(y: ProjectJobMinimal[]) => {
+                                    console.log('1', y)
+                                    onSelect(x.project_id, y);
+                                }}
+                            />
+                        </Accordion.Panel>
+                    </Accordion.Item>
                 </>
             )
     }
@@ -81,7 +75,7 @@ function RouteComponent() {
             selected={selectedRows}
 
             onCreated={(id: Uuid) => navigation({
-                to: AssignmentOverview.to,
+                to: AssignmentOverviewRoute.to,
                 params: {
                     assignmentId: id
                 },
@@ -89,7 +83,7 @@ function RouteComponent() {
         />
 
         <Accordion
-            defaultValue={(projects || []).map(x => x.id)}
+            defaultValue={(projects || []).map(x => x.project_id)}
             variant="contained"
             multiple
         >
@@ -100,63 +94,177 @@ function RouteComponent() {
 
 // Wrapper so that every project can independently can load the jobs
 function ProjectJobListWrapper({
-    project,
-    onSelect,
+    jobs,
+    onSelect = () => {},
 }: ProjectJobListWrapperProps) {
-    const isFirstRender = useIsFirstRender();
+    const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+    const [started, setStarted] = useState<Uuid[]>([]);
 
-    const {
-        isPending,
-        isFetching,
-        isError,
+    const columnHelper = createColumnHelper<ProjectJob>();
+    const columns = [
+        columnHelper.display({
+            id: 'check',
+            header: ({table}) => <Checkbox
+                checked={table.getIsAllRowsSelected()}
+                indeterminate={table.getIsSomeRowsSelected()}
+                onChange={table.getToggleAllRowsSelectedHandler()}
+            />,
+            cell: ({row}) => <Checkbox
+                checked={row.getIsSelected()}
+                onChange={row.getToggleSelectedHandler()}
+            />,
+            size: 1,
+            maxSize: 1,
+        }),
+        columnHelper.display({
+            id: 'icon',
+            cell: ({ row }) => <EveIcon
+                id={row.original.item.type_id}
+            />,
+            size: 1,
+            maxSize: 1,
+        }),
+        columnHelper.display({
+            id: 'name',
+            cell: ({ row }) => <CopyText
+                value={row.original.item.name}
+                disabled={started.indexOf(row.original.id) > -1}
+            />,
+            header: () => 'Name',
+            size: 20,
+        }),
+        columnHelper.display({
+            id: 'runs',
+            cell: ({ row }) => <CopyText
+                value={row.original.runs}
+                disabled={started.indexOf(row.original.id) > -1}
+            />,
+            header: () => 'Runs',
+            size: 3,
+            maxSize: 3,
+        }),
+        columnHelper.display({
+            id: 'structure',
+            cell: ({ row }) => <CopyText
+                value={row.original.structure.name}
+                disabled={started.indexOf(row.original.id) > -1}
+            />,
+            header: () => 'Structure',
+            size: 10,
+        }),
+        columnHelper.display({
+            id: 'action',
+            cell: ({ row }) => {
+                return <Button
+                    onClick={() => {
+                        setStarted([...started, row.original.id]);
+                    }}
+                    disabled={started.indexOf(row.original.id) > -1}
+                >
+                    Started
+                </Button>;
+            },
+            meta: {
+                align: 'right',
+            },
+            size: 1,
+            maxSize: 1,
+        }),
+    ];
+    
+    const table = useReactTable<ProjectJob>({
+        columns: columns,
         data: jobs,
-    } = useListProjectJobsRefresh(
-        project.id,
-        {
-            startable: true,
-        }
-    );
+        autoResetPageIndex: false,
+        onRowSelectionChange: (selected) => setRowSelection(selected),
+        getCoreRowModel: getCoreRowModel(),
+        getRowId: row => row.id,
+        state: {
+            rowSelection,
+        },
+    });
 
-    if ((isPending || isFetching) && isFirstRender) {
-        return <>
-            <Title order={2}>{project.name}</Title>
-            {LoadingAnimation()}
-        </>
-    }
+    // must stay, otherwise the selection change is not properly triggered
+    useEffect(() => {
+        onSelect(
+            table
+                .getSelectedRowModel()
+                .rows
+                .map(x => x.original)
+                .map(x => {
+                    return {
+                        project_id: x.project_id,
+                        job_id: x.id
+                    }
+                })
+            );
+    }, [rowSelection]);
 
-    if (isError) {
-        return LoadingError();
-    }
+    return <>
+        <Table.ScrollContainer minWidth={100} maxHeight={500}>
+            <Table stickyHeader striped data-cy="data">
+                <Table.Thead>
+                    {
+                        table
+                            .getHeaderGroups()
+                            .map(headerGroup => (
+                                <Table.Tr key={headerGroup.id}>
+                                    {
+                                        headerGroup
+                                            .headers
+                                            .map(header => (
+                                                <Table.Th
+                                                    key={header.id}
+                                                    style={{
+                                                        width: `${header.getSize()}%`
+                                                    }}
+                                                >
+                                                    {
+                                                        flexRender(
+                                                            header.column.columnDef.header,
+                                                            header.getContext()
+                                                        )
+                                                    }
+                                                </Table.Th>
+                                            ))
+                                    }
+                                </Table.Tr>
+                            ))
+                    }
+                </Table.Thead>
 
-    if (jobs) {
-        if (jobs.length === 0) {
-            return <></>;
-        }
-
-        return <>
-            <Accordion.Item
-                key={project.id}
-                value={project.id}
-            >
-                <Accordion.Control>
-                    {project.name}
-                </Accordion.Control>
-                <Accordion.Panel>
-                    <ProjectJobListTable
-                        projectId={project.id}
-                        jobs={jobs.flatMap(x => x.entries)}
-                        checkable={true}
-                        showStarted={true}
-                        onSelect={onSelect}
-                    />
-                </Accordion.Panel>
-            </Accordion.Item>
-        </>
-    }
+                <Table.Tbody>
+                    {
+                        table
+                            .getRowModel()
+                            .rows
+                            .map(row => (
+                                <Table.Tr key={row.id}>
+                                    {
+                                        row
+                                            .getVisibleCells()
+                                            .map(cell => (
+                                                <Table.Td key={cell.id}>
+                                                    {
+                                                        flexRender(
+                                                            cell.column.columnDef.cell,
+                                                            cell.getContext()
+                                                        )
+                                                    }
+                                                </Table.Td>
+                                            ))
+                                    }
+                                </Table.Tr>
+                            ))
+                    }
+                </Table.Tbody>
+            </Table>
+        </Table.ScrollContainer>
+    </>
 }
 
 type ProjectJobListWrapperProps = {
-    project: ProjectListMinimal,
+    jobs:           ProjectJob[],
 
-    onSelect?: (selected: ProjectJob[]) => void;
+    onSelect?: (selected: ProjectJobMinimal[]) => void;
 }

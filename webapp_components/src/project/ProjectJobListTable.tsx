@@ -1,17 +1,17 @@
-import { Alert, Button, Checkbox } from "@mantine/core";
+import { Alert, Button, Checkbox, Table } from "@mantine/core";
 import { CopyTable } from "@internal/misc/CopyTable";
 import { CopyText } from "@internal/misc/CopyText";
 import { Countdown } from "@internal/misc/Countdown";
-import { createColumnHelper, getCoreRowModel, useReactTable, type RowSelectionState } from "@tanstack/react-table";
+import { createColumnHelper, flexRender, getCoreRowModel, useReactTable, type RowSelectionState } from "@tanstack/react-table";
 import { EveIcon } from "@internal/misc/EveIcon";
 import { JobStatusBadge } from "./JobStatusBadge";
 import { Nakamura } from "@internal/misc/Nakamura";
 import { ProjectJobEditModal } from "./ProjectJobEditModal";
-import { TableWrapper } from "@internal/wrapper/Table";
 import { useDisclosure } from "@mantine/hooks";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { ProjectJob } from "@internal/services/projects/listJobs";
 import type { Uuid } from "@internal/services/utils";
+import type { ProjectJobMinimal } from "./ProjectJobAction";
 
 export function ProjectJobListTable({
     projectId,
@@ -22,15 +22,13 @@ export function ProjectJobListTable({
     showRemaining = false,
     showStarted = false,
 
-    scrollable = false,
-
     checkable = false,
     onSelect = () => {},
 
     editable = false,
     showQuickFix = false,
 }: ProjectJobListTableProps) {
-    const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+    const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
     const [editJobModalOpened, { open: editJobModalOpen, close: editJobModalClose }] = useDisclosure(false);
     const [editJob, setEditJob] = useState<ProjectJob>({} as ProjectJob);
@@ -174,7 +172,23 @@ export function ProjectJobListTable({
         columns: columns,
         data: jobs,
         autoResetPageIndex: false,
-        onRowSelectionChange: setRowSelection,
+        onRowSelectionChange: (selected) => {
+            setRowSelection(selected);
+            //onSelect(table.getSelectedRowModel().rows.map(x => x.original));
+            console.log(table.getSelectedRowModel().rows.map(x => x.original))
+            onSelect(
+                table
+                    .getSelectedRowModel()
+                    .rows
+                    .map(x => x.original)
+                    .map(x => {
+                        return {
+                            project_id: x.project_id,
+                            job_id: x.id
+                        }
+                    })
+                );
+        },
         getRowCanExpand: () => true,
         getCoreRowModel: getCoreRowModel(),
         getRowId: row => row.id,
@@ -192,10 +206,6 @@ export function ProjectJobListTable({
             rowSelection,
         },
     });
-
-    useEffect(() => {
-        onSelect(table.getSelectedRowModel().rows.map(x => x.original));
-    }, [rowSelection]);
 
     const emptyTable = () => {
         if (jobs.length === 0) {
@@ -223,10 +233,65 @@ export function ProjectJobListTable({
             opened={editJobModalOpened && Object.keys(editJob).length > 0}
         />
 
-        <TableWrapper
-            table={table}
-            scrollable={scrollable}
-        />
+        <Table.ScrollContainer minWidth={100} maxHeight={500}>
+            <Table stickyHeader striped data-cy="data">
+                <Table.Thead>
+                    {
+                        table
+                            .getHeaderGroups()
+                            .map(headerGroup => (
+                                <Table.Tr key={headerGroup.id}>
+                                    {
+                                        headerGroup
+                                            .headers
+                                            .map(header => (
+                                                <Table.Th
+                                                    key={header.id}
+                                                    style={{
+                                                        width: `${header.getSize()}%`
+                                                    }}
+                                                >
+                                                    {
+                                                        flexRender(
+                                                            header.column.columnDef.header,
+                                                            header.getContext()
+                                                        )
+                                                    }
+                                                </Table.Th>
+                                            ))
+                                    }
+                                </Table.Tr>
+                            ))
+                    }
+                </Table.Thead>
+        
+                <Table.Tbody>
+                    {
+                        table
+                            .getRowModel()
+                            .rows
+                            .map(row => (
+                                <Table.Tr key={row.id}>
+                                    {
+                                        row
+                                            .getVisibleCells()
+                                            .map(cell => (
+                                                <Table.Td key={cell.id}>
+                                                    {
+                                                        flexRender(
+                                                            cell.column.columnDef.cell,
+                                                            cell.getContext()
+                                                        )
+                                                    }
+                                                </Table.Td>
+                                            ))
+                                    }
+                                </Table.Tr>
+                            ))
+                    }
+                </Table.Tbody>
+            </Table>
+        </Table.ScrollContainer>
     </>
 }
 
@@ -242,7 +307,7 @@ export type ProjectJobListTableProps = {
     scrollable?:    boolean;
 
     checkable?: boolean;
-    onSelect?: (selected: ProjectJob[]) => void;
+    onSelect?: (selected: ProjectJobMinimal[]) => void;
 
     editable?:      boolean;
     showQuickFix?:  boolean;

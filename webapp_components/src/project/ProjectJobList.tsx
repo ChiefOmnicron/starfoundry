@@ -2,7 +2,7 @@ import { Stack, Title } from "@mantine/core";
 import { ProjectJobAction, type ProjectJobMinimal } from "./ProjectJobAction";
 import { ProjectJobListTable } from "./ProjectJobListTable";
 import { useState } from "react";
-import type { ProjectJob, ProjectJobGroup, ProjectJobStatus } from "@internal/services/projects/listJobs"
+import type { ProjectJobGroup, ProjectJobStatus } from "@internal/services/projects/listJobs"
 import type { Uuid } from "@internal/services/utils";
 
 export function ProjectJobList({
@@ -59,13 +59,8 @@ export function ProjectJobList({
         }
     }
 
-    const onSelect = (projectJobs: ProjectJob[]) => {
-        setSelectedRows(projectJobs.map(x => {
-            return {
-                job_id:     x.id,
-                project_id: x.project_id,
-            }
-        }))
+    const onSelect = (projectJobs: ProjectJobMinimal[]) => {
+        setSelectedRows(projectJobs);
     }
 
     const content = () => {
@@ -75,7 +70,6 @@ export function ProjectJobList({
                     if (!status) {
                         return true;
                     }
-
                     return !!x.entries.find(y => y.status === status);
                 })
                 .map(x => {

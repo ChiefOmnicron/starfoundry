@@ -10,6 +10,7 @@ mod delete;
 mod delete_market;
 mod initialize;
 mod list_jobs;
+mod list_all_jobs;
 mod list_market;
 mod list_market_buy;
 mod list_market_structures;
@@ -68,6 +69,8 @@ pub fn routes(
         .routes(routes!(list_jobs::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+    let list_all_jobs = OpenApiRouter::new()
+        .routes(routes!(list_all_jobs::api));
     let list_market = OpenApiRouter::new()
         .routes(routes!(list_market::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
@@ -119,6 +122,7 @@ pub fn routes(
         .merge(initialize)
         .merge(list)
         .merge(list_jobs)
+        .merge(list_all_jobs)
         .merge(list_market)
         .merge(list_market_buy)
         .merge(list_market_structures)

@@ -8,33 +8,33 @@ export function TableWrapper<T>({
 }: TableWrapperProps<T>) {
     const tableView = <Table stickyHeader striped data-cy="data">
         <Table.Thead>
-        {
-            table
-                .getHeaderGroups()
-                .map(headerGroup => (
-                    <Table.Tr key={headerGroup.id}>
-                        {
-                            headerGroup
-                                .headers
-                                .map(header => (
-                                    <Table.Th
-                                        key={header.id}
-                                        style={{
-                                            width: `${header.getSize()}%`
-                                        }}
-                                    >
-                                        {
-                                            flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext()
-                                            )
-                                        }
-                                    </Table.Th>
-                                ))
-                        }
-                    </Table.Tr>
-                ))
-        }
+            {
+                table
+                    .getHeaderGroups()
+                    .map(headerGroup => (
+                        <Table.Tr key={headerGroup.id}>
+                            {
+                                headerGroup
+                                    .headers
+                                    .map(header => (
+                                        <Table.Th
+                                            key={header.id}
+                                            style={{
+                                                width: `${header.getSize()}%`
+                                            }}
+                                        >
+                                            {
+                                                flexRender(
+                                                    header.column.columnDef.header,
+                                                    header.getContext()
+                                                )
+                                            }
+                                        </Table.Th>
+                                    ))
+                            }
+                        </Table.Tr>
+                    ))
+            }
         </Table.Thead>
 
         <Table.Tbody>

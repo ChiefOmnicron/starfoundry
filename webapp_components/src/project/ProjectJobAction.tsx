@@ -9,6 +9,7 @@ export function ProjectJobAction({
 
     onCreated,
 }: ProjectJobActionProps) {
+    console.log(selected)
     const isMobile = useMediaQuery('(max-width: 50em)');
 
     const [checkResourcesModalOpened, { open: checkResourcesModalOpen, close: checkResourcesModalClose }] = useDisclosure(false);
