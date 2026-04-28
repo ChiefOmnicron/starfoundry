@@ -22,7 +22,7 @@ use crate::job_assignments::JobAssignmentUuid;
 /// 
 #[utoipa::path(
     post,
-    path = "/job-assignments",
+    path = "/",
     tag = "job_assignment",
     request_body = Vec<CreateProjectJobAssignmentResponse>,
     responses(

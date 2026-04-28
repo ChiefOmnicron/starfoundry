@@ -24,6 +24,7 @@ service_url = "http://localhost:9994"
 
 [routes."job-assignments"]
 service_url = "http://localhost:9994"
+require_auth = false
 
 [routes."project-groups"]
 service_url = "http://localhost:9994"
