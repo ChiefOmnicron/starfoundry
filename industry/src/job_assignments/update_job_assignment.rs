@@ -4,14 +4,15 @@ use axum::response::IntoResponse;
 
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized, UnprocessableEntity, UnsupportedMediaType};
 use crate::AppState;
-use crate::project::error::Result;
-use crate::project::ProjectAssignmentUuid;
-use crate::project::service::{ProjectJobUuid, update_job_assignment};
+use crate::job_assignments::JobAssignmentUuid;
+use crate::job_assignments::error::Result;
+use crate::job_assignments::service::update_job_assignment;
+use crate::project::ProjectJobUuid;
 
 /// Update Project Job
 /// 
-/// - Alternative route: `/v1/projects/job-assignments/{ProjectAssignmentUuid}/{ProjectJobUuid}`
-/// - Alternative route: `/latest/projects/job-assignments/{ProjectAssignmentUuid}/{ProjectJobUuid}`
+/// - Alternative route: `/v1/job-assignments/{JobAssignmentUuid}/{ProjectJobUuid}`
+/// - Alternative route: `/latest/job-assignments/{JobAssignmentUuid}/{ProjectJobUuid}`
 /// 
 /// ---
 /// 
@@ -23,10 +24,10 @@ use crate::project::service::{ProjectJobUuid, update_job_assignment};
 /// 
 #[utoipa::path(
     put,
-    path = "/job-assignments/{ProjectAssignmentUuid}/{ProjectJobUuid}",
-    tag = "Project",
+    path = "/{JobAssignmentUuid}/{ProjectJobUuid}",
+    tag = "job_assignments",
     params(
-        ProjectAssignmentUuid,
+        JobAssignmentUuid,
         ProjectJobUuid,
     ),
     responses(
@@ -47,7 +48,7 @@ use crate::project::service::{ProjectJobUuid, update_job_assignment};
 )]
 pub async fn api(
     State(state):                   State<AppState>,
-    Path((assignment_id, job_id)):  Path<(ProjectAssignmentUuid, ProjectJobUuid)>,
+    Path((assignment_id, job_id)):  Path<(JobAssignmentUuid, ProjectJobUuid)>,
 ) -> Result<impl IntoResponse> {
     update_job_assignment(
         &state.postgres,

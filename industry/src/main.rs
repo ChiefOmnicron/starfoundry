@@ -3,6 +3,7 @@ mod config;
 mod healthcheck;
 mod industry_hub;
 mod industry;
+mod job_assignments;
 mod metrics;
 mod project_group;
 mod project;
@@ -91,6 +92,7 @@ fn app(
         .nest("/structures", structure::routes(state.clone()))
         .nest("/industry", industry::routes())
         .nest("/industry-hubs", industry_hub::routes(state.clone()))
+        .nest("/job-assignments", job_assignments::routes())
         .layer(
             ServiceBuilder::new()
                 .layer(middleware::from_fn_with_state(state.clone(), path_metrics))

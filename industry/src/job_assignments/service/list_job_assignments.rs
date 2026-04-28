@@ -4,14 +4,14 @@ use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item};
 use std::collections::HashMap;
 use utoipa::ToSchema;
 
-use crate::project::error::{ProjectError, Result};
-use crate::project::ProjectAssignmentUuid;
-use crate::project::service::ProjectJobUuid;
 use crate::sort_by_job_flat;
+use crate::job_assignments::error::{JobAssignmentError, Result};
+use crate::job_assignments::JobAssignmentUuid;
+use crate::project::ProjectJobUuid;
 
 pub async fn list_job_assignments(
     pool:                   &PgPool,
-    assignment_id:          ProjectAssignmentUuid,
+    assignment_id:          JobAssignmentUuid,
     eve_gateway_api_client: &impl EveGatewayApiClient,
 ) -> Result<Vec<ProjectJobAssignmentGroup>> {
     // TODO: merge end_date into project_job?
@@ -32,7 +32,7 @@ pub async fn list_job_assignments(
         )
         .fetch_all(pool)
         .await
-        .map_err(ProjectError::ListJobs)?;
+        .map_err(JobAssignmentError::List)?;
 
     let mut type_ids = entries
         .iter()
@@ -76,7 +76,7 @@ pub async fn list_job_assignments(
         )
         .fetch_all(pool)
         .await
-        .map_err(ProjectError::ListJobs)?
+        .map_err(JobAssignmentError::List)?
         .into_iter()
         .map(|x| (x.id, x.name))
         .collect::<HashMap<_, _>>();
@@ -91,7 +91,7 @@ pub async fn list_job_assignments(
         )
         .fetch_all(pool)
         .await
-        .map_err(ProjectError::ListJobs)?
+        .map_err(JobAssignmentError::List)?
         .into_iter()
         .map(|x| (x.id, x.name))
         .collect::<HashMap<_, _>>();

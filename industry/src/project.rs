@@ -3,7 +3,6 @@ mod add_job;
 mod add_market;
 mod check_resources;
 mod create;
-mod create_job_assignment;
 mod error;
 mod fetch;
 mod fetch_cost;
@@ -11,7 +10,6 @@ mod delete;
 mod delete_market;
 mod initialize;
 mod list_jobs;
-mod list_job_assignments;
 mod list_market;
 mod list_market_buy;
 mod list_market_structures;
@@ -22,7 +20,6 @@ mod service;
 mod split_job_check;
 mod update;
 mod update_job;
-mod update_job_assignment;
 mod update_market_bulk;
 mod update_market_entry;
 mod update_misc;
@@ -42,8 +39,6 @@ pub fn routes(
 ) -> OpenApiRouter<AppState> {
     let create = OpenApiRouter::new()
         .routes(routes!(create::api));
-    let create_job_assignment = OpenApiRouter::new()
-        .routes(routes!(create_job_assignment::api));
 
     let add_excess = OpenApiRouter::new()
         .routes(routes!(add_excess::api));
@@ -73,8 +68,6 @@ pub fn routes(
         .routes(routes!(list_jobs::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
-    let list_job_assignments = OpenApiRouter::new()
-        .routes(routes!(list_job_assignments::api));
     let list_market = OpenApiRouter::new()
         .routes(routes!(list_market::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
@@ -102,8 +95,6 @@ pub fn routes(
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
     let update_job = OpenApiRouter::new()
         .routes(routes!(update_job::api));
-    let update_job_assignment = OpenApiRouter::new()
-        .routes(routes!(update_job_assignment::api));
     let update_market_bulk = OpenApiRouter::new()
         .routes(routes!(update_market_bulk::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
@@ -118,7 +109,6 @@ pub fn routes(
 
     OpenApiRouter::new()
         .merge(create)
-        .merge(create_job_assignment)
         .merge(add_excess)
         .merge(add_job)
         .merge(add_market)
@@ -129,7 +119,6 @@ pub fn routes(
         .merge(initialize)
         .merge(list)
         .merge(list_jobs)
-        .merge(list_job_assignments)
         .merge(list_market)
         .merge(list_market_buy)
         .merge(list_market_structures)
@@ -138,16 +127,15 @@ pub fn routes(
         .merge(split_job_check)
         .merge(update)
         .merge(update_job)
-        .merge(update_job_assignment)
         .merge(update_market_bulk)
         .merge(update_market_entry)
         .merge(update_misc)
 }
 
 starfoundry_uuid!(ProjectUuid, "ProjectUuid");
+starfoundry_uuid!(ProjectJobUuid, "ProjectJobUuid");
 starfoundry_uuid!(SolutionUuid, "SolutionUuid");
 starfoundry_uuid!(MarketUuid, "MarketUuid");
-starfoundry_uuid!(ProjectAssignmentUuid, "ProjectAssignmentUuid");
 
 #[cfg(test)]
 pub async fn project_test_routes(

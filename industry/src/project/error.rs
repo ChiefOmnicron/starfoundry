@@ -9,8 +9,7 @@ use thiserror::Error;
 use crate::api_docs::format_json_errors;
 use crate::industry_hub::IndustryHubError;
 use crate::project_group::ProjectGroupError;
-use crate::project::ProjectUuid;
-use crate::project::service::ProjectJobUuid;
+use crate::project::{ProjectJobUuid, ProjectUuid};
 
 pub type Result<T, E = ProjectError> = std::result::Result<T, E>;
 

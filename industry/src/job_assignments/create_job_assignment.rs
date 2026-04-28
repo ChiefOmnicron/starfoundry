@@ -7,14 +7,14 @@ use utoipa::ToSchema;
 
 use crate::api_docs::{BadRequest, InternalServerError, Unauthorized};
 use crate::AppState;
-use crate::project::error::Result;
-use crate::project::ProjectAssignmentUuid;
-use crate::project::service::{CreateProjectJobAssignment, create_job_assignment};
+use crate::job_assignments::error::Result;
+use crate::job_assignments::service::{CreateProjectJobAssignment, create_job_assignment};
+use crate::job_assignments::JobAssignmentUuid;
 
-/// List Groups
+/// Create Job Assignment
 /// 
-/// - Alternative route: `/latest/projects/job-assignments`
-/// - Alternative route: `/v1/projects/job-assignments`
+/// - Alternative route: `/latest/job-assignments`
+/// - Alternative route: `/v1/job-assignments`
 /// 
 /// ---
 /// 
@@ -23,12 +23,12 @@ use crate::project::service::{CreateProjectJobAssignment, create_job_assignment}
 #[utoipa::path(
     post,
     path = "/job-assignments",
-    tag = "projects",
-    request_body = Vec<CreateProjectJobAssignment>,
+    tag = "job_assignment",
+    request_body = Vec<CreateProjectJobAssignmentResponse>,
     responses(
         (
             body = CreateProjectJobAssignmentResponse,
-            description = "List all projects that match the given filters",
+            description = "Creates a new job assignment",
             status = OK,
         ),
         BadRequest,
@@ -65,5 +65,5 @@ pub async fn api(
     })
 )]
 pub struct CreateProjectJobAssignmentResponse {
-    id: ProjectAssignmentUuid,
+    id: JobAssignmentUuid,
 }

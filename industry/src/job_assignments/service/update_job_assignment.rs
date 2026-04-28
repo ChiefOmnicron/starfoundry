@@ -1,12 +1,12 @@
 use sqlx::PgPool;
 
-use crate::project::error::{ProjectError, Result};
-use crate::project::service::ProjectJobUuid;
-use crate::project::ProjectAssignmentUuid;
+use crate::job_assignments::JobAssignmentUuid;
+use crate::project::ProjectJobUuid;
+use crate::job_assignments::error::{JobAssignmentError, Result};
 
 pub async fn update_job_assignment(
     pool:           &PgPool,
-    assignment_id:  ProjectAssignmentUuid,
+    assignment_id:  JobAssignmentUuid,
     job_id:         ProjectJobUuid,
 ) -> Result<()> {
     sqlx::query!("
@@ -20,7 +20,7 @@ pub async fn update_job_assignment(
         )
         .execute(pool)
         .await
-        .map_err(ProjectError::Update)?;
+        .map_err(JobAssignmentError::Update)?;
 
     Ok(())
 }

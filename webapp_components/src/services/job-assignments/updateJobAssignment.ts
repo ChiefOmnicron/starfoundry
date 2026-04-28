@@ -1,12 +1,12 @@
 import { axiosClient } from "@internal/services/client";
 import type { Uuid } from "../utils"
 
-export const updateJobOrder = async (
+export const updateJobAssignment = async (
     assignmentId: Uuid,
     jobId: Uuid,
 ): Promise<void> => (await axiosClient())
     .put(
-        `/api/projects/job-assignments/${assignmentId}/${jobId}`,
+        `/api/job-assignments/${assignmentId}/${jobId}`,
         {
             started: true,
         },

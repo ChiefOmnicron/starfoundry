@@ -3,16 +3,15 @@ use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item};
 use starfoundry_lib_industry::Structure;
+use starfoundry_lib_market::Gas;
 use starfoundry_lib_types::{CharacterId, TypeId};
 use std::collections::HashMap;
 use utoipa::{IntoParams, ToSchema};
 
 use crate::project::error::{ProjectError, Result};
-use crate::project::ProjectUuid;
+use crate::project::{ProjectJobUuid, ProjectUuid};
 use crate::structure::service::FetchStructureQuery;
 use crate::sort_by_job;
-use crate::project::service::ProjectJobUuid;
-use starfoundry_lib_market::Gas;
 
 pub async fn list_jobs(
     pool:                   &PgPool,

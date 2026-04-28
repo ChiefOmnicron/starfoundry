@@ -1,16 +1,16 @@
 use serde::Deserialize;
 use sqlx::PgPool;
 use utoipa::ToSchema;
-
-use crate::project::error::{ProjectError, Result};
-use crate::project::{ProjectAssignmentUuid, ProjectUuid};
-use crate::project::service::ProjectJobUuid;
 use uuid::Uuid;
+
+use crate::job_assignments::error::{JobAssignmentError, Result};
+use crate::job_assignments::JobAssignmentUuid;
+use crate::project::{ProjectJobUuid, ProjectUuid};
 
 pub async fn create_job_assignment(
     pool:         &PgPool,
     project_info: Vec<CreateProjectJobAssignment>,
-) -> Result<ProjectAssignmentUuid> {
+) -> Result<JobAssignmentUuid> {
     let id = Uuid::now_v7();
     let mut project_ids = Vec::new();
     let mut job_ids = Vec::new();
@@ -40,7 +40,7 @@ pub async fn create_job_assignment(
         )
         .execute(pool)
         .await
-        .map_err(ProjectError::Create)?;
+        .map_err(JobAssignmentError::Create)?;
 
     Ok(id.into())
 }

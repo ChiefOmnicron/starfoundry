@@ -3,8 +3,8 @@ use utoipa::ToSchema;
 use sqlx::PgPool;
 
 use crate::project::error::{ProjectError, Result};
-use crate::project::ProjectUuid;
-use crate::project::service::{ProjectJobStatusDatabase, ProjectJobUuid};
+use crate::project::{ProjectJobUuid, ProjectUuid};
+use crate::project::service::ProjectJobStatusDatabase;
 
 pub async fn update_job(
     pool:           &PgPool,

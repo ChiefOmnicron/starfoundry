@@ -5,8 +5,8 @@ use axum::response::IntoResponse;
 
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized, UnprocessableEntity, UnsupportedMediaType};
 use crate::AppState;
-use crate::project::service::{ProjectJobUuid, UpdateProjectJob, update_job};
-use crate::project::ProjectUuid;
+use crate::project::service::{UpdateProjectJob, update_job};
+use crate::project::{ProjectJobUuid, ProjectUuid};
 use crate::project::error::Result;
 
 /// Update Project Job

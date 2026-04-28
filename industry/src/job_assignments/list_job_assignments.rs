@@ -5,23 +5,23 @@ use axum::response::IntoResponse;
 
 use crate::{AppState, eve_gateway_api_client};
 use crate::api_docs::{BadRequest, InternalServerError, NotFound, Unauthorized};
-use crate::project::{ProjectAssignmentUuid, ProjectUuid};
-use crate::project::error::Result;
-use crate::project::service::{ProjectJobAssignmentGroup, list_job_assignments};
+use crate::job_assignments::service::{ProjectJobAssignmentGroup, list_job_assignments};
+use crate::job_assignments::error::Result;
+use crate::job_assignments::JobAssignmentUuid;
 
 /// List Job Assignments
 /// 
-/// - Alternative route: `/latest/projects/job-assignments/{ProjectAssignmentUuid}`
-/// - Alternative route: `/v1/projects/job-assignments/{ProjectAssignmentUuid}`
+/// - Alternative route: `/latest/job-assignments/{JobAssignmentUuid}`
+/// - Alternative route: `/v1/job-assignments/{JobAssignmentUuid}`
 /// 
 /// ---
 /// 
 #[utoipa::path(
     get,
-    path = "/job-assignments/{ProjectAssignmentUuid}",
-    tag = "projects",
+    path = "/{JobAssignmentUuid}",
+    tag = "job_assignment",
     params(
-        ProjectUuid,
+        JobAssignmentUuid,
     ),
     responses(
         (
@@ -34,13 +34,10 @@ use crate::project::service::{ProjectJobAssignmentGroup, list_job_assignments};
         Unauthorized,
         InternalServerError,
     ),
-    security(
-        ("api_key" = [])
-    ),
 )]
 pub async fn api(
     State(state):           State<AppState>,
-    Path(assignment_id):    Path<ProjectAssignmentUuid>,
+    Path(assignment_id):    Path<JobAssignmentUuid>,
 ) -> Result<impl IntoResponse> {
     let data = list_job_assignments(
             &state.postgres,

@@ -12,7 +12,7 @@ export const listJobAssignments = async (
     signal?:        GenericAbortSignal,
 ): Promise<ProjectJobAssignmentGroup[]> => axios
     .get(
-        `/api/projects/job-assignments/${assignment_id}`,
+        `/api/job-assignments/${assignment_id}`,
         {
             signal,
         }

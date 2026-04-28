@@ -1,16 +1,16 @@
+import { Accordion, Button, Title } from '@mantine/core';
+import { CopyText } from '@starfoundry/components/misc/CopyText';
+import { createColumnHelper, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { createFileRoute } from '@tanstack/react-router';
+import { EveIcon } from '@starfoundry/components/misc/EveIcon';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
-import { Accordion, Button, Title } from '@mantine/core';
-import { useIsFirstRender } from '@mantine/hooks';
-import { LIST_JOB_ASSIGNMENT, useListJobAssignmentsRefresh, type ProjectJobAssignment, type ProjectJobAssignmentGroup } from '@starfoundry/components/services/projects/listJobAssignments';
-import { createColumnHelper, getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { CopyText } from '@starfoundry/components/misc/CopyText';
-import { EveIcon } from '@starfoundry/components/misc/EveIcon';
 import { TableWrapper } from '@starfoundry/components/wrapper/Table';
-import type { Uuid } from '@starfoundry/components/services/utils';
+import { updateJobAssignment } from '@starfoundry/components/services/job-assignments/updateJobAssignment';
+import { useIsFirstRender } from '@mantine/hooks';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { updateJobOrder } from '@starfoundry/components/services/projects/updateJobOrder';
+import type { Uuid } from '@starfoundry/components/services/utils';
+import { LIST_JOB_ASSIGNMENT, useListJobAssignmentsRefresh, type ProjectJobAssignment, type ProjectJobAssignmentGroup } from '@starfoundry/components/services/job-assignments/listJobAssignments';
 
 export interface QueryParams {
     deleted?: boolean;
@@ -83,7 +83,7 @@ function JobAssignmentWrapper({
 
     const updateEntryMutation = useMutation({
         mutationFn: async (jobId: Uuid) => {
-            return await updateJobOrder(assignmentId, jobId);
+            return await updateJobAssignment(assignmentId, jobId);
         },
         onMutate: async (newEntry, context) => {
             const updated: ProjectJobAssignmentGroup[] = context

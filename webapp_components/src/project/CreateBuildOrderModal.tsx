@@ -1,7 +1,7 @@
 import { Alert, Button, Group, Stack, Textarea, Title } from "@mantine/core";
 import { BlueprintList } from "@internal/list/BlueprintList";
 import { checkResources, type CheckMaterialsRequest, type CheckMaterialsResponse } from "@internal/services/projects/checkResource";
-import { createJobOrder } from "@internal/services/projects/createJobOrder";
+import { createJobAssignment } from "@internal/services/job-assignments/createJobAssignment";
 import { LoadingError } from "@internal/misc/LoadingError";
 import { MaterialList } from "@internal/list/MaterialList";
 import { ModalWrapper } from "@internal/wrapper/Modal";
@@ -36,7 +36,7 @@ export function CreateBuildOrderModal({
 
     const createJobOrderMutation = useMutation({
         mutationFn: async () => {
-            return await createJobOrder(jobs);
+            return await createJobAssignment(jobs);
         },
         onSuccess: (data) => {
             setHasError(false);

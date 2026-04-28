@@ -3,7 +3,7 @@ use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item};
 use starfoundry_lib_industry::StructureUuid;
 use starfoundry_lib_market::MarketApiClient;
-use starfoundry_lib_types::{CharacterId, TypeId, starfoundry_uuid};
+use starfoundry_lib_types::{CharacterId, TypeId};
 use std::collections::HashMap;
 use utoipa::ToSchema;
 
@@ -11,6 +11,7 @@ use crate::{sort_by_job_flat, sort_by_market_group_flat};
 use crate::industry::{CalculationEngine, Dependency, ProjectConfigBuilder, StructureMapping};
 use crate::project::error::{ProjectError, Result};
 use crate::structure::service::FetchStructureQuery;
+use crate::project::ProjectJobUuid;
 
 pub async fn check_resources(
     pool:                       &PgPool,
@@ -254,8 +255,6 @@ pub struct JobToStart {
     pub runs:           i32,
     pub type_id:        TypeId,
 }
-
-starfoundry_uuid!(ProjectJobUuid, "ProjectJobUuid");
 
 sort_by_market_group_flat!(sort_materials, CheckMaterialsResponseMaterial);
 sort_by_job_flat!(sort_blueprints, CheckMaterialsResponseBlueprint);

@@ -22,6 +22,9 @@ drop_prefix = true
 [routes."projects"]
 service_url = "http://localhost:9994"
 
+[routes."job-assignments"]
+service_url = "http://localhost:9994"
+
 [routes."project-groups"]
 service_url = "http://localhost:9994"
 
