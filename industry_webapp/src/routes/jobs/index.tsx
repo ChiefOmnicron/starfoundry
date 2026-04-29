@@ -60,7 +60,6 @@ function RouteComponent() {
                                 key={x.header}
                                 jobs={x.entries}
                                 onSelect={(y: ProjectJobMinimal[]) => {
-                                    console.log('1', y)
                                     onSelect(x.project_id, y);
                                 }}
                             />
