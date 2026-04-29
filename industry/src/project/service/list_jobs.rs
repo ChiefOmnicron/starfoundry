@@ -137,7 +137,7 @@ pub async fn list_jobs(
 
 sort_by_job!(sort_jobs, ProjectJob, ProjectJobGroup);
 
-async fn determine_ready_to_start(
+pub async fn determine_ready_to_start(
     pool:                   &PgPool,
     project_id:             ProjectUuid,
     eve_gateway_api_client: &impl EveGatewayApiClient,

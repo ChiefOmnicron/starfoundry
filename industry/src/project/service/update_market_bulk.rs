@@ -49,6 +49,7 @@ pub async fn update_market_bulk(
     let mut excess_entries = Vec::new();
 
     let mut mineral_updates: HashMap<TypeId, i32> = HashMap::new();
+    let mut moon_updates: HashMap<TypeId, i32> = HashMap::new();
 
     for entry in entries.iter() {
         if let Ok(asteroid) = Asteroid::try_from_asteroid(entry.type_id) {
@@ -64,10 +65,30 @@ pub async fn update_market_bulk(
                 .collect::<HashMap<_, _>>()
                 .into_iter()
                 .for_each(|(type_id, x)| {
-                    mineral_updates
-                        .entry(type_id)
-                        .and_modify(|y: &mut i32| *y += x)
-                        .or_insert(x);
+                    // ignore R4 in the calculations, otherwise it will cause
+                    // issues down stream.
+                    // -> Startable jobs doesn't detect them, as they are not
+                    //    in the stock or market
+                    // -> It is possible to buy the R4 needed + it is getting
+                    //    removed due to it being in the Asteroids bought
+                    // TODO: implement it into the asteroid calculations
+                    //       and properly record the change in the market part
+                    if
+                        type_id == Asteroid::AtmosphericGases.to_type_id() ||
+                        type_id == Asteroid::EvaporiteDeposits.to_type_id() ||
+                        type_id == Asteroid::Hydrocarbons.to_type_id() ||
+                        type_id == Asteroid::Silicates.to_type_id() {
+
+                        moon_updates
+                            .entry(type_id)
+                            .and_modify(|y: &mut i32| *y += x)
+                            .or_insert(x);
+                    } else {
+                        mineral_updates
+                            .entry(type_id)
+                            .and_modify(|y: &mut i32| *y += x)
+                            .or_insert(x);
+                    }
                 });
 
             new_entries.push(entry);
@@ -143,6 +164,13 @@ pub async fn update_market_bulk(
             });
             delete_entries.push(market_entry.id);
         }
+    }
+
+    for (type_id, quantity) in moon_updates {
+        excess_entries.push(TmpExcessEntry {
+            type_id:    type_id,
+            quantity:   quantity,
+        });
     }
 
     let mut transaction = pool
