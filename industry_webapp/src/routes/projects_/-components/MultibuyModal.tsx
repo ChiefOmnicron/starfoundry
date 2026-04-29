@@ -101,7 +101,7 @@ export function MultiBuyModal({
                     justify="flex-end"
                 >
                     <Button
-                        onClick={() => onSave(fromMultibuy)}
+                        onClick={() => onSave(fromMultibuy.replace(/,/g, ''))}
                     >
                         Mark as bought
                     </Button>

@@ -716,6 +716,7 @@ impl CalculationEngine {
                 .collect::<Vec<_>>();
 
             // Grab the actual structures
+
             let structures = if structure_ids.len() > 0 {
                 structures_clone
                     .iter()
@@ -753,6 +754,7 @@ impl CalculationEngine {
                         blueprint.item.group.group_id == 547.into() ||
                         blueprint.item.group.group_id == 1538.into() ||
                         blueprint.item.group.group_id == 659.into() ||
+                        blueprint.item.group.group_id == 883.into() ||
                         blueprint.item.group.group_id == 30.into() {
 
                         // ignore

@@ -194,7 +194,6 @@ export function MarketBuy({
                     <Table
                         variant="vertical"
                         layout="fixed"
-                        striped
                     >
                         <Table.Tbody>
                             <Table.Tr>
@@ -233,7 +232,7 @@ export function MarketBuy({
                         minWidth={500}
                         maxHeight={200}
                     >
-                        <Table>
+                        <Table striped>
                             <Table.Thead>
                                 <Table.Tr>
                                     <Table.Th w={32}></Table.Th>
