@@ -1,4 +1,4 @@
-import { Accordion, Button, Checkbox, Table } from '@mantine/core';
+import { Accordion, Button, Checkbox, Table, Text } from '@mantine/core';
 import { CopyText } from '@starfoundry/components/misc/CopyText';
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable, type RowSelectionState } from '@tanstack/react-table';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
@@ -69,6 +69,11 @@ function RouteComponent() {
             )
     }
 
+    const jobCount = (projects || [])
+        .flatMap(x => x.entries)
+        .filter(x => x.status === 'READY_TO_START')
+        .reduce((prev) => prev += 1, 0);
+
     return <>
         <ProjectJobAction
             selected={selectedRows}
@@ -80,6 +85,8 @@ function RouteComponent() {
                 },
             })}
         />
+
+        <Text>Number of startable jobs: {jobCount}</Text>
 
         <Accordion
             defaultValue={(projects || []).map(x => x.project_id)}

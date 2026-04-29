@@ -1,4 +1,4 @@
-import { Accordion, Button, Title } from '@mantine/core';
+import { Accordion, Button, Stack, Text, Title } from '@mantine/core';
 import { CopyText } from '@starfoundry/components/misc/CopyText';
 import { createColumnHelper, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { createFileRoute } from '@tanstack/react-router';
@@ -60,16 +60,25 @@ function RouteComponent() {
             )
     }
 
-    return <>
-        <Title order={1}>Jobs ready to be started</Title>
+    const jobCount = (jobs || [])
+        .flatMap(x => x.entries)
+        .filter(x => !x.started)
+        .reduce((prev) => prev += 1, 0);
 
-        <Accordion
-            defaultValue={(jobs || []).map(x => x.header)}
-            variant="contained"
-            multiple
-        >
-            {entries()}
-        </Accordion>
+    return <>
+        <Stack>
+            <Title order={1}>Jobs ready to be started</Title>
+
+            <Text>Number of startable jobs: {jobCount}</Text>
+
+            <Accordion
+                defaultValue={(jobs || []).map(x => x.header)}
+                variant="contained"
+                multiple
+            >
+                {entries()}
+            </Accordion>
+        </Stack>
     </>
 }
 
