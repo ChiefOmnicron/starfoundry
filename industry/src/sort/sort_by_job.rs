@@ -107,7 +107,7 @@ macro_rules! sort_by_job {
                     let entries = entries
                         .iter_mut()
                         .map(|x| {
-                            x.sort_by_key(|y| y.runs.clone());
+                            x.sort_by_key(|y| (y.runs.clone(), y.id));
                             x.reverse();
                             x.clone()
                         })

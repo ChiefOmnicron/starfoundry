@@ -11,6 +11,7 @@ use crate::project::error::{ProjectError, Result};
 use crate::project::ProjectUuid;
 use crate::{sort_by_job_flat, sort_by_market_group_flat};
 use crate::project::service::ProjectJobStatus;
+use uuid::Uuid;
 
 pub async fn split_job_check(
     pool:                       &PgPool,
@@ -309,9 +310,10 @@ pub async fn split_job_check(
         };
 
         result_jobs.push(SplitJobResponseJobEntry {
-            item,
-            runs,
-            structure_id,
+            id:             Uuid::now_v7(),
+            item:           item,
+            runs:           runs,
+            structure_id:   structure_id,
         });
     }
 
@@ -405,6 +407,8 @@ pub struct SplitJobResponse {
 
 #[derive(Clone, Debug, Serialize, ToSchema)]
 pub struct SplitJobResponseJobEntry {
+    #[serde(skip)]
+    pub id:             Uuid,
     pub item:           Item,
     pub runs:           i32,
     pub structure_id:   StructureUuid,

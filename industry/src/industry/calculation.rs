@@ -29,7 +29,7 @@ use crate::project_group::ProjectGroupUuid;
 use crate::project_group::service::{list_default_blacklist, list_default_blueprint_overwrite, list_default_job_splitting, list_industry_hubs};
 use crate::industry_hub::service::IndustryHub;
 use sqlx::PgPool;
-use crate::project::SolutionUuid;
+use crate::project::{ProjectJobUuid, SolutionUuid};
 use crate::industry_hub::IndustryHubUuid;
 use uuid::Uuid;
 
@@ -267,6 +267,8 @@ pub async fn api(
             .iter()
             .filter(|(_, x)| x.typ != BlueprintTyp::Material)
             .map(|(_, x)| TmpManufacturingResponse {
+                // only needed for sorting
+                id:         Uuid::now_v7().into(),
                 item:       x.item.clone(),
                 build_tax:  x.build_cost.total_job_cost,
                 runs:       x.runs.clone(),
@@ -619,6 +621,7 @@ pub struct TmpMaterialResponse {
 
 #[derive(Clone, Debug, Serialize, ToSchema)]
 pub struct TmpManufacturingResponse {
+    pub id:         ProjectJobUuid,
     pub item:       Item,
     pub runs:       Vec<u32>,
     pub structure:  Option<Structure>,

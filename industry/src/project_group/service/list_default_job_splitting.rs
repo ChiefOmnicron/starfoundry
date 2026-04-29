@@ -7,6 +7,7 @@ use utoipa::ToSchema;
 use crate::project_group::error::{ProjectGroupError, Result};
 use crate::project_group::ProjectGroupUuid;
 use crate::sort_by_job_flat;
+use uuid::Uuid;
 
 /// 3 days in seconds
 const DEFAULT_TIME_JOB_SPLITTING: i32 = 259_200i32;
@@ -69,6 +70,7 @@ pub async fn list_default_job_splitting(
     for entry in run_entries {
         if let Some(x) = items.get(&entry.type_id.into()) {
             runs.push(JobSplittingRun {
+                id:         Uuid::now_v7(),
                 max_runs:   entry.max_runs,
                 item:       x.clone(),
                 runs:       1i32,
@@ -132,6 +134,9 @@ pub struct JobSplittingGeneral {
     })
 )]
 pub struct JobSplittingRun {
+    // only needed for sorting
+    #[serde(skip)]
+    pub id:         Uuid,
     pub max_runs:   i32,
     pub item:       Item,
     // for sorting

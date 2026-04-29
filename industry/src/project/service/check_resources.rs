@@ -12,6 +12,7 @@ use crate::industry::{CalculationEngine, Dependency, ProjectConfigBuilder, Struc
 use crate::project::error::{ProjectError, Result};
 use crate::structure::service::FetchStructureQuery;
 use crate::project::ProjectJobUuid;
+use uuid::Uuid;
 
 pub async fn check_resources(
     pool:                       &PgPool,
@@ -203,8 +204,9 @@ pub async fn check_resources(
             continue;
         };
         blueprints.push(CheckMaterialsResponseBlueprint {
-            item,
-            runs,
+            id:   Uuid::now_v7(),
+            item: item,
+            runs: runs,
         });
     }
 
@@ -240,6 +242,9 @@ pub struct CheckMaterialsResponseMaterial {
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 pub struct CheckMaterialsResponseBlueprint {
+    // only needed for sorting
+    #[serde(skip)]
+    pub id:       Uuid,
     pub item:     Item,
     pub runs:     Vec<u32>,
 }
