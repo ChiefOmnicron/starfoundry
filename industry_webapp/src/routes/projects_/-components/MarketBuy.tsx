@@ -194,6 +194,7 @@ export function MarketBuy({
                     <Table
                         variant="vertical"
                         layout="fixed"
+                        striped
                     >
                         <Table.Tbody>
                             <Table.Tr>

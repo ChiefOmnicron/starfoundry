@@ -265,7 +265,7 @@ function RouteComponent() {
             </Table.Tr>);
 
         return <>
-            <Table>
+            <Table striped>
                 <Table.Thead>
                     <Table.Tr>
                         <Table.Th w={32}></Table.Th>

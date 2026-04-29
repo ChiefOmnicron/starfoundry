@@ -287,6 +287,7 @@ pub async fn api(
             .tree
             .iter()
             .filter(|(_, x)| x.typ == BlueprintTyp::Material)
+            .filter(|(_, x)| x.needed as i32 > 0i32)
             .map(|(_, x)| TmpMaterialResponse {
                 item:   x.item.clone(),
                 needed: x.needed,
@@ -313,14 +314,14 @@ pub async fn api(
             })
             .collect::<Vec<_>>();
 
-        let solution_id = store(
+        let solution_id = store_solution(
                 &state.postgres,
                 industry_hub.id,
                 config.project_group_id,
                 blacklist.clone(),
                 blueprint_overwrites.clone(),
                 job_splitting.clone(),
-                stocks.clone(),
+                dependency_result.stocks.clone(),
                 products.clone(),
                 excess.clone(),
                 material.clone(),
@@ -346,7 +347,7 @@ pub async fn api(
     )
 }
 
-async fn store(
+async fn store_solution(
     pool:                   &PgPool,
     industry_hub_id:        IndustryHubUuid,
     project_group_id:       ProjectGroupUuid,
