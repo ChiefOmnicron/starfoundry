@@ -7,7 +7,7 @@ use std::collections::HashMap;
 use utoipa::ToSchema;
 use uuid::Uuid;
 
-use crate::error::{Error, Result};
+use crate::{error::{Error, Result}, jobs::UnmatchedJob};
 
 /// Fetches both the default group and the specific group jobs and joins them
 /// together.
@@ -208,16 +208,15 @@ pub async fn update_finished_jobs(
         .map_err(Error::UpdateJob)
 }
 
-// TODO: check if this is still necessary, or if this can be optimized to the new
-// methods
-/*pub async fn insert_job_detection_log(
-    pool:     &PgPool,
-    updates:  &HashMap<Uuid, Vec<UpdateJobRequest>>,
-    umatched: &Vec<IndustryJobEntry>,
+pub async fn insert_job_detection_log(
+    pool:           &PgPool,
+    updates:        &HashMap<Uuid, Vec<UpdateJobRequest>>,
+    unmatched_jobs: &Vec<UnmatchedJob>,
 ) -> Result<()> {
     let mut type_ids    = Vec::new();
     let mut job_ids     = Vec::new();
     let mut project_ids = Vec::new();
+    let mut result      = Vec::new();
 
     let updates = updates
         .into_iter()
@@ -230,12 +229,14 @@ pub async fn update_finished_jobs(
         // if it was matched, it will always have a job_id
         job_ids.push(entry.job_id.unwrap_or_default());
         project_ids.push(entry.project_id);
+        result.push("MATCHED".into());
     }
 
-    for entry in umatched {
-        type_ids.push(entry.product_type_id);
-        job_ids.push(*entry.job_id);
-        project_ids.push(None);
+    for entry in unmatched_jobs {
+        type_ids.push(entry.job.product_type_id);
+        job_ids.push(*entry.job.job_id);
+        project_ids.push(entry.project_id);
+        result.push(entry.reason.into_string());
     }
 
     sqlx::query!("
@@ -243,25 +244,29 @@ pub async fn update_finished_jobs(
             (
                 type_id,
                 job_id,
-                project_id
+                project_id,
+                result
             )
             SELECT * FROM UNNEST(
                 $1::INTEGER[],
                 $2::INTEGER[],
-                $3::UUID[]
+                $3::UUID[],
+                $4::VARCHAR[]
             )
             ON CONFLICT (job_id)
-            DO NOTHING
+            DO UPDATE SET
+                result = EXCLUDED.result
         ",
             &type_ids as _,
             &job_ids,
             &project_ids as _,
+            &result as _,
         )
         .execute(pool)
         .await
         .map(drop)
-        .map_err(Error::UpdateCorporationJobEntry)
-}*/
+        .map_err(Error::InsertJobDetectionLog)
+}
 
 pub async fn cleanup_delivered_jobs(
     pool:                     &PgPool,
@@ -278,24 +283,6 @@ pub async fn cleanup_delivered_jobs(
         .await
         .map(drop)
         .map_err(Error::Cleanup)
-}
-
-pub async fn fetch_ignored_jobs(
-    pool: &PgPool,
-) -> Result<Vec<JobId>> {
-    let ignored_jobs = sqlx::query!("
-            SELECT job_id
-            FROM industry_job
-            WHERE is_delivered = false
-            AND ignore = true
-        ")
-        .fetch_all(pool)
-        .await
-        .unwrap()
-        .into_iter()
-        .map(|x| x.job_id.into())
-        .collect::<Vec<_>>();
-    Ok(ignored_jobs)
 }
 
 #[derive(

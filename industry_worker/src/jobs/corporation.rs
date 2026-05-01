@@ -8,7 +8,7 @@ use std::collections::HashMap;
 use crate::error::{Error, Result};
 use crate::{SERVICE_NAME, WorkerIndustryTask};
 use crate::metric::WorkerMetric;
-use crate::jobs::{cleanup_delivered_jobs, fetch_done_job_ids, fetch_ignored_jobs, fetch_startable_jobs, job_detection, resolve_corporation_asset_name, update_finished_jobs, update_industry_jobs};
+use crate::jobs::{cleanup_delivered_jobs, fetch_done_job_ids, fetch_startable_jobs, insert_job_detection_log, job_detection, resolve_corporation_asset_name, update_finished_jobs, update_industry_jobs};
 
 pub async fn corporation_jobs(
     pool:        &PgPool,
@@ -108,14 +108,6 @@ pub async fn corporation_jobs(
         }
     };
 
-    let ignored_job_ids = match fetch_ignored_jobs(pool).await {
-        Ok(x)  => x,
-        Err(e) => {
-            task.append_error(e.to_string());
-            Vec::new()
-        }
-    };
-
     let mut updates      = HashMap::new();
     let mut unmatched    = Vec::new();
     let mut used_ids     = Vec::new();
@@ -156,7 +148,6 @@ pub async fn corporation_jobs(
             &industry_jobs,
             &startable_jobs,
             &finished_job_ids,
-            &ignored_job_ids,
             &container_names,
             &mut used_ids,
             &mut used_job_ids,
@@ -221,7 +212,7 @@ pub async fn corporation_jobs(
 
     update_industry_jobs(pool, &updates).await?;
     update_finished_jobs(pool).await?;
-    //insert_job_detection_log(pool, &updates, &unmatched).await?;
+    insert_job_detection_log(pool, &updates, &unmatched).await?;
 
     Ok(())
 }

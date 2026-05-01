@@ -14,6 +14,9 @@ pub enum Error {
     #[error("error while cleaning jobs, error: '{0}'")]
     Cleanup(sqlx::Error),
 
+    #[error("error while inserting job detection log, error: '{0}'")]
+    InsertJobDetectionLog(sqlx::Error),
+
     #[error("error during transaction, error: '{0}'")]
     TransactionError(sqlx::Error),
 
