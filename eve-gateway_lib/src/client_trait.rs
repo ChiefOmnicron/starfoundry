@@ -1,7 +1,7 @@
 use starfoundry_lib_gateway::ApiClient;
 use starfoundry_lib_types::{CharacterId, StructureId, SystemId, TypeId};
 
-use crate::{AuthedCharacterInfo, CharacterInfo, EveGatewayApiClientAsset, EveGatewayApiClientEveAsset, EveGatewayApiClientIndustry, EveGatewayApiClientItem, ResolveStructureResponse, StructureRigBlueprintBonus, StructureRigResponse, StructureServiceResponse, System};
+use crate::{AuthedCharacterInfo, CharacterInfo, EveGatewayApiClientAsset, EveGatewayApiClientEveAsset, EveGatewayApiClientEveFitting, EveGatewayApiClientIndustry, EveGatewayApiClientItem, ResolveStructureResponse, StructureRigBlueprintBonus, StructureRigResponse, StructureServiceResponse, System};
 use crate::contract::EveGatewayApiClientContract;
 use crate::error::Result;
 use crate::eve_industry::EveGatewayApiClientEveIndustry;
@@ -12,6 +12,7 @@ pub trait EveGatewayApiClient:
     EveGatewayApiClientAsset +
     EveGatewayApiClientContract +
     EveGatewayApiClientEveAsset +
+    EveGatewayApiClientEveFitting +
     EveGatewayApiClientEveIndustry +
     EveGatewayApiClientEveMarket +
     EveGatewayApiClientIndustry +

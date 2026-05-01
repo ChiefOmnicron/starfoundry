@@ -28,6 +28,8 @@ pub mod asset;
 pub mod character;
 /// eve route for all contracts
 pub mod contract;
+/// eve route for all fittings
+pub mod fitting;
 /// all industry related routes
 pub mod industry;
 /// public eve route for items

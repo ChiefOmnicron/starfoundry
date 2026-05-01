@@ -1,4 +1,4 @@
-import { Alert, Button, Group, Table, Tabs } from '@mantine/core';
+import { Alert, Button, Group, Stack, Table, Tabs } from '@mantine/core';
 import { CopyText } from '@starfoundry/components/misc/CopyText';
 import { createFileRoute } from '@tanstack/react-router'
 import { EveIcon } from '@starfoundry/components/misc/EveIcon';
@@ -17,6 +17,8 @@ import { useDisclosure } from '@mantine/hooks';
 import { EditMarketEntryModal } from './-components/EditMarketEntryModal';
 import { updateMarketEntry } from '@starfoundry/components/services/projects/updateMarketEntry';
 import { FETCH_PROJECT_COST } from '@starfoundry/components/services/projects/fetchCost';
+import { FittingModal } from './-components/FittingModal';
+import { useFetchProject } from '@starfoundry/components/services/projects/fetch';
 
 export const Route = createFileRoute('/projects_/$projectId/market')({
     component: RouteComponent,
@@ -27,6 +29,11 @@ function RouteComponent() {
     const { projectId } = Route.useParams();
 
     const [updateEntry, setUpdateEntry] = useState<ProjectMarketEntry | undefined>(undefined);
+
+    const [fittingsModalOpened, {
+        open: openFittingsModal,
+        close: closeFittingsModal,
+    }] = useDisclosure(false);
 
     const [updateEntryModalOpened, {
         open: openUpdateEntryModal,
@@ -52,6 +59,12 @@ function RouteComponent() {
         service_id: 35892,
         include_npc: true,
     });
+
+    const {
+        isPending: isPendingProject,
+        isError: isErrorProject,
+        data: project,
+    } = useFetchProject(projectId);
 
     const {
         isError,
@@ -132,11 +145,11 @@ function RouteComponent() {
         }
     })
 
-    if (isPending || isPendingMarkets || isPendingDefaultMarkets) {
+    if (isPending || isPendingMarkets || isPendingDefaultMarkets || isPendingProject) {
         return LoadingAnimation();
     }
 
-    if (isError || isErrorMarkets || isErrorDefaultMarkets) {
+    if (isError || isErrorMarkets || isErrorDefaultMarkets || isErrorProject) {
         return LoadingError();
     }
 
@@ -302,6 +315,14 @@ function RouteComponent() {
             :   <></>
         }
 
+        <FittingModal
+            entries={projectMarket}
+            fitName={`${project.name}-market`}
+
+            opened={fittingsModalOpened}
+            close={closeFittingsModal}
+        />
+
         {showError()}
         {showUpdateSuccess()}
 
@@ -322,7 +343,19 @@ function RouteComponent() {
             </Tabs.List>
 
             <Tabs.Panel value="overview">
-                {marketTable(projectMarket)}
+                <Stack>
+                    <Group
+                        justify='flex-end'
+                    >
+                        <Button
+                            onClick={openFittingsModal}
+                        >
+                            Save as fit
+                        </Button>
+                    </Group>
+
+                    {marketTable(projectMarket)}
+                </Stack>
             </Tabs.Panel>
             <Tabs.Panel value="multiBuy">
                 <MultiBuyTab

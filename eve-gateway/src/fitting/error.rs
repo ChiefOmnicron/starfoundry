@@ -1,0 +1,23 @@
+use axum::response::{IntoResponse, Response};
+use starfoundry_lib_eve_client::EveApiError;
+use thiserror::Error;
+
+pub type Result<T, E = FittingError> = std::result::Result<T, E>;
+
+#[derive(Debug, Error)]
+#[non_exhaustive]
+pub enum FittingError {
+    #[error("eve api error, error: '{0:?}'")]
+    EveApiError(#[from] EveApiError),
+}
+
+impl IntoResponse for FittingError {
+    fn into_response(self) -> Response {
+        match self {
+            Self::EveApiError(e) => {
+                EveApiError::into_response(e)
+            },
+        }
+        .into_response()
+    }
+}

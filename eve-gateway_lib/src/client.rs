@@ -7,7 +7,7 @@ use starfoundry_lib_gateway::{ApiClient, StarFoundryApiClient, Result as Gateway
 use url::Url;
 
 use crate::error::{Error, Result};
-use crate::{EveGatewayApiClient, EveGatewayApiClientAsset, EveGatewayApiClientEveAsset, EveGatewayApiClientIndustry, EveGatewayApiClientItem};
+use crate::{EveGatewayApiClient, EveGatewayApiClientAsset, EveGatewayApiClientEveAsset, EveGatewayApiClientEveFitting, EveGatewayApiClientIndustry, EveGatewayApiClientItem};
 use crate::contract::EveGatewayApiClientContract;
 use crate::eve_market::EveGatewayApiClientEveMarket;
 use crate::eve_industry::EveGatewayApiClientEveIndustry;
@@ -98,12 +98,27 @@ impl ApiClient for EveGatewayClient {
             .await
             .map_err(Into::into)
     }
+
+    async fn delete_auth<T>(
+        &self,
+        path:       impl Into<String>,
+        header_map: HeaderMap,
+    ) -> GatewayResult<T>
+    where
+        T: Default + DeserializeOwned {
+
+        self.0
+            .delete_auth(path, header_map)
+            .await
+            .map_err(Into::into)
+    }
 }
 
 impl EveGatewayApiClient for EveGatewayClient {}
 impl EveGatewayApiClientAsset for EveGatewayClient {}
 impl EveGatewayApiClientContract for EveGatewayClient {}
 impl EveGatewayApiClientEveAsset for EveGatewayClient {}
+impl EveGatewayApiClientEveFitting for EveGatewayClient {}
 impl EveGatewayApiClientEveIndustry for EveGatewayClient {}
 impl EveGatewayApiClientEveMarket for EveGatewayClient {}
 impl EveGatewayApiClientIndustry for EveGatewayClient {}

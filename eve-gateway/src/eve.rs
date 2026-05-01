@@ -36,6 +36,11 @@ pub fn routes() -> OpenApiRouter<AppState> {
     let prices = OpenApiRouter::new()
         .routes(routes!(crate::market::eve_price::api));
 
+    let create_fitting = OpenApiRouter::new()
+        .routes(routes!(crate::fitting::eve_create::api));
+    let delete_fitting = OpenApiRouter::new()
+        .routes(routes!(crate::fitting::eve_delete::api));
+
     OpenApiRouter::new()
         // assets
         .merge(character_asset)
@@ -56,4 +61,8 @@ pub fn routes() -> OpenApiRouter<AppState> {
         .merge(list_character)
         .merge(list_corporation)
         .merge(prices)
+
+        // fittings
+        .merge(create_fitting)
+        .merge(delete_fitting)
 }

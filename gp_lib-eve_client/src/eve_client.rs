@@ -426,6 +426,41 @@ impl EveApiClient {
         Ok(json)
     }
 
+    /// Makes a delete request to the given path and returns parses the result
+    /// the given struct.
+    ///
+    /// # Params
+    ///
+    /// * `T`    -> Model that represents the resulting json
+    /// * `path` -> Path of the request
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if either the request failed or the parsing failed
+    ///
+    /// # Returns
+    ///
+    /// Parsed json data
+    ///
+    pub async fn delete<T>(
+        &self,
+        path: impl Into<String>,
+    ) -> Result<T>
+    where
+        T: DeserializeOwned,
+    {
+        let mut api_url = Self::api_url()?;
+        api_url.set_path(&path.into());
+
+        let json = self
+            .send_delete(api_url.clone())
+            .await?
+            .json::<T>()
+            .await
+            .map_err(|x| EveApiError::ReqwestError(x, api_url))?;
+        Ok(json)
+    }
+
     /// Sends a GET request to the given path setting the current `access_token`
     /// as `bearer_auth`.
     ///
@@ -800,6 +835,126 @@ impl EveApiClient {
                 .client
                 .post(request_uri.clone())
                 .json(&data)
+                .bearer_auth(token)
+                .send()
+                .await
+                .map_err(|x| EveApiError::ReqwestError(x, request_uri.clone()))?;
+
+            self
+                .metric
+                .increase_eve_status(
+                    response.status().to_string(),
+                    request_uri.clone().to_string(),
+                );
+
+            match response.status() {
+                StatusCode::NOT_FOUND => {
+                    return Err(EveApiError::NotFound(request_uri));
+                },
+                StatusCode::TOO_MANY_REQUESTS => {
+                    return Err(EveApiError::RateLimit(request_uri));
+                },
+                StatusCode::NOT_MODIFIED => {
+                    return Err(EveApiError::NotModified(request_uri));
+                },
+                StatusCode::FORBIDDEN |
+                StatusCode::UNAUTHORIZED => {
+                    let content = response.text().await.unwrap_or_default();
+                    return Err(EveApiError::Unauthorized(request_uri, content));
+                },
+                StatusCode::BAD_GATEWAY => {
+                    return Err(EveApiError::BadGateway);
+                },
+                StatusCode::SERVICE_UNAVAILABLE => {
+                    return Err(EveApiError::ServiceUnavailable);
+                },
+                _ => {}
+            };
+
+            let response_status = response.status();
+            if !response_status.is_success() {
+                last_status = response.status();
+                last_text   = response
+                    .text()
+                    .await
+                    .unwrap_or_default();
+
+                retry_counter += 1;
+                tracing::error!(
+                    {
+                        retry = retry_counter,
+                        status = response_status.as_u16(),
+                        uri = request_uri.as_str(),
+                        last_text = last_text,
+                    },
+                    "Fetch resulted in non successful status code.",
+                );
+                continue;
+            }
+
+            return Ok(response);
+        }
+    }
+
+    /// Sends a DELETE request to the given path setting the current
+    /// `access_token` as `bearer_auth`.
+    ///
+    /// If a request fails with a non successful status, it will retry the
+    /// request again, up to 3 times.
+    ///
+    /// # Params
+    ///
+    /// * `data` -> Data to send in the body
+    /// * `path` -> Path for the request
+    ///
+    /// # Errors
+    ///
+    /// The function errors if too many request failed, or if there is a general
+    /// error with the requesting library.
+    ///
+    /// If the EVE-API returns [StatusCode::UNAUTHORIZED] it will attempt to
+    /// retrieve a new `access_token`. If that fails an error is returned.
+    ///
+    /// # Returns
+    ///
+    /// Response of the request, ready to work with
+    ///
+    async fn send_delete(
+        &self,
+        request_uri: Url,
+    ) -> Result<Response> {
+        let access_token = {
+            #[allow(clippy::unwrap_used)]
+            self.access_token.lock().unwrap().clone()
+        };
+        let access_token = if access_token.is_none() {
+            self.get_access_token().await?;
+            #[allow(clippy::unwrap_used)]
+            self.access_token.lock().unwrap().clone()
+        } else {
+            access_token
+        };
+
+        let mut retry_counter = 0usize;
+        let mut last_status   = StatusCode::OK;
+        let mut last_text     = String::new();
+
+        loop {
+            if retry_counter == 3 {
+                tracing::error!("Too many retries requesting {}.", request_uri);
+                return Err(EveApiError::TooManyRetries(
+                    request_uri,
+                    last_status,
+                    last_text,
+                ));
+            }
+
+            let token = access_token
+                .as_ref()
+                .expect("We check but somehow the access_token is still None");
+            let response = self
+                .client
+                .delete(request_uri.clone())
                 .bearer_auth(token)
                 .send()
                 .await

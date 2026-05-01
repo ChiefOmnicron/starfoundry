@@ -1,6 +1,6 @@
 use axum::http::HeaderMap;
 use serde::Serialize;
-use starfoundry_lib_eve_gateway::{EveGatewayApiClient, EveGatewayApiClientAsset, EveGatewayApiClientEveAsset, EveGatewayApiClientIndustry, EveGatewayApiClientItem};
+use starfoundry_lib_eve_gateway::{EveGatewayApiClient, EveGatewayApiClientAsset, EveGatewayApiClientEveAsset, EveGatewayApiClientEveFitting, EveGatewayApiClientIndustry, EveGatewayApiClientItem};
 use starfoundry_lib_eve_gateway::contract::EveGatewayApiClientContract;
 use starfoundry_lib_eve_gateway::eve_industry::EveGatewayApiClientEveIndustry;
 use starfoundry_lib_eve_gateway::eve_market::EveGatewayApiClientEveMarket;
@@ -21,6 +21,7 @@ impl EveGatewayApiClient for EveGatewayTestApiClient {}
 impl EveGatewayApiClientAsset for EveGatewayTestApiClient {}
 impl EveGatewayApiClientContract for EveGatewayTestApiClient {}
 impl EveGatewayApiClientEveAsset for EveGatewayTestApiClient {}
+impl EveGatewayApiClientEveFitting for EveGatewayTestApiClient {}
 impl EveGatewayApiClientEveIndustry for EveGatewayTestApiClient {}
 impl EveGatewayApiClientEveMarket for EveGatewayTestApiClient {}
 impl EveGatewayApiClientIndustry for EveGatewayTestApiClient {}
@@ -352,6 +353,16 @@ impl ApiClient for EveGatewayTestApiClient {
         T: serde::de::DeserializeOwned {
         unimplemented!()
     }
+
+    async fn delete_auth<T>(
+        &self,
+        _path:    impl Into<String>,
+        _headers: HeaderMap,
+    ) -> starfoundry_lib_gateway::error::Result<T>
+    where
+        T: serde::de::DeserializeOwned {
+        unimplemented!()
+    }
 }
 
 impl ApiClient for MarketTestApiClient {
@@ -395,6 +406,16 @@ impl ApiClient for MarketTestApiClient {
     ) -> starfoundry_lib_gateway::error::Result<T>
     where
         D: std::fmt::Debug + serde::Serialize + Send + Sync,
+        T: serde::de::DeserializeOwned {
+        unimplemented!()
+    }
+
+    async fn delete_auth<T>(
+        &self,
+        _path:      impl Into<String>,
+        _headers:   HeaderMap,
+    ) -> starfoundry_lib_gateway::error::Result<T>
+    where
         T: serde::de::DeserializeOwned {
         unimplemented!()
     }

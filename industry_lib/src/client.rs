@@ -105,6 +105,20 @@ impl ApiClient for IndustryClient {
             .await
             .map_err(Into::into)
     }
+
+    async fn delete_auth<T>(
+        &self,
+        path:       impl Into<String>,
+        header_map: HeaderMap,
+    ) -> GatewayResult<T>
+    where
+        T: Default + DeserializeOwned {
+
+        self.0
+            .delete_auth(path, header_map)
+            .await
+            .map_err(Into::into)
+    }
 }
 
 impl IndustryApiClient for IndustryClient {}

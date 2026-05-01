@@ -27,6 +27,9 @@ use crate::project::service::{AddJobEntryRequest, add_job};
     path = "/{ProjectUuid}/job",
     tag = "projects",
     request_body = AddJobEntryRequest,
+    params(
+        ProjectUuid,
+    ),
     responses(
         (
             description = "The entries were added",
