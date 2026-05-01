@@ -225,6 +225,10 @@ pub async fn insert_job_detection_log(
         .collect::<Vec<_>>();
 
     for entry in updates {
+        if job_ids.contains(&entry.job_id.unwrap_or_default()) {
+            continue;
+        }
+
         type_ids.push(entry.type_id);
         // if it was matched, it will always have a job_id
         job_ids.push(entry.job_id.unwrap_or_default());
@@ -233,6 +237,10 @@ pub async fn insert_job_detection_log(
     }
 
     for entry in unmatched_jobs {
+        if job_ids.contains(&entry.job.job_id) {
+            continue;
+        }
+
         type_ids.push(entry.job.product_type_id);
         job_ids.push(*entry.job.job_id);
         project_ids.push(entry.project_id);
