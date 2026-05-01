@@ -65,7 +65,9 @@ export function FittingModal({
             return;
         }
 
+        console.log(characters)
         const selectableCharacters = characters
+            .filter(x => x.scopes.indexOf('esi-fittings.write_fittings.v1') > -1)
             .map(x => {
                 return {
                     label: x.character_name,

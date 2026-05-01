@@ -8,7 +8,7 @@ import { JobStatusBadge } from "./JobStatusBadge";
 import { Nakamura } from "@internal/misc/Nakamura";
 import { ProjectJobEditModal } from "./ProjectJobEditModal";
 import { useDisclosure } from "@mantine/hooks";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ProjectJob } from "@internal/services/projects/listJobs";
 import type { Uuid } from "@internal/services/utils";
 import type { ProjectJobMinimal } from "./ProjectJobAction";
@@ -175,18 +175,6 @@ export function ProjectJobListTable({
         autoResetPageIndex: false,
         onRowSelectionChange: (selected) => {
             setRowSelection(selected);
-            onSelect(
-                table
-                    .getSelectedRowModel()
-                    .rows
-                    .map(x => x.original)
-                    .map(x => {
-                        return {
-                            project_id: x.project_id,
-                            job_id: x.id
-                        }
-                    })
-                );
         },
         getRowCanExpand: () => true,
         getCoreRowModel: getCoreRowModel(),
@@ -205,6 +193,22 @@ export function ProjectJobListTable({
             rowSelection,
         },
     });
+
+    // must stay, otherwise the selection change is not properly triggered
+    useEffect(() => {
+        onSelect(
+            table
+                .getSelectedRowModel()
+                .rows
+                .map(x => x.original)
+                .map(x => {
+                    return {
+                        project_id: x.project_id,
+                        job_id: x.id
+                    }
+                })
+            );
+    }, [rowSelection]);
 
     const emptyTable = () => {
         if (jobs.length === 0) {
