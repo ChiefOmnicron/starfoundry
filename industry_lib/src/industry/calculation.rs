@@ -5,7 +5,7 @@ use utoipa::ToSchema;
 
 use crate::{IndustryHub, ProjectGroupUuid, ProjectJobUuid, SolutionUuid, StockMinimal, Structure};
 
-#[derive(Debug, Deserialize, Serialize, ToSchema)]
+#[derive(Debug, Default, Deserialize, Serialize, ToSchema)]
 pub struct TmpRequest {
     pub project_group_id:       ProjectGroupUuid,
     pub products:               Option<Vec<TmpProductRequest>>,
