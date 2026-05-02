@@ -1,8 +1,6 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import { Title } from '@mantine/core'
 import { fetchIndustryHubQuery, useFetchIndustryHub } from '@starfoundry/components/services/industry-hub/fetch';
-import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
-import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 import { useDocumentTitle } from '@mantine/hooks';
 
 export const Route = createFileRoute('/industry-hubs_/$industryHubId')({
@@ -22,20 +20,10 @@ function RouteComponent() {
     const { industryHubId } = Route.useParams();
 
     const {
-        isPending,
-        isError,
         data: industryHub,
     } = useFetchIndustryHub(industryHubId);
+    useDocumentTitle(`Industry Hub - ${(industryHub || { name: '' }).name}`);
 
-    if (isPending) {
-        return LoadingAnimation();
-    }
-
-    if (isError) {
-        return LoadingError();
-    }
-
-    useDocumentTitle(`Industry Hub - ${industryHub.name}`);
 
     return <>
         <Title
