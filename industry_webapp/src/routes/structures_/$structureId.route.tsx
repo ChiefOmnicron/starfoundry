@@ -1,7 +1,5 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import { fetchStructureQuery, useFetchStructure } from '@starfoundry/components/services/structure/fetch';
-import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
-import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 import { Title } from '@mantine/core'
 import { useDocumentTitle } from '@mantine/hooks';
 
@@ -22,20 +20,10 @@ function RouteComponent() {
     const { structureId } = Route.useParams();
 
     const {
-        isPending,
-        isError,
         data: structure
     } = useFetchStructure(structureId);
 
-    if (isPending) {
-        return LoadingAnimation();
-    }
-
-    if (isError) {
-        return LoadingError();
-    }
-
-    useDocumentTitle(`StarFoundry - ${structure.name}`);
+    useDocumentTitle(`StarFoundry - ${(structure || { name: 'StarFoundry' }).name}`);
 
     return <>
         <Title

@@ -83,14 +83,6 @@ function RouteComponent() {
         return LoadingError();
     }
 
-    if (isPending) {
-        return LoadingAnimation();
-    }
-
-    if (isError) {
-        return LoadingError();
-    }
-
     const notification = () => {
         if (createdResource) {
             return <Alert
