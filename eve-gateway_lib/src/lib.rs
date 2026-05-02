@@ -30,3 +30,6 @@ pub use self::search::*;
 pub use self::structure::*;
 pub use self::structure_type::*;
 pub use self::universe::*;
+
+pub const ENV_EVE_GATEWAY_API: &str      = "STARFOUNDRY_EVE_GATEWAY_API_URL";
+pub const ENV_EVE_GATEWAY_JWT_SIGN: &str = "STARFOUNDRY_EVE_GATEWAY_JWT_SIGN";

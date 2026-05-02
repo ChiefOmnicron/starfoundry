@@ -7,12 +7,10 @@ use starfoundry_lib_gateway::{ApiClient, StarFoundryApiClient, Result as Gateway
 use url::Url;
 
 use crate::error::{Error, Result};
-use crate::{EveGatewayApiClient, EveGatewayApiClientAsset, EveGatewayApiClientEveAsset, EveGatewayApiClientEveFitting, EveGatewayApiClientIndustry, EveGatewayApiClientItem};
+use crate::{ENV_EVE_GATEWAY_API, EveGatewayApiClient, EveGatewayApiClientAsset, EveGatewayApiClientEveAsset, EveGatewayApiClientEveFitting, EveGatewayApiClientIndustry, EveGatewayApiClientItem};
 use crate::contract::EveGatewayApiClientContract;
 use crate::eve_market::EveGatewayApiClientEveMarket;
 use crate::eve_industry::EveGatewayApiClientEveIndustry;
-
-pub const ENV_EVE_GATEWAY_API: &str = "STARFOUNDRY_EVE_GATEWAY_API_URL";
 
 pub struct EveGatewayClient(StarFoundryApiClient);
 

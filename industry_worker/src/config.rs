@@ -1,4 +1,5 @@
-use starfoundry_lib_gateway::{ENV_EVE_GATEWAY_API, ENV_USER_AGENT};
+use starfoundry_lib_eve_gateway::ENV_EVE_GATEWAY_API;
+use starfoundry_lib_gateway::ENV_USER_AGENT;
 use std::net::SocketAddr;
 
 const ENV_DATABASE_URL: &str    = "STARFOUNDRY_INDUSTRY_WORKER_DATABASE_URL";

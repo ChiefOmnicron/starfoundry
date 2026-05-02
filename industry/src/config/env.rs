@@ -1,4 +1,6 @@
-use starfoundry_lib_gateway::{ENV_EVE_GATEWAY_API, ENV_MARKET_API, ENV_USER_AGENT};
+use starfoundry_lib_eve_gateway::ENV_EVE_GATEWAY_API;
+use starfoundry_lib_gateway::ENV_USER_AGENT;
+use starfoundry_lib_market::ENV_MARKET_API;
 use tokio::net::TcpListener;
 
 const ENV_DATABASE_URL: &str     = "STARFOUNDRY_INDUSTRY_DATABASE_URL";

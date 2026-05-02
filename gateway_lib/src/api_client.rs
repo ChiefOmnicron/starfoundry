@@ -8,11 +8,6 @@ use url::Url;
 use crate::error::{Error, Result};
 use crate::HEADER_SERVICE;
 
-pub const ENV_MARKET_API: &str = "STARFOUNDRY_MARKET_API_URL";
-
-pub const ENV_EVE_GATEWAY_API: &str      = "STARFOUNDRY_EVE_GATEWAY_API_URL";
-pub const ENV_EVE_GATEWAY_JWT_SIGN: &str = "STARFOUNDRY_EVE_GATEWAY_JWT_SIGN";
-
 pub const ENV_USER_AGENT: &str = "STARFOUNDRY_USER_AGENT";
 
 const HEADER_SERVICE_UNKNOWN: &str = "Unknown";
