@@ -52,6 +52,7 @@ use crate::project_group::service::{list_default_blacklist, list_default_bluepri
     post,
     path = "/calculation",
     tag = "Industry",
+    request_body = TmpRequest,
     responses(
         (
             body = serde_json::Value,

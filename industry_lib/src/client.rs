@@ -6,10 +6,9 @@ use serde::Serialize;
 use starfoundry_lib_gateway::{ApiClient, StarFoundryApiClient, Result as GatewayResult};
 use url::Url;
 
-use crate::error::{Error, Result};
-use crate::IndustryApiClientInternal;
+use crate::{IndustryApiClientIndustry, error::{Error, Result}};
 
-pub const ENV_INDUSTRY_API: &str = "STARFOUNDRY_INDUSTRY_API_URL";
+pub const EVE_MARKET_API: &str = "STARFOUNDRY_INDUSTRY_API_URL";
 
 pub struct IndustryClient(StarFoundryApiClient);
 
@@ -20,10 +19,10 @@ impl IndustryClient {
     pub fn new<S: Into<String>>(
         service: S,
     ) -> Result<Self> {
-        let env = if let Ok(x) = std::env::var(ENV_INDUSTRY_API) {
+        let env = if let Ok(x) = std::env::var(EVE_MARKET_API) {
             x
         } else {
-            return Err(Error::EnvNotSet(ENV_INDUSTRY_API).into());
+            return Err(Error::EnvNotSet(EVE_MARKET_API).into());
         };
 
         let api_url = Url::parse(&env).map_err(Error::UrlParseError)?;
@@ -121,13 +120,13 @@ impl ApiClient for IndustryClient {
     }
 }
 
-impl IndustryApiClient for IndustryClient {}
+impl MarketApiClient for IndustryClient {}
 
-impl IndustryApiClientInternal for IndustryClient {}
+impl IndustryApiClientIndustry for IndustryClient {}
 
 /// Trait that should be implemented on all clients
 /// The default implementation will be sufficient in most cases, overwriting
 /// them is only recommended for mocking tests
-pub trait IndustryApiClient:
+pub trait MarketApiClient:
     ApiClient +
-    IndustryApiClientInternal {}
+    IndustryApiClientIndustry {}

@@ -5,7 +5,7 @@ use utoipa::ToSchema;
 
 use crate::{IndustryHub, ProjectGroupUuid, ProjectJobUuid, SolutionUuid, StockMinimal, Structure};
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, ToSchema)]
 pub struct TmpRequest {
     pub project_group_id:       ProjectGroupUuid,
     pub products:               Option<Vec<TmpProductRequest>>,
@@ -19,7 +19,7 @@ pub struct TmpRequest {
     pub job_splitting:          Option<Vec<TmpJobSplitting>>,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 pub struct TmpProductRequest {
     pub type_id:                TypeId,
     pub material_efficiency:    u32,
