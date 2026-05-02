@@ -1,5 +1,6 @@
 use serde::Deserialize;
 use sqlx::PgPool;
+use starfoundry_lib_industry::ProjectUuid;
 use starfoundry_lib_market::{Asteroid, Gas, GasDecompressionEfficiency, MarketApiClient, MarketVirtualRequest, OreReprocessingEfficiency};
 use starfoundry_lib_types::{StructureId, TypeId};
 use std::collections::HashMap;
@@ -7,7 +8,6 @@ use utoipa::ToSchema;
 use uuid::Uuid;
 
 use crate::project::error::{ProjectError, Result};
-use crate::project::ProjectUuid;
 
 pub async fn update_market_bulk(
     pool:               &PgPool,

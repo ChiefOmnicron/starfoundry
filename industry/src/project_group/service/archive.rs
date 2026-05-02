@@ -1,7 +1,7 @@
 use sqlx::PgPool;
+use starfoundry_lib_industry::ProjectGroupUuid;
 
 use crate::project_group::error::{ProjectGroupError, Result};
-use crate::project_group::ProjectGroupUuid;
 
 pub async fn archive(
     pool:     &PgPool,

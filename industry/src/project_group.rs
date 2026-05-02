@@ -25,12 +25,10 @@ pub mod service;
 pub use self::error::*;
 
 use axum::middleware;
-use starfoundry_lib_types::starfoundry_uuid;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
 
 use crate::AppState;
-use crate::project_group::error::Result;
 use crate::project_group::permission::{assert_exists, assert_read, assert_owner, assert_write};
 
 pub fn routes(
@@ -148,8 +146,6 @@ pub fn routes(
         .merge(update_industry_hubs)
         .merge(update_members)
 }
-
-starfoundry_uuid!(ProjectGroupUuid, "ProjectGroupUuid");
 
 #[cfg(test)]
 pub async fn project_group_test_routes(

@@ -1,6 +1,6 @@
 use sqlx::PgPool;
+use starfoundry_lib_industry::{ProjectUuid, SolutionUuid};
 
-use crate::project::{ProjectUuid, SolutionUuid};
 use crate::project::error::{ProjectError, Result};
 
 pub async fn initialize(

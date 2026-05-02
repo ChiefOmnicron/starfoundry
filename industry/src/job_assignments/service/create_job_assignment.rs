@@ -1,11 +1,11 @@
 use serde::Deserialize;
 use sqlx::PgPool;
+use starfoundry_lib_industry::{ProjectJobUuid, ProjectUuid};
 use utoipa::ToSchema;
 use uuid::Uuid;
 
 use crate::job_assignments::error::{JobAssignmentError, Result};
 use crate::job_assignments::JobAssignmentUuid;
-use crate::project::{ProjectJobUuid, ProjectUuid};
 
 pub async fn create_job_assignment(
     pool:         &PgPool,

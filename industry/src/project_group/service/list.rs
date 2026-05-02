@@ -1,10 +1,10 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
+use starfoundry_lib_industry::ProjectGroupUuid;
 use starfoundry_lib_types::CharacterId;
 use utoipa::{IntoParams, ToSchema};
 
 use crate::project_group::error::{ProjectGroupError, Result};
-use crate::project_group::ProjectGroupUuid;
 
 pub async fn list(
     pool:           &PgPool,

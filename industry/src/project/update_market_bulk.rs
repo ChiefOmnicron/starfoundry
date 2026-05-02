@@ -2,11 +2,11 @@ use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
+use starfoundry_lib_industry::ProjectUuid;
 
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized, UnprocessableEntity, UnsupportedMediaType};
 use crate::{AppState, eve_gateway_api_client, market_api_client};
 use crate::project::error::Result;
-use crate::project::ProjectUuid;
 use crate::project::service::{UpdateProjectMarket, update_market_bulk};
 use utoipa::ToSchema;
 use serde::Deserialize;

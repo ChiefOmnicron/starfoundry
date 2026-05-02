@@ -4,12 +4,12 @@ use axum::Json;
 use axum::response::IntoResponse;
 use serde::Serialize;
 use starfoundry_lib_gateway::ExtractIdentity;
+use starfoundry_lib_industry::ProjectGroupUuid;
 use utoipa::ToSchema;
 
 use crate::api_docs::{BadRequest, InternalServerError, Unauthorized, UnprocessableEntity, UnsupportedMediaType};
 use crate::AppState;
 use crate::project_group::error::Result;
-use crate::project_group::ProjectGroupUuid;
 use crate::project_group::service::{CreateProjectGroup, create};
 
 /// Create Group

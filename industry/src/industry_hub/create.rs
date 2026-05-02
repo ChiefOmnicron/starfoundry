@@ -4,11 +4,11 @@ use axum::Json;
 use axum::response::IntoResponse;
 use serde::Serialize;
 use starfoundry_lib_gateway::ExtractIdentity;
+use starfoundry_lib_industry::IndustryHubUuid;
 use utoipa::ToSchema;
 
 use crate::industry_hub::service::{create, CreateIndustryHub};
 use crate::AppState;
-use crate::industry_hub::IndustryHubUuid;
 use crate::industry_hub::error::Result;
 use crate::api_docs::{BadRequest, InternalServerError, Unauthorized, UnprocessableEntity, UnsupportedMediaType};
 

@@ -1,6 +1,7 @@
 use sqlx::PgPool;
+use starfoundry_lib_industry::MarketUuid;
+use starfoundry_lib_industry::ProjectUuid;
 
-use crate::project::{MarketUuid, ProjectUuid};
 use crate::project::error::ProjectError;
 use crate::project::error::Result;
 

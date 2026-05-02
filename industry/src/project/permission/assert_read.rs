@@ -3,11 +3,11 @@ use axum::middleware::Next;
 use axum::response::IntoResponse;
 use sqlx::PgPool;
 use starfoundry_lib_gateway::ExtractIdentity;
+use starfoundry_lib_industry::ProjectUuid;
 use starfoundry_lib_types::CharacterId;
 
 use crate::AppState;
 use crate::project::error::{ProjectError, Result};
-use crate::project::ProjectUuid;
 
 pub async fn assert_read(
     State(state):       State<AppState>,

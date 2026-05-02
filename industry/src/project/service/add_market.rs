@@ -1,9 +1,9 @@
 use serde::Deserialize;
 use sqlx::PgPool;
+use starfoundry_lib_industry::ProjectUuid;
 use starfoundry_lib_types::TypeId;
 use utoipa::ToSchema;
 
-use crate::project::ProjectUuid;
 use crate::project::error::{ProjectError, Result};
 
 pub async fn add_market(

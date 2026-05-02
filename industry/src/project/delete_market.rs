@@ -2,11 +2,11 @@ use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
+use starfoundry_lib_industry::{MarketUuid, ProjectUuid};
 
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
 use crate::AppState;
 use crate::project::error::Result;
-use crate::project::{MarketUuid, ProjectUuid};
 use crate::project::service::delete_market_entry;
 
 /// Delete market entry

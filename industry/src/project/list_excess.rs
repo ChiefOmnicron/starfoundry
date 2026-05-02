@@ -7,7 +7,6 @@ use starfoundry_lib_gateway::ExtractIdentity;
 use crate::api_docs::{BadRequest, InternalServerError, NotFound, Unauthorized};
 use crate::AppState;
 use crate::project::error::Result;
-use crate::project::ProjectUuid;
 use crate::project::service::{ProjectMisc, list_misc};
 
 /// List Exces

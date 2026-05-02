@@ -4,12 +4,12 @@ use axum::Json;
 use axum::response::IntoResponse;
 use serde::Serialize;
 use starfoundry_lib_gateway::ExtractIdentity;
+use starfoundry_lib_industry::IndustryHubUuid;
 use utoipa::ToSchema;
 
 use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 use crate::AppState;
 use crate::industry_hub::error::Result;
-use crate::industry_hub::IndustryHubUuid;
 use crate::industry_hub::service::clone;
 
 /// Clone Industry Hub

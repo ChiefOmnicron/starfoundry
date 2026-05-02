@@ -2,12 +2,12 @@ use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
+use starfoundry_lib_industry::ProjectGroupUuid;
 
 use crate::eve_gateway_api_client;
 use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 use crate::AppState;
 use crate::project_group::error::Result;
-use crate::project_group::ProjectGroupUuid;
 use crate::project_group::service::{ProjectGroupMember, list_members};
 
 /// List Group Members

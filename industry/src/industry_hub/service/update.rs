@@ -1,12 +1,11 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
+use starfoundry_lib_industry::{IndustryHubShare, IndustryHubUuid};
 use starfoundry_lib_types::CharacterId;
 use utoipa::ToSchema;
 use uuid::Uuid;
 
-use crate::industry_hub::IndustryHubUuid;
 use crate::industry_hub::error::{Result, IndustryHubError};
-use crate::industry_hub::service::IndustryHubShare;
 
 pub async fn update(
     pool:                &PgPool,

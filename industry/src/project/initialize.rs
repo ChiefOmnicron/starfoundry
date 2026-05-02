@@ -3,11 +3,11 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use serde::Deserialize;
+use starfoundry_lib_industry::{ProjectUuid, SolutionUuid};
 use utoipa::ToSchema;
 
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized, UnprocessableEntity, UnsupportedMediaType};
 use crate::AppState;
-use crate::project::{ProjectUuid, SolutionUuid};
 use crate::project::error::Result;
 use crate::project::service::initialize;
 

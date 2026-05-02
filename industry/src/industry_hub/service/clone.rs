@@ -1,9 +1,9 @@
 use sqlx::PgPool;
+use starfoundry_lib_industry::IndustryHubUuid;
 use starfoundry_lib_types::CharacterId;
 
 use crate::industry_hub::error::Result;
 use crate::industry_hub::error::IndustryHubError;
-use crate::industry_hub::IndustryHubUuid;
 
 pub async fn clone(
     pool:            &PgPool,

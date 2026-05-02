@@ -3,13 +3,13 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::{IntoResponse, Response};
 use starfoundry_lib_gateway::ErrorResponse;
+use starfoundry_lib_industry::{ProjectJobUuid, ProjectUuid};
 use starfoundry_lib_types::CharacterId;
 use thiserror::Error;
 
 use crate::api_docs::format_json_errors;
 use crate::industry_hub::IndustryHubError;
 use crate::project_group::ProjectGroupError;
-use crate::project::{ProjectJobUuid, ProjectUuid};
 
 pub type Result<T, E = ProjectError> = std::result::Result<T, E>;
 

@@ -1,10 +1,11 @@
 use serde::Serialize;
 use starfoundry_lib_eve_gateway::{BonusVariations, StructureType};
+use starfoundry_lib_industry::StockMinimal;
 use starfoundry_lib_types::TypeId;
 use std::collections::{HashMap, VecDeque};
 use std::fs::File;
 
-use crate::industry::calculation::models::{BlueprintTyp, Bonus, Dependency, DependencyBuildCost, DependencyTreeEntry, StockMinimal};
+use crate::industry::calculation::models::{BlueprintTyp, Bonus, Dependency, DependencyBuildCost, DependencyTreeEntry};
 use crate::industry::calculation::project_config::ProjectConfig;
 use crate::industry::calculation::result::EngineResult;
 

@@ -26,12 +26,10 @@ mod update_market_entry;
 mod update_misc;
 
 use axum::middleware;
-use starfoundry_lib_types::starfoundry_uuid;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
 
 use crate::AppState;
-use crate::project::error::Result;
 use crate::project::permission::{assert_exists, assert_read};
 
 // TODO: check write permission
@@ -135,11 +133,6 @@ pub fn routes(
         .merge(update_market_entry)
         .merge(update_misc)
 }
-
-starfoundry_uuid!(ProjectUuid, "ProjectUuid");
-starfoundry_uuid!(ProjectJobUuid, "ProjectJobUuid");
-starfoundry_uuid!(SolutionUuid, "SolutionUuid");
-starfoundry_uuid!(MarketUuid, "MarketUuid");
 
 #[cfg(test)]
 pub async fn project_test_routes(

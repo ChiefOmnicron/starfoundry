@@ -1,8 +1,8 @@
 use serde::Deserialize;
 use sqlx::PgPool;
+use starfoundry_lib_industry::{ProjectUuid, MarketUuid};
 use utoipa::ToSchema;
 
-use crate::project::{MarketUuid, ProjectUuid};
 use crate::project::error::ProjectError;
 use crate::project::error::Result;
 

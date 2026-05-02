@@ -1,11 +1,11 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item};
+use starfoundry_lib_industry::ProjectUuid;
 use std::collections::HashMap;
 use utoipa::ToSchema;
 
 use crate::project::error::{ProjectError, Result};
-use crate::project::ProjectUuid;
 use crate::sort_by_market_group_flat;
 
 pub async fn list_excess(

@@ -2,12 +2,12 @@ use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use starfoundry_lib_gateway::ExtractIdentity;
+use starfoundry_lib_industry::IndustryHubUuid;
 
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
 use crate::AppState;
 use crate::industry_hub::error::Result;
 use crate::industry_hub::service::delete;
-use crate::industry_hub::IndustryHubUuid;
 
 /// Delete Industry Hub
 /// 

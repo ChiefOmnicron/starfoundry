@@ -13,25 +13,27 @@ use axum::extract::State;
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
-use serde::{Deserialize, Serialize};
-use starfoundry_lib_eve_gateway::{EveGatewayApiClientIndustry, EveGatewayApiClientItem, Item};
+use sqlx::PgPool;
+use starfoundry_lib_eve_gateway::{EveGatewayApiClientIndustry, EveGatewayApiClientItem};
 use starfoundry_lib_gateway::{ErrorResponse, ExtractIdentity};
-use starfoundry_lib_industry::Structure;
+use starfoundry_lib_industry::IndustryHubUuid;
+use starfoundry_lib_industry::ProjectGroupUuid;
+use starfoundry_lib_industry::SolutionUuid;
+use starfoundry_lib_industry::StockMinimal;
+use starfoundry_lib_industry::TmpManufacturingResponse;
+use starfoundry_lib_industry::TmpMaterialResponse;
+use starfoundry_lib_industry::TmpProductRequest;
+use starfoundry_lib_industry::TmpRequest;
+use starfoundry_lib_industry::TmpResponse;
 use starfoundry_lib_market::MarketApiClientPrice;
 use starfoundry_lib_types::TypeId;
 use std::collections::HashMap;
-use utoipa::ToSchema;
+use uuid::Uuid;
 
 use crate::{AppState, eve_gateway_api_client, market_api_client, sort_by_job_flat, sort_by_market_group_flat};
 use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 use crate::industry::error::Result;
-use crate::project_group::ProjectGroupUuid;
 use crate::project_group::service::{list_default_blacklist, list_default_blueprint_overwrite, list_default_job_splitting, list_industry_hubs};
-use crate::industry_hub::service::IndustryHub;
-use sqlx::PgPool;
-use crate::project::{ProjectJobUuid, SolutionUuid};
-use crate::industry_hub::IndustryHubUuid;
-use uuid::Uuid;
 
 // TODO: refactor
 /// Build plan
@@ -569,62 +571,3 @@ async fn store_solution(
 
 sort_by_market_group_flat!(sort_market, TmpMaterialResponse);
 sort_by_job_flat!(sort_jobs, TmpManufacturingResponse);
-
-#[derive(Debug, Deserialize)]
-pub struct TmpRequest {
-    pub project_group_id:       ProjectGroupUuid,
-    pub products:               Option<Vec<TmpProductRequest>>,
-    pub products_str:           Option<String>,
-
-    pub stocks:                 Option<Vec<StockMinimal>>,
-    pub stocks_str:             Option<String>,
-
-    pub blacklist:              Option<Vec<TypeId>>,
-    pub blueprint_overwrite:    Option<Vec<TmpBlueprintOverwrite>>,
-    pub job_splitting:          Option<Vec<TmpJobSplitting>>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-pub struct TmpProductRequest {
-    pub type_id:                TypeId,
-    pub material_efficiency:    u32,
-    pub quantity:               u32,
-}
-
-#[derive(Debug, Deserialize, ToSchema)]
-pub struct TmpBlueprintOverwrite {
-    pub type_id:                TypeId,
-    pub material_efficiency:    u32,
-}
-
-#[derive(Debug, Deserialize, ToSchema)]
-pub struct TmpJobSplitting {
-    pub type_id:    TypeId,
-    pub runs:       u32,
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-pub struct TmpResponse {
-    pub solution_id:    SolutionUuid,
-    pub industry_hub:   IndustryHub,
-    pub material:       Vec<TmpMaterialResponse>,
-    pub manufacturing:  Vec<TmpManufacturingResponse>,
-}
-
-#[derive(Clone, Debug, Serialize, ToSchema)]
-pub struct TmpMaterialResponse {
-    pub item:   Item,
-    pub needed: f32,
-    pub stock:  i32,
-    // TODO: add market
-}
-
-#[derive(Clone, Debug, Serialize, ToSchema)]
-pub struct TmpManufacturingResponse {
-    pub id:         ProjectJobUuid,
-    pub item:       Item,
-    pub runs:       Vec<u32>,
-    pub structure:  Option<Structure>,
-    pub build_tax:  f32,
-    pub time:       f32,
-}

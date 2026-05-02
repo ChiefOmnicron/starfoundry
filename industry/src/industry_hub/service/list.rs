@@ -1,14 +1,13 @@
 use serde::Deserialize;
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::EveGatewayApiClient;
+use starfoundry_lib_industry::{IndustryHub, IndustryHubShare, IndustryHubShareType};
 use starfoundry_lib_types::{AllianceId, CharacterId, CorporationId};
 use std::fmt;
 use utoipa::IntoParams;
 use uuid::Uuid;
 
 use crate::industry_hub::error::{Result, IndustryHubError};
-use crate::industry_hub::service::{IndustryHub, IndustryHubShare};
-use crate::industry_hub::service::fetch::ShareType;
 use crate::structure::service::StructureFilter;
 
 pub async fn list(
@@ -154,7 +153,7 @@ pub async fn list(
         let shares = sqlx::query!(r#"
                 SELECT
                     share_id,
-                    share_type AS "share_type!: ShareType",
+                    share_type AS "share_type!: IndustryHubShareType",
                     name
                 FROM industry_hub_share
                 WHERE industry_hub_id = $1

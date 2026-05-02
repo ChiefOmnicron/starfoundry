@@ -1,13 +1,13 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item};
+use starfoundry_lib_industry::ProjectJobUuid;
 use std::collections::HashMap;
 use utoipa::ToSchema;
 
 use crate::sort_by_job_flat;
 use crate::job_assignments::error::{JobAssignmentError, Result};
 use crate::job_assignments::JobAssignmentUuid;
-use crate::project::ProjectJobUuid;
 
 pub async fn list_job_assignments(
     pool:                   &PgPool,

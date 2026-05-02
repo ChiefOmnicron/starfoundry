@@ -1,9 +1,9 @@
 use serde::Deserialize;
+use starfoundry_lib_industry::{ProjectJobUuid, ProjectUuid};
 use utoipa::ToSchema;
 use sqlx::PgPool;
 
 use crate::project::error::{ProjectError, Result};
-use crate::project::{ProjectJobUuid, ProjectUuid};
 use crate::project::service::ProjectJobStatusDatabase;
 
 pub async fn update_job(

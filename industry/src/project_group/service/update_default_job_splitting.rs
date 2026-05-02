@@ -1,10 +1,10 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
+use starfoundry_lib_industry::ProjectGroupUuid;
 use starfoundry_lib_types::TypeId;
 use utoipa::ToSchema;
 
 use crate::project_group::error::{ProjectGroupError, Result};
-use crate::project_group::ProjectGroupUuid;
 
 pub async fn update_default_job_splitting(
     pool:               &PgPool,

@@ -1,10 +1,9 @@
 use serde::Deserialize;
+use starfoundry_lib_industry::{ProjectGroupUuid, ProjectUuid};
 use utoipa::ToSchema;
 use sqlx::PgPool;
 
 use crate::project::error::{ProjectError, Result};
-use crate::project::ProjectUuid;
-use crate::project_group::ProjectGroupUuid;
 use crate::project::service::ProjectStatus;
 
 pub async fn update(

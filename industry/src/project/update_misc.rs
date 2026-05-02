@@ -2,11 +2,11 @@ use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
+use starfoundry_lib_industry::ProjectUuid;
 
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized, UnprocessableEntity, UnsupportedMediaType};
 use crate::AppState;
 use crate::project::error::Result;
-use crate::project::ProjectUuid;
 use crate::project::service::{UpdateMiscRequest, update_misc};
 
 /// Update Misc

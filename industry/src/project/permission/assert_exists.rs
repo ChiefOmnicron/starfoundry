@@ -2,10 +2,10 @@ use axum::extract::{Path, Request, State};
 use axum::middleware::Next;
 use axum::response::IntoResponse;
 use sqlx::PgPool;
+use starfoundry_lib_industry::ProjectUuid;
 
 use crate::AppState;
 use crate::project::error::{ProjectError, Result};
-use crate::project::ProjectUuid;
 
 pub async fn assert_exists(
     State(state):     State<AppState>,

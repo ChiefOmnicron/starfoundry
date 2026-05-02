@@ -1,12 +1,9 @@
-use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::EveGatewayApiClient;
-use starfoundry_lib_industry::Structure;
+use starfoundry_lib_industry::{IndustryHub, IndustryHubShare, IndustryHubShareType, IndustryHubUuid};
 use starfoundry_lib_types::CharacterId;
-use utoipa::ToSchema;
 
 use crate::industry_hub::error::{Result, IndustryHubError};
-use crate::industry_hub::IndustryHubUuid;
 use crate::structure::service::StructureFilter;
 
 // TODO: Permission check
@@ -58,7 +55,7 @@ pub async fn fetch(
     let shares = sqlx::query!(r#"
             SELECT
                 share_id,
-                share_type AS "share_type!: ShareType",
+                share_type AS "share_type!: IndustryHubShareType",
                 name
             FROM industry_hub_share
             WHERE industry_hub_id = $1
@@ -148,44 +145,4 @@ mod tests {
 
         assert!(response.unwrap().is_none());
     }
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
-pub struct IndustryHub {
-    pub id:          IndustryHubUuid,
-    pub name:        String,
-    pub structures:  Vec<Structure>,
-    pub shares:      Vec<IndustryHubShare>,
-    pub description: Option<String>,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
-#[schema(
-    examples(
-        json!({
-            "name": "Rational Chaos Inc.",
-            "share_id": 98024275,
-            "share_type": "CORPORATION"
-        })
-    )
-)]
-pub struct IndustryHubShare {
-    pub name:       String,
-    /// either a character id, corporation id or alliance id
-    pub share_id:   i32,
-    pub share_type: ShareType,
-}
-
-#[derive(
-    Clone, Debug, Copy, Hash,
-    PartialEq, Eq, PartialOrd, Ord,
-    sqlx::Type, Deserialize, Serialize, ToSchema,
-)]
-#[sqlx(type_name = "SHARE_TYPE")]
-#[sqlx(rename_all = "SCREAMING_SNAKE_CASE")]
-#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
-pub enum ShareType {
-    Character,
-    Corporation,
-    Alliance,
 }

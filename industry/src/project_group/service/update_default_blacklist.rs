@@ -1,8 +1,8 @@
 use sqlx::PgPool;
+use starfoundry_lib_industry::ProjectGroupUuid;
 use starfoundry_lib_types::TypeId;
 
 use crate::project_group::error::{ProjectGroupError, Result};
-use crate::project_group::ProjectGroupUuid;
 
 pub async fn update_default_blacklist(
     pool:                   &PgPool,

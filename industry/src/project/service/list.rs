@@ -1,12 +1,11 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
+use starfoundry_lib_industry::{ProjectGroupUuid, ProjectUuid};
 use starfoundry_lib_types::CharacterId;
 use std::collections::HashMap;
 use utoipa::{IntoParams, ToSchema};
 
-use crate::project_group::ProjectGroupUuid;
 use crate::project::error::{ProjectError, Result};
-use crate::project::ProjectUuid;
 use crate::project_group::service::{ProjectGroupFilter, ProjectGroupMinimal};
 
 pub async fn list(

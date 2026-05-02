@@ -1,10 +1,9 @@
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::EveGatewayApiClient;
+use starfoundry_lib_industry::{IndustryHub, ProjectGroupUuid};
 use starfoundry_lib_types::CharacterId;
 
-use crate::project_group::error::{ProjectGroupError, Result};
-use crate::project_group::ProjectGroupUuid;
-use crate::industry_hub::service::{IndustryHub, fetch};
+use crate::{industry_hub::service::fetch, project_group::error::{ProjectGroupError, Result}};
 
 pub async fn list_industry_hubs(
     pool:                   &PgPool,

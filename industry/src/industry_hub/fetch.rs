@@ -3,13 +3,13 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_gateway::ExtractIdentity;
+use starfoundry_lib_industry::{IndustryHub, IndustryHubUuid};
 
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
 use crate::AppState;
 use crate::eve_gateway_api_client;
 use crate::industry_hub::error::Result;
-use crate::industry_hub::IndustryHubUuid;
-use crate::industry_hub::service::{IndustryHub, fetch};
+use crate::industry_hub::service::fetch;
 
 /// Fetch Industry Hub
 /// 

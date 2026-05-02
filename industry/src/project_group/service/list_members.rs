@@ -1,11 +1,11 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{CharacterInfo, EveGatewayApiClient};
+use starfoundry_lib_industry::ProjectGroupUuid;
 use utoipa::ToSchema;
 
 use crate::project_group::error::{ProjectGroupError, Result};
 use crate::project_group::permission::ProjectGroupPermission;
-use crate::project_group::ProjectGroupUuid;
 
 pub async fn list_members(
     pool:                   &PgPool,

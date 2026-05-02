@@ -1,8 +1,9 @@
 use serde::Serialize;
+use starfoundry_lib_industry::StockMinimal;
 use starfoundry_lib_types::TypeId;
 use std::{collections::HashMap, fs::File};
 
-use crate::industry::calculation::models::{DependencyTreeEntry, StockMinimal};
+use crate::industry::calculation::models::DependencyTreeEntry;
 use crate::industry::calculation::project_config::ProjectConfig;
 
 #[derive(Debug, Serialize)]

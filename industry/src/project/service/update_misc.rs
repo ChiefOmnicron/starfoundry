@@ -1,9 +1,9 @@
 use serde::Deserialize;
+use starfoundry_lib_industry::ProjectUuid;
 use utoipa::ToSchema;
 use sqlx::PgPool;
 
 use crate::project::error::{ProjectError, Result};
-use crate::project::ProjectUuid;
 
 pub async fn update_misc(
     pool:           &PgPool,

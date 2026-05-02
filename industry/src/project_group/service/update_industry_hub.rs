@@ -1,8 +1,7 @@
 use sqlx::PgPool;
+use starfoundry_lib_industry::{IndustryHubUuid, ProjectGroupUuid};
 
 use crate::project_group::error::{ProjectGroupError, Result};
-use crate::project_group::ProjectGroupUuid;
-use crate::industry_hub::IndustryHubUuid;
 
 pub async fn update_industry_hubs(
     pool:               &PgPool,

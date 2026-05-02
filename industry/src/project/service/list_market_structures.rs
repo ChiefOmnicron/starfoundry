@@ -1,10 +1,9 @@
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::EveGatewayApiClient;
-use starfoundry_lib_industry::Structure;
+use starfoundry_lib_industry::{ProjectUuid, Structure};
 use starfoundry_lib_types::CharacterId;
 
 use crate::project::error::{ProjectError, Result};
-use crate::project::ProjectUuid;
 use crate::structure::service::FetchStructureQuery;
 
 pub async fn list_market_structures(

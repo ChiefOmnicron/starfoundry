@@ -3,11 +3,11 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_gateway::ExtractIdentity;
+use starfoundry_lib_industry::ProjectUuid;
 
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
 use crate::{AppState, eve_gateway_api_client};
 use crate::project::error::Result;
-use crate::project::ProjectUuid;
 use crate::project::service::{Project, fetch};
 
 /// Fetch Structure

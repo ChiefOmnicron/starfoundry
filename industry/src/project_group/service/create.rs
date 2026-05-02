@@ -1,4 +1,5 @@
 use sqlx::PgPool;
+use starfoundry_lib_industry::ProjectGroupUuid;
 use starfoundry_lib_types::CharacterId;
 use std::str::FromStr;
 use uuid::Uuid;
@@ -7,7 +8,6 @@ use utoipa::ToSchema;
 
 use crate::project_group::error::{ProjectGroupError, Result};
 use crate::project_group::permission::ProjectGroupPermissionCode;
-use crate::project_group::ProjectGroupUuid;
 
 pub async fn create(
     pool:         &PgPool,

@@ -3,11 +3,11 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::{IntoResponse, Response};
 use starfoundry_lib_gateway::ErrorResponse;
+use starfoundry_lib_industry::IndustryHubUuid;
 use starfoundry_lib_types::CharacterId;
 use thiserror::Error;
 
 use crate::api_docs::format_json_errors;
-use crate::industry_hub::IndustryHubUuid;
 use crate::structure::StructureError;
 
 pub type Result<T, E = IndustryHubError> = std::result::Result<T, E>;

@@ -2,13 +2,13 @@ use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::EveGatewayApiClient;
+use starfoundry_lib_industry::ProjectUuid;
 use starfoundry_lib_types::CharacterId;
 use std::collections::HashMap;
 use utoipa::ToSchema;
 
 use crate::{sort_by_job_flat};
 use crate::project::error::{ProjectError, Result};
-use crate::project::ProjectUuid;
 use crate::project::service::{ProjectFilter, ProjectJob, ProjectJobStatus, ProjectJobStatusDatabase, determine_ready_to_start, list};
 use crate::structure::service::FetchStructureQuery;
 

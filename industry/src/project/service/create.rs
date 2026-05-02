@@ -1,11 +1,10 @@
 use serde::Deserialize;
 use sqlx::PgPool;
+use starfoundry_lib_industry::{ProjectGroupUuid, ProjectUuid};
 use starfoundry_lib_types::CharacterId;
 use utoipa::ToSchema;
 
-use crate::project_group::ProjectGroupUuid;
 use crate::project::error::{ProjectError, Result};
-use crate::project::ProjectUuid;
 
 pub async fn create(
     pool:         &PgPool,

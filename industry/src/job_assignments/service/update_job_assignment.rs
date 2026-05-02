@@ -1,7 +1,7 @@
 use sqlx::PgPool;
+use starfoundry_lib_industry::ProjectJobUuid;
 
 use crate::job_assignments::JobAssignmentUuid;
-use crate::project::ProjectJobUuid;
 use crate::job_assignments::error::{JobAssignmentError, Result};
 
 pub async fn update_job_assignment(

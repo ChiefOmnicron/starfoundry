@@ -1,11 +1,11 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item};
+use starfoundry_lib_industry::ProjectGroupUuid;
 use starfoundry_lib_types::CharacterId;
 use utoipa::ToSchema;
 
 use crate::project_group::error::{ProjectGroupError, Result};
-use crate::project_group::ProjectGroupUuid;
 use crate::project_group::service::{BlueprintOverwrite, JobSplitting, ProjectGroupMember, list_members};
 
 pub async fn fetch(

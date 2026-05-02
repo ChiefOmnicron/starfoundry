@@ -1,10 +1,10 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
+use starfoundry_lib_industry::ProjectUuid;
 use utoipa::ToSchema;
 use uuid::Uuid;
 
 use crate::project::error::{ProjectError, Result};
-use crate::project::ProjectUuid;
 
 pub async fn list_misc(
     pool:       &PgPool,

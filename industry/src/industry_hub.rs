@@ -12,12 +12,10 @@ pub mod service;
 pub use self::error::*;
 
 use axum::middleware;
-use starfoundry_lib_types::starfoundry_uuid;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
 
 use crate::AppState;
-use crate::industry_hub::error::Result;
 use crate::industry_hub::permission::{assert_exists, assert_read, assert_write};
 
 pub fn routes(
@@ -57,8 +55,6 @@ pub fn routes(
         .merge(clone)
         .merge(delete)
 }
-
-starfoundry_uuid!(IndustryHubUuid, "IndustryHubUuid");
 
 #[cfg(test)]
 pub async fn industry_hub_test_routes(

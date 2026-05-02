@@ -1,8 +1,7 @@
 use sqlx::PgPool;
-use starfoundry_lib_industry::StructureUuid;
+use starfoundry_lib_industry::{ProjectGroupUuid, StructureUuid};
 
 use crate::project_group::error::{ProjectGroupError, Result};
-use crate::project_group::ProjectGroupUuid;
 
 pub async fn update_default_market(
     pool:               &PgPool,

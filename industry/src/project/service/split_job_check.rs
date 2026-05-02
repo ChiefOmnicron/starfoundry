@@ -1,14 +1,13 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item};
-use starfoundry_lib_industry::StructureUuid;
+use starfoundry_lib_industry::{ProjectUuid, StockMinimal, StructureUuid};
 use starfoundry_lib_types::{CharacterId, TypeId};
 use std::collections::HashMap;
 use utoipa::ToSchema;
 
-use crate::industry::{BlueprintBonus, BlueprintTyp, CalculationEngine, Dependency, ProjectConfig, ProjectConfigBuilder, StockMinimal, StructureMapping};
+use crate::industry::{BlueprintBonus, BlueprintTyp, CalculationEngine, Dependency, ProjectConfig, ProjectConfigBuilder, StructureMapping};
 use crate::project::error::{ProjectError, Result};
-use crate::project::ProjectUuid;
 use crate::{sort_by_job_flat, sort_by_market_group_flat};
 use crate::project::service::ProjectJobStatus;
 use uuid::Uuid;

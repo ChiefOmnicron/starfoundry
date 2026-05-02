@@ -2,11 +2,11 @@ use serde::Deserialize;
 use serde::Serialize;
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::EveGatewayApiClient;
+use starfoundry_lib_industry::ProjectUuid;
+use starfoundry_lib_industry::SolutionUuid;
 use starfoundry_lib_types::CharacterId;
 use utoipa::ToSchema;
 
-use crate::project::ProjectUuid;
-use crate::project::SolutionUuid;
 use crate::project::error::ProjectError;
 use crate::project::error::Result;
 use crate::project::service::{ProjectExcess, ProjectJobFilter, ProjectStock, list_stock};

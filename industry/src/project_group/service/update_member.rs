@@ -1,10 +1,10 @@
 use serde::Deserialize;
 use sqlx::PgPool;
+use starfoundry_lib_industry::ProjectGroupUuid;
 use starfoundry_lib_types::CharacterId;
 use utoipa::ToSchema;
 
 use crate::project_group::error::{ProjectGroupError, Result};
-use crate::project_group::ProjectGroupUuid;
 use crate::project_group::permission::ProjectGroupPermissionCode;
 
 pub async fn update_member(

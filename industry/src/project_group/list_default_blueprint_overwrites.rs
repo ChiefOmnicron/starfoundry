@@ -2,11 +2,11 @@ use axum::response::IntoResponse;
 use axum::http::StatusCode;
 use axum::Json;
 use axum::extract::{Path, State};
+use starfoundry_lib_industry::ProjectGroupUuid;
 
 use crate::{eve_gateway_api_client, AppState};
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
 use crate::project_group::error::Result;
-use crate::project_group::ProjectGroupUuid;
 use crate::project_group::service::{BlueprintOverwrite, list_default_blueprint_overwrite};
 
 /// List Blueprint overwrites

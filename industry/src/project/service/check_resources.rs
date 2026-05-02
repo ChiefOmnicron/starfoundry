@@ -1,18 +1,17 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item};
-use starfoundry_lib_industry::StructureUuid;
+use starfoundry_lib_industry::{ProjectJobUuid, StructureUuid};
 use starfoundry_lib_market::MarketApiClient;
 use starfoundry_lib_types::{CharacterId, TypeId};
 use std::collections::HashMap;
 use utoipa::ToSchema;
+use uuid::Uuid;
 
 use crate::{sort_by_job_flat, sort_by_market_group_flat};
 use crate::industry::{CalculationEngine, Dependency, ProjectConfigBuilder, StructureMapping};
 use crate::project::error::{ProjectError, Result};
 use crate::structure::service::FetchStructureQuery;
-use crate::project::ProjectJobUuid;
-use uuid::Uuid;
 
 pub async fn check_resources(
     pool:                       &PgPool,

@@ -1,7 +1,7 @@
 use sqlx::PgPool;
+use starfoundry_lib_industry::IndustryHubUuid;
 use starfoundry_lib_types::CharacterId;
 
-use crate::industry_hub::IndustryHubUuid;
 use crate::industry_hub::error::{Result, IndustryHubError};
 
 pub async fn delete(

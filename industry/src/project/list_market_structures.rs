@@ -3,12 +3,11 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_gateway::ExtractIdentity;
-use starfoundry_lib_industry::Structure;
+use starfoundry_lib_industry::{ProjectUuid, Structure};
 
 use crate::{AppState, eve_gateway_api_client};
 use crate::api_docs::{BadRequest, InternalServerError, NotFound, Unauthorized};
 use crate::project::error::Result;
-use crate::project::ProjectUuid;
 use crate::project::service::list_market_structures;
 
 /// List Market

@@ -3,11 +3,11 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_gateway::ExtractIdentity;
+use starfoundry_lib_industry::ProjectUuid;
 
 use crate::api_docs::{BadRequest, InternalServerError, NotFound, Unauthorized};
 use crate::AppState;
 use crate::project::error::Result;
-use crate::project::ProjectUuid;
 use crate::project::service::{ProjectMisc, list_misc};
 
 /// List Misc

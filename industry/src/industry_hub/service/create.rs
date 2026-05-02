@@ -1,11 +1,11 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
+use starfoundry_lib_industry::IndustryHubUuid;
 use starfoundry_lib_types::CharacterId;
 use utoipa::ToSchema;
 
 use crate::industry_hub::error::Result;
 use crate::industry_hub::error::IndustryHubError;
-use crate::industry_hub::IndustryHubUuid;
 
 pub async fn create(
     pool:         &PgPool,
