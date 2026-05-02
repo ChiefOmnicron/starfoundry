@@ -83,7 +83,7 @@ pub async fn api(
             .map(|x| TmpProductRequest {
                 quantity:   x.quantity as u32,
                 type_id:    x.type_id,
-                material_efficiency: x.material_efficiency.map(|x| x as u32).unwrap_or(10),
+                material_efficiency: x.material_efficiency.map(|x| x as u32).unwrap_or(0),
             })
             .collect::<Vec<_>>()
     } else {
