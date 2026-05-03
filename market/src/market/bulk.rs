@@ -5,7 +5,7 @@ use axum::response::IntoResponse;
 use starfoundry_lib_market::{MarketBulkRequest, MarketBulkResponse};
 
 use crate::api_docs::{BadRequest, InternalServerError, Unauthorized};
-use crate::AppState;
+use crate::{AppState, eve_gateway_api_client};
 use crate::market::error::Result;
 use crate::market::service::bulk;
 
@@ -53,6 +53,7 @@ pub async fn api(
 ) -> Result<impl IntoResponse> {
     let data = bulk(
             &state.postgres,
+            &eve_gateway_api_client()?,
             request,
         ).await?;
 

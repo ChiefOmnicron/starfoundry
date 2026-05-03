@@ -2,21 +2,33 @@ mod multibuy;
 mod smartbuy;
 
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::EveGatewayApiClientItem;
-use starfoundry_lib_market::{Asteroid, BuyStrategy, Gas, MarketBulkRequest, MarketBulkResponse};
+use starfoundry_lib_eve_gateway::EveGatewayApiClient;
+use starfoundry_lib_market::{Asteroid, BuyStrategy, Gas, MarketBulkRequest, MarketBulkResponse, MarketItemList};
 use starfoundry_lib_types::{StructureId, TypeId};
 use std::collections::HashMap;
 
 use crate::market::error::Result;
-use crate::eve_gateway_api_client;
 use crate::market::last_fetched;
 
 pub async fn bulk(
-    pool:    &PgPool,
-    request: MarketBulkRequest,
+    pool:                   &PgPool,
+    eve_gateway_api_client: &impl EveGatewayApiClient,
+    request:                MarketBulkRequest,
 ) -> Result<Vec<MarketBulkResponse>> {
     let market_items = if let Some(items) = request.item_list {
         items
+    } else if let Some(x) = request.item_list_str {
+        eve_gateway_api_client
+            .parse_items(x)
+            .await
+            .map(|x| x.items)
+            .unwrap_or_default()
+            .into_iter()
+            .map(|x| MarketItemList {
+                quantity:   x.quantity as i32,
+                type_id:    x.type_id,
+            })
+            .collect::<Vec<_>>()
     } else {
         return Ok(Vec::new());
     };
@@ -32,7 +44,7 @@ pub async fn bulk(
     type_ids.extend(Asteroid::compressed_moon_type_ids());
     type_ids.extend(Gas::compressed_type_ids());
 
-    let items = eve_gateway_api_client()?
+    let items = eve_gateway_api_client
         .fetch_item_bulk(type_ids.clone())
         .await
         .unwrap()

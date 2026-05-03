@@ -6,7 +6,7 @@ use crate::{GasDecompressionEfficiency, OreReprocessingEfficiency};
 
 /// Bulk request for resolving prices
 /// 
-/// Either `appraisal` or `item_list` must be set
+/// Either `item_list_str` or `item_list` must be set
 /// 
 #[derive(Debug, Default, Deserialize, Serialize, ToSchema, IntoParams)]
 pub struct MarketBulkRequest {
@@ -15,8 +15,8 @@ pub struct MarketBulkRequest {
     #[serde(default)]
     pub virtual_market:     bool,
 
-    pub appraisal:          Option<String>,
     pub item_list:          Option<Vec<MarketItemList>>,
+    pub item_list_str:      Option<String>,
     pub smart_buy_config:   Option<SmartBuyConfig>,
 }
 
