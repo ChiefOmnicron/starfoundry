@@ -17,7 +17,7 @@ pub trait IndustryApiClientIndustry: ApiClient {
         &self,
         source:         &String,
         character_id:   &CharacterId,
-        request:        TmpRequest,
+        request:        &TmpRequest,
     ) -> Result<Vec<TmpResponse>> {
         let mut headers = HeaderMap::new();
         headers.insert(HOST, HeaderValue::from_str(&source).unwrap_or(HeaderValue::from_static("invalid.header")));

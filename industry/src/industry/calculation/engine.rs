@@ -716,15 +716,17 @@ impl CalculationEngine {
                 .map(|x| x.structure_uuid)
                 .collect::<Vec<_>>();
 
-            // Grab the actual structures
-
+            // If there were bonused structures found, filter them out and only
+            // use those for the next calculations
+            //
+            // If no structures were found, return all
             let structures = if structure_ids.len() > 0 {
                 structures_clone
                     .iter()
                     .filter(|x| structure_ids.contains(&x.id))
                     .collect::<Vec<_>>()
             } else {
-                continue;
+                structures_clone.iter().collect::<Vec<_>>()
             };
 
             // Find the structure with the best ME bonus and the lowest system bonus
