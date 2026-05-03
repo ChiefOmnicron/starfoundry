@@ -756,9 +756,8 @@ impl CalculationEngine {
                     if blueprint.item.group.group_id == 485.into() ||
                         blueprint.item.group.group_id == 547.into() ||
                         blueprint.item.group.group_id == 1538.into() ||
-                        blueprint.item.group.group_id == 659.into() ||
                         blueprint.item.group.group_id == 883.into() ||
-                        blueprint.item.group.group_id == 30.into() {
+                        blueprint.item.group.group_id == 4594.into() {
 
                         // ignore
                     } else if structure
@@ -846,6 +845,7 @@ impl CalculationEngine {
                     .map(|y| y.structure = Some(x.clone()));
                 x
             } else {
+                dbg!("no structure", &blueprint.item.group.group_id);
                 continue;
             };
 
