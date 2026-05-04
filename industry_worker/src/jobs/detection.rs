@@ -6,6 +6,7 @@ use starfoundry_lib_types::{ItemId, JobId};
 use starfoundry_lib_eve_gateway::IndustryJob;
 
 use crate::jobs::{ProjectJobStatusDatabase, StartableIndustryJobs, UpdateJobRequest};
+use tracing::{Level, event, span};
 
 /// Attempts to match an industry job retrieved from the eve api, to a industry
 /// job that needs to be done in order to complete a project.
@@ -32,6 +33,9 @@ pub fn job_detection(
     used_ids:        &mut Vec<Uuid>,
     used_job_ids:    &mut Vec<JobId>,
 ) -> (HashMap<Uuid, Vec<UpdateJobRequest>>, Vec<UnmatchedJob>) {
+    let span = span!(Level::INFO, "job_detection");
+    let _guard = span.enter();
+
     let now = chrono::Utc::now().naive_utc();
 
     // List of entries that need to be updated
@@ -41,10 +45,12 @@ pub fn job_detection(
     let mut unmatched_jobs: Vec<UnmatchedJob> = Vec::new();
 
     for entry in eve_jobs {
+        event!(Level::INFO, "[{}] corporation: {}", entry.job_id, entry.corporation_id.map(|x| x.to_string()).unwrap_or("-/-".into()));
         let end_date = NaiveDateTime::parse_from_str(&entry.end_date, "%Y-%m-%dT%H:%M:%SZ").unwrap();
 
         // 1. The job is already done, so we can continue
         if finished_jobs.contains(&entry.job_id) {
+            event!(Level::INFO, "[{}] job is already finished - continue to next", entry.job_id);
             continue;
         }
 
@@ -60,6 +66,7 @@ pub fn job_detection(
                 x.job_id.is_some() &&
                 x.job_id.unwrap() == entry.job_id
             ) {
+            event!(Level::INFO, "[{}] job is marked as done", entry.job_id);
             // The job changed its status from Building to done
             // TODO: this can probably be replaced by just checking the eve status
             if job.status == ProjectJobStatusDatabase::Building && now > end_date {
@@ -93,6 +100,7 @@ pub fn job_detection(
                     !used_ids.contains(&x.id) &&
                     !used_job_ids.contains(&entry.job_id)
                 ) {
+                    event!(Level::INFO, "[{}] found a suitable project job", entry.job_id);
                     let update = UpdateJobRequest {
                         id:           job.id,
                         character_id: Some(entry.installer_id),
@@ -110,6 +118,7 @@ pub fn job_detection(
                 used_ids.push(job.id);
                 used_job_ids.push(entry.job_id);
             } else {
+                event!(Level::INFO, "[{}] could not find a matching job, marking as unmatched", entry.job_id);
                 let project_id = startable_jobs
                     .iter()
                     .find(|x| x.project_name == *container)
@@ -122,6 +131,7 @@ pub fn job_detection(
                 });
             }
         } else {
+            event!(Level::INFO, "[{}] job could not be matched", entry.job_id);
             unmatched_jobs.push(UnmatchedJob {
                 job:        entry.clone(),
                 reason:     UnmatchedJobReason::NoContainer,

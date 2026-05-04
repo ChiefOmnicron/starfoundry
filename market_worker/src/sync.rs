@@ -1,9 +1,7 @@
-use chrono::{NaiveDateTime, Timelike, Utc};
 use sqlx::PgPool;
 use starfoundry_lib_types::{CharacterId, RegionId, StructureId};
 use starfoundry_lib_worker::Task;
 use std::collections::HashMap;
-use std::time::Duration;
 
 use crate::error::{Error, Result};
 use crate::metric::WorkerMetric;
@@ -238,11 +236,52 @@ async fn sync_player_stations(
         return Ok(0usize);
     }
 
-    time_slotted_market(
-        pool,
-        WorkerMarketTask::LatestPlayer,
-        registered_structures,
-    ).await
+    let mut new_entries = Vec::new();
+    for ((character_id, structure_id), structures) in registered_structures {
+        if *character_id == 0 {
+            continue;
+        }
+
+        for structure in structures {
+            if let None = market_stations
+                .iter()
+                .find(|x| {
+                    x.character_id == *character_id &&
+                    x.structure_id == *structure_id &&
+                    x.source == Some(structure.source.clone())
+                }) {
+
+                let additional_data = serde_json::json!({
+                    "structure_id": structure.structure_id,
+                    "character_id": character_id,
+                    "region_id": structure.region_id,
+                    "source": structure.source,
+                });
+                new_entries.push(additional_data);
+            }
+        }
+    }
+
+    tracing::info!("Added {} new player market jobs", new_entries.len());
+    sqlx::query!("
+            INSERT INTO worker_queue (task, additional_data)
+            SELECT $1, * FROM UNNEST(
+                $2::JSONB[]
+            )
+        ",
+            &task_name,
+            &new_entries
+        )
+        .execute(pool)
+        .await
+        .map(|_| new_entries.len())
+        .map_err(Error::SyncError)
+
+    //time_slotted_market(
+    //    pool,
+    //    WorkerMarketTask::LatestPlayer,
+    //    registered_structures,
+    //).await
 }
 
 async fn sync_public_contract(
@@ -381,7 +420,7 @@ async fn sync_private_orders(
     Ok(total_added)
 }
 
-/// Market entries that are time slotted
+/*/// Market entries that are time slotted
 async fn time_slotted_market(
     pool:      &PgPool,
     task_name: WorkerMarketTask,
@@ -446,7 +485,7 @@ async fn time_slotted_market(
         .await
         .map(|_| new_entries.len())
         .map_err(Error::SyncError)
-}
+}*/
 
 #[derive(Clone, Debug)]
 struct TimeSlottedMarketEntry {

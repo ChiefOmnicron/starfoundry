@@ -192,7 +192,7 @@ pub async fn determine_ready_to_start(
         .collect::<Vec<TypeId>>();
 
     for entry in entries.iter_mut() {
-        if entry.status == ProjectJobStatus::Done {
+        if entry.status != ProjectJobStatus::WaitingForMaterials {
             continue;
         }
 
