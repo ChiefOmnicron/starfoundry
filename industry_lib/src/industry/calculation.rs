@@ -8,7 +8,7 @@ use crate::industry_hub::IndustryHub;
 use crate::industry::StockMinimal;
 use crate::structure::Structure;
 
-#[derive(Debug, Deserialize, Serialize, ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 pub struct BuildEngine {
     pub project_group_id:       ProjectGroupUuid,
     pub products:               Option<Vec<BuildEngineProduct>>,
@@ -29,19 +29,19 @@ pub struct BuildEngineProduct {
     pub quantity:               u32,
 }
 
-#[derive(Debug, Deserialize, Serialize, ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 pub struct TmpBlueprintOverwrite {
     pub type_id:                TypeId,
     pub material_efficiency:    u32,
 }
 
-#[derive(Debug, Deserialize, Serialize, ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 pub struct TmpJobSplitting {
     pub type_id:    TypeId,
     pub runs:       u32,
 }
 
-#[derive(Debug, Deserialize, Serialize, ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 pub struct BuildEngineResponse {
     pub solution_id:    SolutionUuid,
     pub industry_hub:   IndustryHub,
