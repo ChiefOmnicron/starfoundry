@@ -1,29 +1,31 @@
-mod add_excess;
+mod add_excess_entry;
 mod add_job;
 mod add_market;
 mod check_resources;
 mod create;
-mod error;
-mod fetch;
-mod fetch_cost;
+mod delete_market_entry;
 mod delete;
-mod delete_market;
+mod error;
+mod fetch_cost;
+mod fetch_time_left;
+mod fetch;
 mod initialize;
-mod list_jobs;
 mod list_all_jobs;
-mod list_market;
+mod list_excess;
+mod list_jobs;
 mod list_market_buy;
 mod list_market_structures;
+mod list_market;
 mod list_misc;
 mod list;
 mod permission;
 mod service;
 mod split_job_check;
-mod update;
 mod update_job;
 mod update_market_bulk;
 mod update_market_entry;
 mod update_misc;
+mod update;
 
 use axum::middleware;
 use utoipa_axum::router::OpenApiRouter;
@@ -40,7 +42,7 @@ pub fn routes(
         .routes(routes!(create::api));
 
     let add_excess = OpenApiRouter::new()
-        .routes(routes!(add_excess::api));
+        .routes(routes!(add_excess_entry::api));
     let add_job = OpenApiRouter::new()
         .routes(routes!(add_job::api));
     let add_market = OpenApiRouter::new()
@@ -54,12 +56,16 @@ pub fn routes(
         .routes(routes!(fetch_cost::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+    let fetch_time_left = OpenApiRouter::new()
+        .routes(routes!(fetch_time_left::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
 
     let delete = OpenApiRouter::new()
         .routes(routes!(delete::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
     let delete_market_entry = OpenApiRouter::new()
-        .routes(routes!(delete_market::api));
+        .routes(routes!(delete_market_entry::api));
 
     let list = OpenApiRouter::new()
         .routes(routes!(list::api));
@@ -69,6 +75,10 @@ pub fn routes(
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
     let list_all_jobs = OpenApiRouter::new()
         .routes(routes!(list_all_jobs::api));
+    let list_excess = OpenApiRouter::new()
+        .routes(routes!(list_excess::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
     let list_market = OpenApiRouter::new()
         .routes(routes!(list_market::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_read))
@@ -115,10 +125,12 @@ pub fn routes(
         .merge(add_market)
         .merge(fetch)
         .merge(fetch_cost)
+        .merge(fetch_time_left)
         .merge(delete)
         .merge(delete_market_entry)
         .merge(initialize)
         .merge(list)
+        .merge(list_excess)
         .merge(list_jobs)
         .merge(list_all_jobs)
         .merge(list_market)

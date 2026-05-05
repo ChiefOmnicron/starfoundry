@@ -1,8 +1,7 @@
-use serde::Deserialize;
 use sqlx::PgPool;
-use starfoundry_lib_industry::{ProjectGroupUuid, ProjectUuid};
+use starfoundry_lib_industry::project::CreateProject;
+use starfoundry_lib_industry::ProjectUuid;
 use starfoundry_lib_types::CharacterId;
-use utoipa::ToSchema;
 
 use crate::project::error::{ProjectError, Result};
 
@@ -21,9 +20,11 @@ pub async fn create(
                 project_group_id,
                 orderer,
                 name,
-                note
+                note,
+                pre_products,
+                pre_additional
             )
-            VALUES ($1, $2, $3, $4, $5, $6)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
             RETURNING id
         "#,
             *character_id,
@@ -32,34 +33,12 @@ pub async fn create(
             project_info.orderer,
             project_info.name,
             project_info.notes,
+            project_info.pre_products,
+            project_info.pre_additional,
         )
         .fetch_one(pool)
         .await
         .map_err(ProjectError::Create)?;
 
     Ok(project_id.id.into())
-}
-
-#[derive(Debug, Deserialize, ToSchema)]
-pub struct CreateProject {
-    pub project_group_id:   ProjectGroupUuid,
-    pub orderer:            String,
-    pub name:               String,
-
-    pub sell_price:         Option<f64>,
-    pub notes:              Option<String>,
-}
-
-impl CreateProject {
-    pub fn validate(&self) -> Result<bool> {
-        if self.name.len() <= 100 {
-            if self.name.trim().is_empty() {
-                return Err(ProjectError::ValidationError("Field 'name' must be set".into()));
-            }
-        } else {
-            return Err(ProjectError::ValidationError("Field 'name' is too long, max length: 100".into()));
-        };
-
-        Ok(true)
-    }
 }

@@ -2,12 +2,13 @@ use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
+use starfoundry_lib_industry::project::AddJobEntryRequest;
 use starfoundry_lib_industry::ProjectUuid;
 
 use crate::api_docs::{BadRequest, InternalServerError, Unauthorized};
 use crate::AppState;
 use crate::project::error::Result;
-use crate::project::service::{AddJobEntryRequest, add_job};
+use crate::project::service::add_job;
 
 /// List Groups
 /// 

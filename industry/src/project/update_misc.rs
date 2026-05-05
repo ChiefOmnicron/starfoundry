@@ -2,12 +2,13 @@ use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
+use starfoundry_lib_industry::project::UpdateMisc;
 use starfoundry_lib_industry::ProjectUuid;
 
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized, UnprocessableEntity, UnsupportedMediaType};
 use crate::AppState;
 use crate::project::error::Result;
-use crate::project::service::{UpdateMiscRequest, update_misc};
+use crate::project::service::update_misc;
 
 /// Update Misc
 /// 
@@ -26,7 +27,7 @@ use crate::project::service::{UpdateMiscRequest, update_misc};
     put,
     path = "/{ProjectUuid}/misc",
     tag = "Project",
-    request_body = UpdateMiscRequest,
+    request_body = UpdateMisc,
     params(
         ProjectUuid,
     ),
@@ -49,7 +50,7 @@ use crate::project::service::{UpdateMiscRequest, update_misc};
 pub async fn api(
     State(state):       State<AppState>,
     Path(project_id):   Path<ProjectUuid>,
-    Json(update_info):  Json<Vec<UpdateMiscRequest>>,
+    Json(update_info):  Json<Vec<UpdateMisc>>,
 ) -> Result<impl IntoResponse> {
     update_misc(
         &state.postgres,

@@ -1,11 +1,11 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                pj.id           AS \"id!\",\n                pj.runs         AS \"runs!\",\n                pj.status       AS \"status!: ProjectJobStatusDatabase\",\n                pj.cost,\n                pj.job_id,\n                pj.structure_id AS \"structure_id!\",\n                pj.type_id      AS \"type_id!\",\n                pj.started_by,\n                pj.project_id   AS \"project_id!\",\n                ij.end_date     AS \"end_date?\"\n            FROM project_job pj\n            LEFT JOIN industry_job ij ON pj.job_id = ij.job_id\n            WHERE project_id = ANY($1)\n        ",
+  "query": "\n            SELECT\n                pj.id,\n                pj.runs,\n                pj.status AS \"status: ProjectJobStatus\",\n                pj.cost,\n                pj.job_id,\n                pj.structure_id,\n                pj.type_id,\n                pj.started_by,\n                ij.end_date AS \"end_date?\"\n            FROM project_job pj\n            LEFT JOIN industry_job ij ON pj.job_id = ij.job_id\n            WHERE project_id = $1\n        ",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
-        "name": "id!",
+        "name": "id",
         "type_info": "Uuid",
         "origin": {
           "Table": {
@@ -16,7 +16,7 @@
       },
       {
         "ordinal": 1,
-        "name": "runs!",
+        "name": "runs",
         "type_info": "Int4",
         "origin": {
           "Table": {
@@ -27,7 +27,7 @@
       },
       {
         "ordinal": 2,
-        "name": "status!: ProjectJobStatusDatabase",
+        "name": "status: ProjectJobStatus",
         "type_info": {
           "Custom": {
             "name": "project_job_status",
@@ -71,7 +71,7 @@
       },
       {
         "ordinal": 5,
-        "name": "structure_id!",
+        "name": "structure_id",
         "type_info": "Uuid",
         "origin": {
           "Table": {
@@ -82,7 +82,7 @@
       },
       {
         "ordinal": 6,
-        "name": "type_id!",
+        "name": "type_id",
         "type_info": "Int4",
         "origin": {
           "Table": {
@@ -104,17 +104,6 @@
       },
       {
         "ordinal": 8,
-        "name": "project_id!",
-        "type_info": "Uuid",
-        "origin": {
-          "Table": {
-            "table": "project_job",
-            "name": "project_id"
-          }
-        }
-      },
-      {
-        "ordinal": 9,
         "name": "end_date?",
         "type_info": "Varchar",
         "origin": {
@@ -127,7 +116,7 @@
     ],
     "parameters": {
       "Left": [
-        "UuidArray"
+        "Uuid"
       ]
     },
     "nullable": [
@@ -139,9 +128,8 @@
       false,
       false,
       true,
-      false,
       false
     ]
   },
-  "hash": "2dd401b8b80bf9abb9357659d5f06e28eb6ea5a65fbe3c2d66c11e195398bbd3"
+  "hash": "d80717f04bc1bfa3ef7d80d7690eeebaff56fb4907062cd9cbe634fa9825ea36"
 }

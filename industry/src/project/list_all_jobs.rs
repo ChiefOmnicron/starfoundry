@@ -3,12 +3,13 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_gateway::ExtractIdentity;
+use starfoundry_lib_industry::project::ProjectJobAllGroup;
 use starfoundry_lib_industry::ProjectUuid;
 
 use crate::api_docs::{BadRequest, InternalServerError, NotFound, Unauthorized};
 use crate::{AppState, eve_gateway_api_client};
 use crate::project::error::Result;
-use crate::project::service::{ProjectJobAllGroup, list_all_jobs};
+use crate::project::service::list_all_jobs;
 
 /// List All Jobs
 /// 

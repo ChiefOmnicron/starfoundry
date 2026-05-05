@@ -1,15 +1,13 @@
 use chrono::NaiveDateTime;
-use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::EveGatewayApiClient;
-use starfoundry_lib_industry::ProjectUuid;
+use starfoundry_lib_industry::project::{ProjectFilter, ProjectJob, ProjectJobAllGroup, ProjectJobStatus};
 use starfoundry_lib_types::CharacterId;
 use std::collections::HashMap;
-use utoipa::ToSchema;
 
 use crate::{sort_by_job_flat};
 use crate::project::error::{ProjectError, Result};
-use crate::project::service::{ProjectFilter, ProjectJob, ProjectJobStatus, ProjectJobStatusDatabase, determine_ready_to_start, list};
+use crate::project::service::{determine_ready_to_start, list};
 use crate::structure::service::FetchStructureQuery;
 
 pub async fn list_all_jobs(
@@ -37,7 +35,7 @@ pub async fn list_all_jobs(
             SELECT
                 pj.id           AS "id!",
                 pj.runs         AS "runs!",
-                pj.status       AS "status!: ProjectJobStatusDatabase",
+                pj.status       AS "status!: ProjectJobStatus",
                 pj.cost,
                 pj.job_id,
                 pj.structure_id AS "structure_id!",
@@ -176,10 +174,3 @@ pub async fn list_all_jobs(
 }
 
 sort_by_job_flat!(sort_jobs, ProjectJob);
-
-#[derive(Debug, Deserialize, Serialize, ToSchema)]
-pub struct ProjectJobAllGroup {
-    pub header:     String,
-    pub project_id: ProjectUuid,
-    pub entries:    Vec<ProjectJob>,
-}

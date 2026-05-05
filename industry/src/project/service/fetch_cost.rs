@@ -1,9 +1,7 @@
-use serde::Deserialize;
-use serde::Serialize;
 use sqlx::PgPool;
+use starfoundry_lib_industry::project::ProjectCost;
 use starfoundry_lib_industry::ProjectUuid;
 use starfoundry_lib_types::CharacterId;
-use utoipa::ToSchema;
 
 use crate::project::error::ProjectError;
 use crate::project::error::Result;
@@ -96,15 +94,4 @@ pub async fn fetch_cost(
     } else {
         Ok(None)
     }
-}
-
-#[derive(Debug, Deserialize, Serialize, ToSchema)]
-pub struct ProjectCost {
-    sell_price:     f64,
-
-    job_cost:       f64,
-    market_cost:    f64,
-    misc_cost:      f64,
-    excess_cost:    f64,
-    stock_cost:     f64,
 }

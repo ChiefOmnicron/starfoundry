@@ -3,7 +3,8 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_gateway::ExtractIdentity;
-use starfoundry_lib_industry::{ProjectGroupUuid, Structure};
+use starfoundry_lib_industry::ProjectGroupUuid;
+use starfoundry_lib_industry::structure::Structure;
 
 use crate::{eve_gateway_api_client, AppState};
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
@@ -90,7 +91,7 @@ mod tests {
     use http_body_util::BodyExt;
     use sqlx::PgPool;
     use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID, HEADER_SERVICE};
-    use starfoundry_lib_industry::Structure;
+    use starfoundry_lib_industry::structure::Structure;
 
     use crate::project_group::project_group_test_routes;
 

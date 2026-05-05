@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
-use crate::{IndustryHubUuid, Structure};
+use crate::IndustryHubUuid;
+use crate::structure::Structure;
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 pub struct IndustryHub {

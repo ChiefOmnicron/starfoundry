@@ -1,12 +1,10 @@
-use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-use starfoundry_lib_industry::{ProjectGroupUuid, ProjectUuid};
+use starfoundry_lib_industry::project::{ProjectFilter, ProjectMinimal, ProjectStatus};
 use starfoundry_lib_types::CharacterId;
 use std::collections::HashMap;
-use utoipa::{IntoParams, ToSchema};
 
 use crate::project::error::{ProjectError, Result};
-use crate::project_group::service::{ProjectGroupFilter, ProjectGroupMinimal};
+use crate::project_group::service::ProjectGroupFilter;
 
 pub async fn list(
     pool:           &PgPool,
@@ -109,91 +107,6 @@ pub async fn list(
     }
 
     Ok(projects)
-}
-
-#[derive(Debug, Default, Deserialize, ToSchema, IntoParams)]
-#[into_params(parameter_in = Query)]
-pub struct ProjectFilter {
-    #[serde(default)]
-    #[param(
-        example = json!("Project 1337"),
-        required = false,
-    )]
-    pub name: Option<String>,
-
-    #[param(
-        default = json!("DRAFT,READY_TO_START,IN_PROGRESS,PAUSED,DONE"),
-        required = false,
-    )]
-    #[serde(default = "default_status")]
-    pub status: Option<String>,
-
-    #[serde(default)]
-    #[param(
-        example = json!("019b5d76-0ebd-77f4-80b0-12daf86501b6"),
-        required = false,
-    )]
-    pub project_group_id: Option<ProjectGroupUuid>,
-
-    #[serde(default)]
-    #[param(
-        example = json!("Eistonen Kodan Sasen"),
-        required = false,
-    )]
-    pub orderer: Option<String>,
-}
-
-fn default_status() -> Option<String> {
-    Some("DRAFT,READY_TO_START,IN_PROGRESS,PAUSED,DONE".into())
-}
-
-#[derive(Debug, Deserialize, Serialize, ToSchema)]
-#[schema(
-    example = json!({
-        "id": "b034c3a9-2f4d-487d-95bb-c66fc20148b3",
-        "name": "My cool project",
-        "status": "IN_PROGRESS",
-        "orderer": "Me Myself and I",
-        "sell_price": 1337
-    })
-)]
-pub struct ProjectMinimal {
-    pub id:            ProjectUuid,
-    pub name:          String,
-    pub status:        ProjectStatus,
-    pub orderer:       String,
-    pub project_group: ProjectGroupMinimal,
-
-    pub sell_price:    Option<f64>,
-}
-
-/// Different states of the project
-/// 
-/// A newly created project will always be in the status `Preparing`.
-/// When the projects switches into `InProgress` the job detection gets active
-/// for that project.
-/// Afterwards the project is either `Done` or `Closed`. Job detection then gets
-/// deactivated again.
-/// 
-#[derive(
-    Clone, Debug, Copy, Hash,
-    PartialEq, Eq, PartialOrd, Ord,
-    sqlx::Type, Deserialize, Serialize, ToSchema,
-)]
-#[sqlx(type_name = "PROJECT_STATUS")]
-#[sqlx(rename_all = "SCREAMING_SNAKE_CASE")]
-#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
-pub enum ProjectStatus {
-    /// the project has been created, but no builds have been added
-    Draft,
-    /// the project has builds selected, and is ready to be started
-    ReadyToStart,
-    /// the project is currently in progress, and job detection is active
-    InProgress,
-    /// the project is currently paused, job detection not active
-    Paused,
-    /// the project is finished, industry job detection is no longer active
-    Done,
 }
 
 #[cfg(test)]

@@ -1,16 +1,15 @@
-use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item};
+use starfoundry_lib_eve_gateway::EveGatewayApiClient;
+use starfoundry_lib_industry::project::ProjectProduct;
 use starfoundry_lib_industry::ProjectUuid;
 use std::collections::HashMap;
-use utoipa::ToSchema;
 
 use crate::project::error::{ProjectError, Result};
 
 pub async fn list_products(
     pool:                   &PgPool,
-    project_id:             ProjectUuid,
     eve_gateway_api_client: &impl EveGatewayApiClient,
+    project_id:             ProjectUuid,
 ) -> Result<Vec<ProjectProduct>> {
     let entries = sqlx::query!(r#"
             SELECT
@@ -55,12 +54,5 @@ pub async fn list_products(
     }
 
     Ok(result)
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
-pub struct ProjectProduct {
-    pub item:                   Item,
-    pub quantity:               i32,
-    pub material_efficiency:    i32,
 }
 

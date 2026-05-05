@@ -16,15 +16,10 @@ use axum::response::IntoResponse;
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{EveGatewayApiClientIndustry, EveGatewayApiClientItem};
 use starfoundry_lib_gateway::{ErrorResponse, ExtractIdentity};
+use starfoundry_lib_industry::industry::{BuildEngine, BuildEngineManufacturingResponse, BuildEngineMaterialResponse, BuildEngineProduct, BuildEngineResponse, StockMinimal};
 use starfoundry_lib_industry::IndustryHubUuid;
 use starfoundry_lib_industry::ProjectGroupUuid;
 use starfoundry_lib_industry::SolutionUuid;
-use starfoundry_lib_industry::StockMinimal;
-use starfoundry_lib_industry::TmpManufacturingResponse;
-use starfoundry_lib_industry::TmpMaterialResponse;
-use starfoundry_lib_industry::TmpProductRequest;
-use starfoundry_lib_industry::TmpRequest;
-use starfoundry_lib_industry::TmpResponse;
 use starfoundry_lib_market::MarketApiClientPrice;
 use starfoundry_lib_types::TypeId;
 use std::collections::HashMap;
@@ -52,7 +47,7 @@ use crate::project_group::service::{list_default_blacklist, list_default_bluepri
     post,
     path = "/calculation",
     tag = "Industry",
-    request_body = TmpRequest,
+    request_body = BuildEngine,
     responses(
         (
             body = serde_json::Value,
@@ -70,7 +65,7 @@ use crate::project_group::service::{list_default_blacklist, list_default_bluepri
 pub async fn api(
     identity:     ExtractIdentity,
     State(state): State<AppState>,
-    Json(config): Json<TmpRequest>,
+    Json(config): Json<BuildEngine>,
 ) -> Result<impl IntoResponse> {
     let products = if let Some(x) = config.products {
         x
@@ -80,7 +75,7 @@ pub async fn api(
             .await?
             .items
             .into_iter()
-            .map(|x| TmpProductRequest {
+            .map(|x| BuildEngineProduct {
                 quantity:   x.quantity as u32,
                 type_id:    x.type_id,
                 material_efficiency: x.material_efficiency.map(|x| x as u32).unwrap_or(0),
@@ -269,7 +264,7 @@ pub async fn api(
             .tree
             .iter()
             .filter(|(_, x)| x.typ != BlueprintTyp::Material)
-            .map(|(_, x)| TmpManufacturingResponse {
+            .map(|(_, x)| BuildEngineManufacturingResponse {
                 // only needed for sorting
                 id:         Uuid::now_v7().into(),
                 item:       x.item.clone(),
@@ -293,7 +288,7 @@ pub async fn api(
             .iter()
             .filter(|(_, x)| x.typ == BlueprintTyp::Material)
             .filter(|(_, x)| x.needed as i32 > 0i32)
-            .map(|(_, x)| TmpMaterialResponse {
+            .map(|(_, x)| BuildEngineMaterialResponse {
                 item:   x.item.clone(),
                 needed: x.needed,
                 stock:  x.stock,
@@ -335,7 +330,7 @@ pub async fn api(
             .await
             .unwrap();
 
-        solutions.push(TmpResponse {
+        solutions.push(BuildEngineResponse {
             solution_id:    solution_id,
             industry_hub:   industry_hub,
             material:       sort_market(material),
@@ -361,10 +356,10 @@ async fn store_solution(
     blueprint_overwrites:   HashMap<TypeId, BlueprintBonus>,
     job_splitting:          HashMap<TypeId, u32>,
     stock:                  Vec<StockMinimal>,
-    products:               Vec<TmpProductRequest>,
+    products:               Vec<BuildEngineProduct>,
     excess:                 Vec<StockMinimal>,
-    materials:              Vec<TmpMaterialResponse>,
-    manufacturing:          Vec<TmpManufacturingResponse>,
+    materials:              Vec<BuildEngineMaterialResponse>,
+    manufacturing:          Vec<BuildEngineManufacturingResponse>,
 ) -> Result<SolutionUuid> {
     let mut transaction = pool.begin().await.unwrap();
 
@@ -570,5 +565,5 @@ async fn store_solution(
     Ok(solution_id.into())
 }
 
-sort_by_market_group_flat!(sort_market, TmpMaterialResponse);
-sort_by_job_flat!(sort_jobs, TmpManufacturingResponse);
+sort_by_market_group_flat!(sort_market, BuildEngineMaterialResponse);
+sort_by_job_flat!(sort_jobs, BuildEngineManufacturingResponse);

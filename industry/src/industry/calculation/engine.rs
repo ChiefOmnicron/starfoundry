@@ -1,6 +1,6 @@
 use serde::Serialize;
 use starfoundry_lib_eve_gateway::{BonusVariations, StructureType};
-use starfoundry_lib_industry::StockMinimal;
+use starfoundry_lib_industry::industry::StockMinimal;
 use starfoundry_lib_types::TypeId;
 use std::collections::{HashMap, VecDeque};
 use std::fs::File;

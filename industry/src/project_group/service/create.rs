@@ -1,13 +1,13 @@
+use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
+use starfoundry_lib_industry::project_group::ProjectGroupPermissionCode;
 use starfoundry_lib_industry::ProjectGroupUuid;
 use starfoundry_lib_types::CharacterId;
 use std::str::FromStr;
-use uuid::Uuid;
-use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
+use uuid::Uuid;
 
 use crate::project_group::error::{ProjectGroupError, Result};
-use crate::project_group::permission::ProjectGroupPermissionCode;
 
 pub async fn create(
     pool:         &PgPool,

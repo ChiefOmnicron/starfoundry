@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::EveGatewayApiClient;
-use starfoundry_lib_industry::{IndustryHub, IndustryHubShare, IndustryHubShareType};
+use starfoundry_lib_industry::industry_hub::{IndustryHub, IndustryHubShareType, IndustryHubShare};
 use starfoundry_lib_types::{AllianceId, CharacterId, CorporationId};
 use std::fmt;
 use utoipa::IntoParams;

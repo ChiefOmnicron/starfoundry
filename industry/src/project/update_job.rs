@@ -3,10 +3,11 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_industry::{ProjectJobUuid, ProjectUuid};
+use starfoundry_lib_industry::project::UpdateJob;
 
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized, UnprocessableEntity, UnsupportedMediaType};
 use crate::AppState;
-use crate::project::service::{UpdateProjectJob, update_job};
+use crate::project::service::update_job;
 use crate::project::error::Result;
 
 /// Update Project Job
@@ -26,7 +27,7 @@ use crate::project::error::Result;
     put,
     path = "/{ProjectUuid}/jobs/{ProjectJobUuid}",
     tag = "Project",
-    request_body = UpdateProjectJob,
+    request_body = UpdateJob,
     params(
         ProjectUuid,
         ProjectJobUuid,
@@ -50,7 +51,7 @@ use crate::project::error::Result;
 pub async fn api(
     State(state):                       State<AppState>,
     Path((project_id, project_job_id)): Path<(ProjectUuid, ProjectJobUuid)>,
-    Json(update_info):                  Json<UpdateProjectJob>,
+    Json(update_info):                  Json<UpdateJob>,
 ) -> Result<impl IntoResponse> {
     update_job(
         &state.postgres,

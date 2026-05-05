@@ -1,5 +1,5 @@
 use serde::Serialize;
-use starfoundry_lib_industry::StockMinimal;
+use starfoundry_lib_industry::industry::StockMinimal;
 use starfoundry_lib_types::TypeId;
 use std::{collections::HashMap, fs::File};
 

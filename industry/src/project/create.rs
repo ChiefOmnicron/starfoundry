@@ -2,15 +2,14 @@ use axum::extract::State;
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
-use serde::Serialize;
 use starfoundry_lib_gateway::ExtractIdentity;
+use starfoundry_lib_industry::project::{CreateProject, CreateProjectResponse};
 use starfoundry_lib_industry::ProjectUuid;
-use utoipa::ToSchema;
 
 use crate::api_docs::{BadRequest, InternalServerError, Unauthorized};
 use crate::AppState;
 use crate::project::error::Result;
-use crate::project::service::{CreateProject, create};
+use crate::project::service::create;
 
 /// List Groups
 /// 
@@ -67,14 +66,4 @@ pub async fn api(
             })
         )
     )
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-#[schema(
-    example = json!({
-        "id": "fd324c9f-ecda-49c8-948e-18f4b4b23bff"
-    })
-)]
-pub struct CreateProjectResponse {
-    id: ProjectUuid,
 }

@@ -66,5 +66,5 @@ pub async fn api(
 
 #[derive(Debug, Deserialize, ToSchema)]
 pub struct InitializeProject {
-    solution_id: SolutionUuid,
+    pub solution_id: SolutionUuid,
 }

@@ -8,7 +8,7 @@ use utoipa_axum::routes;
 
 use crate::state::AppState;
 
-/// Exposes all routes that are under `/contracts`
+/// Exposes all routes that are under `/characters`
 pub fn routes() -> OpenApiRouter<AppState> {
     let public = OpenApiRouter::new()
         .routes(routes!(public::api));

@@ -3,12 +3,13 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_gateway::ExtractIdentity;
+use starfoundry_lib_industry::project::ProjectCost;
 use starfoundry_lib_industry::ProjectUuid;
 
 use crate::AppState;
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
 use crate::project::error::Result;
-use crate::project::service::{ProjectCost, fetch_cost};
+use crate::project::service::fetch_cost;
 
 /// Fetch Cost
 /// 

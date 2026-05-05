@@ -1,6 +1,7 @@
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::EveGatewayApiClient;
-use starfoundry_lib_industry::{IndustryHub, IndustryHubShare, IndustryHubShareType, IndustryHubUuid};
+use starfoundry_lib_industry::industry_hub::{IndustryHub, IndustryHubShare, IndustryHubShareType};
+use starfoundry_lib_industry::IndustryHubUuid;
 use starfoundry_lib_types::CharacterId;
 
 use crate::industry_hub::error::{Result, IndustryHubError};

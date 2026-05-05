@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-use starfoundry_lib_industry::{IndustryHubShare, IndustryHubUuid};
+use starfoundry_lib_industry::industry_hub::IndustryHubShare;
+use starfoundry_lib_industry::IndustryHubUuid;
 use starfoundry_lib_types::CharacterId;
 use utoipa::ToSchema;
 use uuid::Uuid;

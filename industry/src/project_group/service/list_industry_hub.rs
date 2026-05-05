@@ -1,6 +1,7 @@
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::EveGatewayApiClient;
-use starfoundry_lib_industry::{IndustryHub, ProjectGroupUuid};
+use starfoundry_lib_industry::ProjectGroupUuid;
+use starfoundry_lib_industry::industry_hub::IndustryHub;
 use starfoundry_lib_types::CharacterId;
 
 use crate::{industry_hub::service::fetch, project_group::error::{ProjectGroupError, Result}};

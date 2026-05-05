@@ -2,14 +2,15 @@ use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
-use starfoundry_lib_gateway::ExtractIdentity;
+use starfoundry_lib_industry::project::ProjectExcess;
+use starfoundry_lib_industry::ProjectUuid;
 
 use crate::api_docs::{BadRequest, InternalServerError, NotFound, Unauthorized};
-use crate::AppState;
+use crate::{AppState, eve_gateway_api_client};
 use crate::project::error::Result;
-use crate::project::service::{ProjectMisc, list_misc};
+use crate::project::service::list_excess;
 
-/// List Exces
+/// List Excess
 /// 
 /// - Alternative route: `/latest/projects/{ProjectUuid}/excess`
 /// - Alternative route: `/v1/projects/{ProjectUuid}/excess`
@@ -31,7 +32,7 @@ use crate::project::service::{ProjectMisc, list_misc};
     ),
     responses(
         (
-            body = Vec<ProjectMisc>,
+            body = Vec<ProjectExcess>,
             description = "List all misc entries for a project",
             status = OK,
         ),
@@ -49,12 +50,12 @@ use crate::project::service::{ProjectMisc, list_misc};
     ),
 )]
 pub async fn api(
-    _identity:        ExtractIdentity,
     State(state):     State<AppState>,
     Path(project_id): Path<ProjectUuid>,
 ) -> Result<impl IntoResponse> {
-    let data = list_misc(
+    let data = list_excess(
             &state.postgres,
+            &eve_gateway_api_client()?,
             project_id,
         ).await?;
 

@@ -1,16 +1,14 @@
-use serde::Deserialize;
-use starfoundry_lib_industry::{ProjectJobUuid, ProjectUuid};
-use utoipa::ToSchema;
 use sqlx::PgPool;
+use starfoundry_lib_industry::{ProjectJobUuid, ProjectUuid};
+use starfoundry_lib_industry::project::UpdateJob;
 
 use crate::project::error::{ProjectError, Result};
-use crate::project::service::ProjectJobStatusDatabase;
 
 pub async fn update_job(
     pool:           &PgPool,
     project_id:     ProjectUuid,
     project_job_id: ProjectJobUuid,
-    update:         UpdateProjectJob,
+    update:         UpdateJob,
 ) -> Result<()> {
     // make sure to reset the job if the cost is set reset, otherwise the job
     // detection won't pick it up again
@@ -46,12 +44,4 @@ pub async fn update_job(
     }
 
     Ok(())
-}
-
-#[derive(Debug, Deserialize, ToSchema)]
-pub struct UpdateProjectJob {
-    pub cost:   Option<f64>,
-    pub job_id: Option<i32>,
-    pub runs:   Option<i32>,
-    pub status: ProjectJobStatusDatabase,
 }

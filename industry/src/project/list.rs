@@ -3,11 +3,12 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_gateway::ExtractIdentity;
+use starfoundry_lib_industry::project::{ProjectFilter, ProjectMinimal};
 
 use crate::AppState;
 use crate::api_docs::{BadRequest, InternalServerError, Unauthorized};
 use crate::project::error::Result;
-use crate::project::service::{ProjectMinimal, ProjectFilter, list};
+use crate::project::service::list;
 
 /// List Projects
 /// 
@@ -84,9 +85,9 @@ mod tests {
     use http_body_util::BodyExt;
     use sqlx::PgPool;
     use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID, HEADER_SERVICE};
+    use starfoundry_lib_industry::project::ProjectMinimal;
 
     use crate::project::project_test_routes;
-    use crate::project::service::ProjectMinimal;
 
     #[sqlx::test(
         fixtures("base"),
@@ -131,7 +132,8 @@ mod tests {
 
         let response = project_test_routes(pool.clone(), request).await;
         assert_eq!(response.status(), StatusCode::OK);
-        let body: Vec<ProjectMinimal> = serde_json::from_slice(
+        let body: Vec<ProjectMinimal
+        > = serde_json::from_slice(
             &response.into_body().collect().await.unwrap().to_bytes()
         ).unwrap();
         assert_eq!(body.len(), 1);

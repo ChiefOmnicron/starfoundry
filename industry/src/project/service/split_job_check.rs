@@ -1,16 +1,17 @@
-use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item};
-use starfoundry_lib_industry::{ProjectUuid, StockMinimal, StructureUuid};
+use starfoundry_lib_eve_gateway::EveGatewayApiClient;
+use starfoundry_lib_industry::{ProjectUuid, StructureUuid};
+use starfoundry_lib_industry::industry::StockMinimal;
+use starfoundry_lib_industry::project::{ProjectJobFilter, ProjectJobStatus, SplitJobRequest, SplitJobResponse, SplitJobResponseJobEntry, SplitJobResponseMarketEntry};
 use starfoundry_lib_types::{CharacterId, TypeId};
 use std::collections::HashMap;
-use utoipa::ToSchema;
+use uuid::Uuid;
 
 use crate::industry::{BlueprintBonus, BlueprintTyp, CalculationEngine, Dependency, ProjectConfig, ProjectConfigBuilder, StructureMapping};
 use crate::project::error::{ProjectError, Result};
 use crate::{sort_by_job_flat, sort_by_market_group_flat};
-use crate::project::service::ProjectJobStatus;
-use uuid::Uuid;
+use crate::project_group::service::{list_default_blacklist, list_default_blueprint_overwrite, list_default_job_splitting};
+use crate::project::service::{list_excess, list_jobs, list_products};
 
 pub async fn split_job_check(
     pool:                       &PgPool,
@@ -56,42 +57,51 @@ pub async fn split_job_check(
         .await?
         .ok_or(ProjectError::NoIndustryHub)?;
 
-    let blacklist_type_ids = project
-        .project_group
-        .blacklist(pool, eve_gateway_api_client)
+    let project_group_uuid = project.project_group.id;
+    let blacklist_type_ids = list_default_blacklist(
+            pool,
+            eve_gateway_api_client,
+            project_group_uuid,
+        )
         .await?
         .into_iter()
         .map(|x| x.type_id)
         .collect::<Vec<_>>();
-
-    let mut overwrites = project
-        .project_group
-        .overwrites(pool, eve_gateway_api_client)
+    let mut overwrites = list_default_blueprint_overwrite(
+            pool,
+            eve_gateway_api_client,
+            project_group_uuid,
+        )
         .await?
         .into_iter()
         .map(|x| (x.item.type_id, BlueprintBonus::new(x.item.type_id, x.material_efficiency as f32, 0f32)))
         .collect::<HashMap<_, _>>();
-    let products = project
-        .products(pool, eve_gateway_api_client)
-        .await?
-        .into_iter()
-        .map(|x| (x.item.type_id, BlueprintBonus::new(x.item.type_id, x.material_efficiency as f32, 0f32)))
-        .collect::<HashMap<_, _>>();
-    overwrites.extend(products);
-
-    let max_runs = project
-        .project_group
-        .job_splitting(pool, eve_gateway_api_client)
+    let max_runs = list_default_job_splitting(
+            pool,
+            eve_gateway_api_client,
+            project_group_uuid,
+        )
         .await?
         .runs
         .into_iter()
         .map(|x| (x.item.type_id, x.max_runs as u32))
         .collect::<HashMap<_, _>>();
 
-    let mut excess = project
-        .excess(
+    let products = list_products(
             pool,
             eve_gateway_api_client,
+            project.id,
+        )
+        .await?
+        .into_iter()
+        .map(|x| (x.item.type_id, BlueprintBonus::new(x.item.type_id, x.material_efficiency as f32, 0f32)))
+        .collect::<HashMap<_, _>>();
+    overwrites.extend(products);
+
+    let mut excess = list_excess(
+            pool,
+            eve_gateway_api_client,
+            project.id,
         )
         .await?
         .into_iter()
@@ -101,11 +111,12 @@ pub async fn split_job_check(
         })
         .collect::<Vec<_>>();
 
-    let jobs = project
-        .jobs(
+    let jobs = list_jobs(
                 pool,
                 character_id,
-                eve_gateway_api_client
+                eve_gateway_api_client,
+                project.id,
+                ProjectJobFilter::default(),
         )
         .await?
         .into_iter()
@@ -384,37 +395,3 @@ async fn determine_dependant_materials(
 
 sort_by_job_flat!(sort_jobs, SplitJobResponseJobEntry);
 sort_by_market_group_flat!(sort_materials, SplitJobResponseMarketEntry);
-
-#[derive(Debug, Deserialize, ToSchema)]
-pub struct SplitJobRequest {
-    pub old: SplitJobEntry,
-    pub new: Vec<SplitJobEntry>,
-}
-
-#[derive(Clone, Debug, Deserialize, ToSchema)]
-pub struct SplitJobEntry {
-    pub type_id: TypeId,
-    pub runs:    u32,
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-pub struct SplitJobResponse {
-    pub excess:     Vec<SplitJobResponseMarketEntry>,
-    pub materials:  Vec<SplitJobResponseMarketEntry>,
-    pub jobs:       Vec<SplitJobResponseJobEntry>,
-}
-
-#[derive(Clone, Debug, Serialize, ToSchema)]
-pub struct SplitJobResponseJobEntry {
-    #[serde(skip)]
-    pub id:             Uuid,
-    pub item:           Item,
-    pub runs:           i32,
-    pub structure_id:   StructureUuid,
-}
-
-#[derive(Clone, Debug, Serialize, ToSchema)]
-pub struct SplitJobResponseMarketEntry {
-    pub item:       Item,
-    pub quantity:   i32,
-}

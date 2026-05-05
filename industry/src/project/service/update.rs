@@ -1,15 +1,13 @@
-use serde::Deserialize;
-use starfoundry_lib_industry::{ProjectGroupUuid, ProjectUuid};
-use utoipa::ToSchema;
 use sqlx::PgPool;
+use starfoundry_lib_industry::ProjectUuid;
 
 use crate::project::error::{ProjectError, Result};
-use crate::project::service::ProjectStatus;
+use starfoundry_lib_industry::project::UpdateProject;
 
 pub async fn update(
     pool:           &PgPool,
     project_id:     ProjectUuid,
-    update:         UpdateProjectRequest,
+    update:         UpdateProject,
 ) -> Result<()> {
     let result = sqlx::query!("
             UPDATE project
@@ -39,15 +37,4 @@ pub async fn update(
     }
 
     Ok(())
-}
-
-#[derive(Debug, Deserialize, ToSchema)]
-pub struct UpdateProjectRequest {
-    pub project_group_id:   ProjectGroupUuid,
-    pub orderer:            String,
-    pub name:               String,
-    pub status:             ProjectStatus,
-
-    pub sell_price:         Option<f64>,
-    pub note:               Option<String>,
 }

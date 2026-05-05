@@ -3,6 +3,7 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use serde::Deserialize;
+use starfoundry_lib_industry::project::ProjectMarketBuy;
 use starfoundry_lib_industry::ProjectUuid;
 use starfoundry_lib_market::{BuyStrategy, GasDecompressionEfficiency, OreReprocessingEfficiency};
 use starfoundry_lib_types::StructureId;
@@ -11,7 +12,7 @@ use utoipa::{IntoParams, ToSchema};
 use crate::{AppState, eve_gateway_api_client};
 use crate::api_docs::{BadRequest, InternalServerError, NotFound, Unauthorized};
 use crate::project::error::Result;
-use crate::project::service::{ProjectMarket, list_market_buy};
+use crate::project::service::list_market_buy;
 
 /// List Market
 /// 
@@ -36,7 +37,7 @@ use crate::project::service::{ProjectMarket, list_market_buy};
     ),
     responses(
         (
-            body = Vec<ProjectMarket>,
+            body = Vec<ProjectMarketBuy>,
             description = "List all materials for a project",
             status = OK,
         ),

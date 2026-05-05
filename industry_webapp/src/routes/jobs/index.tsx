@@ -1,4 +1,4 @@
-import { Accordion, Button, Checkbox, Table, Text } from '@mantine/core';
+import { Accordion, Button, Checkbox, Table } from '@mantine/core';
 import { CopyText } from '@starfoundry/components/misc/CopyText';
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable, type RowSelectionState } from '@tanstack/react-table';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
@@ -12,6 +12,7 @@ import { useIsFirstRender } from '@mantine/hooks';
 import { useListProjectAllJobs } from '@starfoundry/components/services/projects/listAllJobs';
 import type { ProjectJob } from '@starfoundry/components/services/projects/listJobs';
 import type { Uuid } from '@starfoundry/components/services/utils';
+import { NumberOfStartableJobs } from '@starfoundry/components/project/NumberOfStartableJobs';
 
 
 export const Route = createFileRoute('/jobs/')({
@@ -69,11 +70,6 @@ function RouteComponent() {
             )
     }
 
-    const jobCount = (projects || [])
-        .flatMap(x => x.entries)
-        .filter(x => x.status === 'READY_TO_START')
-        .reduce((prev) => prev += 1, 0);
-
     return <>
         <ProjectJobAction
             selected={selectedRows}
@@ -86,7 +82,9 @@ function RouteComponent() {
             })}
         />
 
-        <Text>Number of startable jobs: {jobCount}</Text>
+        <NumberOfStartableJobs
+            jobs={((projects || []).flatMap(x => x.entries))}
+        />
 
         <Accordion
             defaultValue={(projects || []).map(x => x.project_id)}

@@ -3,7 +3,8 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_gateway::ExtractIdentity;
-use starfoundry_lib_industry::{IndustryHub, ProjectGroupUuid};
+use starfoundry_lib_industry::industry_hub::IndustryHub;
+use starfoundry_lib_industry::ProjectGroupUuid;
 
 use crate::{eve_gateway_api_client, AppState};
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};

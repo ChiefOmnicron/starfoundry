@@ -22,8 +22,6 @@ pub enum ProjectError {
     NotFound(ProjectUuid),
     #[error("project job with id '{1}' not found in project '{0}'")]
     JobNotFound(ProjectUuid, ProjectJobUuid),
-    #[error("Validating the input data failed, '{0}'")]
-    ValidationError(String),
     #[error("No industry hub is set, but the operation requires it")]
     NoIndustryHub,
     #[error("The solution could not be found, but the operation requires it")]
@@ -73,6 +71,8 @@ pub enum ProjectError {
     #[error(transparent)]
     MarketLibError(#[from] starfoundry_lib_market::Error),
     #[error(transparent)]
+    ProjectLibError(#[from] starfoundry_lib_industry::Error),
+    #[error(transparent)]
     StructureError(#[from] crate::structure::StructureError),
 }
 
@@ -99,19 +99,6 @@ impl IntoResponse for ProjectError {
                     Json(
                         ErrorResponse {
                             error: "NOT_FOUND".into(),
-                            description: self.to_string(),
-                        }
-                    )
-                ).into_response()
-            },
-
-            Self::ValidationError(_) => {
-                tracing::warn!("{}", self.to_string());
-                (
-                    StatusCode::BAD_REQUEST,
-                    Json(
-                        ErrorResponse {
-                            error: "INVALID_RESPONSE".into(),
                             description: self.to_string(),
                         }
                     )

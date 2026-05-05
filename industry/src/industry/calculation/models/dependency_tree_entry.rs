@@ -1,6 +1,6 @@
 use serde::Serialize;
 use starfoundry_lib_eve_gateway::Item;
-use starfoundry_lib_industry::Structure;
+use starfoundry_lib_industry::structure::Structure;
 use starfoundry_lib_types::TypeId;
 use std::collections::HashMap;
 

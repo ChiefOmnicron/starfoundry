@@ -2,17 +2,14 @@ use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
+use starfoundry_lib_eve_gateway::EveGatewayApiClientItem;
+use starfoundry_lib_industry::project::UpdateMarketBulk;
 use starfoundry_lib_industry::ProjectUuid;
 
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized, UnprocessableEntity, UnsupportedMediaType};
 use crate::{AppState, eve_gateway_api_client, market_api_client};
 use crate::project::error::Result;
 use crate::project::service::{UpdateProjectMarket, update_market_bulk};
-use utoipa::ToSchema;
-use serde::Deserialize;
-use starfoundry_lib_types::{StructureId, TypeId};
-use starfoundry_lib_eve_gateway::EveGatewayApiClientItem;
-use starfoundry_lib_market::{GasDecompressionEfficiency, OreReprocessingEfficiency};
 
 /// Update Market
 /// 
@@ -31,7 +28,7 @@ use starfoundry_lib_market::{GasDecompressionEfficiency, OreReprocessingEfficien
     put,
     path = "/{ProjectUuid}/market",
     tag = "Project",
-    request_body = Vec<UpdateProjectMarketRequest>,
+    request_body = Vec<UpdateMarketBulk>,
     params(
         ProjectUuid,
     ),
@@ -54,7 +51,7 @@ use starfoundry_lib_market::{GasDecompressionEfficiency, OreReprocessingEfficien
 pub async fn api(
     State(state):       State<AppState>,
     Path(project_id):   Path<ProjectUuid>,
-    Json(update):       Json<UpdateProjectMarketRequest>,
+    Json(update):       Json<UpdateMarketBulk>,
 ) -> Result<impl IntoResponse> {
     let market_api_client = market_api_client()?;
 
@@ -126,27 +123,4 @@ pub async fn api(
     Ok((
         StatusCode::NO_CONTENT,
     ))
-}
-
-#[derive(Clone, Debug, Deserialize, ToSchema)]
-pub struct UpdateProjectMarketRequest {
-    pub source:                 String,
-    pub entries:                Vec<UpdateProjectMarketEntry>,
-    #[serde(default)]
-    pub gas_decompression:      Option<GasDecompressionEfficiency>,
-    #[serde(default)]
-    pub mineral_compression:    Option<OreReprocessingEfficiency>,
-}
-
-#[derive(Clone, Debug, Deserialize, ToSchema)]
-pub struct UpdateProjectMarketEntry {
-    #[serde(default)]
-    pub type_id:        Option<TypeId>,
-    #[serde(default)]
-    pub name:           Option<String>,
-    #[serde(default)]
-    pub structure_id:   Option<StructureId>,
-
-    pub cost:           f32,
-    pub quantity:       i32,
 }

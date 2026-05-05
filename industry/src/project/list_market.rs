@@ -3,12 +3,13 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_gateway::ExtractIdentity;
+use starfoundry_lib_industry::project::ProjectMarket;
 use starfoundry_lib_industry::ProjectUuid;
 
 use crate::{AppState, eve_gateway_api_client};
 use crate::api_docs::{BadRequest, InternalServerError, NotFound, Unauthorized};
 use crate::project::error::Result;
-use crate::project::service::{ProjectMarketBuy, list_market};
+use crate::project::service::list_market;
 
 /// List Market
 /// 
@@ -32,7 +33,7 @@ use crate::project::service::{ProjectMarketBuy, list_market};
     ),
     responses(
         (
-            body = Vec<ProjectMarketBuy>,
+            body = Vec<ProjectMarket>,
             description = "List all materials for a project",
             status = OK,
         ),

@@ -3,7 +3,8 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_gateway::ExtractIdentity;
-use starfoundry_lib_industry::{IndustryHub, IndustryHubUuid};
+use starfoundry_lib_industry::industry_hub::IndustryHub;
+use starfoundry_lib_industry::IndustryHubUuid;
 
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
 use crate::AppState;

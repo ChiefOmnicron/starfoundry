@@ -1,22 +1,12 @@
-use serde::Deserialize;
-use serde::Serialize;
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::EveGatewayApiClient;
+use starfoundry_lib_industry::project::{Project, ProjectStatus};
 use starfoundry_lib_industry::ProjectUuid;
-use starfoundry_lib_industry::SolutionUuid;
 use starfoundry_lib_types::CharacterId;
-use utoipa::ToSchema;
 
 use crate::project::error::ProjectError;
 use crate::project::error::Result;
-use crate::project::service::{ProjectExcess, ProjectJobFilter, ProjectStock, list_stock};
-use crate::project::service::ProjectJobGroup;
-use crate::project::service::ProjectProduct;
-use crate::project::service::list_excess;
-use crate::project::service::list_jobs;
-use crate::project::service::list_products;
-use crate::project::service::ProjectStatus;
-use crate::project_group::service::ProjectGroup;
+use crate::project::service::{list_excess, list_products, list_stock};
 
 pub async fn fetch(
     pool:                   &PgPool,
@@ -60,8 +50,8 @@ pub async fn fetch(
 
         let products = list_products(
                 pool,
+                eve_gateway_api_client,
                 project_id,
-                eve_gateway_api_client
             )
             .await?;
 
@@ -74,8 +64,8 @@ pub async fn fetch(
 
         let excess = list_excess(
                 pool,
+                eve_gateway_api_client,
                 project_id,
-                eve_gateway_api_client
             )
             .await?;
 
@@ -96,75 +86,5 @@ pub async fn fetch(
         Ok(Some(project))
     } else {
         Ok(None)
-    }
-}
-
-#[derive(Debug, Deserialize, Serialize, ToSchema)]
-#[schema(
-    example = json!({
-        "id": "b034c3a9-2f4d-487d-95bb-c66fc20148b3",
-        "name": "My cool project",
-        "status": "IN_PROGRESS",
-        "orderer": "Me Myself and I",
-        "sell_price": 1337
-    })
-)]
-pub struct Project {
-    pub id:             ProjectUuid,
-    pub name:           String,
-    pub status:         ProjectStatus,
-    pub orderer:        String,
-    pub project_group:  ProjectGroup,
-    pub products:       Vec<ProjectProduct>,
-    pub stock:          Vec<ProjectStock>,
-    pub excess:         Vec<ProjectExcess>,
-
-    pub note:           Option<String>,
-    pub sell_price:     Option<f64>,
-    #[serde(skip)]
-    pub solution_id:    Option<SolutionUuid>,
-}
-
-impl Project {
-    pub async fn excess(
-        &self,
-        pool:                   &PgPool,
-        eve_gateway_api_client: &impl EveGatewayApiClient,
-    ) -> Result<Vec<ProjectExcess>> {
-        list_excess(
-                pool,
-                self.id,
-                eve_gateway_api_client,
-            )
-            .await
-    }
-
-    pub async fn products(
-        &self,
-        pool:                   &PgPool,
-        eve_gateway_api_client: &impl EveGatewayApiClient,
-    ) -> Result<Vec<ProjectProduct>> {
-        list_products(
-                pool,
-                self.id,
-                eve_gateway_api_client,
-            )
-            .await
-    }
-
-    pub async fn jobs(
-        &self,
-        pool:                   &PgPool,
-        character_id:           CharacterId,
-        eve_gateway_api_client: &impl EveGatewayApiClient,
-    ) -> Result<Vec<ProjectJobGroup>> {
-        list_jobs(
-                pool,
-                character_id,
-                self.id,
-                eve_gateway_api_client,
-                ProjectJobFilter::default(),
-            )
-            .await
     }
 }

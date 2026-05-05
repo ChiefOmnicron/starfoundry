@@ -1,22 +1,21 @@
 use chrono::NaiveDateTime;
-use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item};
-use starfoundry_lib_industry::{ProjectJobUuid, ProjectUuid, Structure};
+use starfoundry_lib_eve_gateway::{EveGatewayApiClient};
+use starfoundry_lib_industry::project::{ProjectJob, ProjectJobFilter, ProjectJobGroup, ProjectJobStatus};
+use starfoundry_lib_industry::ProjectUuid;
 use starfoundry_lib_market::Gas;
 use starfoundry_lib_types::{CharacterId, TypeId};
 use std::collections::HashMap;
-use utoipa::{IntoParams, ToSchema};
 
 use crate::project::error::{ProjectError, Result};
-use crate::structure::service::FetchStructureQuery;
 use crate::sort_by_job;
+use crate::structure::service::FetchStructureQuery;
 
 pub async fn list_jobs(
     pool:                   &PgPool,
     character_id:           CharacterId,
-    project_id:             ProjectUuid,
     eve_gateway_api_client: &impl EveGatewayApiClient,
+    project_id:             ProjectUuid,
     filter:                 ProjectJobFilter,
 ) -> Result<Vec<ProjectJobGroup>> {
     // TODO: merge end_date into project_job?
@@ -24,7 +23,7 @@ pub async fn list_jobs(
             SELECT
                 pj.id,
                 pj.runs,
-                pj.status AS "status: ProjectJobStatusDatabase",
+                pj.status AS "status: ProjectJobStatus",
                 pj.cost,
                 pj.job_id,
                 pj.structure_id,
@@ -100,7 +99,7 @@ pub async fn list_jobs(
             id:         entry.id.into(),
             project_id: project_id,
             job_id:     entry.job_id,
-            status:     entry.status.into(),
+            status:     entry.status,
 
             cost:       entry.cost,
             runs:       entry.runs,
@@ -269,71 +268,4 @@ async fn used_stock(
                 .collect::<Vec<_>>()
         })
         .map_err(ProjectError::ListJobs)
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
-pub struct ProjectJob {
-    pub id:         ProjectJobUuid,
-    pub project_id: ProjectUuid,
-    pub job_id:     Option<i32>,
-    pub status:     ProjectJobStatus,
-
-    pub runs:       i32,
-    pub cost:       Option<f64>,
-
-    pub item:       Item,
-    pub structure:  Structure,
-    pub started_by: Option<CharacterId>,
-
-    pub end_date:   Option<NaiveDateTime>,
-}
-
-#[derive(Debug, Deserialize, Serialize, ToSchema)]
-pub struct ProjectJobGroup {
-    pub header:  String,
-    pub entries: Vec<ProjectJob>,
-}
-
-#[derive(
-    Clone, Debug, Copy,
-    PartialEq, Eq, PartialOrd, Ord,
-    Deserialize, Serialize, ToSchema
-)]
-#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
-pub enum ProjectJobStatus {
-    WaitingForMaterials,
-    ReadyToStart,
-    Building,
-    Done,
-}
-
-impl From<ProjectJobStatusDatabase> for ProjectJobStatus {
-    fn from(value: ProjectJobStatusDatabase) -> Self {
-        match value {
-            ProjectJobStatusDatabase::WaitingForMaterials => Self::WaitingForMaterials,
-            ProjectJobStatusDatabase::Building => Self::Building,
-            ProjectJobStatusDatabase::Done => Self::Done,
-        }
-    }
-}
-
-#[derive(
-    Clone, Debug, Copy, Hash,
-    PartialEq, Eq, PartialOrd, Ord,
-    sqlx::Type, Deserialize, Serialize, ToSchema,
-)]
-#[sqlx(type_name = "PROJECT_JOB_STATUS")]
-#[sqlx(rename_all = "SCREAMING_SNAKE_CASE")]
-#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
-pub enum ProjectJobStatusDatabase {
-    WaitingForMaterials,
-    Building,
-    Done,
-}
-
-#[derive(Debug, Default, Deserialize, ToSchema, IntoParams)]
-#[into_params(parameter_in = Query)]
-pub struct ProjectJobFilter {
-    #[serde(default)]
-    pub startable: Option<bool>,
 }

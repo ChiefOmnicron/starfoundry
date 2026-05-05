@@ -6,7 +6,9 @@ use serde::Serialize;
 use starfoundry_lib_gateway::{ApiClient, StarFoundryApiClient, Result as GatewayResult};
 use url::Url;
 
-use crate::{IndustryApiClientIndustry, error::{Error, Result}};
+use crate::error::{Error, Result};
+use crate::industry::IndustryApiClientIndustry;
+use crate::project::IndustryApiClientProject;
 
 pub const EVE_MARKET_API: &str = "STARFOUNDRY_INDUSTRY_API_URL";
 
@@ -105,6 +107,22 @@ impl ApiClient for IndustryClient {
             .map_err(Into::into)
     }
 
+    async fn put_auth<D, T>(
+        &self,
+        path:       impl Into<String>,
+        data:       D,
+        header_map: HeaderMap,
+    ) -> GatewayResult<T>
+    where
+        D: Debug + Serialize + Send + Sync,
+        T: Default + DeserializeOwned {
+
+        self.0
+            .put_auth(path, data, header_map)
+            .await
+            .map_err(Into::into)
+    }
+
     async fn delete_auth<T>(
         &self,
         path:       impl Into<String>,
@@ -120,13 +138,14 @@ impl ApiClient for IndustryClient {
     }
 }
 
-impl MarketApiClient for IndustryClient {}
-
+impl IndustryApiClient for IndustryClient {}
 impl IndustryApiClientIndustry for IndustryClient {}
+impl IndustryApiClientProject for IndustryClient {}
 
 /// Trait that should be implemented on all clients
 /// The default implementation will be sufficient in most cases, overwriting
 /// them is only recommended for mocking tests
-pub trait MarketApiClient:
+pub trait IndustryApiClient:
     ApiClient +
-    IndustryApiClientIndustry {}
+    IndustryApiClientIndustry +
+    IndustryApiClientProject {}

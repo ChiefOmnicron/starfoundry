@@ -1,8 +1,6 @@
-use serde::Deserialize;
 use sqlx::PgPool;
+use starfoundry_lib_industry::project::AddMarketEntryRequest;
 use starfoundry_lib_industry::ProjectUuid;
-use starfoundry_lib_types::TypeId;
-use utoipa::ToSchema;
 
 use crate::project::error::{ProjectError, Result};
 
@@ -40,10 +38,4 @@ pub async fn add_market(
         .await
         .map(drop)
         .map_err(ProjectError::AddMarketEntry)
-}
-
-#[derive(Debug, Deserialize, ToSchema)]
-pub struct AddMarketEntryRequest {
-    pub type_id:    TypeId,
-    pub quantity:   i32,
 }

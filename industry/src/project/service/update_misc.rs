@@ -1,14 +1,13 @@
-use serde::Deserialize;
-use starfoundry_lib_industry::ProjectUuid;
-use utoipa::ToSchema;
 use sqlx::PgPool;
+use starfoundry_lib_industry::project::UpdateMisc;
+use starfoundry_lib_industry::ProjectUuid;
 
 use crate::project::error::{ProjectError, Result};
 
 pub async fn update_misc(
     pool:           &PgPool,
     project_id:     ProjectUuid,
-    update:         Vec<UpdateMiscRequest>,
+    update:         Vec<UpdateMisc>,
 ) -> Result<()> {
     let mut transaction = pool
         .begin()
@@ -73,13 +72,4 @@ pub async fn update_misc(
         .await
         .map(drop)
         .map_err(ProjectError::Update)
-}
-
-#[derive(Debug, Deserialize, ToSchema)]
-pub struct UpdateMiscRequest {
-    pub item:           String,
-    pub cost:           f32,
-
-    pub description:    Option<String>,
-    pub quantity:       Option<i32>,
 }

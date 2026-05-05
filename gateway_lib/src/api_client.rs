@@ -177,6 +177,63 @@ impl StarFoundryApiClient {
         };
     }
 
+    pub async fn put_auth<D, T>(
+        &self,
+        path:       impl Into<String>,
+        data:       D,
+        headers:    HeaderMap,
+    ) -> Result<T>
+    where
+        D: Debug + Serialize + Send + Sync,
+        T: Default + DeserializeOwned,
+    {
+        let path = path.into();
+
+        let mut api_url = self.address.clone();
+        api_url.set_path(&path.clone());
+
+        let response = self
+            .send(
+                Method::PUT,
+                api_url.clone(),
+                serde_json::to_value(&data)?,
+                &(),
+                Some(headers),
+            )
+            .await?;
+
+        match response.status() {
+            StatusCode::NOT_FOUND => {
+                return Err(Error::NotFound(api_url).into());
+            },
+            StatusCode::FORBIDDEN => {
+                return Err(Error::Forbidden(api_url).into());
+            },
+            StatusCode::UNAUTHORIZED => {
+                return Err(Error::Unauthorized.into());
+            },
+            StatusCode::BAD_GATEWAY => {
+                return Err(Error::BadGateway.into());
+            },
+            StatusCode::SERVICE_UNAVAILABLE => {
+                return Err(Error::ServiceUnavailable.into());
+            },
+            StatusCode::NO_CONTENT => {
+                return Ok(T::default());
+            },
+            StatusCode::OK => {
+                return response
+                    .json::<T>()
+                    .await
+                    .map_err(|x| Error::ReqwestError(x, api_url));
+            },
+            _ => {
+                // TODO: better fallback
+                return Err(Error::Unauthorized.into());
+            }
+        };
+    }
+
     pub async fn delete_auth<T>(
         &self,
         path:       impl Into<String>,
@@ -361,6 +418,17 @@ pub trait ApiClient {
 
     #[allow(async_fn_in_trait)]
     async fn post_auth<D, T>(
+        &self,
+        path:       impl Into<String>,
+        data:       D,
+        headers:    HeaderMap,
+    ) -> Result<T>
+    where
+        D: Debug + Serialize + Send + Sync,
+        T: Default + DeserializeOwned;
+
+    #[allow(async_fn_in_trait)]
+    async fn put_auth<D, T>(
         &self,
         path:       impl Into<String>,
         data:       D,

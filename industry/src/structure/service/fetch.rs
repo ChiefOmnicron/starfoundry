@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{EveGatewayApiClient, StructurePosition, StructureType};
-use starfoundry_lib_industry::{Structure, StructureUuid};
+use starfoundry_lib_industry::StructureUuid;
+use starfoundry_lib_industry::structure::Structure;
 use starfoundry_lib_types::CharacterId;
 use std::collections::HashMap;
 use utoipa::IntoParams;

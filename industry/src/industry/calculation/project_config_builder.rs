@@ -1,4 +1,4 @@
-use starfoundry_lib_industry::Structure;
+use starfoundry_lib_industry::structure::Structure;
 use starfoundry_lib_types::{SystemId, TypeId};
 use std::collections::HashMap;
 

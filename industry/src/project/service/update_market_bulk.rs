@@ -102,23 +102,21 @@ pub async fn update_market_bulk(
                 if gas.is_compressed() {
                     let uncompressed_type_id = gas.to_uncompressed_type_id();
 
-                    let decompression_efficiency = entry
+                    let decompression_quantity = entry
                         .gas_decompression
                         .unwrap_or(GasDecompressionEfficiency::default())
-                        .efficiency();
-                    let decompressed_amount = (
-                        entry.quantity as f64 * decompression_efficiency
-                    ).floor();
+                        .decompressed_quantity(entry.quantity);
+
                     // adds the compressed amount
                     new_entries.push(entry);
 
                     if let Some(x) = market_entries.get(&uncompressed_type_id) {
-                        if decompressed_amount as i32 >= x.quantity {
+                        if decompression_quantity >= x.quantity {
                             delete_entries.push(x.id);
                         } else {
                             update_quantity.push(TmpMarketEntry {
                                 id:         x.id,
-                                quantity:   x.quantity - decompressed_amount as i32,
+                                quantity:   x.quantity - decompression_quantity,
                             });
                         }
                     }

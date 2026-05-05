@@ -1,17 +1,16 @@
-use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item};
 use starfoundry_lib_industry::{ProjectJobUuid, StructureUuid};
 use starfoundry_lib_market::MarketApiClient;
 use starfoundry_lib_types::{CharacterId, TypeId};
 use std::collections::HashMap;
-use utoipa::ToSchema;
 use uuid::Uuid;
 
 use crate::{sort_by_job_flat, sort_by_market_group_flat};
 use crate::industry::{CalculationEngine, Dependency, ProjectConfigBuilder, StructureMapping};
 use crate::project::error::{ProjectError, Result};
 use crate::structure::service::FetchStructureQuery;
+use starfoundry_lib_industry::project::{CheckMaterialsResponse, CheckMaterialsResponseBlueprint, CheckMaterialsResponseMaterial, JobToStart, Material};
 
 pub async fn check_resources(
     pool:                       &PgPool,
@@ -214,50 +213,6 @@ pub async fn check_resources(
         materials:  sort_materials(materials),
         blueprints: sort_blueprints(blueprints),
     })
-}
-
-/// Either `materials` or `materials_str` is required
-/// If `materials_str` is given, they will be resolved to their type_id and quantity
-/// 
-#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
-pub struct CheckMaterialsRequest {
-    pub job_ids:        Vec<ProjectJobUuid>,
-    pub materials:      Option<Vec<Material>>,
-    pub materials_str:  Option<String>,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
-pub struct CheckMaterialsResponse {
-    pub job_cost:   f32,
-    pub materials:  Vec<CheckMaterialsResponseMaterial>,
-    pub blueprints: Vec<CheckMaterialsResponseBlueprint>,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
-pub struct CheckMaterialsResponseMaterial {
-    pub item:     Item,
-    pub quantity: i32,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
-pub struct CheckMaterialsResponseBlueprint {
-    // only needed for sorting
-    #[serde(skip)]
-    pub id:       Uuid,
-    pub item:     Item,
-    pub runs:     Vec<u32>,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
-pub struct Material {
-    pub quantity: i32,
-    pub type_id:  TypeId,
-}
-
-#[derive(Clone, Debug)]
-pub struct JobToStart {
-    pub runs:           i32,
-    pub type_id:        TypeId,
 }
 
 sort_by_market_group_flat!(sort_materials, CheckMaterialsResponseMaterial);

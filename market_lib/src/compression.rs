@@ -103,6 +103,22 @@ impl GasDecompressionEfficiency {
             Self::TataraLvl5  => Self::BASE_DECOMPRESSION + Self::TATARA_DECOMPRESSION + 5f64,
         }
     }
+
+    pub fn decompressed_quantity(
+        &self,
+        quantity: i32,
+    ) -> i32 {
+        let decompression_efficiency = self.efficiency();
+
+        let mut percent_increase = decompression_efficiency - 100f64;
+        if percent_increase.is_sign_negative() {
+            percent_increase *= -1f64;
+        }
+        percent_increase /= decompression_efficiency;
+        percent_increase += 1f64;
+
+        (quantity as f64 * percent_increase).ceil() as i32
+    }
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, ToSchema)]

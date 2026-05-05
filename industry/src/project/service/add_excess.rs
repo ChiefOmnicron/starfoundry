@@ -1,10 +1,8 @@
-use serde::Deserialize;
 use sqlx::PgPool;
 use starfoundry_lib_industry::ProjectUuid;
-use starfoundry_lib_types::TypeId;
-use utoipa::ToSchema;
 
 use crate::project::error::{ProjectError, Result};
+use starfoundry_lib_industry::project::AddExcessEntryRequest;
 
 pub async fn add_excess(
     pool:       &PgPool,
@@ -40,10 +38,4 @@ pub async fn add_excess(
         .await
         .map(drop)
         .map_err(ProjectError::AddExcessEntry)
-}
-
-#[derive(Debug, Deserialize, ToSchema)]
-pub struct AddExcessEntryRequest {
-    pub type_id:    TypeId,
-    pub quantity:   i32,
 }

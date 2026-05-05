@@ -1,10 +1,8 @@
-use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::{EveGatewayApiClientItem, Item};
+use starfoundry_lib_eve_gateway::EveGatewayApiClientItem;
+use starfoundry_lib_industry::project::ProjectMarket;
 use starfoundry_lib_industry::ProjectUuid;
 use std::collections::HashMap;
-use utoipa::ToSchema;
-use uuid::Uuid;
 
 use crate::project::error::{ProjectError, Result};
 use crate::sort_by_market_group_flat;
@@ -65,14 +63,5 @@ pub async fn list_market(
     Ok(sort_market(project_market))
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
-pub struct ProjectMarket {
-    pub id:       Uuid,
-    pub item:     Item,
-    pub quantity: i32,
-
-    pub cost:     Option<f64>,
-    pub source:   Option<String>,
-}
 
 sort_by_market_group_flat!(sort_market, ProjectMarket);

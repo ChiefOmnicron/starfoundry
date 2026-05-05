@@ -3,12 +3,13 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_gateway::ExtractIdentity;
+use starfoundry_lib_industry::project::{ProjectJob, ProjectJobFilter};
 use starfoundry_lib_industry::ProjectUuid;
 
 use crate::api_docs::{BadRequest, InternalServerError, NotFound, Unauthorized};
 use crate::{AppState, eve_gateway_api_client};
 use crate::project::error::Result;
-use crate::project::service::{ProjectJob, ProjectJobFilter, list_jobs};
+use crate::project::service::list_jobs;
 
 /// List Jobs
 /// 
@@ -58,8 +59,8 @@ pub async fn api(
     let data = list_jobs(
             &state.postgres,
             identity.character_id,
-            project_id,
             &eve_gateway_api_client()?,
+            project_id,
             filter,
         ).await?;
 

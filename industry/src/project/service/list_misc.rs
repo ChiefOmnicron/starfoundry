@@ -1,8 +1,6 @@
-use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
+use starfoundry_lib_industry::project::ProjectMisc;
 use starfoundry_lib_industry::ProjectUuid;
-use utoipa::ToSchema;
-use uuid::Uuid;
 
 use crate::project::error::{ProjectError, Result};
 
@@ -38,14 +36,3 @@ pub async fn list_misc(
 
     Ok(entries)
 }
-
-#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
-pub struct ProjectMisc {
-    pub id:          Uuid,
-    pub item:        String,
-    pub cost:        f64,
-
-    pub description: Option<String>,
-    pub quantity:    Option<i32>,
-}
-

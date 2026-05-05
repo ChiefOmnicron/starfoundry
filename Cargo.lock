@@ -2824,6 +2824,7 @@ dependencies = [
  "sqlx",
  "starfoundry_lib-eve_gateway",
  "starfoundry_lib-gateway",
+ "starfoundry_lib-market",
  "starfoundry_lib-types",
  "thiserror 2.0.18",
  "tracing",

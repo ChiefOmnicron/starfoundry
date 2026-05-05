@@ -3,11 +3,12 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_gateway::ExtractIdentity;
+use starfoundry_lib_industry::project_group::ProjectGroup;
 
 use crate::api_docs::{BadRequest, InternalServerError, Unauthorized};
 use crate::AppState;
 use crate::project_group::error::Result;
-use crate::project_group::service::{ProjectGroup, ProjectGroupFilter, list};
+use crate::project_group::service::{ProjectGroupFilter, list};
 
 /// List Groups
 /// 
@@ -84,9 +85,9 @@ mod tests {
     use http_body_util::BodyExt;
     use sqlx::PgPool;
     use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID, HEADER_SERVICE};
+    use starfoundry_lib_industry::project_group::ProjectGroupMinimal;
 
     use crate::project_group::project_group_test_routes;
-    use crate::project_group::service::ProjectGroupMinimal;
 
     #[sqlx::test(
         fixtures("base"),

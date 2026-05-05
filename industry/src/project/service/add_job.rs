@@ -1,8 +1,6 @@
-use serde::Deserialize;
 use sqlx::PgPool;
-use starfoundry_lib_industry::{ProjectUuid, StructureUuid};
-use starfoundry_lib_types::TypeId;
-use utoipa::ToSchema;
+use starfoundry_lib_industry::project::AddJobEntryRequest;
+use starfoundry_lib_industry::ProjectUuid;
 
 use crate::project::error::{ProjectError, Result};
 
@@ -47,11 +45,4 @@ pub async fn add_job(
         .await
         .map(drop)
         .map_err(ProjectError::AddJobEntry)
-}
-
-#[derive(Debug, Deserialize, ToSchema)]
-pub struct AddJobEntryRequest {
-    pub type_id:        TypeId,
-    pub runs:           i32,
-    pub structure_id:   StructureUuid,
 }

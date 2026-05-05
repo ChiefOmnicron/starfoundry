@@ -3,12 +3,15 @@ use starfoundry_lib_eve_gateway::Item;
 use starfoundry_lib_types::TypeId;
 use utoipa::ToSchema;
 
-use crate::{IndustryHub, ProjectGroupUuid, ProjectJobUuid, SolutionUuid, StockMinimal, Structure};
+use crate::{ProjectGroupUuid, ProjectJobUuid, SolutionUuid};
+use crate::industry_hub::IndustryHub;
+use crate::industry::StockMinimal;
+use crate::structure::Structure;
 
 #[derive(Debug, Deserialize, Serialize, ToSchema)]
-pub struct TmpRequest {
+pub struct BuildEngine {
     pub project_group_id:       ProjectGroupUuid,
-    pub products:               Option<Vec<TmpProductRequest>>,
+    pub products:               Option<Vec<BuildEngineProduct>>,
     pub products_str:           Option<String>,
 
     pub stocks:                 Option<Vec<StockMinimal>>,
@@ -20,7 +23,7 @@ pub struct TmpRequest {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
-pub struct TmpProductRequest {
+pub struct BuildEngineProduct {
     pub type_id:                TypeId,
     pub material_efficiency:    u32,
     pub quantity:               u32,
@@ -39,15 +42,15 @@ pub struct TmpJobSplitting {
 }
 
 #[derive(Debug, Deserialize, Serialize, ToSchema)]
-pub struct TmpResponse {
+pub struct BuildEngineResponse {
     pub solution_id:    SolutionUuid,
     pub industry_hub:   IndustryHub,
-    pub material:       Vec<TmpMaterialResponse>,
-    pub manufacturing:  Vec<TmpManufacturingResponse>,
+    pub material:       Vec<BuildEngineMaterialResponse>,
+    pub manufacturing:  Vec<BuildEngineManufacturingResponse>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
-pub struct TmpMaterialResponse {
+pub struct BuildEngineMaterialResponse {
     pub item:   Item,
     pub needed: f32,
     pub stock:  i32,
@@ -55,7 +58,7 @@ pub struct TmpMaterialResponse {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
-pub struct TmpManufacturingResponse {
+pub struct BuildEngineManufacturingResponse {
     pub id:         ProjectJobUuid,
     pub item:       Item,
     pub runs:       Vec<u32>,

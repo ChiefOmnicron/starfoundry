@@ -97,6 +97,22 @@ impl ApiClient for EveGatewayClient {
             .map_err(Into::into)
     }
 
+    async fn put_auth<D, T>(
+        &self,
+        path:       impl Into<String>,
+        data:       D,
+        header_map: HeaderMap,
+    ) -> GatewayResult<T>
+    where
+        D: Debug + Serialize + Send + Sync,
+        T: Default + DeserializeOwned {
+
+        self.0
+            .put_auth(path, data, header_map)
+            .await
+            .map_err(Into::into)
+    }
+
     async fn delete_auth<T>(
         &self,
         path:       impl Into<String>,

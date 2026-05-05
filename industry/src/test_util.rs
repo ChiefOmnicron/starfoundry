@@ -354,6 +354,18 @@ impl ApiClient for EveGatewayTestApiClient {
         unimplemented!()
     }
 
+    async fn put_auth<D, T>(
+        &self,
+        _path:      impl Into<String>,
+        _data:      D,
+        _headers:   HeaderMap,
+    ) -> starfoundry_lib_gateway::error::Result<T>
+    where
+        D: std::fmt::Debug + serde::Serialize + Send + Sync,
+        T: serde::de::DeserializeOwned {
+        unimplemented!()
+    }
+
     async fn delete_auth<T>(
         &self,
         _path:    impl Into<String>,
@@ -403,6 +415,18 @@ impl ApiClient for MarketTestApiClient {
         _path:      impl Into<String>,
         _data:      D,
         _headers:   HeaderMap,
+    ) -> starfoundry_lib_gateway::error::Result<T>
+    where
+        D: std::fmt::Debug + serde::Serialize + Send + Sync,
+        T: serde::de::DeserializeOwned {
+        unimplemented!()
+    }
+
+    async fn put_auth<D, T>(
+        &self,
+        _path:       impl Into<String>,
+        _data:       D,
+        _header_map: HeaderMap,
     ) -> starfoundry_lib_gateway::error::Result<T>
     where
         D: std::fmt::Debug + serde::Serialize + Send + Sync,

@@ -3,7 +3,7 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_gateway::ExtractIdentity;
-use starfoundry_lib_industry::Structure;
+use starfoundry_lib_industry::structure::Structure;
 
 use crate::api_docs::{Forbidden, InternalServerError, Unauthorized};
 use crate::structure::service::{list, StructureFilter};
@@ -87,7 +87,7 @@ mod tests {
     use http_body_util::BodyExt;
     use sqlx::PgPool;
     use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID, HEADER_SERVICE};
-    use starfoundry_lib_industry::Structure;
+    use starfoundry_lib_industry::structure::Structure;
 
     use crate::structure::structure_test_routes;
 

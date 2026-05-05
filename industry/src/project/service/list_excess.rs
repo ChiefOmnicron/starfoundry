@@ -1,17 +1,16 @@
-use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::{EveGatewayApiClient, Item};
+use starfoundry_lib_eve_gateway::EveGatewayApiClient;
 use starfoundry_lib_industry::ProjectUuid;
 use std::collections::HashMap;
-use utoipa::ToSchema;
 
 use crate::project::error::{ProjectError, Result};
 use crate::sort_by_market_group_flat;
+use starfoundry_lib_industry::project::ProjectExcess;
 
 pub async fn list_excess(
     pool:                   &PgPool,
-    project_id:             ProjectUuid,
     eve_gateway_api_client: &impl EveGatewayApiClient,
+    project_id:             ProjectUuid,
 ) -> Result<Vec<ProjectExcess>> {
     let entries = sqlx::query!(r#"
             SELECT
@@ -58,11 +57,3 @@ pub async fn list_excess(
 }
 
 sort_by_market_group_flat!(sort_market, ProjectExcess);
-
-#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
-pub struct ProjectExcess {
-    pub item:       Item,
-    pub quantity:   i32,
-    pub cost:       Option<f64>,
-}
-

@@ -3,11 +3,12 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_industry::{MarketUuid, ProjectUuid};
+use starfoundry_lib_industry::project::UpdateMarketEntry;
 
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
 use crate::AppState;
 use crate::project::error::Result;
-use crate::project::service::{UpdateMarketEntryRequest, update_market_entry};
+use crate::project::service::update_market_entry;
 
 /// Delete market entry
 /// 
@@ -25,7 +26,7 @@ use crate::project::service::{UpdateMarketEntryRequest, update_market_entry};
     put,
     path = "/{ProjectUuid}/market/{MarketUuid}",
     tag = "Project",
-    request_body = UpdateMarketEntryRequest,
+    request_body = UpdateMarketEntry,
     params(
         ProjectUuid,
     ),
@@ -46,7 +47,7 @@ use crate::project::service::{UpdateMarketEntryRequest, update_market_entry};
 pub async fn api(
     State(state):                   State<AppState>,
     Path((project_id, market_id)):  Path<(ProjectUuid, MarketUuid)>,
-    Json(update):                   Json<UpdateMarketEntryRequest>,
+    Json(update):                   Json<UpdateMarketEntry>,
 ) -> Result<impl IntoResponse> {
     update_market_entry(
             &state.postgres,

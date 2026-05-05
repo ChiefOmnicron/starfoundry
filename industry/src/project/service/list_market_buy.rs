@@ -1,11 +1,10 @@
-use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::{EveGatewayApiClientItem, Item};
+use starfoundry_lib_eve_gateway::EveGatewayApiClientItem;
+use starfoundry_lib_industry::project::ProjectMarketBuy;
 use starfoundry_lib_industry::ProjectUuid;
-use starfoundry_lib_market::{Asteroid, BuyStrategy, Gas, MarketApiClientOrder, MarketBulkRequest, MarketBulkResponse, MarketItemList, SmartBuyConfig};
+use starfoundry_lib_market::{Asteroid, BuyStrategy, Gas, MarketApiClientOrder, MarketBulkRequest, MarketItemList, SmartBuyConfig};
 use starfoundry_lib_types::TypeId;
 use std::collections::HashMap;
-use utoipa::ToSchema;
 use uuid::Uuid;
 
 use crate::project::error::{ProjectError, Result};
@@ -196,18 +195,6 @@ pub async fn list_market_buy(
     }
 
     Ok(sort_market(project_market))
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
-pub struct ProjectMarketBuy {
-    pub id:       Uuid,
-    pub item:     Item,
-    pub quantity: i32,
-
-    pub cost:     Option<f64>,
-    pub source:   Option<String>,
-
-    pub entries:  Vec<MarketBulkResponse>,
 }
 
 sort_by_market_group_flat!(sort_market, ProjectMarketBuy);
