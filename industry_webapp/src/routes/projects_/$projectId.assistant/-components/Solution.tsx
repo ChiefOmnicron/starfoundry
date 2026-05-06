@@ -154,6 +154,7 @@ export function Solution({
     const [showError, setShowError] = useState<boolean>(false);
 
     const [products, setProducts] = useState<string>('');
+    const [additionalProducts, setAdditionalProducts] = useState<string>('');
     const [stocks, setStocks] = useState<string>('');
 
     const [generatedSolutions, setGeneratedSolutions] = useState<GenerateSolutionResponse[]>([]);
@@ -165,6 +166,7 @@ export function Solution({
             return await generateSolution({
                 project_group_id: project.project_group.id,
                 products_str: products,
+                additional_products_str: additionalProducts,
                 stocks_str: stocks,
 
                 blacklist:              (selectedBlacklist || [])
@@ -319,6 +321,7 @@ export function Solution({
                             label="Products to buy"
                             description="List of products that should be bought. Product Amount"
                             placeholder="Mobile Depot 1"
+                            onChange={(event) => setAdditionalProducts(event.currentTarget.value)}
                             minRows={10}
                             maxRows={10}
                             autosize

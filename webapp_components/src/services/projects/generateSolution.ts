@@ -14,10 +14,12 @@ export const generateSolution = async (
     .then(x => x.data);
 
 export type GenerateSolutionRequest = {
-    project_group_id:   Uuid;
-    products?:          ProjectProducts[];
-    products_str?:      string;
-    stocks_str?:        string;
+    project_group_id:           Uuid;
+    products?:                  ProjectProducts[];
+    products_str?:              string;
+    additional_products?:       ProjectProducts[];
+    additional_products_str?:   string;
+    stocks_str?:                string;
 
     blacklist?:             number[];
     blueprint_overwrite?:   TmpBlueprintOverwrite[];

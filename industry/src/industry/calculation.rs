@@ -95,6 +95,23 @@ pub async fn api(
             .into_response()
         );
     };
+    let additional_products = if let Some(x) = config.additional_products {
+        x
+    } else if let Some(x) = config.additional_products_str {
+        eve_gateway_api_client()?
+            .parse_items(x)
+            .await?
+            .items
+            .into_iter()
+            .map(|x| BuildEngineProduct {
+                quantity:               x.quantity as u32,
+                type_id:                x.type_id,
+                material_efficiency:    0,
+            })
+            .collect::<Vec<_>>()
+    } else {
+        Vec::new()
+    };
 
     let stocks = if let Some(x) = config.stocks {
         x
@@ -314,6 +331,23 @@ pub async fn api(
             })
             .collect::<Vec<_>>();
 
+        let mut updated_stocks = dependency_result.stocks.clone();
+        let mut additional_products = additional_products.clone();
+        for additional_product in additional_products.iter_mut() {
+            if let Some(x) = stocks
+                .iter()
+                .find(|x| x.type_id == additional_product.type_id) {
+
+                let stock_quantity = std::cmp::min(x.quantity, additional_product.quantity as i32);
+                additional_product.quantity = additional_product.quantity.saturating_sub(x.quantity as u32);
+
+                updated_stocks.push(StockMinimal {
+                    quantity:   stock_quantity,
+                    type_id:    x.type_id,
+                });
+            }
+        }
+
         let solution_id = store_solution(
                 &state.postgres,
                 industry_hub.id,
@@ -321,10 +355,11 @@ pub async fn api(
                 blacklist.clone(),
                 blueprint_overwrites.clone(),
                 job_splitting.clone(),
-                dependency_result.stocks.clone(),
+                updated_stocks.clone(),
                 products.clone(),
                 excess.clone(),
                 material.clone(),
+                additional_products.clone(),
                 manufacturing.clone(),
             )
             .await
@@ -359,6 +394,7 @@ async fn store_solution(
     products:               Vec<BuildEngineProduct>,
     excess:                 Vec<StockMinimal>,
     materials:              Vec<BuildEngineMaterialResponse>,
+    additional_materials:   Vec<BuildEngineProduct>,
     manufacturing:          Vec<BuildEngineManufacturingResponse>,
 ) -> Result<SolutionUuid> {
     let mut transaction = pool.begin().await.unwrap();
@@ -514,7 +550,32 @@ async fn store_solution(
         ",
             solution_id,
             &materials.iter().map(|x| *x.item.type_id).collect::<Vec<_>>(),
-            &materials.iter().map(|x| x.needed as i32).collect::<Vec<_>>(),
+            &materials
+                .iter()
+                .filter(|x| x.needed > 0f32)
+                .map(|x| x.needed as i32).collect::<Vec<_>>(),
+        )
+        .execute(&mut *transaction)
+        .await
+        .unwrap();
+    sqlx::query!("
+            INSERT INTO solution_material
+            (
+                solution_id,
+                type_id,
+                quantity
+            )
+            SELECT $1, * FROM UNNEST(
+                $2::INTEGER[],
+                $3::INTEGER[]
+            )
+        ",
+            solution_id,
+            &additional_materials.iter().map(|x| *x.type_id).collect::<Vec<_>>(),
+            &additional_materials
+                .iter()
+                .filter(|x| x.quantity > 0)
+                .map(|x| x.quantity as i32).collect::<Vec<_>>(),
         )
         .execute(&mut *transaction)
         .await

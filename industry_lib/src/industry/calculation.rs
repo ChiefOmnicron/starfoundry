@@ -10,16 +10,18 @@ use crate::structure::Structure;
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 pub struct BuildEngine {
-    pub project_group_id:       ProjectGroupUuid,
-    pub products:               Option<Vec<BuildEngineProduct>>,
-    pub products_str:           Option<String>,
+    pub project_group_id:           ProjectGroupUuid,
+    pub products:                   Option<Vec<BuildEngineProduct>>,
+    pub products_str:               Option<String>,
+    pub additional_products:        Option<Vec<BuildEngineProduct>>,
+    pub additional_products_str:    Option<String>,
 
-    pub stocks:                 Option<Vec<StockMinimal>>,
-    pub stocks_str:             Option<String>,
+    pub stocks:                     Option<Vec<StockMinimal>>,
+    pub stocks_str:                 Option<String>,
 
-    pub blacklist:              Option<Vec<TypeId>>,
-    pub blueprint_overwrite:    Option<Vec<TmpBlueprintOverwrite>>,
-    pub job_splitting:          Option<Vec<TmpJobSplitting>>,
+    pub blacklist:                  Option<Vec<TypeId>>,
+    pub blueprint_overwrite:        Option<Vec<TmpBlueprintOverwrite>>,
+    pub job_splitting:              Option<Vec<TmpJobSplitting>>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
