@@ -47,8 +47,3 @@ service_url = "http://localhost:9996"
 
 [routes."admin"]
 service_url = "http://localhost:9996"
-
-[routes."general"]
-service_url = "http://localhost:9996"
-require_auth = false
-
