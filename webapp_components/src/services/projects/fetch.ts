@@ -41,17 +41,20 @@ export const fetchProjectQuery = (
 });
 
 export type ProjectList = {
-    id:             Uuid;
-    name:           string;
-    status:         ProjectStatus;
-    orderer:        string;
-    sell_price:     number;
-    project_group:  ProjectGroup;
-    products:       ProjectProduct[];
-    stock:          ProjectStock[];
-    excess:         ProjectExcess[];
+    id:                 Uuid;
+    name:               string;
+    status:             ProjectStatus;
+    orderer:            string;
+    sell_price:         number;
+    project_group:      ProjectGroup;
+    products:           ProjectProduct[];
+    stock:              ProjectStock[];
+    excess:             ProjectExcess[];
 
-    note?:          string;
+    note?:              string;
+
+    pre_products?:      string;
+    pre_additional?:    string;
 }
 
 export type ProjectStock = {

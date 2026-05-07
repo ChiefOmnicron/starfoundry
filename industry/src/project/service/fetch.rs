@@ -23,7 +23,9 @@ pub async fn fetch(
                 sell_price,
                 project_group_id,
                 solution_id,
-                note
+                note,
+                pre_products,
+                pre_additional
             FROM project
             WHERE
                 (owner = $1 OR owner = 0) AND
@@ -82,6 +84,9 @@ pub async fn fetch(
             note:           x.note,
             project_group:  project_group,
             solution_id:    x.solution_id.map(Into::into),
+
+            pre_products:   x.pre_products,
+            pre_additional: x.pre_additional,
         };
         Ok(Some(project))
     } else {

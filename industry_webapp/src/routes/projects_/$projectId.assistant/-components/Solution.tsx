@@ -160,6 +160,15 @@ export function Solution({
     const [generatedSolutions, setGeneratedSolutions] = useState<GenerateSolutionResponse[]>([]);
     const [selectedSolution, setSelectedSolution] = useState<GenerateSolutionResponse | undefined>(undefined);
 
+    useEffect(() => {
+        if (project.pre_products) {
+            setProducts(project.pre_products);
+        }
+        if (project.pre_additional) {
+            setAdditionalProducts(project.pre_additional);
+        }
+    }, [project]);
+
     // tmp
     const generateSolutionMutation = useMutation({
         mutationFn: async () => {
@@ -322,6 +331,7 @@ export function Solution({
                             description="List of products that should be bought. Product Amount"
                             placeholder="Mobile Depot 1"
                             onChange={(event) => setAdditionalProducts(event.currentTarget.value)}
+                            value={additionalProducts}
                             minRows={10}
                             maxRows={10}
                             autosize

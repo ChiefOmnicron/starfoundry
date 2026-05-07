@@ -32,6 +32,11 @@ pub struct Project {
     pub sell_price:     Option<f64>,
     #[serde(skip)]
     pub solution_id:    Option<SolutionUuid>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pre_products:   Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pre_additional: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]

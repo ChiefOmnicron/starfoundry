@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                id,\n                name,\n                status AS \"status: ProjectStatus\",\n                orderer,\n                sell_price,\n                project_group_id,\n                solution_id,\n                note\n            FROM project\n            WHERE\n                (owner = $1 OR owner = 0) AND\n                id = $2\n        ",
+  "query": "\n            SELECT\n                id,\n                name,\n                status AS \"status: ProjectStatus\",\n                orderer,\n                sell_price,\n                project_group_id,\n                solution_id,\n                note,\n                pre_products,\n                pre_additional\n            FROM project\n            WHERE\n                (owner = $1 OR owner = 0) AND\n                id = $2\n        ",
   "describe": {
     "columns": [
       {
@@ -103,6 +103,28 @@
             "name": "note"
           }
         }
+      },
+      {
+        "ordinal": 8,
+        "name": "pre_products",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "project",
+            "name": "pre_products"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "pre_additional",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "project",
+            "name": "pre_additional"
+          }
+        }
       }
     ],
     "parameters": {
@@ -119,8 +141,10 @@
       true,
       false,
       true,
+      true,
+      true,
       true
     ]
   },
-  "hash": "117cdf518ab8742134b071ca402b09ca986ca5490fe01b58483102d2a47e907a"
+  "hash": "7cc1a3d367fb38ec9c05eed7ee1e29efd361d1f5688c73504110f2dce6d853fe"
 }
