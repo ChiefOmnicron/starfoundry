@@ -38,9 +38,9 @@ impl WorkerTask for WorkerMarketTask {
         match self {
             Self::Sync                  => self.add_minutes(5),
             Self::Cleanup               => self.during_downtime(),
-            Self::LatestNpc             => self.add_minutes(10),
-            Self::LatestPlayer          => self.add_minutes(10),
-            Self::LatestRegion          => self.add_minutes(10),
+            Self::LatestNpc             => self.add_minutes(15),
+            Self::LatestPlayer          => self.add_minutes(15),
+            Self::LatestRegion          => self.add_minutes(15),
             Self::PublicContracts       => self.add_minutes(30),
             Self::PublicContractItems   => self.oneshot(),
             Self::CharacterOrders       => self.add_minutes(20),
