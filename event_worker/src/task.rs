@@ -132,9 +132,9 @@ impl WorkerTask {
             Self::IndustryIndex              => self.add_minutes(60),
 
             Self::MarketCheck                => self.add_minutes(5),
-            Self::MarketLatestNpc            => self.add_minutes(5),
-            Self::MarketLatestPlayer         => self.add_minutes(5),
-            Self::MarketLatestRegion         => self.add_minutes(5),
+            Self::MarketLatestNpc            => self.add_minutes(60),
+            Self::MarketLatestPlayer         => self.add_minutes(60),
+            Self::MarketLatestRegion         => self.add_minutes(60),
             Self::MarketPrices               => self.add_minutes(60),
 
             Self::SdeCheck                   => self.add_minutes(120),
