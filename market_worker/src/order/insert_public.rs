@@ -175,6 +175,7 @@ pub async fn insert_structure_market(
             UPDATE market_order_info
             SET removed_at = NOW()
             WHERE NOT order_id = ANY($1)
+            AND removed_at IS NULL
         ",
             &order_ids,
         )
