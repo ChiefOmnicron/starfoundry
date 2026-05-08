@@ -164,6 +164,7 @@ impl StarFoundryApiClient {
             StatusCode::NO_CONTENT => {
                 return Ok(T::default());
             },
+            StatusCode::CREATED |
             StatusCode::OK => {
                 return response
                     .json::<T>()
