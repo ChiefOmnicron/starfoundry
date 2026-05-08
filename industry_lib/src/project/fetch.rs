@@ -59,6 +59,24 @@ pub struct ProjectCost {
 
 #[derive(Debug, Deserialize, Serialize, ToSchema)]
 pub struct ProjectTimeLeft {
+    /// # Possible values:
+    /// 
+    /// - CREATED
+    /// - RAW_MATERIALS
+    /// - INTERMEDIATE_REACTIONS
+    /// - COMPOSITE_REACTIONS
+    /// - BIOCHEM_REACTIONS
+    /// - HYBRID_REACTIONS
+    /// - CONSTRUCTION_COMPONENTS
+    /// - ADVANCED_CAPITAL_CONSTRUCTION_COMPONENTS
+    /// - CAPITAL_CONSTRUCTION_COMPONENTS
+    /// - TOOLS
+    /// - T1_STUFF
+    /// - T2_STUFF
+    /// - CHARGES
+    /// - SHIPS
+    /// - UNKNOWN
+    /// - DONE
     pub state:      String,
     pub date_ms:    i64,
 }

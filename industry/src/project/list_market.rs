@@ -57,8 +57,8 @@ pub async fn api(
 ) -> Result<impl IntoResponse> {
     let data = list_market(
             &state.postgres,
-            project_id,
             &eve_gateway_api_client()?,
+            project_id,
         ).await?;
 
     if data.is_empty() {

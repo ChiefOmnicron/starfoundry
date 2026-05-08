@@ -7,7 +7,7 @@ use starfoundry_lib_types::{CharacterId, TypeId};
 use std::time::Duration;
 
 use crate::project::error::Result;
-use crate::project::service::list_jobs;
+use crate::project::service::{list_jobs, list_market};
 
 pub async fn fetch_time_left(
     pool:                   &PgPool,
@@ -26,6 +26,42 @@ pub async fn fetch_time_left(
             ProjectJobFilter::default(),
         )
         .await?;
+
+    // project is not yet initialized
+    if jobs.is_empty() {
+        return Ok(ProjectTimeLeft {
+            date_ms:    0,
+            state:      "CREATED".into(),
+        });
+    }
+
+    let market_count = list_market(
+            pool,
+            eve_gateway_api_client,
+            project_id,
+        )
+        .await?
+        .into_iter()
+        .filter(|x| x.cost.is_some())
+        .count();
+    let job_count = jobs
+        .iter()
+        .flat_map(|x| x.entries.clone())
+        .filter(|x| x.cost.is_some())
+        .count();
+
+    // materials are bought, and no jobs started yet
+    if market_count > 0 && job_count == 0 {
+        return Ok(ProjectTimeLeft {
+            date_ms:    0,
+            state:      "RAW_MATERIALS".into(),
+        });
+    } else if market_count == 0 && job_count == 0 {
+        return Ok(ProjectTimeLeft {
+            date_ms:    0,
+            state:      "CREATED".into(),
+        });
+    }
 
     // the first group that had running jobs
     let mut state: String = "DONE".into();

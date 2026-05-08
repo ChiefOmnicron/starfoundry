@@ -9,8 +9,8 @@ use crate::sort_by_market_group_flat;
 
 pub async fn list_market(
     pool:                   &PgPool,
-    project_id:             ProjectUuid,
     eve_gateway_api_client: &impl EveGatewayApiClientItem,
+    project_id:             ProjectUuid,
 ) -> Result<Vec<ProjectMarket>> {
     let entries = sqlx::query!(r#"
             SELECT
