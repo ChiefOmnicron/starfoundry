@@ -549,7 +549,10 @@ async fn store_solution(
             )
         ",
             solution_id,
-            &materials.iter().map(|x| *x.item.type_id).collect::<Vec<_>>(),
+            &materials
+                .iter()
+                .filter(|x| x.needed > 0f32)
+                .map(|x| *x.item.type_id).collect::<Vec<_>>(),
             &materials
                 .iter()
                 .filter(|x| x.needed > 0f32)
@@ -571,7 +574,10 @@ async fn store_solution(
             )
         ",
             solution_id,
-            &additional_materials.iter().map(|x| *x.type_id).collect::<Vec<_>>(),
+            &additional_materials
+                .iter()
+                .filter(|x| x.quantity > 0)
+                .map(|x| *x.type_id).collect::<Vec<_>>(),
             &additional_materials
                 .iter()
                 .filter(|x| x.quantity > 0)
