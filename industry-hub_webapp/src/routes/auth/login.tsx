@@ -115,7 +115,7 @@ export function UnauthorizedShell() {
                             textDecoration: 'none',
                         }}
                     >
-                        Fenris Creations
+                        CCP Games
                     </a>
 
                     See

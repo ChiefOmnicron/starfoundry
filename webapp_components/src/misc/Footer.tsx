@@ -35,7 +35,7 @@ export function Footer({
                         textDecoration: 'none',
                     }}
                 >
-                    Fenris Creations
+                    CCP Games
                 </a>
 
                 See
