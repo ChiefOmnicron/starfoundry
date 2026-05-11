@@ -1,13 +1,13 @@
 use chrono::Utc;
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::EveGatewayApiClient;
-use starfoundry_lib_industry::project::{ProjectJobFilter, ProjectJobStatus, ProjectTimeLeft};
+use starfoundry_lib_industry::project::{ProjectJobFilter, ProjectJobStatus, ProjectStatus, ProjectTimeLeft};
 use starfoundry_lib_industry::ProjectUuid;
 use starfoundry_lib_types::{CharacterId, TypeId};
 use std::time::Duration;
 
 use crate::project::error::Result;
-use crate::project::service::{list_jobs, list_market};
+use crate::project::service::{fetch, list_jobs, list_market};
 
 pub async fn fetch_time_left(
     pool:                   &PgPool,
@@ -17,6 +17,23 @@ pub async fn fetch_time_left(
 ) -> Result<ProjectTimeLeft> {
     let now = Utc::now().naive_utc().and_utc().timestamp();
     let mut projected_end_date = Utc::now().naive_utc();
+
+    let project = fetch(
+            pool,
+            character_id,
+            project_id,
+            eve_gateway_api_client,
+        )
+        .await?;
+
+    if let Some(x) = project {
+        if x.status == ProjectStatus::Done {
+            return Ok(ProjectTimeLeft {
+                date_ms:    0,
+                state:      "DONE".into(),
+            });
+        }
+    }
 
     let jobs = list_jobs(
             pool,
@@ -64,7 +81,7 @@ pub async fn fetch_time_left(
     }
 
     // the first group that had running jobs
-    let mut state: String = "DONE".into();
+    let mut state: String = "UNKNOWN".into();
 
     for group in jobs {
         let jobs = group
@@ -79,7 +96,7 @@ pub async fn fetch_time_left(
         }
 
         // set the current group
-        if state == "DONE" {
+        if state == "UNKNOWN" {
             state = group.header.clone();
         }
 
