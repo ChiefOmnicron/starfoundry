@@ -1,16 +1,10 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n                SELECT\n                    DATE(timestamp) AS \"date!\",\n                    *\n                FROM system_index\n                WHERE system_id = $1\n                --AND DATE(timestamp) > DATE(NOW() - INTERVAL '7 DAY')\n                AND DATE(timestamp) < DATE(NOW() - INTERVAL '3 DAY')\n            ",
+  "query": "\n                SELECT\n                    id,\n                    DATE(timestamp) AS \"date!\",\n                    copying,\n                    invention,\n                    manufacturing,\n                    reaction,\n                    research_time,\n                    research_material,\n                    system_id\n                FROM system_index\n                WHERE system_id = $1\n                AND DATE(timestamp) > DATE(NOW() - INTERVAL '7 DAY')\n                AND DATE(timestamp) < DATE(NOW() - INTERVAL '3 DAY')\n            ",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
-        "name": "date!",
-        "type_info": "Date",
-        "origin": "Expression"
-      },
-      {
-        "ordinal": 1,
         "name": "id",
         "type_info": "Uuid",
         "origin": {
@@ -21,24 +15,30 @@
         }
       },
       {
+        "ordinal": 1,
+        "name": "date!",
+        "type_info": "Date",
+        "origin": "Expression"
+      },
+      {
         "ordinal": 2,
-        "name": "timestamp",
-        "type_info": "Timestamp",
+        "name": "copying",
+        "type_info": "Float4",
         "origin": {
           "Table": {
             "table": "system_index",
-            "name": "timestamp"
+            "name": "copying"
           }
         }
       },
       {
         "ordinal": 3,
-        "name": "system_id",
-        "type_info": "Int4",
+        "name": "invention",
+        "type_info": "Float4",
         "origin": {
           "Table": {
             "table": "system_index",
-            "name": "system_id"
+            "name": "invention"
           }
         }
       },
@@ -55,28 +55,6 @@
       },
       {
         "ordinal": 5,
-        "name": "copying",
-        "type_info": "Float4",
-        "origin": {
-          "Table": {
-            "table": "system_index",
-            "name": "copying"
-          }
-        }
-      },
-      {
-        "ordinal": 6,
-        "name": "invention",
-        "type_info": "Float4",
-        "origin": {
-          "Table": {
-            "table": "system_index",
-            "name": "invention"
-          }
-        }
-      },
-      {
-        "ordinal": 7,
         "name": "reaction",
         "type_info": "Float4",
         "origin": {
@@ -87,7 +65,7 @@
         }
       },
       {
-        "ordinal": 8,
+        "ordinal": 6,
         "name": "research_time",
         "type_info": "Float4",
         "origin": {
@@ -98,13 +76,24 @@
         }
       },
       {
-        "ordinal": 9,
+        "ordinal": 7,
         "name": "research_material",
         "type_info": "Float4",
         "origin": {
           "Table": {
             "table": "system_index",
             "name": "research_material"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "system_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "system_index",
+            "name": "system_id"
           }
         }
       }
@@ -115,9 +104,8 @@
       ]
     },
     "nullable": [
+      false,
       null,
-      false,
-      false,
       false,
       false,
       false,
@@ -127,5 +115,5 @@
       false
     ]
   },
-  "hash": "1708e7dbd9b9f8839070e66d3061df2f0ba916f238f2b84935d52aa580c9d764"
+  "hash": "758c82bc36c4a8422512c6b1737b33debbcbf55a48626aa5a447399ea9c675d2"
 }

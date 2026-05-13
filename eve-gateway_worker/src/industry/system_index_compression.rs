@@ -18,7 +18,7 @@ pub async fn system_index_compress(
         copying:           f32,
         invention:         f32,
         reaction:          f32,
-        reasearch_time:    f32,
+        research_time:     f32,
         research_material: f32,
         system_id:         i32,
     }
@@ -50,11 +50,18 @@ pub async fn system_index_compress(
 
         sqlx::query!(r#"
                 SELECT
+                    id,
                     DATE(timestamp) AS "date!",
-                    *
+                    copying,
+                    invention,
+                    manufacturing,
+                    reaction,
+                    research_time,
+                    research_material,
+                    system_id
                 FROM system_index
                 WHERE system_id = $1
-                --AND DATE(timestamp) > DATE(NOW() - INTERVAL '7 DAY')
+                AND DATE(timestamp) > DATE(NOW() - INTERVAL '7 DAY')
                 AND DATE(timestamp) < DATE(NOW() - INTERVAL '3 DAY')
             "#,
                 system_id,
@@ -73,7 +80,7 @@ pub async fn system_index_compress(
                     invention:         x.invention,
                     manufacturing:     x.manufacturing,
                     reaction:          x.reaction,
-                    reasearch_time:    x.research_time,
+                    research_time:     x.research_time,
                     research_material: x.research_material,
                     system_id:         x.system_id,
                 };
@@ -98,7 +105,7 @@ pub async fn system_index_compress(
             copying.push(entries.iter().map(|x| x.copying).sum::<f32>() / entries.len() as f32);
             invention.push(entries.iter().map(|x| x.invention).sum::<f32>() / entries.len() as f32);
             rme.push(entries.iter().map(|x| x.research_material).sum::<f32>() / entries.len() as f32);
-            rte.push(entries.iter().map(|x| x.reasearch_time).sum::<f32>() / entries.len() as f32);
+            rte.push(entries.iter().map(|x| x.research_time).sum::<f32>() / entries.len() as f32);
         }
     }
 
