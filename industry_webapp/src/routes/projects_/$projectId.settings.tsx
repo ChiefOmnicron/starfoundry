@@ -121,7 +121,7 @@ function RouteComponent() {
                 onClose={ () => setSuccessfulUpdate(false) }
                 withCloseButton
             >
-                The project group was updated
+                The project was updated
             </Alert>;
         } else if (errorUpdate) {
             return <Alert

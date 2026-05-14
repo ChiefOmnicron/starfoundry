@@ -146,6 +146,7 @@ function JobAssignmentWrapper({
             cell: ({ row }) => <CopyText
                 value={row.original.runs}
                 disabled={row.original.started}
+                number
             />,
             header: () => 'Runs',
             size: 3,
