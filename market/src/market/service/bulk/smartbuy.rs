@@ -146,18 +146,3 @@ pub fn smartbuy(
     dbg!("smart", start.elapsed().as_millis());
     results
 }
-
-fn compression_quantity_modifier(
-    quantity:                 f64,
-    // for example 95f64
-    decompression_efficiency: f64
-) -> i32 {
-    let mut percent_increase = decompression_efficiency - 100f64;
-    if percent_increase.is_sign_negative() {
-        percent_increase *= -1f64;
-    }
-    percent_increase /= decompression_efficiency;
-    percent_increase += 1f64;
-
-    (quantity * percent_increase).ceil() as i32
-}
