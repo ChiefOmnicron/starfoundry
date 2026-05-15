@@ -91,6 +91,24 @@ function RouteComponent() {
         },
     });
 
+    useEffect(() => {
+        if (industryHub) {
+            setSelectedStructures(industryHub.structures);
+
+            let shares = industryHub
+                .shares
+                .map(x => {
+                    return {
+                        id: x.share_id,
+                        name: x.name,
+                        category: x.share_type.toLowerCase() as any,
+                    }
+                });
+            setSelectedEntities(shares);
+            setDescription(industryHub.description || '');
+        }
+    }, [industryHub]);
+
     if (isPending) {
         return LoadingAnimation();
     }
@@ -98,22 +116,6 @@ function RouteComponent() {
     if (isError) {
         return LoadingError();
     }
-
-    useEffect(() => {
-        setSelectedStructures(industryHub.structures);
-
-        let shares = industryHub
-            .shares
-            .map(x => {
-                return {
-                    id: x.share_id,
-                    name: x.name,
-                    category: x.share_type.toLowerCase() as any,
-                }
-            });
-        setSelectedEntities(shares);
-        setDescription(industryHub.description || '');
-    }, [industryHub]);
 
     const form = useForm({
         defaultValues: {
