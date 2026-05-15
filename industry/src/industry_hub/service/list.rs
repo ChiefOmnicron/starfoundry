@@ -37,9 +37,9 @@ pub async fn list(
                     ih.name,
                     ih.description
                 FROM industry_hub ih
-                JOIN industry_hub_structure ihs ON ihs.industry_hub_id = ih.id
-                JOIN structure s ON s.id = ihs.structure_id
-                JOIN industry_hub_share ihsa ON ihsa.industry_hub_id = ih.id
+                LEFT JOIN industry_hub_structure ihs ON ihs.industry_hub_id = ih.id
+                LEFT JOIN structure s ON s.id = ihs.structure_id
+                LEFT JOIN industry_hub_share ihsa ON ihsa.industry_hub_id = ih.id
                 WHERE
                     NOT (LOWER(ih.name) LIKE '%' || LOWER($4) || '%') IS FALSE AND
                     NOT (s.type_id = $5) IS FALSE AND
@@ -80,8 +80,8 @@ pub async fn list(
                     ih.name,
                     ih.description
                 FROM industry_hub ih
-                JOIN industry_hub_structure sgs ON sgs.industry_hub_id = ih.id
-                JOIN structure s ON s.id = sgs.structure_id
+                LEFT JOIN industry_hub_structure sgs ON sgs.industry_hub_id = ih.id
+                LEFT JOIN structure s ON s.id = sgs.structure_id
                 WHERE
                     NOT (LOWER(ih.name) LIKE '%' || LOWER($2) || '%') IS FALSE AND
                     NOT (s.type_id = $3) IS FALSE AND

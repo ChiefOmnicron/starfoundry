@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n                SELECT\n                    DISTINCT(ih.id),\n                    ih.name,\n                    ih.description\n                FROM industry_hub ih\n                JOIN industry_hub_structure sgs ON sgs.industry_hub_id = ih.id\n                JOIN structure s ON s.id = sgs.structure_id\n                WHERE\n                    NOT (LOWER(ih.name) LIKE '%' || LOWER($2) || '%') IS FALSE AND\n                    NOT (s.type_id = $3) IS FALSE AND\n                    NOT (s.system_id = $4) IS FALSE AND\n                    NOT ($5::INTEGER IS NULL OR $5::INTEGER = ANY(s.services)) IS FALSE AND\n                    NOT ($6::INTEGER IS NULL OR $6::INTEGER = ANY(s.rigs)) IS FALSE AND\n                    ih.owner = $1\n                ORDER BY ih.name\n            ",
+  "query": "\n                SELECT\n                    DISTINCT(ih.id),\n                    ih.name,\n                    ih.description\n                FROM industry_hub ih\n                LEFT JOIN industry_hub_structure sgs ON sgs.industry_hub_id = ih.id\n                LEFT JOIN structure s ON s.id = sgs.structure_id\n                WHERE\n                    NOT (LOWER(ih.name) LIKE '%' || LOWER($2) || '%') IS FALSE AND\n                    NOT (s.type_id = $3) IS FALSE AND\n                    NOT (s.system_id = $4) IS FALSE AND\n                    NOT ($5::INTEGER IS NULL OR $5::INTEGER = ANY(s.services)) IS FALSE AND\n                    NOT ($6::INTEGER IS NULL OR $6::INTEGER = ANY(s.rigs)) IS FALSE AND\n                    ih.owner = $1\n                ORDER BY ih.name\n            ",
   "describe": {
     "columns": [
       {
@@ -53,5 +53,5 @@
       true
     ]
   },
-  "hash": "6babc938bc9c8bd717de20dd8e68b91fdb8703ca485c40e8a94cc001c55e5aec"
+  "hash": "6e8acc3325d69857ac079bc8831769d84ca9c06ad8f1124c7e6029fe3288e7cc"
 }

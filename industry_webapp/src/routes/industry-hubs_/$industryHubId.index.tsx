@@ -5,7 +5,7 @@ import { FETCH_INDUSTRY_HUB, useFetchIndustryHub } from '@starfoundry/components
 import { LIST_INDUSTRY_HUB } from '@starfoundry/components/services/industry-hub/list';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
-import { Route as StructureListRoute } from '@/routes/structures/index';
+import { Route as IndustryHubListRoute } from '@/routes/industry-hubs/index';
 import { updateIndustryHub, type UpdateIndustryHub } from '@starfoundry/components/services/industry-hub/update';
 import { useDisclosure } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
@@ -83,7 +83,7 @@ function RouteComponent() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [LIST_INDUSTRY_HUB] });
             navigation({
-                to: StructureListRoute.to,
+                to: IndustryHubListRoute.to,
                 search: {
                     deleted: true,
                 }
@@ -109,18 +109,10 @@ function RouteComponent() {
         }
     }, [industryHub]);
 
-    if (isPending) {
-        return LoadingAnimation();
-    }
-
-    if (isError) {
-        return LoadingError();
-    }
-
     const form = useForm({
         defaultValues: {
-            name:        industryHub.name,
-            structures:  industryHub.structures.map(x => x.id),
+            name:        (industryHub && industryHub.name) || 'Unknown',
+            structures:  (industryHub && industryHub.structures.map(x => x.id)) || [],
             description: description,
         },
         onSubmit: async ({ value }) => {
@@ -145,11 +137,11 @@ function RouteComponent() {
     });
 
     // needs to be here, to make sure the effect hook is called
-    if (isPendingStructures) {
+    if (isPending || isPendingStructures) {
         return LoadingAnimation();
     }
 
-    if (isErrorStructures) {
+    if (isError || isErrorStructures) {
         return LoadingError();
     }
 

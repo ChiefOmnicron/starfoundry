@@ -8,7 +8,7 @@ export function StructureServiceBadge({
     size = 'xs',
 }: StructureServiceBadgeProps) {
     if (services.length === 0) {
-        return <Text>The structure has no services installed</Text>
+        return <Text>No services installed</Text>
     }
 
     const uniqueServices: Item[] = [];

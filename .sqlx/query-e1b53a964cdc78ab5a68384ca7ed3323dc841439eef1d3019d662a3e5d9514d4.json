@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                order_id,\n                structure_id,\n                price,\n                remaining,\n                virtual_remaining,\n                type_id\n            FROM market_order_latest mol\n            WHERE mol.type_id = ANY($1)\n            AND mol.structure_id = ANY($2)\n            AND mol.is_buy = false\n            ORDER BY mol.price ASC\n        ",
+  "query": "\n            SELECT\n                order_id,\n                structure_id,\n                price,\n                remaining,\n                virtual_remaining,\n                type_id,\n                is_buy\n            FROM market_order_latest mol\n            WHERE mol.type_id = ANY($1)\n            AND mol.structure_id = ANY($2)\n            ORDER BY mol.price ASC\n        ",
   "describe": {
     "columns": [
       {
@@ -68,6 +68,17 @@
             "name": "type_id"
           }
         }
+      },
+      {
+        "ordinal": 6,
+        "name": "is_buy",
+        "type_info": "Bool",
+        "origin": {
+          "Table": {
+            "table": "market_order_latest",
+            "name": "is_buy"
+          }
+        }
       }
     ],
     "parameters": {
@@ -82,8 +93,9 @@
       false,
       false,
       false,
+      false,
       false
     ]
   },
-  "hash": "a0e86e1c24e566c490f9616ad876ab524dcf5c5d78c615f55d085928001326ee"
+  "hash": "e1b53a964cdc78ab5a68384ca7ed3323dc841439eef1d3019d662a3e5d9514d4"
 }

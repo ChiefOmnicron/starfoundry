@@ -11,7 +11,7 @@ export function StructureRigBadge({
     const [showAll, setShowAll] = useState<boolean>(false);
 
     if (rigs.length === 0) {
-        return <Text>The structure has no rigs installed</Text>
+        return <Text>No rigs installed</Text>
     }
 
     const t1Rigs = rigs
