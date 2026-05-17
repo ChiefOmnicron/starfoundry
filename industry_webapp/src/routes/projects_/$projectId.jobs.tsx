@@ -5,8 +5,10 @@ import { ProjectJobList, type ProjectJobListProps } from '@starfoundry/component
 import { Route as AssignmentOverview } from '@/routes/jobs_/$assignmentId.index';
 import { Tabs } from '@mantine/core';
 import { useIsFirstRender } from '@mantine/hooks';
-import { useListProjectJobsRefresh } from '@starfoundry/components/services/projects/listJobs'
+import { LIST_PROJECT_JOBS, useListProjectJobsRefresh } from '@starfoundry/components/services/projects/listJobs'
 import type { Uuid } from '@starfoundry/components/services/utils';
+import { useMutation } from '@tanstack/react-query';
+import { deleteJob } from '@starfoundry/components/services/projects/deleteJob';
 
 export const Route = createFileRoute('/projects_/$projectId/jobs')({
     component: RouteComponent,
@@ -23,6 +25,13 @@ function RouteComponent() {
         isFetching,
         data: jobs,
     } = useListProjectJobsRefresh(projectId, {});
+
+    const deleteJobMutation = useMutation({
+        mutationFn: (id: Uuid) => deleteJob(projectId, id),
+        onSuccess: (_data, _variables, _result, context) => {
+            context.client.invalidateQueries({ queryKey: [LIST_PROJECT_JOBS] })
+        }
+    })
 
     const content = (props: ProjectJobListProps) => {
         if ((isPending || isFetching) && isFirstRender) {
@@ -44,6 +53,10 @@ function RouteComponent() {
                 assignmentId: id
             },
         })
+    }
+
+    const onDelete = (id: Uuid) => {
+        deleteJobMutation.mutate(id);
     }
 
     return <>
@@ -70,6 +83,7 @@ function RouteComponent() {
                         //showQuickFix: true,
                         showStarted: true,
                         onCreated,
+                        onDelete,
                     })
                 }
             </Tabs.Panel>
@@ -82,6 +96,7 @@ function RouteComponent() {
                         showCost: true,
                         showRemaining: true,
                         onCreated,
+                        onDelete,
                     })
                 }
             </Tabs.Panel>
@@ -95,6 +110,7 @@ function RouteComponent() {
                         showStatus: true,
                         showCost: true,
                         onCreated,
+                        onDelete,
                     })
                 }
             </Tabs.Panel>

@@ -1,4 +1,4 @@
-import { Alert, Button, Checkbox } from "@mantine/core";
+import { Alert, Button, Checkbox, Group } from "@mantine/core";
 import { CopyTable } from "@internal/misc/CopyTable";
 import { CopyText } from "@internal/misc/CopyText";
 import { Countdown } from "@internal/misc/Countdown";
@@ -25,6 +25,8 @@ export function ProjectJobListTable({
 
     checkable = false,
     onSelect = () => {},
+
+    onDelete = () => {},
 
     editable = false,
     showQuickFix = false,
@@ -142,14 +144,27 @@ export function ProjectJobListTable({
                         Quick Fix
                     </Button>;
                 } else if (editable) {
-                    return <Button
-                        onClick={() => {
-                            setEditJob(row.original);
-                            editJobModalOpen();
-                        }}
-                    >
-                        Edit
-                    </Button>;
+                    return <Group>
+                        <Button
+                            onClick={() => {
+                                setEditJob(row.original);
+                                editJobModalOpen();
+                            }}
+                            variant="subtle"
+                        >
+                            Edit
+                        </Button>
+                        <Button
+                            color="red.9"
+                            onClick={() => {
+                                console.log(onDelete, row.original.id)
+                                onDelete(row.original.id)
+                            }}
+                            variant="subtle"
+                        >
+                            Delete
+                        </Button>
+                    </Group>;
                 } else if (showStarted) {
                     return <Button
                         onClick={() => {
@@ -164,8 +179,8 @@ export function ProjectJobListTable({
             meta: {
                 align: 'right',
             },
-            size: 1,
-            maxSize: 1,
+            size: 10,
+            maxSize: 10,
         }),
     ];
 
@@ -256,6 +271,8 @@ export type ProjectJobListTableProps = {
 
     checkable?: boolean;
     onSelect?: (selected: ProjectJobMinimal[]) => void;
+
+    onDelete?: (jobId: Uuid) => void;
 
     editable?:      boolean;
     showQuickFix?:  boolean;

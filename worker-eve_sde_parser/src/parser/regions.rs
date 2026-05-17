@@ -1,15 +1,16 @@
 use serde::Deserialize;
-use starfoundry_lib_types::RegionId;
+use starfoundry_lib_types::{ConstellationId, RegionId};
 use std::collections::HashMap;
 use std::fs::File;
 use std::path::Path;
 use std::time::Instant;
 
 use crate::{FOLDER_INPUT, Error};
+use crate::parser::systems::Position;
 
 pub fn parse(
     directory: &str,
-) -> Result<HashMap<RegionId, Region>, Error> {
+) -> Result<Vec<Region>, Error> {
     tracing::info!("Parsing mapRegions.yaml");
     let start = Instant::now();
 
@@ -37,21 +38,30 @@ pub fn parse(
         .map_err(Error::ParseTypeIds)?;
     let parsed = parsed
         .into_iter()
-        .map(|(region_id, wrapper)| (region_id, Region {
-            name: wrapper.name.get("en").cloned().unwrap_or_default(),
-        }))
-        .collect::<HashMap<_, _>>();
+        .map(|(region_id, wrapper)| Region {
+            region_id:          region_id,
+            name:               wrapper.name.get("en").cloned().unwrap_or_default(),
+            constellation_ids:  wrapper.constellation_ids,
+            position:           wrapper.position,
+        })
+        .collect::<Vec<_>>();
     Ok(parsed)
 }
 
 /// Represents a single entry in the yaml for a type
 #[derive(Clone, Debug, Deserialize)]
 pub struct RegionWrapper {
+    #[serde(rename = "constellationIDs")]
+    pub constellation_ids:  Vec<ConstellationId>,
     /// Name of the region
-    pub name: HashMap<String, String>,
+    pub name:               HashMap<String, String>,
+    pub position:           Position,
 }
 
 #[derive(Clone, Debug)]
 pub struct Region {
-    pub name:      String,
+    pub region_id:          RegionId,
+    pub name:               String,
+    pub constellation_ids:  Vec<ConstellationId>,
+    pub position:           Position,
 }

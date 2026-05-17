@@ -1,5 +1,4 @@
 use sqlx::PgPool;
-use starfoundry_lib_types::{ConstellationId, RegionId};
 use std::collections::HashMap;
 use std::time::Instant;
 
@@ -10,8 +9,8 @@ use crate::parser::constellations::Constellation;
 
 pub async fn run(
     pool:           &PgPool,
-    regions:        HashMap<RegionId, Region>,
-    constellations: HashMap<ConstellationId, Constellation>,
+    regions:        Vec<Region>,
+    constellations: Vec<Constellation>,
     systems:        Vec<System>,
 ) -> Result<(), Error> {
     tracing::info!("Processing systems");
@@ -36,9 +35,18 @@ pub async fn run(
 async fn insert_into_database(
     pool:           &PgPool,
     systems:        Vec<System>,
-    constellations: HashMap<ConstellationId, Constellation>,
-    regions:        HashMap<RegionId, Region>,
+    constellations: Vec<Constellation>,
+    regions:        Vec<Region>,
 ) -> Result<(), Error> {
+    let constellations = constellations
+        .iter()
+        .map(|x| (x.constellation_id, x))
+        .collect::<HashMap<_, _>>();
+    let regions = regions
+        .iter()
+        .map(|x| (x.region_id, x))
+        .collect::<HashMap<_, _>>();
+
     let mut transaction = pool
         .begin()
         .await

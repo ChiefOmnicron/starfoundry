@@ -1,12 +1,15 @@
 pub mod blueprints;
-pub mod dogma_effects;
 pub mod categories;
 pub mod constellations;
+pub mod dogma_effects;
 pub mod groups;
 pub mod industry_modifier_sources;
 pub mod industry_target_filters;
+pub mod moon;
+pub mod planet;
 pub mod regions;
 pub mod repackaged;
+pub mod stargate;
 pub mod stars;
 pub mod systems;
 pub mod type_dogma;

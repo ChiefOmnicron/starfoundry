@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use starfoundry_lib_types::{ConstellationId, RegionId, StarId, SystemId};
+use starfoundry_lib_types::{ConstellationId, OrbitId, RegionId, StarId, StargateId, SystemId};
 use std::collections::HashMap;
 use std::fs::File;
 use std::path::Path;
@@ -40,6 +40,8 @@ pub fn parse(
         .map(|(system_id, wrapper)| System {
             name:             wrapper.name.get("en").cloned().unwrap_or_default(),
             region_id:        wrapper.region_id,
+            planet_ids:       wrapper.planet_ids,
+            stargate_ids:     wrapper.stargate_ids,
             constellation_id: wrapper.constellation_id,
             security:         wrapper.security,
             position:         wrapper.position,
@@ -56,32 +58,40 @@ pub fn parse(
 #[derive(Clone, Debug, Deserialize)]
 pub struct SystemWrapper {
     /// Name of the region
-    pub name:             HashMap<String, String>,
+    pub name:               HashMap<String, String>,
     #[serde(rename = "regionID")]
-    pub region_id:        RegionId,
+    pub region_id:          RegionId,
+    #[serde(default)]
+    #[serde(rename = "planetIDs")]
+    pub planet_ids:         Vec<OrbitId>,
+    #[serde(rename = "stargateIDs")]
+    #[serde(default)]
+    pub stargate_ids:       Vec<StargateId>,
     #[serde(rename = "constellationID")]
-    pub constellation_id: ConstellationId,
+    pub constellation_id:   ConstellationId,
     #[serde(rename = "securityStatus")]
-    pub security:         f32,
-    pub position:         Position,
+    pub security:           f32,
+    pub position:           Position,
     #[serde(rename = "position2D")]
-    pub position_2d:      Option<Position2d>,
+    pub position_2d:        Option<Position2d>,
 
     #[serde(rename = "starID")]
-    pub star_id:          Option<StarId>,
+    pub star_id:            Option<StarId>,
 }
 
 #[derive(Clone, Debug)]
 pub struct System {
-    pub region_id:        RegionId,
-    pub constellation_id: ConstellationId,
-    pub system_id:        SystemId,
-    pub name:             String,
-    pub security:         f32,
-    pub position:         Position,
-    pub position_2d:      Option<Position2d>,
+    pub region_id:          RegionId,
+    pub planet_ids:         Vec<OrbitId>,
+    pub stargate_ids:       Vec<StargateId>,
+    pub constellation_id:   ConstellationId,
+    pub system_id:          SystemId,
+    pub name:               String,
+    pub security:           f32,
+    pub position:           Position,
+    pub position_2d:        Option<Position2d>,
 
-    pub star_id:          Option<StarId>,
+    pub star_id:            Option<StarId>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

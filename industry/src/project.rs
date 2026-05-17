@@ -3,6 +3,7 @@ mod add_job;
 mod add_market;
 mod check_resources;
 mod create;
+mod delete_job;
 mod delete_market_entry;
 mod delete;
 mod error;
@@ -66,6 +67,8 @@ pub fn routes(
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
     let delete_market_entry = OpenApiRouter::new()
         .routes(routes!(delete_market_entry::api));
+    let delete_job = OpenApiRouter::new()
+        .routes(routes!(delete_job::api));
 
     let list = OpenApiRouter::new()
         .routes(routes!(list::api));
@@ -128,6 +131,7 @@ pub fn routes(
         .merge(fetch_time_left)
         .merge(delete)
         .merge(delete_market_entry)
+        .merge(delete_job)
         .merge(initialize)
         .merge(list)
         .merge(list_excess)

@@ -23,6 +23,7 @@ export function ProjectJobList({
     showQuickFix = false,
 
     onCreated,
+    onDelete,
 }: ProjectJobListProps) {
     const [selectedRows, setSelectedRows] = useState<ProjectJobMinimal[]>([]);
 
@@ -89,6 +90,8 @@ export function ProjectJobList({
                             checkable={checkable}
                             onSelect={onSelect}
 
+                            onDelete={onDelete}
+
                             editable={editable}
                             showQuickFix={showQuickFix}
 
@@ -114,6 +117,8 @@ export function ProjectJobList({
 
                 checkable={checkable}
                 onSelect={onSelect}
+
+                onDelete={onDelete}
 
                 editable={editable}
                 showQuickFix={showQuickFix}
@@ -155,5 +160,6 @@ export type ProjectJobListProps = {
     showQuickFix?:  boolean;
 
     onCreated:      (id: Uuid) => void;
+    onDelete?:      (jobId: Uuid) => void;
 }
 

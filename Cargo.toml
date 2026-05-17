@@ -34,6 +34,9 @@ members = [
   'market_worker',
   'worker_lib',
 
+  # mapping
+  #'mapping_worker',
+
   #'meta_webserver',
   # needs rewrite to match new worker
   'worker-eve_sde_parser',
