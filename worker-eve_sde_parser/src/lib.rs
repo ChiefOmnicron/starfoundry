@@ -1,13 +1,13 @@
-mod blueprints_dependencies;
-mod blueprints_json;
-mod blueprints;
-mod dogma;
-mod downloads;
-mod items;
-mod parser;
-mod reprocessing;
-mod structure;
-mod systems;
+pub mod blueprints_dependencies;
+pub mod blueprints_json;
+pub mod blueprints;
+pub mod dogma;
+pub mod downloads;
+pub mod items;
+pub mod parser;
+pub mod reprocessing;
+pub mod structure;
+pub mod systems;
 
 mod error;
 use crate::parser::stars::Star;
@@ -25,8 +25,8 @@ use std::fs;
 pub const FOLDER_INPUT: &str  = "input";
 
 pub async fn import_sde(
-    pool: &PgPool,
-    current_checksum: Option<String>,
+    pool:               &PgPool,
+    current_checksum:   Option<String>,
 ) -> Result<String, Error> {
     let current_dir = std::env::current_dir().map_err(Error::IoError)?;
     let directory = current_dir.to_str().unwrap_or_default();
