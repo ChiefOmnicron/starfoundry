@@ -598,6 +598,10 @@ async fn store_solution(
         };
 
         for run in job.runs.iter() {
+            if *run == 0 {
+                continue;
+            }
+
             type_id.push(*job.item.type_id);
             runs.push(*run as i32);
             structure.push(structure_id);
