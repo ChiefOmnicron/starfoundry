@@ -536,4 +536,48 @@ pub trait IndustryApiClientProject: ApiClient {
             .await
             .map_err(Into::into)
     }
+
+    #[allow(async_fn_in_trait)]
+    async fn update_orderer(
+        &self,
+        source:         &String,
+        character_id:   &CharacterId,
+        project_id:     &ProjectUuid,
+        request:        String,
+    ) -> Result<()> {
+        let mut headers = HeaderMap::new();
+        headers.insert(HOST, HeaderValue::from_str(&source).unwrap_or(HeaderValue::from_static("invalid.header")));
+        headers.insert(HEADER_CHARACTER_ID, (**character_id).into());
+
+        self
+            .put_auth(
+                format!("projects/{project_id}/orderer"),
+                request,
+                headers,
+            )
+            .await
+            .map_err(Into::into)
+    }
+
+    #[allow(async_fn_in_trait)]
+    async fn update_notes(
+        &self,
+        source:         &String,
+        character_id:   &CharacterId,
+        project_id:     &ProjectUuid,
+        request:        String,
+    ) -> Result<()> {
+        let mut headers = HeaderMap::new();
+        headers.insert(HOST, HeaderValue::from_str(&source).unwrap_or(HeaderValue::from_static("invalid.header")));
+        headers.insert(HEADER_CHARACTER_ID, (**character_id).into());
+
+        self
+            .put_auth(
+                format!("projects/{project_id}/notes"),
+                request,
+                headers,
+            )
+            .await
+            .map_err(Into::into)
+    }
 }

@@ -3,18 +3,16 @@ use starfoundry_lib_market::{GasDecompressionEfficiency, OreReprocessingEfficien
 use starfoundry_lib_types::{StructureId, TypeId};
 use utoipa::ToSchema;
 
-use crate::ProjectGroupUuid;
 use crate::project::{ProjectJobStatus, ProjectStatus};
 
 #[derive(Debug, Deserialize, Serialize, ToSchema)]
 pub struct UpdateProject {
-    pub project_group_id:   ProjectGroupUuid,
-    pub orderer:            String,
-    pub name:               String,
-    pub status:             ProjectStatus,
+    pub orderer:        String,
+    pub name:           String,
+    pub status:         ProjectStatus,
 
-    pub sell_price:         Option<f64>,
-    pub note:               Option<String>,
+    pub sell_price:     Option<f64>,
+    pub note:           Option<String>,
 }
 
 #[derive(Debug, Deserialize, ToSchema)]

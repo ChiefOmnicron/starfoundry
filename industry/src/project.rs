@@ -28,6 +28,9 @@ mod update_market_entry;
 mod update_misc;
 mod update;
 
+mod update_orderer;
+mod update_notes;
+
 use axum::middleware;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
@@ -121,6 +124,13 @@ pub fn routes(
         .routes(routes!(initialize::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
 
+    let update_notes = OpenApiRouter::new()
+        .routes(routes!(update_notes::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+    let update_orderer = OpenApiRouter::new()
+        .routes(routes!(update_orderer::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+
     OpenApiRouter::new()
         .merge(create)
         .merge(add_excess)
@@ -148,6 +158,9 @@ pub fn routes(
         .merge(update_market_bulk)
         .merge(update_market_entry)
         .merge(update_misc)
+
+        .merge(update_orderer)
+        .merge(update_notes)
 }
 
 #[cfg(test)]

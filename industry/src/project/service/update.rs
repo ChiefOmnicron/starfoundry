@@ -13,16 +13,14 @@ pub async fn update(
             UPDATE project
             SET
                 sell_price = $2,
-                project_group_id = $3,
-                orderer = $4,
-                name = $5,
-                note = $6,
-                status = $7
+                orderer = $3,
+                name = $4,
+                note = $5,
+                status = $6
             WHERE id = $1
         ",
             *project_id,
             update.sell_price,
-            *update.project_group_id,
             update.orderer,
             update.name,
             update.note,
