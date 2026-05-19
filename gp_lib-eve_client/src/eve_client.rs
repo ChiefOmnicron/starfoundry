@@ -1038,6 +1038,7 @@ impl EveApiClient {
         let client_id = (*Self::client_id()?).clone();
         let secret_key = (*Self::secret_key()?).clone();
         let oauth_token_url = Self::oauth_token_url()?;
+        dbg!(&form);
 
         let response = Client::new()
             .post(oauth_token_url.clone())
@@ -1060,6 +1061,13 @@ impl EveApiClient {
 
             Ok(token)
         } else {
+            let status = response.status();
+            let content = response.text().await.unwrap_or_default();
+            tracing::error!(
+                "Failed to get token, status: {}, content: {}",
+                status,
+                content,
+            );
             return Err(EveApiError::GetTokenError)
         }
     }
