@@ -6,6 +6,7 @@ pub mod groups;
 pub mod industry_modifier_sources;
 pub mod industry_target_filters;
 pub mod moon;
+pub mod overwrite;
 pub mod planet;
 pub mod regions;
 pub mod repackaged;

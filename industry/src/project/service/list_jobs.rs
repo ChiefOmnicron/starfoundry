@@ -195,9 +195,14 @@ pub async fn determine_ready_to_start(
             continue;
         }
 
+        if entry.item.name == "Cap Recharger II" {
+            dbg!(&entry, &done);
+        }
+
         let dependency = if let Some(dependency) = dependencies.get(&entry.item.type_id) {
             dependency
         } else {
+            dbg!("missing dependency");
             continue;
         };
 
@@ -207,6 +212,7 @@ pub async fn determine_ready_to_start(
             .iter()
             .any(|x| building.contains(x));
         if has_dependency_building {
+            dbg!("dependency building");
             continue;
         }
 
@@ -216,6 +222,7 @@ pub async fn determine_ready_to_start(
             .iter()
             .all(|x| done.contains(x));
         if all_done {
+            dbg!("ready to start");
             entry.status = ProjectJobStatus::ReadyToStart;
         }
     }

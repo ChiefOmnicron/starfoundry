@@ -40,7 +40,6 @@ pub async fn import_sde(
 
     downloads::download_assets(directory).await?;
 
-    let blueprints                = parser::blueprints::parse(&directory)?;
     let categories                = parser::categories::parse(&directory)?;
     let constellations            = parser::constellations::parse(&directory)?;
     let dogma_effects             = parser::dogma_effects::parse(&directory)?;
@@ -52,8 +51,14 @@ pub async fn import_sde(
     let stars                     = parser::stars::parse(&directory)?;
     let systems                   = parser::systems::parse(&directory)?;
     let type_dogma                = parser::type_dogma::parse(&directory)?;
-    let type_ids                  = parser::type_ids::parse(&directory)?;
     let type_material             = parser::type_material::parse(&directory)?;
+    let overwrites                = parser::overwrite::parse(&directory)?;
+
+    let mut blueprints            = parser::blueprints::parse(&directory)?;
+    let mut type_ids              = parser::type_ids::parse(&directory)?;
+
+    blueprints.extend(overwrites.blueprints);
+    type_ids.extend(overwrites.items);
 
     write_system_json(systems.clone(), stars);
 

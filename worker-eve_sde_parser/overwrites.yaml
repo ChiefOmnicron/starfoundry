@@ -1,0 +1,331 @@
+blueprints:
+  # salvation
+  94072:
+    activities:
+      manufacturing:
+        materials:
+        - quantity: 1
+          typeID: 23757
+        - quantity: 100
+          typeID: 11478
+        - quantity: 500
+          typeID: 29067
+        - quantity: 500
+          typeID: 29109
+        - quantity: 1000
+          typeID: 29053
+        - quantity: 1000
+          typeID: 29095
+        - quantity: 1000
+          typeID: 29073
+        - quantity: 1000
+          typeID: 29103
+        - quantity: 1500
+          typeID: 29039
+        - quantity: 2000
+          typeID: 3828
+        - quantity: 4000
+          typeID: 11399
+        products:
+        - quantity: 1
+          typeID: 92822
+        skills:
+        - level: 1
+          typeID: 11433
+        - level: 1
+          typeID: 11444
+        - level: 1
+          typeID: 77725
+        - level: 5
+          typeID: 3380
+        time: 4800000
+    blueprintTypeID: 94072
+    maxProductionLimit: 1
+  # Simurgh
+  94073:
+    activities:
+      manufacturing:
+        materials:
+        - quantity: 1
+          typeID: 24483
+        - quantity: 100
+          typeID: 11478
+        - quantity: 500
+          typeID: 29043
+        - quantity: 500
+          typeID: 29049
+        - quantity: 1000
+          typeID: 29045
+        - quantity: 1000
+          typeID: 29065
+        - quantity: 1000
+          typeID: 29075
+        - quantity: 1000
+          typeID: 29089
+        - quantity: 2000
+          typeID: 29079
+        - quantity: 2000
+          typeID: 3828
+        - quantity: 4000
+          typeID: 11399
+        products:
+        - quantity: 1
+          typeID: 92823
+        skills:
+        - level: 1
+          typeID: 11433
+        - level: 1
+          typeID: 11444
+        - level: 1
+          typeID: 77725
+        - level: 5
+          typeID: 3380
+        time: 4800000
+    blueprintTypeID: 94073
+    maxProductionLimit: 1
+  # Gaia
+  94074:
+    activities:
+      manufacturing:
+        materials:
+        - quantity: 1
+          typeID: 23911
+        - quantity: 100
+          typeID: 11478
+        - quantity: 500
+          typeID: 29041
+        - quantity: 500
+          typeID: 29091
+        - quantity: 1000
+          typeID: 29061
+        - quantity: 1000
+          typeID: 29069
+        - quantity: 1000
+          typeID: 29081
+        - quantity: 1000
+          typeID: 29085
+        - quantity: 2000
+          typeID: 29051
+        - quantity: 2000
+          typeID: 3828
+        - quantity: 4000
+          typeID: 11399
+        products:
+        - quantity: 1
+          typeID: 92824
+        skills:
+        - level: 1
+          typeID: 11433
+        - level: 1
+          typeID: 11444
+        - level: 1
+          typeID: 77725
+        - level: 5
+          typeID: 3380
+        time: 4800000
+    blueprintTypeID: 94074
+    maxProductionLimit: 1
+  # Ymir
+  94075:
+    activities:
+      manufacturing:
+        materials:
+        - quantity: 1
+          typeID: 24483
+        - quantity: 100
+          typeID: 11478
+        - quantity: 500
+          typeID: 29043
+        - quantity: 500
+          typeID: 29049
+        - quantity: 1000
+          typeID: 29045
+        - quantity: 1000
+          typeID: 29065
+        - quantity: 1000
+          typeID: 29075
+        - quantity: 1000
+          typeID: 29089
+        - quantity: 2000
+          typeID: 29079
+        - quantity: 2000
+          typeID: 3828
+        - quantity: 4000
+          typeID: 11399
+        products:
+        - quantity: 1
+          typeID: 92825
+        skills:
+        - level: 1
+          typeID: 11433
+        - level: 1
+          typeID: 11444
+        - level: 1
+          typeID: 77725
+        - level: 5
+          typeID: 3380
+        time: 4800000
+    blueprintTypeID: 94075
+    maxProductionLimit: 1
+
+items:
+  92822:
+    basePrice: 4333400000.0
+    capacity: 2925.0
+    description:
+      en: Tmp
+    factionID: 500003
+    graphicID: 26015
+    groupID: 4594
+    marketGroupID: 3512
+    mass: 1290000000.0
+    metaGroupID: 2
+    name:
+      en: Salvation
+    portionSize: 1
+    published: true
+    raceID: 4
+    radius: 1700.0
+    soundID: 20061
+    variationParentTypeID: 19720
+    volume: 18500000.0
+  94072:
+    basePrice: 4333400000.0
+    capacity: 2925.0
+    description:
+      en: Tmp
+    factionID: 500003
+    graphicID: 26015
+    groupID: 4594
+    marketGroupID: 3512
+    mass: 1290000000.0
+    metaGroupID: 2
+    name:
+      en: Salvation Blueprint
+    portionSize: 1
+    published: true
+    raceID: 4
+    radius: 1700.0
+    soundID: 20061
+    variationParentTypeID: 19720
+    volume: 18500000.0
+  92823:
+    basePrice: 4333400000.0
+    capacity: 2925.0
+    description:
+      en: Tmp
+    factionID: 500003
+    graphicID: 26015
+    groupID: 4594
+    marketGroupID: 3512
+    mass: 1290000000.0
+    metaGroupID: 2
+    name:
+      en: Simurgh
+    portionSize: 1
+    published: true
+    raceID: 4
+    radius: 1700.0
+    soundID: 20061
+    variationParentTypeID: 19720
+    volume: 18500000.0
+  94073:
+    basePrice: 4333400000.0
+    capacity: 2925.0
+    description:
+      en: Tmp
+    factionID: 500003
+    graphicID: 26015
+    groupID: 4594
+    marketGroupID: 3512
+    mass: 1290000000.0
+    metaGroupID: 2
+    name:
+      en: Simurgh Blueprint
+    portionSize: 1
+    published: true
+    raceID: 4
+    radius: 1700.0
+    soundID: 20061
+    variationParentTypeID: 19720
+    volume: 18500000.0
+  92824:
+    basePrice: 4333400000.0
+    capacity: 2925.0
+    description:
+      en: Tmp
+    factionID: 500003
+    graphicID: 26015
+    groupID: 4594
+    marketGroupID: 3512
+    mass: 1290000000.0
+    metaGroupID: 2
+    name:
+      en: Gaia
+    portionSize: 1
+    published: true
+    raceID: 4
+    radius: 1700.0
+    soundID: 20061
+    variationParentTypeID: 19720
+    volume: 18500000.0
+  94074:
+    basePrice: 4333400000.0
+    capacity: 2925.0
+    description:
+      en: Tmp
+    factionID: 500003
+    graphicID: 26015
+    groupID: 4594
+    marketGroupID: 3512
+    mass: 1290000000.0
+    metaGroupID: 2
+    name:
+      en: Gaia Blueprint
+    portionSize: 1
+    published: true
+    raceID: 4
+    radius: 1700.0
+    soundID: 20061
+    variationParentTypeID: 19720
+    volume: 18500000.0
+  92825:
+    basePrice: 4333400000.0
+    capacity: 2925.0
+    description:
+      en: Tmp
+    factionID: 500003
+    graphicID: 26015
+    groupID: 4594
+    marketGroupID: 3512
+    mass: 1290000000.0
+    metaGroupID: 2
+    name:
+      en: Ymir
+    portionSize: 1
+    published: true
+    raceID: 4
+    radius: 1700.0
+    soundID: 20061
+    variationParentTypeID: 19720
+    volume: 18500000.0
+  94075:
+    basePrice: 4333400000.0
+    capacity: 2925.0
+    description:
+      en: Tmp
+    factionID: 500003
+    graphicID: 26015
+    groupID: 4594
+    marketGroupID: 3512
+    mass: 1290000000.0
+    metaGroupID: 2
+    name:
+      en: Ymir Blueprint
+    portionSize: 1
+    published: true
+    raceID: 4
+    radius: 1700.0
+    soundID: 20061
+    variationParentTypeID: 19720
+    volume: 18500000.0
