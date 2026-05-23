@@ -180,6 +180,8 @@ pub async fn determine_ready_to_start(
     done.extend(stock_data);
     // TODO: remove when market is implemented
     done.extend(vec![34, 35, 36, 37, 38, 39, 40].into_iter().map(Into::<TypeId>::into).collect::<Vec<_>>());
+    // R.A.M
+    done.extend(vec![11476, 11475, 11485, 11483, 11482, 11481, 11484, 11478, 11486].into_iter().map(Into::<TypeId>::into).collect::<Vec<_>>());
     done.extend(Gas::compressed_type_ids());
     done.extend(Gas::uncompressed_type_ids());
 
@@ -195,14 +197,9 @@ pub async fn determine_ready_to_start(
             continue;
         }
 
-        if entry.item.name == "Cap Recharger II" {
-            dbg!(&entry, &done);
-        }
-
         let dependency = if let Some(dependency) = dependencies.get(&entry.item.type_id) {
             dependency
         } else {
-            dbg!("missing dependency");
             continue;
         };
 
@@ -212,7 +209,6 @@ pub async fn determine_ready_to_start(
             .iter()
             .any(|x| building.contains(x));
         if has_dependency_building {
-            dbg!("dependency building");
             continue;
         }
 
@@ -222,7 +218,6 @@ pub async fn determine_ready_to_start(
             .iter()
             .all(|x| done.contains(x));
         if all_done {
-            dbg!("ready to start");
             entry.status = ProjectJobStatus::ReadyToStart;
         }
     }
