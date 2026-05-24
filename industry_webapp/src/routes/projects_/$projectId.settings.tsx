@@ -278,8 +278,10 @@ function RouteComponent() {
                                 }
                                 onBlur={field.handleBlur}
                                 onChange={(e) => {
-                                    if (e) {
+                                    if (e && e as number > 0) {
                                         field.handleChange(e as number);
+                                    } else {
+                                        field.handleChange(0);
                                     }
                                 }}
                             />
