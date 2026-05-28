@@ -26,17 +26,24 @@ export const listProjectGroupDefaultMarkets = async (
 
 // For general use
 export const useListProjectGroupDefaultMarkets = (
-    projectGroupUuid: Uuid,
+    projectGroupUuid:   Uuid,
+    options:            AdditionalProjectGroupDefaultMarketsOptions = {},
 ) => {
-    return useQuery(listProjectGroupDefaultMarketsQuery(projectGroupUuid));
+    return useQuery(listProjectGroupDefaultMarketsQuery(projectGroupUuid, options));
 }
 
 // For pre-fetching
 export const listProjectGroupDefaultMarketsQuery = (
-    projectGroupUuid: Uuid,
+    projectGroupUuid:   Uuid,
+    options:            AdditionalProjectGroupDefaultMarketsOptions
 ) => ({
     queryKey: [LIST_PROJECT_GROUP_DEFAULT_MARKETS, projectGroupUuid],
     queryFn: async ({
         signal
     }: AbortSignal) => listProjectGroupDefaultMarkets(projectGroupUuid, signal),
+    ...options,
 });
+
+export type AdditionalProjectGroupDefaultMarketsOptions = {
+    enabled?: boolean,
+}

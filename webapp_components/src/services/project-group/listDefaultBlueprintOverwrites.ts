@@ -31,17 +31,24 @@ export type BlueprintOverwrite = {
 
 // For general use
 export const useListProjectGroupDefaultBlueprintOverwrites = (
-    projectGroupUuid: Uuid,
+    projectGroupUuid:   Uuid,
+    options:            AdditionalProjectGroupDefaultBlueprintOverwritesOptions = {},
 ) => {
-    return useQuery(listProjectGroupDefaultBlueprintOverwritesQuery(projectGroupUuid));
+    return useQuery(listProjectGroupDefaultBlueprintOverwritesQuery(projectGroupUuid, options));
 }
 
 // For pre-fetching
 export const listProjectGroupDefaultBlueprintOverwritesQuery = (
-    projectGroupUuid: Uuid,
+    projectGroupUuid:   Uuid,
+    options:            AdditionalProjectGroupDefaultBlueprintOverwritesOptions,
 ) => ({
     queryKey: [LIST_PROJECT_GROUP_DEFAULT_BLUEPRINT_OVERWRITES, projectGroupUuid],
     queryFn: async ({
         signal
     }: AbortSignal) => listProjectGroupDefaultBlueprintOverwrites(projectGroupUuid, signal),
+    ...options,
 });
+
+export type AdditionalProjectGroupDefaultBlueprintOverwritesOptions = {
+    enabled?: boolean,
+}

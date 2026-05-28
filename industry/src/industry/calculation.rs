@@ -16,11 +16,11 @@ use axum::response::IntoResponse;
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{EveGatewayApiClientIndustry, EveGatewayApiClientItem};
 use starfoundry_lib_gateway::{ErrorResponse, ExtractIdentity};
-use starfoundry_lib_industry::industry::{BuildEngine, BuildEngineManufacturingResponse, BuildEngineMaterialResponse, BuildEngineProduct, BuildEngineResponse, StockMinimal};
+use starfoundry_lib_industry::industry::{BuildEngine, BuildEngineAdditionalProduct, BuildEngineManufacturingResponse, BuildEngineMaterialResponse, BuildEngineProduct, BuildEngineResponse, StockMinimal};
 use starfoundry_lib_industry::IndustryHubUuid;
 use starfoundry_lib_industry::ProjectGroupUuid;
 use starfoundry_lib_industry::SolutionUuid;
-use starfoundry_lib_market::MarketApiClientPrice;
+use starfoundry_lib_market::{BuyStrategy, MarketApiClientOrder, MarketApiClientPrice, MarketBulkRequest, MarketItemList};
 use starfoundry_lib_types::TypeId;
 use std::collections::HashMap;
 use uuid::Uuid;
@@ -103,10 +103,10 @@ pub async fn api(
             .await?
             .items
             .into_iter()
-            .map(|x| BuildEngineProduct {
-                quantity:               x.quantity as u32,
-                type_id:                x.type_id,
-                material_efficiency:    0,
+            .map(|x| BuildEngineAdditionalProduct {
+                quantity:   x.quantity as u32,
+                type_id:    x.type_id,
+                price:      None,
             })
             .collect::<Vec<_>>()
     } else {
@@ -300,7 +300,7 @@ pub async fn api(
                 continue;
         }
 
-        let material = dependency_result
+        let mut material = dependency_result
             .tree
             .iter()
             .filter(|(_, x)| x.typ == BlueprintTyp::Material)
@@ -309,8 +309,36 @@ pub async fn api(
                 item:   x.item.clone(),
                 needed: x.needed,
                 stock:  x.stock,
+                price:  None,
             })
             .collect::<Vec<_>>();
+        if let Some(true) = config.calculate_market_cost {
+            let items = material
+                .iter()
+                .map(|x| MarketItemList {
+                    quantity:   x.needed as i32,
+                    type_id:    x.item.type_id,
+                })
+                .collect::<Vec<_>>();
+
+            let market_entries = market_api_client()?
+                .bulk_latest_orders(MarketBulkRequest {
+                    strategy:   BuyStrategy::MultiBuy,
+                    markets:    config.markets.clone().unwrap_or_default(),
+                    item_list:  Some(items),
+                    ..Default::default()
+                })
+                .await?;
+
+            for market_entry in market_entries {
+                if let Some(x) = material
+                    .iter_mut()
+                    .find(|x| x.item.type_id == market_entry.type_id) {
+
+                    x.price = Some(market_entry.price);
+                }
+            }
+        }
 
         let excess = dependency_result
             .tree
@@ -345,6 +373,33 @@ pub async fn api(
                     quantity:   stock_quantity,
                     type_id:    x.type_id,
                 });
+            }
+        }
+        if let Some(true) = config.calculate_market_cost {
+            let items = additional_products
+                .iter()
+                .map(|x| MarketItemList {
+                    quantity:   x.quantity as i32,
+                    type_id:    x.type_id,
+                })
+                .collect::<Vec<_>>();
+
+            let market_entries = market_api_client()?
+                .bulk_latest_orders(MarketBulkRequest {
+                    strategy:   BuyStrategy::MultiBuy,
+                    markets:    config.markets.clone().unwrap_or_default(),
+                    item_list:  Some(items),
+                    ..Default::default()
+                })
+                .await?;
+
+            for market_entry in market_entries {
+                if let Some(x) = additional_products
+                    .iter_mut()
+                    .find(|x| x.type_id == market_entry.type_id) {
+
+                    x.price = Some(market_entry.price);
+                }
             }
         }
 
@@ -394,7 +449,7 @@ async fn store_solution(
     products:               Vec<BuildEngineProduct>,
     excess:                 Vec<StockMinimal>,
     materials:              Vec<BuildEngineMaterialResponse>,
-    additional_materials:   Vec<BuildEngineProduct>,
+    additional_materials:   Vec<BuildEngineAdditionalProduct>,
     manufacturing:          Vec<BuildEngineManufacturingResponse>,
 ) -> Result<SolutionUuid> {
     let mut transaction = pool.begin().await.unwrap();
@@ -541,11 +596,13 @@ async fn store_solution(
             (
                 solution_id,
                 type_id,
-                quantity
+                quantity,
+                cost
             )
             SELECT $1, * FROM UNNEST(
                 $2::INTEGER[],
-                $3::INTEGER[]
+                $3::INTEGER[],
+                $4::DOUBLE PRECISION[]
             )
         ",
             solution_id,
@@ -557,6 +614,10 @@ async fn store_solution(
                 .iter()
                 .filter(|x| x.needed > 0f32)
                 .map(|x| x.needed as i32).collect::<Vec<_>>(),
+            &materials
+                .iter()
+                .filter(|x| x.needed > 0f32)
+                .map(|x| x.price.unwrap_or_default()).collect::<Vec<_>>(),
         )
         .execute(&mut *transaction)
         .await
@@ -566,11 +627,13 @@ async fn store_solution(
             (
                 solution_id,
                 type_id,
-                quantity
+                quantity,
+                cost
             )
             SELECT $1, * FROM UNNEST(
                 $2::INTEGER[],
-                $3::INTEGER[]
+                $3::INTEGER[],
+                $4::DOUBLE PRECISION[]
             )
         ",
             solution_id,
@@ -582,6 +645,10 @@ async fn store_solution(
                 .iter()
                 .filter(|x| x.quantity > 0)
                 .map(|x| x.quantity as i32).collect::<Vec<_>>(),
+            &additional_materials
+                .iter()
+                .filter(|x| x.quantity > 0)
+                .map(|x| x.price.unwrap_or_default()).collect::<Vec<_>>(),
         )
         .execute(&mut *transaction)
         .await

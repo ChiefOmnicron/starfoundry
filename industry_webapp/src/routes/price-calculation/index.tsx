@@ -1,30 +1,24 @@
-import { Accordion, Alert, Button, Grid, Group, Stack, Text, Textarea, Title } from '@mantine/core';
-import { CopyText } from '@starfoundry/components/misc/CopyText';
+import { Accordion, Button, Grid, Group, Stack, Text, Textarea, Title } from '@mantine/core';
+import { CopyText } from '@starfoundry/components/misc';
 import { createColumnHelper, getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { deleteProject } from '@starfoundry/components/services/projects/delete';
-import { DeleteResource } from '@starfoundry/components/misc/DeleteResource';
+import { createFileRoute } from '@tanstack/react-router';
 import { EveIcon } from '@starfoundry/components/misc/EveIcon';
-import { FETCH_PROJECT, type ProjectList } from '@starfoundry/components/services/projects/fetch';
 import { generateSolution, type GenerateSolutionResponse, type SolutionManufacturing, type SolutionMaterial } from '@starfoundry/components/services/projects/generateSolution';
 import { IndustryHubList } from '@starfoundry/components/list/IndustryHubList';
-import { InitializeProject } from '@starfoundry/components/services/projects/initialize';
-import { InternalLink } from '@starfoundry/components/links/InternalLink';
-import { LIST_PROJECT } from '@starfoundry/components/services/projects/list';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
-import { LoadingError } from '@starfoundry/components/misc/LoadingError';
-import { Route as ProjectGroupDefaultsRoute } from '@/routes/project-groups_/$projectGroupId.defaults';
-import { Route as ProjectRoute } from '@/routes/projects/index';
-import { Route as ProjectView } from '@/routes/projects_/$projectId.overview';
+import { ProjectGroupSelector } from '@starfoundry/components/selectors/ProjectGroupSelector';
 import { TableWrapper } from '@starfoundry/components/wrapper/Table';
 import { TempProjectGroupConfiguration } from '@starfoundry/components/projectGroup/TempConfiguration';
 import { useEffect, useState } from 'react';
+import { useListProjectGroup, type ProjectGroupMinimal } from '@starfoundry/components/services/project-group/list';
 import { useListProjectGroupDefaultBlacklist } from '@starfoundry/components/services/project-group/listDefaultBlacklist';
 import { useListProjectGroupDefaultBlueprintOverwrites, type BlueprintOverwrite } from '@starfoundry/components/services/project-group/listDefaultBlueprintOverwrites';
 import { useListProjectGroupDefaultJobSplitting, type JobSplittingRun } from '@starfoundry/components/services/project-group/listDefaultJobSplitting';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from '@tanstack/react-router';
+import { useListProjectGroupDefaultMarkets } from '@starfoundry/components/services/project-group/listDefaultMarket';
+import { useMutation } from '@tanstack/react-query';
 import type { IndustryHub } from '@starfoundry/components/services/industry-hub/list';
 import type { Item } from '@starfoundry/components/services/item/model';
+import type { Structure } from '@starfoundry/components/services/structure/list';
 
 const columnHelperMaterial = createColumnHelper<SolutionMaterial>();
 const columnsMaterial = [
@@ -42,7 +36,7 @@ const columnsMaterial = [
             value={props.row.original.item.name}
         />,
         header: () => 'Name',
-        size: 50,
+        size: 40,
     }),
     columnHelperMaterial.display({
         id: 'needed',
@@ -53,7 +47,7 @@ const columnsMaterial = [
             />
         </>,
         header: () => 'Needed',
-        size: 5,
+        size: 10,
     }),
     columnHelperMaterial.display({
         id: 'stock',
@@ -71,6 +65,15 @@ const columnsMaterial = [
             number
         />,
         header: () => 'Total',
+        size: 10,
+    }),
+    columnHelperMaterial.display({
+        id: 'price',
+        cell: props => <CopyText
+            value={props.row.original.needed * (props.row.original.price || 0)}
+            number
+        />,
+        header: () => 'Price (Needed)',
         size: 10,
     }),
 ];
@@ -139,17 +142,17 @@ const columnsManufacturing = [
     }),
 ];
 
-export function Solution({
-    project,
-}: SolutionProps) {
-    const navigation = useNavigate();
-    const queryClient = useQueryClient();
+export const Route = createFileRoute('/price-calculation/')({
+    component: RouteComponent,})
+
+function RouteComponent() {
+    const [selectedProjectGroup, setSelectedProjectGroup] = useState<ProjectGroupMinimal | null>(null);
+    const [_showError, setShowError] = useState<boolean>(false);
 
     const [selectedBlacklist, setSelectedBlacklist] = useState<Item[]>([]);
     const [selectedBlueprintOverwrite, setSelectedBlueprintOverwrite] = useState<BlueprintOverwrite[]>([]);
     const [selectedJobSplittingRun, setSelectedJobSplittingRun] = useState<JobSplittingRun[]>([]);
-
-    const [showError, setShowError] = useState<boolean>(false);
+    const [selectedMarkets, setSelectedMarkets] = useState<Structure[]>([]);
 
     const [products, setProducts] = useState<string>('');
     const [additionalProducts, setAdditionalProducts] = useState<string>('');
@@ -158,23 +161,52 @@ export function Solution({
     const [generatedSolutions, setGeneratedSolutions] = useState<GenerateSolutionResponse[]>([]);
     const [selectedSolution, setSelectedSolution] = useState<GenerateSolutionResponse | undefined>(undefined);
 
-    useEffect(() => {
-        if (project.pre_products) {
-            setProducts(project.pre_products);
-        }
-        if (project.pre_additional) {
-            setAdditionalProducts(project.pre_additional);
-        }
-    }, [project]);
+    const {
+        data: projectGroups,
+    } = useListProjectGroup({
+        archived: false,
+    });
 
-    // tmp
+    const {
+        isPending: isPendingBlacklist,
+        isError: isErrorBlacklist,
+        data: projectGroupBlacklist,
+    } = useListProjectGroupDefaultBlacklist((selectedProjectGroup || { id: '' }).id, {
+        enabled: !!selectedProjectGroup
+    });
+
+    const {
+        isPending: isPendingBlueprintOverwrite,
+        isError: isErrorBlueprintOverwrite,
+        data: projectGroupBlueprintOverwrite,
+    } = useListProjectGroupDefaultBlueprintOverwrites((selectedProjectGroup || { id: '' }).id, {
+        enabled: !!selectedProjectGroup
+    });
+
+    const {
+        isPending: isPendingJobSplitting,
+        isError: isErrorJobSplitting,
+        data: projectGroupDefaultJobSplittings,
+    } = useListProjectGroupDefaultJobSplitting((selectedProjectGroup || { id: '' }).id, {
+        enabled: !!selectedProjectGroup
+    });
+
+    const {
+        isPending: isPendingMarket,
+        isError: isErrorMarket,
+        data: projectGroupDefaultMarkets,
+    } = useListProjectGroupDefaultMarkets((selectedProjectGroup || { id: '' }).id, {
+        enabled: !!selectedProjectGroup
+    });
+
     const generateSolutionMutation = useMutation({
         mutationFn: async () => {
             return await generateSolution({
-                project_group_id: project.project_group.id,
+                project_group_id: (selectedProjectGroup || { id: '' }).id,
                 products_str: products,
                 additional_products_str: additionalProducts,
                 stocks_str: stocks,
+                calculate_market_cost: true,
 
                 blacklist:              (selectedBlacklist || [])
                                             .map(x => x.type_id),
@@ -192,6 +224,8 @@ export function Solution({
                                                     type_id:    x.item.type_id,
                                                 }
                                             }),
+                markets:                (selectedMarkets || [])
+                                            .map(x => x.structure_id),
             })
         },
         onSuccess: (data: GenerateSolutionResponse[]) => {
@@ -204,85 +238,6 @@ export function Solution({
             setShowError(true);
         },
     });
-
-    const initializeProjectMutation = useMutation({
-        mutationFn: async () => {
-            if (!selectedSolution) {
-                return;
-            }
-
-            return await InitializeProject(
-                project.id,
-                {
-                    solution_id: selectedSolution.solution_id,
-                }
-            );
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: [FETCH_PROJECT] });
-            navigation({
-                to: ProjectView.to,
-                params: {
-                    projectId: project.id,
-                },
-            });
-        },
-        onError: () => {
-            setShowError(true);
-        },
-    });
-
-    const deleteMutation = useMutation({
-        mutationFn: () => deleteProject(project.id),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: [FETCH_PROJECT] });
-            queryClient.invalidateQueries({ queryKey: [LIST_PROJECT] });
-
-            navigation({
-                to: ProjectRoute.to,
-                search: {
-                    deleted: true,
-                }
-            });
-        },
-        onError: (_) => {
-            setShowError(true);
-        },
-    });
-
-    const {
-        isPending: isPendingBlacklist,
-        isError: isErrorBlacklist,
-        data: projectGroupBlacklist,
-    } = useListProjectGroupDefaultBlacklist(project.project_group.id);
-
-    const {
-        isPending: isPendingBlueprintOverwrite,
-        isError: isErrorBlueprintOverwrite,
-        data: projectGroupBlueprintOverwrite,
-    } = useListProjectGroupDefaultBlueprintOverwrites(project.project_group.id);
-
-    const {
-        isPending: isPendingJobSplitting,
-        isError: isErrorJobSplitting,
-        data: projectGroupDefaultJobSplittings,
-    } = useListProjectGroupDefaultJobSplitting(project.project_group.id);
-
-    useEffect(() => {
-        if (isPendingBlacklist || isErrorBlacklist) {
-            return;
-        }
-        if (isPendingBlueprintOverwrite || isErrorBlueprintOverwrite) {
-            return;
-        }
-        if (isPendingJobSplitting || isErrorJobSplitting) {
-            return;
-        }
-
-        setSelectedBlacklist(projectGroupBlacklist);
-        setSelectedBlueprintOverwrite(projectGroupBlueprintOverwrite);
-        setSelectedJobSplittingRun(projectGroupDefaultJobSplittings.runs);
-    }, [projectGroupBlacklist, projectGroupBlueprintOverwrite, projectGroupDefaultJobSplittings]);
 
     const tableMaterials = useReactTable<SolutionMaterial>({
         columns: columnsMaterial,
@@ -297,14 +252,54 @@ export function Solution({
         getCoreRowModel: getCoreRowModel(),
     });
 
-    if (isPendingBlacklist) {
-        return LoadingAnimation();
-    }
-    if (isErrorBlacklist) {
-        return LoadingError();
+    useEffect(() => {
+        if (isPendingBlacklist || isErrorBlacklist) {
+            return;
+        }
+        if (isPendingBlueprintOverwrite || isErrorBlueprintOverwrite) {
+            return;
+        }
+        if (isPendingJobSplitting || isErrorJobSplitting) {
+            return;
+        }
+        if (isPendingMarket || isErrorMarket) {
+            return;
+        }
+
+        setSelectedBlacklist(projectGroupBlacklist);
+        setSelectedBlueprintOverwrite(projectGroupBlueprintOverwrite);
+        setSelectedJobSplittingRun(projectGroupDefaultJobSplittings.runs);
+        setSelectedMarkets(projectGroupDefaultMarkets)
+    }, [projectGroupBlacklist, projectGroupDefaultMarkets, projectGroupDefaultJobSplittings, projectGroupDefaultMarkets]);
+
+    const showProjectGroupConfiguration = () => {
+        if (!!!selectedProjectGroup) {
+            return <></>
+        }
+
+        return <TempProjectGroupConfiguration
+            showBlacklist
+            blacklist={selectedBlacklist}
+            onBlacklistSelect={() => {}}
+
+            showBlueprintOverwrites
+            blueprintOverwrites={selectedBlueprintOverwrite}
+            onBlueprintOverwriteSelect={() => {}}
+
+            showJobSplitting
+            jobSplitting={selectedJobSplittingRun}
+            onJobSplittingSelect={() => {}}
+
+            showMarket
+            markets={selectedMarkets}
+        />
     }
 
-    const productsSelect = () => {
+    const showProductConfiguration = () => {
+        if (!!!selectedProjectGroup) {
+            return <></>
+        }
+
         return <>
             <Stack>
                 <Title order={2}>Products & Stock</Title>
@@ -376,35 +371,57 @@ export function Solution({
         </>
     }
 
-    const material = () => {
-        if (generatedSolutions.length === 0) {
-            return <></>
-        }
-
-        return <>
-            <TableWrapper
-                scrollable
-                table={tableMaterials}
-            />
-        </>;
-    }
-
-    const manufacturing = () => {
-        if (generatedSolutions.length === 0) {
-            return <></>
-        }
-
-        return <>
-            <TableWrapper
-                scrollable
-                table={tableManufacturing}
-            />
-        </>;
-    }
-
     const showSolution = () => {
         if (generatedSolutions.length === 0) {
             return <></>;
+        }
+
+        const material = () => {
+            if (generatedSolutions.length === 0) {
+                return <></>
+            }
+
+            return <>
+                <TableWrapper
+                    scrollable
+                    table={tableMaterials}
+                />
+            </>;
+        }
+
+        const manufacturing = () => {
+            if (generatedSolutions.length === 0) {
+                return <></>
+            }
+
+            return <>
+                <TableWrapper
+                    scrollable
+                    table={tableManufacturing}
+                />
+            </>;
+        }
+
+        const manufacturingCost = () =>  {
+            if (!selectedSolution) {
+                return 0;
+            }
+
+            return selectedSolution
+                .manufacturing
+                .map(x => x.build_tax)
+                .reduce((prev, curr) => prev += curr, 0);
+        }
+
+        const marketCost = () => {
+            if (!selectedSolution) {
+                return 0;
+            }
+
+            return selectedSolution
+                .material
+                .map(x => (x.price || 0) * x.needed)
+                .reduce((prev, curr) => prev += curr, 0);
         }
 
         return <>
@@ -454,79 +471,29 @@ export function Solution({
                     </Accordion.Panel>
                 </Accordion.Item>
             </Accordion>
-        </>
-    }
 
-    const initializeProjectView = () => {
-        if (generatedSolutions.length === 0) {
-            return <></>
-        }
-
-        return <>
-            <Group
-                justify='flex-end'
-            >
-                <Button
-                    disabled={initializeProjectMutation.isPending}
-                    loading={initializeProjectMutation.isPending}
-                    onClick={() => initializeProjectMutation.mutate()}
-                >
-                    Select Solution
-                </Button>
-            </Group>
+            <Stack>
+                <Text>Market: { Math.ceil(marketCost()) }</Text>
+                <Text>Taxes: { Math.ceil(manufacturingCost()) }</Text>
+                <Text>Total: { Math.ceil(marketCost() + manufacturingCost()) }</Text>
+                <Text>Total (7.5%): { Math.ceil((marketCost() + manufacturingCost()) * 1.075) }</Text>
+                <Text>Total (10%): { Math.ceil((marketCost() + manufacturingCost()) * 1.1) }</Text>
+            </Stack>
         </>
     }
 
     return <>
-        {
-            showError
-            ?   LoadingError()
-            :   <></>
-        }
-
         <Stack>
-            <Title order={2}>Project Group Defaults</Title>
-
-            <Alert variant='light' color='gray'>
-                Any changes made will only be applied to this project.
-                For permanent changes head over to <InternalLink
-                    content='Project Group Defaults'
-                    to={ProjectGroupDefaultsRoute.to}
-                    params={{
-                        projectGroupId: project.project_group.id,
-                    }}
-                    target='_blank'
-                />
-            </Alert>
-
-            <TempProjectGroupConfiguration
-                showBlacklist
-                blacklist={selectedBlacklist}
-                onBlacklistSelect={setSelectedBlacklist}
-
-                showBlueprintOverwrites
-                blueprintOverwrites={selectedBlueprintOverwrite}
-
-                showJobSplitting
-                jobSplitting={selectedJobSplittingRun}
+            <ProjectGroupSelector
+                projectGroups={projectGroups}
+                onSelect={setSelectedProjectGroup}
             />
+
+            {showProjectGroupConfiguration()}
+
+            {showProductConfiguration()}
+
+            {showSolution()}
         </Stack>
-
-        {productsSelect()}
-
-        {showSolution()}
-
-        {initializeProjectView()}
-
-        <DeleteResource
-            resource={project.name}
-            onConfirm={() => {
-                deleteMutation.mutate();
-            }}
-        />
     </>
-}
-
-export type SolutionProps = {
-    project: ProjectList;
 }

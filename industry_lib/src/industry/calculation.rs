@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use starfoundry_lib_eve_gateway::Item;
-use starfoundry_lib_types::TypeId;
+use starfoundry_lib_types::{StructureId, TypeId};
 use utoipa::ToSchema;
 
 use crate::{ProjectGroupUuid, ProjectJobUuid, SolutionUuid};
@@ -13,7 +13,7 @@ pub struct BuildEngine {
     pub project_group_id:           ProjectGroupUuid,
     pub products:                   Option<Vec<BuildEngineProduct>>,
     pub products_str:               Option<String>,
-    pub additional_products:        Option<Vec<BuildEngineProduct>>,
+    pub additional_products:        Option<Vec<BuildEngineAdditionalProduct>>,
     pub additional_products_str:    Option<String>,
 
     pub stocks:                     Option<Vec<StockMinimal>>,
@@ -22,6 +22,8 @@ pub struct BuildEngine {
     pub blacklist:                  Option<Vec<TypeId>>,
     pub blueprint_overwrite:        Option<Vec<TmpBlueprintOverwrite>>,
     pub job_splitting:              Option<Vec<TmpJobSplitting>>,
+    pub markets:                    Option<Vec<StructureId>>,
+    pub calculate_market_cost:      Option<bool>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
@@ -56,7 +58,14 @@ pub struct BuildEngineMaterialResponse {
     pub item:   Item,
     pub needed: f32,
     pub stock:  i32,
-    // TODO: add market
+    pub price:  Option<f64>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
+pub struct BuildEngineAdditionalProduct {
+    pub type_id:    TypeId,
+    pub quantity:   u32,
+    pub price:      Option<f64>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]

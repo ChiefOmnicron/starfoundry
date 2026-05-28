@@ -66,17 +66,17 @@ services:
         - action: sync+restart
           path: ./target/debug/starfoundry_bin-market
           target: /usr/local/bin/app
-  #market-worker:
-  #  build:
-  #    context: .
-  #    dockerfile: Dockerfile.dev
-  #    target: market-worker
-  #  env_file: market_worker/.env
-  #  network_mode: "host"
-  #  volumes:
-  #    - ./market_worker/config.toml:/usr/local/bin/config.toml
-  #  develop:
-  #    watch:
-  #      - action: sync+restart
-  #        path: ./target/debug/starfoundry_bin-market_worker
-  #        target: /usr/local/bin/app
+  market-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: market-worker
+    env_file: market_worker/.env
+    network_mode: "host"
+    volumes:
+      - ./market_worker/config.toml:/usr/local/bin/config.toml
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./target/debug/starfoundry_bin-market_worker
+          target: /usr/local/bin/app

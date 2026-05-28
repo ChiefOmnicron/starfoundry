@@ -12,12 +12,14 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as StructuresRouteRouteImport } from './routes/structures/route'
 import { Route as ProjectsRouteRouteImport } from './routes/projects/route'
 import { Route as ProjectGroupsRouteRouteImport } from './routes/project-groups/route'
+import { Route as PriceCalculationRouteRouteImport } from './routes/price-calculation/route'
 import { Route as JobsRouteRouteImport } from './routes/jobs/route'
 import { Route as IndustryHubsRouteRouteImport } from './routes/industry-hubs/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StructuresIndexRouteImport } from './routes/structures/index'
 import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
 import { Route as ProjectGroupsIndexRouteImport } from './routes/project-groups/index'
+import { Route as PriceCalculationIndexRouteImport } from './routes/price-calculation/index'
 import { Route as LegalIndexRouteImport } from './routes/legal/index'
 import { Route as JobsIndexRouteImport } from './routes/jobs/index'
 import { Route as IndustryHubsIndexRouteImport } from './routes/industry-hubs/index'
@@ -61,6 +63,11 @@ const ProjectGroupsRouteRoute = ProjectGroupsRouteRouteImport.update({
   path: '/project-groups',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PriceCalculationRouteRoute = PriceCalculationRouteRouteImport.update({
+  id: '/price-calculation',
+  path: '/price-calculation',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const JobsRouteRoute = JobsRouteRouteImport.update({
   id: '/jobs',
   path: '/jobs',
@@ -90,6 +97,11 @@ const ProjectGroupsIndexRoute = ProjectGroupsIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => ProjectGroupsRouteRoute,
+} as any)
+const PriceCalculationIndexRoute = PriceCalculationIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PriceCalculationRouteRoute,
 } as any)
 const LegalIndexRoute = LegalIndexRouteImport.update({
   id: '/legal/',
@@ -245,6 +257,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/industry-hubs': typeof IndustryHubsRouteRouteWithChildren
   '/jobs': typeof JobsRouteRouteWithChildren
+  '/price-calculation': typeof PriceCalculationRouteRouteWithChildren
   '/project-groups': typeof ProjectGroupsRouteRouteWithChildren
   '/projects': typeof ProjectsRouteRouteWithChildren
   '/structures': typeof StructuresRouteRouteWithChildren
@@ -258,6 +271,7 @@ export interface FileRoutesByFullPath {
   '/industry-hubs/': typeof IndustryHubsIndexRoute
   '/jobs/': typeof JobsIndexRoute
   '/legal/': typeof LegalIndexRoute
+  '/price-calculation/': typeof PriceCalculationIndexRoute
   '/project-groups/': typeof ProjectGroupsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/structures/': typeof StructuresIndexRoute
@@ -289,6 +303,7 @@ export interface FileRoutesByTo {
   '/industry-hubs': typeof IndustryHubsIndexRoute
   '/jobs': typeof JobsIndexRoute
   '/legal': typeof LegalIndexRoute
+  '/price-calculation': typeof PriceCalculationIndexRoute
   '/project-groups': typeof ProjectGroupsIndexRoute
   '/projects': typeof ProjectsIndexRoute
   '/structures': typeof StructuresIndexRoute
@@ -314,6 +329,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/industry-hubs': typeof IndustryHubsRouteRouteWithChildren
   '/jobs': typeof JobsRouteRouteWithChildren
+  '/price-calculation': typeof PriceCalculationRouteRouteWithChildren
   '/project-groups': typeof ProjectGroupsRouteRouteWithChildren
   '/projects': typeof ProjectsRouteRouteWithChildren
   '/structures': typeof StructuresRouteRouteWithChildren
@@ -327,6 +343,7 @@ export interface FileRoutesById {
   '/industry-hubs/': typeof IndustryHubsIndexRoute
   '/jobs/': typeof JobsIndexRoute
   '/legal/': typeof LegalIndexRoute
+  '/price-calculation/': typeof PriceCalculationIndexRoute
   '/project-groups/': typeof ProjectGroupsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/structures/': typeof StructuresIndexRoute
@@ -354,6 +371,7 @@ export interface FileRouteTypes {
     | '/'
     | '/industry-hubs'
     | '/jobs'
+    | '/price-calculation'
     | '/project-groups'
     | '/projects'
     | '/structures'
@@ -367,6 +385,7 @@ export interface FileRouteTypes {
     | '/industry-hubs/'
     | '/jobs/'
     | '/legal/'
+    | '/price-calculation/'
     | '/project-groups/'
     | '/projects/'
     | '/structures/'
@@ -398,6 +417,7 @@ export interface FileRouteTypes {
     | '/industry-hubs'
     | '/jobs'
     | '/legal'
+    | '/price-calculation'
     | '/project-groups'
     | '/projects'
     | '/structures'
@@ -422,6 +442,7 @@ export interface FileRouteTypes {
     | '/'
     | '/industry-hubs'
     | '/jobs'
+    | '/price-calculation'
     | '/project-groups'
     | '/projects'
     | '/structures'
@@ -435,6 +456,7 @@ export interface FileRouteTypes {
     | '/industry-hubs/'
     | '/jobs/'
     | '/legal/'
+    | '/price-calculation/'
     | '/project-groups/'
     | '/projects/'
     | '/structures/'
@@ -461,6 +483,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   IndustryHubsRouteRoute: typeof IndustryHubsRouteRouteWithChildren
   JobsRouteRoute: typeof JobsRouteRouteWithChildren
+  PriceCalculationRouteRoute: typeof PriceCalculationRouteRouteWithChildren
   ProjectGroupsRouteRoute: typeof ProjectGroupsRouteRouteWithChildren
   ProjectsRouteRoute: typeof ProjectsRouteRouteWithChildren
   StructuresRouteRoute: typeof StructuresRouteRouteWithChildren
@@ -496,6 +519,13 @@ declare module '@tanstack/react-router' {
       path: '/project-groups'
       fullPath: '/project-groups'
       preLoaderRoute: typeof ProjectGroupsRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/price-calculation': {
+      id: '/price-calculation'
+      path: '/price-calculation'
+      fullPath: '/price-calculation'
+      preLoaderRoute: typeof PriceCalculationRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/jobs': {
@@ -539,6 +569,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/project-groups/'
       preLoaderRoute: typeof ProjectGroupsIndexRouteImport
       parentRoute: typeof ProjectGroupsRouteRoute
+    }
+    '/price-calculation/': {
+      id: '/price-calculation/'
+      path: '/'
+      fullPath: '/price-calculation/'
+      preLoaderRoute: typeof PriceCalculationIndexRouteImport
+      parentRoute: typeof PriceCalculationRouteRoute
     }
     '/legal/': {
       id: '/legal/'
@@ -755,6 +792,19 @@ const JobsRouteRouteWithChildren = JobsRouteRoute._addFileChildren(
   JobsRouteRouteChildren,
 )
 
+interface PriceCalculationRouteRouteChildren {
+  PriceCalculationIndexRoute: typeof PriceCalculationIndexRoute
+}
+
+const PriceCalculationRouteRouteChildren: PriceCalculationRouteRouteChildren = {
+  PriceCalculationIndexRoute: PriceCalculationIndexRoute,
+}
+
+const PriceCalculationRouteRouteWithChildren =
+  PriceCalculationRouteRoute._addFileChildren(
+    PriceCalculationRouteRouteChildren,
+  )
+
 interface ProjectGroupsRouteRouteChildren {
   ProjectGroupsIndexRoute: typeof ProjectGroupsIndexRoute
 }
@@ -892,6 +942,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   IndustryHubsRouteRoute: IndustryHubsRouteRouteWithChildren,
   JobsRouteRoute: JobsRouteRouteWithChildren,
+  PriceCalculationRouteRoute: PriceCalculationRouteRouteWithChildren,
   ProjectGroupsRouteRoute: ProjectGroupsRouteRouteWithChildren,
   ProjectsRouteRoute: ProjectsRouteRouteWithChildren,
   StructuresRouteRoute: StructuresRouteRouteWithChildren,

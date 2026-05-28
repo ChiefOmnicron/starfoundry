@@ -20,10 +20,12 @@ export type GenerateSolutionRequest = {
     additional_products?:       ProjectProducts[];
     additional_products_str?:   string;
     stocks_str?:                string;
+    calculate_market_cost?:     boolean;
 
     blacklist?:             number[];
     blueprint_overwrite?:   TmpBlueprintOverwrite[];
     job_splitting?:         TmpJobSplitting[];
+    markets?:               number[];
 }
 
 export type TmpBlueprintOverwrite = {
@@ -53,6 +55,7 @@ export type SolutionMaterial = {
     item:   Item;
     needed: number;
     stock:  number;
+    price?: number;
 }
 
 export type SolutionManufacturing = {

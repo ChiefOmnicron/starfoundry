@@ -55,6 +55,10 @@ const routes: RouteDefinition[] = [{
         label: 'Industry Jobs',
         paths: [],
     }, {
+        link: '/price-calculation',
+        label: 'Price Calculation',
+        paths: [],
+    }, {
         link: '/project-groups',
         label: 'Project Groups',
         subpath: '/project-groups/$projectGroupId',

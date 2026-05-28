@@ -74,8 +74,8 @@ impl CalculationEngine {
         // Set all blacklisted items to be materials and set their required
         // amount to 0
         // The correct required number will be determined in a later step
-        for ptype_id in self.config.blacklist.iter() {
-            if let Some(x) = self.tree.get_mut(&ptype_id) {
+        for product_type_id in self.config.blacklist.iter() {
+            if let Some(x) = self.tree.get_mut(&product_type_id) {
                 x.needed = 0f32;
                 x.typ    = BlueprintTyp::Material;
             }
@@ -150,9 +150,9 @@ impl CalculationEngine {
     /// 
     pub fn partial_calculation(
         &mut self,
-        ptype_id: TypeId,
+        product_type_id: TypeId,
     ) {
-        self.calculate_runs(vec![ptype_id].into())
+        self.calculate_runs(vec![product_type_id].into())
     }
 
     /// Gets a list of all product [TypeId]s that are required for the current
@@ -169,32 +169,32 @@ impl CalculationEngine {
     }
 
     /// Applies blueprint and structure bonuses to the tree.
-    /// Unless overriden, it is assumed that every blueprint has a ME of 10
+    /// Unless overridden, it is assumed that every blueprint has a ME of 10
     /// 
     pub fn apply_bonus(
         &mut self,
     ) -> &mut Self {
-        for ptype_id in self.product_type_ids().iter() {
-            let me_bonus = match self.config.blueprint_overwrite.get(ptype_id) {
+        for product_type_id in self.product_type_ids().iter() {
+            let me_bonus = match self.config.blueprint_overwrite.get(product_type_id) {
                 Some(x) => x.material,
                 None => 10f32,
             };
-            let te_bonus = match self.config.blueprint_overwrite.get(ptype_id) {
+            let te_bonus = match self.config.blueprint_overwrite.get(product_type_id) {
                 Some(x) => x.time,
                 None    => 20f32
             };
 
             self.apply_me_bonus(
-                *ptype_id,
+                *product_type_id,
                 me_bonus,
-                *ptype_id,
+                *product_type_id,
             );
             self.apply_te_bonus(
-                *ptype_id,
+                *product_type_id,
                 te_bonus,
-                *ptype_id,
+                *product_type_id,
             );
-            self.partial_calculation(*ptype_id);
+            self.partial_calculation(*product_type_id);
         }
 
         self.apply_by_bonus_type(BlueprintTyp::Blueprint);
@@ -206,7 +206,7 @@ impl CalculationEngine {
     pub fn finalize(
         &mut self,
     ) -> EngineResult {
-        for ptype_id in self.tree
+        for product_type_id in self.tree
                             .iter()
                             .filter(|(_, x)|
                                 x.typ == BlueprintTyp::Blueprint ||
@@ -215,11 +215,11 @@ impl CalculationEngine {
                             .map(|(_, x)| x.product_type_id)
                             .collect::<Vec<_>>() {
 
-            if self.config.is_blacklisted(ptype_id.0) {
+            if self.config.is_blacklisted(product_type_id.0) {
                 continue;
             }
 
-            if let Some(x) = self.tree.get_mut(&ptype_id) {
+            if let Some(x) = self.tree.get_mut(&product_type_id) {
                 let total_runs: u32 = x.runs.iter().map(|x| *x).sum();
                 if x.is_product && total_runs as f32 == x.needed {
                     continue;

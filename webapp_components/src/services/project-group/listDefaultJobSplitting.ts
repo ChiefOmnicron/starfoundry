@@ -41,17 +41,24 @@ export type JobSplittingRun = {
 
 // For general use
 export const useListProjectGroupDefaultJobSplitting = (
-    projectGroupUuid: Uuid,
+    projectGroupUuid:   Uuid,
+    options:            AdditionalProjectGroupDefaultJobSplittingOptions = {},
 ) => {
-    return useQuery(listProjectGroupDefaultJobSplittingQuery(projectGroupUuid));
+    return useQuery(listProjectGroupDefaultJobSplittingQuery(projectGroupUuid, options));
 }
 
 // For pre-fetching
 export const listProjectGroupDefaultJobSplittingQuery = (
-    projectGroupUuid: Uuid,
+    projectGroupUuid:   Uuid,
+    options:            AdditionalProjectGroupDefaultJobSplittingOptions,
 ) => ({
     queryKey: [LIST_PROJECT_GROUP_DEFAULT_JOB_SPLITTING, projectGroupUuid],
     queryFn: async ({
         signal
     }: AbortSignal) => listProjectGroupDefaultJobSplitting(projectGroupUuid, signal),
+    ...options,
 });
+
+export type AdditionalProjectGroupDefaultJobSplittingOptions = {
+    enabled?: boolean,
+}

@@ -8,19 +8,19 @@ blueprints:
           typeID: 23757
         - quantity: 100
           typeID: 11478
-        - quantity: 500
+        - quantity: 400
           typeID: 29067
-        - quantity: 500
+        - quantity: 400
           typeID: 29109
-        - quantity: 1000
+        - quantity: 800
           typeID: 29053
-        - quantity: 1000
+        - quantity: 800
           typeID: 29095
-        - quantity: 1000
+        - quantity: 800
           typeID: 29073
-        - quantity: 1000
+        - quantity: 800
           typeID: 29103
-        - quantity: 1500
+        - quantity: 1200
           typeID: 29039
         - quantity: 2000
           typeID: 3828
@@ -50,19 +50,19 @@ blueprints:
           typeID: 24483
         - quantity: 100
           typeID: 11478
-        - quantity: 500
+        - quantity: 400
           typeID: 29043
-        - quantity: 500
+        - quantity: 400
           typeID: 29049
-        - quantity: 1000
+        - quantity: 800
           typeID: 29045
-        - quantity: 1000
+        - quantity: 800
           typeID: 29065
-        - quantity: 1000
+        - quantity: 800
           typeID: 29075
-        - quantity: 1000
+        - quantity: 800
           typeID: 29089
-        - quantity: 2000
+        - quantity: 1200
           typeID: 29079
         - quantity: 2000
           typeID: 3828
@@ -92,19 +92,19 @@ blueprints:
           typeID: 23911
         - quantity: 100
           typeID: 11478
-        - quantity: 500
+        - quantity: 400
           typeID: 29041
-        - quantity: 500
+        - quantity: 400
           typeID: 29091
-        - quantity: 1000
+        - quantity: 800
           typeID: 29061
-        - quantity: 1000
+        - quantity: 800
           typeID: 29069
-        - quantity: 1000
+        - quantity: 800
           typeID: 29081
-        - quantity: 1000
+        - quantity: 800
           typeID: 29085
-        - quantity: 2000
+        - quantity: 1200
           typeID: 29051
         - quantity: 2000
           typeID: 3828
@@ -134,19 +134,19 @@ blueprints:
           typeID: 24483
         - quantity: 100
           typeID: 11478
-        - quantity: 500
+        - quantity: 400
           typeID: 29043
-        - quantity: 500
+        - quantity: 400
           typeID: 29049
-        - quantity: 1000
+        - quantity: 800
           typeID: 29045
-        - quantity: 1000
+        - quantity: 800
           typeID: 29065
-        - quantity: 1000
+        - quantity: 800
           typeID: 29075
-        - quantity: 1000
+        - quantity: 800
           typeID: 29089
-        - quantity: 2000
+        - quantity: 1200
           typeID: 29079
         - quantity: 2000
           typeID: 3828

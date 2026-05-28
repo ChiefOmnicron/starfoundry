@@ -26,17 +26,27 @@ export const listProjectGroupDefaultBlacklist = async (
 
 // For general use
 export const useListProjectGroupDefaultBlacklist = (
-    projectGroupUuid: Uuid,
+    projectGroupUuid:   Uuid,
+    options:            AdditionalProjectGroupDefaultBlacklistOptions = {},
 ) => {
-    return useQuery(listProjectGroupDefaultBlacklistQuery(projectGroupUuid));
+    return useQuery(listProjectGroupDefaultBlacklistQuery(
+        projectGroupUuid,
+        options,
+    ));
 }
 
 // For pre-fetching
 export const listProjectGroupDefaultBlacklistQuery = (
-    projectGroupUuid: Uuid,
+    projectGroupUuid:   Uuid,
+    options:            AdditionalProjectGroupDefaultBlacklistOptions,
 ) => ({
     queryKey: [LIST_PROJECT_GROUP_DEFAULT_BLACKLIST, projectGroupUuid],
     queryFn: async ({
-        signal
+        signal,
     }: AbortSignal) => listProjectGroupDefaultBlacklist(projectGroupUuid, signal),
+    ...options,
 });
+
+export type AdditionalProjectGroupDefaultBlacklistOptions = {
+    enabled?: boolean,
+}

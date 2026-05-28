@@ -1,0 +1,1 @@
+ALTER TABLE solution_material ADD COLUMN cost DOUBLE PRECISION;
