@@ -1,4 +1,4 @@
-import { Accordion, Button, Grid, Group, Stack, Text, Textarea, Title } from '@mantine/core';
+import { Accordion, Button, Grid, Group, Stack, Table, Text, Textarea, Title } from '@mantine/core';
 import { CopyText } from '@starfoundry/components/misc';
 import { createColumnHelper, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { createFileRoute } from '@tanstack/react-router';
@@ -479,6 +479,71 @@ function RouteComponent() {
                 <Text>Total (7.5%): { Math.ceil((marketCost() + manufacturingCost()) * 1.075) }</Text>
                 <Text>Total (10%): { Math.ceil((marketCost() + manufacturingCost()) * 1.1) }</Text>
             </Stack>
+
+            <Table variant="vertical" layout="fixed" withTableBorder>
+                <Table.Tbody>
+                    <Table.Tr>
+                        <Table.Th w={200}>Materials</Table.Th>
+                        <Table.Td>
+                            <CopyText
+                                value={ Math.ceil(marketCost()) }
+                                number
+                                withUnit
+                            />
+                        </Table.Td>
+                    </Table.Tr>
+                    <Table.Tr>
+                        <Table.Th>Manufacturing taxes</Table.Th>
+                        <Table.Td>
+                            <CopyText
+                                value={ Math.ceil(manufacturingCost()) }
+                                number
+                                withUnit
+                            />
+                        </Table.Td>
+                    </Table.Tr>
+                    <Table.Tr>
+                        <Table.Th>Total</Table.Th>
+                        <Table.Td>
+                            <CopyText
+                                value={ Math.ceil(marketCost() + manufacturingCost()) }
+                                number
+                                withUnit
+                            />
+                        </Table.Td>
+                    </Table.Tr>
+                    <Table.Tr>
+                        <Table.Th>Total (5%)</Table.Th>
+                        <Table.Td>
+                            <CopyText
+                                value={ Math.ceil((marketCost() + manufacturingCost()) * 1.05) }
+                                number
+                                withUnit
+                            />
+                        </Table.Td>
+                    </Table.Tr>
+                    <Table.Tr>
+                        <Table.Th>Total (7.5%)</Table.Th>
+                        <Table.Td>
+                            <CopyText
+                                value={ Math.ceil((marketCost() + manufacturingCost()) * 1.075) }
+                                number
+                                withUnit
+                            />
+                        </Table.Td>
+                    </Table.Tr>
+                    <Table.Tr>
+                        <Table.Th>Total (10%)</Table.Th>
+                        <Table.Td>
+                            <CopyText
+                                value={ Math.ceil((marketCost() + manufacturingCost()) * 1.1) }
+                                number
+                                withUnit
+                            />
+                        </Table.Td>
+                    </Table.Tr>
+                </Table.Tbody>
+            </Table>
         </>
     }
 

@@ -61,6 +61,12 @@ pub async fn run(
     let mut name          = Vec::new();
 
     for item in items {
+        if let Some(x) = type_ids.get(&item.type_id) {
+            if !x.published {
+                continue;
+            }
+        }
+
         type_id.push(*item.type_id);
         name.push(item.name);
         category_id.push(*item.category.category_id);

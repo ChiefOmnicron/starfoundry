@@ -1038,7 +1038,6 @@ impl EveApiClient {
         let client_id = (*Self::client_id()?).clone();
         let secret_key = (*Self::secret_key()?).clone();
         let oauth_token_url = Self::oauth_token_url()?;
-        dbg!(&form);
 
         let response = Client::new()
             .post(oauth_token_url.clone())
