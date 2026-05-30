@@ -1,5 +1,7 @@
+mod systems;
+
 use sqlx::PgPool;
-use starfoundry_lib_eve_sde_parser::{downloads, parser, systems};
+use starfoundry_lib_eve_sde_parser::{downloads, parser};
 use std::fs;
 
 /// Folder that contains the input file
@@ -20,6 +22,16 @@ pub async fn import_static(
     let planets                   = parser::planet::parse(&directory)?;
     let stargates                 = parser::stargate::parse(&directory)?;
     let stars                     = parser::stars::parse(&directory)?;
+    let asteroid_belts            = parser::asteroid_belt::parse(&directory)?;
+    let npc_stations              = parser::npc_station::parse(&directory)?;
+
+    systems::run(
+            pool,
+            regions,
+            constellations,
+            systems,
+        )
+        .await?;
 
     Ok(())
 }

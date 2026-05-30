@@ -1,3 +1,4 @@
+pub mod asteroid_belt;
 pub mod blueprints;
 pub mod categories;
 pub mod constellations;
@@ -6,6 +7,7 @@ pub mod groups;
 pub mod industry_modifier_sources;
 pub mod industry_target_filters;
 pub mod moon;
+pub mod npc_station;
 pub mod overwrite;
 pub mod planet;
 pub mod regions;
