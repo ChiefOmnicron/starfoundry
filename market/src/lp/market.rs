@@ -133,15 +133,15 @@ impl MarketProblem {
                 result
                     .entry(entry.structure_id)
                     .and_modify(|x: &mut MarketProblemResult| {
-                        x.quantity += buy_quantity as i32;
+                        x.quantity += buy_quantity.ceil() as i32;
 
                         if entry.price > x.price {
-                            x.price = entry.price
+                            x.price = entry.price.ceil()
                         }
                     })
                     .or_insert(MarketProblemResult {
-                        quantity: buy_quantity as i32,
-                        price: entry.price,
+                        quantity: buy_quantity.ceil() as i32,
+                        price: entry.price.ceil(),
                         type_id: entry.type_id,
                     });
             }

@@ -104,7 +104,7 @@ impl GasDecompressionEfficiency {
         }
     }
 
-    pub fn decompressed_quantity(
+    pub fn compression_quantity(
         &self,
         quantity: i32,
     ) -> i32 {
@@ -118,6 +118,14 @@ impl GasDecompressionEfficiency {
         percent_increase += 1f64;
 
         (quantity as f64 * percent_increase).ceil() as i32
+    }
+
+    pub fn decompression_quantity(
+        &self,
+        quantity: i32,
+    ) -> i32 {
+        let decompression_efficiency = self.efficiency();
+        (quantity as f64 * (decompression_efficiency as f64 / 100f64)).floor() as i32
     }
 }
 

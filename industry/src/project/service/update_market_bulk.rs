@@ -105,7 +105,7 @@ pub async fn update_market_bulk(
                     let decompression_quantity = entry
                         .gas_decompression
                         .unwrap_or(GasDecompressionEfficiency::default())
-                        .decompressed_quantity(entry.quantity);
+                        .decompression_quantity(entry.quantity);
 
                     // adds the compressed amount
                     new_entries.push(entry);

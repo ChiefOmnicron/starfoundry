@@ -114,7 +114,7 @@ pub fn smartbuy(
 
         // increase required amount
         let result = if Gas::is_gas(item.type_id) && let Some(x) = config.gas_decompression {
-            lp.solve(x.decompressed_quantity(item.quantity))
+            lp.solve(x.compression_quantity(item.quantity))
         } else {
             lp.solve(item.quantity)
         };

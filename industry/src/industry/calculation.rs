@@ -257,10 +257,8 @@ pub async fn api(
         let eve_gateway_client = eve_gateway_api_client()?;
         for product in products.iter() {
             let dependency = if let Ok(Some(x)) = eve_gateway_client.fetch_blueprint_json(product.type_id).await {
-                dbg!("blueprint found");
                 x.data
             } else {
-                dbg!("blueprint NOT found", product.type_id);
                 continue
             };
 
@@ -277,7 +275,6 @@ pub async fn api(
             .apply_bonus()
             .add_stocks(&stocks)
             .finalize();
-        dbg!(dependency_result.tree.len());
 
         let manufacturing = dependency_result
             .tree
