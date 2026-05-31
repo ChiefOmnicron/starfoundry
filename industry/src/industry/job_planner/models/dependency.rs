@@ -3,7 +3,7 @@ use starfoundry_lib_eve_gateway::Item;
 use starfoundry_lib_types::TypeId;
 
 use crate::industry::error::{IndustryError, Result};
-use crate::industry::calculation::models::BlueprintTyp;
+use crate::industry::job_planner::models::BlueprintTyp;
 
 /// Single dependency that represents either a end product, component or
 /// material

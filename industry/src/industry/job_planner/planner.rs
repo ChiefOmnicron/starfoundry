@@ -1,3 +1,4 @@
+
 use serde::Serialize;
 use starfoundry_lib_eve_gateway::{BonusVariations, StructureType};
 use starfoundry_lib_industry::industry::StockMinimal;
@@ -5,9 +6,9 @@ use starfoundry_lib_types::TypeId;
 use std::collections::{HashMap, VecDeque};
 use std::fs::File;
 
-use crate::industry::calculation::models::{BlueprintTyp, Bonus, Dependency, DependencyBuildCost, DependencyTreeEntry};
-use crate::industry::calculation::project_config::ProjectConfig;
-use crate::industry::calculation::result::EngineResult;
+use crate::industry::job_planner::models::{BlueprintTyp, Bonus, Dependency, DependencyBuildCost, DependencyTreeEntry};
+use crate::industry::job_planner::project_config::ProjectConfig;
+use crate::industry::job_planner::result::EngineResult;
 
 /// SCC tax that is added to every job, currently 4%
 const SCC_TAX: f32 = 0.04;
@@ -15,14 +16,14 @@ const SCC_TAX: f32 = 0.04;
 /// Group of dependencies.
 /// 
 #[derive(Debug, Default, Serialize)]
-pub struct CalculationEngine {
+pub struct JobPlannerEngine {
     tree:   HashMap<TypeId, DependencyTreeEntry>,
 
     config: ProjectConfig,
     stocks: HashMap<TypeId, StockMinimal>,
 }
 
-impl CalculationEngine {
+impl JobPlannerEngine {
     /// Creates a new Dependency tree, without any dependencies.
     /// Use [CalculationEngine::add] to add dependencies.
     /// 
@@ -56,7 +57,7 @@ impl CalculationEngine {
         while let Some(dep) = queue.pop_front() {
             self.add_to_tree(dep.clone(), false);
 
-            // Skip if the ptype_id is in the ignore list
+            // Skip if the product_type_id is in the ignore list
             if self.config.blacklist.contains(&dep.product_type_id) {
                 continue;
             }
@@ -520,10 +521,10 @@ impl CalculationEngine {
         // This will be our total required materials over all jobs
         let mut materials = HashMap::new();
         for entry in entries {
-            for (child_ptype, child_val) in entry.children.iter() {
+            for (child_product_type_id, child_val) in entry.children.iter() {
                 for run in entry.runs.iter() {
                     materials
-                        .entry(child_ptype.clone())
+                        .entry(child_product_type_id.clone())
                         .and_modify(|x: &mut f32| *x += (child_val * *run as f32).ceil())
                         .or_insert((child_val * *run as f32).ceil());
                 }
@@ -916,20 +917,20 @@ impl CalculationEngine {
         self
     }
 
-    /// Applies a material bonus to the given ptype_id
+    /// Applies a material bonus to the given product_type_id
     /// 
     /// # Params
     /// 
-    /// * `ptype_id` > [TypeId] of the product that gets a bonus
+    /// * `product_type_id` > [TypeId] of the product that gets a bonus
     /// * `bonus`    > Bonus in percent that should be applied
     /// 
     fn apply_me_bonus(
         &mut self,
-        ptype_id: TypeId,
-        bonus:    f32,
-        source:   TypeId,
+        product_type_id:    TypeId,
+        bonus:              f32,
+        source:             TypeId,
     ) {
-        let entry = if let Some(x) = self.tree.get_mut(&ptype_id) {
+        let entry = if let Some(x) = self.tree.get_mut(&product_type_id) {
             x
         } else {
             return;
@@ -956,20 +957,20 @@ impl CalculationEngine {
         }
     }
 
-    /// Applies a time bonus to the given ptype_id
+    /// Applies a time bonus to the given product_type_id
     /// 
     /// # Params
     /// 
-    /// * `ptype_id` > [TypeId] of the product that gets a bonus
+    /// * `product_type_id` > [TypeId] of the product that gets a bonus
     /// * `bonus`    > Bonus in percent that should be applied
     /// 
     fn apply_te_bonus(
         &mut self,
-        ptype_id: TypeId,
-        bonus:    f32,
-        source:   TypeId,
+        product_type_id:    TypeId,
+        bonus:              f32,
+        source:             TypeId,
     ) {
-        let entry = if let Some(x) = self.tree.get_mut(&ptype_id) {
+        let entry = if let Some(x) = self.tree.get_mut(&product_type_id) {
             x
         } else {
             return;

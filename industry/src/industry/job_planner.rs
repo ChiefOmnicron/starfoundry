@@ -1,10 +1,10 @@
-mod engine;
+mod planner;
 mod models;
 mod project_config_builder;
 mod project_config;
 mod result;
 
-pub use self::engine::*;
+pub use self::planner::*;
 pub use self::models::*;
 pub use self::project_config::*;
 pub use self::project_config_builder::*;
@@ -252,7 +252,7 @@ pub async fn api(
             .set_system_index(system_index.clone())
             .build();
 
-        let mut dependency_tree = CalculationEngine::new(project_config);
+        let mut dependency_tree = JobPlannerEngine::new(project_config);
 
         let eve_gateway_client = eve_gateway_api_client()?;
         for product in products.iter() {

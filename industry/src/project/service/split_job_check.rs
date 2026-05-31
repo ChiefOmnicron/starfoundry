@@ -7,7 +7,7 @@ use starfoundry_lib_types::{CharacterId, TypeId};
 use std::collections::HashMap;
 use uuid::Uuid;
 
-use crate::industry::{BlueprintBonus, BlueprintTyp, CalculationEngine, Dependency, ProjectConfig, ProjectConfigBuilder, StructureMapping};
+use crate::industry::{BlueprintBonus, BlueprintTyp, JobPlannerEngine, Dependency, ProjectConfig, ProjectConfigBuilder, StructureMapping};
 use crate::project::error::{ProjectError, Result};
 use crate::{sort_by_job_flat, sort_by_market_group_flat};
 use crate::project_group::service::{list_default_blacklist, list_default_blueprint_overwrite, list_default_job_splitting};
@@ -151,8 +151,8 @@ pub async fn split_job_check(
         .set_max_runs(max_runs)
         .build();
 
-    let mut engine_old = CalculationEngine::new(project_config.clone());
-    let mut engine_new = CalculationEngine::new(project_config.clone());
+    let mut engine_old = JobPlannerEngine::new(project_config.clone());
+    let mut engine_new = JobPlannerEngine::new(project_config.clone());
 
     // add the dependencies to the engines
     let dependency = Dependency::try_from(split.old.runs, dependency_json.data.clone()).unwrap();
@@ -340,7 +340,7 @@ async fn determine_dependant_materials(
     additional_products:    HashMap<TypeId, i32>,
     stocks:                 &Vec<StockMinimal>,
 ) -> Result<(HashMap<TypeId, i32>, HashMap<TypeId, (i32, StructureUuid)>, HashMap<TypeId, i32>)> {
-    let mut engine = CalculationEngine::new(project_config.clone());
+    let mut engine = JobPlannerEngine::new(project_config.clone());
 
     for (type_id, runs) in additional_products {
         let dependency_json = eve_gateway_api_client

@@ -7,7 +7,7 @@ use std::collections::HashMap;
 use uuid::Uuid;
 
 use crate::{sort_by_job_flat, sort_by_market_group_flat};
-use crate::industry::{CalculationEngine, Dependency, ProjectConfigBuilder, StructureMapping};
+use crate::industry::{JobPlannerEngine, Dependency, ProjectConfigBuilder, StructureMapping};
 use crate::project::error::{ProjectError, Result};
 use crate::structure::service::FetchStructureQuery;
 use starfoundry_lib_industry::project::{CheckMaterialsResponse, CheckMaterialsResponseBlueprint, CheckMaterialsResponseMaterial, JobToStart, Material};
@@ -100,7 +100,7 @@ pub async fn check_resources(
             .set_system_index(system_index.clone())
             .build();
 
-        let mut engine = CalculationEngine::new(project_config);
+        let mut engine = JobPlannerEngine::new(project_config);
 
         let mut blueprint_cache: HashMap<TypeId, serde_json::Value> = HashMap::new();
         for job in jobs {

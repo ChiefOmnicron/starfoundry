@@ -3,8 +3,8 @@ use starfoundry_lib_industry::industry::StockMinimal;
 use starfoundry_lib_types::TypeId;
 use std::{collections::HashMap, fs::File};
 
-use crate::industry::calculation::models::DependencyTreeEntry;
-use crate::industry::calculation::project_config::ProjectConfig;
+use crate::industry::job_planner::models::DependencyTreeEntry;
+use crate::industry::job_planner::project_config::ProjectConfig;
 
 #[derive(Debug, Serialize)]
 pub struct EngineResult {

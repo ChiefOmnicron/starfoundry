@@ -2,8 +2,8 @@ use starfoundry_lib_industry::structure::Structure;
 use starfoundry_lib_types::{SystemId, TypeId};
 use std::collections::HashMap;
 
-use crate::industry::calculation::models::{BlueprintBonus, Dependency, StructureMapping};
-use crate::industry::calculation::project_config::ProjectConfig;
+use crate::industry::job_planner::models::{BlueprintBonus, Dependency, StructureMapping};
+use crate::industry::job_planner::project_config::ProjectConfig;
 
 // TODO: rename
 #[derive(Debug)]

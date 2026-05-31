@@ -5,7 +5,7 @@ use starfoundry_lib_types::TypeId;
 use std::collections::HashMap;
 
 use super::{Bonus, DependencyBuildCost};
-use crate::industry::calculation::models::BlueprintTyp;
+use crate::industry::job_planner::models::BlueprintTyp;
 
 #[derive(Clone, Debug, Serialize)]
 pub struct DependencyTreeEntry {

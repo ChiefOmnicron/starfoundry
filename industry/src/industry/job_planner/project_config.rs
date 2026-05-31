@@ -3,8 +3,8 @@ use starfoundry_lib_industry::structure::Structure;
 use starfoundry_lib_types::{SystemId, TypeId};
 use std::collections::HashMap;
 
-use crate::industry::calculation::project_config_builder::ProjectConfigBuilder;
-use crate::industry::calculation::models::{BlueprintBonus, Dependency, StructureMapping};
+use crate::industry::job_planner::project_config_builder::ProjectConfigBuilder;
+use crate::industry::job_planner::models::{BlueprintBonus, Dependency, StructureMapping};
 
 /// Configuration for a new project.
 /// Must be created with [ProjectConfigBuilder].
