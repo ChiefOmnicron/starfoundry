@@ -20,7 +20,6 @@ export function ProjectJobList({
     groupByHeader = false,
 
     editable = false,
-    showQuickFix = false,
 
     onCreated,
     onDelete,
@@ -60,7 +59,7 @@ export function ProjectJobList({
         }
     }
 
-    const onSelect = (projectJobs: ProjectJobMinimal[]) => {
+    const onSelect = (_projectId: Uuid, projectJobs: ProjectJobMinimal[]) => {
         setSelectedRows(projectJobs);
     }
 
@@ -92,8 +91,8 @@ export function ProjectJobList({
 
                             onDelete={onDelete}
 
-                            editable={editable}
-                            showQuickFix={showQuickFix}
+                            showEdit={editable}
+                            showDelete={editable}
 
                             showCost={showCost}
                             showStatus={showStatus}
@@ -120,8 +119,8 @@ export function ProjectJobList({
 
                 onDelete={onDelete}
 
-                editable={editable}
-                showQuickFix={showQuickFix}
+                showEdit={editable}
+                showDelete={editable}
 
                 showCost={showCost}
                 showStatus={showStatus}
@@ -157,9 +156,10 @@ export type ProjectJobListProps = {
     groupByHeader?: boolean;
     checkable?:     boolean;
     editable?:      boolean;
-    showQuickFix?:  boolean;
 
     onCreated:      (id: Uuid) => void;
     onDelete?:      (jobId: Uuid) => void;
+
+    onJobSplit?:    () => void;
 }
 

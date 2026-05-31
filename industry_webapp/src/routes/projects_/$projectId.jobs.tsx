@@ -31,7 +31,7 @@ function RouteComponent() {
         onSuccess: (_data, _variables, _result, context) => {
             context.client.invalidateQueries({ queryKey: [LIST_PROJECT_JOBS] })
         }
-    })
+    });
 
     const content = (props: ProjectJobListProps) => {
         if ((isPending || isFetching) && isFirstRender) {

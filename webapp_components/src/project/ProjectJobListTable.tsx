@@ -5,16 +5,16 @@ import { Countdown } from "@internal/misc/Countdown";
 import { createColumnHelper, getCoreRowModel, useReactTable, type RowSelectionState } from "@tanstack/react-table";
 import { EveIcon } from "@internal/misc/EveIcon";
 import { JobStatusBadge } from "./JobStatusBadge";
+import { memo, useEffect, useState } from "react";
 import { Nakamura } from "@internal/misc/Nakamura";
 import { ProjectJobEditModal } from "./ProjectJobEditModal";
-import { useDisclosure } from "@mantine/hooks";
-import { useEffect, useState } from "react";
-import type { ProjectJob } from "@internal/services/projects/listJobs";
-import type { Uuid } from "@internal/services/utils";
-import type { ProjectJobMinimal } from "./ProjectJobAction";
 import { TableWrapper } from "@internal/wrapper/Table";
+import { useDisclosure } from "@mantine/hooks";
+import type { ProjectJob } from "@internal/services/projects/listJobs";
+import type { ProjectJobMinimal } from "./ProjectJobAction";
+import type { Uuid } from "@internal/services/utils";
 
-export function ProjectJobListTable({
+export const ProjectJobListTable = function ProjectJobListTableImp({
     projectId,
     jobs,
 
@@ -22,14 +22,15 @@ export function ProjectJobListTable({
     showStatus = false,
     showRemaining = false,
     showStarted = false,
+    showEdit = false,
+    showDelete = false,
 
     checkable = false,
     onSelect = () => {},
 
     onDelete = () => {},
 
-    editable = false,
-    showQuickFix = false,
+    onJobSplit = () => {}
 }: ProjectJobListTableProps) {
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
@@ -136,46 +137,56 @@ export function ProjectJobListTable({
             header: () => <CopyTable
                     value={jobs.map(x => `${x.item.name}\t${x.runs}\t${x.structure.name}`).join('\n')}
                 />,
-            cell: ({ row }) => {
-                if (showQuickFix) {
-                    return <Button
-                        variant="outline"
-                    >
-                        Quick Fix
-                    </Button>;
-                } else if (editable) {
-                    return <Group>
-                        <Button
-                            onClick={() => {
-                                setEditJob(row.original);
-                                editJobModalOpen();
-                            }}
-                            variant="subtle"
-                        >
-                            Edit
-                        </Button>
-                        <Button
-                            color="red.9"
-                            onClick={() => {
-                                console.log(onDelete, row.original.id)
-                                onDelete(row.original.id)
-                            }}
-                            variant="subtle"
-                        >
-                            Delete
-                        </Button>
-                    </Group>;
-                } else if (showStarted) {
-                    return <Button
-                        onClick={() => {
-                            setStarted([...started, row.original.id]);
-                        }}
-                        disabled={started.indexOf(row.original.id) > -1}
-                    >
-                        Started
-                    </Button>;
-                }
-            },
+            cell: ({ row }) => <>
+                <Group>
+                    {
+                        showEdit
+                        ?   <>
+                                <Button
+                                    onClick={() => {
+                                        setEditJob(row.original);
+                                        editJobModalOpen();
+                                    }}
+                                    variant="subtle"
+                                >
+                                    Edit
+                                </Button>
+                            </>
+                        :   <></>
+                    }
+
+                    {
+                        showDelete
+                        ?   <>
+                                <Button
+                                    color="red.9"
+                                    onClick={() => {
+                                        onDelete(row.original.id)
+                                    }}
+                                    variant="subtle"
+                                >
+                                    Delete
+                                </Button>
+                            </>
+                        :   <></>
+                    }
+
+                    {
+                        showStarted
+                        ?   <>
+                                <Button
+                                    onClick={() => {
+                                        setStarted([...started, row.original.id]);
+                                    }}
+                                    disabled={started.indexOf(row.original.id) > -1}
+                                >
+                                    Started
+                                </Button>
+                            </>
+                        :   <></>
+                    }
+                </Group>
+            </>,
             meta: {
                 align: 'right',
             },
@@ -197,7 +208,6 @@ export function ProjectJobListTable({
         initialState: {
             columnVisibility: {
                 check: checkable,
-                edit: editable,
                 cost: showCost,
                 status: showStatus,
                 remaining: showRemaining,
@@ -212,6 +222,7 @@ export function ProjectJobListTable({
     // must stay, otherwise the selection change is not properly triggered
     useEffect(() => {
         onSelect(
+            projectId,
             table
                 .getSelectedRowModel()
                 .rows
@@ -249,6 +260,8 @@ export function ProjectJobListTable({
                 editJobModalClose();
             }}
             opened={editJobModalOpened && Object.keys(editJob).length > 0}
+
+            onJobSplit={onJobSplit}
         />
 
         <TableWrapper
@@ -258,6 +271,8 @@ export function ProjectJobListTable({
     </>
 }
 
+export const ProjectJobListTableMemo = memo(ProjectJobListTable);
+
 export type ProjectJobListTableProps = {
     projectId:      Uuid;
     jobs:           ProjectJob[];
@@ -266,15 +281,15 @@ export type ProjectJobListTableProps = {
     showStatus?:    boolean;
     showRemaining?: boolean;
     showStarted?:   boolean;
+    showEdit?:      boolean;
+    showDelete?:    boolean;
 
     scrollable?:    boolean;
 
     checkable?: boolean;
-    onSelect?: (selected: ProjectJobMinimal[]) => void;
+    onSelect?: (projectId: Uuid, selected: ProjectJobMinimal[]) => void;
 
     onDelete?: (jobId: Uuid) => void;
 
-    editable?:      boolean;
-    showQuickFix?:  boolean;
+    onJobSplit?: () => void;
 }
-

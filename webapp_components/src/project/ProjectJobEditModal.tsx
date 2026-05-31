@@ -11,6 +11,7 @@ import { updateProjectJob, type UpdateProjectJob } from "@internal/services/proj
 import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import type { Uuid } from "@internal/services/utils";
+import { EveIcon } from "@internal/misc/EveIcon";
 
 const SELECTABLE_STATES = [{
     label: 'Waiting for materials',
@@ -33,6 +34,8 @@ export function ProjectJobEditModal({
 
     opened,
     close,
+
+    onJobSplit,
 }: ProjectJobEditModalProps) {
     const [hasError, setHasError] = useState<boolean>(false);
     const [updateSuccess, setUpdateSuccess] = useState<boolean>(false);
@@ -64,6 +67,10 @@ export function ProjectJobEditModal({
             const previousJobs = context.client.getQueryData([LIST_PROJECT_JOBS, projectId]);
 
             context.client.setQueryData([LIST_PROJECT_JOBS, projectId], (jobs: ProjectJob[]) => {
+                if (!jobs) {
+                    return;
+                }
+
                 const old = jobs.find(x => x.id === job.id);
                 if (job) {
                     job.cost = updatedJob.cost;
@@ -172,7 +179,7 @@ export function ProjectJobEditModal({
     }
 
     const saveSplitJob = () => {
-        let excess = checkedJobChange
+        const excess = checkedJobChange
                 .excess
                 .map(x => {
                     return {
@@ -180,7 +187,7 @@ export function ProjectJobEditModal({
                         type_id:  x.item.type_id,
                     }
                 });
-        let jobs = checkedJobChange
+        const jobs = checkedJobChange
                 .jobs
                 .map(x => {
                     return {
@@ -189,7 +196,7 @@ export function ProjectJobEditModal({
                         structure_id:   x.structure_id,
                     }
                 });
-        let market = checkedJobChange
+        const market = checkedJobChange
                 .materials
                 .map(x => {
                     return {
@@ -199,25 +206,43 @@ export function ProjectJobEditModal({
                 });
 
         // adds new jobs that are required for the final product
-        addJobMutation.mutate(jobs);
-        addExcessMutation.mutate(excess);
-        addMarketMutation.mutate(market);
+        const addSubJobPromise = addJobMutation.mutateAsync(jobs);
+        const addExcessPromise = addExcessMutation.mutateAsync(excess);
+        const addMarketPromise = addMarketMutation.mutateAsync(market);
 
         // add the split runs
-        addJobMutation.mutate([{
+        const addJobPromise = addJobMutation.mutateAsync([{
             runs:           splitRuns,
             structure_id:   job.structure.id,
             type_id:        job.item.type_id
         }]);
         // update the amount of runs
-        saveJobMutation.mutate({
+        const saveJobPromise = saveJobMutation.mutateAsync({
             status: "WAITING_FOR_MATERIALS",
             runs: job.runs - splitRuns,
         });
+
+        Promise.all([
+                addSubJobPromise,
+                addExcessPromise,
+                addMarketPromise,
+                addJobPromise,
+                saveJobPromise,
+            ])
+            .then(_ => {
+                onJobSplit();
+                reset();
+                close();
+            });
     }
 
     const showJobChange = () => {
         if (checkedJobChange.jobs.length === 0 && checkedJobChange.materials.length === 0) {
+            if (hasChecked) {
+                return <>
+                    <Alert>No additional materials/runs are needed</Alert>
+                </>;
+            }
             return <></>;
         }
 
@@ -273,140 +298,192 @@ export function ProjectJobEditModal({
         }
     }
 
+    const reset = () => {
+        setHasError(false);
+        setUpdateSuccess(false);
+
+        setCost(undefined);
+        setJobId(undefined);
+        setStatus('WAITING_FOR_MATERIALS');
+
+        setCurrentRuns(0);
+        setSplitRuns(0);
+        setHasChecked(false);
+
+        setCheckedJobChange({
+            excess: [],
+            jobs: [],
+            materials: [],
+        });
+    }
+
+    const showItemName = () => {
+        if (!job || !job.item) {
+            return <></>;
+        }
+
+        return <>
+            <Group>
+                <EveIcon
+                    id={job.item.type_id}
+                    category="types"
+                    height={32}
+                    width={32}
+                />
+
+                <Text>
+                    {job.item.name}
+                </Text>
+
+                <Text>
+                    x{job.runs}
+                </Text>
+            </Group>
+        </>;
+    }
+
     return <ModalWrapper
         close={() => {
-            setCheckedJobChange({
-                excess: [],
-                jobs: [],
-                materials: [],
-            });
+            reset();
             close();
         }}
         opened={opened}
         title="Edit job"
         size="50%"
     >
-        {showError()}
+        <Stack>
+            {showError()}
+            {showUpdateSuccess()}
 
-        <Tabs defaultValue="general">
-            <Tabs.List>
-                <Tabs.Tab
+            {showItemName()}
+
+            <Tabs defaultValue="general">
+                <Tabs.List>
+                    <Tabs.Tab
+                        value="general"
+                    >
+                        General
+                    </Tabs.Tab>
+                    <Tabs.Tab
+                        value="split_job"
+                    >
+                        Split Job
+                    </Tabs.Tab>
+                </Tabs.List>
+
+                <Tabs.Panel
                     value="general"
                 >
-                    General
-                </Tabs.Tab>
-                <Tabs.Tab
+                    <Stack>
+                        <Text size="sm" fw={500} mt={10}>
+                            Status
+                        </Text>
+                        <SegmentedControl
+                            fullWidth
+                            data={SELECTABLE_STATES}
+                            value={status}
+                            onChange={(status: string) => {
+                                setStatus(status as ProjectJobStatus);
+                            }}
+                        />
+
+                        <NumberInput
+                            label="Cost"
+                            description="Cost it took to start the job"
+                            placeholder="5000 ISK"
+                            min={0}
+                            allowDecimal={false}
+                            thousandSeparator=","
+                            suffix=" ISK"
+                            value={cost}
+                            onChange={(x) => {
+                                setCost(x as number)
+                            }}
+                        />
+
+                        <Group
+                            justify="flex-end"
+                        >
+                            <Button
+                                onClick={updateJob}
+                                loading={saveJobMutation.isPending}
+                                disabled={saveJobMutation.isPending}
+                            >
+                                Save
+                            </Button>
+                        </Group>
+                    </Stack>
+                </Tabs.Panel>
+
+                <Tabs.Panel
                     value="split_job"
                 >
-                    Split Job
-                </Tabs.Tab>
-            </Tabs.List>
+                    <Stack>
+                        <Alert>
+                            Splitting the job runs will create a new job entry, and if necessary add additional materials needed due to the change.
+                        </Alert>
 
-            <Tabs.Panel
-                value="general"
-            >
-                <Stack>
-                    {showUpdateSuccess()}
+                        <Text size="sm" fw={500} mt={3}>
+                            Total runs: {job.runs}
+                        </Text>
 
-                    <Text size="sm" fw={500} mt={3}>
-                        Status
-                    </Text>
-                    <SegmentedControl
-                        fullWidth
-                        data={SELECTABLE_STATES}
-                        value={status}
-                        onChange={(status: string) => {
-                            setStatus(status as ProjectJobStatus);
-                        }}
-                    />
+                        <Grid>
+                            <Grid.Col span={6}>
+                                <NumberInput
+                                    value={currentRuns}
+                                    disabled
+                                />
+                            </Grid.Col>
+                            <Grid.Col span={6}>
+                                <NumberInput
+                                    value={splitRuns}
+                                    onChange={(value) => {
+                                        if (hasChecked) {
+                                            setHasChecked(false);
+                                            setCheckedJobChange({
+                                                excess: [],
+                                                jobs: [],
+                                                materials: [],
+                                            });
+                                        }
 
-                    <NumberInput
-                        label="Cost"
-                        description="Cost it took to start the job"
-                        placeholder="5000 ISK"
-                        min={0}
-                        allowDecimal={false}
-                        thousandSeparator=","
-                        suffix=" ISK"
-                        value={cost}
-                        onChange={(x) => {
-                            setCost(x as number)
-                        }}
-                    />
+                                        if (!value) {
+                                            setSplitRuns(0);
+                                        } else {
+                                            setSplitRuns(value as number);
+                                        }
 
-                    <Group
-                        justify="flex-end"
-                    >
-                        <Button
-                            onClick={updateJob}
-                            loading={saveJobMutation.isPending}
-                            disabled={saveJobMutation.isPending}
+                                        setCurrentRuns(job.runs - (value as number));
+                                    }}
+                                    min={0}
+                                    max={job.runs - 1}
+                                />
+                            </Grid.Col>
+                        </Grid>
+
+                        {showJobChange()}
+
+                        <Group
+                            justify="flex-end"
                         >
-                            Save
-                        </Button>
-                    </Group>
-                </Stack>
-            </Tabs.Panel>
-
-            <Tabs.Panel
-                value="split_job"
-            >
-                <Stack>
-                    <Alert>
-                        Splitting the job runs will create a new job entry, and if necessary add additional materials needed due to the change.
-                    </Alert>
-
-                    <Text size="sm" fw={500} mt={3}>
-                        Total runs: {job.runs}
-                    </Text>
-
-                    <Grid>
-                        <Grid.Col span={6}>
-                            <NumberInput
-                                value={currentRuns}
-                                disabled
-                            />
-                        </Grid.Col>
-                        <Grid.Col span={6}>
-                            <NumberInput
-                                value={splitRuns}
-                                onChange={(value) => {
-                                    if (!value) {
-                                        setSplitRuns(0);
-                                    } else {
-                                        setSplitRuns(value as number);
-                                    }
-
-                                    setCurrentRuns(job.runs - (value as number));
-                                }}
-                                min={0}
-                                max={job.runs - 1}
-                            />
-                        </Grid.Col>
-                    </Grid>
-
-                    {showJobChange()}
-
-                    <Group
-                        justify="flex-end"
-                    >
-                        <Button
-                            onClick={splitJobCheckClick}
-                            disabled={!(splitRuns > 0)}
-                            loading={splitJobCheckMutation.isPending}
-                        >
-                            Check adjusted
-                        </Button>
-                        <Button
-                            disabled={!hasChecked}
-                            onClick={saveSplitJob}
-                        >
-                            Save
-                        </Button>
-                    </Group>
-                </Stack>
-            </Tabs.Panel>
-        </Tabs>
+                            <Button
+                                onClick={splitJobCheckClick}
+                                disabled={!(splitRuns > 0)}
+                                loading={splitJobCheckMutation.isPending}
+                            >
+                                Check adjusted
+                            </Button>
+                            <Button
+                                disabled={!hasChecked}
+                                onClick={saveSplitJob}
+                            >
+                                Save
+                            </Button>
+                        </Group>
+                    </Stack>
+                </Tabs.Panel>
+            </Tabs>
+        </Stack>
     </ModalWrapper>
 }
 
@@ -416,4 +493,6 @@ export type ProjectJobEditModalProps = {
 
     opened: boolean;
     close: () => void;
+
+    onJobSplit: () => void;
 }
