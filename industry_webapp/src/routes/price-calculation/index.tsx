@@ -472,14 +472,6 @@ function RouteComponent() {
                 </Accordion.Item>
             </Accordion>
 
-            <Stack>
-                <Text>Market: { Math.ceil(marketCost()) }</Text>
-                <Text>Taxes: { Math.ceil(manufacturingCost()) }</Text>
-                <Text>Total: { Math.ceil(marketCost() + manufacturingCost()) }</Text>
-                <Text>Total (7.5%): { Math.ceil((marketCost() + manufacturingCost()) * 1.075) }</Text>
-                <Text>Total (10%): { Math.ceil((marketCost() + manufacturingCost()) * 1.1) }</Text>
-            </Stack>
-
             <Table variant="vertical" layout="fixed" withTableBorder>
                 <Table.Tbody>
                     <Table.Tr>
