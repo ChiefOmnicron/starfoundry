@@ -5,7 +5,7 @@ import { LIST_PROJECT_MISC, useListProjectMisc, type ProjectMisc } from '@starfo
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 import { ProjectMiscList } from './-components/MiscList'
-import { SaveDialog } from '@starfoundry/components/misc/SaveDialog';
+import { compareArray, SaveDialog } from '@starfoundry/components/misc/SaveDialog';
 import { updateMisc } from '@starfoundry/components/services/projects/updateMisc';
 import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -136,7 +136,7 @@ function RouteComponent() {
         <SaveDialog
             onReset={resetChanges}
             onSave={saveChanges}
-            show={ selectedProjectMisc !== selectedProjectMiscOld }
+            show={ !compareArray(selectedProjectMisc, selectedProjectMiscOld) }
         />
     </>
 }

@@ -109,3 +109,18 @@ export const formatDate = (dateMs: number): string => {
 
     return `${year}.${month}.${day} ${hours}:${minutes}`;
 };
+
+// Compares two arrays
+const compareArray = (arrayOne: any[], arrayTwo: []) => {
+    if (arrayOne.length !== arrayTwo.length) {
+        return false;
+    }
+
+    for (let i = 0; i < arrayOne.length; i++) {
+        if (arrayOne[i] !== arrayTwo[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}

@@ -145,6 +145,7 @@ export function ProjectMiscList({
                         placeholder="Quantity"
                         onChange={(v) => setQuantity(v as number)}
                         value={quantity}
+                        thousandSeparator
                     />
                 </Table.Td>
                 <Table.Td>
@@ -163,6 +164,7 @@ export function ProjectMiscList({
                         placeholder="Cost"
                         onChange={(v) => setCost(v as number)}
                         value={cost}
+                        thousandSeparator
                     />
                 </Table.Td>
                 <Table.Td>

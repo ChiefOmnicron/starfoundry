@@ -42,6 +42,7 @@ export function EditMarketEntryModal({
                     e.preventDefault();
                     e.stopPropagation();
                     form.handleSubmit();
+                    form.reset();
                 }}
             >
                 <Stack>
