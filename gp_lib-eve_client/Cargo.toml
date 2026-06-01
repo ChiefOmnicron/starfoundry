@@ -6,14 +6,14 @@ version.workspace = true
 license.workspace = true
 
 [dependencies]
-axum = { version = "0.8.7", features = ["macros"] }
+axum = { version = "0.8.9", features = ["macros"] }
 base64 = "0.22.1"
-jsonwebtoken = { version = "9.3.1", features = ["use_pem"] }
-prometheus-client = "0.24.0"
-reqwest = { version = "0.13.1", features = ["json", "query", "form"] }
+jsonwebtoken = { version = "10.4.0", features = ["use_pem"] }
+prometheus-client = "0.24.1"
+reqwest = { version = "0.13.4", features = ["json", "query", "form"] }
 serde = { version = "1.0.228", features = ["derive"] }
-serde_json = "1.0.145"
+serde_json = "1.0.150"
 starfoundry_lib-types = { path = "../gp_lib-types" }
-thiserror = "2.0.17"
-tracing = "0.1.43"
-url = { version = "2.5.7", features = ["serde"] }
+thiserror = "2.0.18"
+tracing = "0.1.44"
+url = { version = "2.5.8", features = ["serde"] }
