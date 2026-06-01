@@ -105,24 +105,24 @@ pub async fn insert_private_orders(
     );
     task.append_log(format!("Updates: {}", result.rows_affected()));
 
-    //sqlx::query!("
-    //        INSERT INTO market_private_order_history (
-    //            order_id,
-    //            remaining
-    //        )
-    //        SELECT * FROM UNNEST(
-    //            $1::BIGINT[],
-    //            $2::INTEGER[]
-    //        )
-    //        ON CONFLICT (order_id, remaining)
-    //        DO NOTHING
-    //    ",
-    //        &order_ids,
-    //        &remaining,
-    //    )
-    //    .execute(&mut *transaction)
-    //    .await
-    //    .map_err(Error::InsertPrivateHistoryOrders)?;
+    sqlx::query!("
+            INSERT INTO market_private_order_history (
+                order_id,
+                remaining
+            )
+            SELECT * FROM UNNEST(
+                $1::BIGINT[],
+                $2::INTEGER[]
+            )
+            ON CONFLICT (order_id, remaining)
+            DO NOTHING
+        ",
+            &order_ids,
+            &remaining,
+        )
+        .execute(&mut *transaction)
+        .await
+        .map_err(Error::InsertPrivateHistoryOrders)?;
 
     transaction
         .commit()

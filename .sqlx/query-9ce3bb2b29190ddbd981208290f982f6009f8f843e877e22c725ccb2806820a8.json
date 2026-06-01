@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO market_order_history (\n                order_id,\n                remaining\n            )\n            SELECT * FROM UNNEST(\n                $1::BIGINT[],\n                $2::INTEGER[]\n            )\n            ON CONFLICT (order_id, remaining)\n            DO NOTHING\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8Array",
+        "Int4Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "9ce3bb2b29190ddbd981208290f982f6009f8f843e877e22c725ccb2806820a8"
+}
