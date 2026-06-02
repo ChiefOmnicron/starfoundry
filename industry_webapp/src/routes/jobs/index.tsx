@@ -33,7 +33,7 @@ function RouteComponent() {
     const onSelect = useCallback((projectId: Uuid, projectJobs: ProjectJobMinimal[]) => {
         let tmp = selectedRows.filter(x => x.project_id !== projectId);
         setSelectedRows([...tmp, ...projectJobs]);
-    }, []);
+    }, [selectedRows]);
 
     const onJobSplit = useCallback(() => {
         queryClient.invalidateQueries({ queryKey: [LIST_PROJECT_ALL_JOBS] })
