@@ -1,10 +1,11 @@
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use starfoundry_lib_types::{StargateId, SystemId, TypeId};
 use std::collections::HashMap;
 use std::fs::File;
 use std::path::Path;
 use std::time::Instant;
 
+use crate::parser::systems::Position;
 use crate::{FOLDER_INPUT, Error};
 
 pub fn parse(
@@ -84,17 +85,3 @@ pub struct StargateDestination {
     pub system_id:      SystemId,
     pub stargate_id:    StargateId,
 }
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct Position {
-    pub y: f64,
-    pub x: f64,
-    pub z: f64,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct Position2d {
-    pub y: f64,
-    pub x: f64,
-}
-

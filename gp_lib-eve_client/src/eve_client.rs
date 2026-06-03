@@ -719,7 +719,9 @@ impl EveApiClient {
                 StatusCode::NOT_MODIFIED => {
                     return Err(EveApiError::NotModified(request_uri));
                 },
-                StatusCode::FORBIDDEN |
+                StatusCode::FORBIDDEN => {
+                    return Err(EveApiError::Forbidden(request_uri));
+                },
                 StatusCode::UNAUTHORIZED => {
                     last_status = response.status();
                     last_text   = response

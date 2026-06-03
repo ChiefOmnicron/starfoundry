@@ -438,10 +438,10 @@ pub enum Asteroid {
     BlueIceIVGrade,
     CompressedBlueIce,
     CompressedBlueIceIVGrade,
-    IcicleIIGrade,
-    IcicleIVGradeIIGrade,
-    CompressedIcicleIIGrade,
-    CompressedIcicleIVGradeIIGrade,
+    Icicle,
+    IcicleIVGrade,
+    CompressedIcicle,
+    CompressedIcicleIVGrade,
     GlacialMass,
     GlacialMassIVGrade,
     CompressedGlacialMass,
@@ -881,10 +881,10 @@ impl Asteroid {
             Self::BlueIceIVGrade.to_type_id(),
             Self::CompressedBlueIce.to_type_id(),
             Self::CompressedBlueIceIVGrade.to_type_id(),
-            Self::IcicleIIGrade.to_type_id(),
-            Self::IcicleIVGradeIIGrade.to_type_id(),
-            Self::CompressedIcicleIIGrade.to_type_id(),
-            Self::CompressedIcicleIVGradeIIGrade.to_type_id(),
+            Self::Icicle.to_type_id(),
+            Self::IcicleIVGrade.to_type_id(),
+            Self::CompressedIcicle.to_type_id(),
+            Self::CompressedIcicleIVGrade.to_type_id(),
             Self::GlacialMass.to_type_id(),
             Self::GlacialMassIVGrade.to_type_id(),
             Self::CompressedGlacialMass.to_type_id(),
@@ -1325,10 +1325,10 @@ impl Asteroid {
             Self::BlueIceIVGrade                            => 17975,
             Self::CompressedBlueIce                         => 28433,
             Self::CompressedBlueIceIVGrade                  => 28443,
-            Self::IcicleIIGrade                             => 16262,
-            Self::IcicleIVGradeIIGrade                      => 17978,
-            Self::CompressedIcicleIIGrade                   => 28434,
-            Self::CompressedIcicleIVGradeIIGrade            => 28436,
+            Self::Icicle                                    => 16262,
+            Self::IcicleIVGrade                             => 17978,
+            Self::CompressedIcicle                          => 28434,
+            Self::CompressedIcicleIVGrade                   => 28436,
             Self::GlacialMass                               => 16263,
             Self::GlacialMassIVGrade                        => 17977,
             Self::CompressedGlacialMass                     => 28438,
@@ -1776,10 +1776,10 @@ impl Asteroid {
             17975 => Self::BlueIceIVGrade,
             28433 => Self::CompressedBlueIce,
             28443 => Self::CompressedBlueIceIVGrade,
-            16262 => Self::IcicleIIGrade,
-            17978 => Self::IcicleIVGradeIIGrade,
-            28434 => Self::CompressedIcicleIIGrade,
-            28436 => Self::CompressedIcicleIVGradeIIGrade,
+            16262 => Self::Icicle,
+            17978 => Self::IcicleIVGrade,
+            28434 => Self::CompressedIcicle,
+            28436 => Self::CompressedIcicleIVGrade,
             16263 => Self::GlacialMass,
             17977 => Self::GlacialMassIVGrade,
             28438 => Self::CompressedGlacialMass,
@@ -2841,8 +2841,8 @@ impl Asteroid {
                 )
             },
 
-            Self::IcicleIIGrade                               |
-            Self::CompressedIcicleIIGrade                     => {
+            Self::Icicle                                    |
+            Self::CompressedIcicle                          => {
                 mineral_init(
                     vec![
                         Mineral::HeavyWater,
@@ -2859,8 +2859,8 @@ impl Asteroid {
                 )
             },
 
-            Self::IcicleIVGradeIIGrade                        |
-            Self::CompressedIcicleIVGradeIIGrade              => {
+            Self::IcicleIVGrade                             |
+            Self::CompressedIcicleIVGrade                   => {
                 mineral_init(
                     vec![
                         Mineral::HeavyWater,
@@ -3398,10 +3398,10 @@ impl Asteroid {
             Self::BlueIceIVGrade                            |
             Self::CompressedBlueIce                         |
             Self::CompressedBlueIceIVGrade                  |
-            Self::IcicleIIGrade                             |
-            Self::IcicleIVGradeIIGrade                      |
-            Self::CompressedIcicleIIGrade                   |
-            Self::CompressedIcicleIVGradeIIGrade            |
+            Self::Icicle                                    |
+            Self::IcicleIVGrade                             |
+            Self::CompressedIcicle                          |
+            Self::CompressedIcicleIVGrade                   |
             Self::GlacialMass                               |
             Self::GlacialMassIVGrade                        |
             Self::CompressedGlacialMass                     |
@@ -5348,10 +5348,10 @@ impl TryFrom<TypeId> for Asteroid {
             17975 => Ok(Self::BlueIceIVGrade),
             28433 => Ok(Self::CompressedBlueIce),
             28443 => Ok(Self::CompressedBlueIceIVGrade),
-            16262 => Ok(Self::IcicleIIGrade),
-            17978 => Ok(Self::IcicleIVGradeIIGrade),
-            28434 => Ok(Self::CompressedIcicleIIGrade),
-            28436 => Ok(Self::CompressedIcicleIVGradeIIGrade),
+            16262 => Ok(Self::Icicle),
+            17978 => Ok(Self::IcicleIVGrade),
+            28434 => Ok(Self::CompressedIcicle),
+            28436 => Ok(Self::CompressedIcicleIVGrade),
             16263 => Ok(Self::GlacialMass),
             17977 => Ok(Self::GlacialMassIVGrade),
             28438 => Ok(Self::CompressedGlacialMass),

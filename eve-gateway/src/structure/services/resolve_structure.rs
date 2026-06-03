@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use starfoundry_lib_eve_client::EveApiClient;
 use starfoundry_lib_eve_gateway::{ResolveStructureResponse, StructurePosition};
-use starfoundry_lib_types::{StructureId, SystemId, TypeId};
+use starfoundry_lib_types::{CharacterId, StructureId, SystemId, TypeId};
 
 use crate::structure::error::{Result, StructureError};
 use crate::structure::services::{fetch_services, list_structure_rigs};
@@ -28,7 +28,7 @@ pub async fn resolve_structure(
 ) -> Result<Option<ResolveStructureResponse>> {
     let path = format!(
         "latest/universe/structures/{}",
-        structure_id
+        structure_id,
     );
 
     let response: Option<EveStructure> = eve_api_client
@@ -63,13 +63,14 @@ pub async fn resolve_structure(
 
     Ok(
         Some(ResolveStructureResponse {
-            structure_id:         structure_id,
-            name:                 response.name,
-            system:               system,
-            item:                 item,
-            position:             response.position,
-            installable_rigs:     rigs,
-            installable_services: services,
+            owner_id:               response.owner_id,
+            structure_id:           structure_id,
+            name:                   response.name,
+            system:                 system,
+            item:                   item,
+            position:               response.position,
+            installable_rigs:       rigs,
+            installable_services:   services,
         })
     )
 }
@@ -77,6 +78,8 @@ pub async fn resolve_structure(
 /// Represents a structure
 #[derive(Debug, Deserialize, Serialize)]
 pub struct EveStructure {
+    /// Name of the structure
+    pub owner_id:  CharacterId,
     /// Name of the structure
     pub name:      String,
     /// Id of the system the structure is located in

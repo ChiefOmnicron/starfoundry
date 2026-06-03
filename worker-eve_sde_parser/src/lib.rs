@@ -4,6 +4,7 @@ pub mod blueprints;
 pub mod dogma;
 pub mod downloads;
 pub mod items;
+pub mod map;
 pub mod parser;
 pub mod reprocessing;
 pub mod structure;
@@ -21,7 +22,7 @@ use starfoundry_lib_types::{RegionId, SystemId};
 use std::collections::HashMap;
 use std::fs;
 
-/// Folder that contains the input file
+// Folder that contains the input file
 pub const FOLDER_INPUT: &str  = "input";
 
 pub async fn import_sde(
@@ -52,6 +53,11 @@ pub async fn import_sde(
     let systems                   = parser::systems::parse(&directory)?;
     let type_dogma                = parser::type_dogma::parse(&directory)?;
     let type_material             = parser::type_material::parse(&directory)?;
+    let asteroid_belts            = parser::asteroid_belt::parse(&directory)?;
+    let npc_stations              = parser::npc_station::parse(&directory)?;
+    let moons                     = parser::moon::parse(&directory)?;
+    let planets                   = parser::planet::parse(&directory)?;
+    let stargates                 = parser::stargate::parse(&directory)?;
     let overwrites                = parser::overwrite::parse(&directory)?;
 
     let mut blueprints            = parser::blueprints::parse(&directory)?;
@@ -59,8 +65,6 @@ pub async fn import_sde(
 
     blueprints.extend(overwrites.blueprints);
     type_ids.extend(overwrites.items);
-
-    write_system_json(systems.clone(), stars);
 
     blueprints_dependencies::run(
             &pool,
@@ -118,48 +122,7 @@ pub async fn import_sde(
         )
         .await?;
 
+    //map::full_map(systems, stargates, regions);
+
     Ok(checksum)
-}
-
-// https://github.com/edutechtammy/star-color-and-temperature/blob/main/script.js
-fn write_system_json(
-    systems: Vec<System>,
-    stars:   Vec<Star>,
-) {
-    let stars = stars
-        .into_iter()
-        .map(|x| (x.star_id, x))
-        .collect::<HashMap<_, _>>();
-
-    #[derive(Debug, Serialize)]
-    struct TmpSystem {
-        system_id:   SystemId,
-        region_id:   RegionId,
-        position:    Position,
-        #[serde(rename = "position2D")]
-        position_2d: Option<Position2d>,
-        star:        Star,
-    }
-
-    let systems = systems
-        .into_iter()
-        .filter(|x| x.star_id.is_some())
-        .filter(|x|
-            x.region_id != RegionId(10000004) &&
-            x.region_id != RegionId(10000017) &&
-            x.region_id != RegionId(10000019) &&
-            (*x.region_id) < 11000000
-        )
-        .filter(|x| x.position_2d.is_some())
-        .map(|x| TmpSystem {
-            position:    x.position,
-            position_2d: x.position_2d,
-            region_id:   x.region_id,
-            system_id:   x.system_id,
-            star:        stars.get(&x.star_id.unwrap()).unwrap().clone(),
-        })
-        .collect::<Vec<_>>();
-
-    let mut file = std::fs::File::create("../webapp_components/loading_animation/map.json").unwrap();
-    serde_json::to_writer(&mut file, &systems).unwrap();
 }

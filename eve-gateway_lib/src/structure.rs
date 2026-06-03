@@ -1,12 +1,14 @@
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
-use starfoundry_lib_types::{CategoryId, GroupId, StructureId, TypeId};
+use starfoundry_lib_types::{CategoryId, CharacterId, GroupId, StructureId, TypeId};
 
 use crate::{Category, Group, Item, System};
 
 /// Return message for resolving a structure
 #[derive(Debug, Deserialize, Serialize, ToSchema)]
 pub struct ResolveStructureResponse {
+    /// ID of the in-game structure
+    pub owner_id:             CharacterId,
     /// ID of the in-game structure
     pub structure_id:         StructureId,
     /// Name of the structure
@@ -35,6 +37,15 @@ pub struct StructurePosition {
 pub struct StructureServiceResponse {
     pub services: Vec<Item>,
     pub slots:    i32,
+}
+
+impl Default for StructureServiceResponse {
+    fn default() -> Self {
+        Self {
+            services: Vec::new(),
+            slots:    0,
+        }
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]

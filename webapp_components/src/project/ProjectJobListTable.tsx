@@ -221,6 +221,7 @@ export const ProjectJobListTable = function ProjectJobListTableImp({
 
     // must stay, otherwise the selection change is not properly triggered
     useEffect(() => {
+        console.log('asdasdss')
         onSelect(
             projectId,
             table

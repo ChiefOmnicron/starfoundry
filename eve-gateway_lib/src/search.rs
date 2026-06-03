@@ -28,12 +28,12 @@ pub struct SearchResult(pub Vec<i64>);
 
 pub trait EveGatewayApiClientSearch: ApiClient {
     #[allow(async_fn_in_trait)]
-    async fn in_game_search(
+    async fn in_game_search<S: Into<String>>(
         &self,
         character_id: CharacterId,
         source:       String,
         category:     SearchCategory,
-        search:       String,
+        search:       S,
     ) -> Result<SearchResult> {
         let mut headers = HeaderMap::new();
         headers.insert(HOST, HeaderValue::from_str(&source).unwrap_or(HeaderValue::from_static("invalid.header")));
@@ -48,12 +48,12 @@ pub trait EveGatewayApiClientSearch: ApiClient {
         let category_str: String = category.clone().into();
         let query = &Query {
             categories: category_str,
-            search: search,
+            search: search.into(),
         };
 
         self
             .fetch_auth(
-                &format!("characters/{}/search", *character_id),
+                "/search",
                 query,
                 headers,
             )
@@ -75,6 +75,36 @@ pub trait EveGatewayApiClientSearch: ApiClient {
                 };
                 SearchResult(result)
             })
+    }
+
+    #[allow(async_fn_in_trait)]
+    async fn search_structure<S: Into<String>>(
+        &self,
+        character_id: CharacterId,
+        source:       String,
+        search:       S,
+    ) -> Result<Vec<i64>> {
+        let mut headers = HeaderMap::new();
+        headers.insert(HOST, HeaderValue::from_str(&source).unwrap_or(HeaderValue::from_static("invalid.header")));
+        headers.insert(HEADER_CHARACTER_ID, (*character_id).into());
+
+        #[derive(Debug, Serialize)]
+        struct Query {
+            search: String,
+        }
+
+        let query = &Query {
+            search: search.into(),
+        };
+
+        self
+            .fetch_auth(
+                "/search/structure",
+                query,
+                headers,
+            )
+            .await
+            .map_err(Into::into)
     }
 }
 
@@ -133,7 +163,7 @@ impl Into<String> for SearchCategory {
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Default, Deserialize)]
 struct EveSearchResult {
     #[serde(default)]
     agent:          Vec<i64>,

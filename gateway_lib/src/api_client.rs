@@ -91,14 +91,43 @@ impl StarFoundryApiClient {
             )
             .await?;
 
-        match response.text().await {
-            Err(e) => {
-                tracing::error!("Error parsing json, {}", e);
-                Err(Error::ReqwestError(e, api_url))
+        match response.status() {
+            StatusCode::NOT_FOUND => {
+                return Err(Error::NotFound(api_url).into());
             },
-            Ok(x) => {
-                serde_json::from_str(&x)
-                    .map_err(|e| Error::JsonParseError(e, x, api_url))
+            StatusCode::FORBIDDEN => {
+                return Err(Error::Forbidden(api_url).into());
+            },
+            StatusCode::UNAUTHORIZED => {
+                return Err(Error::Unauthorized.into());
+            },
+            StatusCode::BAD_GATEWAY => {
+                return Err(Error::BadGateway.into());
+            },
+            StatusCode::SERVICE_UNAVAILABLE => {
+                return Err(Error::ServiceUnavailable.into());
+            },
+            // TODO: implement
+            //StatusCode::NO_CONTENT => {
+            //    return Ok(T::default());
+            //},
+            StatusCode::CREATED |
+            StatusCode::OK => {
+                // TODO: use actual json function
+                match response.text().await {
+                    Err(e) => {
+                        tracing::error!("Error parsing json, {}", e);
+                        Err(Error::ReqwestError(e, api_url))
+                    },
+                    Ok(x) => {
+                        serde_json::from_str(&x)
+                            .map_err(|e| Error::JsonParseError(e, x, api_url))
+                    }
+                }
+            },
+            _ => {
+                // TODO: better fallback
+                return Err(Error::Unauthorized.into());
             }
         }
     }

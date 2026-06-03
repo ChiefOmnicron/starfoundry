@@ -64,9 +64,9 @@ pub struct NpcStationWrapper {
     #[serde(rename = "orbitID")]
     pub orbit_id:           OrbitId,
     #[serde(rename = "orbitIndex")]
-    pub orbit_index:        i32,
+    pub orbit_index:        Option<i32>,
     #[serde(rename = "celestialIndex")]
-    pub celestial_index:    i32,
+    pub celestial_index:    Option<i32>,
     pub position:           Position,
 }
 
@@ -77,8 +77,8 @@ pub struct NpcStation {
     pub type_id:            TypeId,
     pub owner_id:           TypeId,
     pub orbit_id:           OrbitId,
-    pub orbit_index:        i32,
-    pub celestial_index:    i32,
+    pub orbit_index:        Option<i32>,
+    pub celestial_index:    Option<i32>,
     pub position:           Position,
 }
 

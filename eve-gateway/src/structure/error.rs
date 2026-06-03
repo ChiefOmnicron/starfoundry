@@ -43,18 +43,12 @@ pub enum StructureError {
 impl IntoResponse for StructureError {
     fn into_response(self) -> Response {
         match self {
-            Self::EveApiError(EveApiError::NotFound(_)) => {
-                tracing::error!("{}", self.to_string());
-                (
-                    StatusCode::NOT_FOUND,
-                    Json(
-                        ErrorResponse {
-                            error: "NOT_FOUND".into(),
-                            description: "The requested resource could not be found.".into(),
-                        }
-                    )
-                ).into_response()
-            }
+            Self::EveApiError(e) => {
+                starfoundry_lib_eve_client::EveApiError::into_response(e)
+            },
+            Self::GatewayError(e) => {
+                starfoundry_lib_gateway::Error::into_response(e)
+            },
 
             _ => {
                 tracing::error!("{}", self.to_string());

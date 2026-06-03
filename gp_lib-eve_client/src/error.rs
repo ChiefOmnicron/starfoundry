@@ -39,6 +39,8 @@ pub enum EveApiError {
     NotFound(Url),
     #[error("the route is still cached and new data cannot be obtained, '{0}'")]
     NotModified(Url),
+    #[error("the character is not allowed to access the resource, '{0}'")]
+    Forbidden(Url),
     #[error("the last received data is still valid, and the server is not ready to give new data, '{0}'")]
     DataNotExpired(Url),
     #[error("the eve Server not reachable")]
@@ -141,6 +143,18 @@ impl IntoResponse for EveApiError {
                     Json(
                         ErrorResponse {
                             error: "BAD_GATEWAY".into(),
+                            description: format!("{}", self),
+                        }
+                    )
+                ).into_response()
+            },
+            Self::Forbidden(_) => {
+                tracing::warn!("{}", self.to_string());
+                (
+                    StatusCode::FORBIDDEN,
+                    Json(
+                        ErrorResponse {
+                            error: "FORBIDDEN".into(),
                             description: format!("{}", self),
                         }
                     )

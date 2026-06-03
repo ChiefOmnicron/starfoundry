@@ -24,7 +24,7 @@ export function ProjectJobList({
     onCreated,
     onDelete,
 }: ProjectJobListProps) {
-    const [selectedRows, setSelectedRows] = useState<{ [key: Uuid]: ProjectJobMinimal[] }>({});
+    const [selectedRows, setSelectedRows] = useState<ProjectJobMinimal[]>([]);
 
     const header = (
         header: string,
@@ -59,10 +59,8 @@ export function ProjectJobList({
         }
     }
 
-    const onSelect = (projectId: Uuid, projectJobs: ProjectJobMinimal[]) => {
-        let oldRows = selectedRows;
-        oldRows[projectId] = projectJobs;
-        setSelectedRows(oldRows);
+    const onSelect = (_projectId: Uuid, projectJobs: ProjectJobMinimal[]) => {
+        setSelectedRows(projectJobs);
     }
 
     const content = () => {
@@ -132,11 +130,9 @@ export function ProjectJobList({
         }
     }
 
-    const selected = Object.keys(selectedRows).flatMap(x => selectedRows[x]);
-
     return <>
         <ProjectJobAction
-            selected={selected}
+            selected={selectedRows}
             onCreated={onCreated}
         />
 
