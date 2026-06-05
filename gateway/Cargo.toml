@@ -8,7 +8,7 @@ license.workspace = true
 [dependencies]
 axum = { version = "0.8.9", features = ["macros"] }
 dotenvy = "0.15.7"
-jsonwebtoken = { version = "10.4.0", features = ["use_pem"] }
+jsonwebtoken = { version = "10.4.0", features = ["use_pem", "aws_lc_rs"] }
 prometheus-client = "0.24.1"
 reqwest = { version = "0.13.4", features = ["json", "query", "form"] }
 starfoundry_lib-gateway ={ path = "../gateway_lib" }
