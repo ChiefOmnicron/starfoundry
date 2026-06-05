@@ -1,4 +1,4 @@
-import { Accordion } from '@mantine/core';
+import { Accordion, Button } from '@mantine/core';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { LIST_PROJECT_ALL_JOBS, useListProjectAllJobs } from '@starfoundry/components/services/projects/listAllJobs';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
@@ -66,13 +66,20 @@ function RouteComponent() {
                                 jobs={x.entries}
 
                                 checkable
-                                onSelect={onSelect}
+                                onSelect={() => onSelect}
 
                                 onJobSplit={onJobSplit}
 
                                 showEdit
                                 showStarted
                             />
+
+                            <Button onClick={() => onSelect(x.project_id, selectedRows)}>
+                                Add to selected
+                            </Button>
+                            <Button onClick={() => onSelect(x.project_id, [])}>
+                                Reset
+                            </Button>
                         </Accordion.Panel>
                     </Accordion.Item>
                 </>
