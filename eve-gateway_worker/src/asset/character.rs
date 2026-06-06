@@ -1,7 +1,8 @@
 use serde::Deserialize;
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{EveGatewayApiClientEveAsset, EveGatewayClient};
-use starfoundry_lib_types::CharacterId;
+use starfoundry_lib_gateway::Identity;
+use starfoundry_lib_types::{CharacterId, CorporationId};
 use starfoundry_lib_worker::Task;
 
 use crate::asset::insert::insert_assets;
@@ -28,19 +29,22 @@ pub async fn assets(
         }
     };
 
-    let client = EveGatewayClient::new(SERVICE_NAME)?;
+    let identity = Identity::new(
+        additional_data.character_id,
+        additional_data.corporation_id,
+        additional_data.source,
+    );
+
+    let client = EveGatewayClient::new_with_identity(SERVICE_NAME, identity)?;
     let entries = match client
-        .eve_fetch_character_assets(
-            additional_data.source,
-            additional_data.character_id,
-        )
+        .eve_fetch_character_assets(additional_data.character_id)
         .await {
 
         Ok(x) => {
             x
         },
         Err(e) => {
-            tracing::error!("Error while fetching corporation blueprint data, {:?}", e);
+            tracing::error!("Error while fetching character blueprint data, {:?}", e);
             task.append_error(e.to_string());
             return Err(e.into());
         }
@@ -63,6 +67,7 @@ pub async fn assets(
 
 #[derive(Debug, Deserialize)]
 struct AdditionalData {
-    source:       String,
-    character_id: CharacterId,
+    source:         String,
+    character_id:   CharacterId,
+    corporation_id: CorporationId,
 }

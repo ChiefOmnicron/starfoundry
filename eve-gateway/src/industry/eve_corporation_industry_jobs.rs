@@ -48,7 +48,7 @@ pub async fn api(
             state.eve_api_metric,
             identity.host()?,
             identity.character_id,
-            identity.corporation_id.unwrap_or(CorporationId(0)),
+            identity.corporation_id,
             vec![
                 SCOPE.into(),
             ],
@@ -69,7 +69,7 @@ pub async fn api(
     let path = format!(
         "latest/corporations/{}/industry/jobs",
         // TODO: refactor
-        *identity.corporation_id.unwrap_or(CorporationId(0)),
+        *identity.corporation_id,
     );
     let job_data = api_client
         .fetch_page_auth::<IndustryJob>(&path)

@@ -1,0 +1,1 @@
+ALTER TABLE structure ADD COLUMN IF NOT EXISTS corporation_id INTEGER NOT NULL;

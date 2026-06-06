@@ -5,7 +5,7 @@ use crate::error::{Error, Result};
 use crate::metric::WorkerMetric;
 use crate::WorkerIndustryTask;
 
-const SOURCE: &str = "industry.alpha.starfoundry.space";
+const SOURCE: &str = "industry.dev.starfoundry.space";
 
 /// Ensures that all necessary tasks are in the queue and new structures
 /// are added into the rotation

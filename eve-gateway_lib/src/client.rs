@@ -1,9 +1,8 @@
 use std::fmt::Debug;
 
-use axum::http::HeaderMap;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
-use starfoundry_lib_gateway::{ApiClient, StarFoundryApiClient, Result as GatewayResult};
+use starfoundry_lib_gateway::{ApiClient, Identity, Result as GatewayResult, StarFoundryApiClient};
 use url::Url;
 
 use crate::error::{Error, Result};
@@ -20,6 +19,19 @@ impl EveGatewayClient {
     ) -> Result<Self> {
         let api_url = Self::api_url()?;
         let api_client = StarFoundryApiClient::new(api_url, service.into())?;
+        Ok(Self(api_client))
+    }
+
+    pub fn new_with_identity<S: Into<String>>(
+        service:    S,
+        identity:   Identity,
+    ) -> Result<Self> {
+        let api_url = Self::api_url()?;
+        let api_client = StarFoundryApiClient::new_with_identity(
+            api_url,
+            service.into(),
+            identity,
+        )?;
         Ok(Self(api_client))
     }
 
@@ -43,7 +55,7 @@ impl ApiClient for EveGatewayClient {
         query: &Q,
     ) -> GatewayResult<T>
     where
-        T: DeserializeOwned {
+        T: Default + DeserializeOwned {
 
         self.0
             .fetch(path, query)
@@ -53,23 +65,22 @@ impl ApiClient for EveGatewayClient {
 
     async fn fetch_auth<Q: Serialize, T>(
         &self,
-        path:       impl Into<String>,
-        query:      &Q,
-        header_map: HeaderMap,
+        path:  impl Into<String>,
+        query: &Q,
     ) -> GatewayResult<T>
     where
-        T: DeserializeOwned {
+        T: Default + DeserializeOwned {
 
         self.0
-            .fetch_auth(path, query, header_map)
+            .fetch_auth(path, query)
             .await
             .map_err(Into::into)
     }
 
     async fn post<D, T>(
         &self,
-        path:   impl Into<String>,
-        data:   D,
+        path: impl Into<String>,
+        data: D,
     ) -> GatewayResult<T>
     where
         D: Debug + Serialize + Send + Sync,
@@ -83,46 +94,43 @@ impl ApiClient for EveGatewayClient {
 
     async fn post_auth<D, T>(
         &self,
-        path:       impl Into<String>,
-        data:       D,
-        header_map: HeaderMap,
+        path: impl Into<String>,
+        data: D,
     ) -> GatewayResult<T>
     where
         D: Debug + Serialize + Send + Sync,
         T: Default + DeserializeOwned {
 
         self.0
-            .post_auth(path, data, header_map)
+            .post_auth(path, data)
             .await
             .map_err(Into::into)
     }
 
     async fn put_auth<D, T>(
         &self,
-        path:       impl Into<String>,
-        data:       D,
-        header_map: HeaderMap,
+        path: impl Into<String>,
+        data: D,
     ) -> GatewayResult<T>
     where
         D: Debug + Serialize + Send + Sync,
         T: Default + DeserializeOwned {
 
         self.0
-            .put_auth(path, data, header_map)
+            .put_auth(path, data)
             .await
             .map_err(Into::into)
     }
 
     async fn delete_auth<T>(
         &self,
-        path:       impl Into<String>,
-        header_map: HeaderMap,
+        path: impl Into<String>,
     ) -> GatewayResult<T>
     where
         T: Default + DeserializeOwned {
 
         self.0
-            .delete_auth(path, header_map)
+            .delete_auth(path)
             .await
             .map_err(Into::into)
     }

@@ -1,5 +1,5 @@
 use sqlx::PgPool;
-use starfoundry_lib_types::{CharacterId, RegionId, StructureId};
+use starfoundry_lib_types::{CharacterId, CorporationId, RegionId, StructureId};
 use starfoundry_lib_worker::Task;
 use std::collections::HashMap;
 
@@ -192,6 +192,7 @@ async fn sync_player_stations(
             SELECT
                 main_character,
                 character_id,
+                corporation_id,
                 structure_id,
                 region_id,
                 source
@@ -205,6 +206,7 @@ async fn sync_player_stations(
         .map(|x| TimeSlottedMarketEntry {
             main_character: x.main_character.into(),
             character_id:   x.character_id.into(),
+            corporation_id: x.corporation_id.into(),
             structure_id:   x.structure_id.into(),
             region_id:      x.region_id.into(),
             source:         x.source,
@@ -220,6 +222,7 @@ async fn sync_player_stations(
             SELECT
                 (additional_data ->> 'structure_id')::BIGINT AS "structure_id!",
                 (additional_data ->> 'character_id')::INTEGER AS "character_id!",
+                (additional_data ->> 'corporation_id')::INTEGER AS "corporation_id!",
                 (additional_data ->> 'source')::VARCHAR AS source
             FROM worker_queue
             WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
@@ -254,6 +257,7 @@ async fn sync_player_stations(
                 let additional_data = serde_json::json!({
                     "structure_id": structure.structure_id,
                     "character_id": character_id,
+                    "corporation_id": structure.corporation_id,
                     "region_id": structure.region_id,
                     "source": structure.source,
                 });
@@ -340,7 +344,9 @@ async fn sync_private_orders(
         let task_name: String = WorkerMarketTask::CharacterOrders.into();
         let public_contract = sqlx::query!("
                 SELECT
-                    (additional_data ->> 'character_id')::INTEGER AS character_id
+                    (additional_data ->> 'character_id')::INTEGER AS character_id,
+                    (additional_data ->> 'corporation_id')::INTEGER AS corporation_id,
+                    (additional_data ->> 'source')::INTEGER AS source
                 FROM worker_queue
                 WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
                 AND task = $1
@@ -381,7 +387,9 @@ async fn sync_private_orders(
         let task_name: String = WorkerMarketTask::CorporationOrders.into();
         let public_contract = sqlx::query!("
                 SELECT
-                    (additional_data ->> 'corporation_id')::INTEGER AS corporation_id
+                    (additional_data ->> 'character_id')::INTEGER AS character_id,
+                    (additional_data ->> 'corporation_id')::INTEGER AS corporation_id,
+                    (additional_data ->> 'source')::INTEGER AS source
                 FROM worker_queue
                 WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
                 AND task = $1
@@ -487,10 +495,12 @@ async fn time_slotted_market(
         .map_err(Error::SyncError)
 }*/
 
+// TODO:: remove
 #[derive(Clone, Debug)]
 struct TimeSlottedMarketEntry {
     main_character: CharacterId,
     character_id:   CharacterId,
+    corporation_id: CorporationId,
     structure_id:   StructureId,
     region_id:      RegionId,
     source:         String,

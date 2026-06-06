@@ -11,7 +11,7 @@ pub async fn fetch_members_self(
     character_id:           CharacterId,
     eve_gateway_api_client: &impl EveGatewayApiClient,
     project_group_uuid:     ProjectGroupUuid,
-) -> Result<ProjectGroupMember> {
+) -> Result<Option<ProjectGroupMember>> {
     let entry = sqlx::query!(
         "
             SELECT
@@ -29,16 +29,20 @@ pub async fn fetch_members_self(
         .await
         .map_err(|e| ProjectGroupError::FetchMembersSelf(e, project_group_uuid))?;
 
-    let character = eve_gateway_api_client
+    match eve_gateway_api_client
         .fetch_character(
             character_id,
         )
-        .await?;
-    Ok(ProjectGroupMember {
-        character:      character,
-        permissions:    ProjectGroupPermission::new(entry.permission),
-        is_owner:       entry.is_owner.unwrap_or(false),
-    })
+        .await {
+
+        Ok(Some(x)) => Ok(Some(ProjectGroupMember {
+            character:      x,
+            permissions:    ProjectGroupPermission::new(entry.permission),
+            is_owner:       entry.is_owner.unwrap_or(false),
+        })),
+        Ok(None) => Ok(None),
+        Err(_) => Ok(None),
+    }
 }
 
 #[cfg(test)]

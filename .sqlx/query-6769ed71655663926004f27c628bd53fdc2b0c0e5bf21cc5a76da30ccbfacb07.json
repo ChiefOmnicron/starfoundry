@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                main_character,\n                character_id,\n                structure_id,\n                region_id,\n                source\n            FROM structure\n            WHERE structure_id > 1000000000000\n        ",
+  "query": "\n            SELECT\n                main_character,\n                character_id,\n                corporation_id,\n                structure_id,\n                region_id,\n                source\n            FROM structure\n            WHERE structure_id > 1000000000000\n        ",
   "describe": {
     "columns": [
       {
@@ -27,6 +27,17 @@
       },
       {
         "ordinal": 2,
+        "name": "corporation_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "corporation_id"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
         "name": "structure_id",
         "type_info": "Int8",
         "origin": {
@@ -37,7 +48,7 @@
         }
       },
       {
-        "ordinal": 3,
+        "ordinal": 4,
         "name": "region_id",
         "type_info": "Int4",
         "origin": {
@@ -48,7 +59,7 @@
         }
       },
       {
-        "ordinal": 4,
+        "ordinal": 5,
         "name": "source",
         "type_info": "Varchar",
         "origin": {
@@ -67,8 +78,9 @@
       false,
       false,
       false,
+      false,
       false
     ]
   },
-  "hash": "5eb5f82155f11510606de7e704fe7784a782d2f7648acf1825f1a3209467fdbc"
+  "hash": "6769ed71655663926004f27c628bd53fdc2b0c0e5bf21cc5a76da30ccbfacb07"
 }

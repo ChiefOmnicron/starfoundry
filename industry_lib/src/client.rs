@@ -1,6 +1,5 @@
 use std::fmt::Debug;
 
-use axum::http::HeaderMap;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 use starfoundry_lib_gateway::{ApiClient, StarFoundryApiClient, Result as GatewayResult};
@@ -53,7 +52,7 @@ impl ApiClient for IndustryClient {
         query: &Q,
     ) -> GatewayResult<T>
     where
-        T: DeserializeOwned {
+        T: Default + DeserializeOwned {
 
         self.0
             .fetch(path, query)
@@ -63,15 +62,14 @@ impl ApiClient for IndustryClient {
 
     async fn fetch_auth<Q: Serialize, T>(
         &self,
-        path:       impl Into<String>,
-        query:      &Q,
-        header_map: HeaderMap,
+        path:  impl Into<String>,
+        query: &Q,
     ) -> GatewayResult<T>
     where
-        T: DeserializeOwned {
+        T: Default + DeserializeOwned {
 
         self.0
-            .fetch_auth(path, query, header_map)
+            .fetch_auth(path, query)
             .await
             .map_err(Into::into)
     }
@@ -93,46 +91,43 @@ impl ApiClient for IndustryClient {
 
     async fn post_auth<D, T>(
         &self,
-        path:       impl Into<String>,
-        data:       D,
-        header_map: HeaderMap,
+        path: impl Into<String>,
+        data: D,
     ) -> GatewayResult<T>
     where
         D: Debug + Serialize + Send + Sync,
         T: Default + DeserializeOwned {
 
         self.0
-            .post_auth(path, data, header_map)
+            .post_auth(path, data)
             .await
             .map_err(Into::into)
     }
 
     async fn put_auth<D, T>(
         &self,
-        path:       impl Into<String>,
-        data:       D,
-        header_map: HeaderMap,
+        path: impl Into<String>,
+        data: D,
     ) -> GatewayResult<T>
     where
         D: Debug + Serialize + Send + Sync,
         T: Default + DeserializeOwned {
 
         self.0
-            .put_auth(path, data, header_map)
+            .put_auth(path, data)
             .await
             .map_err(Into::into)
     }
 
     async fn delete_auth<T>(
         &self,
-        path:       impl Into<String>,
-        header_map: HeaderMap,
+        path: impl Into<String>,
     ) -> GatewayResult<T>
     where
         T: Default + DeserializeOwned {
 
         self.0
-            .delete_auth(path, header_map)
+            .delete_auth(path)
             .await
             .map_err(Into::into)
     }

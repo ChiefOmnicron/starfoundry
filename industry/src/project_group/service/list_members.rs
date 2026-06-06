@@ -29,11 +29,16 @@ pub async fn list_members(
     let mut members = Vec::new();
     for entry in entries {
         // TODO: add bulk fetch
-        let character = eve_gateway_api_client
+        let character = match eve_gateway_api_client
             .fetch_character(
                 entry.character_id.into(),
             )
-            .await?;
+            .await {
+
+            Ok(Some(x)) => x,
+            Ok(None) => continue,
+            Err(_) => continue
+        };
 
         let member = ProjectGroupMember {
             character:      character,

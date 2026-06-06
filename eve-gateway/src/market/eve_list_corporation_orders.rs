@@ -4,7 +4,6 @@ use axum::response::IntoResponse;
 use reqwest::StatusCode;
 use starfoundry_lib_eve_gateway::eve_market::MarketOrder;
 use starfoundry_lib_gateway::ExtractIdentity;
-use starfoundry_lib_types::CorporationId;
 
 use crate::api_docs::{InternalServerError, NotFound};
 use crate::market::error::Result;
@@ -45,7 +44,7 @@ pub async fn api(
             state.eve_api_metric,
             identity.host()?,
             identity.character_id,
-            identity.corporation_id.unwrap_or(CorporationId(0)),
+            identity.corporation_id,
             vec![
                 SCOPE.into(),
             ],
@@ -66,7 +65,7 @@ pub async fn api(
     let path = format!(
         "latest/corporations/{}/orders",
         // TODO: refactor
-        *identity.corporation_id.unwrap_or(CorporationId(0)),
+        *identity.corporation_id,
     );
     let market_data = api_client
         .fetch_page_auth::<MarketOrder>(&path)

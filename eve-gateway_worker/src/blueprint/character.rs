@@ -1,7 +1,8 @@
 use serde::Deserialize;
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{EveGatewayApiClientEveAsset, EveGatewayClient};
-use starfoundry_lib_types::CharacterId;
+use starfoundry_lib_gateway::Identity;
+use starfoundry_lib_types::{CharacterId, CorporationId};
 use starfoundry_lib_worker::Task;
 
 use crate::blueprint::insert::insert_blueprints;
@@ -28,10 +29,14 @@ pub async fn blueprints(
         }
     };
 
-    let client = EveGatewayClient::new(SERVICE_NAME)?;
+    let identity = Identity::new(
+        additional_data.character_id,
+        additional_data.corporation_id,
+        additional_data.source,
+    );
+    let client = EveGatewayClient::new_with_identity(SERVICE_NAME, identity)?;
     let entries = match client
         .eve_fetch_character_blueprints(
-            additional_data.source,
             additional_data.character_id,
         )
         .await {
@@ -63,6 +68,7 @@ pub async fn blueprints(
 
 #[derive(Debug, Deserialize)]
 struct AdditionalData {
-    source:       String,
-    character_id: CharacterId,
+    source:         String,
+    character_id:   CharacterId,
+    corporation_id: CorporationId,
 }

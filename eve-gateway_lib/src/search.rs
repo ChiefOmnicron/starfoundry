@@ -1,8 +1,5 @@
-use axum::http::{HeaderMap, HeaderValue};
-use reqwest::header::HOST;
 use serde::{Deserialize, Serialize};
-use starfoundry_lib_gateway::{ApiClient, HEADER_CHARACTER_ID};
-use starfoundry_lib_types::CharacterId;
+use starfoundry_lib_gateway::ApiClient;
 use utoipa::ToSchema;
 
 use crate::{Error, Result};
@@ -30,15 +27,9 @@ pub trait EveGatewayApiClientSearch: ApiClient {
     #[allow(async_fn_in_trait)]
     async fn in_game_search<S: Into<String>>(
         &self,
-        character_id: CharacterId,
-        source:       String,
-        category:     SearchCategory,
-        search:       S,
+        category: SearchCategory,
+        search:   S,
     ) -> Result<SearchResult> {
-        let mut headers = HeaderMap::new();
-        headers.insert(HOST, HeaderValue::from_str(&source).unwrap_or(HeaderValue::from_static("invalid.header")));
-        headers.insert(HEADER_CHARACTER_ID, (*character_id).into());
-
         #[derive(Debug, Serialize)]
         struct Query {
             categories: String,
@@ -55,7 +46,6 @@ pub trait EveGatewayApiClientSearch: ApiClient {
             .fetch_auth(
                 "/search",
                 query,
-                headers,
             )
             .await
             .map_err(Into::into)
@@ -80,14 +70,8 @@ pub trait EveGatewayApiClientSearch: ApiClient {
     #[allow(async_fn_in_trait)]
     async fn search_structure<S: Into<String>>(
         &self,
-        character_id: CharacterId,
-        source:       String,
-        search:       S,
+        search:   S,
     ) -> Result<Vec<i64>> {
-        let mut headers = HeaderMap::new();
-        headers.insert(HOST, HeaderValue::from_str(&source).unwrap_or(HeaderValue::from_static("invalid.header")));
-        headers.insert(HEADER_CHARACTER_ID, (*character_id).into());
-
         #[derive(Debug, Serialize)]
         struct Query {
             search: String,
@@ -101,7 +85,6 @@ pub trait EveGatewayApiClientSearch: ApiClient {
             .fetch_auth(
                 "/search/structure",
                 query,
-                headers,
             )
             .await
             .map_err(Into::into)

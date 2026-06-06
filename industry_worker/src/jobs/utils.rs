@@ -73,9 +73,7 @@ pub async fn fetch_done_job_ids(
 pub async fn resolve_corporation_asset_name(
     _pool:                  &PgPool,
     eve_gateway_api_client: &impl EveGatewayApiClient,
-    source:                 &String,
-    character_id:           &CharacterId,
-    corporation_id:         &CorporationId,
+    corporation_id:         CorporationId,
     location_ids:           &Vec<ItemId>,
     output_location_ids:    &Vec<ItemId>,
 ) -> Result<HashMap<ItemId, String>> {
@@ -91,8 +89,6 @@ pub async fn resolve_corporation_asset_name(
     for item_id in item_ids {
         let result = match eve_gateway_api_client
                 .eve_resolve_corporation_asset(
-                    source,
-                    character_id,
                     corporation_id,
                     vec![*item_id],
                 )

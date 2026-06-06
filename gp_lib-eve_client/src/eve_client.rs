@@ -1065,8 +1065,9 @@ impl EveApiClient {
             let status = response.status();
             let content = response.text().await.unwrap_or_default();
             tracing::error!(
-                "Failed to get token, status: {}, content: {}",
+                "Failed to get token, status: {}, url: {}, content: {}",
                 status,
+                oauth_token_url,
                 content,
             );
             return Err(EveApiError::GetTokenError)

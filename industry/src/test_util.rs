@@ -1,4 +1,3 @@
-use axum::http::HeaderMap;
 use serde::Serialize;
 use starfoundry_lib_eve_gateway::{EveGatewayApiClient, EveGatewayApiClientAsset, EveGatewayApiClientEveAsset, EveGatewayApiClientEveFitting, EveGatewayApiClientIndustry, EveGatewayApiClientItem};
 use starfoundry_lib_eve_gateway::contract::EveGatewayApiClientContract;
@@ -159,12 +158,11 @@ impl ApiClient for EveGatewayTestApiClient {
 
     async fn fetch_auth<Q: Serialize, T>(
         &self,
-        _path:    impl Into<String>,
-        _query:   &Q,
-        _headers: HeaderMap,
+        _path:  impl Into<String>,
+        _query: &Q,
     ) -> starfoundry_lib_gateway::error::Result<T>
     where
-        T: serde::de::DeserializeOwned {
+        T: Default + serde::de::DeserializeOwned {
         unimplemented!()
     }
 
@@ -344,9 +342,8 @@ impl ApiClient for EveGatewayTestApiClient {
 
     async fn post_auth<D, T>(
         &self,
-        _path:      impl Into<String>,
-        _data:      D,
-        _headers:   HeaderMap,
+        _path: impl Into<String>,
+        _data: D,
     ) -> starfoundry_lib_gateway::error::Result<T>
     where
         D: std::fmt::Debug + serde::Serialize + Send + Sync,
@@ -356,9 +353,8 @@ impl ApiClient for EveGatewayTestApiClient {
 
     async fn put_auth<D, T>(
         &self,
-        _path:      impl Into<String>,
-        _data:      D,
-        _headers:   HeaderMap,
+        _path: impl Into<String>,
+        _data: D,
     ) -> starfoundry_lib_gateway::error::Result<T>
     where
         D: std::fmt::Debug + serde::Serialize + Send + Sync,
@@ -368,8 +364,7 @@ impl ApiClient for EveGatewayTestApiClient {
 
     async fn delete_auth<T>(
         &self,
-        _path:    impl Into<String>,
-        _headers: HeaderMap,
+        _path: impl Into<String>,
     ) -> starfoundry_lib_gateway::error::Result<T>
     where
         T: serde::de::DeserializeOwned {
@@ -390,12 +385,11 @@ impl ApiClient for MarketTestApiClient {
 
     async fn fetch_auth<Q: Serialize, T>(
             &self,
-            _path:    impl Into<String>,
-            _query:   &Q,
-            _headers: HeaderMap,
+            _path:  impl Into<String>,
+            _query: &Q,
         ) -> starfoundry_lib_gateway::Result<T>
         where
-            T: serde::de::DeserializeOwned {
+            T: Default + serde::de::DeserializeOwned {
         unimplemented!()
     }
 
@@ -414,7 +408,6 @@ impl ApiClient for MarketTestApiClient {
         &self,
         _path:      impl Into<String>,
         _data:      D,
-        _headers:   HeaderMap,
     ) -> starfoundry_lib_gateway::error::Result<T>
     where
         D: std::fmt::Debug + serde::Serialize + Send + Sync,
@@ -424,9 +417,8 @@ impl ApiClient for MarketTestApiClient {
 
     async fn put_auth<D, T>(
         &self,
-        _path:       impl Into<String>,
-        _data:       D,
-        _header_map: HeaderMap,
+        _path: impl Into<String>,
+        _data: D,
     ) -> starfoundry_lib_gateway::error::Result<T>
     where
         D: std::fmt::Debug + serde::Serialize + Send + Sync,
@@ -437,7 +429,6 @@ impl ApiClient for MarketTestApiClient {
     async fn delete_auth<T>(
         &self,
         _path:      impl Into<String>,
-        _headers:   HeaderMap,
     ) -> starfoundry_lib_gateway::error::Result<T>
     where
         T: serde::de::DeserializeOwned {

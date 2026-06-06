@@ -14,7 +14,7 @@ pub async fn list(
     pool:                   &PgPool,
     eve_gateway_api_client: &impl EveGatewayApiClient,
     character_id:           CharacterId,
-    corporation_id:         Option<CorporationId>,
+    corporation_id:         CorporationId,
     alliance_id:            Option<AllianceId>,
     filter:                 IndustryHubFilter,
 ) -> Result<Vec<IndustryHub>> {
@@ -55,7 +55,7 @@ pub async fn list(
                 ORDER BY ih.name
             "#,
                 *character_id,
-                corporation_id.map(|x| *x).unwrap_or(0),
+                *corporation_id,
                 alliance_id.map(|x| *x).unwrap_or(0),
                 filter.name,
                 filter.structure_type_id,
@@ -256,7 +256,7 @@ mod list_structure_test {
                 &pool,
                 &gateway_client,
                 CharacterId(1),
-                Some(CorporationId(1)),
+                CorporationId(1),
                 Some(AllianceId(0)),
                 IndustryHubFilter::default(),
             )
@@ -268,7 +268,7 @@ mod list_structure_test {
                 &pool,
                 &gateway_client,
                 CharacterId(1),
-                Some(CorporationId(1)),
+                CorporationId(1),
                 Some(AllianceId(0)),
                 IndustryHubFilter {
                     name:  Some(String::from("IndustryHubA")),
@@ -283,7 +283,7 @@ mod list_structure_test {
                 &pool,
                 &gateway_client,
                 CharacterId(1),
-                Some(CorporationId(1)),
+                CorporationId(1),
                 Some(AllianceId(0)),
                 IndustryHubFilter {
                     name: Some(String::from("SomeGibberish")),

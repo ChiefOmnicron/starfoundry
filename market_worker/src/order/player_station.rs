@@ -2,13 +2,14 @@ use serde::Deserialize;
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::EveGatewayClient;
 use starfoundry_lib_eve_gateway::eve_market::EveGatewayApiClientEveMarket;
-use starfoundry_lib_types::{CharacterId, RegionId, StructureId};
+use starfoundry_lib_types::{CharacterId, CorporationId, RegionId, StructureId};
 use starfoundry_lib_worker::Task;
 
 use crate::{SERVICE_NAME, WorkerMarketTask};
 use crate::error::{Error, Result};
 use crate::metric::WorkerMetric;
 use crate::order::insert_structure_market;
+use starfoundry_lib_gateway::Identity;
 
 pub async fn by_player_station_task(
     pool: &PgPool,
@@ -28,11 +29,14 @@ pub async fn by_player_station_task(
         }
     };
 
-    let client = EveGatewayClient::new(SERVICE_NAME)?;
+    let identity = Identity::new(
+        additional_data.character_id,
+        additional_data.corporation_id,
+        additional_data.source,
+    );
+    let client = EveGatewayClient::new_with_identity(SERVICE_NAME, identity)?;
     let entries = match client
         .fetch_market_by_player(
-            additional_data.source,
-            additional_data.character_id,
             additional_data.structure_id,
         )
         .await {
@@ -59,9 +63,10 @@ pub async fn by_player_station_task(
 
 #[derive(Debug, Deserialize)]
 struct AdditionalData {
-    character_id: CharacterId,
-    structure_id: StructureId,
+    character_id:   CharacterId,
+    corporation_id: CorporationId,
+    structure_id:   StructureId,
     // source from where the player structure was fetched
     // for example, either from the industry tool, or the appraisal
-    source:       String,
+    source:         String,
 }

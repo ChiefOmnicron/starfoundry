@@ -1,8 +1,9 @@
 use serde::Deserialize;
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::EveGatewayClient;
 use starfoundry_lib_eve_gateway::eve_market::EveGatewayApiClientEveMarket;
-use starfoundry_lib_types::CharacterId;
+use starfoundry_lib_eve_gateway::EveGatewayClient;
+use starfoundry_lib_gateway::Identity;
+use starfoundry_lib_types::{CharacterId, CorporationId};
 use starfoundry_lib_worker::Task;
 
 use crate::{SERVICE_NAME, WorkerMarketTask};
@@ -28,12 +29,14 @@ pub async fn character_orders(
         }
     };
 
-    let client = EveGatewayClient::new(SERVICE_NAME)?;
+    let identity = Identity::new(
+        additional_data.character_id,
+        additional_data.corporation_id,
+        additional_data.source,
+    );
+    let client = EveGatewayClient::new_with_identity(SERVICE_NAME, identity)?;
     let entries = match client
-        .fetch_character_orders(
-            additional_data.source,
-            additional_data.character_id,
-        )
+        .fetch_character_orders()
         .await {
 
         Ok(x) => {
@@ -57,6 +60,7 @@ pub async fn character_orders(
 
 #[derive(Debug, Deserialize)]
 struct AdditionalData {
-    character_id: CharacterId,
-    source:       String,
+    character_id:   CharacterId,
+    corporation_id: CorporationId,
+    source:         String,
 }

@@ -134,8 +134,12 @@ async fn sync_character_assets(
 ) -> Result<usize> {
     let task_name: String = WorkerEveGatewayTask::CharacterAssets.into();
     let entries = sqlx::query!("
-            SELECT character_id, domain
-            FROM eve_credential
+            SELECT
+                ec.character_id,
+                c.corporation_id,
+                ec.domain
+            FROM eve_credential ec
+            JOIN character c ON c.character_id = ec.character_id
             WHERE
                 scopes && $1::VARCHAR[] AND
                 character_main IS NULL
@@ -149,6 +153,7 @@ async fn sync_character_assets(
     let tasks = sqlx::query!("
             SELECT
                 (additional_data ->> 'character_id')::INTEGER AS character_id,
+                (additional_data ->> 'corporation_id')::INTEGER AS corporation_id,
                 (additional_data ->> 'source')::VARCHAR AS source
             FROM worker_queue
             WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
@@ -170,6 +175,7 @@ async fn sync_character_assets(
             }) {
                 let additional_data = serde_json::json!({
                     "character_id": entry.character_id,
+                    "corporation_id": entry.corporation_id,
                     "source": entry.domain,
                 });
                 new_entries.push(additional_data);
@@ -199,13 +205,13 @@ async fn sync_corporation_assets(
 
     let entries = sqlx::query!("
             SELECT
-                character_id,
-                character_main,
-                domain
-            FROM eve_credential
+                ec.character_id,
+                c.corporation_id,
+                ec.domain
+            FROM eve_credential ec
+            JOIN character c ON c.character_id = ec.character_id
             WHERE
-                scopes && $1::VARCHAR[] AND
-                character_main IS NOT NULL
+                scopes && $1::VARCHAR[]
         ",
             &vec!["esi-assets.read_corporation_assets.v1".into()],
         )
@@ -233,13 +239,12 @@ async fn sync_corporation_assets(
         if let None = tasks
             .iter()
             .find(|x| {
-                x.corporation_id == Some(entry.character_id) &&
-                x.character_id == entry.character_main &&
+                x.corporation_id == Some(entry.corporation_id) &&
                 x.source == Some(entry.domain.clone())
             }) {
                 let additional_data = serde_json::json!({
-                    "character_id": entry.character_main,
-                    "corporation_id": entry.character_id,
+                    "character_id": entry.character_id,
+                    "corporation_id": entry.corporation_id,
                     "source": entry.domain,
                 });
                 new_entries.push(additional_data);
@@ -267,8 +272,12 @@ async fn sync_character_blueprints(
 ) -> Result<usize> {
     let task_name: String = WorkerEveGatewayTask::CharacterBlueprints.into();
     let entries = sqlx::query!("
-            SELECT character_id, domain
-            FROM eve_credential
+            SELECT
+                ec.character_id,
+                c.corporation_id,
+                ec.domain
+            FROM eve_credential ec
+            JOIN character c ON c.character_id = ec.character_id
             WHERE
                 scopes && $1::VARCHAR[] AND
                 character_main IS NULL
@@ -282,6 +291,7 @@ async fn sync_character_blueprints(
     let tasks = sqlx::query!("
             SELECT
                 (additional_data ->> 'character_id')::INTEGER AS character_id,
+                (additional_data ->> 'corporation_id')::INTEGER AS corporation_id,
                 (additional_data ->> 'source')::VARCHAR AS source
             FROM worker_queue
             WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
@@ -303,6 +313,7 @@ async fn sync_character_blueprints(
             }) {
                 let additional_data = serde_json::json!({
                     "character_id": entry.character_id,
+                    "corporation_id": entry.corporation_id,
                     "source": entry.domain,
                 });
                 new_entries.push(additional_data);
@@ -332,13 +343,13 @@ async fn sync_corporation_blueprints(
 
     let entries = sqlx::query!("
             SELECT
-                character_id,
-                character_main,
-                domain
-            FROM eve_credential
+                ec.character_id,
+                c.corporation_id,
+                ec.domain
+            FROM eve_credential ec
+            JOIN character c ON c.character_id = ec.character_id
             WHERE
-                scopes && $1::VARCHAR[] AND
-                character_main IS NOT NULL
+                scopes && $1::VARCHAR[]
         ",
             &vec!["esi-corporation.read_blueprints.v1".into()],
         )
@@ -366,13 +377,13 @@ async fn sync_corporation_blueprints(
         if let None = tasks
             .iter()
             .find(|x| {
-                x.corporation_id == Some(entry.character_id) &&
-                x.character_id == entry.character_main &&
+                x.corporation_id == Some(entry.corporation_id) &&
+                x.character_id == Some(entry.character_id) &&
                 x.source == Some(entry.domain.clone())
             }) {
                 let additional_data = serde_json::json!({
-                    "character_id": entry.character_main,
-                    "corporation_id": entry.character_id,
+                    "character_id": entry.character_id,
+                    "corporation_id": entry.corporation_id,
                     "source": entry.domain,
                 });
                 new_entries.push(additional_data);

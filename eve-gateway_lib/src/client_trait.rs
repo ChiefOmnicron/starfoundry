@@ -1,4 +1,4 @@
-use starfoundry_lib_gateway::{ApiClient, HEADER_CHARACTER_ID};
+use starfoundry_lib_gateway::ApiClient;
 use starfoundry_lib_types::{CharacterId, StructureId, SystemId, TypeId};
 
 use crate::{AuthedCharacterInfo, CharacterInfo, EveGatewayApiClientAsset, EveGatewayApiClientEveAsset, EveGatewayApiClientEveFitting, EveGatewayApiClientIndustry, EveGatewayApiClientItem, ResolveStructureResponse, StructureRigBlueprintBonus, StructureRigResponse, StructureServiceResponse, System};
@@ -6,8 +6,6 @@ use crate::contract::EveGatewayApiClientContract;
 use crate::error::Result;
 use crate::eve_industry::EveGatewayApiClientEveIndustry;
 use crate::eve_market::EveGatewayApiClientEveMarket;
-use axum::http::{HeaderMap, HeaderValue};
-use reqwest::header::HOST;
 
 pub trait EveGatewayApiClient:
     ApiClient +
@@ -23,7 +21,7 @@ pub trait EveGatewayApiClient:
     #[allow(async_fn_in_trait)]
     async fn list_characters(
         &self,
-    ) -> Result<AuthedCharacterInfo> {
+    ) -> Result<Option<AuthedCharacterInfo>> {
         self
             .fetch(&format!("characters"), &())
             .await
@@ -34,9 +32,12 @@ pub trait EveGatewayApiClient:
     async fn fetch_character(
         &self,
         character_id: CharacterId,
-    ) -> Result<CharacterInfo> {
+    ) -> Result<Option<CharacterInfo>> {
         self
-            .fetch(&format!("characters/{}", *character_id), &())
+            .fetch(
+                &format!("characters/{}", *character_id),
+                &()
+            )
             .await
             .map_err(Into::into)
     }
@@ -55,19 +56,12 @@ pub trait EveGatewayApiClient:
     #[allow(async_fn_in_trait)]
     async fn resolve_structure(
         &self,
-        character_id: CharacterId,
-        source:       String,
         structure_id: StructureId,
     ) -> Result<Option<ResolveStructureResponse>> {
-        let mut headers = HeaderMap::new();
-        headers.insert(HOST, HeaderValue::from_str(&source).unwrap_or(HeaderValue::from_static("invalid.header")));
-        headers.insert(HEADER_CHARACTER_ID, (*character_id).into());
-
         self
             .fetch_auth(
                 &format!("structures/{}", *structure_id),
                 &(),
-                headers
             )
             .await
             .map_err(Into::into)

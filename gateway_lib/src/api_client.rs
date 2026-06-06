@@ -6,7 +6,7 @@ use std::fmt::Debug;
 use url::Url;
 
 use crate::error::{Error, Result};
-use crate::HEADER_SERVICE;
+use crate::{HEADER_SERVICE, Identity};
 
 pub const ENV_USER_AGENT: &str = "STARFOUNDRY_USER_AGENT";
 
@@ -14,8 +14,9 @@ const HEADER_SERVICE_UNKNOWN: &str = "Unknown";
 
 #[derive(Clone)]
 pub struct StarFoundryApiClient {
-    address: Url,
-    client:  Client,
+    address:    Url,
+    client:     Client,
+    identity:   Option<Identity>,
 }
 
 impl StarFoundryApiClient {
@@ -25,8 +26,22 @@ impl StarFoundryApiClient {
     ) -> Result<Self> {
         let client = Self::new_raw(service)?;
         Ok(Self {
-            address,
-            client,
+            address:    address,
+            client:     client,
+            identity:   None,
+        })
+    }
+
+    pub fn new_with_identity<S: Into<String>>(
+        address:    Url,
+        service:    S,
+        identity:   Identity,
+    ) -> Result<Self> {
+        let client = Self::new_raw(service)?;
+        Ok(Self {
+            address:    address,
+            client:     client,
+            identity:   Some(identity),
         })
     }
 
@@ -59,25 +74,44 @@ impl StarFoundryApiClient {
         query: &Q,
     ) -> Result<T>
     where
-        T: DeserializeOwned,
+        T: Default + DeserializeOwned,
     {
-        self.fetch_auth(
-                path,
-                query,
-                HeaderMap::new(),
-            )
-            .await
+        self.send_fetch(
+            path,
+            query,
+            HeaderMap::new(),
+        ).await
     }
 
     pub async fn fetch_auth<Q: Serialize, T>(
         &self,
-        path:    impl Into<String>,
-        query:   &Q,
-        headers: HeaderMap,
+        path:  impl Into<String>,
+        query: &Q,
     ) -> Result<T>
     where
-        T: DeserializeOwned,
+        T: Default + DeserializeOwned,
     {
+        let headers = if let Some(x) = &self.identity {
+            x.as_header()
+        } else {
+            return Err(Error::Unauthorized);
+        };
+
+        self.send_fetch(
+            path,
+            query,
+            headers,
+        ).await
+    }
+
+    async fn send_fetch<Q: Serialize, T>(
+        &self,
+        path:       impl Into<String>,
+        query:      &Q,
+        headers:    HeaderMap,
+    ) -> Result<T>
+    where
+        T: Default + DeserializeOwned, {
         let mut api_url = self.address.clone();
         api_url.set_path(&path.into());
 
@@ -134,22 +168,43 @@ impl StarFoundryApiClient {
 
     pub async fn post<D, T>(
         &self,
-        path:   impl Into<String>,
-        data:   D,
+        path: impl Into<String>,
+        data: D,
     ) -> Result<T>
     where
         D: Debug + Serialize + Send + Sync,
         T: Default + DeserializeOwned,
     {
-        self.post_auth(
-                path,
-                data,
-                HeaderMap::new(),
-            )
-            .await
+        self.send_post(
+            path,
+            data,
+            HeaderMap::new(),
+        ).await
     }
 
     pub async fn post_auth<D, T>(
+        &self,
+        path: impl Into<String>,
+        data: D,
+    ) -> Result<T>
+    where
+        D: Debug + Serialize + Send + Sync,
+        T: Default + DeserializeOwned,
+    {
+        let headers = if let Some(x) = &self.identity {
+            x.as_header()
+        } else {
+            return Err(Error::Unauthorized);
+        };
+
+        self.send_post(
+            path,
+            data,
+            headers,
+        ).await
+    }
+
+    async fn send_post<D, T>(
         &self,
         path:       impl Into<String>,
         data:       D,
@@ -209,14 +264,19 @@ impl StarFoundryApiClient {
 
     pub async fn put_auth<D, T>(
         &self,
-        path:       impl Into<String>,
-        data:       D,
-        headers:    HeaderMap,
+        path: impl Into<String>,
+        data: D,
     ) -> Result<T>
     where
         D: Debug + Serialize + Send + Sync,
         T: Default + DeserializeOwned,
     {
+        let headers = if let Some(x) = &self.identity {
+            x.as_header()
+        } else {
+            HeaderMap::new()
+        };
+
         let path = path.into();
 
         let mut api_url = self.address.clone();
@@ -266,12 +326,17 @@ impl StarFoundryApiClient {
 
     pub async fn delete_auth<T>(
         &self,
-        path:       impl Into<String>,
-        headers:    HeaderMap,
+        path: impl Into<String>,
     ) -> Result<T>
     where
         T: Default + DeserializeOwned,
     {
+        let headers = if let Some(x) = &self.identity {
+            x.as_header()
+        } else {
+            HeaderMap::new()
+        };
+
         let path = path.into();
 
         let mut api_url = self.address.clone();
@@ -424,23 +489,22 @@ pub trait ApiClient {
         query: &Q,
     ) -> Result<T>
     where
-        T: DeserializeOwned;
+        T: Default + DeserializeOwned;
 
     #[allow(async_fn_in_trait)]
     async fn fetch_auth<Q: Serialize, T>(
         &self,
-        path:    impl Into<String>,
-        query:   &Q,
-        headers: HeaderMap,
+        path:  impl Into<String>,
+        query: &Q,
     ) -> Result<T>
     where
-        T: DeserializeOwned;
+        T: Default + DeserializeOwned;
 
     #[allow(async_fn_in_trait)]
     async fn post<D, T>(
         &self,
-        path:   impl Into<String>,
-        data:   D,
+        path: impl Into<String>,
+        data: D,
     ) -> Result<T>
     where
         D: Debug + Serialize + Send + Sync,
@@ -449,9 +513,8 @@ pub trait ApiClient {
     #[allow(async_fn_in_trait)]
     async fn post_auth<D, T>(
         &self,
-        path:       impl Into<String>,
-        data:       D,
-        headers:    HeaderMap,
+        path: impl Into<String>,
+        data: D,
     ) -> Result<T>
     where
         D: Debug + Serialize + Send + Sync,
@@ -460,9 +523,8 @@ pub trait ApiClient {
     #[allow(async_fn_in_trait)]
     async fn put_auth<D, T>(
         &self,
-        path:       impl Into<String>,
-        data:       D,
-        headers:    HeaderMap,
+        path: impl Into<String>,
+        data: D,
     ) -> Result<T>
     where
         D: Debug + Serialize + Send + Sync,
@@ -471,8 +533,7 @@ pub trait ApiClient {
     #[allow(async_fn_in_trait)]
     async fn delete_auth<T>(
         &self,
-        path:       impl Into<String>,
-        headers:    HeaderMap,
+        path: impl Into<String>,
     ) -> Result<T>
     where
         T: Default + DeserializeOwned;

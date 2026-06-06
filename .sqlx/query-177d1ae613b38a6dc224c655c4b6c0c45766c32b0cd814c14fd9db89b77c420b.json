@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                character_id,\n                character_main,\n                domain\n            FROM eve_credential\n            WHERE\n                scopes && $1::VARCHAR[] AND\n                character_main IS NOT NULL\n        ",
+  "query": "\n            SELECT\n                ec.character_id,\n                c.corporation_id,\n                ec.domain\n            FROM eve_credential ec\n            JOIN character c ON c.character_id = ec.character_id\n            WHERE\n                scopes && $1::VARCHAR[] AND\n                character_main IS NULL\n        ",
   "describe": {
     "columns": [
       {
@@ -16,12 +16,12 @@
       },
       {
         "ordinal": 1,
-        "name": "character_main",
+        "name": "corporation_id",
         "type_info": "Int4",
         "origin": {
           "Table": {
-            "table": "eve_credential",
-            "name": "character_main"
+            "table": "\"character\"",
+            "name": "corporation_id"
           }
         }
       },
@@ -44,9 +44,9 @@
     },
     "nullable": [
       false,
-      true,
+      false,
       false
     ]
   },
-  "hash": "ff63f9fce523c2498fc9d448c153013f955abafad226bb1a5d09a84e89ae13f9"
+  "hash": "177d1ae613b38a6dc224c655c4b6c0c45766c32b0cd814c14fd9db89b77c420b"
 }
