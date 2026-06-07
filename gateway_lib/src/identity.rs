@@ -3,7 +3,7 @@ use starfoundry_lib_types::{CharacterId, CorporationId};
 
 use crate::{ExtractIdentity, HEADER_CHARACTER_ID, HEADER_CORPORATION_ID, HEADER_SOURCE};
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Identity {
     character_id:   CharacterId,
     corporation_id: CorporationId,

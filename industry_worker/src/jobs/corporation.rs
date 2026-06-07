@@ -34,6 +34,8 @@ pub async fn corporation_jobs(
         additional_data.corporation_id.clone(),
         additional_data.source,
     );
+    dbg!(&identity);
+    dbg!(&identity.as_header());
     let client = EveGatewayClient::new_with_identity(SERVICE_NAME, identity)?;
     let entries = match client
         .fetch_corporation_jobs()
@@ -48,8 +50,10 @@ pub async fn corporation_jobs(
             return Err(e.into());
         }
     };
+    task.append_log(format!("Job entries: {}", entries.len()));
 
     if entries.is_empty() {
+        task.append_log("No jobs");
         return Ok(());
     }
 
@@ -90,7 +94,7 @@ pub async fn corporation_jobs(
 
     let startable_jobs = match fetch_startable_jobs(
         pool,
-        additional_data.main_character_id,
+        additional_data.character_id,
     ).await {
 
         Ok(x)  => x,
@@ -160,7 +164,7 @@ pub async fn corporation_jobs(
     //if let Err(e) = cleanup_delivered_jobs(pool, *additional_data.corporation_id).await {
     if let Err(e) = cleanup_delivered_jobs(pool).await {
         tracing::warn!("{}", e);
-        task.append_log(e.to_string());
+        task.append_error(e.to_string());
     }
 
     sqlx::query!("
@@ -222,5 +226,4 @@ struct AdditionalData {
     source:             String,
     corporation_id:     CorporationId,
     character_id:       CharacterId,
-    main_character_id:  CharacterId,
 }
