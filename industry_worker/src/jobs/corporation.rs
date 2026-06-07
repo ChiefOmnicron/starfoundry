@@ -158,6 +158,10 @@ pub async fn corporation_jobs(
         unmatched.extend(unmatched_);
     }
 
+    task.append_log(format!("Updates: {}", updates.len()));
+    task.append_log(format!("Unmatched: {}", unmatched.len()));
+
+
     // TODO: check if this is okay here
     //if let Err(e) = cleanup_delivered_jobs(pool, *additional_data.corporation_id).await {
     if let Err(e) = cleanup_delivered_jobs(pool).await {
