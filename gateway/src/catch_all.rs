@@ -22,8 +22,8 @@ pub use self::well_known_jwks::*;
 
 use axum::http::HeaderMap;
 use axum::http::HeaderValue;
+use starfoundry_lib_gateway::{HEADER_ALLIANCE_ID, HEADER_CHARACTER_ID, HEADER_CORPORATION_ID, HEADER_IS_ADMIN, HEADER_SOURCE};
 use reqwest::header::HOST;
-use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID, HEADER_ALLIANCE_ID, HEADER_IS_ADMIN};
 
 pub fn add_headers(
     headers:        &mut HeaderMap,
@@ -33,7 +33,8 @@ pub fn add_headers(
     alliance_id:    Option<i32>,
     is_admin:       bool,
 ) {
-    headers.insert(HOST, host);
+    headers.insert(HOST, host.clone());
+    headers.insert(HEADER_SOURCE, host);
     headers.insert(HEADER_CHARACTER_ID, character_id.into());
     headers.insert(HEADER_CORPORATION_ID, corporation_id.into());
 
