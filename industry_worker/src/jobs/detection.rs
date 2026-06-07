@@ -33,7 +33,7 @@ pub fn job_detection(
     used_ids:        &mut Vec<Uuid>,
     used_job_ids:    &mut Vec<JobId>,
 ) -> (HashMap<Uuid, Vec<UpdateJobRequest>>, Vec<UnmatchedJob>) {
-    let span = span!(Level::INFO, "job_detection");
+    let span = span!(Level::DEBUG, "job_detection");
     let _guard = span.enter();
 
     let now = chrono::Utc::now().naive_utc();

@@ -34,8 +34,8 @@ pub async fn corporation_jobs(
         additional_data.corporation_id.clone(),
         additional_data.source,
     );
-    dbg!(&identity);
-    dbg!(&identity.as_header());
+    task.append_log(format!("{:?}", identity));
+    task.append_log(format!("{:?}", identity.as_header()));
     let client = EveGatewayClient::new_with_identity(SERVICE_NAME, identity)?;
     let entries = match client
         .fetch_corporation_jobs()
