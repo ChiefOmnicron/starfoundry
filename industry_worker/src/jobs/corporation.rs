@@ -34,8 +34,6 @@ pub async fn corporation_jobs(
         additional_data.corporation_id.clone(),
         additional_data.source,
     );
-    task.append_log(format!("{:?}", identity));
-    task.append_log(format!("{:?}", identity.as_header()));
     let client = EveGatewayClient::new_with_identity(SERVICE_NAME, identity)?;
     let entries = match client
         .fetch_corporation_jobs()
@@ -94,7 +92,7 @@ pub async fn corporation_jobs(
 
     let startable_jobs = match fetch_startable_jobs(
         pool,
-        additional_data.character_id,
+        additional_data.character_main_id,
     ).await {
 
         Ok(x)  => x,
@@ -225,5 +223,6 @@ pub async fn corporation_jobs(
 struct AdditionalData {
     source:             String,
     corporation_id:     CorporationId,
+    character_main_id:  CharacterId,
     character_id:       CharacterId,
 }

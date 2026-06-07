@@ -116,9 +116,9 @@ async fn sync_corporation_jobs(
     // (corporation_id, character_id, main_character_id)
     let corporations = vec![
         // Flanders
-        (98748294, 2117848811),
+        (98748294, 2117848811, 2117441999),
         // RCI
-        (98024275, 2117441999),
+        (98024275, 2117441999, 2117441999),
     ];
 
     let market_stations = sqlx::query!(r#"
@@ -142,7 +142,7 @@ async fn sync_corporation_jobs(
 
     // ensure that non authed structures are in the queue
     let mut new_entries = Vec::new();
-    for (corporation, character) in corporations {
+    for (corporation, character, character_main_id) in corporations {
         if let None = market_stations
             .iter()
             .find(|x| {
@@ -152,6 +152,7 @@ async fn sync_corporation_jobs(
                 let additional_data = serde_json::json!({
                     "corporation_id": corporation,
                     "character_id": character,
+                    "character_main_id": character_main_id,
                     "source": SOURCE,
                 });
                 new_entries.push(additional_data);
