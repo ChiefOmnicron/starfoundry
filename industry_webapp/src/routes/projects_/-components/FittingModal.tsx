@@ -78,7 +78,7 @@ export function FittingModal({
             name: fitName,
             description: 'Automatically created',
             items: [
-                ...entries
+                ...(entries || [])
                     .map(x => {
                         return {
                             quantity: x.quantity,

@@ -20,20 +20,22 @@ export function EditMarketEntryModal({
             source: entry.source,
         },
         onSubmit: async ({ value }) => {
-            form.reset();
             onSave({
                 ...entry,
                 cost: value.buyPrice,
                 quantity: value.quantity,
                 source: value.source,
-            })
+            });
         }
     });
 
     return <>
         <ModalWrapper
             opened={opened}
-            close={close}
+            close={() => {
+                form.reset();
+                close();
+            }}
             title="Update entry"
             size="50%"
         >
@@ -42,7 +44,6 @@ export function EditMarketEntryModal({
                     e.preventDefault();
                     e.stopPropagation();
                     form.handleSubmit();
-                    form.reset();
                 }}
             >
                 <Stack>

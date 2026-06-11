@@ -1,6 +1,7 @@
 {
   "name": "@starfoundry/components",
   "private": true,
+  "min-release-age": 7,
   "version": "0.0.0",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.2",

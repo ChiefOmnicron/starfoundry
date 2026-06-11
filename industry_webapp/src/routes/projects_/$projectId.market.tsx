@@ -206,7 +206,7 @@ function RouteComponent() {
     const marketTable = (
         marketData: ProjectMarketEntry[],
     ) => {
-        const rows = marketData
+        const rows = (marketData || [])
             .map(x => <Table.Tr>
                 <Table.Td>
                     <EveIcon
