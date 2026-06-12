@@ -1,4 +1,4 @@
-import { AppShell, Burger, createTheme, DEFAULT_THEME, Divider, Group, Image, MantineProvider, mergeMantineTheme, ScrollArea } from '@mantine/core';
+import { AppShell, Burger, createTheme, DEFAULT_THEME, Divider, Group, Image, MantineProvider, mergeMantineTheme, ScrollArea, UnstyledButton } from '@mantine/core';
 import { CharacterComponent } from '@starfoundry/components/misc/Character';
 import { createRootRouteWithContext, Link, Outlet, useRouterState } from '@tanstack/react-router';
 import { CustomLink } from '@starfoundry/components/links/RouterLink';
@@ -281,16 +281,27 @@ function Shell() {
                                 fit="contain"
                             />
                         </Link>
-                        <Link
-                            key="about"
-                            to={ AboutRoute.to }
-                            style={{
-                                textDecoration: 'None',
-                                color: 'var(--mantine-color-dark-0)'
-                            }}
-                        >
-                            About
-                        </Link>
+
+                        <Group>
+                            <Link
+                                key="about"
+                                to={ AboutRoute.to }
+                                style={{
+                                    textDecoration: 'None',
+                                    color: 'var(--mantine-color-dark-0)'
+                                }}
+                            >
+                                About
+                            </Link>
+
+                            <UnstyledButton
+                                component={Link}
+                                onClick={() => { window.location.href = "/api/auth/logout"}}
+                                variant="subtle"
+                            >
+                                Logout
+                            </UnstyledButton>
+                        </Group>
                     </Group>
                 </AppShell.Header>
 
