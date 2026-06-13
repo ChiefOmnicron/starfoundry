@@ -2979,6 +2979,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "starfoundry_lib-notification"
+version = "0.1.0"
+dependencies = [
+ "reqwest",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "starfoundry_lib-types"
 version = "0.1.0"
 dependencies = [

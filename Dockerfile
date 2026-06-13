@@ -27,6 +27,7 @@ COPY        ./market ./market
 COPY        ./market_lib ./market_lib
 COPY        ./market_worker ./market_worker
 COPY        ./meta_webserver ./meta_webserver
+COPY        ./notification_lib ./notification_lib
 COPY        ./worker_lib ./worker_lib
 COPY        ./worker-eve_sde_parser ./worker-eve_sde_parser
 # tmp
@@ -58,6 +59,7 @@ COPY        ./market ./market
 COPY        ./market_lib ./market_lib
 COPY        ./market_worker ./market_worker
 COPY        ./meta_webserver ./meta_webserver
+COPY        ./notification_lib ./notification_lib
 COPY        ./worker_lib ./worker_lib
 COPY        ./worker-eve_sde_parser ./worker-eve_sde_parser
 # tmp
