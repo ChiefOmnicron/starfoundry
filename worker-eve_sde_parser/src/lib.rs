@@ -63,8 +63,8 @@ pub async fn import_sde(
     let mut blueprints            = parser::blueprints::parse(&directory)?;
     let mut type_ids              = parser::type_ids::parse(&directory)?;
 
-    blueprints.extend(overwrites.blueprints);
-    type_ids.extend(overwrites.items);
+    //blueprints.extend(overwrites.blueprints);
+    //type_ids.extend(overwrites.items);
 
     blueprints_dependencies::run(
             &pool,

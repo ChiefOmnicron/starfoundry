@@ -130,7 +130,7 @@ pub fn parse(
         } else {
             invalid.push(line);
         }
-    }
+    } 
 
     ParseResult {
         invalid,
@@ -183,6 +183,7 @@ pub async fn load_items(
         } else {
             continue;
         };
+
         let group = if let Ok(Some(x)) = fetch_group(
             pool,
             item.group_id.into(),

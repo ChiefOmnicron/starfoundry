@@ -760,7 +760,8 @@ impl JobPlannerEngine {
                         blueprint.item.group.group_id == 659.into() ||
                         blueprint.item.group.group_id == 883.into() ||
                         blueprint.item.group.group_id == 30.into() ||
-                        blueprint.item.group.group_id == 4594.into() {
+                        blueprint.item.group.group_id == 4594.into() ||
+                        blueprint.item.group.group_id == 5120.into() {
 
                         // ignore
                     } else if structure
