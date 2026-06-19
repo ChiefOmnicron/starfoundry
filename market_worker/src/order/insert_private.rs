@@ -1,6 +1,6 @@
 use chrono::Days;
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::eve_market::MarketOrder;
+use starfoundry_lib_eve_gateway::MarketOrder;
 use starfoundry_lib_worker::Task;
 
 use crate::WorkerMarketTask;

@@ -6,10 +6,9 @@ use starfoundry_lib_gateway::{ApiClient, Identity, Result as GatewayResult, Star
 use url::Url;
 
 use crate::error::{Error, Result};
-use crate::{ENV_EVE_GATEWAY_API, EveGatewayApiClient, EveGatewayApiClientAsset, EveGatewayApiClientEveAsset, EveGatewayApiClientEveFitting, EveGatewayApiClientIndustry, EveGatewayApiClientItem, EveGatewayApiClientSearch};
+use crate::{ENV_EVE_GATEWAY_API, EveGatewayApiClient, EveGatewayApiClientAsset, EveGatewayApiClientEveAsset, EveGatewayApiClientFitting, EveGatewayApiClientIndustry, EveGatewayApiClientItem, EveGatewayApiClientSearch};
 use crate::contract::EveGatewayApiClientContract;
-use crate::eve_market::EveGatewayApiClientEveMarket;
-use crate::eve_industry::EveGatewayApiClientEveIndustry;
+use crate::market::EveGatewayApiClientMarket;
 
 pub struct EveGatewayClient(StarFoundryApiClient);
 
@@ -39,12 +38,11 @@ impl EveGatewayClient {
         let env = if let Ok(x) = std::env::var(ENV_EVE_GATEWAY_API) {
             x
         } else {
-            return Err(Error::EnvNotSet(ENV_EVE_GATEWAY_API).into());
+            return Err(Error::EnvNotSet(ENV_EVE_GATEWAY_API));
         };
 
         Url::parse(&env)
             .map_err(Error::UrlParseError)
-            .map_err(Into::into)
     }
 }
 
@@ -60,7 +58,6 @@ impl ApiClient for EveGatewayClient {
         self.0
             .fetch(path, query)
             .await
-            .map_err(Into::into)
     }
 
     async fn fetch_auth<Q: Serialize, T>(
@@ -74,7 +71,6 @@ impl ApiClient for EveGatewayClient {
         self.0
             .fetch_auth(path, query)
             .await
-            .map_err(Into::into)
     }
 
     async fn post<D, T>(
@@ -89,7 +85,6 @@ impl ApiClient for EveGatewayClient {
         self.0
             .post(path, data)
             .await
-            .map_err(Into::into)
     }
 
     async fn post_auth<D, T>(
@@ -104,7 +99,6 @@ impl ApiClient for EveGatewayClient {
         self.0
             .post_auth(path, data)
             .await
-            .map_err(Into::into)
     }
 
     async fn put_auth<D, T>(
@@ -119,7 +113,6 @@ impl ApiClient for EveGatewayClient {
         self.0
             .put_auth(path, data)
             .await
-            .map_err(Into::into)
     }
 
     async fn delete_auth<T>(
@@ -132,7 +125,6 @@ impl ApiClient for EveGatewayClient {
         self.0
             .delete_auth(path)
             .await
-            .map_err(Into::into)
     }
 }
 
@@ -140,9 +132,8 @@ impl EveGatewayApiClient for EveGatewayClient {}
 impl EveGatewayApiClientAsset for EveGatewayClient {}
 impl EveGatewayApiClientContract for EveGatewayClient {}
 impl EveGatewayApiClientEveAsset for EveGatewayClient {}
-impl EveGatewayApiClientEveFitting for EveGatewayClient {}
-impl EveGatewayApiClientEveIndustry for EveGatewayClient {}
-impl EveGatewayApiClientEveMarket for EveGatewayClient {}
+impl EveGatewayApiClientFitting for EveGatewayClient {}
+impl EveGatewayApiClientMarket for EveGatewayClient {}
 impl EveGatewayApiClientIndustry for EveGatewayClient {}
 impl EveGatewayApiClientItem for EveGatewayClient {}
 impl EveGatewayApiClientSearch for EveGatewayClient {}

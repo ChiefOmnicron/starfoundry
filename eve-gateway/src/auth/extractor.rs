@@ -4,50 +4,14 @@ use axum::http::request::Parts;
 use axum::http::StatusCode;
 use axum::Json;
 use serde_json::json;
-use sqlx::PgPool;
-use starfoundry_lib_eve_client::{EveApiClient, EveApiClientMetric};
 use starfoundry_lib_eve_gateway::CharacterInfo;
-use std::sync::Arc;
 
-use crate::auth::error::{AuthError, Result};
+use crate::auth::error::Result;
 use crate::auth::verify;
 use crate::state::AppState;
 
 pub struct ExtractIdentity {
     pub character_info: CharacterInfo,
-}
-
-impl ExtractIdentity {
-    pub async fn eve_api_client(
-        &self,
-        postgres: &PgPool,
-        metric:   Arc<EveApiClientMetric>,
-    ) -> Result<Option<EveApiClient>> {
-        let refresh_token = sqlx::query!("
-                SELECT refresh_token
-                FROM eve_credential
-                WHERE character_id = $1
-            ",
-                *self.character_info.character_id,
-            )
-            .fetch_optional(postgres)
-            .await
-            .map_err(AuthError::GetRefreshTokenError)?;
-
-        if let Some(x) = refresh_token {
-            Ok(
-                Some(
-                    EveApiClient::new_with_refresh_token(
-                        metric,
-                        self.character_info.character_id,
-                        x.refresh_token,
-                    )?
-                )
-            )
-        } else {
-            Ok(None)
-        }
-    }
 }
 
 impl<S> FromRequestParts<S> for ExtractIdentity

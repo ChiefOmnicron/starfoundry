@@ -11,7 +11,7 @@ use starfoundry_lib_eve_gateway::CharacterInfo;
 use utoipa::ToSchema;
 
 use crate::api_docs::Unauthorized;
-use crate::auth::{AccessTokenClaims, RefreshTokenClaims};
+use crate::auth::{JwtToken, RefreshTokenClaims};
 use crate::auth::error::{AuthError, Result};
 use crate::state::AppState;
 
@@ -28,6 +28,9 @@ use crate::state::AppState;
 /// 
 /// The token must be added into the `AUTHORIZATION` Header before sending a
 /// request.
+/// 
+/// Access tokens are 15 minute valid, afterwards the client needs to request
+/// a new one using the `refresh_token`.
 /// 
 #[utoipa::path(
     get,
@@ -70,7 +73,7 @@ pub async fn token(
         let token_data = RefreshTokenClaims::verify(x)?;
 
         let refresh_token_hash = Sha256::digest(x.as_bytes());
-        let refresh_token_hash = BASE64_STANDARD.encode(&refresh_token_hash);
+        let refresh_token_hash = BASE64_STANDARD.encode(refresh_token_hash);
 
         let character = sqlx::query!("
                 SELECT
@@ -105,7 +108,7 @@ pub async fn token(
             };
             let character_id = record.character_id;
 
-            let access_token = AccessTokenClaims::new(
+            let access_token = JwtToken::new_access_token(
                 character_id.into(),
                 character_info,
                 domain_config.admins.contains(&character_id.into()),

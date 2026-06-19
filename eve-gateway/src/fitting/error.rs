@@ -9,6 +9,8 @@ pub type Result<T, E = FittingError> = std::result::Result<T, E>;
 pub enum FittingError {
     #[error("eve api error, error: '{0:?}'")]
     EveApiError(#[from] EveApiError),
+    #[error("gateway error, error: '{0:?}'")]
+    GatewayError(#[from] starfoundry_lib_gateway::Error),
 }
 
 impl IntoResponse for FittingError {
@@ -16,6 +18,9 @@ impl IntoResponse for FittingError {
         match self {
             Self::EveApiError(e) => {
                 EveApiError::into_response(e)
+            },
+            Self::GatewayError(e) => {
+                starfoundry_lib_gateway::Error::into_response(e)
             },
         }
         .into_response()

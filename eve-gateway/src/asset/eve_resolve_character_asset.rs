@@ -7,7 +7,7 @@ use starfoundry_lib_gateway::ExtractIdentity;
 use starfoundry_lib_types::{CharacterId, LocationId};
 
 use crate::api_docs::{InternalServerError, Unauthorized};
-use crate::market::error::Result;
+use crate::asset::error::Result;
 use crate::state::AppState;
 use crate::utils::api_client_auth;
 

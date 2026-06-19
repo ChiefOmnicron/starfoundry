@@ -27,4 +27,6 @@ pub fn routes() -> OpenApiRouter<AppState> {
         .merge(fetch)
         .merge(fetch_bulk)
         .merge(list)
+        // fittings
+        .merge(crate::fitting::routes())
 }

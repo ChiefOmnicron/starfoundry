@@ -7,16 +7,16 @@ use starfoundry_lib_types::FittingId;
 
 use crate::Result;
 
-pub trait EveGatewayApiClientEveFitting: ApiClient {
+pub trait EveGatewayApiClientFitting: ApiClient {
     #[allow(async_fn_in_trait)]
-    async fn eve_create_fit(
+    async fn create_fit(
         &self,
         identity:   Identity,
         data:       EveFit,
     ) -> Result<EveFitResponse> {
         self
             .post_auth(
-                &format!("eve/characters/{}/fittings", identity.character_id()),
+                &format!("characters/{}/fittings", identity.character_id()),
                 data,
             )
             .await
@@ -24,7 +24,7 @@ pub trait EveGatewayApiClientEveFitting: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn eve_delete_fit(
+    async fn delete_fit(
         &self,
         identity:   Identity,
         fitting_id: FittingId,
@@ -32,7 +32,7 @@ pub trait EveGatewayApiClientEveFitting: ApiClient {
         self
             .delete_auth(
                 &format!(
-                    "eve/characters/{}/fittings/{}",
+                    "characters/{}/fittings/{}",
                     identity.character_id(),
                     fitting_id,
                 ),

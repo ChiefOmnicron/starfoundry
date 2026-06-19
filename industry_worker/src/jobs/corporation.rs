@@ -1,6 +1,7 @@
 use serde::Deserialize;
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{EveGatewayApiClientIndustry, EveGatewayClient, IndustryActivity};
+use starfoundry_lib_gateway::Identity;
 use starfoundry_lib_types::{CharacterId, CorporationId, ItemId};
 use starfoundry_lib_worker::Task;
 use std::collections::HashMap;
@@ -9,7 +10,6 @@ use crate::error::{Error, Result};
 use crate::{SERVICE_NAME, WorkerIndustryTask};
 use crate::metric::WorkerMetric;
 use crate::jobs::{cleanup_delivered_jobs, fetch_done_job_ids, fetch_startable_jobs, insert_job_detection_log, job_detection, resolve_corporation_asset_name, update_finished_jobs, update_industry_jobs};
-use starfoundry_lib_gateway::Identity;
 
 pub async fn corporation_jobs(
     pool:        &PgPool,
@@ -31,12 +31,12 @@ pub async fn corporation_jobs(
 
     let identity = Identity::new(
         additional_data.character_id,
-        additional_data.corporation_id.clone(),
+        additional_data.corporation_id,
         additional_data.source,
     );
     let client = EveGatewayClient::new_with_identity(SERVICE_NAME, identity)?;
     let entries = match client
-        .fetch_corporation_jobs()
+        .list_corporation_jobs()
         .await {
 
         Ok(x) => {

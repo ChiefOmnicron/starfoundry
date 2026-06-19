@@ -33,5 +33,5 @@ pub async fn fetch_blueprint_dependency_bulk(
                 })
                 .collect::<Vec<_>>()
         )
-        .map_err(|e| IndustryError::FetchBlueprintDependency(e))
+        .map_err(IndustryError::FetchBlueprintDependency)
 }

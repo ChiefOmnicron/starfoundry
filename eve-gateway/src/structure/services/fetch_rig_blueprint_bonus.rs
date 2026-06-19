@@ -38,7 +38,7 @@ pub async fn fetch_rig_blueprint_bonus(
             .map_err(|e| StructureError::FetchRigInformation(e, rig_type_id))?;
 
         for entry in entries.iter() {
-            if !(entry.categories.len() > 0 || entry.groups.len() > 0) {
+            if !(entry.categories.is_empty() || entry.groups.is_empty()) {
                 continue;
             }
 
@@ -126,7 +126,6 @@ pub async fn fetch_rig_blueprint_bonus(
     let mut values =structure_rig_blueprint_entries
         .values()
         .cloned()
-        .into_iter()
         .collect::<Vec<_>>();
     values.sort_by_key(|x| x.blueprint.name.clone());
     Ok(values)

@@ -11,26 +11,26 @@ use starfoundry_lib_types::{RegionId, StructureId};
 
 use crate::error::Result;
 
-pub trait EveGatewayApiClientEveMarket: ApiClient {
+pub trait EveGatewayApiClientMarket: ApiClient {
     #[allow(async_fn_in_trait)]
-    async fn fetch_market_by_region(
+    async fn list_market_by_region(
         &self,
         region_id: RegionId,
     ) -> Result<Vec<Market>> {
         self
-            .fetch(&format!("eve/market/region/{}", *region_id), &())
+            .fetch(&format!("proxy/list/markets/{}/orders", *region_id), &())
             .await
             .map_err(Into::into)
     }
 
     #[allow(async_fn_in_trait)]
-    async fn fetch_market_by_player(
+    async fn list_market_by_player(
         &self,
         structure_id: StructureId,
     ) -> Result<Vec<Market>> {
         self
             .fetch_auth(
-                &format!("eve/market/player/{}", *structure_id),
+                &format!("proxy/list/auth/markets/structures/{}", *structure_id),
                 &(),
             )
             .await
@@ -38,12 +38,12 @@ pub trait EveGatewayApiClientEveMarket: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn fetch_character_orders(
+    async fn list_character_orders(
         &self,
     ) -> Result<Vec<MarketOrder>> {
         self
             .fetch_auth(
-                &format!("eve/market/orders/characters"),
+                "proxy/list/auth/characters/orders",
                 &(),
             )
             .await
@@ -51,12 +51,12 @@ pub trait EveGatewayApiClientEveMarket: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn fetch_corporation_orders(
+    async fn list_corporation_orders(
         &self,
     ) -> Result<Vec<MarketOrder>> {
         self
             .fetch_auth(
-                &format!("eve/market/orders/corporations"),
+                "proxy/list/auth/corporations/orders",
                 &(),
             )
             .await
@@ -64,12 +64,12 @@ pub trait EveGatewayApiClientEveMarket: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn fetch_prices(
+    async fn list_prices(
         &self,
     ) -> Result<Vec<MarketPrice>> {
         self
             .fetch(
-                &format!("eve/market/prices"),
+                "proxy/list/markets/prices",
                 &(),
             )
             .await

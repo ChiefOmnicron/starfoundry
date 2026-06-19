@@ -2,7 +2,7 @@ use sqlx::PgPool;
 use starfoundry_lib_eve_client::EveApiClientMetric;
 use starfoundry_lib_eve_gateway::CharacterInfo;
 use starfoundry_lib_types::CharacterId;
-use std::collections::HashMap;
+use std::collections::{HashMap, hash_map};
 use std::sync::Arc;
 
 use crate::character::{CharacterError, Result};
@@ -45,14 +45,14 @@ pub async fn fetch_character_bulk(
 
     if db_lookup_result.len() != character_ids.len() {
         for character_id in character_ids {
-            if !db_lookup_result.contains_key(&*character_id) {
+            if let hash_map::Entry::Vacant(lookup_result) = db_lookup_result.entry(*character_id) {
                 // ignore errors
                 if let Ok(x) = refresh_character_in_db(
-                    &pool,
+                    pool,
                     metric.clone(),
                     character_id
                 ).await {
-                    db_lookup_result.insert(*character_id, x);
+                    lookup_result.insert(x);
                 }
             }
         }

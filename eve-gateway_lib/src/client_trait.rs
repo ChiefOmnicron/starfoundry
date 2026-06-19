@@ -1,20 +1,18 @@
 use starfoundry_lib_gateway::ApiClient;
 use starfoundry_lib_types::{CharacterId, StructureId, SystemId, TypeId};
 
-use crate::{AuthedCharacterInfo, CharacterInfo, EveGatewayApiClientAsset, EveGatewayApiClientEveAsset, EveGatewayApiClientEveFitting, EveGatewayApiClientIndustry, EveGatewayApiClientItem, ResolveStructureResponse, StructureRigBlueprintBonus, StructureRigResponse, StructureServiceResponse, System};
+use crate::{AuthedCharacterInfo, CharacterInfo, EveGatewayApiClientAsset, EveGatewayApiClientEveAsset, EveGatewayApiClientFitting, EveGatewayApiClientIndustry, EveGatewayApiClientItem, ResolveStructureResponse, StructureRigBlueprintBonus, StructureRigResponse, StructureServiceResponse, System};
 use crate::contract::EveGatewayApiClientContract;
 use crate::error::Result;
-use crate::eve_industry::EveGatewayApiClientEveIndustry;
-use crate::eve_market::EveGatewayApiClientEveMarket;
+use crate::market::EveGatewayApiClientMarket;
 
 pub trait EveGatewayApiClient:
     ApiClient +
     EveGatewayApiClientAsset +
     EveGatewayApiClientContract +
     EveGatewayApiClientEveAsset +
-    EveGatewayApiClientEveFitting +
-    EveGatewayApiClientEveIndustry +
-    EveGatewayApiClientEveMarket +
+    EveGatewayApiClientFitting +
+    EveGatewayApiClientMarket +
     EveGatewayApiClientIndustry +
     EveGatewayApiClientItem {
 
@@ -23,7 +21,7 @@ pub trait EveGatewayApiClient:
         &self,
     ) -> Result<Option<AuthedCharacterInfo>> {
         self
-            .fetch(&format!("characters"), &())
+            .fetch("characters", &())
             .await
             .map_err(Into::into)
     }

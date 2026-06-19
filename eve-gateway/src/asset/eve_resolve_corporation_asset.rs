@@ -7,9 +7,9 @@ use starfoundry_lib_gateway::ExtractIdentity;
 use starfoundry_lib_types::{CorporationId, LocationId};
 
 use crate::api_docs::{InternalServerError, Unauthorized};
-use crate::market::error::Result;
+use crate::asset::error::Result;
 use crate::state::AppState;
-use crate::utils::api_client_corporation_auth;
+use crate::utils::api_client_auth;
 
 const SCOPE: &str = "esi-assets.read_corporation_assets.v1";
 
@@ -45,12 +45,11 @@ pub async fn api(
     Path(corporation_id):   Path<CorporationId>,
     Json(assets):           Json<Vec<LocationId>>,
 ) -> Result<impl IntoResponse> {
-    let api_client = api_client_corporation_auth(
+    let api_client = api_client_auth(
             &state.postgres,
             state.eve_api_metric,
             identity.host()?,
             identity.character_id,
-            corporation_id,
             vec![
                 SCOPE.into(),
             ],

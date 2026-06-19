@@ -29,20 +29,15 @@ pub enum ItemError {
 
 impl IntoResponse for ItemError {
     fn into_response(self) -> Response {
-        match self {
-            _ => {
-                tracing::error!("{}", self.to_string());
-                (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(
-                        ErrorResponse {
-                            error: "UNKNOWN".into(),
-                            description: "An unknown error occurred, please try again later.".into(),
-                        }
-                    )
-                ).into_response()
-            },
-        }
-        .into_response()
+        tracing::error!("{}", self.to_string());
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(
+                ErrorResponse {
+                    error: "UNKNOWN".into(),
+                    description: "An unknown error occurred, please try again later.".into(),
+                }
+            )
+        ).into_response()
     }
 }

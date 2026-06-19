@@ -56,11 +56,7 @@ pub async fn list_structure_rigs(
             .fetch_all(pool)
             .await;
 
-        let bonuses = if let Ok(x) = bonuses {
-            x
-        } else {
-            Vec::new()
-        };
+        let bonuses = bonuses.unwrap_or_default();
 
         let mut material        = None;
         let mut time            = None;
@@ -81,7 +77,7 @@ pub async fn list_structure_rigs(
 
             for category_id in bonus.categories {
                 if let Some(x) = fetch_category(
-                    &pool,
+                    pool,
                     category_id.into(),
                 ).await? {
                     categories.push(x)
@@ -90,7 +86,7 @@ pub async fn list_structure_rigs(
 
             for group_id in bonus.groups {
                 if let Some(x) = fetch_group(
-                    &pool,
+                    pool,
                     group_id.into(),
                 ).await? {
                     groups.push(x)

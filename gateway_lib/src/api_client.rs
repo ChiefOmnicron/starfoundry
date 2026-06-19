@@ -65,7 +65,6 @@ impl StarFoundryApiClient {
             .default_headers(headers)
             .build()
             .map_err(Error::CouldNotConstructClient)
-            .map_err(Into::into)
     }
 
     pub async fn fetch<Q: Serialize, T>(
@@ -127,19 +126,19 @@ impl StarFoundryApiClient {
 
         match response.status() {
             StatusCode::NOT_FOUND => {
-                return Err(Error::NotFound(api_url).into());
+                Err(Error::NotFound(api_url))
             },
             StatusCode::FORBIDDEN => {
-                return Err(Error::Forbidden(api_url).into());
+                Err(Error::Forbidden(api_url))
             },
             StatusCode::UNAUTHORIZED => {
-                return Err(Error::Unauthorized.into());
+                Err(Error::Unauthorized)
             },
             StatusCode::BAD_GATEWAY => {
-                return Err(Error::BadGateway.into());
+                Err(Error::BadGateway)
             },
             StatusCode::SERVICE_UNAVAILABLE => {
-                return Err(Error::ServiceUnavailable.into());
+                Err(Error::ServiceUnavailable)
             },
             // TODO: implement
             //StatusCode::NO_CONTENT => {
@@ -161,7 +160,7 @@ impl StarFoundryApiClient {
             },
             _ => {
                 // TODO: better fallback
-                return Err(Error::Unauthorized.into());
+                Err(Error::Unauthorized)
             }
         }
     }
@@ -231,35 +230,35 @@ impl StarFoundryApiClient {
 
         match response.status() {
             StatusCode::NOT_FOUND => {
-                return Err(Error::NotFound(api_url).into());
+                Err(Error::NotFound(api_url))
             },
             StatusCode::FORBIDDEN => {
-                return Err(Error::Forbidden(api_url).into());
+                Err(Error::Forbidden(api_url))
             },
             StatusCode::UNAUTHORIZED => {
-                return Err(Error::Unauthorized.into());
+                Err(Error::Unauthorized)
             },
             StatusCode::BAD_GATEWAY => {
-                return Err(Error::BadGateway.into());
+                Err(Error::BadGateway)
             },
             StatusCode::SERVICE_UNAVAILABLE => {
-                return Err(Error::ServiceUnavailable.into());
+                Err(Error::ServiceUnavailable)
             },
             StatusCode::NO_CONTENT => {
-                return Ok(T::default());
+                Ok(T::default())
             },
             StatusCode::CREATED |
             StatusCode::OK => {
-                return response
+                response
                     .json::<T>()
                     .await
-                    .map_err(|x| Error::ReqwestError(x, api_url));
+                    .map_err(|x| Error::ReqwestError(x, api_url))
             },
             _ => {
                 // TODO: better fallback
-                return Err(Error::Unauthorized.into());
+                Err(Error::Unauthorized)
             }
-        };
+        }
     }
 
     pub async fn put_auth<D, T>(
@@ -294,34 +293,34 @@ impl StarFoundryApiClient {
 
         match response.status() {
             StatusCode::NOT_FOUND => {
-                return Err(Error::NotFound(api_url).into());
+                Err(Error::NotFound(api_url))
             },
             StatusCode::FORBIDDEN => {
-                return Err(Error::Forbidden(api_url).into());
+                Err(Error::Forbidden(api_url))
             },
             StatusCode::UNAUTHORIZED => {
-                return Err(Error::Unauthorized.into());
+                Err(Error::Unauthorized)
             },
             StatusCode::BAD_GATEWAY => {
-                return Err(Error::BadGateway.into());
+                Err(Error::BadGateway)
             },
             StatusCode::SERVICE_UNAVAILABLE => {
-                return Err(Error::ServiceUnavailable.into());
+                Err(Error::ServiceUnavailable)
             },
             StatusCode::NO_CONTENT => {
-                return Ok(T::default());
+                Ok(T::default())
             },
             StatusCode::OK => {
-                return response
+                response
                     .json::<T>()
                     .await
-                    .map_err(|x| Error::ReqwestError(x, api_url));
+                    .map_err(|x| Error::ReqwestError(x, api_url))
             },
             _ => {
                 // TODO: better fallback
-                return Err(Error::Unauthorized.into());
+                Err(Error::Unauthorized)
             }
-        };
+        }
     }
 
     pub async fn delete_auth<T>(
@@ -354,40 +353,39 @@ impl StarFoundryApiClient {
 
         match response.status() {
             StatusCode::NOT_FOUND => {
-                return Err(Error::NotFound(api_url).into());
+                Err(Error::NotFound(api_url))
             },
             StatusCode::FORBIDDEN => {
-                return Err(Error::Forbidden(api_url).into());
+                Err(Error::Forbidden(api_url))
             },
             StatusCode::UNAUTHORIZED => {
-                return Err(Error::Unauthorized.into());
+                Err(Error::Unauthorized)
             },
             StatusCode::BAD_GATEWAY => {
-                return Err(Error::BadGateway.into());
+                Err(Error::BadGateway)
             },
             StatusCode::SERVICE_UNAVAILABLE => {
-                return Err(Error::ServiceUnavailable.into());
+                Err(Error::ServiceUnavailable)
             },
             StatusCode::NO_CONTENT => {
-                return Ok(T::default());
+                Ok(T::default())
             },
             StatusCode::OK => {
-                return response
+                response
                     .json::<T>()
                     .await
-                    .map_err(|x| Error::ReqwestError(x, api_url));
+                    .map_err(|x| Error::ReqwestError(x, api_url))
             },
             _ => {
                 // TODO: better fallback
-                return Err(Error::Unauthorized.into());
+                Err(Error::Unauthorized)
             }
-        };
+        }
     }
 
     fn user_agent() -> Result<String> {
         std::env::var(ENV_USER_AGENT)
             .map_err(|_| Error::EnvNotSet(ENV_USER_AGENT))
-            .map_err(Into::into)
     }
 
     async fn send<Q: Serialize>(
@@ -409,7 +407,7 @@ impl StarFoundryApiClient {
                     url,
                     last_status,
                     last_text,
-                ).into());
+                ));
             }
 
             let client = self.client
@@ -435,19 +433,19 @@ impl StarFoundryApiClient {
 
             match response.status() {
                 StatusCode::NOT_FOUND => {
-                    return Err(Error::NotFound(url).into());
+                    return Err(Error::NotFound(url));
                 },
                 StatusCode::FORBIDDEN => {
-                    return Err(Error::Forbidden(url).into());
+                    return Err(Error::Forbidden(url));
                 },
                 StatusCode::UNAUTHORIZED => {
-                    return Err(Error::Unauthorized.into());
+                    return Err(Error::Unauthorized);
                 },
                 StatusCode::BAD_GATEWAY => {
-                    return Err(Error::BadGateway.into());
+                    return Err(Error::BadGateway);
                 },
                 StatusCode::SERVICE_UNAVAILABLE => {
-                    return Err(Error::ServiceUnavailable.into());
+                    return Err(Error::ServiceUnavailable);
                 },
                 _ => ()
             };

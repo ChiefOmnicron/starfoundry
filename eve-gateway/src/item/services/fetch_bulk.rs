@@ -16,20 +16,20 @@ pub async fn fetch_item_bulk(
         return Ok(Vec::new());
     }
 
-    if let Ok(x) = load_items_by_type_id(&pool).await {
-        let mut items = Vec::new();
+    let items = load_items_by_type_id();
+    if items.is_empty() {
+        fetch_db(pool, type_ids).await
+    } else {
+        let mut item_vec = Vec::new();
 
         for type_id in type_ids {
-            if let Some(y) = x.get(&type_id) {
-                items.push(y.clone());
+            if let Some(y) = items.get(&type_id) {
+                item_vec.push(y.clone());
             } else {
                 continue;
             }
         }
-
-        Ok(items)
-    } else {
-        fetch_db(pool, type_ids).await
+        Ok(item_vec)
     }
 }
 

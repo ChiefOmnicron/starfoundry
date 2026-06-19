@@ -1,3 +1,5 @@
+use std::ops::Deref;
+
 use chrono::{Duration, Utc};
 use jsonwebtoken::{Algorithm, DecodingKey, EncodingKey, Header, TokenData, Validation, decode, encode};
 use serde::{Deserialize, Serialize};
@@ -30,44 +32,6 @@ pub struct AccessTokenClaims {
     pub sub:        CharacterId,
 }
 
-impl AccessTokenClaims {
-    pub fn new(
-        character_id:   CharacterId,
-        character_info: CharacterInfo,
-        is_admin:       bool,
-        host:           String,
-    ) -> Result<String> {
-        let exp = (
-                Utc::now().naive_utc() + ACCESS_TOKEN_EXP
-            )
-            .and_utc()
-            .timestamp();
-        let iat = (Utc::now().naive_utc())
-            .and_utc()
-            .timestamp();
-
-        let claims = Self {
-            exp,
-            iat,
-
-            aud: vec![
-                host,
-            ],
-            sub: character_id,
-            iss: issuer()?,
-            kid: JWT_KID.into(),
-
-            key_type: KeyType::Character,
-
-            character_info,
-            is_admin,
-        };
-        let claims = serde_json::to_value(claims).unwrap_or_default();
-
-        generate_token(claims)
-    }
-}
-
 #[derive(Debug, Serialize, Deserialize)]
 pub struct RefreshTokenClaims {
     exp:     i64,
@@ -79,30 +43,6 @@ pub struct RefreshTokenClaims {
 }
 
 impl RefreshTokenClaims {
-    pub fn new(
-        character_id: CharacterId,
-    ) -> Result<String> {
-        let exp = (
-                Utc::now().naive_utc() + REFRESH_TOKEN_EXP
-            )
-            .and_utc()
-            .timestamp();
-        let iat = (Utc::now().naive_utc())
-            .and_utc()
-            .timestamp();
-
-        let claims = Self {
-            exp,
-            iat,
-
-            sub: character_id,
-            iss: issuer()?,
-        };
-        let claims = serde_json::to_value(claims).unwrap_or_default();
-
-        generate_token(claims)
-    }
-
     pub fn verify(
         token:  &str,
     ) -> Result<TokenData<Self>> {
@@ -131,23 +71,6 @@ pub fn issuer() -> Result<String> {
         .map_err(|_| AuthError::EnvNotSet(ENV_JWT_ISSUER_DOMAIN.into()))
 }
 
-pub(crate) fn generate_token(
-    claims: serde_json::Value,
-) -> Result<String> {
-    let ec_pem = EncodingKey::from_ec_pem(
-            private_ecdsa_key()?.as_bytes()
-        )
-        .map_err(AuthError::LoadEcPem)?;
-    let header = Header::new(Algorithm::ES256);
-
-    encode(
-            &header,
-            &claims,
-            &ec_pem
-        )
-        .map_err(AuthError::JsonWebTokenEncode)
-}
-
 fn private_ecdsa_key() -> Result<String> {
     std::env::var(ENV_JWT_ECDSA_PRIVATE)
         .map_err(|_| AuthError::EnvNotSet(ENV_JWT_ECDSA_PRIVATE.into()))
@@ -159,4 +82,95 @@ pub enum KeyType {
     Character,
     /// The JWT token is from a service
     Service,
+}
+
+#[derive(Debug, Serialize)]
+pub struct JwtToken(String);
+
+impl JwtToken {
+    pub fn new_access_token(
+        character_id:   CharacterId,
+        character_info: CharacterInfo,
+        is_admin:       bool,
+        host:           String,
+    ) -> Result<Self> {
+        let exp = (
+                Utc::now().naive_utc() + ACCESS_TOKEN_EXP
+            )
+            .and_utc()
+            .timestamp();
+        let iat = (Utc::now().naive_utc())
+            .and_utc()
+            .timestamp();
+
+        let claims = AccessTokenClaims {
+            exp,
+            iat,
+
+            aud: vec![
+                host,
+            ],
+            sub: character_id,
+            iss: issuer()?,
+            kid: JWT_KID.into(),
+
+            key_type: KeyType::Character,
+
+            character_info,
+            is_admin,
+        };
+        let claims = serde_json::to_value(claims).unwrap_or_default();
+
+        Self::generate_token(claims)
+    }
+
+    pub fn new_refresh_token(
+        character_id: CharacterId,
+    ) -> Result<JwtToken> {
+        let exp = (
+                Utc::now().naive_utc() + REFRESH_TOKEN_EXP
+            )
+            .and_utc()
+            .timestamp();
+        let iat = (Utc::now().naive_utc())
+            .and_utc()
+            .timestamp();
+
+        let claims = RefreshTokenClaims {
+            exp,
+            iat,
+
+            sub: character_id,
+            iss: issuer()?,
+        };
+        let claims = serde_json::to_value(claims).unwrap_or_default();
+
+        Self::generate_token(claims)
+    }
+
+    fn generate_token(
+        claims: serde_json::Value,
+    ) -> Result<JwtToken> {
+        let ec_pem = EncodingKey::from_ec_pem(
+                private_ecdsa_key()?.as_bytes()
+            )
+            .map_err(AuthError::LoadEcPem)?;
+        let header = Header::new(Algorithm::ES256);
+
+        encode(
+                &header,
+                &claims,
+                &ec_pem
+            )
+            .map(JwtToken)
+            .map_err(AuthError::JsonWebTokenEncode)
+    }
+}
+
+impl Deref for JwtToken {
+    type Target = String;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
 }

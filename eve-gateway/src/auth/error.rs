@@ -32,9 +32,9 @@ pub enum AuthError {
     UpdateLogin(sqlx::Error),
 
     #[error("character error, error: '{0}'")]
-    CharacterError(#[from] CharacterError),
+    CharacterError(Box<CharacterError>),
     #[error("error performing eve api call, error: '{0}'")]
-    EveApiError(#[from] EveApiError),
+    EveApiError(Box<EveApiError>),
 
     #[error("error decoding jwt, error '{0}'")]
     JsonWebTokenDecode(jsonwebtoken::errors::Error),
@@ -58,11 +58,12 @@ pub enum AuthError {
 
 impl IntoResponse for AuthError {
     fn into_response(self) -> Response {
+        tracing::warn!("{}", self.to_string());
+
         match self {
             Self::InvalidEveLoginResponse |
             Self::GetAccessTokenError(_) |
             Self::GetRefreshTokenError(_) => {
-                tracing::warn!("{}", self.to_string());
                 (
                     StatusCode::BAD_REQUEST,
                     Json(
@@ -74,22 +75,32 @@ impl IntoResponse for AuthError {
                 ).into_response()
             }
 
-            Self::EveApiError(EveApiError::BadGateway) => {
-                tracing::warn!("{}", self.to_string());
-                (
-                    StatusCode::BAD_REQUEST,
-                    Json(
-                        ErrorResponse {
-                            error: "BAD_GATEWAY".into(),
-                            description: "The EVE-API is currently not reachable, or has some other problems.".into(),
-                        }
-                    )
-                ).into_response()
+            //Self::EveApiError(EveApiError::BadGateway) => {
+            Self::EveApiError(x) => {
+                match *x {
+                    EveApiError::BadGateway => (
+                        StatusCode::BAD_REQUEST,
+                        Json(
+                            ErrorResponse {
+                                error: "BAD_GATEWAY".into(),
+                                description: "The EVE-API is currently not reachable, or has some other problems.".into(),
+                            }
+                        )
+                    ).into_response(),
+                    _ => (
+                        StatusCode::BAD_REQUEST,
+                        Json(
+                            ErrorResponse {
+                                error: "BAD_GATEWAY".into(),
+                                description: "The EVE-API is currently not reachable, or has some other problems.".into(),
+                            }
+                        )
+                    ).into_response()
+                }
             }
 
             Self::JsonWebTokenDecode(_) |
             Self::JsonWebTokenEncode(_) => {
-                tracing::warn!("{}", self.to_string());
                 (
                     StatusCode::UNAUTHORIZED,
                     Json(
@@ -102,7 +113,6 @@ impl IntoResponse for AuthError {
             }
 
             _ => {
-                tracing::error!("{}", self.to_string());
                 (
                     StatusCode::INTERNAL_SERVER_ERROR,
                     Json(
@@ -117,3 +127,20 @@ impl IntoResponse for AuthError {
         .into_response()
     }
 }
+
+// Remove once this_error implements it
+// https://github.com/dtolnay/thiserror/issues/424
+// https://github.com/dtolnay/thiserror/pull/431
+#[macro_export]
+macro_rules! boxed_from {
+    ($dst_ty:ident :: $variant:ident, $src_ty:ty) => {
+        impl From<$src_ty> for $dst_ty {
+            fn from(value: $src_ty) -> Self {
+                Self::$variant(Box::new(value))
+            }
+        }
+    };
+}
+
+boxed_from!(AuthError::CharacterError, CharacterError);
+boxed_from!(AuthError::EveApiError, EveApiError);

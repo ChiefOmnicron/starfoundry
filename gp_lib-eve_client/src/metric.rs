@@ -64,6 +64,12 @@ impl EveApiClientMetric {
     }
 }
 
+impl Default for EveApiClientMetric {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[derive(Clone, Debug, Hash, PartialEq, Eq, EncodeLabelSet)]
 struct MetricEveRateLimitLabel {
     group:        String,

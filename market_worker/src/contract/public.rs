@@ -30,7 +30,7 @@ pub async fn public_contracts(
 
     let client = EveGatewayClient::new(SERVICE_NAME)?;
     let contracts = client
-        .fetch_public_contracts(additional_data.region_id.into())
+        .list_public_contracts(additional_data.region_id.into())
         .await?
         .into_iter()
         .filter(|x| x.typ == ContractType::ItemExchange)

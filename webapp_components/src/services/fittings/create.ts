@@ -5,7 +5,7 @@ export const createFitting = async (
     data:           EveFit,
 ): Promise<void> => (await axiosClient())
     .post(
-        `/api/eve/eve/characters/${characterId}/fittings`,
+        `/api/eve/characters/${characterId}/fittings`,
         data,
     )
     .then(x => x.data);

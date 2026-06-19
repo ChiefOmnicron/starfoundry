@@ -1,3 +1,5 @@
+#![allow(clippy::redundant_field_names)]
+
 mod character;
 mod corporation;
 mod error;

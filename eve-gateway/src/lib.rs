@@ -7,6 +7,9 @@
 //! - Wraps a small set of EVE-API calls (see the OpenAPI Documentation)
 //! - Caching of routes
 //! 
+
+#![allow(clippy::redundant_field_names)]
+
 /// general helper function and structs for presenting the api documentation
 pub mod api_docs;
 /// general authentication module
@@ -26,16 +29,12 @@ pub mod utils;
 pub mod asset;
 /// public eve route for characters
 pub mod character;
-/// eve route for all contracts
-pub mod contract;
 /// eve route for all fittings
 pub mod fitting;
 /// all industry related routes
 pub mod industry;
 /// public eve route for items
 pub mod item;
-/// public eve route for market
-pub mod market;
 /// routes for searching
 pub mod search;
 /// routes for structure information
@@ -43,7 +42,5 @@ pub mod structure;
 /// public eve route for universe
 pub mod universe;
 
-/// eve routes for data fetching
-pub mod eve;
-/// internal routes, primarily for other services
-pub mod internal;
+/// proxies requests to the EVE-API
+pub mod proxy;

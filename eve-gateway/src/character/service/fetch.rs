@@ -41,7 +41,7 @@ pub async fn fetch_character(
             alliance_id:      x.alliance_id.map(Into::into),
         }
     } else {
-        refresh_character_in_db(&pool, metric, character_id).await?
+        refresh_character_in_db(pool, metric, character_id).await?
     };
 
     Ok(character_info)
@@ -96,7 +96,7 @@ pub async fn refresh_character_in_db(
         corporation_name: eve_corporation.name,
         corporation_id:   eve_character.corporation_id,
         alliance_name:    alliance_name,
-        alliance_id:      eve_character.alliance_id.map(Into::into),
+        alliance_id:      eve_character.alliance_id,
     })
 }
 
@@ -174,5 +174,4 @@ async fn insert_character_into_db(
         .await
         .map(drop)
         .map_err(CharacterError::InsertCharacter)
-        .map_err(Into::into)
 }

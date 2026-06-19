@@ -12,7 +12,7 @@ use uuid::Uuid;
 use crate::api_docs::{BadRequest, InternalServerError};
 use crate::auth::error::{AuthError, Result};
 use crate::auth::history::insert_into_history;
-use crate::auth::RefreshTokenClaims;
+use crate::auth::JwtToken;
 use crate::character::service::refresh_character_in_db;
 use crate::state::AppState;
 
@@ -41,7 +41,7 @@ const QUERY_PARAM_STATE: &str = "state";
     responses(
         (
             status = TEMPORARY_REDIRECT,
-            description = "Redirects back to the app",
+            description = "Redirects back to the app the user came from",
             content_type = "text/plain",
         ),
         BadRequest,
@@ -59,7 +59,7 @@ pub async fn callback(
     let state_param = query_params
         .get(QUERY_PARAM_STATE)
         .ok_or(AuthError::InvalidEveLoginResponse)?;
-    let state_param = Uuid::from_str(&state_param)
+    let state_param = Uuid::from_str(state_param)
         .map_err(|_| AuthError::InvalidEveLoginResponse)?;
 
     // fetch the state_param, it should match the token we inserted earlier
@@ -195,18 +195,18 @@ pub async fn callback(
         ).into_response());
     }
 
-    let refresh_token = RefreshTokenClaims::new(
+    let refresh_token = JwtToken::new_refresh_token(
         character_id,
     )?;
 
     let refresh_token_hash = Sha256::digest(refresh_token.as_bytes());
-    let refresh_token_hash = BASE64_STANDARD.encode(&refresh_token_hash);
+    let refresh_token_hash = BASE64_STANDARD.encode(refresh_token_hash);
     sqlx::query!("
             INSERT INTO jwt_refresh_token (character_id, refresh_token, token_hash)
             VALUES ($1, $2, $3)
         ",
             *character_id,
-            refresh_token,
+            *refresh_token,
             refresh_token_hash,
         )
         .execute(&state.postgres)

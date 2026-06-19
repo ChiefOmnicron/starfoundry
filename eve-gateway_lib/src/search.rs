@@ -128,20 +128,20 @@ impl TryFrom<String> for SearchCategory {
     }
 }
 
-impl Into<String> for SearchCategory {
-    fn into(self) -> String {
-        match self {
-            Self::Agent         => "agent",
-            Self::Alliance      => "alliance",
-            Self::Character     => "character",
-            Self::Constellation => "constellation",
-            Self::Corporation   => "corporation",
-            Self::Faction       => "faction",
-            Self::InventoryType => "inventory_type",
-            Self::Region        => "region",
-            Self::SolarSystem   => "solar_system",
-            Self::Station       => "station",
-            Self::Structure     => "structure",
+impl From<SearchCategory> for String {
+    fn from(value: SearchCategory) -> Self {
+        match value {
+            SearchCategory::Agent         => "agent",
+            SearchCategory::Alliance      => "alliance",
+            SearchCategory::Character     => "character",
+            SearchCategory::Constellation => "constellation",
+            SearchCategory::Corporation   => "corporation",
+            SearchCategory::Faction       => "faction",
+            SearchCategory::InventoryType => "inventory_type",
+            SearchCategory::Region        => "region",
+            SearchCategory::SolarSystem   => "solar_system",
+            SearchCategory::Station       => "station",
+            SearchCategory::Structure     => "structure",
         }.into()
     }
 }

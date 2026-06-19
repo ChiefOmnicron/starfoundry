@@ -26,7 +26,6 @@ impl EveApiClient {
         self
             .fetch(&path, &())
             .await
-            .map_err(Into::into)
     }
 }
 

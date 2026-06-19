@@ -4,17 +4,31 @@ use utoipa::ToSchema;
 
 
 #[derive(Debug, Deserialize, Serialize, ToSchema)]
+#[schema(
+    example = json!([
+        {
+            "is_included": true,
+            "item_id": 1053992902084i64,
+            "quantity": 1,
+            "record_id": 5196924580i64,
+            "type_id": 49738
+        }
+    ])
+)]
 pub struct PublicContractItem {
     /// Number of items in the stack
     pub quantity:               i32,
-    /// true if the contract issuer has submitted this item with the contract, false if the isser is asking for this item in the contract
+    /// true if the contract issuer has submitted this item with the contract, false if the issuer is asking for this item in the contract
     pub is_included:            bool,
     /// Unique ID for the item, used by the contract system
     pub record_id:              ItemId,
     /// Type ID for the item
     pub type_id:                TypeId,
+
     /// Unique ID for the item being sold. Not present if item is being requested by contract rather than sold with contract
     pub item_id:                Option<ItemId>,
+
+    /// Wether the blueprint is a copy or not
     pub is_blueprint_copy:      Option<bool>,
     /// Material Efficiency Level of the blueprint
     pub material_efficiency:    Option<i32>,

@@ -41,16 +41,6 @@ pub struct Metric {
 }
 
 impl Metric {
-    pub fn new() -> Self {
-        Self  {
-            host_count:         Family::<MetricHostLabel, Counter>::default(),
-            http_request_total: Family::<MetricHttpRequestLabel, Counter>::default(),
-            http_duration:      Family::new_with_constructor(|| {
-                Histogram::new(HTTP_DURATION_BUCKETS.into_iter())
-            }),
-        }
-    }
-
     pub fn increase_host_counter<S: Into<String>>(
         &self,
         host: S,
@@ -119,6 +109,18 @@ impl Metric {
             "Requests responses by path",
             self.http_request_total.clone()
         );
+    }
+}
+
+impl Default for Metric {
+    fn default() -> Self {
+        Self  {
+            host_count:         Family::<MetricHostLabel, Counter>::default(),
+            http_request_total: Family::<MetricHttpRequestLabel, Counter>::default(),
+            http_duration:      Family::new_with_constructor(|| {
+                Histogram::new(HTTP_DURATION_BUCKETS)
+            }),
+        }
     }
 }
 

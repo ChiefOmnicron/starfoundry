@@ -10,7 +10,7 @@ use crate::character::error::Result;
 use crate::state::AppState;
 use crate::character::service::fetch_character_bulk;
 
-/// Fetch multiple characters
+/// Fetch Bulk Characters
 /// 
 /// - Alternative route: `/latest/characters/bulk`
 /// - Alternative route: `/v1/characters/bulk`

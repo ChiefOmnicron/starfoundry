@@ -1,6 +1,5 @@
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::eve_industry::EveGatewayApiClientEveIndustry;
-use starfoundry_lib_eve_gateway::EveGatewayClient;
+use starfoundry_lib_eve_gateway::{EveGatewayApiClientIndustry, EveGatewayClient};
 use starfoundry_lib_worker::Task;
 
 use crate::error::{Error, Result};
@@ -14,7 +13,7 @@ pub async fn system_index(
 ) -> Result<()> {
     let client = EveGatewayClient::new(SERVICE_NAME)?;
     let entries = match client
-        .eve_fetch_system_index()
+        .list_system_index()
         .await {
 
         Ok(x) => {

@@ -2,33 +2,33 @@ use axum::extract::{Path, State};
 use axum::Json;
 use axum::response::IntoResponse;
 use reqwest::StatusCode;
-use starfoundry_lib_eve_gateway::EveFitResponse;
+use starfoundry_lib_eve_gateway::{EveFit, EveFitResponse};
 use starfoundry_lib_gateway::ExtractIdentity;
 use starfoundry_lib_types::{CharacterId, FittingId};
 
-use crate::api_docs::{InternalServerError, NotFound};
-use crate::market::error::Result;
+use crate::api_docs::{InternalServerError, Unauthorized};
+use crate::fitting::error::Result;
 use crate::state::AppState;
 use crate::utils::api_client_auth;
 
 const SCOPE: &str = "esi-fittings.write_fittings.v1";
 
-/// Fetch Player Market
+/// Create Fit
 /// 
-/// - Alternative route: `/latest/eve/character/{CharacterId}/fittings/{FittingId}`
-/// - Alternative route: `/latest/eve/character/{CharacterId}/fittings/{FittingId}`
+/// - Alternative route: `/latest/character/{CharacterId}/fittings`
+/// - Alternative route: `/latest/character/{CharacterId}/fittings`
 /// 
 /// ---
 /// 
-/// Fetches the running character industry jobs
+/// Creates a new fit for the given character
 /// 
 #[utoipa::path(
-    delete,
-    path = "/character/{CharacterId}/fittings/{FittingId}",
-    tag = "Fittings",
+    post,
+    path = "/{CharacterId}/fittings",
+    tag = "Character - Fit",
+    request_body = EveFit,
     params(
         CharacterId,
-        FittingId,
     ),
     responses(
         (
@@ -36,14 +36,15 @@ const SCOPE: &str = "esi-fittings.write_fittings.v1";
             description = "Character industry jobs",
             status = OK,
         ),
-        NotFound,
+        Unauthorized,
         InternalServerError,
     ),
 )]
 pub async fn api(
-    identity:                           ExtractIdentity,
-    Path((character_id, fitting_id)):   Path<(CharacterId, FittingId)>,
-    State(state):                       State<AppState>,
+    identity:           ExtractIdentity,
+    State(state):       State<AppState>,
+    Path(character_id): Path<CharacterId>,
+    Json(fit):          Json<EveFit>,
 ) -> Result<impl IntoResponse> {
     let api_client = api_client_auth(
             &state.postgres,
@@ -68,12 +69,11 @@ pub async fn api(
     };
 
     let path = format!(
-        "latest/characters/{}/fittings/{}",
+        "latest/characters/{}/fittings",
         character_id,
-        fitting_id,
     );
     let fitting = api_client
-        .delete::<EveFitResponse>(&path)
+        .post::<_, EveFitResponse>(&path, fit)
         .await?;
 
     Ok(

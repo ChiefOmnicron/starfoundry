@@ -8,7 +8,8 @@ and wrap the EVE-API.
 ## Current functionality
 
 - EVE-SSO Login for main characters, alt characters and corporations
-- Authentication for all applications within the Eco-System
+- Authentication provider for different applications
+- Wraps parts of the EVE-API
 
 ## JWT expiration
 
@@ -27,9 +28,9 @@ and wrap the EVE-API.
 6. It will generate `refresh_token` and redirect back towards the given callback route in the config file
 7. The requester service must set the `refresh_token` as a cookie and redirect towards the 
 application
-1. An access_token can be retrieved by calling `/auth/token`, the `refresh_token` must be set as a cookie in the request
-2.  The access_token should be securely stored, for example storing it in memory and requesting a new one when needed
-3.  Request towards the API can be made
+8. An access_token can be retrieved by calling `/auth/token`, the `refresh_token` must be set as a cookie in the request
+9. The access_token should be securely stored, for example storing it in memory and requesting a new one when needed
+10. Request towards the API can be made using the access_token
 
 ### Validating the StarFoundry JWT-Token
 

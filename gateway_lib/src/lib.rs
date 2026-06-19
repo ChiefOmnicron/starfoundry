@@ -1,3 +1,5 @@
+#![allow(clippy::redundant_field_names)]
+
 mod auth;
 mod api_client;
 mod identity;

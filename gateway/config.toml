@@ -10,10 +10,6 @@ drop_prefix = true
 service_url = "http://localhost:9998"
 drop_prefix = true
 
-[routes."market"]
-service_url = "http://localhost:9998"
-drop_prefix = true
-
 [routes."search"]
 service_url = "http://localhost:9998"
 drop_prefix = true

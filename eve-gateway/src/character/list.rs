@@ -11,15 +11,14 @@ use crate::state::AppState;
 use crate::character::service::list_authed_characters;
 use starfoundry_lib_eve_gateway::AuthedCharacterInfo;
 
-/// Login Corporation
+/// List Characters
 /// 
 /// Alternative route: `/latest/characters/corporation`
 /// Alternative route: `/v1/characters/corporation`
 /// 
 /// ---
 /// 
-/// Logs in a corporation.
-/// For main characters or alt characters the endpoints `/login` or `/login/character` should be used
+/// Lists all characters the main character has authed.
 /// 
 #[utoipa::path(
     get,

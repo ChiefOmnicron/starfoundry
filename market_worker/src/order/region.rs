@@ -1,8 +1,7 @@
 use chrono::Days;
 use serde::Deserialize;
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::EveGatewayClient;
-use starfoundry_lib_eve_gateway::eve_market::EveGatewayApiClientEveMarket;
+use starfoundry_lib_eve_gateway::{EveGatewayApiClientMarket, EveGatewayClient};
 use starfoundry_lib_types::RegionId;
 use starfoundry_lib_worker::Task;
 
@@ -30,7 +29,7 @@ pub async fn by_region_task(
 
     let client = EveGatewayClient::new(SERVICE_NAME)?;
     let mut entries = client
-        .fetch_market_by_region(additional_data.region_id)
+        .list_market_by_region(additional_data.region_id)
         .await?;
 
     entries.dedup_by_key(|x| x.order_id);

@@ -119,11 +119,11 @@ pub fn parse(
             }
 
             // Material Efficiency
-            if let Some(Some(material_efficiency)) = leftovers.get(1) {
-                if material_efficiency.chars().all(|x| x.is_numeric()) {
+            if let Some(Some(material_efficiency)) = leftovers.get(1)
+                && material_efficiency.chars().all(|x| x.is_numeric()) {
+
                     let material_efficiency = *material_efficiency;
                     x.material_efficiency = Some(material_efficiency.parse::<usize>().unwrap_or(0));
-                }
             }
 
             items.push(x);
@@ -138,39 +138,23 @@ pub fn parse(
     }
 }
 
-pub async fn load_items_by_name(
-    pool: &PgPool,
-) -> Result<HashMap<String, Item>> {
+pub fn load_items_by_name() -> HashMap<String, Item> {
     if let Some(x) = ITEM_CACHE_NAME.get() {
-        return Ok(x.clone());
-    }
-
-    load_items(pool).await?;
-
-    if let Some(x) = ITEM_CACHE_NAME.get() {
-        return Ok(x.clone())
+        x.clone()
     } else {
-        Ok(HashMap::new())
+        HashMap::new()
     }
 }
 
-pub async fn load_items_by_type_id(
-    pool: &PgPool,
-) -> Result<HashMap<TypeId, Item>> {
+pub fn load_items_by_type_id() -> HashMap<TypeId, Item> {
     if let Some(x) = ITEM_CACHE_TYPE_ID.get() {
-        return Ok(x.clone());
-    }
-
-    load_items(pool).await?;
-
-    if let Some(x) = ITEM_CACHE_TYPE_ID.get() {
-        return Ok(x.clone())
+        x.clone()
     } else {
-        Ok(HashMap::new())
+        HashMap::new()
     }
 }
 
-async fn load_items<'a>(
+pub async fn load_items(
     pool: &PgPool,
 ) -> Result<()> {
     let all_items_db = sqlx::query!("
@@ -213,7 +197,7 @@ async fn load_items<'a>(
             name:       sanitize_name(item.name.clone()),
             volume:     item.volume,
             repackaged: item.repackaged,
-            type_id:    type_id.clone(),
+            type_id:    type_id,
 
             category:   category,
             group:      group,
@@ -255,11 +239,12 @@ mod item_parser_tests {
     use starfoundry_lib_eve_gateway::Item;
     use sqlx::PgPool;
 
-    async fn load_items<'a>(
+    async fn load_items(
         pool: &PgPool,
     ) -> HashMap<String, Item> {
         dotenvy::dotenv().ok();
-        super::load_items_by_name(&pool).await.unwrap()
+        super::load_items(&pool).await.unwrap();
+        super::load_items_by_name()
     }
 
     #[sqlx::test(

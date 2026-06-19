@@ -55,11 +55,7 @@ pub async fn fetch_rig(
         .fetch_all(pool)
         .await;
 
-    let bonuses = if let Ok(x) = bonuses {
-        x
-    } else {
-        Vec::new()
-    };
+    let bonuses = bonuses.unwrap_or_default();
 
     let mut material   = None;
     let mut time       = None;
@@ -88,7 +84,7 @@ pub async fn fetch_rig(
     rig_categories.dedup();
     for category_id in rig_categories {
         if let Some(x) = fetch_category(
-            &pool,
+            pool,
             category_id,
         ).await? {
             categories.push(x)
@@ -104,7 +100,7 @@ pub async fn fetch_rig(
     rig_groups.dedup();
     for group_id in rig_groups {
         if let Some(x) = fetch_group(
-            &pool,
+            pool,
             group_id,
         ).await? {
             groups.push(x)

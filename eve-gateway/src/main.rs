@@ -1,12 +1,13 @@
 use axum::{middleware, Router};
 use prometheus_client::registry::Registry;
 use sqlx::postgres::PgPoolOptions;
-use starfoundry_bin_eve_gateway::{auth, character, contract, healthcheck, industry, internal, item, search, structure, universe, eve};
+use starfoundry_bin_eve_gateway::{auth, character, healthcheck, industry, item, search, structure, universe, proxy};
 use starfoundry_bin_eve_gateway::api_docs::ApiDoc;
 use starfoundry_bin_eve_gateway::config::Config;
-use starfoundry_bin_eve_gateway::item::services::load_items_by_name;
+use starfoundry_bin_eve_gateway::item::services::load_items;
 use starfoundry_bin_eve_gateway::metrics::{self, Metric, path_metrics};
 use starfoundry_bin_eve_gateway::state::AppState;
+use starfoundry_lib_eve_client::EveApiClientMetric;
 use std::sync::Arc;
 use tokio::select;
 use tower::ServiceBuilder;
@@ -14,7 +15,6 @@ use tracing_subscriber::EnvFilter;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_scalar::{Scalar, Servable};
 use utoipa::OpenApi;
-use starfoundry_lib_eve_client::EveApiClientMetric;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -33,6 +33,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let config = Config::load().await?;
 
+    if config.domains.is_empty() {
+        tracing::error!("No domain configured. See README.md");
+        return Err("No domain configured. See README.md".into());
+    }
+
     let postgres = PgPoolOptions::new()
         .connect(&config.database_url)
         .await?;
@@ -42,12 +47,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let pool = postgres.clone();
     tokio::spawn(async move {
         tracing::info!("starting item cache population");
-        let _ = load_items_by_name(&pool).await;
+        let _ = load_items(&pool).await;
         tracing::info!("item cache populated");
     });
 
     let mut metric_registry = Registry::with_prefix("starfoundry_eve_gateway_api");
-    let metric = Metric::new();
+    let metric = Metric::default();
     metric.register(&mut metric_registry);
 
     let eve_client_metric = EveApiClientMetric::new();
@@ -91,15 +96,12 @@ fn app(
 
         .nest("/auth", auth::routes())
         .nest("/characters", character::routes())
-        .nest("/contracts", contract::routes())
         .nest("/industry", industry::routes())
         .nest("/items", item::routes())
         .nest("/search", search::routes())
         .nest("/structures", structure::routes())
         .nest("/universe", universe::routes())
-
-        .nest("/eve", eve::routes())
-        .nest("/internal", internal::routes())
+        .nest("/proxy", proxy::routes())
         .layer(
             ServiceBuilder::new().layer(middleware::from_fn_with_state(state.clone(), path_metrics))
         )
@@ -108,12 +110,12 @@ fn app(
 
     let router = router.merge(Scalar::with_url("/", api));
 
-    //let router_v1 = Router::new().nest("/v1", router.clone());
-    //let router_latest = Router::new().nest("/latest", router.clone());
+    let router_v1 = Router::new().nest("/v1", router.clone());
+    let router_latest = Router::new().nest("/latest", router.clone());
 
     router
-        //.merge(router_v1)
-        //.merge(router_latest)
+        .merge(router_v1)
+        .merge(router_latest)
 }
 
 /// General service routes that do not need to be publicly accessible

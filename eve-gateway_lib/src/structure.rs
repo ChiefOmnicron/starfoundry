@@ -33,19 +33,10 @@ pub struct StructurePosition {
     pub z: f32,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize, ToSchema)]
 pub struct StructureServiceResponse {
     pub services: Vec<Item>,
     pub slots:    i32,
-}
-
-impl Default for StructureServiceResponse {
-    fn default() -> Self {
-        Self {
-            services: Vec::new(),
-            slots:    0,
-        }
-    }
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]

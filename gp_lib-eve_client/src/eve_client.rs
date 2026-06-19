@@ -142,7 +142,7 @@ impl EveApiClient {
     /// # Params
     /// 
     /// * `state` -> Unique key to allow to identify the user when he comes back
-    ///              using the callback route
+    ///   using the callback route
     /// * `scope` -> Required scope, must be a list of space separated entries
     /// 
     /// # Errors
@@ -162,7 +162,7 @@ impl EveApiClient {
         url.query_pairs_mut()
             .append_pair("response_type", "code")
             .append_pair("redirect_uri", &callback)
-            .append_pair("client_id", &*client_id)
+            .append_pair("client_id", &client_id)
             .append_pair("scope", scope)
             .append_pair("state", state);
         Ok(url)
@@ -1024,7 +1024,7 @@ impl EveApiClient {
     /// # Params
     ///
     /// * `form` -> Form containing `grant_type` and `code` or `refresh_token`.
-    ///             See the EVE SSO-Flow documentation for more information
+    ///   See the EVE SSO-Flow documentation for more information
     ///
     /// # Errors
     ///
@@ -1054,7 +1054,7 @@ impl EveApiClient {
             let token: EveJwtToken = response
                 .json()
                 .await
-                .map_err(|e| EveApiError::ReqwestError(e, oauth_token_url.into()))?;
+                .map_err(|e| EveApiError::ReqwestError(e, oauth_token_url))?;
             token.validate(
                 Self::oauth_jwt_keys_url()?,
                 Self::client_id()?,
@@ -1070,7 +1070,7 @@ impl EveApiClient {
                 oauth_token_url,
                 content,
             );
-            return Err(EveApiError::GetTokenError)
+            Err(EveApiError::GetTokenError)
         }
     }
 
@@ -1183,13 +1183,13 @@ impl EveApiClient {
     /// 
     pub fn client_id() -> Result<EveClientId> {
         std::env::var(ENV_CLIENT_ID)
-            .map(|x| EveClientId(x))
+            .map(EveClientId)
             .map_err(|_| EveApiError::EnvNotSet(ENV_CLIENT_ID))
     }
 
     fn secret_key() -> Result<EveSecretKey> {
         std::env::var(ENV_SECRET_KEY)
-            .map(|x| EveSecretKey(x))
+            .map(EveSecretKey)
             .map_err(|_| EveApiError::EnvNotSet(ENV_SECRET_KEY))
     }
 
@@ -1222,7 +1222,7 @@ impl Deref for EveClientId {
 
 impl Debug for EveClientId {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:?}", self)
+        write!(f, "{}", self.0)
     }
 }
 

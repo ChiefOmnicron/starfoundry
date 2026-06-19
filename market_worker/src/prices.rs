@@ -1,6 +1,5 @@
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::eve_market::EveGatewayApiClientEveMarket;
-use starfoundry_lib_eve_gateway::EveGatewayClient;
+use starfoundry_lib_eve_gateway::{EveGatewayApiClientMarket, EveGatewayClient};
 use starfoundry_lib_worker::Task;
 
 use crate::error::{Error, Result};
@@ -13,7 +12,7 @@ pub async fn prices(
 ) -> Result<()> {
     let client = EveGatewayClient::new(SERVICE_NAME)?;
     let entries = match client
-        .fetch_prices()
+        .list_prices()
         .await {
 
         Ok(x) => {

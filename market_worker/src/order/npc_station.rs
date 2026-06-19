@@ -1,7 +1,6 @@
 use serde::Deserialize;
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::EveGatewayClient;
-use starfoundry_lib_eve_gateway::eve_market::EveGatewayApiClientEveMarket;
+use starfoundry_lib_eve_gateway::{EveGatewayApiClientMarket, EveGatewayClient};
 use starfoundry_lib_types::{RegionId, StructureId};
 use starfoundry_lib_worker::Task;
 
@@ -30,7 +29,7 @@ pub async fn by_npc_station_task(
 
     let client = EveGatewayClient::new(SERVICE_NAME)?;
     let entries = client
-        .fetch_market_by_region(additional_data.region_id)
+        .list_market_by_region(additional_data.region_id)
         .await?
         .into_iter()
         .filter(|x| *x.location_id == *additional_data.structure_id)

@@ -30,7 +30,7 @@ impl ExtractIdentity {
         if let Some(x) = self.host.clone() {
             Ok(x)
         } else {
-            return Err(Error::Unauthorized)
+            Err(Error::Unauthorized)
         }
     }
 }
@@ -42,11 +42,9 @@ where
     type Rejection = (StatusCode, Json<serde_json::Value>);
 
     async fn from_request_parts(parts: &mut Parts, _: &S) -> Result<Self, Self::Rejection> {
-        let host = if let Some(x) = parts.headers.get(HEADER_SOURCE) {
-            Some(x.to_str().unwrap_or_default().into())
-        } else {
-            None
-        };
+        let host = parts.headers
+            .get(HEADER_SOURCE)
+            .map(|x| x.to_str().unwrap_or_default().into());
 
         let service_name = if let Some(x) = parts.headers.get(HEADER_SERVICE) {
             x.to_str().unwrap_or_default().into()
@@ -133,15 +131,10 @@ where
         };
 
         let is_admin = if let Some(x) = parts.headers.get(HEADER_IS_ADMIN) {
-            let parsed = x.to_str()
+            x.to_str()
                 .unwrap_or_default()
                 .parse::<i32>()
-                .unwrap_or(0);
-            if parsed == 1 {
-                true
-            } else {
-                false
-            }
+                .unwrap_or(0) == 1
         } else {
             false
         };

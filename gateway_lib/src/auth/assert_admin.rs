@@ -27,8 +27,8 @@ pub async fn assert_admin(
         next.run(request).await
     } else {
         tracing::error!("could not `assert_admin`, reason: 'not an admin'");
-        return (
+        (
             StatusCode::FORBIDDEN,
-        ).into_response();
+        ).into_response()
     }
 }

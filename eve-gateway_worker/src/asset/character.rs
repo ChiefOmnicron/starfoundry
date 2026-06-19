@@ -1,6 +1,6 @@
 use serde::Deserialize;
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::{EveGatewayApiClientEveAsset, EveGatewayClient};
+use starfoundry_lib_eve_gateway::{EveGatewayApiClientAsset, EveGatewayClient};
 use starfoundry_lib_gateway::Identity;
 use starfoundry_lib_types::{CharacterId, CorporationId};
 use starfoundry_lib_worker::Task;
@@ -37,7 +37,7 @@ pub async fn assets(
 
     let client = EveGatewayClient::new_with_identity(SERVICE_NAME, identity)?;
     let entries = match client
-        .eve_fetch_character_assets(additional_data.character_id)
+        .list_character_assets()
         .await {
 
         Ok(x) => {

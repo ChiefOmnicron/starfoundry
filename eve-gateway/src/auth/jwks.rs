@@ -66,7 +66,7 @@ pub fn verify(
             &x,
             &y,
         )
-        .map_err(|e| AuthError::InvalidES256Key(e))?;
+        .map_err(AuthError::InvalidES256Key)?;
 
     let mut validation = Validation::new(Algorithm::ES256);
     validation.set_required_spec_claims(&["exp", "iss", "aud", "kid"]);
@@ -83,7 +83,6 @@ pub fn verify(
             &validation
         )
         .map_err(AuthError::InvalidAccessToken)
-        .map_err(Into::into)
 }
 
 /// Decoded access token
@@ -96,17 +95,19 @@ pub struct Claims {
 // only required as a type hint for utoipa
 #[allow(dead_code)]
 #[derive(ToSchema)]
-#[schema(example = json!({
-    "keys": [{
-        "kty": "EC",
-        "use": "sig",
-        "alg": "ES256",
-        "kid": "starfoundry-eve-gateway",
-        "crv": "P-256",
-        "x": "E_F29AWYozaY4fzVjaeSfgASXmHJqKwjmT-4foXMPHc",
-        "y": "pmIsw6PA0hFO1JIzPjNqkXN6dDEIk8LYLdtH9Vq1Qj4"
-    }]
-}))]
+#[schema(
+    example = json!({
+        "keys": [{
+            "kty": "EC",
+            "use": "sig",
+            "alg": "ES256",
+            "kid": "starfoundry-eve-gateway",
+            "crv": "P-256",
+            "x": "E_F29AWYozaY4fzVjaeSfgASXmHJqKwjmT-4foXMPHc",
+            "y": "pmIsw6PA0hFO1JIzPjNqkXN6dDEIk8LYLdtH9Vq1Qj4"
+        }]
+    })
+)]
 struct Jwks {
     keys: Vec<Jwk>
 }

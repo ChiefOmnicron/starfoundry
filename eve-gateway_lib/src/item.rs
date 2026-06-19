@@ -175,7 +175,7 @@ pub trait EveGatewayApiClientItem: ApiClient {
         items: String,
     ) -> Result<ParseResult> {
         self
-            .post(&format!("items/parse"), items)
+            .post("items/parse", items)
             .await
             .map_err(Into::into)
     }

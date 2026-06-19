@@ -29,7 +29,7 @@ pub async fn public_contract_items(
 
     let client = EveGatewayClient::new(SERVICE_NAME)?;
     let contracts = client
-        .fetch_public_contract_items(additional_data.contract_id.into())
+        .list_public_contract_items(additional_data.contract_id.into())
         .await?;
 
     let mut transaction = pool

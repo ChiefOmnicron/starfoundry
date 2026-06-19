@@ -26,7 +26,6 @@ impl EveApiClient {
         self
             .fetch(&path, &())
             .await
-            .map_err(Into::into)
     }
 
     /// Gets the name of an alliance by its id
@@ -59,7 +58,6 @@ impl EveApiClient {
             .fetch::<_, Option<Alliance>>(&path, &())
             .await
             .map(|x| x.map(|y| y.name))
-            .map_err(Into::into)
     }
 }
 

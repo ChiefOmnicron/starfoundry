@@ -1,6 +1,7 @@
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::Blueprint;
 use starfoundry_lib_types::{CharacterId, TypeId};
+
 use crate::asset::{AssetError, Result};
 use crate::item::services::load_items_by_type_id;
 
@@ -8,11 +9,7 @@ pub async fn list_blueprints(
     pool:         &PgPool,
     character_id: CharacterId,
 ) -> Result<Vec<Blueprint>> {
-    let item_cache = if let Ok(x) = load_items_by_type_id(&pool).await {
-        x
-    } else {
-        return Ok(Vec::new());
-    };
+    let item_cache = load_items_by_type_id();
 
     let blueprints = sqlx::query!(r#"
             SELECT

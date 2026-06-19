@@ -4,7 +4,7 @@ use utoipa::ToSchema;
 use chrono::NaiveDateTime;
 
 use crate::utils::from_datetime;
-use crate::eve_market::BuyOrder;
+use crate::market::BuyOrder;
 
 /// Holds information about a market entry
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]

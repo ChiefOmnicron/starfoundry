@@ -35,16 +35,16 @@ pub async fn sync_task(
         Err(e) => task.append_error(e.to_string()),
     };
 
-    //match sync_public_contract(
-    //    pool,
-    //).await {
-    //    Ok(new_entries) => {
-    //        if new_entries > 0 {
-    //            task.append_log(format!("added {new_entries} public contracts"))
-    //        }
-    //    },
-    //    Err(e) => task.append_error(e.to_string()),
-    //};
+    match sync_public_contract(
+        pool,
+    ).await {
+        Ok(new_entries) => {
+            if new_entries > 0 {
+                task.append_log(format!("added {new_entries} public contracts"))
+            }
+        },
+        Err(e) => task.append_error(e.to_string()),
+    };
 
     match sync_misc_tasks(
         pool,
@@ -73,9 +73,9 @@ pub async fn sync(
         pool,
     ).await?;
 
-    //sync_public_contract(
-    //    pool,
-    //).await?;
+    sync_public_contract(
+        pool,
+    ).await?;
 
     sync_misc_tasks(
         pool,

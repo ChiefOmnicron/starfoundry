@@ -39,6 +39,39 @@ pub trait EveGatewayApiClientIndustry: ApiClient {
             .map_err(Into::into)
     }
 
+    /// Lists all active industry jobs from the character from the EVE-API
+    /// 
+    #[allow(async_fn_in_trait)]
+    async fn list_character_jobs(
+        &self,
+    ) -> Result<Vec<IndustryJob>> {
+        self
+            .fetch_auth(
+                "proxy/list/auth/characters/industry/jobs",
+                &(),
+            )
+            .await
+            .map_err(Into::into)
+    }
+
+    /// Lists all active industry jobs from the character from the EVE-API
+    /// 
+    #[allow(async_fn_in_trait)]
+    async fn list_corporation_jobs(
+        &self,
+    ) -> Result<Vec<IndustryJob>> {
+        self
+            .fetch_auth(
+                "proxy/list/auth/corporations/industry/jobs",
+                &(),
+            )
+            .await
+            .map_err(Into::into)
+    }
+
+    /// Fetches a specific index for a system.
+    /// The values are cached and might not be the latest ones.
+    /// 
     #[allow(async_fn_in_trait)]
     async fn fetch_system_index(
         &self,
@@ -50,17 +83,18 @@ pub trait EveGatewayApiClientIndustry: ApiClient {
             .map_err(Into::into)
     }
 
+    /// Lists all industry systems from the EVE-API
+    /// 
     #[allow(async_fn_in_trait)]
-    async fn fetch_corporation_jobs(
+    async fn list_system_index(
         &self,
-    ) -> Result<Vec<IndustryJob>> {
+    ) -> Result<Vec<IndustrySystem>> {
         self
-            .fetch_auth(
-                &format!("eve/industry/jobs/corporation"),
+            .fetch(
+                "proxy/list/industry/systems",
                 &(),
             )
             .await
             .map_err(Into::into)
     }
-
 }
