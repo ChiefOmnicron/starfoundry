@@ -59,11 +59,11 @@ pub async fn readyz(
             );
         }
     };
-    if api_client
-        .fetch_page::<serde_json::Value>("/status")
-        .await
-        .is_err() {
+    if let Err(e) = api_client
+        .fetch::<_, serde_json::Value>("/status", &())
+        .await {
 
+        tracing::error!("EVE-API healthcheck fail, {}", e);
         return (
             StatusCode::INTERNAL_SERVER_ERROR,
             [(
