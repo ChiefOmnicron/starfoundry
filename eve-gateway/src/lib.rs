@@ -42,5 +42,7 @@ pub mod structure;
 /// public eve route for universe
 pub mod universe;
 
+/// eve routes for data fetching
+pub mod eve;
 /// proxies requests to the EVE-API
 pub mod proxy;

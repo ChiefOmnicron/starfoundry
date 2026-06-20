@@ -1,7 +1,7 @@
 use axum::{middleware, Router};
 use prometheus_client::registry::Registry;
 use sqlx::postgres::PgPoolOptions;
-use starfoundry_bin_eve_gateway::{auth, character, healthcheck, industry, item, search, structure, universe, proxy};
+use starfoundry_bin_eve_gateway::{auth, character, eve, healthcheck, industry, item, proxy, search, structure, universe};
 use starfoundry_bin_eve_gateway::api_docs::ApiDoc;
 use starfoundry_bin_eve_gateway::config::Config;
 use starfoundry_bin_eve_gateway::item::services::load_items;
@@ -101,6 +101,7 @@ fn app(
         .nest("/search", search::routes())
         .nest("/structures", structure::routes())
         .nest("/universe", universe::routes())
+        .nest("/eve", eve::routes())
         .nest("/proxy", proxy::routes())
         .layer(
             ServiceBuilder::new().layer(middleware::from_fn_with_state(state.clone(), path_metrics))
