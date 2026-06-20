@@ -115,9 +115,12 @@ impl TryFrom<&str> for Scope {
         match value {
             "assets"        => Ok(Self::Assets),
             "blueprints"    => Ok(Self::Blueprints),
-            "industry/job"  => Ok(Self::IndustryJob),
+            "industry/jobs" => Ok(Self::IndustryJob),
             "orders"        => Ok(Self::Orders),
-            _               => Err(ProxyError::NoScopeFound),
+            _               => {
+                tracing::error!("No scope for {}", value);
+                Err(ProxyError::NoScopeFound)
+            },
         }
     }
 }
