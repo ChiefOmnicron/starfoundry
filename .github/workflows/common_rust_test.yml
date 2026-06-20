@@ -27,6 +27,20 @@ jobs:
           cd ${{ inputs.folder }}
           cargo check
 
+  udeps:
+    name: check
+    runs-on:
+      - self-hosted
+      - linux
+    steps:
+      - uses: actions/checkout@master
+      - name: cargo check
+        env:
+          SQLX_OFFLINE: true
+        run: |
+          cd ${{ inputs.folder }}
+          cargo udeps --all-features --workspace
+
   test:
     name: tests
     runs-on:
@@ -34,6 +48,7 @@ jobs:
       - linux
     needs:
       - check
+      - udeps
     services:
       postgres:
         image: postgres:18
