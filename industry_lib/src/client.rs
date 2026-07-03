@@ -8,6 +8,7 @@ use url::Url;
 use crate::error::{Error, Result};
 use crate::industry::IndustryApiClientIndustry;
 use crate::project::IndustryApiClientProject;
+use crate::tag::IndustryApiClientTag;
 
 pub const ENV_INDUSTRY_API: &str = "STARFOUNDRY_INDUSTRY_API_URL";
 
@@ -154,6 +155,7 @@ impl ApiClient for IndustryClient {
 impl IndustryApiClient for IndustryClient {}
 impl IndustryApiClientIndustry for IndustryClient {}
 impl IndustryApiClientProject for IndustryClient {}
+impl IndustryApiClientTag for IndustryClient {}
 
 /// Trait that should be implemented on all clients
 /// The default implementation will be sufficient in most cases, overwriting
@@ -161,4 +163,5 @@ impl IndustryApiClientProject for IndustryClient {}
 pub trait IndustryApiClient:
     ApiClient +
     IndustryApiClientIndustry +
-    IndustryApiClientProject {}
+    IndustryApiClientProject +
+    IndustryApiClientTag {}

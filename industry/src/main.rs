@@ -10,6 +10,7 @@ mod project;
 mod sort;
 mod state;
 mod structure;
+mod tag;
 
 pub use self::state::*;
 
@@ -93,6 +94,7 @@ fn app(
         .nest("/industry", industry::routes())
         .nest("/industry-hubs", industry_hub::routes(state.clone()))
         .nest("/job-assignments", job_assignments::routes())
+        .nest("/tags", tag::routes())
         .layer(
             ServiceBuilder::new()
                 .layer(middleware::from_fn_with_state(state.clone(), path_metrics))

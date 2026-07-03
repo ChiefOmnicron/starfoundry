@@ -16,6 +16,8 @@ pub enum Error {
     EnvNotSet(&'static str),
     #[error("error while parsing url. Validate the environment variables, error: '{0}'")]
     UrlParseError(url::ParseError),
+    #[error("error while parsing string into enum, value: {0}, enum: {1}")]
+    EnumParseError(String, &'static str),
 
     #[error("Validating the input data failed, '{0}'")]
     ValidationError(String),

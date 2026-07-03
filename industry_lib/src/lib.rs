@@ -6,6 +6,7 @@ pub mod industry;
 pub mod project;
 pub mod project_group;
 pub mod structure;
+pub mod tag;
 
 use starfoundry_lib_types::starfoundry_uuid;
 
@@ -25,3 +26,4 @@ starfoundry_uuid!(ProjectJobUuid, "ProjectJobUuid");
 starfoundry_uuid!(ProjectUuid, "ProjectUuid");
 starfoundry_uuid!(SolutionUuid, "SolutionUuid");
 starfoundry_uuid!(StructureUuid, "StructureUuid");
+starfoundry_uuid!(TagUuid, "TagUuid");

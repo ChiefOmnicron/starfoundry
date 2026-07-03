@@ -4,8 +4,7 @@ use starfoundry_lib_industry::project::{Project, ProjectStatus};
 use starfoundry_lib_industry::ProjectUuid;
 use starfoundry_lib_types::CharacterId;
 
-use crate::project::error::ProjectError;
-use crate::project::error::Result;
+use crate::project::error::{ProjectError, Result};
 use crate::project::service::{list_excess, list_products, list_stock};
 
 pub async fn fetch(

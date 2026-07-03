@@ -3,21 +3,21 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_gateway::ExtractIdentity;
-use starfoundry_lib_industry::project::{CreateProject, CreateProjectResponse};
+use starfoundry_lib_industry::tag::{CreateTag, CreateTagResponse};
 
 use crate::api_docs::{BadRequest, InternalServerError, Unauthorized};
 use crate::AppState;
-use crate::project::error::Result;
-use crate::project::service::create;
+use crate::tag::error::Result;
+use crate::tag::service::create;
 
-/// Create Project
+/// Create Tag
 /// 
-/// - Alternative route: `/latest/projects`
-/// - Alternative route: `/v1/projects`
+/// - Alternative route: `/latest/tags`
+/// - Alternative route: `/v1/tags`
 /// 
 /// ---
 /// 
-/// Creates a new project
+/// Creates a new tag
 /// 
 /// ## Security
 /// - authenticated
@@ -26,12 +26,12 @@ use crate::project::service::create;
 #[utoipa::path(
     post,
     path = "/",
-    tag = "projects",
-    request_body = CreateProject,
+    tag = "tags",
+    request_body = CreateTag,
     responses(
         (
-            body = CreateProjectResponse,
-            description = "List all projects that match the given filters",
+            body = CreateTagResponse,
+            description = "UUID of the new tag",
             status = OK,
         ),
         (
@@ -47,20 +47,20 @@ use crate::project::service::create;
     ),
 )]
 pub async fn api(
-    identity:           ExtractIdentity,
-    State(state):       State<AppState>,
-    Json(project_info): Json<CreateProject>,
+    identity:       ExtractIdentity,
+    State(state):   State<AppState>,
+    Json(tag_info): Json<CreateTag>,
 ) -> Result<impl IntoResponse> {
     let id = create(
             &state.postgres,
             identity.character_id,
-            project_info,
+            tag_info,
         ).await?;
 
     Ok(
         (
             StatusCode::CREATED,
-            Json(CreateProjectResponse {
+            Json(CreateTagResponse {
                 id: id.into(),
             })
         )

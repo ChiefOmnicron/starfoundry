@@ -6,7 +6,7 @@ import { Flex, Table, Text } from "@mantine/core";
 import {useMemo, type ReactElement } from "react";
 import type { AuthedCharacterInfo } from "@internal/services/character/list";
 
-export function CharacterList({
+export function CharacterTable({
     characters,
 }: CharacterListProps): ReactElement {
     const columnHelper = createColumnHelper<AuthedCharacterInfo>();

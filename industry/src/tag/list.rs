@@ -3,34 +3,33 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_gateway::ExtractIdentity;
-use starfoundry_lib_industry::project::{CreateProject, CreateProjectResponse};
+use starfoundry_lib_industry::tag::Tag;
 
-use crate::api_docs::{BadRequest, InternalServerError, Unauthorized};
 use crate::AppState;
-use crate::project::error::Result;
-use crate::project::service::create;
+use crate::api_docs::{BadRequest, InternalServerError, Unauthorized};
+use crate::tag::error::Result;
+use crate::tag::service::list;
 
-/// Create Project
+/// List Projects
 /// 
 /// - Alternative route: `/latest/projects`
 /// - Alternative route: `/v1/projects`
 /// 
 /// ---
 /// 
-/// Creates a new project
+/// Lists all projects the user has access to.
 /// 
 /// ## Security
 /// - authenticated
 /// - project_group:read
 /// 
 #[utoipa::path(
-    post,
+    get,
     path = "/",
     tag = "projects",
-    request_body = CreateProject,
     responses(
         (
-            body = CreateProjectResponse,
+            body = Vec<Tag>,
             description = "List all projects that match the given filters",
             status = OK,
         ),
@@ -47,22 +46,29 @@ use crate::project::service::create;
     ),
 )]
 pub async fn api(
-    identity:           ExtractIdentity,
-    State(state):       State<AppState>,
-    Json(project_info): Json<CreateProject>,
+    identity:      ExtractIdentity,
+    State(state):  State<AppState>,
 ) -> Result<impl IntoResponse> {
-    let id = create(
+    let data = list(
             &state.postgres,
             identity.character_id,
-            project_info,
         ).await?;
 
-    Ok(
-        (
-            StatusCode::CREATED,
-            Json(CreateProjectResponse {
-                id: id.into(),
-            })
+    if data.is_empty() {
+        Ok(
+            (
+                StatusCode::NO_CONTENT,
+                Json(data),
+            )
+            .into_response()
         )
-    )
+    } else {
+        Ok(
+            (
+                StatusCode::OK,
+                Json(data),
+            )
+            .into_response()
+        )
+    }
 }

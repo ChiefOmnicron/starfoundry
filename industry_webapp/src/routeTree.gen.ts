@@ -16,6 +16,7 @@ import { Route as PriceCalculationRouteRouteImport } from './routes/price-calcul
 import { Route as JobsRouteRouteImport } from './routes/jobs/route'
 import { Route as IndustryHubsRouteRouteImport } from './routes/industry-hubs/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TagsIndexRouteImport } from './routes/tags/index'
 import { Route as StructuresIndexRouteImport } from './routes/structures/index'
 import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
 import { Route as ProjectGroupsIndexRouteImport } from './routes/project-groups/index'
@@ -81,6 +82,11 @@ const IndustryHubsRouteRoute = IndustryHubsRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TagsIndexRoute = TagsIndexRouteImport.update({
+  id: '/tags/',
+  path: '/tags/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StructuresIndexRoute = StructuresIndexRouteImport.update({
@@ -275,6 +281,7 @@ export interface FileRoutesByFullPath {
   '/project-groups/': typeof ProjectGroupsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/structures/': typeof StructuresIndexRoute
+  '/tags/': typeof TagsIndexRoute
   '/projects/$projectId/assistant': typeof ProjectsProjectIdAssistantRouteRouteWithChildren
   '/project-groups/$projectGroupId/defaults': typeof ProjectGroupsProjectGroupIdDefaultsRoute
   '/project-groups/$projectGroupId/industry-hubs': typeof ProjectGroupsProjectGroupIdIndustryHubsRoute
@@ -307,6 +314,7 @@ export interface FileRoutesByTo {
   '/project-groups': typeof ProjectGroupsIndexRoute
   '/projects': typeof ProjectsIndexRoute
   '/structures': typeof StructuresIndexRoute
+  '/tags': typeof TagsIndexRoute
   '/project-groups/$projectGroupId/defaults': typeof ProjectGroupsProjectGroupIdDefaultsRoute
   '/project-groups/$projectGroupId/industry-hubs': typeof ProjectGroupsProjectGroupIdIndustryHubsRoute
   '/project-groups/$projectGroupId/members': typeof ProjectGroupsProjectGroupIdMembersRoute
@@ -347,6 +355,7 @@ export interface FileRoutesById {
   '/project-groups/': typeof ProjectGroupsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/structures/': typeof StructuresIndexRoute
+  '/tags/': typeof TagsIndexRoute
   '/projects_/$projectId/assistant': typeof ProjectsProjectIdAssistantRouteRouteWithChildren
   '/project-groups_/$projectGroupId/defaults': typeof ProjectGroupsProjectGroupIdDefaultsRoute
   '/project-groups_/$projectGroupId/industry-hubs': typeof ProjectGroupsProjectGroupIdIndustryHubsRoute
@@ -389,6 +398,7 @@ export interface FileRouteTypes {
     | '/project-groups/'
     | '/projects/'
     | '/structures/'
+    | '/tags/'
     | '/projects/$projectId/assistant'
     | '/project-groups/$projectGroupId/defaults'
     | '/project-groups/$projectGroupId/industry-hubs'
@@ -421,6 +431,7 @@ export interface FileRouteTypes {
     | '/project-groups'
     | '/projects'
     | '/structures'
+    | '/tags'
     | '/project-groups/$projectGroupId/defaults'
     | '/project-groups/$projectGroupId/industry-hubs'
     | '/project-groups/$projectGroupId/members'
@@ -460,6 +471,7 @@ export interface FileRouteTypes {
     | '/project-groups/'
     | '/projects/'
     | '/structures/'
+    | '/tags/'
     | '/projects_/$projectId/assistant'
     | '/project-groups_/$projectGroupId/defaults'
     | '/project-groups_/$projectGroupId/industry-hubs'
@@ -495,6 +507,7 @@ export interface RootRouteChildren {
   AboutIndexRoute: typeof AboutIndexRoute
   CharactersIndexRoute: typeof CharactersIndexRoute
   LegalIndexRoute: typeof LegalIndexRoute
+  TagsIndexRoute: typeof TagsIndexRoute
   JobsAssignmentIdIndexRoute: typeof JobsAssignmentIdIndexRoute
 }
 
@@ -547,6 +560,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tags/': {
+      id: '/tags/'
+      path: '/tags'
+      fullPath: '/tags/'
+      preLoaderRoute: typeof TagsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/structures/': {
@@ -956,6 +976,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutIndexRoute: AboutIndexRoute,
   CharactersIndexRoute: CharactersIndexRoute,
   LegalIndexRoute: LegalIndexRoute,
+  TagsIndexRoute: TagsIndexRoute,
   JobsAssignmentIdIndexRoute: JobsAssignmentIdIndexRoute,
 }
 export const routeTree = rootRouteImport

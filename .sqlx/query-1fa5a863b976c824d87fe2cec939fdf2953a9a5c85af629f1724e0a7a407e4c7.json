@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM tag_auto\n            WHERE tag_id = $1\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "1fa5a863b976c824d87fe2cec939fdf2953a9a5c85af629f1724e0a7a407e4c7"
+}

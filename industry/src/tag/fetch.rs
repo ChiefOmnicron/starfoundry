@@ -3,22 +3,22 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_gateway::ExtractIdentity;
-use starfoundry_lib_industry::project::Project;
-use starfoundry_lib_industry::ProjectUuid;
+use starfoundry_lib_industry::tag::Tag;
+use starfoundry_lib_industry::TagUuid;
 
-use crate::{AppState, eve_gateway_api_client};
+use crate::AppState;
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
-use crate::project::error::Result;
-use crate::project::service::fetch;
+use crate::tag::error::Result;
+use crate::tag::service::fetch;
 
 /// Fetch Tag
 /// 
-/// - Alternative route: `/latest/projects/{ProjectUuid}`
-/// - Alternative route: `/v1/projects/{ProjectUuid}`
+/// - Alternative route: `/latest/tags/{TagUuid}`
+/// - Alternative route: `/v1/tags/{TagUuid}`
 /// 
 /// ---
 /// 
-/// Fetches information about a project
+/// Fetches information about a tag
 /// 
 /// ## Security
 /// - authenticated
@@ -26,14 +26,14 @@ use crate::project::service::fetch;
 /// 
 #[utoipa::path(
     get,
-    path = "/{ProjectUuid}",
-    tag = "Projects",
+    path = "/{TagUuid}",
+    tag = "Tags",
     params(
-        ProjectUuid,
+        TagUuid,
     ),
     responses(
         (
-            body = Project,
+            body = Tag,
             description = "Information about the structure",
             status = OK,
         ),
@@ -47,15 +47,14 @@ use crate::project::service::fetch;
     ),
 )]
 pub async fn api(
-    identity:         ExtractIdentity,
-    State(state):     State<AppState>,
-    Path(project_id): Path<ProjectUuid>,
+    identity:       ExtractIdentity,
+    State(state):   State<AppState>,
+    Path(tag_id):   Path<TagUuid>,
 ) -> Result<impl IntoResponse> {
     let entry = fetch(
             &state.postgres,
             identity.character_id,
-            project_id,
-            &eve_gateway_api_client()?,
+            tag_id,
         )
         .await?;
 
