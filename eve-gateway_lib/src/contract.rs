@@ -19,7 +19,7 @@ pub trait EveGatewayApiClientContract: ApiClient {
     ) -> Result<Vec<PublicContract>> {
         self
             .fetch(
-                &format!("proxy/list/contracts/public/{}", region_id),
+                &format!("proxy/contracts/public/{}", region_id),
                 &()
             )
             .await
@@ -35,7 +35,7 @@ pub trait EveGatewayApiClientContract: ApiClient {
     ) -> Result<Vec<PublicContractItem>> {
         self
             .fetch(
-                &format!("proxy/list/contracts/public/items/{}", contract_id),
+                &format!("proxy/contracts/public/items/{}", contract_id),
                 &(),
             )
             .await

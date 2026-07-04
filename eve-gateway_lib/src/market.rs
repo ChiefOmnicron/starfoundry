@@ -19,7 +19,7 @@ pub trait EveGatewayApiClientMarket: ApiClient + ApiClientExtended {
         region_id: RegionId,
     ) -> Result<Vec<Market>> {
         self
-            .fetch_page(&format!("proxy/list/markets/{}/orders", *region_id))
+            .fetch_page(&format!("proxy/markets/{}/orders", *region_id))
             .await
             .map_err(Into::into)
     }
@@ -31,7 +31,7 @@ pub trait EveGatewayApiClientMarket: ApiClient + ApiClientExtended {
     ) -> Result<Vec<Market>> {
         self
             .fetch_page(
-                &format!("proxy/list/auth/markets/structures/{}", *structure_id),
+                &format!("proxy/auth/markets/structures/{}", *structure_id),
             )
             .await
             .map_err(Into::into)
@@ -43,7 +43,7 @@ pub trait EveGatewayApiClientMarket: ApiClient + ApiClientExtended {
     ) -> Result<Vec<MarketOrder>> {
         self
             .fetch(
-                "proxy/list/auth/characters/orders",
+                "proxy/auth/characters/orders",
                 &(),
             )
             .await
@@ -56,7 +56,7 @@ pub trait EveGatewayApiClientMarket: ApiClient + ApiClientExtended {
     ) -> Result<Vec<MarketOrder>> {
         self
             .fetch_page(
-                "proxy/list/auth/corporations/orders",
+                "proxy/auth/corporations/orders",
             )
             .await
             .map_err(Into::into)
@@ -68,7 +68,7 @@ pub trait EveGatewayApiClientMarket: ApiClient + ApiClientExtended {
     ) -> Result<Vec<MarketPrice>> {
         self
             .fetch(
-                "proxy/list/markets/prices",
+                "proxy/markets/prices",
                 &(),
             )
             .await

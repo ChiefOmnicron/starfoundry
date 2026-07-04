@@ -89,7 +89,7 @@ pub trait EveGatewayApiClientIndustry: ApiClient + ApiClientExtended {
     ) -> Result<Vec<IndustrySystem>> {
         self
             .fetch(
-                "proxy/list/industry/systems",
+                "proxy/industry/systems",
                 &(),
             )
             .await
