@@ -29,7 +29,7 @@ use axum::http::HeaderMap;
 /// 
 #[utoipa::path(
     get,
-    path = "/list/auth/{*path}",
+    path = "/auth/{*path}",
     tag = "Proxy",
     params(
         ("*path" = String, Path, description = "Path to call on the EVE-API"),

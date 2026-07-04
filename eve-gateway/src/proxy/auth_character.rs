@@ -31,7 +31,7 @@ use crate::utils::api_client_auth;
 /// 
 #[utoipa::path(
     get,
-    path = "/list/auth/characters/{*path}",
+    path = "/auth/characters/{*path}",
     tag = "Proxy",
     params(
         ("*path" = String, Path, description = "Path to call on the EVE-API"),
