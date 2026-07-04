@@ -150,3 +150,51 @@ pub struct MarketEntry {
     pub item_volume:  f64,
     pub type_id:      TypeId,
 }
+
+#[cfg(test)]
+mod bulk_market_tests {
+    use sqlx::postgres::PgPoolOptions;
+    use starfoundry_lib_market::{BuyStrategy, GasDecompressionEfficiency, MarketBulkRequest, MarketItemList, OreReprocessingEfficiency, SmartBuyConfig};
+    use starfoundry_lib_types::{StructureId, TypeId};
+
+    use crate::eve_gateway_api_client;
+    use crate::market::bulk;
+
+    #[tokio::test]
+    async fn prismatic_test() {
+        dotenvy::dotenv().ok();
+
+        let pool = PgPoolOptions::new()
+            .connect("postgresql://postgres:postgres@localhost:5432/dev-sf-market")
+            .await
+            .unwrap();
+
+        let api_client = eve_gateway_api_client().unwrap();
+
+        let request = MarketBulkRequest {
+            strategy:           BuyStrategy::SmartBuy,
+            item_list:          Some(vec![
+                                    MarketItemList {
+                                        quantity:   5_000_000,
+                                        type_id:    TypeId(37i32),
+                                    }
+                                ]),
+            item_list_str:      None,
+            markets:            vec![StructureId(60003760)],
+            smart_buy_config:   Some(SmartBuyConfig {
+                                    gas_decompression:      Some(GasDecompressionEfficiency::default()),
+                                    mineral_compression:    Some(OreReprocessingEfficiency::default())
+                                }),
+            ..Default::default()
+        };
+
+        let result = bulk(
+                &pool,
+                &api_client,
+                request
+            )
+            .await
+            .unwrap();
+        dbg!(result);
+    }
+}

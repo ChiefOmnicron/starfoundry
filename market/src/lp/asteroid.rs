@@ -44,13 +44,17 @@ impl AsteroidCompressionProblem {
         entries: Vec<MarketEntry>,
     ) {
         for entry in entries {
+            let asteroid = Asteroid::from_type_id(entry.type_id);
+            if asteroid.is_prismatic() {
+                continue;
+            }
+
             let definition = variable().name(entry.name());
             let var = self.vars.add(definition);
             self.variables.push(var);
             self.mapping_order_id_market.insert(entry.order_id, entry.clone());
 
             // get the max price that was recorded for the market
-            let asteroid = Asteroid::from_type_id(entry.type_id);
             let mut max_price = self.max_price_per_entry.get(&asteroid).unwrap_or(&0f64);
 
             if entry.price > *max_price {
@@ -84,6 +88,64 @@ impl AsteroidCompressionProblem {
                     .entry(mineral)
                     .and_modify(|x: &mut Expression| *x += quantity.clone())
                     .or_insert(quantity);
+            }
+        }
+    }
+
+    // Maybe useful at some point when there are actual sell orders
+    #[allow(dead_code)]
+    pub fn define_problem_prismatic(
+        &mut self,
+        entries: Vec<MarketEntry>,
+    ) {
+        for entry in entries {
+            for reprocess_type in vec![
+                Asteroid::UnrefinedIsogen,
+                Asteroid::UnrefinedMegacyte,
+                Asteroid::UnrefinedMexallon,
+                Asteroid::UnrefinedMorphite,
+                Asteroid::UnrefinedNocxium,
+                Asteroid::UnrefinedPyerite,
+                Asteroid::UnrefinedTritanium,
+                Asteroid::UnrefinedZydrine,
+            ] {
+                let asteroid = Asteroid::from_type_id(entry.type_id);
+                if !asteroid.is_prismatic() {
+                    continue;
+                }
+
+                let name = reprocess_type.prismatic_name();
+                let definition = variable().name(name);
+                let var = self.vars.add(definition);
+                self.variables.push(var);
+                self.mapping_order_id_market.insert(entry.order_id, entry.clone());
+
+                // get the max price that was recorded for the market
+                let mut max_price = self.max_price_per_entry.get(&asteroid).unwrap_or(&0f64);
+
+                if entry.price > *max_price {
+                    max_price = &entry.price;
+                    self.max_price_per_entry.insert(reprocess_type.clone(), entry.price);
+                }
+
+                self.total_price += *max_price * var + self.hauling_cost(entry.structure_id, var, entry.item_volume);
+                self.constraints.push(constraint!(var >= 0));
+
+                let quantity = ((entry.quantity / 100) as f64).floor();
+                self.constraints.push(constraint!(var <= quantity));
+
+                for (mineral, quantity) in reprocess_type.minerals() {
+                    let efficiency = self.mineral_compression
+                        .unwrap_or(OreReprocessingEfficiency::default())
+                        .efficiency();
+
+                    let quantity = (var * quantity) * efficiency;
+
+                    self.minerals
+                        .entry(mineral)
+                        .and_modify(|x: &mut Expression| *x += quantity.clone())
+                        .or_insert(quantity);
+                }
             }
         }
     }

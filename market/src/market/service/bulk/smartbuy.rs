@@ -50,7 +50,7 @@ pub fn smartbuy(
         let mut lp = AsteroidCompressionProblem::new(
             config.mineral_compression,
         );
-        lp.define_problem(market_entries);
+        lp.define_problem(market_entries.clone());
         let result = lp.solve(minerals.clone());
 
         if let Ok(x) = result {

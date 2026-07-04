@@ -248,6 +248,18 @@ pub enum Asteroid {
     CompressedYtiriumIIIGrade,
     CompressedYtiriumIVGrade,
 
+    // Prismatic
+    Prismatic,
+    CompressedPrismatic,
+    UnrefinedIsogen,
+    UnrefinedMegacyte,
+    UnrefinedMexallon,
+    UnrefinedMorphite,
+    UnrefinedNocxium,
+    UnrefinedPyerite,
+    UnrefinedTritanium,
+    UnrefinedZydrine,
+
     // R4
     Bitumens,
     BrimfulBitumens,
@@ -707,6 +719,17 @@ impl Asteroid {
             Self::CompressedYtiriumIIIGrade.to_type_id(),
             Self::CompressedYtiriumIVGrade.to_type_id(),
 
+            Self::Prismatic.to_type_id(),
+            Self::CompressedPrismatic.to_type_id(),
+            Self::UnrefinedIsogen.to_type_id(),
+            Self::UnrefinedMegacyte.to_type_id(),
+            Self::UnrefinedMexallon.to_type_id(),
+            Self::UnrefinedMorphite.to_type_id(),
+            Self::UnrefinedNocxium.to_type_id(),
+            Self::UnrefinedPyerite.to_type_id(),
+            Self::UnrefinedTritanium.to_type_id(),
+            Self::UnrefinedZydrine.to_type_id(),
+
             Self::Tritanium.to_type_id(),
             Self::Pyerite.to_type_id(),
             Self::Mexallon.to_type_id(),
@@ -1149,6 +1172,17 @@ impl Asteroid {
             Self::CompressedYtiriumIIGrade                  => 75280,
             Self::CompressedYtiriumIIIGrade                 => 75281,
             Self::CompressedYtiriumIVGrade                  => 75282,
+
+            Self::Prismatic                                 => 90041,
+            Self::CompressedPrismatic                       => 90307,
+            Self::UnrefinedIsogen                           => 90289,
+            Self::UnrefinedMegacyte                         => 90296,
+            Self::UnrefinedMexallon                         => 90286,
+            Self::UnrefinedMorphite                         => 90298,
+            Self::UnrefinedNocxium                          => 90292,
+            Self::UnrefinedPyerite                          => 90284,
+            Self::UnrefinedTritanium                        => 90283,
+            Self::UnrefinedZydrine                          => 90294,
 
             // MoonGoo
             Self::Bitumens                                  => 45492,
@@ -1595,6 +1629,17 @@ impl Asteroid {
             75280 => Self::CompressedYtiriumIIGrade,
             75281 => Self::CompressedYtiriumIIIGrade,
             75282 => Self::CompressedYtiriumIVGrade,
+
+            90041 => Self::Prismatic,
+            30307 => Self::CompressedPrismatic,
+            90289 => Self::UnrefinedIsogen,
+            90296 => Self::UnrefinedMegacyte,
+            90286 => Self::UnrefinedMexallon,
+            90298 => Self::UnrefinedMorphite,
+            90292 => Self::UnrefinedNocxium,
+            90284 => Self::UnrefinedPyerite,
+            90283 => Self::UnrefinedTritanium,
+            90294 => Self::UnrefinedZydrine,
 
             // MoonGoo
             45492 => Self::Bitumens,
@@ -2387,6 +2432,95 @@ impl Asteroid {
                     vec![
                         240f64 * self.ore_modifier(),
                     ],
+                )
+            },
+
+            // Prismatic
+            Self::Prismatic                                 |
+            Self::CompressedPrismatic                       => {
+                mineral_init(
+                    Vec::new(),
+                    Vec::new(),
+                )
+            }
+            Self::UnrefinedIsogen                           => {
+                mineral_init(
+                    vec![
+                        Mineral::Isogen,
+                    ],
+                    vec![
+                        9568f64 * self.ore_modifier(),
+                    ]
+                )
+            },
+            Self::UnrefinedMegacyte                         => {
+                mineral_init(
+                    vec![
+                        Mineral::Megacyte,
+                    ],
+                    vec![
+                        602f64 * self.ore_modifier(),
+                    ]
+                )
+            },
+            Self::UnrefinedMexallon                         => {
+                mineral_init(
+                    vec![
+                        Mineral::Mexallon,
+                    ],
+                    vec![
+                        33649f64 * self.ore_modifier(),
+                    ]
+                )
+            },
+            Self::UnrefinedMorphite                         => {
+                mineral_init(
+                    vec![
+                        Mineral::Morphite,
+                    ],
+                    vec![
+                        93f64 * self.ore_modifier(),
+                    ]
+                )
+            },
+            Self::UnrefinedNocxium                          => {
+                mineral_init(
+                    vec![
+                        Mineral::Nocxium,
+                    ],
+                    vec![
+                        2731f64 * self.ore_modifier(),
+                    ]
+                )
+            },
+            Self::UnrefinedPyerite                          => {
+                mineral_init(
+                    vec![
+                        Mineral::Pyerite,
+                    ],
+                    vec![
+                        84990f64 * self.ore_modifier(),
+                    ]
+                )
+            },
+            Self::UnrefinedTritanium                        => {
+                mineral_init(
+                    vec![
+                        Mineral::Tritanium,
+                    ],
+                    vec![
+                        368000f64 * self.ore_modifier(),
+                    ]
+                )
+            },
+            Self::UnrefinedZydrine                          => {
+                mineral_init(
+                    vec![
+                        Mineral::Zydrine,
+                    ],
+                    vec![
+                        1233f64 * self.ore_modifier(),
+                    ]
                 )
             },
 
@@ -3236,6 +3370,18 @@ impl Asteroid {
             Self::CompressedVeldsparIVGrade                 |
             Self::YtiriumIVGrade                            |
             Self::CompressedYtiriumIVGrade                  => 1.15,
+
+            // prismatic
+            Self::Prismatic                                 |
+            Self::CompressedPrismatic                       |
+            Self::UnrefinedIsogen                           |
+            Self::UnrefinedMegacyte                         |
+            Self::UnrefinedMexallon                         |
+            Self::UnrefinedMorphite                         |
+            Self::UnrefinedNocxium                          |
+            Self::UnrefinedPyerite                          |
+            Self::UnrefinedTritanium                        |
+            Self::UnrefinedZydrine                          => 1.00,
 
             // moon
             Self::Bitumens                                  |
@@ -4130,6 +4276,36 @@ impl Asteroid {
             Self::CompressedShiningYtterbite => true,
             _ => false,
         }
+    }
+
+    pub fn is_prismatic(&self) -> bool {
+        match self {
+            Self::Prismatic             |
+            Self::CompressedPrismatic   |
+            Self::UnrefinedIsogen       |
+            Self::UnrefinedMegacyte     |
+            Self::UnrefinedMexallon     |
+            Self::UnrefinedMorphite     |
+            Self::UnrefinedNocxium      |
+            Self::UnrefinedPyerite      |
+            Self::UnrefinedTritanium    |
+            Self::UnrefinedZydrine      => true,
+            _ => false
+        }
+    }
+
+    pub fn prismatic_name(&self) -> String {
+        match self {
+            Self::UnrefinedIsogen       => "Unrefined Isogen",
+            Self::UnrefinedMegacyte     => "Unrefined Megacyte",
+            Self::UnrefinedMexallon     => "Unrefined Mexallon",
+            Self::UnrefinedMorphite     => "Unrefined Morphite",
+            Self::UnrefinedNocxium      => "Unrefined Nocxium",
+            Self::UnrefinedPyerite      => "Unrefined Pyerite",
+            Self::UnrefinedTritanium    => "Unrefined Tritanium",
+            Self::UnrefinedZydrine      => "Unrefined Zydrine",
+            _ => "Unknown"
+        }.into()
     }
 
     pub fn asteroid_type_ids() -> Vec<TypeId> {
