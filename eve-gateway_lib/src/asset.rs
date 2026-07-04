@@ -4,17 +4,16 @@ pub use self::blueprints::*;
 
 use starfoundry_lib_gateway::ApiClient;
 
-use crate::{Asset, EveBlueprintResponse, Result};
+use crate::{ApiClientExtended, Asset, EveBlueprintResponse, Result};
 
-pub trait EveGatewayApiClientAsset: ApiClient {
+pub trait EveGatewayApiClientAsset: ApiClient + ApiClientExtended {
     #[allow(async_fn_in_trait)]
     async fn list_character_assets(
         &self,
     ) -> Result<Vec<Asset>> {
         self
-            .fetch_auth(
-                "proxy/list/auth/characters/assets",
-                &(),
+            .fetch_page(
+                "proxy/auth/characters/assets",
             )
             .await
             .map_err(Into::into)
@@ -25,9 +24,8 @@ pub trait EveGatewayApiClientAsset: ApiClient {
         &self,
     ) -> Result<Vec<EveBlueprintResponse>> {
         self
-            .fetch_auth(
-                "proxy/list/auth/characters/blueprints",
-                &(),
+            .fetch_page(
+                "proxy/auth/characters/blueprints",
             )
             .await
             .map_err(Into::into)
@@ -38,9 +36,8 @@ pub trait EveGatewayApiClientAsset: ApiClient {
         &self,
     ) -> Result<Vec<Asset>> {
         self
-            .fetch_auth(
-                "proxy/list/auth/corporations/assets",
-                &(),
+            .fetch_page(
+                "proxy/auth/corporations/assets",
             )
             .await
             .map_err(Into::into)
@@ -51,9 +48,8 @@ pub trait EveGatewayApiClientAsset: ApiClient {
         &self,
     ) -> Result<Vec<EveBlueprintResponse>> {
         self
-            .fetch_auth(
-                "proxy/list/auth/corporations/blueprints",
-                &(),
+            .fetch_page(
+                "proxy/auth/corporations/blueprints",
             )
             .await
             .map_err(Into::into)

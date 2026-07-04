@@ -1,14 +1,15 @@
-use std::fmt::Debug;
-
+use reqwest::Method;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 use starfoundry_lib_gateway::{ApiClient, Identity, Result as GatewayResult, StarFoundryApiClient};
+use std::fmt::Debug;
 use url::Url;
 
 use crate::error::{Error, Result};
-use crate::{ENV_EVE_GATEWAY_API, EveGatewayApiClient, EveGatewayApiClientAsset, EveGatewayApiClientEveAsset, EveGatewayApiClientFitting, EveGatewayApiClientIndustry, EveGatewayApiClientItem, EveGatewayApiClientSearch};
+use crate::{ApiClientExtended, ENV_EVE_GATEWAY_API, EveGatewayApiClient, EveGatewayApiClientAsset, EveGatewayApiClientEveAsset, EveGatewayApiClientFitting, EveGatewayApiClientIndustry, EveGatewayApiClientItem, EveGatewayApiClientSearch};
 use crate::contract::EveGatewayApiClientContract;
 use crate::market::EveGatewayApiClientMarket;
+use crate::utils::{has_content, page_count};
 
 pub struct EveGatewayClient(StarFoundryApiClient);
 
@@ -60,19 +61,6 @@ impl ApiClient for EveGatewayClient {
             .await
     }
 
-    async fn fetch_auth<Q: Serialize, T>(
-        &self,
-        path:  impl Into<String>,
-        query: &Q,
-    ) -> GatewayResult<T>
-    where
-        T: Default + DeserializeOwned {
-
-        self.0
-            .fetch_auth(path, query)
-            .await
-    }
-
     async fn post<D, T>(
         &self,
         path: impl Into<String>,
@@ -87,7 +75,7 @@ impl ApiClient for EveGatewayClient {
             .await
     }
 
-    async fn post_auth<D, T>(
+    async fn put<D, T>(
         &self,
         path: impl Into<String>,
         data: D,
@@ -97,25 +85,11 @@ impl ApiClient for EveGatewayClient {
         T: Default + DeserializeOwned {
 
         self.0
-            .post_auth(path, data)
+            .put(path, data)
             .await
     }
 
-    async fn put_auth<D, T>(
-        &self,
-        path: impl Into<String>,
-        data: D,
-    ) -> GatewayResult<T>
-    where
-        D: Debug + Serialize + Send + Sync,
-        T: Default + DeserializeOwned {
-
-        self.0
-            .put_auth(path, data)
-            .await
-    }
-
-    async fn delete_auth<T>(
+    async fn delete<T>(
         &self,
         path: impl Into<String>,
     ) -> GatewayResult<T>
@@ -123,8 +97,90 @@ impl ApiClient for EveGatewayClient {
         T: Default + DeserializeOwned {
 
         self.0
-            .delete_auth(path)
+            .delete(path)
             .await
+    }
+}
+
+impl ApiClientExtended for EveGatewayClient {
+    /// Makes requests as long as there are pages to fetch.
+    ///
+    /// # Params
+    ///
+    /// * `T`    -> Model that represents the resulting json
+    /// * `path` -> Path of the request
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if either the request failed or the parsing failed.
+    /// The error is returned the first time an error is encountered.
+    ///
+    /// # Returns
+    ///
+    /// Vector of parsed json
+    ///
+    async fn fetch_page<T>(
+        &self,
+        path: impl Into<String>,
+    ) -> Result<Vec<T>>
+    where
+        T: DeserializeOwned + Send,
+    {
+        let headers = if let Ok(x) = self.0.identity_as_header() {
+            Some(x)
+        } else {
+            None
+        };
+
+        let mut api_url = Self::api_url()?;
+        api_url.set_path(&path.into());
+
+        let response = self.0
+            .send_raw(
+                Method::GET,
+                api_url.clone(),
+                serde_json::Value::Null,
+                &(),
+                headers.clone(),
+            )
+            .await?;
+
+        let pages = page_count(&response);
+
+        if !has_content(&response) {
+            return Ok(Vec::new());
+        }
+
+        let mut data: Vec<T> = Vec::new();
+        let fetched_data = response
+            .json::<Vec<T>>()
+            .await
+            .map_err(Error::ReqwestError)?;
+        data.extend(fetched_data);
+
+        for page in 2..=pages {
+            let next_page = self.0
+                .send_raw(
+                    Method::GET,
+                    api_url.clone(),
+                    serde_json::Value::Null,
+                    &[("page", &page.to_string())],
+                    headers.clone(),
+                )
+                .await?;
+
+            if !has_content(&next_page) {
+                continue;
+            }
+
+            let next_page = next_page
+                .json::<Vec<T>>()
+                .await
+                .map_err(Error::ReqwestError)?;
+            data.extend(next_page);
+        }
+
+        Ok(data)
     }
 }
 

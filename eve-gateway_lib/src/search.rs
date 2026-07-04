@@ -43,7 +43,7 @@ pub trait EveGatewayApiClientSearch: ApiClient {
         };
 
         self
-            .fetch_auth(
+            .fetch(
                 "/search",
                 query,
             )
@@ -82,7 +82,7 @@ pub trait EveGatewayApiClientSearch: ApiClient {
         };
 
         self
-            .fetch_auth(
+            .fetch(
                 "/search/structure",
                 query,
             )

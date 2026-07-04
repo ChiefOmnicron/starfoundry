@@ -11,9 +11,9 @@ pub use self::system_index::*;
 use starfoundry_lib_gateway::ApiClient;
 use starfoundry_lib_types::{SystemId, TypeId};
 
-use crate::Result;
+use crate::{ApiClientExtended, Result};
 
-pub trait EveGatewayApiClientIndustry: ApiClient {
+pub trait EveGatewayApiClientIndustry: ApiClient + ApiClientExtended {
     #[allow(async_fn_in_trait)]
     async fn fetch_blueprint_dependencies_bulk(
         &self,
@@ -46,9 +46,8 @@ pub trait EveGatewayApiClientIndustry: ApiClient {
         &self,
     ) -> Result<Vec<IndustryJob>> {
         self
-            .fetch_auth(
-                "proxy/list/auth/characters/industry/jobs",
-                &(),
+            .fetch_page(
+                "proxy/auth/characters/industry/jobs",
             )
             .await
             .map_err(Into::into)
@@ -61,9 +60,8 @@ pub trait EveGatewayApiClientIndustry: ApiClient {
         &self,
     ) -> Result<Vec<IndustryJob>> {
         self
-            .fetch_auth(
-                "proxy/list/auth/corporations/industry/jobs",
-                &(),
+            .fetch_page(
+                "proxy/auth/corporations/industry/jobs",
             )
             .await
             .map_err(Into::into)

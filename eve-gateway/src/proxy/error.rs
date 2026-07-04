@@ -4,14 +4,18 @@ use reqwest::StatusCode;
 use starfoundry_lib_eve_client::EveApiError;
 use starfoundry_lib_gateway::ErrorResponse;
 use thiserror::Error;
+use url::Url;
 
 pub type Result<T, E = ProxyError> = std::result::Result<T, E>;
 
 #[derive(Debug, Error)]
 #[non_exhaustive]
 pub enum ProxyError {
-    #[error("No scope found the requested url")]
+    #[error("no scope found the requested url")]
     NoScopeFound,
+
+    #[error("generic reqwest error for path '{1}', error: '{0:?}'")]
+    ReqwestError(reqwest::Error, Url),
 
     #[error("eve api error, error: '{0:?}'")]
     EveApiError(#[from] EveApiError),
@@ -22,7 +26,8 @@ pub enum ProxyError {
 impl IntoResponse for ProxyError {
     fn into_response(self) -> Response {
         match self {
-            Self::NoScopeFound => {
+            Self::NoScopeFound       |
+            Self::ReqwestError(_, _) => {
                 (
                     StatusCode::BAD_REQUEST,
                     Json(

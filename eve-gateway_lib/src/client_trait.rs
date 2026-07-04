@@ -1,3 +1,4 @@
+use serde::de::DeserializeOwned;
 use starfoundry_lib_gateway::ApiClient;
 use starfoundry_lib_types::{CharacterId, StructureId, SystemId, TypeId};
 
@@ -8,6 +9,7 @@ use crate::market::EveGatewayApiClientMarket;
 
 pub trait EveGatewayApiClient:
     ApiClient +
+    ApiClientExtended +
     EveGatewayApiClientAsset +
     EveGatewayApiClientContract +
     EveGatewayApiClientEveAsset +
@@ -57,7 +59,7 @@ pub trait EveGatewayApiClient:
         structure_id: StructureId,
     ) -> Result<Option<ResolveStructureResponse>> {
         self
-            .fetch_auth(
+            .fetch(
                 &format!("structures/{}", *structure_id),
                 &(),
             )
@@ -145,4 +147,14 @@ pub trait EveGatewayApiClient:
             .await
             .map_err(Into::into)
     }
+}
+
+pub trait ApiClientExtended: ApiClient {
+    #[allow(async_fn_in_trait)]
+    async fn fetch_page<T>(
+        &self,
+        path: impl Into<String>,
+    ) -> Result<Vec<T>>
+    where
+        T: DeserializeOwned + Send;
 }

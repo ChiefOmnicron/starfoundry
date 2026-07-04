@@ -1,7 +1,9 @@
-use axum::extract::{Path, State};
+use axum::extract::{Path, Query, State};
+use axum::http::HeaderMap;
 use axum::Json;
 use axum::response::IntoResponse;
 use reqwest::StatusCode;
+use starfoundry_lib_eve_client::EveApiClient;
 use starfoundry_lib_gateway::ExtractIdentity;
 
 use crate::api_docs::{BadRequest, InternalServerError, NotFound, Unauthorized};
@@ -11,16 +13,17 @@ use crate::utils::api_client_auth;
 
 /// Proxy List Auth Character
 /// 
-/// - Alternative route: `/latest/proxy/list/auth/corporations/{*path}`
-/// - Alternative route: `/v1/proxy/list/auth/corporations/{*path}`
+/// - Alternative route: `/latest/proxy/auth/characters/{*path}`
+/// - Alternative route: `/v1/proxy/auth/characters/{*path}`
 /// 
 /// ---
 /// 
 /// Proxies requests to the EVE-API.
-/// Do NOT include `/corporations/{CorporationId}` in the query parameter.
+/// Do NOT include `/characters/{CharacterId}` in the query parameter, it will
+/// be filled automatically using your current authenticated user.
 /// 
-/// Example: `/proxy/list/auth/corporations/industry/jobs` to call
-/// `corporations/{YourCorporationId}/industry/jobs` on the EVE-API.
+/// Example: `/proxy/auth/characters/industry/jobs` to call
+/// `characters/{YourCharacterId}/industry/jobs` on the EVE-API.
 ///
 /// Returns an array of values.
 /// 
@@ -28,10 +31,11 @@ use crate::utils::api_client_auth;
 /// 
 #[utoipa::path(
     get,
-    path = "/list/auth/corporations/{*path}",
+    path = "/list/auth/characters/{*path}",
     tag = "Proxy",
     params(
         ("*path" = String, Path, description = "Path to call on the EVE-API"),
+        ("query" = serde_json::Value, Query),
     ),
     responses(
         (
@@ -49,6 +53,7 @@ pub async fn api(
     identity:       ExtractIdentity,
     State(state):   State<AppState>,
     Path(eve_path): Path<String>,
+    Query(query):   Query<serde_json::Value>,
 ) -> Result<impl IntoResponse> {
     let api_client = api_client_auth(
             &state.postgres,
@@ -73,20 +78,47 @@ pub async fn api(
     };
 
     let path = format!(
-        "latest/corporations/{}/{}",
-        identity.corporation_id,
+        "latest/characters/{}/{}",
+        identity.character_id,
         eve_path,
     );
-    let data = api_client
-        .fetch_page_auth::<serde_json::Value>(&path)
+    let mut api_url = EveApiClient::api_url()?;
+    api_url.set_path(&path);
+
+    let response = api_client
+        .send_auth(api_url.clone(), &query)
         .await?;
+
+    if response.status() == StatusCode::NO_CONTENT {
+        return Ok(
+            (
+                StatusCode::NO_CONTENT,
+            ).into_response()
+        )
+    }
+
+    let mut response_headers = HeaderMap::new();
+    let headers = response.headers();
+    if let Some(x) = headers.get("x-pages") {
+        response_headers.insert("x-pages", x.clone());
+    } else {
+        response_headers.insert("x-pages", 1.into());
+    };
+
+    let data: serde_json::Value = match response.json().await {
+        Err(e) => {
+            tracing::error!("Error parsing json, {}", e);
+            return Err(ProxyError::ReqwestError(e, api_url));
+        },
+        Ok(x) => x,
+    };
 
     Ok(
         (
             StatusCode::OK,
+            response_headers,
             Json(data),
-        )
-        .into_response()
+        ).into_response()
     )
 }
 
@@ -100,10 +132,10 @@ enum Scope {
 impl Scope {
     pub fn as_permission(&self) -> String {
         match self {
-            Self::Assets        => "esi-corporations.read_corporation_assets.v1",
-            Self::Blueprints    => "esi-corporations.read_blueprints.v1",
-            Self::IndustryJob   => "esi-industry.read_corporation_jobs.v1",
-            Self::Orders        => "esi-markets.read_corporation_orders.v1",
+            Self::Assets        => "esi-assets.read_assets.v1",
+            Self::Blueprints    => "esi-characters.read_blueprints.v1",
+            Self::IndustryJob   => "esi-industry.read_character_jobs.v1",
+            Self::Orders        => "esi-markets.read_character_orders.v1",
         }.into()
     }
 }

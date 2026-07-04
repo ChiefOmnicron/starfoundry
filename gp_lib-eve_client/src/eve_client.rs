@@ -73,6 +73,7 @@ impl EveApiClient {
     /// - If the ENV '[ENV_CLIENT_ID]' is not set
     /// 
     pub fn new(
+        // TODO: remove them and put them into the proxy function
         metric: Arc<EveApiClientMetric>,
     ) -> Result<Self> {
         let client = Self::client()?;
@@ -178,6 +179,7 @@ impl EveApiClient {
     /// - Request fails
     /// - Parsing the response fails
     /// 
+    #[deprecated]
     pub async fn fetch<Q: Serialize, T>(
         &self,
         path:  impl Into<String>,
@@ -226,6 +228,7 @@ impl EveApiClient {
     ///
     /// Parsed json data
     ///
+    #[deprecated]
     pub async fn fetch_auth<Q: Serialize, T>(
         &self,
         path:  impl Into<String>,
@@ -274,6 +277,7 @@ impl EveApiClient {
     ///
     /// Vector of parsed json
     ///
+    #[deprecated]
     pub async fn fetch_page<T>(
         &self,
         path: impl Into<String>,
@@ -339,6 +343,8 @@ impl EveApiClient {
     ///
     /// Vector of parsed json
     ///
+    /// 
+    #[deprecated]
     pub async fn fetch_page_auth<T>(
         &self,
         path: impl Into<String>,
@@ -483,7 +489,7 @@ impl EveApiClient {
     ///
     /// Response of the request, ready to work with
     ///
-    async fn send<Q: Serialize>(
+    pub async fn send<Q: Serialize>(
         &self,
         request_uri: Url,
         query:       &Q,
@@ -636,7 +642,7 @@ impl EveApiClient {
     ///
     /// Response of the request, ready to work with
     ///
-    async fn send_auth<Q: Serialize>(
+    pub async fn send_auth<Q: Serialize>(
         &self,
         request_uri: Url,
         query:       &Q,
@@ -1086,6 +1092,7 @@ impl EveApiClient {
     /// - If the header exists, it will try to parse it, if that fails a 0 is
     ///   is returned
     ///
+    #[deprecated]
     fn page_count(&self, response: &Response) -> u16 {
         let headers = response.headers();
         if let Some(x) = headers.get("x-pages") {
@@ -1110,6 +1117,7 @@ impl EveApiClient {
     /// - False if the content does not contain data
     ///   True if the content contains data
     ///
+    #[deprecated]
     fn has_content(
         &self,
         response: &Response

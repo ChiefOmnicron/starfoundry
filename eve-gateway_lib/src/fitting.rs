@@ -15,7 +15,7 @@ pub trait EveGatewayApiClientFitting: ApiClient {
         data:       EveFit,
     ) -> Result<EveFitResponse> {
         self
-            .post_auth(
+            .post(
                 &format!("characters/{}/fittings", identity.character_id()),
                 data,
             )
@@ -30,7 +30,7 @@ pub trait EveGatewayApiClientFitting: ApiClient {
         fitting_id: FittingId,
     ) -> Result<EveFitResponse> {
         self
-            .delete_auth(
+            .delete(
                 &format!(
                     "characters/{}/fittings/{}",
                     identity.character_id(),

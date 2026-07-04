@@ -79,20 +79,6 @@ impl ApiClient for IndustryClient {
             .map_err(Into::into)
     }
 
-    async fn fetch_auth<Q: Serialize, T>(
-        &self,
-        path:  impl Into<String>,
-        query: &Q,
-    ) -> GatewayResult<T>
-    where
-        T: Default + DeserializeOwned {
-
-        self.0
-            .fetch_auth(path, query)
-            .await
-            .map_err(Into::into)
-    }
-
     async fn post<D, T>(
         &self,
         path: impl Into<String>,
@@ -108,7 +94,7 @@ impl ApiClient for IndustryClient {
             .map_err(Into::into)
     }
 
-    async fn post_auth<D, T>(
+    async fn put<D, T>(
         &self,
         path: impl Into<String>,
         data: D,
@@ -118,27 +104,12 @@ impl ApiClient for IndustryClient {
         T: Default + DeserializeOwned {
 
         self.0
-            .post_auth(path, data)
+            .put(path, data)
             .await
             .map_err(Into::into)
     }
 
-    async fn put_auth<D, T>(
-        &self,
-        path: impl Into<String>,
-        data: D,
-    ) -> GatewayResult<T>
-    where
-        D: Debug + Serialize + Send + Sync,
-        T: Default + DeserializeOwned {
-
-        self.0
-            .put_auth(path, data)
-            .await
-            .map_err(Into::into)
-    }
-
-    async fn delete_auth<T>(
+    async fn delete<T>(
         &self,
         path: impl Into<String>,
     ) -> GatewayResult<T>
@@ -146,7 +117,7 @@ impl ApiClient for IndustryClient {
         T: Default + DeserializeOwned {
 
         self.0
-            .delete_auth(path)
+            .delete(path)
             .await
             .map_err(Into::into)
     }

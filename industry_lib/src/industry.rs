@@ -15,7 +15,7 @@ pub trait IndustryApiClientIndustry: ApiClient {
         request: &BuildEngine,
     ) -> Result<Vec<BuildEngineResponse>> {
         self
-            .post_auth(
+            .post(
                 "industry/calculation",
                 request,
             )

@@ -1,5 +1,5 @@
 use serde::Serialize;
-use starfoundry_lib_eve_gateway::{EveGatewayApiClient, EveGatewayApiClientAsset, EveGatewayApiClientEveAsset, EveGatewayApiClientFitting, EveGatewayApiClientIndustry, EveGatewayApiClientItem, EveGatewayApiClientMarket};
+use starfoundry_lib_eve_gateway::{ApiClientExtended, EveGatewayApiClient, EveGatewayApiClientAsset, EveGatewayApiClientEveAsset, EveGatewayApiClientFitting, EveGatewayApiClientIndustry, EveGatewayApiClientItem, EveGatewayApiClientMarket};
 use starfoundry_lib_eve_gateway::contract::EveGatewayApiClientContract;
 use starfoundry_lib_gateway::ApiClient;
 use starfoundry_lib_market::{MarketApiClient, MarketApiClientOrder, MarketApiClientPrice};
@@ -151,16 +151,6 @@ impl ApiClient for EveGatewayTestApiClient {
         Ok(
             serde_json::from_value(response).unwrap(),
         )
-    }
-
-    async fn fetch_auth<Q: Serialize, T>(
-        &self,
-        _path:  impl Into<String>,
-        _query: &Q,
-    ) -> starfoundry_lib_gateway::error::Result<T>
-    where
-        T: Default + serde::de::DeserializeOwned {
-        unimplemented!()
     }
 
     async fn post<D, T>(
@@ -337,7 +327,7 @@ impl ApiClient for EveGatewayTestApiClient {
         )
     }
 
-    async fn post_auth<D, T>(
+    async fn put<D, T>(
         &self,
         _path: impl Into<String>,
         _data: D,
@@ -348,23 +338,24 @@ impl ApiClient for EveGatewayTestApiClient {
         unimplemented!()
     }
 
-    async fn put_auth<D, T>(
+    async fn delete<T>(
         &self,
         _path: impl Into<String>,
-        _data: D,
     ) -> starfoundry_lib_gateway::error::Result<T>
     where
-        D: std::fmt::Debug + serde::Serialize + Send + Sync,
         T: serde::de::DeserializeOwned {
         unimplemented!()
     }
+}
 
-    async fn delete_auth<T>(
+impl ApiClientExtended for EveGatewayTestApiClient {
+    async fn fetch_page<T>(
         &self,
-        _path: impl Into<String>,
-    ) -> starfoundry_lib_gateway::error::Result<T>
+        _: impl Into<String>,
+    ) -> starfoundry_lib_eve_gateway::Result<Vec<T>>
     where
-        T: serde::de::DeserializeOwned {
+        T: serde::de::DeserializeOwned + Send
+    {
         unimplemented!()
     }
 }
@@ -380,16 +371,6 @@ impl ApiClient for MarketTestApiClient {
         unimplemented!()
     }
 
-    async fn fetch_auth<Q: Serialize, T>(
-            &self,
-            _path:  impl Into<String>,
-            _query: &Q,
-        ) -> starfoundry_lib_gateway::Result<T>
-        where
-            T: Default + serde::de::DeserializeOwned {
-        unimplemented!()
-    }
-
     async fn post<D, T>(
             &self,
             _path: impl Into<String>,
@@ -401,18 +382,7 @@ impl ApiClient for MarketTestApiClient {
         unimplemented!()
     }
 
-    async fn post_auth<D, T>(
-        &self,
-        _path:      impl Into<String>,
-        _data:      D,
-    ) -> starfoundry_lib_gateway::error::Result<T>
-    where
-        D: std::fmt::Debug + serde::Serialize + Send + Sync,
-        T: serde::de::DeserializeOwned {
-        unimplemented!()
-    }
-
-    async fn put_auth<D, T>(
+    async fn put<D, T>(
         &self,
         _path: impl Into<String>,
         _data: D,
@@ -423,7 +393,7 @@ impl ApiClient for MarketTestApiClient {
         unimplemented!()
     }
 
-    async fn delete_auth<T>(
+    async fn delete<T>(
         &self,
         _path:      impl Into<String>,
     ) -> starfoundry_lib_gateway::error::Result<T>

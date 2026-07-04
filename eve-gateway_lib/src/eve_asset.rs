@@ -23,7 +23,7 @@ pub trait EveGatewayApiClientEveAsset: ApiClient {
         assets:         Vec<ItemId>,
     ) -> Result<Vec<ResolvedItem>> {
         self
-            .post_auth(
+            .post(
                 &format!(
                     "eve/characters/{}/assets",
                     character_id,
@@ -41,7 +41,7 @@ pub trait EveGatewayApiClientEveAsset: ApiClient {
         assets:         Vec<ItemId>,
     ) -> Result<Vec<ResolvedItem>> {
         self
-            .post_auth(
+            .post(
                 &format!(
                     "eve/corporations/{}/assets",
                     corporation_id,

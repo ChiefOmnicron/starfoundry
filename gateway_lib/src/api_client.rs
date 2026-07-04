@@ -45,6 +45,14 @@ impl StarFoundryApiClient {
         })
     }
 
+    pub fn identity_as_header(&self) -> Result<HeaderMap> {
+        if let Some(x) = &self.identity {
+            Ok(x.as_header())
+        } else {
+            Err(Error::Unauthorized)
+        }
+    }
+
     /// Creates a new [reqwest::Client] without pre-defined address
     /// 
     pub fn new_raw<S: Into<String>>(
@@ -75,25 +83,10 @@ impl StarFoundryApiClient {
     where
         T: Default + DeserializeOwned,
     {
-        self.send_fetch(
-            path,
-            query,
-            HeaderMap::new(),
-        ).await
-    }
-
-    pub async fn fetch_auth<Q: Serialize, T>(
-        &self,
-        path:  impl Into<String>,
-        query: &Q,
-    ) -> Result<T>
-    where
-        T: Default + DeserializeOwned,
-    {
-        let headers = if let Some(x) = &self.identity {
-            x.as_header()
+        let headers = if let Ok(x) = self.identity_as_header() {
+            Some(x)
         } else {
-            return Err(Error::Unauthorized);
+            None
         };
 
         self.send_fetch(
@@ -107,7 +100,7 @@ impl StarFoundryApiClient {
         &self,
         path:       impl Into<String>,
         query:      &Q,
-        headers:    HeaderMap,
+        headers:    Option<HeaderMap>,
     ) -> Result<T>
     where
         T: Default + DeserializeOwned, {
@@ -115,12 +108,12 @@ impl StarFoundryApiClient {
         api_url.set_path(&path.into());
 
         let response = self
-            .send(
+            .send_raw(
                 Method::GET,
                 api_url.clone(),
                 serde_json::Value::Null,
                 query,
-                Some(headers),
+                headers,
             )
             .await?;
 
@@ -140,10 +133,9 @@ impl StarFoundryApiClient {
             StatusCode::SERVICE_UNAVAILABLE => {
                 Err(Error::ServiceUnavailable)
             },
-            // TODO: implement
-            //StatusCode::NO_CONTENT => {
-            //    return Ok(T::default());
-            //},
+            StatusCode::NO_CONTENT => {
+                Ok(T::default())
+            },
             StatusCode::CREATED |
             StatusCode::OK => {
                 // TODO: use actual json function
@@ -174,26 +166,10 @@ impl StarFoundryApiClient {
         D: Debug + Serialize + Send + Sync,
         T: Default + DeserializeOwned,
     {
-        self.send_post(
-            path,
-            data,
-            HeaderMap::new(),
-        ).await
-    }
-
-    pub async fn post_auth<D, T>(
-        &self,
-        path: impl Into<String>,
-        data: D,
-    ) -> Result<T>
-    where
-        D: Debug + Serialize + Send + Sync,
-        T: Default + DeserializeOwned,
-    {
-        let headers = if let Some(x) = &self.identity {
-            x.as_header()
+        let headers = if let Ok(x) = self.identity_as_header() {
+            Some(x)
         } else {
-            return Err(Error::Unauthorized);
+            None
         };
 
         self.send_post(
@@ -207,7 +183,7 @@ impl StarFoundryApiClient {
         &self,
         path:       impl Into<String>,
         data:       D,
-        headers:    HeaderMap,
+        headers:    Option<HeaderMap>,
     ) -> Result<T>
     where
         D: Debug + Serialize + Send + Sync,
@@ -219,12 +195,12 @@ impl StarFoundryApiClient {
         api_url.set_path(&path.clone());
 
         let response = self
-            .send(
+            .send_raw(
                 Method::POST,
                 api_url.clone(),
                 serde_json::to_value(&data)?,
                 &(),
-                Some(headers),
+                headers,
             )
             .await?;
 
@@ -261,7 +237,7 @@ impl StarFoundryApiClient {
         }
     }
 
-    pub async fn put_auth<D, T>(
+    pub async fn put<D, T>(
         &self,
         path: impl Into<String>,
         data: D,
@@ -270,10 +246,10 @@ impl StarFoundryApiClient {
         D: Debug + Serialize + Send + Sync,
         T: Default + DeserializeOwned,
     {
-        let headers = if let Some(x) = &self.identity {
-            x.as_header()
+        let headers = if let Ok(x) = self.identity_as_header() {
+            Some(x)
         } else {
-            HeaderMap::new()
+            None
         };
 
         let path = path.into();
@@ -282,12 +258,12 @@ impl StarFoundryApiClient {
         api_url.set_path(&path.clone());
 
         let response = self
-            .send(
+            .send_raw(
                 Method::PUT,
                 api_url.clone(),
                 serde_json::to_value(&data)?,
                 &(),
-                Some(headers),
+                headers,
             )
             .await?;
 
@@ -323,17 +299,17 @@ impl StarFoundryApiClient {
         }
     }
 
-    pub async fn delete_auth<T>(
+    pub async fn delete<T>(
         &self,
         path: impl Into<String>,
     ) -> Result<T>
     where
         T: Default + DeserializeOwned,
     {
-        let headers = if let Some(x) = &self.identity {
-            x.as_header()
+        let headers = if let Ok(x) = self.identity_as_header() {
+            Some(x)
         } else {
-            HeaderMap::new()
+            None
         };
 
         let path = path.into();
@@ -342,12 +318,12 @@ impl StarFoundryApiClient {
         api_url.set_path(&path.clone());
 
         let response = self
-            .send(
+            .send_raw(
                 Method::DELETE,
                 api_url.clone(),
                 serde_json::Value::Null,
                 &(),
-                Some(headers),
+                headers,
             )
             .await?;
 
@@ -388,7 +364,7 @@ impl StarFoundryApiClient {
             .map_err(|_| Error::EnvNotSet(ENV_USER_AGENT))
     }
 
-    async fn send<Q: Serialize>(
+    pub async fn send_raw<Q: Serialize>(
         &self,
         method:  Method,
         url:     Url,
@@ -490,15 +466,6 @@ pub trait ApiClient {
         T: Default + DeserializeOwned;
 
     #[allow(async_fn_in_trait)]
-    async fn fetch_auth<Q: Serialize, T>(
-        &self,
-        path:  impl Into<String>,
-        query: &Q,
-    ) -> Result<T>
-    where
-        T: Default + DeserializeOwned;
-
-    #[allow(async_fn_in_trait)]
     async fn post<D, T>(
         &self,
         path: impl Into<String>,
@@ -509,7 +476,7 @@ pub trait ApiClient {
         T: Default + DeserializeOwned;
 
     #[allow(async_fn_in_trait)]
-    async fn post_auth<D, T>(
+    async fn put<D, T>(
         &self,
         path: impl Into<String>,
         data: D,
@@ -519,17 +486,7 @@ pub trait ApiClient {
         T: Default + DeserializeOwned;
 
     #[allow(async_fn_in_trait)]
-    async fn put_auth<D, T>(
-        &self,
-        path: impl Into<String>,
-        data: D,
-    ) -> Result<T>
-    where
-        D: Debug + Serialize + Send + Sync,
-        T: Default + DeserializeOwned;
-
-    #[allow(async_fn_in_trait)]
-    async fn delete_auth<T>(
+    async fn delete<T>(
         &self,
         path: impl Into<String>,
     ) -> Result<T>

@@ -20,14 +20,14 @@ use crate::{MarketUuid, ProjectJobUuid, ProjectUuid, Result};
 
 pub trait IndustryApiClientProject: ApiClient {
     #[allow(async_fn_in_trait)]
-    async fn add_excess_entry(
+    async fn project_add_excess_entry(
         &self,
         project_id: &ProjectUuid,
         request:    &AddExcessEntryRequest,
     ) -> Result<()> {
 
         self
-            .post_auth(
+            .post(
                 format!("projects/{project_id}/excess"),
                 request,
             )
@@ -36,14 +36,14 @@ pub trait IndustryApiClientProject: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn add_market_entry(
+    async fn project_add_market_entry(
         &self,
         project_id: &ProjectUuid,
         request:    &AddMarketEntryRequest,
     ) -> Result<()> {
 
         self
-            .post_auth(
+            .post(
                 format!("projects/{project_id}/market"),
                 request,
             )
@@ -52,14 +52,14 @@ pub trait IndustryApiClientProject: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn add_job_entry(
+    async fn project_add_job_entry(
         &self,
         project_id: &ProjectUuid,
         request:    &AddJobEntryRequest,
     ) -> Result<()> {
 
         self
-            .post_auth(
+            .post(
                 format!("projects/{project_id}/market"),
                 request,
             )
@@ -68,13 +68,13 @@ pub trait IndustryApiClientProject: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn create(
+    async fn project_create(
         &self,
         request: &CreateProject,
     ) -> Result<CreateProjectResponse> {
 
         self
-            .post_auth(
+            .post(
                 "projects",
                 request,
             )
@@ -83,12 +83,12 @@ pub trait IndustryApiClientProject: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn delete(
+    async fn project_delete(
         &self,
         project_id: &ProjectUuid,
     ) -> Result<()> {
         self
-            .delete_auth(
+            .delete(
                 format!("projects/{project_id}"),
             )
             .await
@@ -96,13 +96,13 @@ pub trait IndustryApiClientProject: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn delete_market_entry(
+    async fn project_delete_market_entry(
         &self,
         project_id: &ProjectUuid,
         market_id:  &MarketUuid,
     ) -> Result<()> {
         self
-            .delete_auth(
+            .delete(
                 format!("projects/{project_id}/market/{market_id}"),
             )
             .await
@@ -110,12 +110,12 @@ pub trait IndustryApiClientProject: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn fetch(
+    async fn project_fetch(
         &self,
         project_id: &ProjectUuid,
     ) -> Result<Option<Project>> {
         self
-            .fetch_auth(
+            .fetch(
                 format!("projects/{project_id}"),
                 &(),
             )
@@ -124,12 +124,12 @@ pub trait IndustryApiClientProject: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn fetch_cost(
+    async fn project_fetch_cost(
         &self,
         project_id: &ProjectUuid,
     ) -> Result<Option<ProjectCost>> {
         self
-            .fetch_auth(
+            .fetch(
                 format!("projects/{project_id}/cost"),
                 &(),
             )
@@ -138,12 +138,12 @@ pub trait IndustryApiClientProject: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn fetch_time_left(
+    async fn project_fetch_time_left(
         &self,
         project_id: &ProjectUuid,
     ) -> Result<Option<ProjectTimeLeft>> {
         self
-            .fetch_auth(
+            .fetch(
                 format!("projects/{project_id}/time-left"),
                 &(),
             )
@@ -152,13 +152,13 @@ pub trait IndustryApiClientProject: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn list(
+    async fn project_list(
         &self,
         filter: &ProjectFilter,
     ) -> Result<Vec<ProjectMinimal>> {
 
         self
-            .fetch_auth(
+            .fetch(
                 "projects",
                 filter,
             )
@@ -167,14 +167,14 @@ pub trait IndustryApiClientProject: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn list_excess(
+    async fn project_list_excess(
         &self,
         project_id: &ProjectUuid,
         filter:     &ProjectJobFilter,
     ) -> Result<Vec<ProjectJob>> {
 
         self
-            .fetch_auth(
+            .fetch(
                 format!("projects/{project_id}/excess"),
                 filter,
             )
@@ -183,14 +183,14 @@ pub trait IndustryApiClientProject: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn list_jobs(
+    async fn project_list_jobs(
         &self,
         project_id: &ProjectUuid,
         filter:     &ProjectJobFilter,
     ) -> Result<Vec<ProjectJob>> {
 
         self
-            .fetch_auth(
+            .fetch(
                 format!("projects/{project_id}/jobs"),
                 filter,
             )
@@ -199,11 +199,11 @@ pub trait IndustryApiClientProject: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn list_all_jobs(
+    async fn project_list_all_jobs(
         &self,
     ) -> Result<Vec<ProjectJobAllGroup>> {
         self
-            .fetch_auth(
+            .fetch(
                 format!("projects/jobs"),
                 &(),
             )
@@ -212,12 +212,12 @@ pub trait IndustryApiClientProject: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn list_market(
+    async fn project_list_market(
         &self,
         project_id: &ProjectUuid,
     ) -> Result<Vec<ProjectMarket>> {
         self
-            .fetch_auth(
+            .fetch(
                 format!("projects/{project_id}/market"),
                 &(),
             )
@@ -226,12 +226,12 @@ pub trait IndustryApiClientProject: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn list_market_buy(
+    async fn project_list_market_buy(
         &self,
         project_id: &ProjectUuid,
     ) -> Result<Vec<ProjectMarketBuy>> {
         self
-            .fetch_auth(
+            .fetch(
                 format!("projects/{project_id}/market/buy"),
                 &(),
             )
@@ -240,12 +240,12 @@ pub trait IndustryApiClientProject: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn list_misc(
+    async fn project_list_misc(
         &self,
         project_id: &ProjectUuid,
     ) -> Result<Vec<ProjectMisc>> {
         self
-            .fetch_auth(
+            .fetch(
                 format!("projects/{project_id}/misc"),
                 &(),
             )
@@ -254,12 +254,12 @@ pub trait IndustryApiClientProject: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn list_stock(
+    async fn project_list_stock(
         &self,
         project_id: &ProjectUuid,
     ) -> Result<Vec<ProjectStock>> {
         self
-            .fetch_auth(
+            .fetch(
                 format!("projects/{project_id}/stock"),
                 &(),
             )
@@ -268,13 +268,13 @@ pub trait IndustryApiClientProject: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn update(
+    async fn project_update(
         &self,
         project_id: &ProjectUuid,
         request:    &UpdateProject,
     ) -> Result<()> {
         self
-            .put_auth(
+            .put(
                 format!("projects/{project_id}"),
                 request,
             )
@@ -283,14 +283,14 @@ pub trait IndustryApiClientProject: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn update_job(
+    async fn project_update_job(
         &self,
         project_id: &ProjectUuid,
         job_id:     &ProjectJobUuid,
         request:    &UpdateMarketBulk,
     ) -> Result<()> {
         self
-            .put_auth(
+            .put(
                 format!("projects/{project_id}/jobs/{job_id}"),
                 request,
             )
@@ -299,13 +299,13 @@ pub trait IndustryApiClientProject: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn update_market_bulk(
+    async fn project_update_market_bulk(
         &self,
         project_id: &ProjectUuid,
         request:    &UpdateMarketBulk,
     ) -> Result<()> {
         self
-            .put_auth(
+            .put(
                 format!("projects/{project_id}/market"),
                 request,
             )
@@ -314,14 +314,14 @@ pub trait IndustryApiClientProject: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn update_market_entry(
+    async fn project_update_market_entry(
         &self,
         project_id: &ProjectUuid,
         market_id:  &MarketUuid,
         request:    &UpdateMarketEntry,
     ) -> Result<()> {
         self
-            .put_auth(
+            .put(
                 format!("projects/{project_id}/market/{market_id}"),
                 request,
             )
@@ -330,13 +330,13 @@ pub trait IndustryApiClientProject: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn update_misc(
+    async fn project_update_misc(
         &self,
         project_id: &ProjectUuid,
         request:    &UpdateMisc,
     ) -> Result<()> {
         self
-            .put_auth(
+            .put(
                 format!("projects/{project_id}/misc"),
                 request,
             )
@@ -345,12 +345,12 @@ pub trait IndustryApiClientProject: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn check_materials(
+    async fn project_check_materials(
         &self,
         request: &CheckMaterialsRequest,
     ) -> Result<CheckMaterialsResponse> {
         self
-            .post_auth(
+            .post(
                 "projects/check",
                 request,
             )
@@ -359,13 +359,13 @@ pub trait IndustryApiClientProject: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn split_job_check(
+    async fn project_split_job_check(
         &self,
         project_id: &ProjectUuid,
         request:    &SplitJobRequest,
     ) -> Result<SplitJobResponse> {
         self
-            .put_auth(
+            .put(
                 format!("projects/{project_id}/split-job/check"),
                 request,
             )
@@ -374,13 +374,13 @@ pub trait IndustryApiClientProject: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn update_orderer(
+    async fn project_update_orderer(
         &self,
         project_id: &ProjectUuid,
         request:    String,
     ) -> Result<()> {
         self
-            .put_auth(
+            .put(
                 format!("projects/{project_id}/orderer"),
                 request,
             )
@@ -389,13 +389,13 @@ pub trait IndustryApiClientProject: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn update_notes(
+    async fn project_update_notes(
         &self,
         project_id: &ProjectUuid,
         request:    String,
     ) -> Result<()> {
         self
-            .put_auth(
+            .put(
                 format!("projects/{project_id}/notes"),
                 request,
             )

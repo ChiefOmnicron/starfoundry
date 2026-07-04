@@ -12,12 +12,12 @@ use crate::{TagUuid, Result};
 
 pub trait IndustryApiClientTag: ApiClient {
     #[allow(async_fn_in_trait)]
-    async fn create(
+    async fn tag_create(
         &self,
         request: &CreateTag,
     ) -> Result<CreateTagResponse> {
         self
-            .post_auth(
+            .post(
                 "tags",
                 request,
             )
@@ -26,12 +26,12 @@ pub trait IndustryApiClientTag: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn delete(
+    async fn tag_delete(
         &self,
         tag_id: &TagUuid,
     ) -> Result<()> {
         self
-            .delete_auth(
+            .delete(
                 format!("tags/{tag_id}"),
             )
             .await
@@ -39,12 +39,12 @@ pub trait IndustryApiClientTag: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn fetch(
+    async fn tag_fetch(
         &self,
         tag_id: &TagUuid,
     ) -> Result<Option<Tag>> {
         self
-            .fetch_auth(
+            .fetch(
                 format!("projects/{tag_id}"),
                 &(),
             )
@@ -53,12 +53,12 @@ pub trait IndustryApiClientTag: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn list(
+    async fn tag_list(
         &self,
     ) -> Result<Vec<Tag>> {
 
         self
-            .fetch_auth(
+            .fetch(
                 "tags",
                 &(),
             )
@@ -67,13 +67,13 @@ pub trait IndustryApiClientTag: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
-    async fn update(
+    async fn tag_update(
         &self,
         tag_id:     &TagUuid,
         request:    &UpdateTag,
     ) -> Result<()> {
         self
-            .put_auth(
+            .put(
                 format!("tags/{tag_id}"),
                 request,
             )
