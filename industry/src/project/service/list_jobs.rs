@@ -203,11 +203,12 @@ pub async fn determine_ready_to_start(
             continue;
         };
 
-        // if a dependency is still building, ignore it
+        // if a dependency is still building ignore it
+        // but if some of them are already done, keep it
         let has_dependency_building = dependency
             .depends_on
             .iter()
-            .any(|x| building.contains(x));
+            .any(|x| building.contains(x) && !done.contains(x));
         if has_dependency_building {
             continue;
         }
