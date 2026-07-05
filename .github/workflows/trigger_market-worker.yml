@@ -6,6 +6,7 @@ on:
       - main
       - rewrite
     paths:
+      - 'eve-gateway_lib/**'
       - 'market_worker/**'
       - 'market_lib/**'
       - 'gateway_lib/**'
@@ -14,7 +15,7 @@ on:
       - '.github/workflows/common_build_docker.yml'
       - '.github/workflows/common_deploy.yml'
       - '.github/workflows/common_rust_test.yml'
-      - '.github/workflows/trigger_market_worker.yml'
+      - '.github/workflows/trigger_market-worker.yml'
       - 'Dockerfile'
 
 concurrency:
