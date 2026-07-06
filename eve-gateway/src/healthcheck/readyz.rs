@@ -3,7 +3,6 @@ use axum::http::{header, StatusCode};
 use axum::response::IntoResponse;
 
 use crate::state::AppState;
-use starfoundry_lib_eve_client::EveApiClient;
 
 /// Readyz
 /// 
@@ -44,32 +43,6 @@ pub async fn readyz(
                 header::CACHE_CONTROL, "no-cache"
             )],
             "db unhealthy"
-        );
-    }
-
-    let api_client = match EveApiClient::new(state.eve_api_metric) {
-        Ok(x) => x,
-        Err(_) => {
-            return (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                [(
-                    header::CACHE_CONTROL, "no-cache"
-                )],
-                "EVE-Api client unhealthy"
-            );
-        }
-    };
-    if let Err(e) = api_client
-        .fetch::<_, serde_json::Value>("/status", &())
-        .await {
-
-        tracing::error!("EVE-API healthcheck fail, {}", e);
-        return (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            [(
-                header::CACHE_CONTROL, "no-cache"
-            )],
-            "EVE-Api unhealthy"
         );
     }
 
