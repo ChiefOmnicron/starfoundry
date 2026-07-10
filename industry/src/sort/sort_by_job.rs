@@ -23,6 +23,14 @@ macro_rules! sort_by_job {
                         insert_into_map(8, entry);
                         continue;
                     },
+                    65i32 => {
+                        insert_into_map(65, entry);
+                        continue;
+                    },
+                    66i32 => {
+                        insert_into_map(66, entry);
+                        continue;
+                    },
                     _  => {}
                 }
 
@@ -43,6 +51,10 @@ macro_rules! sort_by_job {
                         insert_into_map(429, entry);
                         continue;
                     },
+                    536i32 => {
+                        insert_into_map(536, entry);
+                        continue;
+                    },
                     873i32 => {
                         insert_into_map(873, entry);
                         continue;
@@ -57,6 +69,67 @@ macro_rules! sort_by_job {
                     },
                     4096i32 => {
                         insert_into_map(4096, entry);
+                        continue;
+                    },
+                    // Rigs
+                    773i32 => {
+                        insert_into_map(1308, entry);
+                        continue;
+                    },
+                    774i32 => {
+                        insert_into_map(1308, entry);
+                        continue;
+                    },
+                    775i32 => {
+                        insert_into_map(1308, entry);
+                        continue;
+                    },
+                    776i32 => {
+                        insert_into_map(1308, entry);
+                        continue;
+                    },
+                    777i32 => {
+                        insert_into_map(1308, entry);
+                        continue;
+                    },
+                    778i32 => {
+                        insert_into_map(1308, entry);
+                        continue;
+                    },
+                    779i32 => {
+                        insert_into_map(1308, entry);
+                        continue;
+                    },
+                    781i32 => {
+                        insert_into_map(1308, entry);
+                        continue;
+                    },
+                    782i32 => {
+                        insert_into_map(1308, entry);
+                        continue;
+                    },
+                    786i32 => {
+                        insert_into_map(1308, entry);
+                        continue;
+                    },
+                    904i32 => {
+                        insert_into_map(1308, entry);
+                        continue;
+                    },
+                    1308i32 => {
+                        insert_into_map(1308, entry);
+                        continue;
+                    },
+                    1232i32 => {
+                        insert_into_map(1308, entry);
+                        continue;
+                    },
+                    1233i32 => {
+                        insert_into_map(1308, entry);
+                        continue;
+                    },
+                    1234i32 => {
+                        insert_into_map(1308, entry);
                         continue;
                     },
                     _  => {}
@@ -91,11 +164,15 @@ macro_rules! sort_by_job {
                 ("CONSTRUCTION_COMPONENTS",                   334),
                 ("ADVANCED_CAPITAL_CONSTRUCTION_COMPONENTS",  913),
                 ("CAPITAL_CONSTRUCTION_COMPONENTS",           873),
+                ("STRUCTURE_COMPONENTS",                      536),
                 ("TOOLS",                                     332),
                 ("T1_STUFF",                                    1),
                 ("T2_STUFF",                                    2),
+                ("RIGS",                                     1308),
+                ("STRUCTURE_RIGS",                             66),
                 ("CHARGES",                                     8),
                 ("SHIPS",                                       6),
+                ("STRUCTURE",                                  65),
                 ("UNKNOWN",                                     0),
             ] {
                 if let Some(entries) = grouped_entries.get_mut(&id) {
