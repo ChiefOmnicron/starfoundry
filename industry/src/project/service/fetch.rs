@@ -5,7 +5,7 @@ use starfoundry_lib_industry::ProjectUuid;
 use starfoundry_lib_types::CharacterId;
 
 use crate::project::error::{ProjectError, Result};
-use crate::project::service::{list_excess, list_products, list_stock};
+use crate::project::service::{list_excess, list_products, list_stock, list_tags};
 
 pub async fn fetch(
     pool:                   &PgPool,
@@ -70,6 +70,12 @@ pub async fn fetch(
             )
             .await?;
 
+        let tags = list_tags(
+                pool,
+                project_id,
+            )
+            .await?;
+
         let project = Project {
             id:             x.id.into(),
             name:           x.name,
@@ -79,6 +85,7 @@ pub async fn fetch(
             products:       products,
             stock:          stock,
             excess:         excess,
+            tags:           tags,
 
             note:           x.note,
             project_group:  project_group,

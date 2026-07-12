@@ -1,5 +1,6 @@
 import { axiosClient } from "@internal/services/client";
 import type { Uuid } from "@internal/services/utils";
+import type { TagType, AutoTagSelect, AutoTagCompare } from '@internal/services/tags/list';
 
 export const createTag = async (
     data: CreateTag,
@@ -11,21 +12,19 @@ export const createTag = async (
     .then(x => x.data);
 
 export type CreateTag = {
-    color:          string;
-    content:        string;
-    typ:            TagType;
+    color:      string;
+    content:    string;
+    typ:        TagType;
 
-    auto?: {
-        select:     AutoTagSelect;
-        compare:    AutoTagCompare;
-        value:      string;
-    }
+    auto?:      CreateTagAuto[];
+}
+
+export type CreateTagAuto = {
+    select:     AutoTagSelect;
+    compare:    AutoTagCompare;
+    value:      string;
 }
 
 export type CreateTagResponse = {
     id: Uuid,
 }
-
-export type TagType = 'MANUAL' | 'AUTO';
-export type AutoTagSelect = 'PROJECT_NAME' | 'PROJECT_ORDERER' | 'PROJECT_NOTE' | 'PROJECT_PRODUCT' | 'PROJECT_STATUS';
-export type AutoTagCompare = 'IS' | 'IS_NOT' | 'CONTAINS' | 'PATTERN';

@@ -7,6 +7,7 @@ use starfoundry_lib_market::MarketBulkResponse;
 use crate::{ProjectUuid, SolutionUuid};
 use crate::project::{ProjectExcess, ProjectStatus};
 use crate::project_group::ProjectGroup;
+use crate::tag::Tag;
 
 #[derive(Debug, Deserialize, Serialize, ToSchema)]
 #[schema(
@@ -27,6 +28,7 @@ pub struct Project {
     pub products:       Vec<ProjectProduct>,
     pub stock:          Vec<ProjectStock>,
     pub excess:         Vec<ProjectExcess>,
+    pub tags:           Vec<Tag>,
 
     pub note:           Option<String>,
     pub sell_price:     Option<f64>,

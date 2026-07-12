@@ -3,10 +3,12 @@ use starfoundry_lib_types::CharacterId;
 use starfoundry_lib_industry::tag::{Tag, TagAuto, TagAutoCompare, TagAutoSelect, TagType};
 
 use crate::tag::error::{Result, TagError};
+use crate::tag::list::TagFilter;
 
 pub async fn list(
     pool:           &PgPool,
     character_id:   CharacterId,
+    filter:         TagFilter,
 ) -> Result<Vec<Tag>> {
     let entries = sqlx::query!(r#"
             SELECT
@@ -15,13 +17,27 @@ pub async fn list(
                 color,
                 typ
             FROM tag
-            WHERE owner_id = $1
+            WHERE
+                owner_id = $1
+            ORDER BY content
         "#,
             *character_id,
         )
         .fetch_all(pool)
         .await
-        .map_err(|e| TagError::List(e))?;
+        .map_err(|e| TagError::List(e))?
+        .into_iter()
+        .filter(|x| {
+            // unwrap is safe, as it's set per default
+            if filter.auto.unwrap() && x.typ == "AUTO" {
+                true
+            } else if filter.manual.unwrap() && x.typ == "MANUAL" {
+                true
+            } else {
+                false
+            }
+        })
+        .collect::<Vec<_>>();
 
     let mut results = Vec::new();
     for entry in entries {

@@ -4,12 +4,14 @@ use starfoundry_lib_types::{StructureId, TypeId};
 use utoipa::ToSchema;
 
 use crate::project::{ProjectJobStatus, ProjectStatus};
+use crate::TagUuid;
 
 #[derive(Debug, Deserialize, Serialize, ToSchema)]
 pub struct UpdateProject {
     pub orderer:        String,
     pub name:           String,
     pub status:         ProjectStatus,
+    pub tags:           Vec<TagUuid>,
 
     pub sell_price:     Option<f64>,
     pub note:           Option<String>,

@@ -11,12 +11,13 @@ pub struct CreateTag {
     pub content:    String,
     pub typ:        TagType,
 
+    #[serde(default)]
     pub auto:       Vec<TagAuto>
 }
 
 impl CreateTag {
     pub fn validate(&self) -> Result<bool> {
-        if self.typ == TagType::Auto && self.auto.len() > 0 {
+        if self.typ == TagType::Auto && self.auto.is_empty() {
             return Err(Error::ValidationError("Field 'auto' must contain at least one value, when 'typ' is 'AUTO'".into()));
         }
 

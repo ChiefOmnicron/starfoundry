@@ -1,9 +1,11 @@
-use axum::extract::State;
+use axum::extract::{Query, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_gateway::ExtractIdentity;
 use starfoundry_lib_industry::tag::Tag;
+use serde::{Deserialize, Serialize};
+use utoipa::{IntoParams, ToSchema};
 
 use crate::AppState;
 use crate::api_docs::{BadRequest, InternalServerError, Unauthorized};
@@ -27,6 +29,7 @@ use crate::tag::service::list;
     get,
     path = "/",
     tag = "projects",
+    params(TagFilter),
     responses(
         (
             body = Vec<Tag>,
@@ -48,10 +51,12 @@ use crate::tag::service::list;
 pub async fn api(
     identity:      ExtractIdentity,
     State(state):  State<AppState>,
+    Query(filter): Query<TagFilter>,
 ) -> Result<impl IntoResponse> {
     let data = list(
             &state.postgres,
             identity.character_id,
+            filter,
         ).await?;
 
     if data.is_empty() {
@@ -71,4 +76,26 @@ pub async fn api(
             .into_response()
         )
     }
+}
+
+#[derive(Debug, Default, Deserialize, Serialize, ToSchema, IntoParams)]
+#[into_params(parameter_in = Query)]
+pub struct TagFilter {
+    #[serde(default = "default_true")]
+    #[param(
+        default = json!(true),
+        required = false,
+    )]
+    pub auto: Option<bool>,
+
+    #[serde(default = "default_true")]
+    #[param(
+        default = json!(true),
+        required = false,
+    )]
+    pub manual: Option<bool>,
+}
+
+fn default_true() -> Option<bool> {
+    Some(true)
 }

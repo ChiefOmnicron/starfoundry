@@ -30,6 +30,18 @@ pub enum ProjectStatus {
     Done,
 }
 
+impl ProjectStatus {
+    pub fn as_str(&self) -> &str {
+        match self {
+            ProjectStatus::Done         => "Done",
+            ProjectStatus::Draft        => "Draft",
+            ProjectStatus::InProgress   => "InProgress",
+            ProjectStatus::Paused       => "Paused",
+            ProjectStatus::ReadyToStart => "ReadyToStart",
+        }
+    }
+}
+
 #[derive(
     Clone, Debug, Copy,
     PartialEq, Eq, PartialOrd, Ord,

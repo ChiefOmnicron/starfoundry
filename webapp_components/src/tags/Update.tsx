@@ -1,95 +1,64 @@
-import { createTag, type AutoTagCompare, type AutoTagSelect, type CreateTag, type TagType } from "@internal/services/tags/create";
-import { Button, ColorInput, Grid, Group, InputBase, InputWrapper, Pill, SegmentedControl, Select, Stack, TextInput } from "@mantine/core";
+import { Alert, Button, ColorInput, Grid, Group, InputBase, InputWrapper, SegmentedControl, Select, Stack, TextInput } from "@mantine/core";
+import { BadgeWrapper } from "@internal/wrapper/Badge";
+import { LIST_TAGS, type AutoTagCompare, type AutoTagSelect, type Tag, type TagType } from "@internal/services/tags/list";
+import { tagOptions } from "@internal/services/tags/options";
+import { updateTag } from "@internal/services/tags/update";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { useState, type ReactElement } from "react";
+import type { CreateTag } from "@internal/services/tags/create";
 
-export function CreateTag(): ReactElement {
-    const [tagColor, setTagColor] = useState<string>(randomColor());
-    const [tagContent, setTagContent] = useState<string>('New Tag');
-    const [tagType, setTagType] = useState<TagType>('MANUAL');
+export function UpdateTag({
+    tag,
+    onUpdate,
+}: UpdateTagProps): ReactElement {
+    const [hasError, setHasError] = useState<boolean>(false);
 
-    const createTagMutation = useMutation({
+    const updateTagMutation = useMutation({
         mutationFn: async (value: CreateTag) => {
-            console.log(value)
-            return await createTag(value)
+            return await updateTag(tag.id, value)
+        },
+        onError: () => {
+            setHasError(true);
+        },
+        onSuccess: (_data, _variables, _onMutateResult, context) => {
+            context.client.invalidateQueries({ queryKey: [LIST_TAGS] });
+            setHasError(false);
+            onUpdate();
         },
     });
 
     const form = useForm({
         defaultValues: {
-            content: tagContent,
-            color: tagColor,
-            typ: 'MANUAL',
-            auto: {
-                compare: 'IS',
-                select: 'PROJECT_NAME',
-                value: '',
-            },
+            content: tag.content,
+            color: tag.color,
+            typ: tag.typ,
+            auto: tag.auto,
         },
-        onSubmit: async ({ value }) => await createTagMutation
+        onSubmit: async ({ value }) => await updateTagMutation
             .mutateAsync({
                 color:      value.color,
                 content:    value.content,
                 typ:        value.typ as TagType,
 
                 auto:       value.typ === 'AUTO'
-                            ?   {
-                                    compare:    (value.auto.compare || 'IS') as AutoTagCompare,
-                                    select:     (value.auto.select || 'PROJECT_NAME') as AutoTagSelect,
-                                    value:      value.auto.value || '',
-                                }
-                            :   undefined
-            })
-            .then(x => {
-                console.log(x)
-            })
-            .catch(e => {
-                console.error(e)
+                            ?   value.auto.map(x => {
+                                    return {
+                                        compare: x.compare as AutoTagCompare,
+                                        select: x.select as AutoTagSelect,
+                                        value: x.value,
+                                    }
+                                })
+                            :   []
             }),
     });
 
-    const autoConfiguration = () => {
-        if (tagType !== 'AUTO') {
-            return <></>;
-        }
-
-        const optionsProject = [{
-            label:  'project.name',
-            value:  'PROJECT_NAME',
-        }, {
-            label:  'project.orderer',
-            value:  'PROJECT_ORDERER',
-        }, {
-            label:  'project.note',
-            value:  'PROJECT_NOTE',
-        }, {
-            label:  'project.product',
-            value:  'PROJECT_PRODUCT',
-        }, {
-            label:  'project.status',
-            value:  'PROJECT_STATUS',
-        }];
-
-        const optionsCompare = [{
-            label:  'is',
-            value:  'IS',
-        }, {
-            label:  'is not',
-            value:  'IS_NOT',
-        }, {
-            label:  'contains',
-            value:  'CONTAINS',
-        }, {
-            label:  'pattern',
-            value:  'PATTERN',
-        }];
-
+    const autoConfiguration = (index: number) => {
         return <>
             <Grid>
                 <Grid.Col span={3}>
                     <form.Field
-                        name="auto.select"
+                        name={`auto[${index}].select`}
                         children={(field) => {
                             return <Select
                                 label="Select an option"
@@ -101,7 +70,7 @@ export function CreateTag(): ReactElement {
                                     !field.state.meta.isValid && field.state.meta.errors.join(', ')
                                 }
                                 onChange={(x) => field.handleChange(x as any)}
-                                data={optionsProject}
+                                data={tagOptions}
                                 withAsterisk
                             />
                         }}
@@ -109,30 +78,36 @@ export function CreateTag(): ReactElement {
                 </Grid.Col>
 
                 <Grid.Col span={2}>
-                    <form.Field
-                        name="auto.compare"
-                        children={(field) => {
-                            return <Select
-                                label="Compare"
-                                placeholder="is"
-                                id={field.name}
-                                name={field.name}
-                                value={field.state.value}
-                                error={
-                                    !field.state.meta.isValid && field.state.meta.errors.join(', ')
-                                }
-                                onChange={(x) => {
-                                    field.handleChange(x as any)
+                    <form.Subscribe
+                        selector={(state) => [state.values.auto[index].select]}
+                        children={([select]) => {
+                            return <form.Field
+                                name={`auto[${index}].compare`}
+                                children={(field) => {
+                                    return <Select
+                                        label="Compare"
+                                        placeholder="is"
+                                        id={field.name}
+                                        name={field.name}
+                                        value={field.state.value}
+                                        error={
+                                            !field.state.meta.isValid && field.state.meta.errors.join(', ')
+                                        }
+                                        onChange={(x) => {
+                                            field.handleChange(x as any)
+                                        }}
+                                        data={(tagOptions.find(x => x.value === select) || { compare: [] }).compare}
+                                        allowDeselect={false}
+                                        withAsterisk
+                                    />
                                 }}
-                                data={optionsCompare}
-                                withAsterisk
                             />
                         }}
                     />
                 </Grid.Col>
                 <Grid.Col span={7}>
                     <form.Field
-                        name="auto.value"
+                        name={`auto[${index}].value`}
                         children={(field) => {
                             return <TextInput
                                 label="Value"
@@ -156,7 +131,25 @@ export function CreateTag(): ReactElement {
         </>
     }
 
+    const notification = () => {
+        if (hasError) {
+            return <Alert
+                mt="sm"
+                variant='light'
+                color='red'
+                title='Error while creating'
+                data-cy="successfulUpdate"
+                onClose={ () => setHasError(false) }
+                withCloseButton
+            >
+                There was an error while creating the tag
+            </Alert>;
+        }
+    }
+
     return <>
+        { notification() }
+
         <form
             onSubmit={(e) => {
                 e.preventDefault()
@@ -191,7 +184,6 @@ export function CreateTag(): ReactElement {
                                 onBlur={field.handleBlur}
                                 onChange={(e) => {
                                     field.handleChange(e.target.value);
-                                    setTagContent(e.target.value);
                                 }}
                             />
                         </>
@@ -216,7 +208,6 @@ export function CreateTag(): ReactElement {
                                 onBlur={field.handleBlur}
                                 onChange={(e) => {
                                     field.handleChange(e);
-                                    setTagColor(e);
                                 }}
                             />
                         </>
@@ -243,7 +234,6 @@ export function CreateTag(): ReactElement {
                                         value={field.state.value}
                                         onChange={(x: any) => {
                                             field.handleChange(x);
-                                            setTagType(x);
                                         }}
                                     />
                                 </Group>
@@ -252,21 +242,54 @@ export function CreateTag(): ReactElement {
                     }}
                 />
 
-                { autoConfiguration() }
+                <form.Subscribe
+                    selector={(state) => [state.values.typ]}
+                    children={([typ]) => {
+                        if (typ !== 'AUTO') {
+                            return <></>;
+                        }
 
-                <InputWrapper
-                    label="Example Tag"
-                >
-                    <Group>
-                        <Pill
-                            style={{
-                                backgroundColor: form.getFieldValue('color'),
-                            }}
+                        return <>
+                            <form.Field name="auto" mode="array">
+                                {(field) => {
+                                    return <>
+                                        <Stack>
+                                            {field.state.value.map((_, i) => autoConfiguration(i))}
+
+                                            <Group justify="flex-end">
+                                                <Button
+                                                    onClick={() => field.pushValue({
+                                                        select: 'PROJECT_NAME',
+                                                        compare: 'IS',
+                                                        value: ''
+                                                    })}
+                                                >
+                                                    Add another one
+                                                </Button>
+                                            </Group>
+                                        </Stack>
+                                    </>
+                                }}
+                            </form.Field>
+                        </>
+                    }}
+                />
+
+                <form.Subscribe
+                    selector={(state) => [state.values.content, state.values.color]}
+                    children={([content, color]) => <InputWrapper
+                            label="Example Tag"
                         >
-                            {form.getFieldValue('content')}
-                        </Pill>
-                    </Group>
-                </InputWrapper>
+                            <Group>
+                                <BadgeWrapper
+                                    color={color}
+                                >
+                                    {content}
+                                </BadgeWrapper>
+                            </Group>
+                        </InputWrapper>
+                    }
+                />
 
                 <form.Subscribe
                     selector={(state) => [state.canSubmit, state.isSubmitting]}
@@ -276,7 +299,7 @@ export function CreateTag(): ReactElement {
                             gap="sm"
                         >
                             <Button
-                                data-cy="create"
+                                data-cy="update"
                                 mt="sm"
                                 type="submit"
                                 disabled={!canSubmit}
@@ -285,7 +308,7 @@ export function CreateTag(): ReactElement {
                                     form.handleSubmit()
                                 }}
                             >
-                                Create
+                                Update
                             </Button>
                         </Group>
                     )}
@@ -295,6 +318,7 @@ export function CreateTag(): ReactElement {
     </>
 }
 
-const randomColor = () => {
-    return '#' + Math.floor(Math.random() * 16777215).toString(16);
+export type UpdateTagProps = {
+    tag: Tag,
+    onUpdate: () => void
 }

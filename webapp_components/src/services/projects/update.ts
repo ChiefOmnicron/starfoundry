@@ -15,11 +15,12 @@ export const updateProject = async (
     });
 
 export type UpdateProjectRequest = {
-    project_group_id:   Uuid,
-    orderer:            string,
-    name:               string,
-    status:             ProjectStatus,
+    project_group_id:   Uuid;
+    orderer:            string;
+    name:               string;
+    status:             ProjectStatus;
+    tags:               Uuid[];
 
-    sell_price?:        number,
-    note?:              string,
+    sell_price?:        number;
+    note?:              string;
 }

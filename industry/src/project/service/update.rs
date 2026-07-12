@@ -9,6 +9,11 @@ pub async fn update(
     project_id:     ProjectUuid,
     update:         UpdateProject,
 ) -> Result<()> {
+    let mut transaction = pool
+        .begin()
+        .await
+        .map_err(ProjectError::TransactionError)?;
+
     let result = sqlx::query!("
             UPDATE project
             SET
@@ -26,13 +31,45 @@ pub async fn update(
             update.note,
             update.status as _,
         )
-        .execute(pool)
+        .execute(&mut *transaction)
         .await
         .map_err(ProjectError::Update)?;
 
     if result.rows_affected() == 0 {
         return Err(ProjectError::NotFound(project_id));
     }
+
+    sqlx::query!("
+            DELETE FROM project_tag
+            WHERE project_id = $1
+        ",
+            *project_id,
+        )
+        .execute(&mut *transaction)
+        .await
+        .map_err(ProjectError::Update)?;
+
+    sqlx::query!("
+            INSERT INTO project_tag
+            (
+                project_id,
+                tag_id
+            )
+            SELECT $1, * FROM UNNEST(
+                $2::UUID[]
+            )
+        ",
+            *project_id,
+            &update.tags.into_iter().map(|x| *x).collect::<Vec<_>>(),
+        )
+        .execute(&mut *transaction)
+        .await
+        .map_err(ProjectError::Update)?;
+
+    transaction
+        .commit()
+        .await
+        .map_err(ProjectError::TransactionError)?;
 
     Ok(())
 }

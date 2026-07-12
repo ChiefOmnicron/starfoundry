@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                id,\n                content,\n                color,\n                typ\n            FROM tag\n            WHERE owner_id = $1\n        ",
+  "query": "\n            SELECT\n                t.id,\n                t.color,\n                t.content,\n                t.typ\n            FROM project_tag pt\n            JOIN tag t ON pt.tag_id = t.id\n            WHERE\n                pt.project_id = $1\n        ",
   "describe": {
     "columns": [
       {
@@ -16,23 +16,23 @@
       },
       {
         "ordinal": 1,
-        "name": "content",
-        "type_info": "Varchar",
-        "origin": {
-          "Table": {
-            "table": "tag",
-            "name": "content"
-          }
-        }
-      },
-      {
-        "ordinal": 2,
         "name": "color",
         "type_info": "Varchar",
         "origin": {
           "Table": {
             "table": "tag",
             "name": "color"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "content",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "tag",
+            "name": "content"
           }
         }
       },
@@ -50,7 +50,7 @@
     ],
     "parameters": {
       "Left": [
-        "Int4"
+        "Uuid"
       ]
     },
     "nullable": [
@@ -60,5 +60,5 @@
       false
     ]
   },
-  "hash": "f9a9ec4f99fc4e96ce36ced94f2a78b71e277ee4a57ebe72dc45eb306ea00f51"
+  "hash": "9c2ef34016ceadf8addf62fa9379f978503c065d7977ce2202c5abb3ffeb1b9c"
 }

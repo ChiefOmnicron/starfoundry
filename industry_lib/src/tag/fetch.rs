@@ -2,7 +2,6 @@ use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
 use crate::{Error, TagUuid};
-use std::fmt;
 
 #[derive(Debug, Deserialize, Serialize, ToSchema)]
 pub struct Tag {
@@ -28,6 +27,15 @@ pub enum TagType {
     Manual,
 }
 
+impl TagType {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Auto      => "AUTO",
+            Self::Manual    => "MANUAL",
+        }
+    }
+}
+
 impl TryFrom<String> for TagType {
     type Error = Error;
 
@@ -40,20 +48,22 @@ impl TryFrom<String> for TagType {
     }
 }
 
-impl fmt::Display for TagType {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self)
-    }
-}
-
 #[derive(Debug, Deserialize, Serialize, ToSchema, PartialEq, Eq)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum TagAutoSelect {
     ProjectName,
     ProjectOrderer,
-    ProjectNote,
-    ProjectProduct,
     ProjectStatus,
+}
+
+impl TagAutoSelect {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::ProjectName       => "PROJECT_NAME",
+            Self::ProjectOrderer    => "PROJECT_ORDER",
+            Self::ProjectStatus     => "PROJECT_STATUS",
+        }
+    }
 }
 
 impl TryFrom<String> for TagAutoSelect {
@@ -63,20 +73,11 @@ impl TryFrom<String> for TagAutoSelect {
         match value.as_ref() {
             "PROJECT_NAME"      => Ok(Self::ProjectName),
             "PROJECT_ORDERER"   => Ok(Self::ProjectOrderer),
-            "PROJECT_NOTE"      => Ok(Self::ProjectOrderer),
-            "PROJECT_PRODUCT"   => Ok(Self::ProjectProduct),
             "PROJECT_STATUS"    => Ok(Self::ProjectStatus),
             _                   => Err(Self::Error::EnumParseError(value, "TagAutoSelect")),
         }
     }
 }
-
-impl fmt::Display for TagAutoSelect {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self)
-    }
-}
-
 
 #[derive(Debug, Deserialize, Serialize, ToSchema, PartialEq, Eq)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
@@ -85,6 +86,17 @@ pub enum TagAutoCompare {
     IsNot,
     Contains,
     Pattern,
+}
+
+impl TagAutoCompare {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Is        => "IS",
+            Self::IsNot     => "IS_NOT",
+            Self::Contains  => "CONTAINS",
+            Self::Pattern   => "PATTERN",
+        }
+    }
 }
 
 impl TryFrom<String> for TagAutoCompare {
@@ -98,11 +110,5 @@ impl TryFrom<String> for TagAutoCompare {
             "PATTERN"   => Ok(Self::Pattern),
             _           => Err(Self::Error::EnumParseError(value, "TagAutoCompare")),
         }
-    }
-}
-
-impl fmt::Display for TagAutoCompare {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self)
     }
 }

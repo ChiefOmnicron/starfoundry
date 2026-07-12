@@ -30,11 +30,15 @@ pub enum TagError {
 
     #[error("transaction error, '{0}'")]
     TransactionError(sqlx::Error),
+    #[error("sqlx error, '{0}'")]
+    SqlxError(sqlx::Error),
 
     #[error(transparent)]
     JsonExtractorRejection(#[from] JsonRejection),
     #[error(transparent)]
     ProjectLibError(#[from] starfoundry_lib_industry::Error),
+    #[error(transparent)]
+    ProjectError(#[from] crate::project::error::ProjectError),
 }
 
 impl IntoResponse for TagError {

@@ -42,7 +42,7 @@ pub async fn update(
             *tag_id,
             tag_info.content,
             tag_info.color,
-            tag_info.typ.to_string(),
+            tag_info.typ.as_str(),
         )
         .execute(&mut *transaction)
         .await
@@ -54,8 +54,8 @@ pub async fn update(
         let mut values = Vec::new();
 
         for auto_tag in tag_info.auto {
-            options.push(auto_tag.select.to_string());
-            compares.push(auto_tag.compare.to_string());
+            options.push(auto_tag.select.as_str().into());
+            compares.push(auto_tag.compare.as_str().into());
             values.push(auto_tag.value);
         }
 

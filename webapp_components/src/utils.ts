@@ -109,3 +109,7 @@ export const formatDate = (dateMs: number): string => {
 
     return `${year}.${month}.${day} ${hours}:${minutes}`;
 };
+
+export const randomColor = () => {
+    return '#' + Math.floor(Math.random() * 16777215).toString(16);
+}

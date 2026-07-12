@@ -1,4 +1,4 @@
-import { Alert, Flex, InputBase, NumberInput, Stack, TextInput, Title } from '@mantine/core';
+import { Alert, Flex, InputBase, InputWrapper, NumberInput, Stack, TextInput, Title } from '@mantine/core';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { deleteProject } from '@starfoundry/components/services/projects/delete';
 import { DeleteResource } from '@starfoundry/components/misc/DeleteResource';
@@ -16,6 +16,8 @@ import { useForm } from '@tanstack/react-form';
 import { useListProjectGroup } from '@starfoundry/components/services/project-group/list';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import { TagSelector } from '@starfoundry/components/selectors/TagSelector';
+import { useListTags } from '@starfoundry/components/services/tags/list';
 
 export interface QueryParams {
     created?: boolean;
@@ -51,6 +53,13 @@ function RouteComponent() {
         data: projectGroups,
     } = useListProjectGroup({
         archived: false,
+    });
+
+    const {
+        data: tags,
+    } = useListTags({
+        auto: true,
+        manual: true,
     });
 
     const updateMutation = useMutation({
@@ -93,6 +102,7 @@ function RouteComponent() {
             sell_price: project?.sell_price || 0,
             note: project?.note || '',
             status: project?.status || 'READY_TO_START',
+            tags: project?.tags.map(x => x.id) || [],
         },
         onSubmit: async ({ value }) => await updateMutation
             .mutateAsync(value)
@@ -302,6 +312,29 @@ function RouteComponent() {
                 />
 
                 <form.Field
+                    name="tags"
+                    children={(field) => {
+                        return <>
+                            <InputWrapper
+                                label="Tags"
+                            >
+                                <TagSelector
+                                    selected={field.state.value}
+                                    tags={tags || []}
+                                    onSelect={(x) => {
+                                        const updated = field.state.value.find(y => y === x.id)
+                                            ? field.state.value.filter((y) => y !== x.id)
+                                            : [...field.state.value, x.id];
+                                        field.handleChange(updated);
+                                        setTouched(true);
+                                    }}
+                                />
+                            </InputWrapper>
+                        </>
+                    }}
+                />
+
+                <form.Field
                     name="note"
                     validators={{
                         onBlur: ({ value }) => {
@@ -331,7 +364,7 @@ function RouteComponent() {
                             gap="sm"
                         >
                             <SaveDialog
-                                onReset={ () => {
+                                onReset={() => {
                                     form.reset();
                                     setTouched(!form.state.isDefaultValue);
                                 }}

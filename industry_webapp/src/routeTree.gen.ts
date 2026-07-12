@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TagsRouteRouteImport } from './routes/tags/route'
 import { Route as StructuresRouteRouteImport } from './routes/structures/route'
 import { Route as ProjectsRouteRouteImport } from './routes/projects/route'
 import { Route as ProjectGroupsRouteRouteImport } from './routes/project-groups/route'
@@ -49,6 +50,11 @@ import { Route as ProjectGroupsProjectGroupIdDefaultsRouteImport } from './route
 import { Route as ProjectsProjectIdAssistantRouteRouteImport } from './routes/projects_/$projectId.assistant/route'
 import { Route as ProjectsProjectIdAssistantIndexRouteImport } from './routes/projects_/$projectId.assistant/index'
 
+const TagsRouteRoute = TagsRouteRouteImport.update({
+  id: '/tags',
+  path: '/tags',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StructuresRouteRoute = StructuresRouteRouteImport.update({
   id: '/structures',
   path: '/structures',
@@ -85,9 +91,9 @@ const IndexRoute = IndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const TagsIndexRoute = TagsIndexRouteImport.update({
-  id: '/tags/',
-  path: '/tags/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => TagsRouteRoute,
 } as any)
 const StructuresIndexRoute = StructuresIndexRouteImport.update({
   id: '/',
@@ -267,6 +273,7 @@ export interface FileRoutesByFullPath {
   '/project-groups': typeof ProjectGroupsRouteRouteWithChildren
   '/projects': typeof ProjectsRouteRouteWithChildren
   '/structures': typeof StructuresRouteRouteWithChildren
+  '/tags': typeof TagsRouteRouteWithChildren
   '/industry-hubs/$industryHubId': typeof IndustryHubsIndustryHubIdRouteRouteWithChildren
   '/project-groups/$projectGroupId': typeof ProjectGroupsProjectGroupIdRouteRouteWithChildren
   '/projects/$projectId': typeof ProjectsProjectIdRouteRouteWithChildren
@@ -341,6 +348,7 @@ export interface FileRoutesById {
   '/project-groups': typeof ProjectGroupsRouteRouteWithChildren
   '/projects': typeof ProjectsRouteRouteWithChildren
   '/structures': typeof StructuresRouteRouteWithChildren
+  '/tags': typeof TagsRouteRouteWithChildren
   '/industry-hubs_/$industryHubId': typeof IndustryHubsIndustryHubIdRouteRouteWithChildren
   '/project-groups_/$projectGroupId': typeof ProjectGroupsProjectGroupIdRouteRouteWithChildren
   '/projects_/$projectId': typeof ProjectsProjectIdRouteRouteWithChildren
@@ -384,6 +392,7 @@ export interface FileRouteTypes {
     | '/project-groups'
     | '/projects'
     | '/structures'
+    | '/tags'
     | '/industry-hubs/$industryHubId'
     | '/project-groups/$projectGroupId'
     | '/projects/$projectId'
@@ -457,6 +466,7 @@ export interface FileRouteTypes {
     | '/project-groups'
     | '/projects'
     | '/structures'
+    | '/tags'
     | '/industry-hubs_/$industryHubId'
     | '/project-groups_/$projectGroupId'
     | '/projects_/$projectId'
@@ -499,6 +509,7 @@ export interface RootRouteChildren {
   ProjectGroupsRouteRoute: typeof ProjectGroupsRouteRouteWithChildren
   ProjectsRouteRoute: typeof ProjectsRouteRouteWithChildren
   StructuresRouteRoute: typeof StructuresRouteRouteWithChildren
+  TagsRouteRoute: typeof TagsRouteRouteWithChildren
   IndustryHubsIndustryHubIdRouteRoute: typeof IndustryHubsIndustryHubIdRouteRouteWithChildren
   ProjectGroupsProjectGroupIdRouteRoute: typeof ProjectGroupsProjectGroupIdRouteRouteWithChildren
   ProjectsProjectIdRouteRoute: typeof ProjectsProjectIdRouteRouteWithChildren
@@ -507,12 +518,18 @@ export interface RootRouteChildren {
   AboutIndexRoute: typeof AboutIndexRoute
   CharactersIndexRoute: typeof CharactersIndexRoute
   LegalIndexRoute: typeof LegalIndexRoute
-  TagsIndexRoute: typeof TagsIndexRoute
   JobsAssignmentIdIndexRoute: typeof JobsAssignmentIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tags': {
+      id: '/tags'
+      path: '/tags'
+      fullPath: '/tags'
+      preLoaderRoute: typeof TagsRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/structures': {
       id: '/structures'
       path: '/structures'
@@ -564,10 +581,10 @@ declare module '@tanstack/react-router' {
     }
     '/tags/': {
       id: '/tags/'
-      path: '/tags'
+      path: '/'
       fullPath: '/tags/'
       preLoaderRoute: typeof TagsIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof TagsRouteRoute
     }
     '/structures/': {
       id: '/structures/'
@@ -860,6 +877,18 @@ const StructuresRouteRouteWithChildren = StructuresRouteRoute._addFileChildren(
   StructuresRouteRouteChildren,
 )
 
+interface TagsRouteRouteChildren {
+  TagsIndexRoute: typeof TagsIndexRoute
+}
+
+const TagsRouteRouteChildren: TagsRouteRouteChildren = {
+  TagsIndexRoute: TagsIndexRoute,
+}
+
+const TagsRouteRouteWithChildren = TagsRouteRoute._addFileChildren(
+  TagsRouteRouteChildren,
+)
+
 interface IndustryHubsIndustryHubIdRouteRouteChildren {
   IndustryHubsIndustryHubIdIndexRoute: typeof IndustryHubsIndustryHubIdIndexRoute
 }
@@ -966,6 +995,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectGroupsRouteRoute: ProjectGroupsRouteRouteWithChildren,
   ProjectsRouteRoute: ProjectsRouteRouteWithChildren,
   StructuresRouteRoute: StructuresRouteRouteWithChildren,
+  TagsRouteRoute: TagsRouteRouteWithChildren,
   IndustryHubsIndustryHubIdRouteRoute:
     IndustryHubsIndustryHubIdRouteRouteWithChildren,
   ProjectGroupsProjectGroupIdRouteRoute:
@@ -976,7 +1006,6 @@ const rootRouteChildren: RootRouteChildren = {
   AboutIndexRoute: AboutIndexRoute,
   CharactersIndexRoute: CharactersIndexRoute,
   LegalIndexRoute: LegalIndexRoute,
-  TagsIndexRoute: TagsIndexRoute,
   JobsAssignmentIdIndexRoute: JobsAssignmentIdIndexRoute,
 }
 export const routeTree = rootRouteImport

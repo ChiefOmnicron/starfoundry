@@ -2,6 +2,7 @@ mod create;
 mod delete;
 mod fetch;
 mod list;
+mod trigger;
 mod update;
 
 pub mod error;
@@ -28,10 +29,14 @@ pub fn routes() -> OpenApiRouter<AppState> {
     let delete = OpenApiRouter::new()
         .routes(routes!(delete::api));
 
+    let trigger = OpenApiRouter::new()
+        .routes(routes!(trigger::api));
+
     OpenApiRouter::new()
         .merge(list)
         .merge(fetch)
         .merge(create)
         .merge(update)
         .merge(delete)
+        .merge(trigger)
 }

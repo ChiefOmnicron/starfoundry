@@ -83,8 +83,8 @@ export function BlueprintOverwriteList({
         columnHelper.display({
             id: 'delete',
             cell: props => <Button
-                    variant="outline"
-                    color="#c92a2a"
+                    variant="transparent"
+                    color="red.9"
                     style={{
                         width: '100%'
                     }}

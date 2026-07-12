@@ -6,7 +6,6 @@ mod create;
 mod delete_job;
 mod delete_market_entry;
 mod delete;
-mod error;
 mod fetch_cost;
 mod fetch_time_left;
 mod fetch;
@@ -20,16 +19,17 @@ mod list_market;
 mod list_misc;
 mod list;
 mod permission;
-mod service;
 mod split_job_check;
 mod update_job;
 mod update_market_bulk;
 mod update_market_entry;
 mod update_misc;
+mod update_notes;
+mod update_orderer;
 mod update;
 
-mod update_orderer;
-mod update_notes;
+pub mod error;
+pub mod service;
 
 use axum::middleware;
 use utoipa_axum::router::OpenApiRouter;
