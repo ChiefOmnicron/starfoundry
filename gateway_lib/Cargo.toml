@@ -16,3 +16,6 @@ thiserror = "2.0.18"
 tracing = "0.1.44"
 url = { version = "2.5.8", features = ["serde"] }
 utoipa = { version = "5.5.0", features = ["uuid", "yaml"] }
+
+[lints]
+workspace = true

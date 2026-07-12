@@ -36,3 +36,6 @@ utoipa = { version = "5.5.0", features = ["uuid", "yaml"] }
 utoipa-axum = "0.2.0"
 utoipa-scalar = { version = "0.3.0", features = ["axum"] }
 uuid = { version = "1.23.2", features = ["v7"] }
+
+[lints]
+workspace = true

@@ -22,3 +22,6 @@ tracing = "0.1.44"
 tracing-subscriber =  { version = "0.3.23", features = ["env-filter", "json"] }
 utoipa = { version = "5.5.0", features = ["uuid", "yaml"] }
 uuid = "1.23.2"
+
+[lints]
+workspace = true

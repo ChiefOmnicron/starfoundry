@@ -16,3 +16,6 @@ tokio = { version = "1.52.3", features = ["full"] }
 tracing = "0.1.44"
 uuid = { version = "1.23.2", features = ["serde", "v7"] }
 warp = { version = "0.4.3", features = ["server"] }
+
+[lints]
+workspace = true

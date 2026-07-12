@@ -21,3 +21,6 @@ tracing = "0.1.44"
 url = "2.5.8"
 utoipa = { version = "5.5.0", features = ["chrono", "uuid", "yaml"] }
 uuid = { version = "1.23.2", features = ["v7"] }
+
+[lints]
+workspace = true
