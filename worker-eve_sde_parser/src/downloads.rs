@@ -35,7 +35,7 @@ pub async fn download_assets(
 
     download_file(
         directory,
-        "https://developers.eveonline.com/static-data/tranquility/eve-online-static-data-3400955-yaml.zip",
+        "https://developers.eveonline.com/static-data/tranquility/eve-online-static-data-3435006-yaml.zip",
         "sde.zip",
     )
     .await?;
