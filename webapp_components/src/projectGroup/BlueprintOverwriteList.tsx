@@ -50,7 +50,7 @@ export function BlueprintOverwriteList({
     onSelect = (_) => {},
 }: BlueprintOverwriteListProp): ReactElement {
     const [addItemSelect, setAddItemSelect] = useState<Item | undefined>();
-    const [materialEfficiency, setMaterialEfficiency] = useState<string | undefined>();
+    const [materialEfficiency, setMaterialEfficiency] = useState<number | undefined>();
     const ItemSelectorRef = useRef<ItemSelectorRef>({} as any);
 
     const columnHelper = createColumnHelper<BlueprintOverwrite>();
@@ -139,7 +139,13 @@ export function BlueprintOverwriteList({
                 >
                     <NumberInput
                         placeholder="Set ME"
-                        onChange={(v) => setMaterialEfficiency(v as string)}
+                        onChange={(v) => {
+                            if (v && v as number > 0) {
+                                setMaterialEfficiency(v as number);
+                            } else {
+                                setMaterialEfficiency(0)
+                            }
+                        }}
                         value={materialEfficiency}
                         min={0}
                         max={10}
@@ -153,11 +159,11 @@ export function BlueprintOverwriteList({
                             if (addItemSelect && materialEfficiency) {
                                 onSelect({
                                     item:                addItemSelect,
-                                    material_efficiency: Number.parseInt(materialEfficiency),
+                                    material_efficiency: materialEfficiency,
                                 });
 
                                 setAddItemSelect(undefined);
-                                setMaterialEfficiency('');
+                                setMaterialEfficiency(undefined);
                                 ItemSelectorRef.current.reset();
                             }
                         }}
