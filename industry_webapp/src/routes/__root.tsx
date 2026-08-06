@@ -95,6 +95,10 @@ const routes: RouteDefinition[] = [{
             label: 'Tags',
             paths: [],
         }, {
+            link: '/routes',
+            label: 'Routes',
+            paths: [],
+        }, {
             link: '/characters',
             label: 'Characters',
             paths: [],

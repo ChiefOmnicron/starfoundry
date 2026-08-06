@@ -1,12 +1,13 @@
-import { BadgeWrapper } from "@internal/wrapper/Badge";
 import { Alert, Button, ColorInput, Grid, Group, InputBase, InputWrapper, SegmentedControl, Select, Stack, TextInput } from "@mantine/core";
+import { BadgeWrapper } from "@internal/wrapper/Badge";
 import { createTag, type CreateTag } from "@internal/services/tags/create";
+import { InputWrapperMarginBottom } from "@internal/misc/InputWrapperMarginBottom";
+import { LIST_TAGS, type AutoTagCompare, type AutoTagSelect, type TagType } from "@internal/services/tags/list";
 import { randomColor } from "@internal/utils";
+import { tagOptions } from "@internal/services/tags/options";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
-import { LIST_TAGS, type AutoTagCompare, type AutoTagSelect, type TagType } from "@internal/services/tags/list";
 import { useState, type ReactElement } from "react";
-import { tagOptions } from "@internal/services/tags/options";
 
 export function CreateTag({
     onCreate,
@@ -225,7 +226,10 @@ export function CreateTag({
                             <InputWrapper
                                 label="Type"
                                 description="Select the type of Tag"
+                                withAsterisk
                             >
+                                <InputWrapperMarginBottom />
+
                                 <Group>
                                     <SegmentedControl
                                         data={[{
@@ -235,6 +239,8 @@ export function CreateTag({
                                             label: 'Auto',
                                             value: 'AUTO'
                                         }]}
+                                        id={field.name}
+                                        name={field.name}
                                         value={field.state.value}
                                         onChange={(x: any) => {
                                             field.handleChange(x);

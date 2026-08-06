@@ -1,15 +1,28 @@
 import { SimpleGrid, Title } from '@mantine/core';
-import { StructureCard, type StructureCardAdditionalProps } from '@internal/cards/StructureCard';
+import { StructureCard } from '@internal/cards/StructureCard';
 import type { Structure, System } from '@internal/services/structure/list';
+import { useEffect, useState } from 'react';
+import type { Uuid } from '@internal/services/utils';
 
 export function StructureList({
     structures,
 
-    viewTarget = '_self',
+    filter,
+    multiple = false,
+
     groupBySystem = true,
 
-    structureCardProps,
+    onSelect = undefined,
+    selectedStructures,
+
+    onEditClick = () => {},
 }: StructureListProps) {
+    const [selectedStructuresInternal, setSelectedStructuresInternal] = useState<Structure[]>([]);
+
+    useEffect(() => {
+        setSelectedStructuresInternal(selectedStructures || []);
+    }, [selectedStructures]);
+
     const systems: System[] = [];
     structures
         .map(x => {
@@ -18,16 +31,59 @@ export function StructureList({
             }
         });
 
-    const structureCardBySystem = (systemId: number) => {
+    const structureCards = (
+        filter: StructureListFilter = {},
+    ) => {
         return structures
-            .filter(x => x.system.system_id == systemId)
+            .filter(x => {
+                if (filter && filter.search) {
+                    return x.name
+                            .toLowerCase()
+                            .includes(filter.search.toLowerCase().trim()) ||
+                        x.system
+                            .system_name
+                            .toLowerCase()
+                            .includes(filter.search.toLowerCase().trim());
+                }
+
+                return true;
+            })
+            .filter(x => {
+                if (filter && filter.systemId) {
+                    return x.system.system_id === filter.systemId;
+                }
+
+                return true;
+            })
             .map(x => <StructureCard
                     key={x.id}
                     structure={x}
-                    viewTarget={viewTarget}
-                    {...structureCardProps}
+                    checked={!!selectedStructuresInternal.find(y => y.id === x.id)}
+                    checkable={!!onSelect}
+                    onEditClick={() => onEditClick(x.id)}
+                    onChange={(event: 'checked' | 'unchecked', structure: Structure) => {
+                        if (!onSelect) {
+                            return;
+                        }
+
+                        const update = event === 'checked'
+                            ? multiple
+                                ?   [...selectedStructuresInternal, structure]
+                                :   [structure]
+                            : selectedStructuresInternal.filter((y) => y.id !== structure.id);
+
+                        setSelectedStructuresInternal(update);
+                        onSelect(update);
+                    }}
                 />
             );
+    }
+
+    const structureCardBySystem = (systemId: number) => {
+        return structureCards({
+            systemId: systemId,
+            ...filter,
+        });
     }
 
     if (groupBySystem) {
@@ -59,15 +115,7 @@ export function StructureList({
                     sm: 2,
                 }}
             >
-                {
-                    structures
-                        .map(x => <StructureCard
-                                structure={x}
-                                viewTarget={viewTarget}
-                                {...structureCardProps}
-                            />
-                        )
-                }
+                { structureCards(filter) }
             </SimpleGrid>
         </>;
     }
@@ -76,8 +124,18 @@ export function StructureList({
 export type StructureListProps = {
     structures: Structure[];
 
-    viewTarget?:    '_blank' | '_self';
+    filter?: StructureListFilter;
+    multiple?: boolean;
+
     groupBySystem?: boolean;
 
-    structureCardProps?: StructureCardAdditionalProps;
+    selectedStructures?: Structure[];
+    onSelect?: (structures: Structure[]) => void;
+
+    onEditClick?: (structureId: Uuid) => void;
+}
+
+export type StructureListFilter = {
+    search?: string;
+    systemId?: number;
 }

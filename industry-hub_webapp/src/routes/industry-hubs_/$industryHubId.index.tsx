@@ -345,6 +345,8 @@ function RouteComponent() {
 
                                     structures={structures}
                                     selected={selectedStructures}
+
+                                    multiple
                                 />
 
                                 <StructureList

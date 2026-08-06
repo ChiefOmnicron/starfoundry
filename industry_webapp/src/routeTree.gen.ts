@@ -11,14 +11,17 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TagsRouteRouteImport } from './routes/tags/route'
 import { Route as StructuresRouteRouteImport } from './routes/structures/route'
+import { Route as RoutesRouteRouteImport } from './routes/routes/route'
 import { Route as ProjectsRouteRouteImport } from './routes/projects/route'
 import { Route as ProjectGroupsRouteRouteImport } from './routes/project-groups/route'
 import { Route as PriceCalculationRouteRouteImport } from './routes/price-calculation/route'
 import { Route as JobsRouteRouteImport } from './routes/jobs/route'
 import { Route as IndustryHubsRouteRouteImport } from './routes/industry-hubs/route'
+import { Route as Bulk_buyRouteRouteImport } from './routes/bulk_buy/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TagsIndexRouteImport } from './routes/tags/index'
 import { Route as StructuresIndexRouteImport } from './routes/structures/index'
+import { Route as RoutesIndexRouteImport } from './routes/routes/index'
 import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
 import { Route as ProjectGroupsIndexRouteImport } from './routes/project-groups/index'
 import { Route as PriceCalculationIndexRouteImport } from './routes/price-calculation/index'
@@ -26,6 +29,7 @@ import { Route as LegalIndexRouteImport } from './routes/legal/index'
 import { Route as JobsIndexRouteImport } from './routes/jobs/index'
 import { Route as IndustryHubsIndexRouteImport } from './routes/industry-hubs/index'
 import { Route as CharactersIndexRouteImport } from './routes/characters/index'
+import { Route as Bulk_buyIndexRouteImport } from './routes/bulk_buy/index'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as StructuresStructureIdRouteRouteImport } from './routes/structures_/$structureId.route'
@@ -60,6 +64,11 @@ const StructuresRouteRoute = StructuresRouteRouteImport.update({
   path: '/structures',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RoutesRouteRoute = RoutesRouteRouteImport.update({
+  id: '/routes',
+  path: '/routes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProjectsRouteRoute = ProjectsRouteRouteImport.update({
   id: '/projects',
   path: '/projects',
@@ -85,6 +94,11 @@ const IndustryHubsRouteRoute = IndustryHubsRouteRouteImport.update({
   path: '/industry-hubs',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Bulk_buyRouteRoute = Bulk_buyRouteRouteImport.update({
+  id: '/bulk_buy',
+  path: '/bulk_buy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -99,6 +113,11 @@ const StructuresIndexRoute = StructuresIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => StructuresRouteRoute,
+} as any)
+const RoutesIndexRoute = RoutesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => RoutesRouteRoute,
 } as any)
 const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
   id: '/',
@@ -134,6 +153,11 @@ const CharactersIndexRoute = CharactersIndexRouteImport.update({
   id: '/characters/',
   path: '/characters/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const Bulk_buyIndexRoute = Bulk_buyIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => Bulk_buyRouteRoute,
 } as any)
 const AboutIndexRoute = AboutIndexRouteImport.update({
   id: '/about/',
@@ -267,11 +291,13 @@ const ProjectsProjectIdAssistantIndexRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/bulk_buy': typeof Bulk_buyRouteRouteWithChildren
   '/industry-hubs': typeof IndustryHubsRouteRouteWithChildren
   '/jobs': typeof JobsRouteRouteWithChildren
   '/price-calculation': typeof PriceCalculationRouteRouteWithChildren
   '/project-groups': typeof ProjectGroupsRouteRouteWithChildren
   '/projects': typeof ProjectsRouteRouteWithChildren
+  '/routes': typeof RoutesRouteRouteWithChildren
   '/structures': typeof StructuresRouteRouteWithChildren
   '/tags': typeof TagsRouteRouteWithChildren
   '/industry-hubs/$industryHubId': typeof IndustryHubsIndustryHubIdRouteRouteWithChildren
@@ -280,6 +306,7 @@ export interface FileRoutesByFullPath {
   '/structures/$structureId': typeof StructuresStructureIdRouteRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/about/': typeof AboutIndexRoute
+  '/bulk_buy/': typeof Bulk_buyIndexRoute
   '/characters/': typeof CharactersIndexRoute
   '/industry-hubs/': typeof IndustryHubsIndexRoute
   '/jobs/': typeof JobsIndexRoute
@@ -287,6 +314,7 @@ export interface FileRoutesByFullPath {
   '/price-calculation/': typeof PriceCalculationIndexRoute
   '/project-groups/': typeof ProjectGroupsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
+  '/routes/': typeof RoutesIndexRoute
   '/structures/': typeof StructuresIndexRoute
   '/tags/': typeof TagsIndexRoute
   '/projects/$projectId/assistant': typeof ProjectsProjectIdAssistantRouteRouteWithChildren
@@ -313,6 +341,7 @@ export interface FileRoutesByTo {
   '/projects/$projectId': typeof ProjectsProjectIdRouteRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/about': typeof AboutIndexRoute
+  '/bulk_buy': typeof Bulk_buyIndexRoute
   '/characters': typeof CharactersIndexRoute
   '/industry-hubs': typeof IndustryHubsIndexRoute
   '/jobs': typeof JobsIndexRoute
@@ -320,6 +349,7 @@ export interface FileRoutesByTo {
   '/price-calculation': typeof PriceCalculationIndexRoute
   '/project-groups': typeof ProjectGroupsIndexRoute
   '/projects': typeof ProjectsIndexRoute
+  '/routes': typeof RoutesIndexRoute
   '/structures': typeof StructuresIndexRoute
   '/tags': typeof TagsIndexRoute
   '/project-groups/$projectGroupId/defaults': typeof ProjectGroupsProjectGroupIdDefaultsRoute
@@ -342,11 +372,13 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/bulk_buy': typeof Bulk_buyRouteRouteWithChildren
   '/industry-hubs': typeof IndustryHubsRouteRouteWithChildren
   '/jobs': typeof JobsRouteRouteWithChildren
   '/price-calculation': typeof PriceCalculationRouteRouteWithChildren
   '/project-groups': typeof ProjectGroupsRouteRouteWithChildren
   '/projects': typeof ProjectsRouteRouteWithChildren
+  '/routes': typeof RoutesRouteRouteWithChildren
   '/structures': typeof StructuresRouteRouteWithChildren
   '/tags': typeof TagsRouteRouteWithChildren
   '/industry-hubs_/$industryHubId': typeof IndustryHubsIndustryHubIdRouteRouteWithChildren
@@ -355,6 +387,7 @@ export interface FileRoutesById {
   '/structures_/$structureId': typeof StructuresStructureIdRouteRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/about/': typeof AboutIndexRoute
+  '/bulk_buy/': typeof Bulk_buyIndexRoute
   '/characters/': typeof CharactersIndexRoute
   '/industry-hubs/': typeof IndustryHubsIndexRoute
   '/jobs/': typeof JobsIndexRoute
@@ -362,6 +395,7 @@ export interface FileRoutesById {
   '/price-calculation/': typeof PriceCalculationIndexRoute
   '/project-groups/': typeof ProjectGroupsIndexRoute
   '/projects/': typeof ProjectsIndexRoute
+  '/routes/': typeof RoutesIndexRoute
   '/structures/': typeof StructuresIndexRoute
   '/tags/': typeof TagsIndexRoute
   '/projects_/$projectId/assistant': typeof ProjectsProjectIdAssistantRouteRouteWithChildren
@@ -386,11 +420,13 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/bulk_buy'
     | '/industry-hubs'
     | '/jobs'
     | '/price-calculation'
     | '/project-groups'
     | '/projects'
+    | '/routes'
     | '/structures'
     | '/tags'
     | '/industry-hubs/$industryHubId'
@@ -399,6 +435,7 @@ export interface FileRouteTypes {
     | '/structures/$structureId'
     | '/auth/login'
     | '/about/'
+    | '/bulk_buy/'
     | '/characters/'
     | '/industry-hubs/'
     | '/jobs/'
@@ -406,6 +443,7 @@ export interface FileRouteTypes {
     | '/price-calculation/'
     | '/project-groups/'
     | '/projects/'
+    | '/routes/'
     | '/structures/'
     | '/tags/'
     | '/projects/$projectId/assistant'
@@ -432,6 +470,7 @@ export interface FileRouteTypes {
     | '/projects/$projectId'
     | '/auth/login'
     | '/about'
+    | '/bulk_buy'
     | '/characters'
     | '/industry-hubs'
     | '/jobs'
@@ -439,6 +478,7 @@ export interface FileRouteTypes {
     | '/price-calculation'
     | '/project-groups'
     | '/projects'
+    | '/routes'
     | '/structures'
     | '/tags'
     | '/project-groups/$projectGroupId/defaults'
@@ -460,11 +500,13 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/bulk_buy'
     | '/industry-hubs'
     | '/jobs'
     | '/price-calculation'
     | '/project-groups'
     | '/projects'
+    | '/routes'
     | '/structures'
     | '/tags'
     | '/industry-hubs_/$industryHubId'
@@ -473,6 +515,7 @@ export interface FileRouteTypes {
     | '/structures_/$structureId'
     | '/auth/login'
     | '/about/'
+    | '/bulk_buy/'
     | '/characters/'
     | '/industry-hubs/'
     | '/jobs/'
@@ -480,6 +523,7 @@ export interface FileRouteTypes {
     | '/price-calculation/'
     | '/project-groups/'
     | '/projects/'
+    | '/routes/'
     | '/structures/'
     | '/tags/'
     | '/projects_/$projectId/assistant'
@@ -503,11 +547,13 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  Bulk_buyRouteRoute: typeof Bulk_buyRouteRouteWithChildren
   IndustryHubsRouteRoute: typeof IndustryHubsRouteRouteWithChildren
   JobsRouteRoute: typeof JobsRouteRouteWithChildren
   PriceCalculationRouteRoute: typeof PriceCalculationRouteRouteWithChildren
   ProjectGroupsRouteRoute: typeof ProjectGroupsRouteRouteWithChildren
   ProjectsRouteRoute: typeof ProjectsRouteRouteWithChildren
+  RoutesRouteRoute: typeof RoutesRouteRouteWithChildren
   StructuresRouteRoute: typeof StructuresRouteRouteWithChildren
   TagsRouteRoute: typeof TagsRouteRouteWithChildren
   IndustryHubsIndustryHubIdRouteRoute: typeof IndustryHubsIndustryHubIdRouteRouteWithChildren
@@ -535,6 +581,13 @@ declare module '@tanstack/react-router' {
       path: '/structures'
       fullPath: '/structures'
       preLoaderRoute: typeof StructuresRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/routes': {
+      id: '/routes'
+      path: '/routes'
+      fullPath: '/routes'
+      preLoaderRoute: typeof RoutesRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/projects': {
@@ -572,6 +625,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndustryHubsRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/bulk_buy': {
+      id: '/bulk_buy'
+      path: '/bulk_buy'
+      fullPath: '/bulk_buy'
+      preLoaderRoute: typeof Bulk_buyRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -592,6 +652,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/structures/'
       preLoaderRoute: typeof StructuresIndexRouteImport
       parentRoute: typeof StructuresRouteRoute
+    }
+    '/routes/': {
+      id: '/routes/'
+      path: '/'
+      fullPath: '/routes/'
+      preLoaderRoute: typeof RoutesIndexRouteImport
+      parentRoute: typeof RoutesRouteRoute
     }
     '/projects/': {
       id: '/projects/'
@@ -641,6 +708,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/characters/'
       preLoaderRoute: typeof CharactersIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/bulk_buy/': {
+      id: '/bulk_buy/'
+      path: '/'
+      fullPath: '/bulk_buy/'
+      preLoaderRoute: typeof Bulk_buyIndexRouteImport
+      parentRoute: typeof Bulk_buyRouteRoute
     }
     '/about/': {
       id: '/about/'
@@ -806,6 +880,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface Bulk_buyRouteRouteChildren {
+  Bulk_buyIndexRoute: typeof Bulk_buyIndexRoute
+}
+
+const Bulk_buyRouteRouteChildren: Bulk_buyRouteRouteChildren = {
+  Bulk_buyIndexRoute: Bulk_buyIndexRoute,
+}
+
+const Bulk_buyRouteRouteWithChildren = Bulk_buyRouteRoute._addFileChildren(
+  Bulk_buyRouteRouteChildren,
+)
+
 interface IndustryHubsRouteRouteChildren {
   IndustryHubsIndexRoute: typeof IndustryHubsIndexRoute
 }
@@ -863,6 +949,18 @@ const ProjectsRouteRouteChildren: ProjectsRouteRouteChildren = {
 
 const ProjectsRouteRouteWithChildren = ProjectsRouteRoute._addFileChildren(
   ProjectsRouteRouteChildren,
+)
+
+interface RoutesRouteRouteChildren {
+  RoutesIndexRoute: typeof RoutesIndexRoute
+}
+
+const RoutesRouteRouteChildren: RoutesRouteRouteChildren = {
+  RoutesIndexRoute: RoutesIndexRoute,
+}
+
+const RoutesRouteRouteWithChildren = RoutesRouteRoute._addFileChildren(
+  RoutesRouteRouteChildren,
 )
 
 interface StructuresRouteRouteChildren {
@@ -989,11 +1087,13 @@ const StructuresStructureIdRouteRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  Bulk_buyRouteRoute: Bulk_buyRouteRouteWithChildren,
   IndustryHubsRouteRoute: IndustryHubsRouteRouteWithChildren,
   JobsRouteRoute: JobsRouteRouteWithChildren,
   PriceCalculationRouteRoute: PriceCalculationRouteRouteWithChildren,
   ProjectGroupsRouteRoute: ProjectGroupsRouteRouteWithChildren,
   ProjectsRouteRoute: ProjectsRouteRouteWithChildren,
+  RoutesRouteRoute: RoutesRouteRouteWithChildren,
   StructuresRouteRoute: StructuresRouteRouteWithChildren,
   TagsRouteRoute: TagsRouteRouteWithChildren,
   IndustryHubsIndustryHubIdRouteRoute:

@@ -46,3 +46,11 @@ service_url = "http://localhost:9996"
 
 [routes."admin"]
 service_url = "http://localhost:9996"
+
+# statistics
+[routes."build-cost"]
+service_url = "http://localhost:8000"
+require_auth = false
+
+[routes."materials"]
+service_url = "http://localhost:8002"

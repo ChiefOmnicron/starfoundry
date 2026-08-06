@@ -2,7 +2,7 @@ import { Title } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/tags')({
+export const Route = createFileRoute('/routes')({
     beforeLoad: async ({ context }) => {
         if (!(await context.auth.isAuthenticated())) {
             throw context.auth.login();
@@ -12,14 +12,14 @@ export const Route = createFileRoute('/tags')({
 })
 
 function RouteComponent() {
-    useDocumentTitle('StarFoundry - Tags');
+    useDocumentTitle('StarFoundry - Routes');
 
     return <>
         <Title
             data-cy="header"
             order={1}
         >
-            Tags
+            Routes
         </Title>
 
         <Outlet />

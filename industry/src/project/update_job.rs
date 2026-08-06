@@ -2,6 +2,7 @@ use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
+use starfoundry_lib_gateway::ExtractIdentity;
 use starfoundry_lib_industry::{ProjectJobUuid, ProjectUuid};
 use starfoundry_lib_industry::project::UpdateJob;
 
@@ -49,6 +50,7 @@ use crate::project::error::Result;
     ),
 )]
 pub async fn api(
+    _identity:                          ExtractIdentity,
     State(state):                       State<AppState>,
     Path((project_id, project_job_id)): Path<(ProjectUuid, ProjectJobUuid)>,
     Json(update_info):                  Json<UpdateJob>,

@@ -9,6 +9,7 @@ use crate::error::{Error, Result};
 use crate::industry::IndustryApiClientIndustry;
 use crate::project::IndustryApiClientProject;
 use crate::tag::IndustryApiClientTag;
+use crate::route::IndustryApiClientRoute;
 
 pub const ENV_INDUSTRY_API: &str = "STARFOUNDRY_INDUSTRY_API_URL";
 
@@ -126,6 +127,7 @@ impl ApiClient for IndustryClient {
 impl IndustryApiClient for IndustryClient {}
 impl IndustryApiClientIndustry for IndustryClient {}
 impl IndustryApiClientProject for IndustryClient {}
+impl IndustryApiClientRoute for IndustryClient {}
 impl IndustryApiClientTag for IndustryClient {}
 
 /// Trait that should be implemented on all clients
@@ -135,4 +137,5 @@ pub trait IndustryApiClient:
     ApiClient +
     IndustryApiClientIndustry +
     IndustryApiClientProject +
+    IndustryApiClientRoute +
     IndustryApiClientTag {}

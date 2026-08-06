@@ -3,6 +3,7 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_eve_gateway::EveGatewayApiClientItem;
+use starfoundry_lib_gateway::ExtractIdentity;
 use starfoundry_lib_industry::project::UpdateMarketBulk;
 use starfoundry_lib_industry::ProjectUuid;
 
@@ -49,6 +50,7 @@ use crate::project::service::{UpdateProjectMarket, update_market_bulk};
     ),
 )]
 pub async fn api(
+    _identity:          ExtractIdentity,
     State(state):       State<AppState>,
     Path(project_id):   Path<ProjectUuid>,
     Json(update):       Json<UpdateMarketBulk>,

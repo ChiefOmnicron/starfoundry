@@ -132,6 +132,8 @@ export function ProjectGroupDefaultsMarket({
 
             structures={structures}
             selected={selectedStructures}
+
+            multiple
         />
 
         <Stack>
@@ -162,7 +164,6 @@ export function ProjectGroupDefaultsMarket({
                 structures={selectedStructures}
 
                 groupBySystem={false}
-                viewTarget='_blank'
             />
         </Stack>
     </>

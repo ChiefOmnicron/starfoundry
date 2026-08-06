@@ -37,13 +37,18 @@ export const formatNumber = (
 export const formatNumberUnit = (
     numberToFormat: number,
 ): string => {
-    if (numberToFormat / 1_000_000_000 > 1) {
-        return `${formatNumber(numberToFormat / 1_000_000_000, true)} bil`;
-    } else if (numberToFormat / 1_000_000 > 1) {
-        return `${formatNumber(numberToFormat / 1_000_000, true)} mil`;
+    const isNegative = numberToFormat < 0;
+    const value = numberToFormat >= 0
+        ?   numberToFormat
+        :   numberToFormat * -1;
+
+    if (value / 1_000_000_000 > 1) {
+        return `${isNegative ? '-' : ''}${formatNumber(value / 1_000_000_000, true)} bil`;
+    } else if (value / 1_000_000 > 1) {
+        return `${isNegative ? '-' : ''}${formatNumber(value / 1_000_000, true)} mil`;
     }
 
-    return formatNumber(numberToFormat);
+    return formatNumber(value);
 }
 
 export const formatTime = (numberToFormat: number): string => {

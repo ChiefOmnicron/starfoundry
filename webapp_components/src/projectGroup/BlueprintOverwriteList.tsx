@@ -143,7 +143,7 @@ export function BlueprintOverwriteList({
                             if (v && v as number > 0) {
                                 setMaterialEfficiency(v as number);
                             } else {
-                                setMaterialEfficiency(0)
+                                setMaterialEfficiency(0);
                             }
                         }}
                         value={materialEfficiency}

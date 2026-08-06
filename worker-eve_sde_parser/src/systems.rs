@@ -9,9 +9,9 @@ use crate::parser::constellations::Constellation;
 
 pub async fn run(
     pool:           &PgPool,
-    regions:        Vec<Region>,
-    constellations: Vec<Constellation>,
-    systems:        Vec<System>,
+    regions:        &Vec<Region>,
+    constellations: &Vec<Constellation>,
+    systems:        &Vec<System>,
 ) -> Result<(), Error> {
     tracing::info!("Processing systems");
     let start = Instant::now();
@@ -34,9 +34,9 @@ pub async fn run(
 
 async fn insert_into_database(
     pool:           &PgPool,
-    systems:        Vec<System>,
-    constellations: Vec<Constellation>,
-    regions:        Vec<Region>,
+    systems:        &Vec<System>,
+    constellations: &Vec<Constellation>,
+    regions:        &Vec<Region>,
 ) -> Result<(), Error> {
     let constellations = constellations
         .iter()
@@ -102,6 +102,18 @@ async fn insert_into_database(
             }
         })
         .collect::<Vec<_>>();
+    let position_x = systems
+        .iter()
+        .map(|x| x.position.x)
+        .collect::<Vec<_>>();
+    let position_y = systems
+        .iter()
+        .map(|x| x.position.x)
+        .collect::<Vec<_>>();
+    let position_z = systems
+        .iter()
+        .map(|x| x.position.z)
+        .collect::<Vec<_>>();
 
     tracing::debug!("Inserting data");
     sqlx::query!("
@@ -114,7 +126,10 @@ async fn insert_into_database(
                 system_id,
                 system_name,
                 security,
-                security_str
+                security_str,
+                x,
+                y,
+                z
             )
             SELECT * FROM UNNEST(
                 $1::INTEGER[],
@@ -124,7 +139,10 @@ async fn insert_into_database(
                 $5::INTEGER[],
                 $6::VARCHAR[],
                 $7::REAL[],
-                $8::VARCHAR[]
+                $8::VARCHAR[],
+                $9::DOUBLE PRECISION[],
+                $10::DOUBLE PRECISION[],
+                $11::DOUBLE PRECISION[]
             )
         ",
             &region_ids,
@@ -135,6 +153,9 @@ async fn insert_into_database(
             &system_names,
             &security,
             &security_str,
+            &position_x,
+            &position_y,
+            &position_z,
         )
         .execute(&mut *transaction)
         .await

@@ -66,6 +66,7 @@ export function EditMarketEntryModal({
                                 <NumberInput
                                     data-1p-ignore
                                     thousandSeparator
+                                    withAsterisk
                                     data-cy="quantity"
                                     label="Quantity"
                                     description="Number of items that need to be bought or were bought"
@@ -73,7 +74,6 @@ export function EditMarketEntryModal({
                                     id={field.name}
                                     name={field.name}
                                     value={field.state.value}
-                                    withAsterisk
                                     error={
                                         !field.state.meta.isValid && field.state.meta.errors.join(', ')
                                     }

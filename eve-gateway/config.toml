@@ -57,3 +57,16 @@ character_scopes = [
 ]
 corporation_scopes = []
 redirect = "https://store.dev.starfoundry.space/api/auth/login/callback"
+
+[domains."grumpndump.dev.starfoundry.space"]
+admins = [
+    2117441999,
+]
+whitelist = [
+    2117441999,
+]
+character_scopes = [
+    "publicData",
+]
+corporation_scopes = []
+redirect = "https://grumpndump.dev.starfoundry.space/api/auth/login/callback"

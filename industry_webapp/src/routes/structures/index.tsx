@@ -1,6 +1,6 @@
 import { AddStructure } from './-modal/add';
 import { Alert, Button, Center, Flex, Modal, Stack, Title } from '@mantine/core';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { Filter, type FilterPropEntry, type SelectedFilter } from '@starfoundry/components/deprecated/Filter';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
@@ -10,6 +10,7 @@ import { StructureList } from '@starfoundry/components/list/StructureList';
 import { useDisclosure } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
 import { useListStructure, type StructureFilter } from '@starfoundry/components/services/structure/list';
+import type { Uuid } from '@starfoundry/components/services/utils';
 
 export interface QueryParams {
     deleted?: boolean;
@@ -32,6 +33,7 @@ export const Route = createFileRoute('/structures/')({
 });
 
 function RouteComponent() {
+    const navigation = useNavigate();
     const [opened, { open, close }] = useDisclosure(false);
     const { deleted: deletedResource } = Route.useSearch();
 
@@ -207,8 +209,13 @@ function RouteComponent() {
 
                 <StructureList
                     structures={structures}
-                    structureCardProps={{
-                        editLink: StructureEditRoute.to,
+                    onEditClick={(structureId: Uuid) => {
+                        navigation({
+                            to: StructureEditRoute.to,
+                            params: {
+                                structureId: structureId,
+                            },
+                        });
                     }}
                 />
             </>

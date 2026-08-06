@@ -25,18 +25,10 @@ export function MultiBuySettingsModal({
                 <StructureList
                     structures={markets}
                     groupBySystem={false}
+                    multiple
 
-                    structureCardProps={{
-                        checkable: true,
-                        checked: selectedMarkets,
-                        onChange: (event: 'checked' | 'unchecked', structure: Structure) => {
-                            onMarketUpdate(
-                                event === 'checked'
-                                    ? [...selectedMarkets, structure]
-                                    : selectedMarkets.filter((y) => y.id !== structure.id)
-                            );
-                        }
-                    }}
+                    selectedStructures={selectedMarkets}
+                    onSelect={onMarketUpdate}
                 />
             </Stack>
         </ModalWrapper>

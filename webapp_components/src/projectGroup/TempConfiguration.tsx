@@ -105,7 +105,6 @@ export function TempProjectGroupConfiguration({
                         structures={markets}
 
                         groupBySystem={false}
-                        viewTarget='_blank'
                     />
                 </Accordion.Panel>
             </Accordion.Item>

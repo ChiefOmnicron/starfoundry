@@ -1,12 +1,15 @@
-import { Button, Flex, InputBase, Modal, Stack, UnstyledButton } from "@mantine/core";
+import { Button, Flex, InputBase, Stack, UnstyledButton } from "@mantine/core";
 import { StructureList } from "../list/StructureList";
 import { useEffect, useState, type ReactElement } from "react";
 import type { Structure } from "@internal/services/structure/list";
+import { ModalWrapper } from "@internal/wrapper/Modal";
 
 export function StructureSelectorModal({
     opened,
     onClose,
     onSelect,
+
+    multiple = false,
 
     structures,
 
@@ -14,57 +17,43 @@ export function StructureSelectorModal({
 }: StructureSelectorModalProp): ReactElement {
     // all structures selected by the user
     const [selectedStructures, setSelectedStructures] = useState<Structure[]>([]);
-    const [_, setSearch] = useState('');
+    const [search, setSearch] = useState('');
 
     useEffect(() => {
         setSelectedStructures(selected);
     }, [opened, selected]);
 
-    const structureList = () => {
-        return <StructureList
-            structures={structures}
-            groupBySystem={false}
+    const structureList = <StructureList
+        structures={structures}
+        groupBySystem={false}
 
-            structureCardProps={{
-                checkable: true,
-                checked: selectedStructures,
-                onChange: (event: 'checked' | 'unchecked', structure: Structure) => {
-                    setSelectedStructures(
-                        event === 'checked'
-                            ? [...selectedStructures, structure]
-                            : selectedStructures.filter((y) => y.id !== structure.id)
-                    );
-                }
-            }}
-        />
-    }
+        filter={{
+            search,
+        }}
+        multiple={multiple}
+
+        selectedStructures={selectedStructures}
+        onSelect={setSelectedStructures}
+    />
 
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(event.currentTarget.value);
     };
 
-    return <Modal
+    return <ModalWrapper
         opened={opened}
-        onClose={onClose}
+        close={onClose}
         title="Structures"
-        overlayProps={{
-            backgroundOpacity: 0.55,
-            blur: 3,
-        }}
-        size="70%"
-        centered
-        closeOnEscape
-        closeOnClickOutside
     >
         <Stack>
             <InputBase
                 name="Name"
-                description='Search for the name of the structure'
+                description='Search for the name or system of the structure'
                 placeholder="Jita 4-4"
                 onChange={handleSearch}
             ></InputBase>
 
-            { structureList() }
+            { structureList }
 
             <Flex
                 justify='flex-end'
@@ -82,7 +71,7 @@ export function StructureSelectorModal({
                 </Button>
             </Flex>
         </Stack>
-    </Modal>
+    </ModalWrapper>
 }
 
 export type StructureSelectorModalProp = {
@@ -91,11 +80,10 @@ export type StructureSelectorModalProp = {
     onSelect: (entry: Structure[]) => void;
     onClose: () => void;
 
+    multiple?: boolean;
+
     // structures the user can select
     structures: Structure[],
     // list of values that are already selected
     selected:   Structure[],
-
-    blueprint?: boolean;
-    buildable?: boolean;
 }

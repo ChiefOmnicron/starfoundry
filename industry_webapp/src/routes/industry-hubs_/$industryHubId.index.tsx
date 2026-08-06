@@ -344,13 +344,14 @@ function RouteComponent() {
 
                                     structures={structures}
                                     selected={selectedStructures}
+
+                                    multiple
                                 />
 
                                 <StructureList
                                     structures={selectedStructures}
 
                                     groupBySystem={false}
-                                    viewTarget='_blank'
                                 />
                             </>
                         }}

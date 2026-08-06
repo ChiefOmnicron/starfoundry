@@ -2,6 +2,7 @@ use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
+use starfoundry_lib_gateway::ExtractIdentity;
 use starfoundry_lib_industry::ProjectUuid;
 
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized, UnprocessableEntity, UnsupportedMediaType};
@@ -46,6 +47,7 @@ use crate::project::error::{ProjectError, Result};
     ),
 )]
 pub async fn api(
+    _identity:          ExtractIdentity,
     State(state):       State<AppState>,
     Path(project_id):   Path<ProjectUuid>,
     Json(notes):        Json<String>,

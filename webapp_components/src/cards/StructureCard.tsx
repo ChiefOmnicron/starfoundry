@@ -3,7 +3,6 @@ import { CopyText } from "@internal/misc/CopyText";
 import { Dotlan } from "@internal/misc/Dotlan";
 import { EveIcon } from "@internal/misc/EveIcon";
 import { Flex, Group, Stack, Text, Title, UnstyledButton } from "@mantine/core";
-import { InternalLink } from "@internal/links/InternalLink";
 import { StructureRigBadge } from "@internal/structure/StructureRigBadge";
 import { StructureServiceBadge } from "@internal/structure/StructureServiceBadge";
 import { StructureViewModal } from "@internal/detailView/StructureView";
@@ -14,20 +13,19 @@ import type { Structure } from "@internal/services/structure/list";
 export function StructureCard({
     structure,
 
-    viewTarget = '_self',
-
-    editLink = undefined,
     viewLink = true,
 
+    onEditClick = undefined,
+
     checkable = false,
-    checked = [],
+    checked = false,
     onChange = () => {},
 }: StructureCardProps) {
     const [openedView, { open: openView, close: closeView }] = useDisclosure(false);
     const [isSelected, setIsSelected] = useState<boolean>(false);
 
     useEffect(() => {
-        setIsSelected(!!checked.find(x => x.id === structure.id));
+        setIsSelected(checked);
     }, [checked]);
 
     const structureName = structure
@@ -135,19 +133,20 @@ export function StructureCard({
     }
 
     const footer = () => {
-        const edit = editLink
-            ?   <InternalLink
-                    to={editLink}
-                    params={{
-                        structureId: structure.id,
-                    } as any}
-                    target={viewTarget}
-                    content='Edit'
-                />
+        const edit = onEditClick
+            ?   <UnstyledButton
+                    onClick={onEditClick}
+                    style={{
+                        color: 'var(--mantine-color-blue-4)',
+                        fontSize: 'var(--mantine-font-size-sm)',
+                    }}
+                >
+                    Edit
+                </UnstyledButton>
             :   <></>
         const view = viewLink
             ?   <UnstyledButton
-                    onClick={ openView }
+                    onClick={openView}
                     style={{
                         color: 'var(--mantine-color-blue-4)',
                         fontSize: 'var(--mantine-font-size-sm)',
@@ -157,7 +156,7 @@ export function StructureCard({
                 </UnstyledButton>
             :   <></>
 
-        if (editLink || viewLink) {
+        if (onEditClick || viewLink) {
             return <>
                 <Flex
                     align='flex-end'
@@ -201,20 +200,14 @@ export function StructureCard({
     </>
 }
 
-type StructureCardRequiredProps = {
+type StructureCardProps = {
     structure: Structure;
 
-    viewTarget?: '_blank' | '_self'
-}
-
-export type StructureCardAdditionalProps = {
-    editLink?: string;
     viewLink?: boolean;
+    onEditClick?: () => void;
 
     // Determines if a checkbox is added or not
     checkable?: boolean,
-    checked?: Structure[];
+    checked?: boolean;
     onChange?: (event: 'checked' | 'unchecked', structure: Structure) => void;
 }
-
-export type StructureCardProps = StructureCardRequiredProps & StructureCardAdditionalProps;
