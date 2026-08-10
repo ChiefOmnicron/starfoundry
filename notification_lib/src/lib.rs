@@ -56,6 +56,8 @@ mod tests {
 
     #[tokio::test]
     async fn test_send_discord_happy_path() {
+        let discord_test_key = std::env::var("DISCORD_TEST_KEY").unwrap();
+
         let mut discord_message = Discord::new();
         let mut embedding = DiscordEmbedding::new(
             "Test",
@@ -78,7 +80,7 @@ mod tests {
         ).unwrap();
         discord_message.add_embedding(embedding);
         let result = send_discord(
-                "https://discord.com/api/webhooks/1515149426711072769/heECjRRXGaSxHj6a-BOssUgRcL7UAfz8YSndxxmZSNBdVzJy15bqAGNscVwvW2lbPcyr".into(),
+                discord_test_key.into(),
                 vec![discord_message],
             )
             .await;
@@ -88,6 +90,8 @@ mod tests {
 
     #[tokio::test]
     async fn test_send_discord_field_name_too_long() {
+        let discord_test_key = std::env::var("DISCORD_TEST_KEY").unwrap();
+
         let mut discord_message = Discord::new();
         let mut embedding = DiscordEmbedding::new(
             "Test",
@@ -103,7 +107,7 @@ mod tests {
         ).unwrap();
         discord_message.add_embedding(embedding);
         let result = send_discord(
-                "https://discord.com/api/webhooks/1515149426711072769/heECjRRXGaSxHj6a-BOssUgRcL7UAfz8YSndxxmZSNBdVzJy15bqAGNscVwvW2lbPcyr".into(),
+                discord_test_key.into(),
                 vec![discord_message],
             )
             .await;
