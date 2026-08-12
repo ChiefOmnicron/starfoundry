@@ -53,12 +53,12 @@ pub enum Error {
     CannotOpenTypeIdsFile(std::io::Error, String),
 
     #[error("the file `industrymodifiersources` couldn`t be parsed, '{0}'")]
-    ParseIndustryModifierSources(serde_json::Error),
+    ParseIndustryModifierSources(serde_yaml::Error),
     #[error("the file `industrymodifiersources.json` is not at the expected location, '{0}'")]
     CannotOpenIndustryModifierSources(std::io::Error, String),
 
     #[error("the file `industrytargetfilters` couldn`t be parsed, '{0}'")]
-    ParseIndustryTargetFilters(serde_json::Error),
+    ParseIndustryTargetFilters(serde_yaml::Error),
     #[error("the file `industrytargetfilters.json` is not at the expected location, '{0}'")]
     CannotOpenIndustryTargetFilters(std::io::Error, String),
 
@@ -80,6 +80,8 @@ pub enum Error {
 
     #[error("reqwest error, error: {0}")]
     ReqwestError(reqwest::Error),
+    #[error("sqlx error, error: {0}")]
+    SqlxError(sqlx::Error),
 
     #[error("error while unzipping, error: {0}")]
     UnzipError(std::io::Error),

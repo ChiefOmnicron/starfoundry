@@ -2,12 +2,11 @@
 //! application.
 
 use sqlx::postgres::PgPoolOptions;
-use starfoundry_lib_eve_sde_parser::Error;
 use std::time::Instant;
 use tracing_subscriber::EnvFilter;
 
 #[tokio::main]
-async fn main() -> Result<(), Error> {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenvy::dotenv().ok();
 
     tracing_subscriber::fmt()
@@ -19,8 +18,8 @@ async fn main() -> Result<(), Error> {
     let pool = PgPoolOptions::new()
         .min_connections(20)
         .connect(&pg_addr)
-        .await
-        .unwrap();
+        .await?;
+    sqlx::migrate!().run(&pool).await?;
 
     let start = Instant::now();
 

@@ -9,11 +9,11 @@ use crate::{FOLDER_INPUT, Error};
 pub fn parse(
     directory: &str,
 ) -> Result<HashMap<usize, ModifyResource>, Error> {
-    tracing::info!("Parsing industrymodifiersources.json");
+    tracing::info!("Parsing industryModifierSources.yaml");
     let start = Instant::now();
 
     let path = format!(
-        "{}/{}/industrymodifiersources.json",
+        "{}/{}/industryModifierSources.yaml",
         directory,
         FOLDER_INPUT,
     );
@@ -25,10 +25,10 @@ pub fn parse(
     let file = File::open(&path)
         .map_err(|x| Error::CannotOpenIndustryModifierSources(x, path))?;
 
-    let data: HashMap<usize, ModifyResource> = serde_json::from_reader(file)
+    let data: HashMap<usize, ModifyResource> = serde_yaml::from_reader(file)
         .map(|x| {
             tracing::info!(
-                "Finished parsing industrymodifiersources.json, task took {:.2}s",
+                "Finished parsing industryModifierSources.yaml, task took {:.2}s",
                 start.elapsed().as_secs_f64()
             );
             x
@@ -43,8 +43,14 @@ pub fn parse(
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct ModifyResource {
-    pub manufacturing: Option<Modifier>,
-    pub reaction:      Option<Modifier>,
+    pub manufacturing:      Option<Modifier>,
+    pub reaction:           Option<Modifier>,
+    pub copying:            Option<Modifier>,
+    pub invention:          Option<Modifier>,
+    #[serde(rename = "researchMaterial")]
+    pub research_material:  Option<Modifier>,
+    #[serde(rename = "researchTime")]
+    pub research_time:      Option<Modifier>,
 }
 
 #[derive(Clone, Debug, Deserialize)]

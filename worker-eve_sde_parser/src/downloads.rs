@@ -35,22 +35,8 @@ pub async fn download_assets(
 
     download_file(
         directory,
-        "https://developers.eveonline.com/static-data/tranquility/eve-online-static-data-3435006-yaml.zip",
+        "https://developers.eveonline.com/static-data/tranquility/eve-online-static-data-3464040-yaml.zip",
         "sde.zip",
-    )
-    .await?;
-
-    download_file(
-        directory,
-        "https://sde.hoboleaks.space/tq/industrymodifiersources.json",
-        "industrymodifiersources.json",
-    )
-    .await?;
-
-    download_file(
-        directory,
-        "https://sde.hoboleaks.space/tq/industrytargetfilters.json",
-        "industrytargetfilters.json",
     )
     .await?;
 

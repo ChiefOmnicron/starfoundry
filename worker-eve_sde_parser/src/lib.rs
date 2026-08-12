@@ -9,6 +9,7 @@ pub mod parser;
 pub mod reprocessing;
 pub mod structure;
 pub mod systems;
+pub mod system_distance;
 
 mod error;
 use crate::parser::stars::Star;
@@ -66,7 +67,7 @@ pub async fn import_sde(
     //blueprints.extend(overwrites.blueprints);
     //type_ids.extend(overwrites.items);
 
-    blueprints_dependencies::run(
+    /*blueprints_dependencies::run(
             &pool,
             &blueprints,
             &type_ids
@@ -116,9 +117,14 @@ pub async fn import_sde(
         .await?;
     systems::run(
             &pool,
-            regions,
-            constellations,
-            systems,
+            &regions,
+            &constellations,
+            &systems,
+        )
+        .await?;*/
+    system_distance::run(
+            &pool,
+            &systems,
         )
         .await?;
 
