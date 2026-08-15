@@ -35,7 +35,6 @@ pub async fn system_index_compress(
         .into_iter()
         .map(|x| x.system_id);
 
-    let mut ids           = Vec::new();
     let mut timestamps    = Vec::new();
     let mut systems       = Vec::new();
     let mut manufacturing = Vec::new();
@@ -99,7 +98,6 @@ pub async fn system_index_compress(
             timestamps.push(timestamp);
             systems.push(entries[0].system_id);
 
-            ids.extend(entries.iter().map(|x| x.id).collect::<Vec<_>>());
             manufacturing.push(entries.iter().map(|x| x.manufacturing).sum::<f32>() / entries.len() as f32);
             reaction.push(entries.iter().map(|x| x.reaction).sum::<f32>() / entries.len() as f32);
             copying.push(entries.iter().map(|x| x.copying).sum::<f32>() / entries.len() as f32);
@@ -119,10 +117,9 @@ pub async fn system_index_compress(
 
     sqlx::query!("
             DELETE FROM system_index
-            WHERE id = ANY($1)
-        ",
-            &ids,
-        )
+            WHERE DATE(timestamp) > DATE(NOW() - INTERVAL '7 DAY')
+            AND DATE(timestamp) < DATE(NOW() - INTERVAL '3 DAY')
+        ")
         .execute(&mut *transaction)
         .await
         .map_err(Error::CompressSystemIndex)?;

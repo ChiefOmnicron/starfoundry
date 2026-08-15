@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM system_index\n            WHERE DATE(timestamp) > DATE(NOW() - INTERVAL '7 DAY')\n            AND DATE(timestamp) < DATE(NOW() - INTERVAL '3 DAY')\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "252b47d8b734c5a3b8273330d6ea1e85e15e4554c34ac531139c42891c0cf5f2"
+}

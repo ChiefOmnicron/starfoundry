@@ -166,6 +166,7 @@ impl ApiClient for EveGatewayTestApiClient {
         T: serde::de::DeserializeOwned {
 
         let path = path.into();
+        dbg!(&path);
         let response = match path.as_ref() {
             "items" => {
                 let mut result = Vec::new();
@@ -303,7 +304,7 @@ impl ApiClient for EveGatewayTestApiClient {
 
                 serde_json::json!(result)
             },
-            "universe/systems" => {
+            "systems" => {
                 let data: Vec<SystemId> = serde_json::from_value(serde_json::to_value(&data).unwrap()).unwrap();
                 if data.is_empty() {
                     serde_json::json!([])

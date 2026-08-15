@@ -13,7 +13,7 @@ sqlx-check:
 .PHONY: test
 test: sqlx-prepare
 	# local database on a NVMeSSD prevents `PoolTimeout` errors during execution
-	SQLX_OFFLINE=true DATABASE_URL=postgresql://postgres:postgres@localhost:5555/postgres cargo test
+	SQLX_OFFLINE=true DATABASE_URL=postgresql://postgres:postgres@localhost:5555/postgres cargo nextest run
 
 .PHONY: test-database
 test-database:
