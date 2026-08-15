@@ -1,0 +1,221 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                -- start system\n                ss.region_id AS \"start_region_id\",\n                ss.region_name AS \"start_region_name\",\n                ss.constellation_id AS \"start_constellation_id\",\n                ss.constellation_name AS \"start_constellation_name\",\n                ss.system_id AS \"start_system_id\",\n                ss.system_name AS \"start_system_name\",\n                ss.security AS \"start_security\",\n                ss.security_str AS \"start_security_str\",\n\n                -- end system\n                se.region_id AS \"end_region_id\",\n                se.region_name AS \"end_region_name\",\n                se.constellation_id AS \"end_constellation_id\",\n                se.constellation_name AS \"end_constellation_name\",\n                se.system_id AS \"end_system_id\",\n                se.system_name AS \"end_system_name\",\n                se.security AS \"end_security\",\n                se.security_str AS \"end_security_str\",\n\n                sd.distance_ly\n            FROM system_distance sd\n            JOIN system ss ON ss.system_id = sd.system_start\n            JOIN system se ON se.system_id = sd.system_end\n            WHERE sd.system_start = $1\n            AND sd.system_end = $2\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "start_region_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "system",
+            "name": "region_id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "start_region_name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "system",
+            "name": "region_name"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "start_constellation_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "system",
+            "name": "constellation_id"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "start_constellation_name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "system",
+            "name": "constellation_name"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "start_system_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "system",
+            "name": "system_id"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "start_system_name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "system",
+            "name": "system_name"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "start_security",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "system",
+            "name": "security"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "start_security_str",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "system",
+            "name": "security_str"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "end_region_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "system",
+            "name": "region_id"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "end_region_name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "system",
+            "name": "region_name"
+          }
+        }
+      },
+      {
+        "ordinal": 10,
+        "name": "end_constellation_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "system",
+            "name": "constellation_id"
+          }
+        }
+      },
+      {
+        "ordinal": 11,
+        "name": "end_constellation_name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "system",
+            "name": "constellation_name"
+          }
+        }
+      },
+      {
+        "ordinal": 12,
+        "name": "end_system_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "system",
+            "name": "system_id"
+          }
+        }
+      },
+      {
+        "ordinal": 13,
+        "name": "end_system_name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "system",
+            "name": "system_name"
+          }
+        }
+      },
+      {
+        "ordinal": 14,
+        "name": "end_security",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "system",
+            "name": "security"
+          }
+        }
+      },
+      {
+        "ordinal": 15,
+        "name": "end_security_str",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "system",
+            "name": "security_str"
+          }
+        }
+      },
+      {
+        "ordinal": 16,
+        "name": "distance_ly",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "system_distance",
+            "name": "distance_ly"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "141d66c5ba2f7a5a27245dc7d1c24502a058905970dbe675630a884109b30b7e"
+}

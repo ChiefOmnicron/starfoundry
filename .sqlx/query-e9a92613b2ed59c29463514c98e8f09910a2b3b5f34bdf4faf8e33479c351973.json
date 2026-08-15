@@ -1,0 +1,50 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                system_start,\n                system_end,\n                distance_ly\n            FROM system_distance\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "system_start",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "system_distance",
+            "name": "system_start"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "system_end",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "system_distance",
+            "name": "system_end"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "distance_ly",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "system_distance",
+            "name": "distance_ly"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "e9a92613b2ed59c29463514c98e8f09910a2b3b5f34bdf4faf8e33479c351973"
+}

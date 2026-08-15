@@ -1,0 +1,38 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                system_id,\n                system_name\n            FROM queue_system\n            WHERE status = 'WAITING'\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "system_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "queue_system",
+            "name": "system_id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "system_name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "queue_system",
+            "name": "system_name"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "f2898c13a460866c82f1d848a85cf9a3987abef25029d10c5b64ebae659ede99"
+}

@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO system_distance\n            (\n                system_start,\n                system_end,\n                distance_ly\n            )\n            SELECT * FROM UNNEST(\n                $1::INTEGER[],\n                $2::INTEGER[],\n                $3::DOUBLE PRECISION[]\n            )\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4Array",
+        "Int4Array",
+        "Float8Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "61c774d090a8d417f107b91af92882dc46fc0265bae3f681c6aa9688f90881bf"
+}

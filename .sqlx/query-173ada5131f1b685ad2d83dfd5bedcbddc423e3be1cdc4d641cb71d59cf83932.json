@@ -1,0 +1,26 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT system_id\n            FROM queue_system\n            WHERE status = 'WAITING'\n            LIMIT 1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "system_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "queue_system",
+            "name": "system_id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "173ada5131f1b685ad2d83dfd5bedcbddc423e3be1cdc4d641cb71d59cf83932"
+}

@@ -1,0 +1,29 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                    SELECT distance_ly\n                    FROM system_distance_cache\n                    WHERE system_start = $1\n                    AND system_end = $2\n                ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "distance_ly",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "system_distance_cache",
+            "name": "distance_ly"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "dfa6b7d90dabf7c4192fa6c240146883b18b0577f5c5cac36e15bbc8e6f91e93"
+}

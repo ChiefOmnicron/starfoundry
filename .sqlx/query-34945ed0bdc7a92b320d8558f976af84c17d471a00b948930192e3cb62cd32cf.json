@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                INSERT INTO structure(\n                    owner,\n                    structure_id,\n                    structure_owner,\n                    system_id,\n                    type_id,\n                    name,\n                    x,\n                    y,\n                    z\n                )\n                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)\n                ON CONFLICT (structure_id) DO UPDATE\n                    SET name = EXCLUDED.name\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int8",
+        "Int4",
+        "Int4",
+        "Int4",
+        "Varchar",
+        "Float4",
+        "Float4",
+        "Float4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "34945ed0bdc7a92b320d8558f976af84c17d471a00b948930192e3cb62cd32cf"
+}

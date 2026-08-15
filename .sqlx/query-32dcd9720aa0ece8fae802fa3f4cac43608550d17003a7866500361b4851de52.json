@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                INSERT INTO queue_structure (\n                    system_id,\n                    structure_id\n                )\n                SELECT $1, * FROM UNNEST(\n                    $2::BIGINT[]\n                )\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int8Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "32dcd9720aa0ece8fae802fa3f4cac43608550d17003a7866500361b4851de52"
+}
