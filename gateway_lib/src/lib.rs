@@ -17,3 +17,20 @@ pub const HEADER_ALLIANCE_ID: &str    = "X-SF-AllianceId";
 pub const HEADER_IS_ADMIN: &str       = "X-SF-IsAdmin";
 pub const HEADER_SOURCE: &str         = "X-SF-Source";
 pub const HEADER_SERVICE: &str        = "X-SF-Service";
+
+
+// TODO: Remove once this_error implements it
+// https://github.com/dtolnay/thiserror/issues/424
+// https://github.com/dtolnay/thiserror/pull/431
+// boxed_from!(Error::GatewayClientError, starfoundry_lib_gateway::error::Error);
+#[macro_export]
+macro_rules! boxed_from {
+    ($dst_ty:ident :: $variant:ident, $src_ty:ty) => {
+        impl From<$src_ty> for $dst_ty {
+            fn from(value: $src_ty) -> Self {
+                Self::$variant(Box::new(value))
+            }
+        }
+    };
+}
+

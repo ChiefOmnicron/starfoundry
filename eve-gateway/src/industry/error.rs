@@ -6,7 +6,6 @@ use starfoundry_lib_types::{SystemId, TypeId};
 use thiserror::Error;
 
 use crate::api_docs::ErrorResponse;
-use crate::universe::error::UniverseError;
 
 pub type Result<T, E = IndustryError> = std::result::Result<T, E>;
 
@@ -24,7 +23,7 @@ pub enum IndustryError {
     NoSystem,
 
     #[error(transparent)]
-    UniverseError(#[from] UniverseError),
+    SystemError(#[from] crate::system::error::SystemError),
     #[error("eve api error, error: '{0:?}'")]
     EveApiError(#[from] EveApiError),
 }

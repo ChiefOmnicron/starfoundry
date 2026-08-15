@@ -44,7 +44,7 @@ pub async fn resolve_structure(
     let item = crate::item::services::fetch_item(pool, response.type_id)
         .await?
         .ok_or(StructureError::ItemNotFound)?;
-    let system = crate::universe::services::fetch_system(
+    let system = crate::system::services::fetch_system(
             pool,
             response.system_id,
         )

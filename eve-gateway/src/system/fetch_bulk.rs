@@ -7,13 +7,13 @@ use starfoundry_lib_types::SystemId;
 
 use crate::api_docs::{InternalServerError, NotFound};
 use crate::state::AppState;
-use crate::universe::error::Result;
-use crate::universe::services::fetch_system_bulk;
+use crate::system::error::Result;
+use crate::system::services::fetch_system_bulk;
 
 /// Fetch an item
 /// 
-/// - Alternative route: `/latest/universe/systems`
-/// - Alternative route: `/v1/universe/systems`
+/// - Alternative route: `/latest/systems`
+/// - Alternative route: `/v1/systems`
 /// 
 /// ---
 /// 
@@ -22,7 +22,7 @@ use crate::universe::services::fetch_system_bulk;
 #[utoipa::path(
     post,
     path = "/systems",
-    tag = "Universe",
+    tag = "System",
     request_body = Vec<SystemId>,
     responses(
         (

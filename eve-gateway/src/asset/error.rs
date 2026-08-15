@@ -2,6 +2,7 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::{IntoResponse, Response};
 use starfoundry_lib_eve_client::EveApiError;
+use starfoundry_lib_gateway::boxed_from;
 use thiserror::Error;
 
 use crate::api_docs::ErrorResponse;
@@ -15,7 +16,7 @@ pub enum  AssetError {
     ListBlueprints(sqlx::Error),
 
     #[error("eve api error, error: '{0:?}'")]
-    EveApiError(#[from] EveApiError),
+    EveApiError(Box<EveApiError>),
     #[error("gateway error, error: '{0:?}'")]
     GatewayError(#[from] starfoundry_lib_gateway::Error),
 }
@@ -24,7 +25,7 @@ impl IntoResponse for AssetError {
     fn into_response(self) -> Response {
         match self {
             Self::EveApiError(e) => {
-                EveApiError::into_response(e)
+                EveApiError::into_response(*e)
             },
             Self::GatewayError(e) => {
                 starfoundry_lib_gateway::Error::into_response(e)
@@ -46,3 +47,5 @@ impl IntoResponse for AssetError {
 
     }
 }
+
+boxed_from!(AssetError::EveApiError, EveApiError);

@@ -28,7 +28,6 @@ pub trait EveGatewayApiClientAsset: ApiClient + ApiClientExtended {
                 "proxy/auth/characters/blueprints",
             )
             .await
-            .map_err(Into::into)
     }
 
     #[allow(async_fn_in_trait)]
@@ -40,7 +39,6 @@ pub trait EveGatewayApiClientAsset: ApiClient + ApiClientExtended {
                 "proxy/auth/corporations/assets",
             )
             .await
-            .map_err(Into::into)
     }
 
     #[allow(async_fn_in_trait)]
@@ -52,6 +50,5 @@ pub trait EveGatewayApiClientAsset: ApiClient + ApiClientExtended {
                 "proxy/auth/corporations/blueprints",
             )
             .await
-            .map_err(Into::into)
     }
 }

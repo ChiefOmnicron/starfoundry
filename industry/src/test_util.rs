@@ -1,5 +1,5 @@
 use serde::Serialize;
-use starfoundry_lib_eve_gateway::{ApiClientExtended, EveGatewayApiClient, EveGatewayApiClientAsset, EveGatewayApiClientEveAsset, EveGatewayApiClientFitting, EveGatewayApiClientIndustry, EveGatewayApiClientItem, EveGatewayApiClientMarket};
+use starfoundry_lib_eve_gateway::{ApiClientExtended, EveGatewayApiClient, EveGatewayApiClientAsset, EveGatewayApiClientEveAsset, EveGatewayApiClientFitting, EveGatewayApiClientIndustry, EveGatewayApiClientItem, EveGatewayApiClientMarket, EveGatewayApiClientSearch, EveGatewayApiClientStanding, EveGatewayApiClientSystem};
 use starfoundry_lib_eve_gateway::contract::EveGatewayApiClientContract;
 use starfoundry_lib_gateway::ApiClient;
 use starfoundry_lib_market::{MarketApiClient, MarketApiClientOrder, MarketApiClientPrice};
@@ -22,6 +22,9 @@ impl EveGatewayApiClientFitting for EveGatewayTestApiClient {}
 impl EveGatewayApiClientIndustry for EveGatewayTestApiClient {}
 impl EveGatewayApiClientMarket for EveGatewayTestApiClient {}
 impl EveGatewayApiClientItem for EveGatewayTestApiClient {}
+impl EveGatewayApiClientSearch for EveGatewayTestApiClient {}
+impl EveGatewayApiClientStanding for EveGatewayTestApiClient {}
+impl EveGatewayApiClientSystem for EveGatewayTestApiClient {}
 
 #[derive(Clone)]
 pub struct MarketTestApiClient;

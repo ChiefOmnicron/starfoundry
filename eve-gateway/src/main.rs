@@ -1,12 +1,38 @@
+//! EVE-Gateway services.
+//! 
+//! The service sis designed to abstract everything away from the EVE-API.
+//! 
+//! Current supported features:
+//! - Login with EVE SSO
+//! - Wraps a small set of EVE-API calls (see the OpenAPI Documentation)
+//! - Caching of routes
+//! 
+
+#![allow(clippy::redundant_field_names)]
+
+pub mod api_docs;
+pub mod auth;
+pub mod config;
+pub mod healthcheck;
+pub mod metrics;
+pub mod state;
+pub mod utils;
+
+pub mod asset;
+pub mod character;
+pub mod fitting;
+pub mod industry;
+pub mod item;
+pub mod search;
+pub mod structure;
+pub mod system;
+
+pub mod eve;
+pub mod proxy;
+
 use axum::{middleware, Router};
 use prometheus_client::registry::Registry;
 use sqlx::postgres::PgPoolOptions;
-use starfoundry_bin_eve_gateway::{auth, character, eve, healthcheck, industry, item, proxy, search, structure, universe};
-use starfoundry_bin_eve_gateway::api_docs::ApiDoc;
-use starfoundry_bin_eve_gateway::config::Config;
-use starfoundry_bin_eve_gateway::item::services::load_items;
-use starfoundry_bin_eve_gateway::metrics::{self, Metric, path_metrics};
-use starfoundry_bin_eve_gateway::state::AppState;
 use starfoundry_lib_eve_client::EveApiClientMetric;
 use std::sync::Arc;
 use tokio::select;
@@ -15,6 +41,12 @@ use tracing_subscriber::EnvFilter;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_scalar::{Scalar, Servable};
 use utoipa::OpenApi;
+
+use crate::api_docs::ApiDoc;
+use crate::config::Config;
+use crate::item::services::load_items;
+use crate::metrics::{Metric, path_metrics};
+use crate::state::AppState;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -100,7 +132,7 @@ fn app(
         .nest("/items", item::routes())
         .nest("/search", search::routes())
         .nest("/structures", structure::routes())
-        .nest("/universe", universe::routes())
+        .nest("/systems", system::routes())
         .nest("/eve", eve::routes())
         .nest("/proxy", proxy::routes())
         .layer(

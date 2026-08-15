@@ -1,19 +1,19 @@
-use axum::extract::{Path, State};
+use axum::extract::State;
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_eve_gateway::System;
-use starfoundry_lib_types::{SystemId, TypeId};
+use starfoundry_lib_types::TypeId;
 
 use crate::api_docs::{InternalServerError, NotFound};
 use crate::state::AppState;
-use crate::universe::error::Result;
-use crate::universe::services::fetch_system;
+use crate::system::error::Result;
+use crate::system::services::list;
 
 /// Fetch System
 /// 
-/// - Alternative route: `/latest/universe/systems/{SystemId}`
-/// - Alternative route: `/v1/universe/systems/{SystemId}`
+/// - Alternative route: `/latest/systems`
+/// - Alternative route: `/v1/systems`
 /// 
 /// ---
 /// 
@@ -21,15 +21,15 @@ use crate::universe::services::fetch_system;
 /// 
 #[utoipa::path(
     get,
-    path = "/systems/{SystemId}",
-    tag = "Universe",
+    path = "/",
+    tag = "System",
     params(
         TypeId,
     ),
     responses(
         (
-            body = System,
-            description = "Information about a system",
+            body = Vec<System>,
+            description = "Returns a list of all systems",
             status = OK,
         ),
         NotFound,
@@ -38,11 +38,9 @@ use crate::universe::services::fetch_system;
 )]
 pub async fn api(
     State(state):    State<AppState>,
-    Path(system_id): Path<SystemId>,
 ) -> Result<impl IntoResponse> {
-    let entry = fetch_system(
+    let entry = list(
         &state.postgres,
-        system_id,
     ).await?;
 
     Ok(

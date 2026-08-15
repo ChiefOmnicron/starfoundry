@@ -11,9 +11,10 @@ mod industry;
 mod item;
 mod market;
 mod search;
+mod standing;
 mod structure_type;
 mod structure;
-mod universe;
+mod system;
 mod utils;
 
 pub mod contract;
@@ -29,9 +30,10 @@ pub use self::industry::*;
 pub use self::item::*;
 pub use self::market::*;
 pub use self::search::*;
+pub use self::standing::*;
 pub use self::structure::*;
 pub use self::structure_type::*;
-pub use self::universe::*;
+pub use self::system::*;
 
 pub const ENV_EVE_GATEWAY_API: &str      = "STARFOUNDRY_EVE_GATEWAY_API_URL";
 pub const ENV_EVE_GATEWAY_JWT_SIGN: &str = "STARFOUNDRY_EVE_GATEWAY_JWT_SIGN";

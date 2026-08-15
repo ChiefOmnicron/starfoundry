@@ -125,6 +125,7 @@ pub async fn api(
 enum Scope {
     Assets,
     Blueprints,
+    Contacts,
     IndustryJob,
     Orders,
 }
@@ -134,6 +135,7 @@ impl Scope {
         match self {
             Self::Assets        => "esi-assets.read_assets.v1",
             Self::Blueprints    => "esi-characters.read_blueprints.v1",
+            Self::Contacts      => "esi-characters.read_contacts.v1",
             Self::IndustryJob   => "esi-industry.read_character_jobs.v1",
             Self::Orders        => "esi-markets.read_character_orders.v1",
         }.into()
@@ -147,6 +149,7 @@ impl TryFrom<&str> for Scope {
         match value {
             "assets"        => Ok(Self::Assets),
             "blueprints"    => Ok(Self::Blueprints),
+            "contacts"      => Ok(Self::Contacts),
             "industry/jobs" => Ok(Self::IndustryJob),
             "orders"        => Ok(Self::Orders),
             _               => {

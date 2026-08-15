@@ -1,8 +1,8 @@
 use serde::de::DeserializeOwned;
 use starfoundry_lib_gateway::ApiClient;
-use starfoundry_lib_types::{CharacterId, StructureId, SystemId, TypeId};
+use starfoundry_lib_types::{CharacterId, StructureId, TypeId};
 
-use crate::{AuthedCharacterInfo, CharacterInfo, EveGatewayApiClientAsset, EveGatewayApiClientEveAsset, EveGatewayApiClientFitting, EveGatewayApiClientIndustry, EveGatewayApiClientItem, ResolveStructureResponse, StructureRigBlueprintBonus, StructureRigResponse, StructureServiceResponse, System};
+use crate::{AuthedCharacterInfo, CharacterInfo, EveGatewayApiClientAsset, EveGatewayApiClientEveAsset, EveGatewayApiClientFitting, EveGatewayApiClientIndustry, EveGatewayApiClientItem, EveGatewayApiClientSearch, EveGatewayApiClientStanding, EveGatewayApiClientSystem, ResolveStructureResponse, StructureRigBlueprintBonus, StructureRigResponse, StructureServiceResponse};
 use crate::contract::EveGatewayApiClientContract;
 use crate::error::Result;
 use crate::market::EveGatewayApiClientMarket;
@@ -16,7 +16,10 @@ pub trait EveGatewayApiClient:
     EveGatewayApiClientFitting +
     EveGatewayApiClientMarket +
     EveGatewayApiClientIndustry +
-    EveGatewayApiClientItem {
+    EveGatewayApiClientItem +
+    EveGatewayApiClientSearch +
+    EveGatewayApiClientStanding +
+    EveGatewayApiClientSystem {
 
     #[allow(async_fn_in_trait)]
     async fn list_characters(
@@ -118,32 +121,6 @@ pub trait EveGatewayApiClient:
     ) -> Result<Vec<StructureRigBlueprintBonus>> {
         self
             .post("structures/rigs", rig_type_ids)
-            .await
-            .map_err(Into::into)
-    }
-
-    #[allow(async_fn_in_trait)]
-    async fn fetch_system(
-        &self,
-        system_id: SystemId,
-    ) -> Result<Option<System>> {
-        self
-            .fetch(&format!("universe/systems/{}", *system_id), &())
-            .await
-            .map_err(Into::into)
-    }
-
-    #[allow(async_fn_in_trait)]
-    async fn fetch_system_bulk(
-        &self,
-        system_ids: Vec<SystemId>,
-    ) -> Result<Vec<System>> {
-        let mut system_ids = system_ids;
-        system_ids.sort();
-        system_ids.dedup();
-
-        self
-            .post("universe/systems", system_ids)
             .await
             .map_err(Into::into)
     }

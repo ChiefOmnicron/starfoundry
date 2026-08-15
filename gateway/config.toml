@@ -46,3 +46,18 @@ service_url = "http://localhost:9996"
 
 [routes."admin"]
 service_url = "http://localhost:9996"
+
+# mapping
+[routes."routes"]
+service_url = "http://localhost:9986"
+require_auth = false
+
+# tmp name
+[routes."structures-mapping"]
+service_url = "http://localhost:9986"
+require_auth = false
+
+# statistics
+[routes."materials"]
+service_url = "http://localhost:8000"
+require_auth = false

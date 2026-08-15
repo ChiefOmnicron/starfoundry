@@ -1,15 +1,15 @@
 use axum::extract::{Path, Query, State};
+use axum::http::HeaderMap;
 use axum::Json;
 use axum::response::IntoResponse;
 use reqwest::StatusCode;
+use starfoundry_lib_eve_client::EveApiClient;
 use starfoundry_lib_gateway::ExtractIdentity;
 
 use crate::api_docs::{BadRequest, InternalServerError, NotFound, Unauthorized};
 use crate::proxy::error::{ProxyError, Result};
 use crate::state::AppState;
 use crate::utils::api_client_auth;
-use starfoundry_lib_eve_client::EveApiClient;
-use axum::http::HeaderMap;
 
 /// Proxy List Auth Character
 /// 
@@ -124,6 +124,7 @@ pub async fn api(
 enum Scope {
     Assets,
     Blueprints,
+    Contacts,
     IndustryJob,
     Orders,
 }
@@ -133,6 +134,7 @@ impl Scope {
         match self {
             Self::Assets        => "esi-corporations.read_corporation_assets.v1",
             Self::Blueprints    => "esi-corporations.read_blueprints.v1",
+            Self::Contacts      => "esi-corporations.read_contacts.v1",
             Self::IndustryJob   => "esi-industry.read_corporation_jobs.v1",
             Self::Orders        => "esi-markets.read_corporation_orders.v1",
         }.into()
@@ -146,6 +148,7 @@ impl TryFrom<&str> for Scope {
         match value {
             "assets"        => Ok(Self::Assets),
             "blueprints"    => Ok(Self::Blueprints),
+            "contacts"      => Ok(Self::Contacts),
             "industry/jobs" => Ok(Self::IndustryJob),
             "orders"        => Ok(Self::Orders),
             _               => {

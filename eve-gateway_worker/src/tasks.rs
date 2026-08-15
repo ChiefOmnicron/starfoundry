@@ -23,6 +23,11 @@ pub enum WorkerEveGatewayTask {
     SystemIndex,
     SystemIndexCompress,
 
+    /// Fetches standings for alliance, corporation and character
+    AllianceStanding,
+    CharacterStanding,
+    CorporationStanding,
+
     // Skills
     // Industry Jobs Character
     // Industry Jobs Corporation
@@ -40,6 +45,9 @@ impl WorkerTask for WorkerEveGatewayTask {
             Self::CorporationBlueprints => self.add_minutes(60),
             Self::SystemIndex           => self.add_minutes(60),
             Self::SystemIndexCompress   => self.during_downtime(),
+            Self::AllianceStanding      => self.add_minutes(60),
+            Self::CharacterStanding     => self.add_minutes(60),
+            Self::CorporationStanding   => self.add_minutes(60),
         }
     }
 }
@@ -49,14 +57,17 @@ impl TryFrom<String> for WorkerEveGatewayTask {
 
     fn try_from(value: String) -> Result<Self, Self::Error> {
         match value.as_ref() {
-            "SYNC"                   => Ok(Self::Sync),
-            "CHARACTER_ASSETS"       => Ok(Self::CharacterAssets),
-            "CORPORATION_ASSETS"     => Ok(Self::CorporationAssets),
-            "CHARACTER_BLUEPRINTS"   => Ok(Self::CharacterBlueprints),
-            "CORPORATION_BLUEPRINTS" => Ok(Self::CorporationBlueprints),
-            "SYSTEM_INDEX"           => Ok(Self::SystemIndex),
-            "SYSTEM_INDEX_COMPRESS"  => Ok(Self::SystemIndexCompress),
-            _                        => Err("Invalid".into()),
+            "SYNC"                      => Ok(Self::Sync),
+            "CHARACTER_ASSETS"          => Ok(Self::CharacterAssets),
+            "CORPORATION_ASSETS"        => Ok(Self::CorporationAssets),
+            "CHARACTER_BLUEPRINTS"      => Ok(Self::CharacterBlueprints),
+            "CORPORATION_BLUEPRINTS"    => Ok(Self::CorporationBlueprints),
+            "SYSTEM_INDEX"              => Ok(Self::SystemIndex),
+            "SYSTEM_INDEX_COMPRESS"     => Ok(Self::SystemIndexCompress),
+            "ALLIANCE_STANDING"         => Ok(Self::AllianceStanding),
+            "CHARACTER_STANDING"        => Ok(Self::CharacterStanding),
+            "CORPORATION_STANDING"      => Ok(Self::CorporationStanding),
+            _                           => Err("Invalid".into()),
         }
     }
 }
@@ -71,6 +82,9 @@ impl Into<String> for WorkerEveGatewayTask {
             Self::CorporationBlueprints => "CORPORATION_BLUEPRINTS",
             Self::SystemIndex           => "SYSTEM_INDEX",
             Self::SystemIndexCompress   => "SYSTEM_INDEX_COMPRESS",
+            Self::AllianceStanding      => "ALLIANCE_STANDING",
+            Self::CharacterStanding     => "CHARACTER_STANDING",
+            Self::CorporationStanding   => "CORPORATION_STANDING",
         }.into()
     }
 }

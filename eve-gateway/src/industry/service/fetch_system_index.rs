@@ -3,7 +3,7 @@ use starfoundry_lib_eve_gateway::SystemIndex;
 use starfoundry_lib_types::SystemId;
 
 use crate::industry::error::{IndustryError, Result};
-use crate::universe::services::fetch_system;
+use crate::system::services::fetch_system;
 
 pub async fn fetch_system_index(
     pool:      &PgPool,

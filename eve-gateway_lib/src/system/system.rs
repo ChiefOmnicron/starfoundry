@@ -2,7 +2,6 @@ use serde::{Deserialize, Serialize};
 use starfoundry_lib_types::{ConstellationId, RegionId, SystemId};
 use utoipa::ToSchema;
 
-// TODO: move me when a better location is found
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 #[schema(
     example = json!({

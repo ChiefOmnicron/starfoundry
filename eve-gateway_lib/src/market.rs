@@ -21,7 +21,6 @@ pub trait EveGatewayApiClientMarket: ApiClient + ApiClientExtended {
         self
             .fetch_page(&format!("proxy/markets/{}/orders", *region_id))
             .await
-            .map_err(Into::into)
     }
 
     #[allow(async_fn_in_trait)]
@@ -34,7 +33,6 @@ pub trait EveGatewayApiClientMarket: ApiClient + ApiClientExtended {
                 &format!("proxy/auth/markets/structures/{}", *structure_id),
             )
             .await
-            .map_err(Into::into)
     }
 
     #[allow(async_fn_in_trait)]
@@ -59,7 +57,6 @@ pub trait EveGatewayApiClientMarket: ApiClient + ApiClientExtended {
                 "proxy/auth/corporations/orders",
             )
             .await
-            .map_err(Into::into)
     }
 
     #[allow(async_fn_in_trait)]

@@ -1,6 +1,7 @@
 mod error;
 mod basic;
 mod auth;
+mod auth_alliance;
 mod auth_character;
 mod auth_corporation;
 
@@ -17,6 +18,9 @@ pub fn routes() -> OpenApiRouter<AppState> {
     let list_auth = OpenApiRouter::new()
         .routes(routes!(auth::api));
 
+    let list_auth_alliance = OpenApiRouter::new()
+        .routes(routes!(auth_alliance::api));
+
     let list_auth_character = OpenApiRouter::new()
         .routes(routes!(auth_character::api));
 
@@ -24,6 +28,7 @@ pub fn routes() -> OpenApiRouter<AppState> {
         .routes(routes!(auth_corporation::api));
 
     OpenApiRouter::new()
+        .merge(list_auth_alliance)
         .merge(list_auth_character)
         .merge(list_auth_corporation)
         .merge(list_auth)

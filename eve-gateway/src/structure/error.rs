@@ -8,7 +8,7 @@ use thiserror::Error;
 use crate::api_docs::ErrorResponse;
 use crate::auth::error::AuthError;
 use crate::item::error::ItemError;
-use crate::universe::error::UniverseError;
+use crate::system::error::SystemError;
 
 pub type Result<T, E = StructureError> = std::result::Result<T, E>;
 
@@ -20,7 +20,7 @@ pub enum StructureError {
     #[error("item error, error: '{0}'")]
     ItemError(#[from] ItemError),
     #[error("item error, error: '{0}'")]
-    UniverseError(#[from] UniverseError),
+    SystemError(#[from] SystemError),
 
     #[error("error performing eve api call, error: '{0}'")]
     EveApiError(#[from] EveApiError),

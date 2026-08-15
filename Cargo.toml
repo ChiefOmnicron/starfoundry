@@ -29,6 +29,10 @@ members = [
   'industry_lib',
   'industry_worker',
 
+  # mapping
+  'mapping',
+  'mapping_lib',
+
   # market
   'market',
   'market_lib',

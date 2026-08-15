@@ -62,6 +62,37 @@ pub async fn sync_task(
         Err(e) => task.append_error(e.to_string()),
     };
 
+    match sync_alliance_standings(
+        pool,
+    ).await {
+        Ok(new_entries) => {
+            if new_entries > 0 {
+                task.append_log(format!("added {new_entries} alliance standings"))
+            }
+        },
+        Err(e) => task.append_error(e.to_string()),
+    };
+    match sync_character_standings(
+        pool,
+    ).await {
+        Ok(new_entries) => {
+            if new_entries > 0 {
+                task.append_log(format!("added {new_entries} character standings"))
+            }
+        },
+        Err(e) => task.append_error(e.to_string()),
+    };
+    match sync_corporation_standings(
+        pool,
+    ).await {
+        Ok(new_entries) => {
+            if new_entries > 0 {
+                task.append_log(format!("added {new_entries} corporation standings"))
+            }
+        },
+        Err(e) => task.append_error(e.to_string()),
+    };
+
     Ok(())
 }
 
@@ -86,6 +117,16 @@ pub async fn sync(
     ).await?;
     sync_corporation_blueprints(
         pool,
+    ).await?;
+
+    sync_alliance_standings(
+        pool
+    ).await?;
+    sync_character_standings(
+        pool
+    ).await?;
+    sync_corporation_standings(
+        pool
     ).await?;
 
     Ok(())
@@ -129,6 +170,7 @@ async fn sync_tasks(
     Ok(())
 }
 
+// TODO: replace with insert_task_with_credentials?
 async fn sync_character_assets(
     pool: &PgPool,
 ) -> Result<usize> {
@@ -198,6 +240,7 @@ async fn sync_character_assets(
         .map_err(Error::SyncError)
 }
 
+// TODO: replace with insert_task_with_credentials?
 async fn sync_corporation_assets(
     pool: &PgPool,
 ) -> Result<usize> {
@@ -267,6 +310,7 @@ async fn sync_corporation_assets(
         .map_err(Error::SyncError)
 }
 
+// TODO: replace with insert_task_with_credentials?
 async fn sync_character_blueprints(
     pool: &PgPool,
 ) -> Result<usize> {
@@ -336,6 +380,7 @@ async fn sync_character_blueprints(
         .map_err(Error::SyncError)
 }
 
+// TODO: replace with insert_task_with_credentials?
 async fn sync_corporation_blueprints(
     pool: &PgPool,
 ) -> Result<usize> {
@@ -404,4 +449,109 @@ async fn sync_corporation_blueprints(
         .await
         .map(|_| new_entries.len())
         .map_err(Error::SyncError)
+}
+
+async fn insert_task_with_credentials(
+    pool:   &PgPool,
+    task:   WorkerEveGatewayTask,
+    scope:  String,
+) -> Result<usize> {
+    let task_name: String = task.into();
+
+    let entries = sqlx::query!("
+            SELECT
+                ec.character_id,
+                c.corporation_id,
+                ec.domain
+            FROM eve_credential ec
+            JOIN character c ON c.character_id = ec.character_id
+            WHERE
+                scopes && $1::VARCHAR[]
+        ",
+            &vec![scope],
+        )
+        .fetch_all(pool)
+        .await
+        .map_err(Error::GenericSqlxError)?;
+
+    let tasks = sqlx::query!("
+            SELECT
+                (additional_data ->> 'character_id')::INTEGER AS character_id,
+                (additional_data ->> 'corporation_id')::INTEGER AS corporation_id,
+                (additional_data ->> 'source')::VARCHAR AS source
+            FROM worker_queue
+            WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
+            AND task = $1
+        ",
+            &task_name,
+        )
+        .fetch_all(pool)
+        .await
+        .map_err(Error::SyncError)?;
+
+    let mut new_entries = Vec::new();
+    for entry in entries {
+        if let None = tasks
+            .iter()
+            .find(|x| {
+                x.corporation_id == Some(entry.corporation_id) &&
+                x.character_id == Some(entry.character_id) &&
+                x.source == Some(entry.domain.clone())
+            }) {
+                let additional_data = serde_json::json!({
+                    "character_id": entry.character_id,
+                    "corporation_id": entry.corporation_id,
+                    "source": entry.domain,
+                });
+                new_entries.push(additional_data);
+            }
+    }
+
+    tracing::info!("Added {} new corporation blueprint jobs", new_entries.len());
+    sqlx::query!("
+            INSERT INTO worker_queue (task, additional_data)
+            SELECT $1, * FROM UNNEST(
+                $2::JSONB[]
+            )
+        ",
+            &task_name,
+            &new_entries
+        )
+        .execute(pool)
+        .await
+        .map(|_| new_entries.len())
+        .map_err(Error::SyncError)
+}
+
+async fn sync_alliance_standings(
+    pool: &PgPool,
+) -> Result<usize> {
+    insert_task_with_credentials(
+            pool,
+            WorkerEveGatewayTask::AllianceStanding,
+            "esi-alliances.read_contacts.v1".into(),
+        )
+        .await
+}
+
+async fn sync_character_standings(
+    pool: &PgPool,
+) -> Result<usize> {
+    insert_task_with_credentials(
+            pool,
+            WorkerEveGatewayTask::CharacterStanding,
+            "esi-characters.read_contacts.v1".into(),
+        )
+        .await
+}
+
+async fn sync_corporation_standings(
+    pool: &PgPool,
+) -> Result<usize> {
+    insert_task_with_credentials(
+            pool,
+            WorkerEveGatewayTask::CorporationStanding,
+            "esi-corporations.read_contacts.v1".into(),
+        )
+        .await
 }

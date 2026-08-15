@@ -10,7 +10,7 @@ pub type Result<T, E = CharacterError> = std::result::Result<T, E>;
 
 #[derive(Debug, Error)]
 #[non_exhaustive]
-pub enum  CharacterError {
+pub enum CharacterError {
     #[error("error while fetching character, error: '{0}'")]
     FetchCharacter(sqlx::Error),
     #[error("error while bulk fetching character, error: '{0}'")]

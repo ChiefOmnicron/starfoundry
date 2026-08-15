@@ -23,6 +23,8 @@ COPY        ./gp_lib-types ./gp_lib-types
 COPY        ./industry ./industry
 COPY        ./industry_lib ./industry_lib
 COPY        ./industry_worker ./industry_worker
+COPY        ./mapping ./mapping
+COPY        ./mapping_lib ./mapping_lib
 COPY        ./market ./market
 COPY        ./market_lib ./market_lib
 COPY        ./market_worker ./market_worker
@@ -55,6 +57,8 @@ COPY        ./gp_lib-types ./gp_lib-types
 COPY        ./industry ./industry
 COPY        ./industry_lib ./industry_lib
 COPY        ./industry_worker ./industry_worker
+COPY        ./mapping ./mapping
+COPY        ./mapping_lib ./mapping_lib
 COPY        ./market ./market
 COPY        ./market_lib ./market_lib
 COPY        ./market_worker ./market_worker
@@ -111,6 +115,23 @@ RUN         apt-get update && \
             apt-get clean
 
 COPY        --from=gateway-api-builder /app/target/release/starfoundry_bin-gateway /usr/local/bin/app
+CMD         ["/usr/local/bin/app"]
+
+###############################################################################
+#           mapping_api
+###############################################################################
+FROM builder AS mapping-api-builder
+RUN         apt-get install -y clang coinor-cbc coinor-libcbc-dev && \
+            cargo build --bin starfoundry_bin-mapping --release
+
+FROM ubuntu:26.04 AS mapping-api
+WORKDIR     /usr/local/bin
+
+RUN         apt-get update && \
+            apt-get install -y ca-certificates curl && \
+            apt-get clean
+
+COPY        --from=mapping-api-builder /app/target/release/starfoundry_bin-mapping /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
 ###############################################################################

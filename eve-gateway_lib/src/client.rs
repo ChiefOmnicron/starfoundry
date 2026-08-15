@@ -6,7 +6,7 @@ use std::fmt::Debug;
 use url::Url;
 
 use crate::error::{Error, Result};
-use crate::{ApiClientExtended, ENV_EVE_GATEWAY_API, EveGatewayApiClient, EveGatewayApiClientAsset, EveGatewayApiClientEveAsset, EveGatewayApiClientFitting, EveGatewayApiClientIndustry, EveGatewayApiClientItem, EveGatewayApiClientSearch};
+use crate::{ApiClientExtended, ENV_EVE_GATEWAY_API, EveGatewayApiClient, EveGatewayApiClientAsset, EveGatewayApiClientEveAsset, EveGatewayApiClientFitting, EveGatewayApiClientIndustry, EveGatewayApiClientItem, EveGatewayApiClientSearch, EveGatewayApiClientStanding, EveGatewayApiClientSystem};
 use crate::contract::EveGatewayApiClientContract;
 use crate::market::EveGatewayApiClientMarket;
 use crate::utils::{has_content, page_count};
@@ -126,11 +126,7 @@ impl ApiClientExtended for EveGatewayClient {
     where
         T: DeserializeOwned + Send,
     {
-        let headers = if let Ok(x) = self.0.identity_as_header() {
-            Some(x)
-        } else {
-            None
-        };
+        let headers = self.0.identity_as_header().ok();
 
         let mut api_url = Self::api_url()?;
         api_url.set_path(&path.into());
@@ -193,3 +189,5 @@ impl EveGatewayApiClientMarket for EveGatewayClient {}
 impl EveGatewayApiClientIndustry for EveGatewayClient {}
 impl EveGatewayApiClientItem for EveGatewayClient {}
 impl EveGatewayApiClientSearch for EveGatewayClient {}
+impl EveGatewayApiClientStanding for EveGatewayClient {}
+impl EveGatewayApiClientSystem for EveGatewayClient {}

@@ -2,17 +2,13 @@ use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::System;
 use starfoundry_lib_types::SystemId;
 
-use crate::universe::error::{UniverseError, Result};
+use crate::system::error::{Result, SystemError};
 
-pub async fn fetch_system_bulk(
-    pool:       &PgPool,
-    system_ids: Vec<SystemId>,
-) -> Result<Vec<System>> {
-    if system_ids.is_empty() {
-        return Ok(Vec::new());
-    }
-
-    let systems = sqlx::query!("
+pub async fn fetch_system(
+    pool:      &PgPool,
+    system_id: SystemId,
+) -> Result<Option<System>> {
+    let system = sqlx::query!("
             SELECT
                 region_id,
                 region_name,
@@ -23,15 +19,16 @@ pub async fn fetch_system_bulk(
                 security,
                 security_str
             FROM system
-            WHERE system_id = ANY($1)
+            WHERE system_id = $1
         ",
-            &system_ids.clone().into_iter().map(|x| *x).collect::<Vec<_>>(),
+            *system_id,
         )
-        .fetch_all(pool)
+        .fetch_optional(pool)
         .await
-        .map_err(UniverseError::FetchSystemBulk)?
-        .into_iter()
-        .map(|x| System {
+        .map_err(|e| SystemError::FetchSystem(e, system_id))?;
+
+    if let Some(x) = system {
+        Ok(Some(System {
             region_id:          x.region_id.into(),
             region_name:        x.region_name,
             constellation_id:   x.constellation_id.into(),
@@ -40,10 +37,8 @@ pub async fn fetch_system_bulk(
             system_name:        x.system_name,
             security:           x.security,
             security_str:       x.security_str,
-        })
-        .collect::<Vec<_>>();
-
-    Ok(
-        systems
-    )
+        }))
+    } else {
+        Ok(None)
+    }
 }

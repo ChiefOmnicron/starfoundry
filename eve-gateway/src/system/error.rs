@@ -7,31 +7,34 @@ use thiserror::Error;
 
 use crate::api_docs::ErrorResponse;
 use crate::auth::error::AuthError;
-use crate::item::error::ItemError;
 
-pub type Result<T, E = UniverseError> = std::result::Result<T, E>;
+pub type Result<T, E = SystemError> = std::result::Result<T, E>;
 
 #[derive(Debug, Error)]
 #[non_exhaustive]
-pub enum UniverseError {
+pub enum SystemError {
     #[error("auth error, error: '{0}'")]
     AuthError(#[from] AuthError),
-    #[error("item error, error: '{0}'")]
-    ItemError(#[from] ItemError),
 
     #[error("error performing eve api call, error: '{0}'")]
     EveApiError(#[from] EveApiError),
-
-    #[error("the item information are not available")]
-    ItemNotFound,
 
     #[error("error while resolving system {1}, error: '{0}'")]
     FetchSystem(sqlx::Error, SystemId),
     #[error("error while resolving systems, error: '{0}'")]
     FetchSystemBulk(sqlx::Error),
+    #[error("error while resolving systems, error: '{0}'")]
+    ListSystem(sqlx::Error),
+
+    #[error("error while fetching distance for start system {1} and end system {2}, error: '{0}'")]
+    FetchSystemDistance(sqlx::Error, SystemId, SystemId),
+    #[error("error while listing system distances, error: '{0}'")]
+    ListSystemDistance(sqlx::Error),
+    #[error("error while listing systems in range for {1}, error: '{0}'")]
+    ListSystemsInRange(sqlx::Error, SystemId),
 }
 
-impl IntoResponse for UniverseError {
+impl IntoResponse for SystemError {
     fn into_response(self) -> Response {
         match self {
             Self::EveApiError(EveApiError::NotFound(_)) => {

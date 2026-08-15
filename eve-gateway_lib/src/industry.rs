@@ -50,7 +50,6 @@ pub trait EveGatewayApiClientIndustry: ApiClient + ApiClientExtended {
                 "proxy/auth/characters/industry/jobs",
             )
             .await
-            .map_err(Into::into)
     }
 
     /// Lists all active industry jobs from the character from the EVE-API
@@ -64,7 +63,6 @@ pub trait EveGatewayApiClientIndustry: ApiClient + ApiClientExtended {
                 "proxy/auth/corporations/industry/jobs",
             )
             .await
-            .map_err(Into::into)
     }
 
     /// Fetches a specific index for a system.

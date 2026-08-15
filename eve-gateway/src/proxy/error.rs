@@ -2,7 +2,7 @@ use axum::Json;
 use axum::response::{IntoResponse, Response};
 use reqwest::StatusCode;
 use starfoundry_lib_eve_client::EveApiError;
-use starfoundry_lib_gateway::ErrorResponse;
+use starfoundry_lib_gateway::{ErrorResponse, boxed_from};
 use thiserror::Error;
 use url::Url;
 
@@ -18,9 +18,9 @@ pub enum ProxyError {
     ReqwestError(reqwest::Error, Url),
 
     #[error("eve api error, error: '{0:?}'")]
-    EveApiError(#[from] EveApiError),
+    EveApiError(Box<EveApiError>),
     #[error("gateway error, error: '{0:?}'")]
-    GatewayError(#[from] starfoundry_lib_gateway::Error),
+    GatewayError(Box<starfoundry_lib_gateway::Error>),
 }
 
 impl IntoResponse for ProxyError {
@@ -39,12 +39,15 @@ impl IntoResponse for ProxyError {
                 ).into_response()
             },
             Self::EveApiError(e) => {
-                EveApiError::into_response(e)
+                EveApiError::into_response(*e)
             },
             Self::GatewayError(e) => {
-                starfoundry_lib_gateway::Error::into_response(e)
+                starfoundry_lib_gateway::Error::into_response(*e)
             },
         }
         .into_response()
     }
 }
+
+boxed_from!(ProxyError::EveApiError, EveApiError);
+boxed_from!(ProxyError::GatewayError, starfoundry_lib_gateway::Error);

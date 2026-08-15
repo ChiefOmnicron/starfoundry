@@ -4,6 +4,7 @@ mod config;
 mod error;
 mod industry;
 mod metric;
+mod standing;
 mod sync;
 mod tasks;
 
@@ -168,6 +169,25 @@ async fn task_select(
             crate::industry::system_index_compress(
                 pool,
                 task,
+            ).await
+        },
+
+        WorkerEveGatewayTask::AllianceStanding => {
+            crate::standing::alliance_standings(
+                pool,
+                task
+            ).await
+        },
+        WorkerEveGatewayTask::CharacterStanding => {
+            crate::standing::character_standings(
+                pool,
+                task
+            ).await
+        },
+        WorkerEveGatewayTask::CorporationStanding => {
+            crate::standing::corporation_standings(
+                pool,
+                task
             ).await
         },
     }

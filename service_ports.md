@@ -2,6 +2,8 @@
 
 | Service         | Name                  | Port | Type     |
 |-----------------| ----------------------|------|----------|
+| mapping         | SF_MAPPING            | 9986 | App      |
+| mapping         |                       | 9987 | Service  |
 | market          | SF_MARKET             | 9988 | App      |
 | market          |                       | 9989 | Service  |
 | market-worker   | SF_MARKET_WORKER      | 8989 | Service  |
