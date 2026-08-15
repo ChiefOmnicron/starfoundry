@@ -21,7 +21,7 @@ use crate::system::services::fetch_system_bulk;
 /// 
 #[utoipa::path(
     post,
-    path = "/systems",
+    path = "/",
     tag = "System",
     request_body = Vec<SystemId>,
     responses(
