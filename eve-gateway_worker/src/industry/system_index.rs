@@ -27,8 +27,11 @@ pub async fn system_index(
     };
 
     if entries.is_empty() {
+        task.append_error("No entries");
         return Ok(());
     }
+
+    task.append_log(format!("Adds {} entries", entries.len()));
 
     let mut systems       = Vec::new();
     let mut manufacturing = Vec::new();
