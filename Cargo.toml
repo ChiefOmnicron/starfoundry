@@ -44,8 +44,6 @@ members = [
   #'meta_webserver',
   # needs rewrite to match new worker
   'worker-eve_sde_parser',
-
-  'uuidv7_migration',
 ]
 resolver = "2"
 

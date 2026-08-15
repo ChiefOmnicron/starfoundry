@@ -32,8 +32,7 @@ COPY        ./meta_webserver ./meta_webserver
 COPY        ./notification_lib ./notification_lib
 COPY        ./worker_lib ./worker_lib
 COPY        ./worker-eve_sde_parser ./worker-eve_sde_parser
-# tmp
-COPY        ./uuidv7_migration ./uuidv7_migration
+
 RUN         cargo chef prepare --recipe-path recipe.json
 
 ################################################################################
@@ -66,8 +65,6 @@ COPY        ./meta_webserver ./meta_webserver
 COPY        ./notification_lib ./notification_lib
 COPY        ./worker_lib ./worker_lib
 COPY        ./worker-eve_sde_parser ./worker-eve_sde_parser
-# tmp
-COPY        ./uuidv7_migration ./uuidv7_migration
 
 ###############################################################################
 #           eve_gateway_api
@@ -131,7 +128,7 @@ RUN         apt-get update && \
             apt-get install -y ca-certificates curl && \
             apt-get clean
 
-COPY        --from=mapping-api-builder /app/target/release/starfoundry_bin-mapping /usr/local/bin/app
+COPY        --from=market-api-builder /app/target/release/starfoundry_bin-market /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
 ###############################################################################
@@ -173,7 +170,6 @@ CMD         ["/usr/local/bin/app"]
 ###############################################################################
 FROM builder AS industry-api-builder
 RUN         cargo build --bin starfoundry_bin-industry --release
-RUN         cargo build --bin uuidv7_migration --release
 
 FROM ubuntu:26.04 AS industry-api
 WORKDIR     /usr/local/bin
@@ -183,7 +179,6 @@ RUN         apt-get update && \
             apt-get clean
 
 COPY        --from=industry-api-builder /app/target/release/starfoundry_bin-industry /usr/local/bin/app
-COPY        --from=industry-api-builder /app/target/release/uuidv7_migration /usr/local/bin/migration
 CMD         ["/usr/local/bin/app"]
 
 ###############################################################################
