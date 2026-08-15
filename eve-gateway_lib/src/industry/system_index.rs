@@ -35,12 +35,12 @@ impl IndustrySystem {
 
         for index in self.cost_indices.iter() {
             match index.activity.as_ref() {
-                "manufacturing"        => manufacturing = index.cost_index,
-                "reaction"             => reaction = index.cost_index,
-                "copying"              => copying = index.cost_index,
-                "invention"            => invention = index.cost_index,
-                "researching_material" => researching_material = index.cost_index,
-                "researching_time"     => researching_time = index.cost_index,
+                "manufacturing"                     => manufacturing = index.cost_index,
+                "reaction"                          => reaction = index.cost_index,
+                "copying"                           => copying = index.cost_index,
+                "invention"                         => invention = index.cost_index,
+                "researching_material_efficiency"   => researching_material = index.cost_index,
+                "researching_time_efficiency"       => researching_time = index.cost_index,
                 _ => continue
             }
         }
