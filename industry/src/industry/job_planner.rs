@@ -20,7 +20,7 @@ use starfoundry_lib_industry::industry::{BuildEngine, BuildEngineAdditionalProdu
 use starfoundry_lib_industry::IndustryHubUuid;
 use starfoundry_lib_industry::ProjectGroupUuid;
 use starfoundry_lib_industry::SolutionUuid;
-use starfoundry_lib_market::{BuyStrategy, MarketApiClientOrder, MarketApiClientPrice, MarketBulkRequest, MarketItemList};
+use starfoundry_lib_market::{MarketStrategy, MarketApiClientOrder, MarketApiClientPrice, MarketBulkRequest, MarketItem};
 use starfoundry_lib_types::TypeId;
 use std::collections::HashMap;
 use uuid::Uuid;
@@ -314,7 +314,7 @@ pub async fn api(
         if let Some(true) = config.calculate_market_cost {
             let items = material
                 .iter()
-                .map(|x| MarketItemList {
+                .map(|x| MarketItem {
                     quantity:   x.needed as i32,
                     type_id:    x.item.type_id,
                 })
@@ -322,7 +322,7 @@ pub async fn api(
 
             let market_entries = market_api_client()?
                 .bulk_latest_orders(MarketBulkRequest {
-                    strategy:   BuyStrategy::MultiBuy,
+                    strategy:   MarketStrategy::MultiBuy,
                     markets:    config.markets.clone().unwrap_or_default(),
                     item_list:  Some(items),
                     ..Default::default()
@@ -332,7 +332,7 @@ pub async fn api(
             for market_entry in market_entries {
                 if let Some(x) = material
                     .iter_mut()
-                    .find(|x| x.item.type_id == market_entry.type_id) {
+                    .find(|x| x.item.type_id == market_entry.item.type_id) {
 
                     x.price = Some(market_entry.price);
                 }
@@ -377,7 +377,7 @@ pub async fn api(
         if let Some(true) = config.calculate_market_cost {
             let items = additional_products
                 .iter()
-                .map(|x| MarketItemList {
+                .map(|x| MarketItem {
                     quantity:   x.quantity as i32,
                     type_id:    x.type_id,
                 })
@@ -385,7 +385,7 @@ pub async fn api(
 
             let market_entries = market_api_client()?
                 .bulk_latest_orders(MarketBulkRequest {
-                    strategy:   BuyStrategy::MultiBuy,
+                    strategy:   MarketStrategy::MultiBuy,
                     markets:    config.markets.clone().unwrap_or_default(),
                     item_list:  Some(items),
                     ..Default::default()
@@ -395,7 +395,7 @@ pub async fn api(
             for market_entry in market_entries {
                 if let Some(x) = additional_products
                     .iter_mut()
-                    .find(|x| x.type_id == market_entry.type_id) {
+                    .find(|x| x.type_id == market_entry.item.type_id) {
 
                     x.price = Some(market_entry.price);
                 }

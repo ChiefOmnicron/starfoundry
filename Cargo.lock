@@ -3047,6 +3047,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sqlx",
+ "starfoundry_lib-eve_gateway",
  "starfoundry_lib-gateway",
  "starfoundry_lib-types",
  "thiserror 2.0.20",

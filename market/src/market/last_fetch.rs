@@ -12,7 +12,7 @@ use crate::AppState;
 use crate::market::error::Result;
 use crate::market::last_fetched;
 
-/// Update Virtual
+/// Last Fetch
 /// 
 /// - Alternative route: `/latest/markets/{StructureId}/last-fetch`
 /// - Alternative route: `/v1/markets/{StructureId}/last-fetch`

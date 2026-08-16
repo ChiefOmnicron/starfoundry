@@ -18,6 +18,9 @@ pub enum MarketError {
     #[error("structure not found, structureId '{0}'")]
     NotFound(StructureId),
 
+    #[error("error while fetching market entries, error: '{0}'")]
+    FetchMarketEntries(sqlx::Error),
+
     #[error(transparent)]
     JsonExtractorRejection(#[from] JsonRejection),
     #[error(transparent)]

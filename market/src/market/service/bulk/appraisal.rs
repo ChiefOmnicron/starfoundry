@@ -1,77 +1,119 @@
-use starfoundry_lib_market::{MarketBulkResponse, MarketItemList};
+use chrono::{NaiveDateTime, Utc};
+use starfoundry_lib_eve_gateway::Item;
+use starfoundry_lib_market::{MarketBulkResponse, MarketItem, MarketPrice};
 use starfoundry_lib_types::{StructureId, TypeId};
 use std::collections::HashMap;
 
 use crate::market::service::MarketEntry;
-use chrono::NaiveDateTime;
 
 pub fn appraisal(
-    wanted_items:   Vec<MarketItemList>,
+    items:          HashMap<TypeId, Item>,
+    wanted_items:   Vec<MarketItem>,
     market_entries: Vec<MarketEntry>,
     last_fetched:   HashMap<StructureId, NaiveDateTime>,
 ) -> Vec<MarketBulkResponse> {
     let mut solutions = Vec::new();
 
     for item in wanted_items {
-        let mut result = CalculationHelper {
-            buy_price:          0f64,
-            sell_price:         0f64,
-            quantity:           0u64,
-            insufficient_data:  true,
-            source:             0i64,
-            type_id:            *item.type_id,
+        let item_info = if let Some(x) = items.get(&item.type_id) {
+            x.clone()
+        } else {
+            continue;
+        };
+
+        let structure_id = if let Some(x) = market_entries.first() {
+            x.structure_id
+        } else {
+            return Vec::new();
         };
 
         // market_entries are already sorted by price
-        let highest_buy = market_entries
+        let buy_prices = market_entries
             .iter()
             .filter(|x| x.type_id == item.type_id)
             .filter(|x| x.is_buy)
             .collect::<Vec<_>>();
-        let highest_buy = highest_buy.last();
-        if let Some(x) = highest_buy {
-            result.buy_price = x.price;
-        }
+        let highest_buy = buy_prices.last().map(|x| x.price).unwrap_or(0f64);
+        let lowest_buy = buy_prices.first().map(|x| x.price).unwrap_or(0f64);
+        let order_buy = buy_prices.iter().map(|x| x.quantity).sum();
 
         // market_entries are already sorted by price
-        let lowest_sell = market_entries
+        let sell_prices = market_entries
             .iter()
             .filter(|x| x.type_id == item.type_id)
             .filter(|x| !x.is_buy)
             .collect::<Vec<_>>();
-        let lowest_sell = lowest_sell.first();
-        if let Some(x) = lowest_sell {
-            result.sell_price = x.price;
-        }
+        let highest_sell = sell_prices.last().map(|x| x.price).unwrap_or(0f64);
+        let lowest_sell = sell_prices.first().map(|x| x.price).unwrap_or(0f64);
+        let order_sell = sell_prices.iter().map(|x| x.quantity).sum();
 
-        if result.buy_price > 0f64 && result.sell_price > 0f64 {
-            result.insufficient_data = false;
-        }
+        let insufficient_data = if highest_buy > 0f64 && lowest_sell > 0f64 {
+            false
+        } else {
+            true
+        };
+
+        let last_fetch = if let Some(x) = last_fetched.get(&structure_id) {
+            x
+        } else {
+            &Utc::now().naive_utc()
+        };
+
+        solutions.push(MarketBulkResponse {
+            source:             structure_id,
+            item:               item_info,
+            quantity:           item.quantity as u64,
+            price:              0f64,
+            insufficient_data:  insufficient_data,
+            buy_price:          Some(MarketPrice {
+                                    max: highest_buy,
+                                    min: lowest_buy,
+                                    total_orders: order_buy,
+                                }),
+            sell_price:         Some(MarketPrice {
+                                    max: highest_sell,
+                                    min: lowest_sell,
+                                    total_orders: order_sell,
+                                }),
+            last_fetch:         Some(last_fetch.clone()),
+        });
     }
 
     solutions
 }
 
-#[derive(Clone, Debug, Default)]
-struct CalculationHelper {
-    pub source:             i64,
-    pub type_id:            i32,
-    pub quantity:           u64,
-    pub buy_price:          f64,
-    pub sell_price:         f64,
-    pub insufficient_data:  bool,
-}
-
 #[cfg(test)]
-mod bulk_multibuy_tests {
+mod bulk_appraisal_tests {
+    use starfoundry_lib_eve_gateway::{Category, Group, Item};
+    use starfoundry_lib_market::MarketItem;
     use starfoundry_lib_types::{StructureId, TypeId};
-    use starfoundry_lib_market::MarketItemList;
-    
-    use crate::market::MarketEntry;
     use std::collections::HashMap;
 
+    use crate::market::MarketEntry;
+
+    fn items() -> HashMap<TypeId, Item> {
+        let mut items = HashMap::new();
+        items.insert(1.into(), Item {
+            category: Category {
+                category_id: 1.into(),
+                name: "Test Category".into(),
+            },
+            group: Group {
+                category_id: 1.into(),
+                group_id: 1.into(),
+                name: "Test Group".into(),
+            },
+            name: "Test item".into(),
+            type_id: 1.into(),
+            volume: 0f32,
+            meta_group: None,
+            repackaged: None,
+        });
+        items
+    }
+
     #[test]
-    fn no_overflow() {
+    fn happy_path() {
         let market_entries = vec![
             MarketEntry {
                 item_volume: 0f64,
@@ -80,6 +122,16 @@ mod bulk_multibuy_tests {
                 quantity: 100i32,
                 structure_id: 1i64.into(),
                 type_id: TypeId(1),
+                is_buy: false,
+            },
+            MarketEntry {
+                item_volume: 0f64,
+                order_id: 0i64,
+                price: 3f64,
+                quantity: 100i32,
+                structure_id: 1i64.into(),
+                type_id: TypeId(1),
+                is_buy: false,
             },
             MarketEntry {
                 item_volume: 0f64,
@@ -88,93 +140,35 @@ mod bulk_multibuy_tests {
                 quantity: 500i32,
                 structure_id: 2i64.into(),
                 type_id: TypeId(1),
-            }
+                is_buy: true,
+            },
+            MarketEntry {
+                item_volume: 0f64,
+                order_id: 1i64,
+                price: 4f64,
+                quantity: 500i32,
+                structure_id: 2i64.into(),
+                type_id: TypeId(1),
+                is_buy: true,
+            },
         ];
 
         let wanted = vec![
-            MarketItemList {
+            MarketItem {
                 quantity: 5,
                 type_id:  TypeId(1),
             }
         ];
 
-        let result = super::multibuy(wanted, market_entries, HashMap::new());
+        let result = super::appraisal(items(), wanted, market_entries, HashMap::new());
         assert_eq!(result.len(), 1);
-        assert_eq!(result[0].price, 1f64);
+        assert_eq!(result[0].price, 0f64);
+        assert_eq!(result[0].buy_price.clone().unwrap().max, 4f64);
+        assert_eq!(result[0].buy_price.clone().unwrap().min, 2f64);
+        assert_eq!(result[0].sell_price.clone().unwrap().max, 3f64);
+        assert_eq!(result[0].sell_price.clone().unwrap().min, 1f64);
         assert_eq!(result[0].quantity, 5);
         assert_eq!(result[0].insufficient_data, false);
         assert_eq!(result[0].source, StructureId(1));
-    }
-
-    #[test]
-    fn with_overflow() {
-        let market_entries = vec![
-            MarketEntry {
-                item_volume: 0f64,
-                order_id: 0i64,
-                price: 1f64,
-                quantity: 100i32,
-                structure_id: 1i64.into(),
-                type_id: TypeId(1),
-            },
-            MarketEntry {
-                item_volume: 0f64,
-                order_id: 1i64,
-                price: 2f64,
-                quantity: 500i32,
-                structure_id: 2i64.into(),
-                type_id: TypeId(1),
-            }
-        ];
-
-        let wanted = vec![
-            MarketItemList {
-                quantity: 101,
-                type_id:  TypeId(1),
-            }
-        ];
-
-        let result = super::multibuy(wanted, market_entries, HashMap::new());
-        assert_eq!(result.len(), 1);
-        assert_eq!(result[0].price, 2f64);
-        assert_eq!(result[0].quantity, 101);
-        assert_eq!(result[0].insufficient_data, false);
-        assert_eq!(result[0].source, StructureId(2));
-    }
-
-    #[test]
-    fn insufficient_data() {
-        let market_entries = vec![
-            MarketEntry {
-                item_volume: 0f64,
-                order_id: 0i64,
-                price: 1f64,
-                quantity: 1i32,
-                structure_id: 1i64.into(),
-                type_id: TypeId(1),
-            },
-            MarketEntry {
-                item_volume: 0f64,
-                order_id: 1i64,
-                price: 2f64,
-                quantity: 1i32,
-                structure_id: 2i64.into(),
-                type_id: TypeId(1),
-            }
-        ];
-
-        let wanted = vec![
-            MarketItemList {
-                quantity: 3,
-                type_id:  TypeId(1),
-            }
-        ];
-
-        let result = super::multibuy(wanted, market_entries, HashMap::new());
-        assert_eq!(result.len(), 1);
-        assert_eq!(result[0].price, 2f64);
-        assert_eq!(result[0].quantity, 3);
-        assert_eq!(result[0].insufficient_data, true);
-        assert_eq!(result[0].source, StructureId(2));
     }
 }

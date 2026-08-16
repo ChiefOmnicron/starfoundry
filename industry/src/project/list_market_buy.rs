@@ -5,7 +5,7 @@ use axum::response::IntoResponse;
 use serde::Deserialize;
 use starfoundry_lib_industry::project::ProjectMarketBuy;
 use starfoundry_lib_industry::ProjectUuid;
-use starfoundry_lib_market::{BuyStrategy, GasDecompressionEfficiency, OreReprocessingEfficiency};
+use starfoundry_lib_market::{MarketStrategy, GasDecompressionEfficiency, OreReprocessingEfficiency};
 use starfoundry_lib_types::StructureId;
 use utoipa::{IntoParams, ToSchema};
 
@@ -88,7 +88,7 @@ pub async fn api(
 #[derive(Debug, Default, Deserialize, ToSchema, IntoParams)]
 #[into_params(parameter_in = Query)]
 pub struct ListMarketBuyQuery {
-    pub strategy:               BuyStrategy,
+    pub strategy:               MarketStrategy,
     pub structure_ids:          Vec<StructureId>,
 
     // gas decompression is active

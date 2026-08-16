@@ -1,13 +1,14 @@
+mod appraisal;
 mod multibuy;
 mod smartbuy;
 
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::EveGatewayApiClient;
-use starfoundry_lib_market::{Asteroid, BuyStrategy, Gas, MarketBulkRequest, MarketBulkResponse, MarketItemList};
+use starfoundry_lib_market::{Asteroid, MarketStrategy, Gas, MarketBulkRequest, MarketBulkResponse, MarketItem};
 use starfoundry_lib_types::{StructureId, TypeId};
 use std::collections::HashMap;
 
-use crate::market::error::Result;
+use crate::market::error::{MarketError, Result};
 use crate::market::last_fetched;
 
 pub async fn bulk(
@@ -24,7 +25,7 @@ pub async fn bulk(
             .map(|x| x.items)
             .unwrap_or_default()
             .into_iter()
-            .map(|x| MarketItemList {
+            .map(|x| MarketItem {
                 quantity:   x.quantity as i32,
                 type_id:    x.type_id,
             })
@@ -52,44 +53,85 @@ pub async fn bulk(
         .map(|x| (x.type_id, x))
         .collect::<HashMap<_, _>>();
 
-    let market_entries = sqlx::query!("
-            SELECT
-                order_id,
-                structure_id,
-                price,
-                remaining,
-                virtual_remaining,
-                type_id
-            FROM market_order_latest mol
-            WHERE mol.type_id = ANY($1)
-            AND mol.structure_id = ANY($2)
-            AND mol.is_buy = false
-            ORDER BY mol.price ASC
-        ",
-            &type_ids.into_iter().map(|x| *x).collect::<Vec<_>>(),
-            &request.markets.iter().map(|x| **x).collect::<Vec<_>>(),
-        )
-        .fetch_all(pool)
-        .await
-        .unwrap()
-        .into_iter()
-        .map(|x| {
-            let quantity = if request.virtual_market {
-                x.virtual_remaining
-            } else {
-                x.remaining
-            };
+    let market_entries = if request.strategy == MarketStrategy::Appraisal {
+        sqlx::query!("
+                SELECT
+                    order_id,
+                    structure_id,
+                    price,
+                    remaining,
+                    virtual_remaining,
+                    is_buy,
+                    type_id
+                FROM market_order_latest mol
+                WHERE mol.type_id = ANY($1)
+                AND mol.structure_id = ANY($2)
+                ORDER BY mol.price ASC
+            ",
+                &type_ids.into_iter().map(|x| *x).collect::<Vec<_>>(),
+                &request.markets.iter().map(|x| **x).collect::<Vec<_>>(),
+            )
+            .fetch_all(pool)
+            .await
+            .map_err(MarketError::FetchMarketEntries)?.into_iter()
+            .map(|x| {
+                let quantity = if request.virtual_market {
+                    x.virtual_remaining
+                } else {
+                    x.remaining
+                };
 
-            MarketEntry {
-                order_id:     x.order_id,
-                structure_id: x.structure_id.into(),
-                price:        x.price,
-                quantity:     quantity,
-                item_volume:  items.get(&x.type_id.into()).unwrap().volume as f64,
-                type_id:      x.type_id.into(),
-            }
-        })
-        .collect::<Vec<_>>();
+                MarketEntry {
+                    order_id:       x.order_id,
+                    structure_id:   x.structure_id.into(),
+                    price:          x.price,
+                    quantity:       quantity,
+                    item_volume:    items.get(&x.type_id.into()).unwrap().volume as f64,
+                    type_id:        x.type_id.into(),
+                    is_buy:         x.is_buy,
+                }
+            })
+            .collect::<Vec<_>>()
+    } else {
+        sqlx::query!("
+                SELECT
+                    order_id,
+                    structure_id,
+                    price,
+                    remaining,
+                    virtual_remaining,
+                    type_id
+                FROM market_order_latest mol
+                WHERE mol.type_id = ANY($1)
+                AND mol.structure_id = ANY($2)
+                AND mol.is_buy = false
+                ORDER BY mol.price ASC
+            ",
+                &type_ids.into_iter().map(|x| *x).collect::<Vec<_>>(),
+                &request.markets.iter().map(|x| **x).collect::<Vec<_>>(),
+            )
+            .fetch_all(pool)
+            .await
+            .map_err(MarketError::FetchMarketEntries)?.into_iter()
+            .map(|x| {
+                let quantity = if request.virtual_market {
+                    x.virtual_remaining
+                } else {
+                    x.remaining
+                };
+
+                MarketEntry {
+                    order_id:       x.order_id,
+                    structure_id:   x.structure_id.into(),
+                    price:          x.price,
+                    quantity:       quantity,
+                    item_volume:    items.get(&x.type_id.into()).unwrap().volume as f64,
+                    type_id:        x.type_id.into(),
+                    is_buy:         false,
+                }
+            })
+            .collect::<Vec<_>>()
+    };
 
     let mut market_last_fetch = HashMap::new();
     let mut structure_ids = market_entries
@@ -116,85 +158,50 @@ pub async fn bulk(
         }
     }
 
-    let result = if request.strategy == BuyStrategy::SmartBuy {
-        let config = if let Some(x) = request.smart_buy_config {
-            x
-        } else {
-            return Ok(Vec::new());
-        };
+    let result = match request.strategy {
+        MarketStrategy::Appraisal => {
+            self::appraisal::appraisal(
+                items,
+                market_items,
+                market_entries,
+                market_last_fetch,
+            )
+        },
+        MarketStrategy::MultiBuy => {
+            self::multibuy::multibuy(
+                items,
+                market_items,
+                market_entries,
+                market_last_fetch,
+            )
+        },
+        MarketStrategy::SmartBuy => {
+            let config = if let Some(x) = request.smart_buy_config {
+                x
+            } else {
+                return Ok(Vec::new());
+            };
 
-        self::smartbuy::smartbuy(
-            market_items,
-            market_entries,
-            market_last_fetch,
-            config,
-        )
-    } else if request.strategy == BuyStrategy::MultiBuy {
-        self::multibuy::multibuy(
-            market_items,
-            market_entries,
-            market_last_fetch,
-        )
-    } else {
-        Vec::new()
+            self::smartbuy::smartbuy(
+                items,
+                market_items,
+                market_entries,
+                market_last_fetch,
+                config,
+            )
+        }
     };
+
     Ok(result)
 }
 
 #[derive(Clone, Debug)]
 pub struct MarketEntry {
-    pub order_id:     i64,
-    pub structure_id: StructureId,
-    pub price:        f64,
-    pub quantity:     i32,
-    pub item_volume:  f64,
-    pub type_id:      TypeId,
-}
-
-#[cfg(test)]
-mod bulk_market_tests {
-    use sqlx::postgres::PgPoolOptions;
-    use starfoundry_lib_market::{BuyStrategy, GasDecompressionEfficiency, MarketBulkRequest, MarketItemList, OreReprocessingEfficiency, SmartBuyConfig};
-    use starfoundry_lib_types::{StructureId, TypeId};
-
-    use crate::eve_gateway_api_client;
-    use crate::market::bulk;
-
-    #[tokio::test]
-    async fn prismatic_test() {
-        dotenvy::dotenv().ok();
-
-        let pool = PgPoolOptions::new()
-            .connect("postgresql://postgres:postgres@localhost:5432/dev-sf-market")
-            .await
-            .unwrap();
-
-        let api_client = eve_gateway_api_client().unwrap();
-
-        let request = MarketBulkRequest {
-            strategy:           BuyStrategy::SmartBuy,
-            item_list:          Some(vec![
-                                    MarketItemList {
-                                        quantity:   5_000_000,
-                                        type_id:    TypeId(37i32),
-                                    }
-                                ]),
-            item_list_str:      None,
-            markets:            vec![StructureId(60003760)],
-            smart_buy_config:   Some(SmartBuyConfig {
-                                    gas_decompression:      Some(GasDecompressionEfficiency::default()),
-                                    mineral_compression:    Some(OreReprocessingEfficiency::default())
-                                }),
-            ..Default::default()
-        };
-
-        let result = bulk(
-                &pool,
-                &api_client,
-                request
-            )
-            .await
-            .unwrap();
-        dbg!(result);
-    }
+    pub order_id:       i64,
+    pub structure_id:   StructureId,
+    pub price:          f64,
+    pub quantity:       i32,
+    pub item_volume:    f64,
+    pub type_id:        TypeId,
+    pub is_buy:         bool,
 }

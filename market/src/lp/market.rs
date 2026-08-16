@@ -1,6 +1,6 @@
 use good_lp::{Constraint, Expression, ProblemVariables, Solution, SolverModel, Variable, constraint, default_solver, variable, variables};
 use std::collections::HashMap;
-use starfoundry_lib_types::{StructureId, TypeId};
+use starfoundry_lib_types::StructureId;
 
 use crate::lp::{LpError, Result};
 use crate::market::MarketEntry;
@@ -142,7 +142,6 @@ impl MarketProblem {
                     .or_insert(MarketProblemResult {
                         quantity: buy_quantity.ceil() as i32,
                         price: entry.price.ceil(),
-                        type_id: entry.type_id,
                     });
             }
         }
@@ -155,7 +154,6 @@ impl MarketProblem {
 pub struct MarketProblemResult {
     pub quantity: i32,
     pub price: f64,
-    pub type_id: TypeId,
 }
 
 impl MarketEntry {

@@ -1,5 +1,6 @@
 use chrono::NaiveDateTime;
-use starfoundry_lib_market::{Asteroid, Gas, MarketBulkResponse, MarketItemList, Mineral, SmartBuyConfig};
+use starfoundry_lib_eve_gateway::Item;
+use starfoundry_lib_market::{Asteroid, Gas, MarketBulkResponse, MarketItem, Mineral, SmartBuyConfig};
 use starfoundry_lib_types::{StructureId, TypeId};
 use std::collections::HashMap;
 
@@ -7,7 +8,8 @@ use crate::lp::{AsteroidCompressionProblem, MarketProblem};
 use crate::market::MarketEntry;
 
 pub fn smartbuy(
-    market_items:   Vec<MarketItemList>,
+    items:          HashMap<TypeId, Item>,
+    wanted_items:   Vec<MarketItem>,
     market_entries: Vec<MarketEntry>,
     last_fetched:   HashMap<StructureId, NaiveDateTime>,
     config:         SmartBuyConfig,
@@ -27,6 +29,7 @@ pub fn smartbuy(
                 .or_insert(vec![x.clone()]);
         });
 
+    // check if mineral compression is active and search for those first
     if config.mineral_compression.is_some() {
         let market_entries = market_data
             .iter()
@@ -41,7 +44,7 @@ pub fn smartbuy(
             .cloned()
             .collect::<Vec<_>>();
 
-        let minerals = market_items
+        let minerals = wanted_items
             .iter()
             .filter(|x| Asteroid::mineral_type_ids().contains(&x.type_id))
             .map(|x| (Mineral::from(x.type_id), x.quantity as f64))
@@ -54,49 +57,65 @@ pub fn smartbuy(
         let result = lp.solve(minerals.clone());
 
         if let Ok(x) = result {
-            let result = x.into_iter()
-                .map(|((structure_id, _), x)| MarketBulkResponse {
+            for ((structure_id, type_id), market_result) in x.into_iter() {
+                let item = if let Some(x) = items.get(&type_id) {
+                    x
+                } else {
+                    continue;
+                };
+
+                results.push(MarketBulkResponse {
                     insufficient_data:  false,
-                    price:              x.price,
-                    quantity:           x.quantity as u64,
+                    price:              market_result.price,
+                    buy_price:          None,
+                    sell_price:         None,
+                    quantity:           market_result.quantity as u64,
                     source:             structure_id,
-                    type_id:            x.type_id,
-                    last_fetch:         last_fetched.get(&structure_id.into()).cloned(),
-                })
-                .collect::<Vec<_>>();
-            results.extend(result);
+                    item:               item.clone(),
+                    last_fetch:         last_fetched.get(&structure_id).cloned(),
+                });
+            }
         } else {
             for mineral_type_id in Asteroid::mineral_type_ids() {
                 let quantity = minerals
                     .get(&Mineral::from(mineral_type_id))
                     .unwrap_or(&0f64);
 
+                let item = if let Some(x) = items.get(&mineral_type_id) {
+                    x
+                } else {
+                    continue;
+                };
+
                 results.push(MarketBulkResponse {
                     insufficient_data:  true,
                     price:              0f64,
+                    buy_price:          None,
+                    sell_price:         None,
                     quantity:           *quantity as u64,
                     source:             StructureId(0),
-                    type_id:            mineral_type_id,
+                    item:               item.clone(),
                     last_fetch:         None,
                 });
             }
         }
     }
 
-    for item in market_items.iter() {
-        if !market_data.contains_key(&item.type_id) {
+    // go through all items and find the best matching prices
+    for wanted_item in wanted_items.iter() {
+        if !market_data.contains_key(&wanted_item.type_id) {
             continue;
         }
 
         if config.mineral_compression.is_some() &&
-            Asteroid::mineral_type_ids().contains(&item.type_id) {
+            Asteroid::mineral_type_ids().contains(&wanted_item.type_id) {
 
             continue;
         }
 
-        let mut data = market_data.get(&item.type_id).unwrap().clone();
+        let mut data = market_data.get(&wanted_item.type_id).unwrap().clone();
         if config.gas_decompression.is_some() {
-            if let Ok(gas) = Gas::try_from(item.type_id) {
+            if let Ok(gas) = Gas::try_from(wanted_item.type_id) {
                 if gas.is_uncompressed() {
                     let market_data = market_data
                         .get(&gas.to_compressed_type_id())
@@ -113,10 +132,16 @@ pub fn smartbuy(
         lp.calculate_market(data.clone());
 
         // increase required amount
-        let result = if Gas::is_gas(item.type_id) && let Some(x) = config.gas_decompression {
-            lp.solve(x.compression_quantity(item.quantity))
+        let result = if Gas::is_gas(wanted_item.type_id) && let Some(x) = config.gas_decompression {
+            lp.solve(x.compression_quantity(wanted_item.quantity))
         } else {
-            lp.solve(item.quantity)
+            lp.solve(wanted_item.quantity)
+        };
+
+        let item = if let Some(x) = items.get(&wanted_item.type_id) {
+            x
+        } else {
+            continue;
         };
 
         if let Ok(x) = result {
@@ -124,9 +149,11 @@ pub fn smartbuy(
                 .map(|(structure_id, x)| MarketBulkResponse {
                     insufficient_data:  false,
                     price:              x.price,
+                    buy_price:          None,
+                    sell_price:         None,
                     quantity:           x.quantity as u64,
                     source:             structure_id.into(),
-                    type_id:            x.type_id,
+                    item:               item.clone(),
                     last_fetch:         last_fetched.get(&structure_id.into()).cloned(),
                 })
                 .collect::<Vec<_>>();
@@ -135,9 +162,11 @@ pub fn smartbuy(
             results.push(MarketBulkResponse {
                 insufficient_data:  true,
                 price:              0f64,
-                quantity:           item.quantity as u64,
+                buy_price:          None,
+                sell_price:         None,
+                quantity:           wanted_item.quantity as u64,
                 source:             StructureId(0),
-                type_id:            item.type_id,
+                item:               item.clone(),
                 last_fetch:         None,
             });
         }

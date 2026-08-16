@@ -2,7 +2,7 @@ use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::EveGatewayApiClientItem;
 use starfoundry_lib_industry::project::ProjectMarketBuy;
 use starfoundry_lib_industry::ProjectUuid;
-use starfoundry_lib_market::{Asteroid, BuyStrategy, Gas, MarketApiClientOrder, MarketBulkRequest, MarketItemList, SmartBuyConfig};
+use starfoundry_lib_market::{Asteroid, MarketStrategy, Gas, MarketApiClientOrder, MarketBulkRequest, MarketItem, SmartBuyConfig};
 use starfoundry_lib_types::TypeId;
 use std::collections::HashMap;
 use uuid::Uuid;
@@ -52,37 +52,37 @@ pub async fn list_market_buy(
         .map(|x| (x.type_id, x))
         .collect::<HashMap<_, _>>();
 
-    let market_entries = if config.strategy == BuyStrategy::MultiBuy {
+    let market_entries = if config.strategy == MarketStrategy::MultiBuy {
         market_api_client()
             .unwrap()
             .bulk_latest_orders(MarketBulkRequest {
                 item_list: Some(
-                    entries.iter().map(|x| MarketItemList {
+                    entries.iter().map(|x| MarketItem {
                         quantity: x.quantity,
                         type_id: x.type_id.into(),
                     })
                     .collect::<Vec<_>>()
                 ),
                 markets: config.structure_ids,
-                strategy: BuyStrategy::MultiBuy,
+                strategy: MarketStrategy::MultiBuy,
                 virtual_market: true,
                 ..Default::default()
             })
             .await
             .unwrap()
-    } else if config.strategy == BuyStrategy::SmartBuy {
+    } else if config.strategy == MarketStrategy::SmartBuy {
         market_api_client()
             .unwrap()
             .bulk_latest_orders(MarketBulkRequest {
                 item_list: Some(
-                    entries.iter().map(|x| MarketItemList {
+                    entries.iter().map(|x| MarketItem {
                         quantity: x.quantity,
                         type_id: x.type_id.into(),
                     })
                     .collect::<Vec<_>>()
                 ),
                 markets: config.structure_ids,
-                strategy: BuyStrategy::SmartBuy,
+                strategy: MarketStrategy::SmartBuy,
                 virtual_market: true,
                 smart_buy_config: Some(SmartBuyConfig {
                     gas_decompression: config.gas_decompression,
@@ -108,7 +108,7 @@ pub async fn list_market_buy(
         let market_entry = market_entries
             .iter()
             .cloned()
-            .filter(|x| x.type_id == entry.type_id.into())
+            .filter(|x| x.item.type_id == entry.type_id.into())
             .collect::<Vec<_>>();
 
         let project_group = ProjectMarketBuy {
@@ -142,7 +142,7 @@ pub async fn list_market_buy(
         let market_entry = market_entries
             .iter()
             .cloned()
-            .filter(|x| x.type_id == compressed_gas)
+            .filter(|x| x.item.type_id == compressed_gas)
             .collect::<Vec<_>>();
 
         let project_group = ProjectMarketBuy {
@@ -177,7 +177,7 @@ pub async fn list_market_buy(
         let market_entry = market_entries
             .iter()
             .cloned()
-            .filter(|x| x.type_id == type_id)
+            .filter(|x| x.item.type_id == type_id)
             .collect::<Vec<_>>();
 
         let project_group = ProjectMarketBuy {

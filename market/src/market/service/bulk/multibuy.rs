@@ -1,12 +1,14 @@
-use starfoundry_lib_market::{MarketBulkResponse, MarketItemList};
+use chrono::NaiveDateTime;
+use starfoundry_lib_eve_gateway::Item;
+use starfoundry_lib_market::{MarketItem, MarketBulkResponse};
 use starfoundry_lib_types::{StructureId, TypeId};
 use std::collections::HashMap;
 
 use crate::market::service::MarketEntry;
-use chrono::NaiveDateTime;
 
 pub fn multibuy(
-    wanted_items:   Vec<MarketItemList>,
+    items:          HashMap<TypeId, Item>,
+    wanted_items:   Vec<MarketItem>,
     market_entries: Vec<MarketEntry>,
     last_fetched:   HashMap<StructureId, NaiveDateTime>,
 ) -> Vec<MarketBulkResponse> {
@@ -17,12 +19,11 @@ pub fn multibuy(
         let mut grouped_by_station = HashMap::new();
         for price in market_entries.iter().filter(|x| x.type_id == item.type_id) {
             let entry = CalculationHelper {
-                insufficient_data: false,
-                price: price.price,
-                quantity: item.quantity as u64,
-                remaining: price.quantity as u64,
-                source: *price.structure_id,
-                type_id: *item.type_id,
+                insufficient_data:  false,
+                price:              price.price,
+                quantity:           item.quantity as u64,
+                remaining:          price.quantity as u64,
+                source:             *price.structure_id,
             };
 
             grouped_by_station
@@ -106,23 +107,32 @@ pub fn multibuy(
         }
     }
 
-    viable_markets
-        .into_iter()
-        .map(|(_, x)| MarketBulkResponse {
-            insufficient_data:  x.insufficient_data,
-            price:              x.price,
-            quantity:           x.quantity,
-            source:             x.source.into(),
-            type_id:            x.type_id.into(),
-            last_fetch:         last_fetched.get(&x.source.into()).cloned(),
-        })
-        .collect::<Vec<_>>()
+    let mut result = Vec::new();
+    for (type_id, viable_market) in viable_markets {
+        let item = if let Some(x) = items.get(&type_id) {
+            x
+        } else {
+            continue;
+        };
+
+        result.push(MarketBulkResponse {
+            insufficient_data:  viable_market.insufficient_data,
+            price:              viable_market.price,
+            buy_price:          None,
+            sell_price:         None,
+            quantity:           viable_market.quantity,
+            source:             viable_market.source.into(),
+            item:               item.clone(),
+            last_fetch:         last_fetched.get(&viable_market.source.into()).cloned(),
+        });
+    }
+
+    result
 }
 
 #[derive(Clone, Debug, Default)]
 struct CalculationHelper {
     pub source:             i64,
-    pub type_id:            i32,
     pub quantity:           u64,
     pub price:              f64,
     pub insufficient_data:  bool,
@@ -131,11 +141,34 @@ struct CalculationHelper {
 
 #[cfg(test)]
 mod bulk_multibuy_tests {
+
     use starfoundry_lib_types::{StructureId, TypeId};
-    use starfoundry_lib_market::MarketItemList;
-    
-    use crate::market::MarketEntry;
     use std::collections::HashMap;
+    use starfoundry_lib_eve_gateway::{Category, Group, Item};
+    use starfoundry_lib_market::MarketItem;
+
+    use crate::market::MarketEntry;
+
+    fn items() -> HashMap<TypeId, Item> {
+        let mut items = HashMap::new();
+        items.insert(1.into(), Item {
+            category: Category {
+                category_id: 1.into(),
+                name: "Test Category".into(),
+            },
+            group: Group {
+                category_id: 1.into(),
+                group_id: 1.into(),
+                name: "Test Group".into(),
+            },
+            name: "Test item".into(),
+            type_id: 1.into(),
+            volume: 0f32,
+            meta_group: None,
+            repackaged: None,
+        });
+        items
+    }
 
     #[test]
     fn no_overflow() {
@@ -147,6 +180,7 @@ mod bulk_multibuy_tests {
                 quantity: 100i32,
                 structure_id: 1i64.into(),
                 type_id: TypeId(1),
+                is_buy: false,
             },
             MarketEntry {
                 item_volume: 0f64,
@@ -155,17 +189,23 @@ mod bulk_multibuy_tests {
                 quantity: 500i32,
                 structure_id: 2i64.into(),
                 type_id: TypeId(1),
+                is_buy: false,
             }
         ];
 
         let wanted = vec![
-            MarketItemList {
-                quantity: 5,
-                type_id:  TypeId(1),
+            MarketItem {
+                quantity:   5,
+                type_id:    1.into(),
             }
         ];
 
-        let result = super::multibuy(wanted, market_entries, HashMap::new());
+        let result = super::multibuy(
+            items(),
+            wanted,
+            market_entries,
+            HashMap::new()
+        );
         assert_eq!(result.len(), 1);
         assert_eq!(result[0].price, 1f64);
         assert_eq!(result[0].quantity, 5);
@@ -183,6 +223,7 @@ mod bulk_multibuy_tests {
                 quantity: 100i32,
                 structure_id: 1i64.into(),
                 type_id: TypeId(1),
+                is_buy: false,
             },
             MarketEntry {
                 item_volume: 0f64,
@@ -191,17 +232,23 @@ mod bulk_multibuy_tests {
                 quantity: 500i32,
                 structure_id: 2i64.into(),
                 type_id: TypeId(1),
+                is_buy: false,
             }
         ];
 
         let wanted = vec![
-            MarketItemList {
-                quantity: 101,
-                type_id:  TypeId(1),
+            MarketItem {
+                quantity:   101,
+                type_id:    1.into(),
             }
         ];
 
-        let result = super::multibuy(wanted, market_entries, HashMap::new());
+        let result = super::multibuy(
+            items(),
+            wanted,
+            market_entries,
+            HashMap::new()
+        );
         assert_eq!(result.len(), 1);
         assert_eq!(result[0].price, 2f64);
         assert_eq!(result[0].quantity, 101);
@@ -219,6 +266,7 @@ mod bulk_multibuy_tests {
                 quantity: 1i32,
                 structure_id: 1i64.into(),
                 type_id: TypeId(1),
+                is_buy: false,
             },
             MarketEntry {
                 item_volume: 0f64,
@@ -227,17 +275,23 @@ mod bulk_multibuy_tests {
                 quantity: 1i32,
                 structure_id: 2i64.into(),
                 type_id: TypeId(1),
+                is_buy: false,
             }
         ];
 
         let wanted = vec![
-            MarketItemList {
-                quantity: 3,
-                type_id:  TypeId(1),
+            MarketItem {
+                quantity:   3,
+                type_id:    1.into(),
             }
         ];
 
-        let result = super::multibuy(wanted, market_entries, HashMap::new());
+        let result = super::multibuy(
+            items(),
+            wanted,
+            market_entries,
+            HashMap::new()
+        );
         assert_eq!(result.len(), 1);
         assert_eq!(result[0].price, 2f64);
         assert_eq!(result[0].quantity, 3);

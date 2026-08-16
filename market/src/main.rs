@@ -86,7 +86,7 @@ fn app(
 
     // build our application with a route
     let (router, api) = OpenApiRouter::with_openapi(ApiDoc::openapi())
-        .nest("/markets", market::routes(state.clone()))
+        .nest("/markets", market::routes())
         .nest("/prices", price::routes())
         .nest("/structures", structure::routes())
         .layer(
