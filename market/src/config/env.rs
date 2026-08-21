@@ -48,7 +48,7 @@ impl ConfigEnv {
     }
 
     fn validate_env() -> usize {
-        vec![
+        [
             ENV_DATABASE_URL,
             ENV_APP_ADDRESS,
             ENV_SERVICE_ADDRESS,

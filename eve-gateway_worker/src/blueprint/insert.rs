@@ -17,7 +17,7 @@ pub async fn insert_blueprints(
     }
 
     let mut entries = entries;
-    entries.sort_by(|a, b| a.item_id.cmp(&b.item_id));
+    entries.sort_by_key(|a| a.item_id);
     entries.dedup_by_key(|x| x.item_id);
 
     let mut item_ids            = Vec::new();
@@ -35,8 +35,8 @@ pub async fn insert_blueprints(
             )
             .unwrap_or("Unknown".into());
 
-        item_ids.push(*entry.item_id as i64);
-        location_id.push(*entry.location_id as i64);
+        item_ids.push(*entry.item_id);
+        location_id.push(*entry.location_id);
         type_ids.push(*entry.type_id);
         location_flags.push(location_flag);
         material_efficiency.push(entry.material_efficiency);
@@ -98,7 +98,7 @@ pub async fn insert_blueprints(
         )
         .execute(&mut *transaction)
         .await
-        .map_err(|e| Error::InsertBlueprintsError(e, owner_id))?;
+        .map_err(|e| Error::InsertBlueprints(e, owner_id))?;
     // TODO: refactor to `as_millis_f64()` when https://github.com/rust-lang/rust/issues/122451 is stable
     let update_time = update_start.elapsed().as_millis();
     task.metric.blueprint_insert_row_change(

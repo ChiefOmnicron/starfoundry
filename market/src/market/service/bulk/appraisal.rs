@@ -47,11 +47,7 @@ pub fn appraisal(
         let lowest_sell = sell_prices.first().map(|x| x.price).unwrap_or(0f64);
         let order_sell = sell_prices.iter().map(|x| x.quantity).sum();
 
-        let insufficient_data = if highest_buy > 0f64 && lowest_sell > 0f64 {
-            false
-        } else {
-            true
-        };
+        let insufficient_data = !(highest_buy > 0f64 && lowest_sell > 0f64);
 
         let last_fetch = if let Some(x) = last_fetched.get(&structure_id) {
             x
@@ -75,7 +71,7 @@ pub fn appraisal(
                                     min: lowest_sell,
                                     total_orders: order_sell,
                                 }),
-            last_fetch:         Some(last_fetch.clone()),
+            last_fetch:         Some(*last_fetch),
         });
     }
 

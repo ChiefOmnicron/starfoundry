@@ -1850,17 +1850,16 @@ impl Asteroid {
         &self,
         mineral: Mineral,
     ) -> f64 {
-        self.minerals()
+        *self.minerals()
             .get(&mineral)
             .unwrap_or(&0f64)
-            .clone()
     }
 
     pub fn minerals(&self) -> HashMap<Mineral, f64> {
         let mineral_init = |minerals: Vec<Mineral>, base: Vec<f64>| {
             minerals
                 .into_iter()
-                .zip(base.into_iter())
+                .zip(base)
                 .collect::<HashMap<_, _>>()
         };
 
@@ -3793,7 +3792,8 @@ impl Asteroid {
     }
 
     pub fn is_raw(&self) -> bool {
-        match self {
+        matches!(
+            self,
             Self::Tritanium |
             Self::Pyerite |
             Self::Mexallon |
@@ -3821,13 +3821,13 @@ impl Asteroid {
             Self::Promethium |
             Self::Neodymium |
             Self::Dysprosium |
-            Self::Thulium => true,
-            _ => false
-        }
+            Self::Thulium
+        )
     }
 
     pub fn is_asteroid(&self) -> bool {
-        match self {
+        matches!(
+            self,
             Self::ArkonorIGrade |
             Self::ArkonorIIGrade |
             Self::ArkonorIIIGrade |
@@ -3962,13 +3962,13 @@ impl Asteroid {
             Self::YtiriumIGrade |
             Self::YtiriumIIGrade |
             Self::YtiriumIIIGrade |
-            Self::YtiriumIVGrade => true,
-            _ => false,
-        }
+            Self::YtiriumIVGrade
+        )
     }
 
     pub fn is_compressed_asteroid(&self) -> bool {
-        match self {
+        matches!(
+            self,
             Self::CompressedArkonorIGrade |
             Self::CompressedArkonorIIGrade |
             Self::CompressedArkonorIIIGrade |
@@ -4103,13 +4103,13 @@ impl Asteroid {
             Self::CompressedYtiriumIGrade |
             Self::CompressedYtiriumIIGrade |
             Self::CompressedYtiriumIIIGrade |
-            Self::CompressedYtiriumIVGrade => true,
-            _ => false,
-        }
+            Self::CompressedYtiriumIVGrade
+        )
     }
 
     pub fn is_uncompressed_moon(&self) -> bool {
-        match self {
+        matches!(
+            self,
             Self::Bitumens |
             Self::BrimfulBitumens |
             Self::GlisteningBitumens |
@@ -4188,13 +4188,13 @@ impl Asteroid {
 
             Self::Ytterbite |
             Self::BountifulYtterbite |
-            Self::ShiningYtterbite => true,
-            _ => false,
-        }
+            Self::ShiningYtterbite
+        )
     }
 
     pub fn is_compressed_moon(&self) -> bool {
-        match self {
+        matches!(
+            self,
             Self::CompressedBitumens |
             Self::CompressedBrimfulBitumens |
             Self::CompressedGlisteningBitumens |
@@ -4273,13 +4273,13 @@ impl Asteroid {
 
             Self::CompressedYtterbite |
             Self::CompressedBountifulYtterbite |
-            Self::CompressedShiningYtterbite => true,
-            _ => false,
-        }
+            Self::CompressedShiningYtterbite
+        )
     }
 
     pub fn is_prismatic(&self) -> bool {
-        match self {
+        matches!(
+            self,
             Self::Prismatic             |
             Self::CompressedPrismatic   |
             Self::UnrefinedIsogen       |
@@ -4289,9 +4289,8 @@ impl Asteroid {
             Self::UnrefinedNocxium      |
             Self::UnrefinedPyerite      |
             Self::UnrefinedTritanium    |
-            Self::UnrefinedZydrine      => true,
-            _ => false
-        }
+            Self::UnrefinedZydrine
+        )
     }
 
     pub fn prismatic_name(&self) -> String {
@@ -4687,13 +4686,9 @@ impl Asteroid {
     pub fn is_any_asteroid(
         &self,
     ) -> bool {
-        if self.is_asteroid() ||
+        self.is_asteroid() ||
             self.is_compressed_moon() ||
-            self.is_compressed_asteroid() {
-            true
-        } else {
-            false
-        }
+            self.is_compressed_asteroid()
     }
 
     pub fn try_from_asteroid(

@@ -36,11 +36,11 @@ pub async fn by_region_task(
 
     let order_ids = entries
         .iter()
-        .map(|x| *x.order_id as i64)
+        .map(|x| *x.order_id)
         .collect::<Vec<_>>();
     let type_id = entries
         .iter()
-        .map(|x| *x.type_id as i32)
+        .map(|x| *x.type_id)
         .collect::<Vec<_>>();
     let price = entries
         .iter()

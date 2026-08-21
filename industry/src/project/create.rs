@@ -61,7 +61,7 @@ pub async fn api(
         (
             StatusCode::CREATED,
             Json(CreateProjectResponse {
-                id: id.into(),
+                id,
             })
         )
     )

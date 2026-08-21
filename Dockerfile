@@ -118,8 +118,7 @@ CMD         ["/usr/local/bin/app"]
 #           mapping_api
 ###############################################################################
 FROM builder AS mapping-api-builder
-RUN         apt-get install -y clang coinor-cbc coinor-libcbc-dev && \
-            cargo build --bin starfoundry_bin-mapping --release
+RUN         cargo build --bin starfoundry_bin-mapping --release
 
 FROM ubuntu:26.04 AS mapping-api
 WORKDIR     /usr/local/bin

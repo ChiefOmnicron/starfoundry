@@ -1,7 +1,7 @@
 use thiserror::Error;
 use axum::response::{IntoResponse, Response};
 use reqwest::StatusCode;
-use starfoundry_lib_gateway::ErrorResponse;
+use starfoundry_lib_gateway::{ErrorResponse, boxed_from};
 use axum::Json;
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
@@ -10,7 +10,7 @@ pub type Result<T, E = Error> = std::result::Result<T, E>;
 #[non_exhaustive]
 pub enum Error {
     #[error("{0}")]
-    GatewayClientError(#[from] starfoundry_lib_gateway::error::Error),
+    GatewayClientError(Box<starfoundry_lib_gateway::error::Error>),
 
     #[error("the env {0} is not set")]
     EnvNotSet(&'static str),
@@ -57,3 +57,5 @@ impl IntoResponse for Error {
         }
     }
 }
+
+boxed_from!(Error::GatewayClientError, starfoundry_lib_gateway::error::Error);

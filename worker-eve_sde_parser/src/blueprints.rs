@@ -52,7 +52,7 @@ pub async fn insert_into_database(
         .collect::<Vec<_>>();
     let service_modules = blueprints
         .iter()
-        .map(|(a, v)| {
+        .map(|(a, _)| {
             match items.get(a) {
                 Some(x) => {
                     if x.group_id == 1013.into()|| x.group_id == 110.into() {

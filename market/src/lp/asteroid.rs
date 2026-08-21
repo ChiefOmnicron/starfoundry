@@ -74,7 +74,7 @@ impl AsteroidCompressionProblem {
 
             for (mineral, quantity) in asteroid.minerals() {
                 let efficiency = self.mineral_compression
-                    .unwrap_or(OreReprocessingEfficiency::default())
+                    .unwrap_or_default()
                     .efficiency();
 
                 let quantity = if asteroid.is_any_asteroid() {
@@ -99,7 +99,7 @@ impl AsteroidCompressionProblem {
         entries: Vec<MarketEntry>,
     ) {
         for entry in entries {
-            for reprocess_type in vec![
+            for reprocess_type in [
                 Asteroid::UnrefinedIsogen,
                 Asteroid::UnrefinedMegacyte,
                 Asteroid::UnrefinedMexallon,
@@ -136,7 +136,7 @@ impl AsteroidCompressionProblem {
 
                 for (mineral, quantity) in reprocess_type.minerals() {
                     let efficiency = self.mineral_compression
-                        .unwrap_or(OreReprocessingEfficiency::default())
+                        .unwrap_or_default()
                         .efficiency();
 
                     let quantity = (var * quantity) * efficiency;
@@ -213,12 +213,12 @@ impl AsteroidCompressionProblem {
         for (var, definition) in mapping.iter() {
             let buy_quantity = problem_result.value(*var);
             if buy_quantity > 0f64 {
-                let name = format!("{}", definition);
+                let name = definition.to_string();
 
                 let order_id = name
                     .split_once("_")
                     .iter()
-                    .last()
+                    .next_back()
                     .unwrap().1
                     .parse::<i64>()
                     .unwrap();

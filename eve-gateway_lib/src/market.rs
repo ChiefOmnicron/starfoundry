@@ -1,8 +1,8 @@
-mod market;
+mod market_model;
 mod order;
 mod prices;
 
-pub use self::market::*;
+pub use self::market_model::*;
 pub use self::order::*;
 pub use self::prices::*;
 

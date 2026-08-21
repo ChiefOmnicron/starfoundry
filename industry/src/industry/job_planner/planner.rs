@@ -76,7 +76,7 @@ impl JobPlannerEngine {
         // amount to 0
         // The correct required number will be determined in a later step
         for product_type_id in self.config.blacklist.iter() {
-            if let Some(x) = self.tree.get_mut(&product_type_id) {
+            if let Some(x) = self.tree.get_mut(product_type_id) {
                 x.needed = 0f32;
                 x.typ    = BlueprintTyp::Material;
             }
@@ -128,8 +128,7 @@ impl JobPlannerEngine {
     pub fn stocks(&self) -> Vec<StockMinimal> {
         self.stocks
             .clone()
-            .into_iter()
-            .map(|(_, stock)| stock)
+            .into_values()
             .filter(|x| x.quantity > 0)
             .collect::<Vec<_>>()
     }
@@ -221,14 +220,14 @@ impl JobPlannerEngine {
             }
 
             if let Some(x) = self.tree.get_mut(&product_type_id) {
-                let total_runs: u32 = x.runs.iter().map(|x| *x).sum();
+                let total_runs: u32 = x.runs.iter().copied().sum();
                 if x.is_product && total_runs as f32 == x.needed {
                     continue;
                 }
 
                 // total number of runs required
                 let runs = std::cmp::max(
-                    (x.needed as f32 / x.produces as f32).ceil() as u32,
+                    (x.needed / x.produces as f32).ceil() as u32,
                     1u32
                 );
 
@@ -253,7 +252,7 @@ impl JobPlannerEngine {
 
                     // run based splitting, activated when the number of runs is limited
                     if max_bp_runs < u32::MAX {
-                        let mut needed_total = (x.needed as f32 / x.produces as f32).ceil() as u32;
+                        let mut needed_total = (x.needed / x.produces as f32).ceil() as u32;
 
                         while needed_total > 0 {
                             if needed_total < max_bp_runs {
@@ -271,7 +270,7 @@ impl JobPlannerEngine {
                             1u32
                         );
 
-                        let needed_total = (x.needed as f32 / x.produces as f32).ceil();
+                        let needed_total = (x.needed / x.produces as f32).ceil();
                         let max = (needed_total / splits as f32).floor() as u32;
                         let rest = (needed_total % (max as f32 * splits as f32)) as u32;
 
@@ -358,7 +357,7 @@ impl JobPlannerEngine {
 
         // Either insert or edit the product_type_id entry
         self.tree
-            .entry(dependency.product_type_id.clone())
+            .entry(dependency.product_type_id)
             .and_modify(|x: &mut DependencyTreeEntry| {
                 x.needed += dependency.needed;
 
@@ -393,7 +392,7 @@ impl JobPlannerEngine {
     /// # Params
     /// 
     /// * `queue` > Only updates entries that have the given ids as dependency
-    ///             Allows for partial calculations
+    ///     Allows for partial calculations
     /// 
     fn calculate_runs(
         &mut self,
@@ -428,13 +427,13 @@ impl JobPlannerEngine {
                             .sum();
 
                         updated_runs
-                            .entry(p.clone())
+                            .entry(*p)
                             .and_modify(|x: &mut f32| *x += total_runs)
                             .or_insert(total_runs);
                     } else if !self.config.is_blacklisted(*p) {
                         let runs = (e.needed / e.produces as f32).ceil();
                         let per_run = e.children.get(&product_type_id).unwrap_or(&0f32);
-                        let per_run = runs as f32 * per_run;
+                        let per_run = runs * per_run;
 
                         updated_runs
                             .entry(p.clone())
@@ -454,8 +453,8 @@ impl JobPlannerEngine {
 
                     if !x.is_product {
                         x.needed = updated_runs
-                            .into_iter()
-                            .map(|(_, e)| e.ceil())
+                            .into_values()
+                            .map(|e| e.ceil())
                             .sum();
                     }
 
@@ -490,13 +489,13 @@ impl JobPlannerEngine {
                         self.stocks
                             .entry(x.product_type_id)
                             .and_modify(|y| {
-                                if x.stock as i32 > y.quantity {
-                                    y.quantity = x.stock as i32;
+                                if x.stock > y.quantity {
+                                    y.quantity = x.stock;
                                 }
                             })
                             .or_insert(StockMinimal {
                                 type_id:  x.product_type_id,
-                                quantity: x.stock as i32,
+                                quantity: x.stock,
                             });
                     }
                 }
@@ -524,7 +523,7 @@ impl JobPlannerEngine {
             for (child_product_type_id, child_val) in entry.children.iter() {
                 for run in entry.runs.iter() {
                     materials
-                        .entry(child_product_type_id.clone())
+                        .entry(*child_product_type_id)
                         .and_modify(|x: &mut f32| *x += (child_val * *run as f32).ceil())
                         .or_insert((child_val * *run as f32).ceil());
                 }
@@ -568,13 +567,13 @@ impl JobPlannerEngine {
                     self.stocks
                         .entry(x.product_type_id)
                         .and_modify(|y| {
-                            if x.stock as i32 > y.quantity {
-                                y.quantity = x.stock as i32;
+                            if x.stock > y.quantity {
+                                y.quantity = x.stock;
                             }
                         })
                         .or_insert(StockMinimal {
                             type_id:  x.product_type_id,
-                            quantity: x.stock as i32,
+                            quantity: x.stock,
                         });
                 }
             }
@@ -637,7 +636,7 @@ impl JobPlannerEngine {
                 system_cost * 0.05
             } else if structure.structure_type == StructureType::Azbel {
                 system_cost * 0.04
-            } else if structure.structure_type == StructureType::Azbel {
+            } else if structure.structure_type == StructureType::Raitaru {
                 system_cost * 0.03
             } else {
                 0f32
@@ -676,11 +675,9 @@ impl JobPlannerEngine {
     fn cleanup_stock(
         &mut self,
     ) {
-        for (type_id, _) in self.stocks.clone().iter() {
-            if let Some(x) = self.tree.get(type_id) {
-                if x.is_product {
-                    continue;
-                }
+        for type_id in self.stocks.clone().keys() {
+            if let Some(x) = self.tree.get(type_id) && x.is_product {
+                continue;
             }
 
             if self
@@ -721,7 +718,7 @@ impl JobPlannerEngine {
             // use those for the next calculations
             //
             // If no structures were found, return all
-            let structures = if structure_ids.len() > 0 {
+            let structures = if !structure_ids.is_empty() {
                 structures_clone
                     .iter()
                     .filter(|x| structure_ids.contains(&x.id))
@@ -774,19 +771,21 @@ impl JobPlannerEngine {
                     }
                 }
 
-                if blueprint.item.group.group_id == 485.into() ||
+                if (
+                    blueprint.item.group.group_id == 485.into() ||
                     blueprint.item.group.group_id == 547.into() ||
                     blueprint.item.group.group_id == 1538.into() ||
-                    blueprint.item.group.group_id == 4594.into() {
-                    if !structure.services.iter().map(|x| x.type_id).collect::<Vec<_>>().contains(&35881.into()) {
-                        continue;
-                    }
+                    blueprint.item.group.group_id == 4594.into()
+                ) && !structure.services.iter().map(|x| x.type_id).collect::<Vec<_>>().contains(&35881.into()) {
+                    continue;
                 }
-                if blueprint.item.group.group_id == 659.into() ||
-                    blueprint.item.group.group_id == 30.into() {
-                    if !structure.services.iter().map(|x| x.type_id).collect::<Vec<_>>().contains(&35877.into()) {
-                        continue;
-                    }
+                if (
+                    blueprint.item.group.group_id == 659.into() ||
+                    blueprint.item.group.group_id == 30.into()
+                ) &&
+                    !structure.services.iter().map(|x| x.type_id).collect::<Vec<_>>().contains(&35877.into()) {
+
+                    continue;
                 }
 
                 let rig_me = if let Some(x) = structure
@@ -808,10 +807,10 @@ impl JobPlannerEngine {
                     .bonus()
                     .iter()
                     .find(|x| {
-                        match x {
-                            BonusVariations::Material(_) => true,
-                            _                            => false
-                        }
+                        matches!(
+                            x,
+                            BonusVariations::Material(_),
+                        )
                     }) {
 
                     *me
@@ -884,10 +883,10 @@ impl JobPlannerEngine {
                 .bonus()
                 .iter()
                 .find(|x| {
-                    match x {
-                        BonusVariations::Material(_) => true,
-                        _                            => false
-                    }
+                    matches!(
+                        x,
+                        BonusVariations::Material(_),
+                    )
                 }) {
                     self.apply_me_bonus(
                         blueprint.product_type_id,
@@ -902,10 +901,10 @@ impl JobPlannerEngine {
                 .bonus()
                 .iter()
                 .find(|x| {
-                    match x {
-                        BonusVariations::Time(_) => true,
-                        _                        => false
-                    }
+                    matches!(
+                        x,
+                        BonusVariations::Time(_),
+                    )
                 }) {
                     self.apply_te_bonus(
                         blueprint.product_type_id,
@@ -943,15 +942,17 @@ impl JobPlannerEngine {
                 continue;
             }
 
-            let mut new_bonus = Bonus::default();
-            new_bonus.before = *base_val;
-            new_bonus.percent = bonus;
-            new_bonus.additional = tid.to_string();
-            new_bonus.typ = String::from("material");
-            new_bonus.reason = format!("{}", source);
+            let mut new_bonus = Bonus {
+                before: *base_val,
+                percent: bonus,
+                additional: tid.to_string(),
+                typ: String::from("material"),
+                reason: format!("{}", source),
+                ..Default::default()
+            };
 
-            let modifier = *base_val * (bonus as f32 / 100f32);
-            *base_val = *base_val - modifier;
+            let modifier = *base_val * (bonus / 100f32);
+            *base_val -= modifier;
 
             new_bonus.after = *base_val;
             entry.bonus.push(new_bonus);
@@ -981,14 +982,16 @@ impl JobPlannerEngine {
             return;
         }
 
-        let mut new_bonus = Bonus::default();
-        new_bonus.before = entry.time;
-        new_bonus.percent = bonus;
-        new_bonus.typ = String::from("time");
-        new_bonus.reason = format!("{}", source);
+        let mut new_bonus = Bonus {
+            before: entry.time,
+            percent: bonus,
+            typ: String::from("time"),
+            reason: format!("{}", source),
+            ..Default::default()
+        };
 
-        let modifier = entry.time * (bonus as f32 / 100f32);
-        entry.time = entry.time - modifier;
+        let modifier = entry.time * (bonus / 100f32);
+        entry.time -= modifier;
 
         new_bonus.after = entry.time;
         entry.bonus.push(new_bonus);

@@ -239,7 +239,8 @@ impl Gas {
     }
 
     pub fn is_uncompressed(&self) -> bool {
-        match self {
+        matches!(
+            self,
             Self::AmberCytoserocin                  |
             Self::AmberMykoserocin                  |
             Self::AzureCytoserocin                  |
@@ -264,9 +265,8 @@ impl Gas {
             Self::FulleriteC60                      |
             Self::FulleriteC70                      |
             Self::FulleriteC72                      |
-            Self::FulleriteC84                      => true,
-            _                                       => false,
-        }
+            Self::FulleriteC84
+        )
     }
 
     pub fn is_compressed(&self) -> bool {
@@ -390,31 +390,25 @@ impl Gas {
     pub fn compressed_type_ids() -> Vec<TypeId> {
         Gas::type_ids()
             .into_iter()
-            .map(|x| Gas::from_type_id(x.into()))
+            .map(Gas::from_type_id)
             .filter(|x| !x.is_uncompressed())
             .map(|x| x.to_type_id())
-            .map(Into::into)
             .collect::<Vec<_>>()
     }
 
     pub fn uncompressed_type_ids() -> Vec<TypeId> {
         Gas::type_ids()
             .into_iter()
-            .map(|x| Gas::from_type_id(x.into()))
+            .map(Gas::from_type_id)
             .filter(|x| x.is_uncompressed())
             .map(|x| x.to_type_id())
-            .map(Into::into)
             .collect::<Vec<_>>()
     }
 
     pub fn is_gas(
         type_id: TypeId,
     ) -> bool {
-        if Gas::type_ids().contains(&type_id) {
-            true
-        } else {
-            false
-        }
+        Gas::type_ids().contains(&type_id)
     }
 }
 

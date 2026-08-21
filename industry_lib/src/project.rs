@@ -204,7 +204,7 @@ pub trait IndustryApiClientProject: ApiClient {
     ) -> Result<Vec<ProjectJobAllGroup>> {
         self
             .fetch(
-                format!("projects/jobs"),
+                "projects/jobs",
                 &(),
             )
             .await

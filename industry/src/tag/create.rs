@@ -61,7 +61,7 @@ pub async fn api(
         (
             StatusCode::CREATED,
             Json(CreateTagResponse {
-                id: id.into(),
+                id,
             })
         )
     )

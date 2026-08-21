@@ -60,11 +60,20 @@ pub async fn run(
     let mut packaged      = Vec::new();
     let mut name          = Vec::new();
 
-    let excluded = vec![
+    let excluded_type_ids = vec![
         50097.into(),
+        26149.into(),
+        54257.into(),
+        54257.into(),
+    ];
+    let excluded_group_ids = vec![
+        227.into(),
     ];
     for item in items {
-        if excluded.contains(&item.type_id) {
+        if excluded_type_ids.contains(&item.type_id) {
+            continue;
+        }
+        if excluded_group_ids.contains(&item.group.group_id) {
             continue;
         }
 

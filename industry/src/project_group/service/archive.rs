@@ -17,5 +17,5 @@ pub async fn archive(
     .execute(pool)
     .await
     .map(drop)
-    .map_err(|e| ProjectGroupError::ArchiveGroup(e, group_id).into())
+    .map_err(|e| ProjectGroupError::ArchiveGroup(e, group_id))
 }

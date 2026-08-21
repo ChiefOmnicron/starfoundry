@@ -11,12 +11,12 @@ pub enum Error {
     ParseAdditionalData,
 
     #[error("error while syncing, error: '{0}'")]
-    SyncError(sqlx::Error),
+    Sync(sqlx::Error),
 
     #[error("error while inserting assets for '{1}', error: '{0}'")]
-    InsertAssetError(sqlx::Error, i32),
+    InsertAsset(sqlx::Error, i32),
     #[error("error while inserting blueprints for '{1}', error: '{0}'")]
-    InsertBlueprintsError(sqlx::Error, i32),
+    InsertBlueprints(sqlx::Error, i32),
 
     #[error("error while cleaning standings, error: '{0}'")]
     CleanupStandings(sqlx::Error),
@@ -32,10 +32,10 @@ pub enum Error {
     CompressSystemIndex(sqlx::Error),
 
     #[error("generic sqlx error: '{0}'")]
-    GenericSqlxError(sqlx::Error),
+    GenericSqlx(sqlx::Error),
 
     #[error(transparent)]
-    WorkerLibError(#[from] starfoundry_lib_worker::Error),
+    WorkerLib(#[from] starfoundry_lib_worker::Error),
     #[error(transparent)]
-    EveGatewayError(#[from] starfoundry_lib_eve_gateway::Error),
+    EveGateway(#[from] starfoundry_lib_eve_gateway::Error),
 }

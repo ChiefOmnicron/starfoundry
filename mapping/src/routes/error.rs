@@ -13,6 +13,8 @@ pub enum RouteError {
 }
 
 impl IntoResponse for RouteError {
+    // for future extension this is fine
+    #[allow(clippy::match_single_binding)]
     fn into_response(self) -> Response {
         match self {
             _ => {

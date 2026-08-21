@@ -75,7 +75,7 @@ pub async fn fetch(
         .collect::<Vec<_>>();
 
     let structures = crate::structure::service::list(
-            &pool,
+            pool,
             eve_gateway_api_client,
             character_id,
             StructureFilter {

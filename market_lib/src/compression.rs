@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, ToSchema)]
+#[derive(Copy, Clone, Debug, Deserialize, Default, Serialize, ToSchema)]
 pub enum OreReprocessingEfficiency {
     HsAthanorNoRig,
     HsAthanorT1,
@@ -22,13 +22,8 @@ pub enum OreReprocessingEfficiency {
     NsAthanorT2,
     NsTataraNoRig,
     NsTataraT1,
+    #[default]
     NsTataraT2,
-}
-
-impl Default for OreReprocessingEfficiency {
-    fn default() -> Self {
-        Self::NsTataraT2
-    }
 }
 
 impl OreReprocessingEfficiency {
@@ -58,7 +53,7 @@ impl OreReprocessingEfficiency {
     }
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, Serialize, ToSchema)]
+#[derive(Clone, Copy, Debug, Default, Deserialize, Serialize, ToSchema)]
 pub enum GasDecompressionEfficiency {
     AthanorLvl0,
     AthanorLvl1,
@@ -72,13 +67,8 @@ pub enum GasDecompressionEfficiency {
     TataraLvl2,
     TataraLvl3,
     TataraLvl4,
+    #[default]
     TataraLvl5,
-}
-
-impl Default for GasDecompressionEfficiency {
-    fn default() -> Self {
-        Self::TataraLvl5
-    }
 }
 
 impl GasDecompressionEfficiency {
@@ -125,24 +115,19 @@ impl GasDecompressionEfficiency {
         quantity: i32,
     ) -> i32 {
         let decompression_efficiency = self.efficiency();
-        (quantity as f64 * (decompression_efficiency as f64 / 100f64)).floor() as i32
+        (quantity as f64 * (decompression_efficiency / 100f64)).floor() as i32
     }
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, ToSchema)]
+#[derive(Clone, Copy, Debug, Deserialize, Default, ToSchema)]
 pub enum ScrapReprocessingEfficiency {
     Lvl0,
     Lvl1,
     Lvl2,
     Lvl3,
     Lvl4,
+    #[default]
     Lvl5,
-}
-
-impl Default for ScrapReprocessingEfficiency {
-    fn default() -> Self {
-        Self::Lvl5
-    }
 }
 
 impl ScrapReprocessingEfficiency {

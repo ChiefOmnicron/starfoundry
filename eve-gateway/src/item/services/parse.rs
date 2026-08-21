@@ -167,6 +167,7 @@ pub async fn load_items(
                 meta_group_id,
                 repackaged
             FROM item
+            ORDER BY name
         ")
         .fetch_all(pool)
         .await
@@ -175,6 +176,10 @@ pub async fn load_items(
     let mut all_items_name = HashMap::new();
     let mut all_items_type_id = HashMap::new();
     for item in all_items_db {
+        if item.name.contains("weather effect") {
+            panic!("asdasd");
+        }
+
         let category = if let Ok(Some(x)) = fetch_category(
             pool,
             item.category_id.into(),
@@ -220,12 +225,12 @@ fn sanitize_name(
     name: String,
 ) -> String {
     name
-        .replace("  blueprint", " blueprint")
-        .replace("  Blueprint", " Blueprint")
-        .replace("  hauler", " hauler")
-        .replace("  Hauler", " Hauler")
-        .replace("  skin", " skin")
-        .replace("  SKIN", " SKIN")
+        //.replace("  blueprint", " blueprint")
+        //.replace("  Blueprint", " Blueprint")
+        //.replace("  hauler", " hauler")
+        //.replace("  Hauler", " Hauler")
+        //.replace("  skin", " skin")
+        //.replace("  SKIN", " SKIN")
         .replace(" ", "") // \u{a0}
         .trim_start()
         .trim_end()
@@ -623,7 +628,7 @@ Naglfar Fleet Issue\t1".into();
         pool: PgPool,
     ) {
         let all_items = load_items(&pool).await;
-        let content = "[Karura, Killmail 126026825]
+        let content = "[Karura, Killmail 1337]
 Triple Neutron Blaster Cannon II, Void XL
 Triple Neutron Blaster Cannon II, Void XL
 Triple Neutron Blaster Cannon II, Void XL".into();
@@ -688,10 +693,10 @@ Triple Neutron Blaster Cannon II, Void XL".into();
         let all_items = load_items(&pool).await;
 
         for (name_lower, item) in all_items.iter() {
-            // Splitted with <space>
+            dbg!(name_lower);
             let result = parse(
                 &all_items,
-                &format!("{name_lower} 1"),
+                name_lower,
             );
             assert_eq!(result.items.len(), 1);
             assert_eq!(result.items[0].item_name, item.name.clone());

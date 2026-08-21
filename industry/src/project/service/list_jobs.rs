@@ -89,7 +89,7 @@ pub async fn list_jobs(
 
         let end_date = if let Some(x) = entry.end_date {
             NaiveDateTime::parse_from_str(&x, "%Y-%m-%dT%H:%M:%SZ")
-                .map(|x| Some(x))
+                .map(Some)
                 .unwrap_or(None)
         } else {
             None
@@ -121,7 +121,7 @@ pub async fn list_jobs(
         )
         .await?;
 
-    let project_jobs = if let Some(_) = filter.startable {
+    let project_jobs = if filter.startable.is_some() {
         project_jobs
             .into_iter()
             .filter(|y| y.status == ProjectJobStatus::ReadyToStart)
@@ -139,13 +139,12 @@ pub async fn determine_ready_to_start(
     pool:                   &PgPool,
     project_id:             ProjectUuid,
     eve_gateway_api_client: &impl EveGatewayApiClient,
-    entries:                &mut Vec<ProjectJob>,
+    entries:                &mut [ProjectJob]
 ) -> Result<()> {
     let mut waiting_for_materials = entries
         .iter()
         .filter(|x| x.status == ProjectJobStatus::WaitingForMaterials)
         .map(|x| x.item.type_id)
-        .map(Into::into)
         .collect::<Vec<_>>();
     waiting_for_materials.sort();
     waiting_for_materials.dedup();
@@ -172,7 +171,6 @@ pub async fn determine_ready_to_start(
         .iter()
         .filter(|x| x.status == ProjectJobStatus::Done)
         .map(|x| x.item.type_id)
-        .map(Into::into)
         .collect::<Vec<TypeId>>();
     // bought market data is considered as done, and qualifies for something
     // to be ready to start
@@ -189,7 +187,6 @@ pub async fn determine_ready_to_start(
         .iter()
         .filter(|x| x.status == ProjectJobStatus::Building)
         .map(|x| x.item.type_id)
-        .map(Into::into)
         .collect::<Vec<TypeId>>();
 
     for entry in entries.iter_mut() {

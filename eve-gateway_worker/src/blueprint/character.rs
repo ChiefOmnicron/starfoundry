@@ -50,7 +50,7 @@ pub async fn blueprints(
     };
 
     match insert_blueprints(
-            &pool,
+            pool,
             task,
             *additional_data.character_id,
             entries
@@ -59,7 +59,7 @@ pub async fn blueprints(
             Ok(_)   => Ok(()),
             Err(e)  => {
                 task.append_error(e.to_string());
-                Err(e.into())
+                Err(e)
             },
         }
 }

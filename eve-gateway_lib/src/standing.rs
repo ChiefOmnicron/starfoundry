@@ -1,9 +1,9 @@
-mod standing;
+mod standing_model;
 
 use starfoundry_lib_gateway::ApiClient;
 
 use crate::{ApiClientExtended, Result};
-use crate::standing::standing::Standing;
+use crate::standing::standing_model::Standing;
 
 pub trait EveGatewayApiClientStanding: ApiClient + ApiClientExtended {
     #[allow(async_fn_in_trait)]
@@ -11,7 +11,7 @@ pub trait EveGatewayApiClientStanding: ApiClient + ApiClientExtended {
         &self,
     ) -> Result<Vec<Standing>> {
         self
-            .fetch_page(&format!("proxy/auth/alliances/contacts"))
+            .fetch_page("proxy/auth/alliances/contacts")
             .await
     }
 
@@ -20,7 +20,7 @@ pub trait EveGatewayApiClientStanding: ApiClient + ApiClientExtended {
         &self,
     ) -> Result<Vec<Standing>> {
         self
-            .fetch_page(&format!("proxy/auth/characters/contacts"))
+            .fetch_page("proxy/auth/characters/contacts")
             .await
     }
 
@@ -29,7 +29,7 @@ pub trait EveGatewayApiClientStanding: ApiClient + ApiClientExtended {
         &self,
     ) -> Result<Vec<Standing>> {
         self
-            .fetch_page(&format!("proxy/auth/corporations/contacts"))
+            .fetch_page("proxy/auth/corporations/contacts")
             .await
     }
 }

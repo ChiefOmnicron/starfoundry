@@ -45,7 +45,6 @@ pub async fn list_job_assignments(
     let mut structure_ids = entries
         .iter()
         .map(|x| x.structure_id)
-        .map(Into::into)
         .collect::<Vec<_>>();
     structure_ids.sort();
     structure_ids.dedup();
@@ -53,7 +52,6 @@ pub async fn list_job_assignments(
     let mut project_ids = entries
         .iter()
         .map(|x| x.project_id)
-        .map(Into::into)
         .collect::<Vec<_>>();
     project_ids.sort();
     project_ids.dedup();
@@ -103,12 +101,12 @@ pub async fn list_job_assignments(
         } else {
             continue;
         };
-        let structure = if let Some(x) = structures.get(&entry.structure_id.into()) {
+        let structure = if let Some(x) = structures.get(&entry.structure_id) {
             x
         } else {
             continue;
         };
-        let project = if let Some(x) = projects.get(&entry.project_id.into()) {
+        let project = if let Some(x) = projects.get(&entry.project_id) {
             x.clone()
         } else {
             continue;

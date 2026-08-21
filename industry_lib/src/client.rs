@@ -55,12 +55,11 @@ impl IndustryClient {
         let env = if let Ok(x) = std::env::var(ENV_INDUSTRY_API) {
             x
         } else {
-            return Err(Error::EnvNotSet(ENV_INDUSTRY_API).into());
+            return Err(Error::EnvNotSet(ENV_INDUSTRY_API));
         };
 
         Url::parse(&env)
             .map_err(Error::UrlParseError)
-            .map_err(Into::into)
     }
 }
 
@@ -76,7 +75,6 @@ impl ApiClient for IndustryClient {
         self.0
             .fetch(path, query)
             .await
-            .map_err(Into::into)
     }
 
     async fn post<D, T>(
@@ -91,7 +89,6 @@ impl ApiClient for IndustryClient {
         self.0
             .post(path, data)
             .await
-            .map_err(Into::into)
     }
 
     async fn put<D, T>(
@@ -106,7 +103,6 @@ impl ApiClient for IndustryClient {
         self.0
             .put(path, data)
             .await
-            .map_err(Into::into)
     }
 
     async fn delete<T>(
@@ -119,7 +115,6 @@ impl ApiClient for IndustryClient {
         self.0
             .delete(path)
             .await
-            .map_err(Into::into)
     }
 }
 

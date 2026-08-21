@@ -61,12 +61,11 @@ pub async fn api(
             split,
         ).await?;
 
-    let status;
-    if change.jobs.is_empty() && change.materials.is_empty() {
-        status = StatusCode::NO_CONTENT;
+    let status = if change.jobs.is_empty() && change.materials.is_empty() {
+        StatusCode::NO_CONTENT
     } else {
-        status = StatusCode::OK;
-    }
+        StatusCode::OK
+    };
 
     Ok(
         (

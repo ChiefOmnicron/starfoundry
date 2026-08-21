@@ -2,7 +2,7 @@ use axum::extract::rejection::JsonRejection;
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::{IntoResponse, Response};
-use starfoundry_lib_gateway::ErrorResponse;
+use starfoundry_lib_gateway::{ErrorResponse, boxed_from};
 use starfoundry_lib_industry::{ProjectJobUuid, ProjectUuid};
 use starfoundry_lib_types::CharacterId;
 use thiserror::Error;
@@ -63,15 +63,15 @@ pub enum ProjectError {
     #[error(transparent)]
     JsonExtractorRejection(#[from] JsonRejection),
     #[error(transparent)]
-    ProjectGroupError(#[from] ProjectGroupError),
+    ProjectGroupError(Box<ProjectGroupError>),
     #[error(transparent)]
-    IndustryHubError(#[from] IndustryHubError),
+    IndustryHubError(Box<IndustryHubError>),
     #[error(transparent)]
     EveGatewayLibError(#[from] starfoundry_lib_eve_gateway::Error),
     #[error(transparent)]
     MarketLibError(#[from] starfoundry_lib_market::Error),
     #[error(transparent)]
-    ProjectLibError(#[from] starfoundry_lib_industry::Error),
+    ProjectLibError(Box<starfoundry_lib_industry::Error>),
     #[error(transparent)]
     StructureError(#[from] crate::structure::StructureError),
 }
@@ -125,3 +125,7 @@ impl IntoResponse for ProjectError {
         .into_response()
     }
 }
+
+boxed_from!(ProjectError::ProjectGroupError, ProjectGroupError);
+boxed_from!(ProjectError::IndustryHubError, IndustryHubError);
+boxed_from!(ProjectError::ProjectLibError, starfoundry_lib_industry::Error);

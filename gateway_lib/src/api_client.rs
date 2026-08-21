@@ -83,11 +83,7 @@ impl StarFoundryApiClient {
     where
         T: Default + DeserializeOwned,
     {
-        let headers = if let Ok(x) = self.identity_as_header() {
-            Some(x)
-        } else {
-            None
-        };
+        let headers = self.identity_as_header().ok();
 
         self.send_fetch(
             path,
@@ -166,12 +162,7 @@ impl StarFoundryApiClient {
         D: Debug + Serialize + Send + Sync,
         T: Default + DeserializeOwned,
     {
-        let headers = if let Ok(x) = self.identity_as_header() {
-            Some(x)
-        } else {
-            None
-        };
-
+        let headers = self.identity_as_header().ok();
         self.send_post(
             path,
             data,
@@ -246,12 +237,7 @@ impl StarFoundryApiClient {
         D: Debug + Serialize + Send + Sync,
         T: Default + DeserializeOwned,
     {
-        let headers = if let Ok(x) = self.identity_as_header() {
-            Some(x)
-        } else {
-            None
-        };
-
+        let headers = self.identity_as_header().ok();
         let path = path.into();
 
         let mut api_url = self.address.clone();
@@ -306,12 +292,7 @@ impl StarFoundryApiClient {
     where
         T: Default + DeserializeOwned,
     {
-        let headers = if let Ok(x) = self.identity_as_header() {
-            Some(x)
-        } else {
-            None
-        };
-
+        let headers = self.identity_as_header().ok();
         let path = path.into();
 
         let mut api_url = self.address.clone();

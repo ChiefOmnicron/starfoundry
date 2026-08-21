@@ -102,7 +102,7 @@ pub async fn list_all_jobs(
 
         let end_date = if let Some(x) = entry.end_date {
             NaiveDateTime::parse_from_str(&x, "%Y-%m-%dT%H:%M:%SZ")
-                .map(|x| Some(x))
+                .map(Some)
                 .unwrap_or(None)
         } else {
             None
@@ -112,7 +112,7 @@ pub async fn list_all_jobs(
             id:         entry.id.into(),
             project_id: entry.project_id.into(),
             job_id:     entry.job_id,
-            status:     entry.status.into(),
+            status:     entry.status,
 
             cost:       entry.cost,
             runs:       entry.runs,
@@ -153,7 +153,7 @@ pub async fn list_all_jobs(
         };
 
         let jobs = jobs
-                    .into_iter()
+                    .iter()
                     .filter(|x| x.status == ProjectJobStatus::ReadyToStart)
                     .cloned()
                     .collect::<Vec<_>>();

@@ -12,15 +12,10 @@ pub mod systems;
 pub mod system_distance;
 
 mod error;
-use crate::parser::stars::Star;
-use crate::parser::systems::{Position, Position2d, System};
 
 pub use self::error::*;
 
-use serde::Serialize;
 use sqlx::PgPool;
-use starfoundry_lib_types::{RegionId, SystemId};
-use std::collections::HashMap;
 use std::fs;
 
 // Folder that contains the input file
@@ -50,24 +45,23 @@ pub async fn import_sde(
     let industry_target_filters   = parser::industry_target_filters::parse(&directory)?;
     let regions                   = parser::regions::parse(&directory)?;
     let repackaged                = parser::repackaged::parse(&directory)?;
-    let stars                     = parser::stars::parse(&directory)?;
     let systems                   = parser::systems::parse(&directory)?;
     let type_dogma                = parser::type_dogma::parse(&directory)?;
     let type_material             = parser::type_material::parse(&directory)?;
-    let asteroid_belts            = parser::asteroid_belt::parse(&directory)?;
-    let npc_stations              = parser::npc_station::parse(&directory)?;
-    let moons                     = parser::moon::parse(&directory)?;
-    let planets                   = parser::planet::parse(&directory)?;
-    let stargates                 = parser::stargate::parse(&directory)?;
-    let overwrites                = parser::overwrite::parse(&directory)?;
+    //let stars                     = parser::stars::parse(&directory)?;
+    //let asteroid_belts            = parser::asteroid_belt::parse(&directory)?;
+    //let npc_stations              = parser::npc_station::parse(&directory)?;
+    //let moons                     = parser::moon::parse(&directory)?;
+    //let planets                   = parser::planet::parse(&directory)?;
+    //let stargates                 = parser::stargate::parse(&directory)?;
+    //let overwrites                = parser::overwrite::parse(&directory)?;
 
-    let mut blueprints            = parser::blueprints::parse(&directory)?;
-    let mut type_ids              = parser::type_ids::parse(&directory)?;
-
+    let blueprints            = parser::blueprints::parse(&directory)?;
+    let type_ids              = parser::type_ids::parse(&directory)?;
     //blueprints.extend(overwrites.blueprints);
     //type_ids.extend(overwrites.items);
 
-    /*blueprints_dependencies::run(
+    blueprints_dependencies::run(
             &pool,
             &blueprints,
             &type_ids
@@ -121,14 +115,12 @@ pub async fn import_sde(
             &constellations,
             &systems,
         )
-        .await?;*/
+        .await?;
     system_distance::run(
             &pool,
             &systems,
         )
         .await?;
-
-    //map::full_map(systems, stargates, regions);
 
     Ok(checksum)
 }

@@ -35,7 +35,7 @@ function RouteComponent() {
     const [opened, { open, close }] = useDisclosure(false);
     const { deleted: deletedResource } = Route.useSearch();
 
-    const [filterParams, setFilterParams] = useState<StructureFilter | undefined>();
+    const [filterParams, setFilterParams] = useState<StructureFilter | undefined>({});
     const [filterOptions, setFilterOptions] = useState<FilterPropEntry[]>([]);
 
     const {
@@ -134,6 +134,7 @@ function RouteComponent() {
             system_id: filters.find(x => x.filterKey === 'system_id')?.key as number,
             service_id: filters.find(x => x.filterKey === 'service_id')?.key as number,
             rig_id: filters.find(x => x.filterKey === 'rig_id')?.key as number,
+            include_npc: false,
         });
     };
 

@@ -32,7 +32,7 @@ pub async fn delete(
     .fetch_one(pool)
     .await
     .map(|x| ProjectGroupUuid::new(x.id))
-    .map_err(|e| ProjectGroupError::DeleteGroup(e, group_id).into())
+    .map_err(|e| ProjectGroupError::DeleteGroup(e, group_id))
 }
 
 #[cfg(test)]

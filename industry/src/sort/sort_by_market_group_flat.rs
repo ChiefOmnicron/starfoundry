@@ -8,7 +8,7 @@ macro_rules! sort_by_market_group_flat {
                 entries: Vec<$typ_in>,
             }
 
-            crate::sort_by_market_group!(inner_sort, $typ_in, Tmp);
+            $crate::sort_by_market_group!(inner_sort, $typ_in, Tmp);
 
             inner_sort(entries)
                 .into_iter()

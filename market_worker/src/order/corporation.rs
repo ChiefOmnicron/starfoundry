@@ -49,7 +49,7 @@ pub async fn corporation_orders(
     };
 
     match insert_private_orders(
-            &pool,
+            pool,
             task,
             *additional_data.corporation_id,
             entries
@@ -58,7 +58,7 @@ pub async fn corporation_orders(
             Ok(_)   => Ok(()),
             Err(e)  => {
                 task.append_error(e.to_string());
-                Err(e.into())
+                Err(e)
             },
         }
 }

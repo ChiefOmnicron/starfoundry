@@ -19,8 +19,8 @@ impl EngineResult {
     ) -> f32 {
         self
             .tree
-            .iter()
-            .map(|(_, x)| x.build_cost.total_job_cost)
+            .values()
+            .map(|x| x.build_cost.total_job_cost)
             .sum()
     }
 

@@ -2,7 +2,7 @@ use axum::extract::rejection::JsonRejection;
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::{IntoResponse, Response};
-use starfoundry_lib_gateway::ErrorResponse;
+use starfoundry_lib_gateway::{ErrorResponse, boxed_from};
 use starfoundry_lib_industry::TagUuid;
 use thiserror::Error;
 
@@ -36,9 +36,9 @@ pub enum TagError {
     #[error(transparent)]
     JsonExtractorRejection(#[from] JsonRejection),
     #[error(transparent)]
-    ProjectLibError(#[from] starfoundry_lib_industry::Error),
+    ProjectLibError(Box<starfoundry_lib_industry::Error>),
     #[error(transparent)]
-    ProjectError(#[from] crate::project::error::ProjectError),
+    ProjectError(Box<crate::project::error::ProjectError>),
 }
 
 impl IntoResponse for TagError {
@@ -63,3 +63,6 @@ impl IntoResponse for TagError {
         }
     }
 }
+
+boxed_from!(TagError::ProjectLibError, starfoundry_lib_industry::Error);
+boxed_from!(TagError::ProjectError, crate::project::error::ProjectError);

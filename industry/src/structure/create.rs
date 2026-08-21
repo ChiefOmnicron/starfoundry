@@ -60,7 +60,7 @@ pub async fn api(
         (
             StatusCode::CREATED,
             Json(CreateStructureResponse {
-                id: id.into(),
+                id,
             })
         )
     )

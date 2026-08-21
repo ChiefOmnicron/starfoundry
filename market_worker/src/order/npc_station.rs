@@ -36,7 +36,7 @@ pub async fn by_npc_station_task(
         .collect::<Vec<_>>();
 
     insert_structure_market(
-        &pool,
+        pool,
         task,
         additional_data.structure_id,
         additional_data.region_id, 

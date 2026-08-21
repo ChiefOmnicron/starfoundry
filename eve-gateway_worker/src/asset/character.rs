@@ -51,7 +51,7 @@ pub async fn assets(
     };
 
     match insert_assets(
-            &pool,
+            pool,
             task,
             *additional_data.character_id,
             entries,
@@ -60,7 +60,7 @@ pub async fn assets(
             Ok(_)   => Ok(()),
             Err(e)  => {
                 task.append_error(e.to_string());
-                Err(e.into())
+                Err(e)
             },
         }
 }

@@ -1,11 +1,10 @@
 use sqlx::PgPool;
 use starfoundry_lib_worker::Task;
-use uuid::Uuid;
+use std::collections::HashMap;
 
 use crate::error::{Error, Result};
 use crate::metric::WorkerMetric;
 use crate::tasks::WorkerEveGatewayTask;
-use std::collections::HashMap;
 
 pub async fn system_index_compress(
     pool: &PgPool,
@@ -13,7 +12,6 @@ pub async fn system_index_compress(
 ) -> Result<()> {
     #[derive(Clone, Debug,)]
     struct TmpStruct {
-        id:                Uuid,
         manufacturing:     f32,
         copying:           f32,
         invention:         f32,
@@ -74,7 +72,6 @@ pub async fn system_index_compress(
             .into_iter()
             .for_each(|x| {
                 let tmp = TmpStruct {
-                    id:                x.id,
                     copying:           x.copying,
                     invention:         x.invention,
                     manufacturing:     x.manufacturing,

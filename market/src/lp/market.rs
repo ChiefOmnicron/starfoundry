@@ -120,12 +120,12 @@ impl MarketProblem {
         for (var, definition) in mapping.iter() {
             let buy_quantity = problem_result.value(*var);
             if buy_quantity > 0f64 {
-                let name = format!("{}", definition);
+                let name = definition.to_string();
 
                 let order_id = name
                     .split_once("_")
                     .iter()
-                    .last()
+                    .next_back()
                     .unwrap().1
                     .parse::<i64>()
                     .unwrap();

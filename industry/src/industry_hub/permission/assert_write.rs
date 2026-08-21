@@ -45,7 +45,7 @@ async fn assert_write_check(
         .map_err(|e| IndustryHubError::FetchPermission(e, structure_uuid))?;
 
     if result.is_none() {
-        return Err(IndustryHubError::Forbidden(structure_uuid, character_id));
+        Err(IndustryHubError::Forbidden(structure_uuid, character_id))
     } else {
         Ok(())
     }

@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                name,\n                type_id,\n                volume,\n                category_id,\n                group_id,\n                meta_group_id,\n                repackaged\n            FROM item\n        ",
+  "query": "\n            SELECT\n                name,\n                type_id,\n                volume,\n                category_id,\n                group_id,\n                meta_group_id,\n                repackaged\n            FROM item\n            ORDER BY name\n        ",
   "describe": {
     "columns": [
       {
@@ -94,5 +94,5 @@
       true
     ]
   },
-  "hash": "8d61dcc22c5ba605cb4d554d483c3a04f43244d6f30209ddc52808d1a4e0297a"
+  "hash": "5e7b2d4a6338584a2269e2cce8aaf785c43f1e81ec3fca71cfe312a9e9fb0578"
 }

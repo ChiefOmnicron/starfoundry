@@ -67,7 +67,7 @@ pub async fn api(
     Ok(
         (
             StatusCode::CREATED,
-            Json({})
+            Json(())
         )
     )
 }

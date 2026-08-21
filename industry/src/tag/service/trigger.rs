@@ -95,7 +95,7 @@ fn is_valid(
             TagAutoSelect::ProjectStatus    => {
                 match_compare(
                     &auto_tag.compare,
-                    &project.status.as_str(),
+                    project.status.as_str(),
                     &auto_tag.value,
                 )
             },
@@ -118,11 +118,11 @@ fn match_compare(
             actual_value != target_value
         },
         TagAutoCompare::Contains    => {
-            actual_value.contains(&target_value)
+            actual_value.contains(target_value)
         },
         TagAutoCompare::Pattern     => {
-            if let Ok(x) = Regex::new(&target_value) {
-                x.is_match(&actual_value)
+            if let Ok(x) = Regex::new(target_value) {
+                x.is_match(actual_value)
             } else {
                 false
             }

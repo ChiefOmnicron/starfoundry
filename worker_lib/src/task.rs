@@ -154,15 +154,15 @@ pub enum TaskStatus {
     Timeout,
 }
 
-impl Into<String> for TaskStatus {
-    fn into(self) -> String {
-        match self {
-            Self::Done       => "DONE",
-            Self::Error      => "ERROR",
-            Self::Warning    => "WARNING",
-            Self::InProgress => "IN_PROGRESS",
-            Self::Timeout    => "TIMEOUT",
-            Self::Waiting    => "WAITING",
+impl From<TaskStatus> for String {
+    fn from(value: TaskStatus) -> Self {
+        match value {
+            TaskStatus::Done       => "DONE",
+            TaskStatus::Error      => "ERROR",
+            TaskStatus::Warning    => "WARNING",
+            TaskStatus::InProgress => "IN_PROGRESS",
+            TaskStatus::Timeout    => "TIMEOUT",
+            TaskStatus::Waiting    => "WAITING",
         }
         .into()
     }
@@ -285,13 +285,7 @@ impl<M, WT> Task<M, WT>
         let additional_data = additional_data
             .into_iter()
             .map(|x| serde_json::to_value(x))
-            .map(|x| {
-                if let Ok(x) = x {
-                    Some(x)
-                } else {
-                    None
-                }
-            })
+            .map(Result::ok)
             .collect::<Vec<_>>();
         sqlx::query!("
                 INSERT INTO worker_queue (
@@ -354,7 +348,7 @@ impl<M, WT> Task<M, WT>
             )
             .execute(pool)
             .await
-            .map_err(|e| Error::UpdateTask(e, self.id.clone()))
+            .map_err(|e| Error::UpdateTask(e, self.id))
             .map(drop)?;
 
         // insert a new task if it has a next time

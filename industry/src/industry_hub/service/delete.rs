@@ -21,7 +21,7 @@ pub async fn delete(
     .fetch_one(pool)
     .await
     .map(|x| IndustryHubUuid::new(x.id))
-    .map_err(|e| IndustryHubError::DeleteIndustryHub(e, industry_hub_id).into())
+    .map_err(|e| IndustryHubError::DeleteIndustryHub(e, industry_hub_id))
 }
 
 #[cfg(test)]

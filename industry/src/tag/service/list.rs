@@ -25,16 +25,14 @@ pub async fn list(
         )
         .fetch_all(pool)
         .await
-        .map_err(|e| TagError::List(e))?
+        .map_err(TagError::List)?
         .into_iter()
         .filter(|x| {
             // unwrap is safe, as it's set per default
             if filter.auto.unwrap() && x.typ == "AUTO" {
                 true
-            } else if filter.manual.unwrap() && x.typ == "MANUAL" {
-                true
             } else {
-                false
+                filter.manual.unwrap() && x.typ == "MANUAL"
             }
         })
         .collect::<Vec<_>>();

@@ -50,7 +50,7 @@ pub async fn list_market(
         };
 
         let project_group = ProjectMarket {
-            id:         entry.id.into(),
+            id:         entry.id,
             item:       item.clone(),
             quantity:   entry.quantity,
 

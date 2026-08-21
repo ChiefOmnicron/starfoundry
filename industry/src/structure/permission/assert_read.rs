@@ -45,7 +45,7 @@ async fn assert_read_check(
         .map_err(|e| StructureError::FetchPermission(e, structure_uuid))?;
 
     if result.is_none() {
-        return Err(StructureError::Forbidden(structure_uuid, character_id));
+        Err(StructureError::Forbidden(structure_uuid, character_id))
     } else {
         Ok(())
     }

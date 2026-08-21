@@ -72,19 +72,19 @@ impl TryFrom<String> for WorkerEveGatewayTask {
     }
 }
 
-impl Into<String> for WorkerEveGatewayTask {
-    fn into(self) -> String {
-        match self {
-            Self::Sync                  => "SYNC",
-            Self::CharacterAssets       => "CHARACTER_ASSETS",
-            Self::CorporationAssets     => "CORPORATION_ASSETS",
-            Self::CharacterBlueprints   => "CHARACTER_BLUEPRINTS",
-            Self::CorporationBlueprints => "CORPORATION_BLUEPRINTS",
-            Self::SystemIndex           => "SYSTEM_INDEX",
-            Self::SystemIndexCompress   => "SYSTEM_INDEX_COMPRESS",
-            Self::AllianceStanding      => "ALLIANCE_STANDING",
-            Self::CharacterStanding     => "CHARACTER_STANDING",
-            Self::CorporationStanding   => "CORPORATION_STANDING",
+impl From<WorkerEveGatewayTask> for String {
+    fn from(value: WorkerEveGatewayTask) -> Self {
+        match value {
+            WorkerEveGatewayTask::Sync                  => "SYNC",
+            WorkerEveGatewayTask::CharacterAssets       => "CHARACTER_ASSETS",
+            WorkerEveGatewayTask::CorporationAssets     => "CORPORATION_ASSETS",
+            WorkerEveGatewayTask::CharacterBlueprints   => "CHARACTER_BLUEPRINTS",
+            WorkerEveGatewayTask::CorporationBlueprints => "CORPORATION_BLUEPRINTS",
+            WorkerEveGatewayTask::SystemIndex           => "SYSTEM_INDEX",
+            WorkerEveGatewayTask::SystemIndexCompress   => "SYSTEM_INDEX_COMPRESS",
+            WorkerEveGatewayTask::AllianceStanding      => "ALLIANCE_STANDING",
+            WorkerEveGatewayTask::CharacterStanding     => "CHARACTER_STANDING",
+            WorkerEveGatewayTask::CorporationStanding   => "CORPORATION_STANDING",
         }.into()
     }
 }

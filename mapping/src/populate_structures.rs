@@ -75,7 +75,6 @@ pub async fn populate_structure_database(
             .await?;
         let ids = search
             .into_iter()
-            .map(Into::into)
             .collect::<Vec<_>>();
         total_count_structures += ids.len();
 
@@ -139,7 +138,7 @@ pub async fn populate_structure_database(
         .collect::<HashMap<_, _>>();
 
     for (system_index, (system_id, structure_id)) in structures.iter().enumerate() {
-        let system_name = systems.get(&system_id).cloned().unwrap_or(String::new());
+        let system_name = systems.get(system_id).cloned().unwrap_or(String::new());
         tracing::info!(
             "[{:3} / {:3}] Start system {} fetch",
             system_index + 1,

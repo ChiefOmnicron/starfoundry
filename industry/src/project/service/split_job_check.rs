@@ -159,7 +159,7 @@ pub async fn split_job_check(
     engine_old.add(dependency);
 
     for job in split.new.iter() {
-        let dependency = Dependency::try_from(job.runs as u32, dependency_json.data.clone()).unwrap();
+        let dependency = Dependency::try_from(job.runs, dependency_json.data.clone()).unwrap();
         engine_new.add(dependency);
     }
 
@@ -221,12 +221,11 @@ pub async fn split_job_check(
         } else {
             if let Some(x) = dependency_result_new
                 .tree
-                .get(&type_id) {
+                .get(&type_id)
 
-                if x.typ == BlueprintTyp::Blueprint ||  x.typ == BlueprintTyp::Reaction {
+                && (x.typ == BlueprintTyp::Blueprint ||  x.typ == BlueprintTyp::Reaction) {
                     product_diff.insert(type_id, materials - old_materials);
                     continue;
-                }
             }
 
             material_diff.insert(type_id, materials - old_materials);

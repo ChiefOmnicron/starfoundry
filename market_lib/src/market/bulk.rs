@@ -56,7 +56,7 @@ pub struct MarketItem {
 /// Different strategies for buying materials
 /// 
 #[derive(
-    Clone, Debug, Copy, Hash,
+    Clone, Copy, Debug, Default, Hash,
     PartialEq, Eq, PartialOrd, Ord,
     Deserialize, Serialize, ToSchema,
 )]
@@ -67,16 +67,11 @@ pub enum MarketStrategy {
     Appraisal,
     /// Acts like the in-game multi buy window
     /// 
+    #[default]
     MultiBuy,
     /// Looks at multiple markets in a detailed view
     /// 
     SmartBuy,
-}
-
-impl Default for MarketStrategy {
-    fn default() -> Self {
-        Self::MultiBuy
-    }
 }
 
 #[derive(Debug, Default, Deserialize, Serialize, ToSchema, IntoParams)]

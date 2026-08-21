@@ -1,4 +1,5 @@
 use thiserror::Error;
+use starfoundry_lib_gateway::boxed_from;
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
@@ -6,7 +7,7 @@ pub type Result<T, E = Error> = std::result::Result<T, E>;
 #[non_exhaustive]
 pub enum Error {
     #[error("{0}")]
-    GatewayClientError(#[from] starfoundry_lib_gateway::error::Error),
+    GatewayClientError(Box<starfoundry_lib_gateway::error::Error>),
 
     #[error("the env {0} is not set")]
     EnvNotSet(&'static str),
@@ -16,3 +17,5 @@ pub enum Error {
     #[error("the given category '{0}' is not valid, it must be one of: 'agent', 'alliance', 'character', 'constellation', 'corporation', 'faction', 'inventory_type', 'region', 'solar_system', 'station', 'structure'")]
     InvalidSearchCategory(String),
 }
+
+boxed_from!(Error::GatewayClientError, starfoundry_lib_gateway::error::Error);

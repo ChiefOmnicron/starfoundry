@@ -87,7 +87,6 @@ pub async fn list_market_buy(
                 smart_buy_config: Some(SmartBuyConfig {
                     gas_decompression: config.gas_decompression,
                     mineral_compression: config.mineral_compression,
-                    ..Default::default()
                 }),
                 ..Default::default()
             })
@@ -107,12 +106,12 @@ pub async fn list_market_buy(
 
         let market_entry = market_entries
             .iter()
-            .cloned()
             .filter(|x| x.item.type_id == entry.type_id.into())
+            .cloned()
             .collect::<Vec<_>>();
 
         let project_group = ProjectMarketBuy {
-            id:         entry.id.into(),
+            id:         entry.id,
             item:       item.clone(),
             quantity:   entry.quantity,
 
@@ -141,12 +140,12 @@ pub async fn list_market_buy(
 
         let market_entry = market_entries
             .iter()
-            .cloned()
             .filter(|x| x.item.type_id == compressed_gas)
+            .cloned()
             .collect::<Vec<_>>();
 
         let project_group = ProjectMarketBuy {
-            id:         entry.id.into(),
+            id:         entry.id,
             item:       item.clone(),
             quantity:   entry.quantity,
 
@@ -176,8 +175,8 @@ pub async fn list_market_buy(
 
         let market_entry = market_entries
             .iter()
-            .cloned()
             .filter(|x| x.item.type_id == type_id)
+            .cloned()
             .collect::<Vec<_>>();
 
         let project_group = ProjectMarketBuy {

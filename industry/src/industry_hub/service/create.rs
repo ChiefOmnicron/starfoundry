@@ -29,7 +29,7 @@ pub async fn create(
         .fetch_one(pool)
         .await
         .map(|x| IndustryHubUuid::new(x.id))
-        .map_err(|e| IndustryHubError::CreateIndustryHub(e))
+        .map_err(IndustryHubError::CreateIndustryHub)
 }
 
 #[cfg(test)]

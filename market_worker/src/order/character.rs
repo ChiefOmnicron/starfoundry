@@ -49,7 +49,7 @@ pub async fn character_orders(
     };
 
     insert_private_orders(
-        &pool,
+        pool,
         task,
         *additional_data.character_id,
         entries

@@ -26,13 +26,11 @@ pub async fn fetch_time_left(
         )
         .await?;
 
-    if let Some(x) = project {
-        if x.status == ProjectStatus::Done {
-            return Ok(ProjectTimeLeft {
-                date_ms:    0,
-                state:      "DONE".into(),
-            });
-        }
+    if let Some(x) = project && x.status == ProjectStatus::Done {
+        return Ok(ProjectTimeLeft {
+            date_ms:    0,
+            state:      "DONE".into(),
+        });
     }
 
     let jobs = list_jobs(
@@ -69,11 +67,13 @@ pub async fn fetch_time_left(
 
     // materials are bought, and no jobs started yet
     if market_count > 0 && job_count == 0 {
+        dbg!("RAW", project_id);
         return Ok(ProjectTimeLeft {
             date_ms:    0,
             state:      "RAW_MATERIALS".into(),
         });
     } else if market_count == 0 && job_count == 0 {
+        dbg!("CREATED", project_id);
         return Ok(ProjectTimeLeft {
             date_ms:    0,
             state:      "CREATED".into(),

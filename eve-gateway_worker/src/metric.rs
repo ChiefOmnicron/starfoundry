@@ -31,20 +31,20 @@ impl WorkerMetric {
     pub fn new() -> Self {
         Self {
             asset_insert_duration: Family::new_with_constructor(|| {
-                Histogram::new(BUCKETS.into_iter())
+                Histogram::new(BUCKETS)
             }),
             asset_insert_row_change: Family::<AssetLabel, Gauge>::default(),
             asset_delete_duration: Family::new_with_constructor(|| {
-                Histogram::new(BUCKETS.into_iter())
+                Histogram::new(BUCKETS)
             }),
             asset_delete_row_change: Family::<AssetLabel, Gauge>::default(),
 
             blueprint_insert_duration: Family::new_with_constructor(|| {
-                Histogram::new(BUCKETS.into_iter())
+                Histogram::new(BUCKETS)
             }),
             blueprint_insert_row_change: Family::<AssetLabel, Gauge>::default(),
             blueprint_delete_duration: Family::new_with_constructor(|| {
-                Histogram::new(BUCKETS.into_iter())
+                Histogram::new(BUCKETS)
             }),
             blueprint_delete_row_change: Family::<AssetLabel, Gauge>::default(),
         }

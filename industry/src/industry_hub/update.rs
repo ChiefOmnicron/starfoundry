@@ -49,7 +49,7 @@ pub async fn api(
     Path(industry_hub_uuid): Path<IndustryHubUuid>,
     Json(industry_hub):      Json<UpdateIndustryHub>,
 ) -> Result<impl IntoResponse> {
-    let data = update(
+    update(
             &state.postgres,
             identity.character_id,
             industry_hub_uuid,
@@ -60,7 +60,7 @@ pub async fn api(
     Ok(
         (
             StatusCode::NO_CONTENT,
-            Json(data),
+            Json(()),
         )
         .into_response()
     )

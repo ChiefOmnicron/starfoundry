@@ -33,7 +33,7 @@ pub fn multibuy(
         }
 
         // Sort the vectors by price
-        for (_, entries) in grouped_by_station.iter_mut() {
+        for entries in grouped_by_station.values_mut() {
             entries.sort_by_key(|x| x.price.floor() as u64);
         }
 
@@ -93,18 +93,20 @@ pub fn multibuy(
         // no market had enough materials to fulfil the request
         // take the most expensive one -> prefer an over estimation over an
         // under estimation
-        if !viable_markets.contains_key(&item.type_id) {
-            let mut solution = CalculationHelper::default();
+        viable_markets
+            .entry(item.type_id)
+            .or_insert_with(|| {
+                let mut solution = CalculationHelper::default();
 
-            for market in non_viable_markets {
-                if (market.remaining as f64 * market.price) > (solution.remaining as f64 * solution.price) {
-                    solution = market;
-                    solution.insufficient_data = true;
+                for market in non_viable_markets {
+                    if (market.remaining as f64 * market.price) > (solution.remaining as f64 * solution.price) {
+                        solution = market;
+                        solution.insufficient_data = true;
+                    }
                 }
-            }
 
-            viable_markets.insert(item.type_id, solution);
-        }
+                solution
+            });
     }
 
     let mut result = Vec::new();

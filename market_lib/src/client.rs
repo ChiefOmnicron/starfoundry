@@ -22,7 +22,7 @@ impl MarketClient {
         let env = if let Ok(x) = std::env::var(EVE_MARKET_API) {
             x
         } else {
-            return Err(Error::EnvNotSet(EVE_MARKET_API).into());
+            return Err(Error::EnvNotSet(EVE_MARKET_API));
         };
 
         let api_url = Url::parse(&env).map_err(Error::UrlParseError)?;
@@ -56,7 +56,6 @@ impl ApiClient for MarketClient {
         self.0
             .fetch(path, query)
             .await
-            .map_err(Into::into)
     }
 
     async fn post<D, T>(
@@ -71,7 +70,6 @@ impl ApiClient for MarketClient {
         self.0
             .post(path, data)
             .await
-            .map_err(Into::into)
     }
 
     async fn put<D, T>(
@@ -86,7 +84,6 @@ impl ApiClient for MarketClient {
         self.0
             .put(path, data)
             .await
-            .map_err(Into::into)
     }
 
     async fn delete<T>(
@@ -99,7 +96,6 @@ impl ApiClient for MarketClient {
         self.0
             .delete(path)
             .await
-            .map_err(Into::into)
     }
 }
 

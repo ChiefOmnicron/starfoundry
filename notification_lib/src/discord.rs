@@ -123,7 +123,7 @@ pub enum DiscordColor {
 }
 
 impl DiscordColor {
-    pub fn as_code(self) -> i32 {
+    pub fn as_code(&self) -> i32 {
         match self {
             Self::Default           => 0,
             Self::Aqua              => 1752220,

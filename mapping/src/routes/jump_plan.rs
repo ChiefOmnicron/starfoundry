@@ -73,7 +73,7 @@ pub async fn calculate_jump_plan(
                 SELECT system_id
                 FROM structure
                 WHERE system_id = ANY($1)
-                AND type_id = ANY(ARRAY[35834, 35833, 35832])
+                AND type_id = ANY(ARRAY[35834])
             ",
                 &systems.iter().map(|x| x.system_start).collect::<Vec<_>>(),
             )
@@ -193,21 +193,20 @@ mod test {
                 &pool,
                 CreateJumpPlan {
                     intermediate_system_ids: vec![
-                        //30000018.into(),
                     ],
                     blacklist_system_ids: vec![
-                        30001231.into(),
                     ],
-                    max_distance_ly: 10f32,
+                    max_distance_ly: 6f32,
                     //system_end_id: 30000772.into(), // C-J
-                    system_end_id: 30003499.into(), // C-J
+                    system_end_id: 30004691.into(), // EX6
                     //system_start_id: 30004807.into(), // UALX
-                    system_start_id: 30004831.into(), // UALX
+                    system_start_id: 30004807.into(), // UALX
                 },
             )
             .await
             .unwrap();
 
+        let mut systems = Vec::new();
         for entry in jump_plan_entries {
             let start_system = sqlx::query!("
                     SELECT system_name
@@ -246,7 +245,13 @@ mod test {
                 .distance_ly;
 
             println!("{} -> {} ({})", start_system, end_system, distance_ly);
+
+            systems.push(start_system);
+            systems.push(end_system);
         }
+
+        systems.dedup();
+        println!("https://evemaps.dotlan.net/jump/Thanatos,544/{}", systems.join(":"));
         panic!("asdasd");
     }
 }

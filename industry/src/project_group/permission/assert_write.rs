@@ -55,7 +55,7 @@ pub async fn assert_write_access_check(
         .map_err(|e| ProjectGroupError::FetchGroupPermissions(e, project_group_uuid))?;
 
     if result.is_none() {
-        return Err(ProjectGroupError::Forbidden(project_group_uuid, character_id));
+        Err(ProjectGroupError::Forbidden(project_group_uuid, character_id))
     } else {
         Ok(())
     }

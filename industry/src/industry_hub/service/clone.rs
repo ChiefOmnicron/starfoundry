@@ -35,7 +35,7 @@ pub async fn clone(
         .fetch_one(&mut *transaction)
         .await
         .map(|x| IndustryHubUuid::new(x.id))
-        .map_err(|e| IndustryHubError::CreateIndustryHub(e))?
+        .map_err(IndustryHubError::CreateIndustryHub)?
         .into();
 
     let structure_ids = sqlx::query!("
@@ -106,7 +106,7 @@ pub async fn clone(
         )
         .execute(&mut *transaction)
         .await
-        .map_err(|e| IndustryHubError::CreateIndustryHub(e))?;
+        .map_err(IndustryHubError::CreateIndustryHub)?;
 
     transaction
         .commit()

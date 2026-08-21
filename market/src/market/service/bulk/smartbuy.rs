@@ -24,7 +24,7 @@ pub fn smartbuy(
         .iter()
         .for_each(|x| {
             market_data
-                .entry(x.type_id.into())
+                .entry(x.type_id)
                 .and_modify(|y: &mut Vec<MarketEntry>| y.push(x.clone()))
                 .or_insert(vec![x.clone()]);
         });
@@ -35,10 +35,10 @@ pub fn smartbuy(
             .iter()
             .filter(|(type_id, _)|
                 // TODO: make them configurable
-                Asteroid::mineral_type_ids().contains(&type_id) ||
-                Asteroid::asteroid_type_ids().contains(&type_id) ||
-                Asteroid::compressed_asteroid_type_ids().contains(&type_id) ||
-                Asteroid::compressed_moon_type_ids().contains(&type_id)
+                Asteroid::mineral_type_ids().contains(type_id) ||
+                Asteroid::asteroid_type_ids().contains(type_id) ||
+                Asteroid::compressed_asteroid_type_ids().contains(type_id) ||
+                Asteroid::compressed_moon_type_ids().contains(type_id)
             )
             .flat_map(|(_, x)| x)
             .cloned()
@@ -114,18 +114,17 @@ pub fn smartbuy(
         }
 
         let mut data = market_data.get(&wanted_item.type_id).unwrap().clone();
-        if config.gas_decompression.is_some() {
-            if let Ok(gas) = Gas::try_from(wanted_item.type_id) {
-                if gas.is_uncompressed() {
-                    let market_data = market_data
-                        .get(&gas.to_compressed_type_id())
-                        .map(Clone::clone)
-                        .unwrap_or_default()
-                        .clone();
-                    data.extend(market_data);
-                    data.sort_by(|a, b| a.price.total_cmp(&b.price));
-                }
-            }
+        if config.gas_decompression.is_some()
+            && let Ok(gas) = Gas::try_from(wanted_item.type_id)
+            && gas.is_uncompressed() {
+
+            let market_data = market_data
+                .get(&gas.to_compressed_type_id())
+                .cloned()
+                .unwrap_or_default()
+                .clone();
+            data.extend(market_data);
+            data.sort_by(|a, b| a.price.total_cmp(&b.price));
         }
 
         let mut lp = MarketProblem::new();
@@ -152,9 +151,9 @@ pub fn smartbuy(
                     buy_price:          None,
                     sell_price:         None,
                     quantity:           x.quantity as u64,
-                    source:             structure_id.into(),
+                    source:             structure_id,
                     item:               item.clone(),
-                    last_fetch:         last_fetched.get(&structure_id.into()).cloned(),
+                    last_fetch:         last_fetched.get(&structure_id).cloned(),
                 })
                 .collect::<Vec<_>>();
             results.extend(result);

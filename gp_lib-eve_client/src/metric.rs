@@ -11,6 +11,7 @@ pub struct EveApiClientMetric {
 }
 
 impl EveApiClientMetric {
+    #[must_use]
     pub fn new() -> Self {
         Self  {
             eve_api_rate_limit: Family::<MetricEveRateLimitLabel, Gauge>::default(),

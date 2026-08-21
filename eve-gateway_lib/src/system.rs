@@ -1,4 +1,4 @@
-mod system;
+mod system_model;
 mod system_distance;
 
 use starfoundry_lib_gateway::ApiClient;
@@ -6,7 +6,7 @@ use starfoundry_lib_types::SystemId;
 
 use crate::Result;
 
-pub use self::system::*;
+pub use self::system_model::*;
 pub use self::system_distance::*;
 
 pub trait EveGatewayApiClientSystem: ApiClient {

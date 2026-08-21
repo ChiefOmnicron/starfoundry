@@ -351,9 +351,9 @@ checksum = "3f88a43d011fc4a6876cb7344703e297c71dda42494fee094d5f7c76bf13f746"
 
 [[package]]
 name = "coin_cbc"
-version = "0.1.8"
+version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d602045cd2e7ad02608a71492af94357f493a6f3c934ce854c03bf10fddc5780"
+checksum = "0b9bc933a1e54a161006787be18d1f963a2defe587ba4c59ae962899c6b6949f"
 dependencies = [
  "coin_cbc_sys",
  "lazy_static",
@@ -361,9 +361,9 @@ dependencies = [
 
 [[package]]
 name = "coin_cbc_sys"
-version = "0.1.2"
+version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "085619f8bdc38e24e25c6336ecc3f2e6c0543d67566dff6daef0e32f7ac20f76"
+checksum = "7a32b35768f8d7e0e938c3c307e8a06c27633b1c8490042dd66508b85be29032"
 dependencies = [
  "pkg-config",
 ]
@@ -922,9 +922,9 @@ dependencies = [
 
 [[package]]
 name = "good_lp"
-version = "1.15.2"
+version = "1.15.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "745190412d5ff4a54335cd16229a475ad3fb8f5474a5c1358292d62932187ea7"
+checksum = "c4255eb1d65eea322f73a326038f2bcec19dae13ca50fa557da19b03274b4d56"
 dependencies = [
  "coin_cbc",
  "fnv",

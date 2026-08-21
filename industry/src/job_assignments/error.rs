@@ -23,6 +23,8 @@ pub enum JobAssignmentError {
 }
 
 impl IntoResponse for JobAssignmentError {
+    // for future extensions this is fine
+    #[allow(clippy::match_single_binding)]
     fn into_response(self) -> Response {
         match self {
             _ => {

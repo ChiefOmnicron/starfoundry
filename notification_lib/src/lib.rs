@@ -15,7 +15,7 @@ pub async fn send_discord(
     for message in messages {
         let value = serde_json::to_value(&message)?;
 
-        if let Err(e) = dbg!(send_json(url.clone(), value).await) {
+        if let Err(e) = send_json(url.clone(), value).await {
             return Err(e)
         }
     }
@@ -38,13 +38,13 @@ pub async fn send_json(
         let message = response
             .text()
             .await
-            .map_err(Error::GenericReqwestError)?;
-        Err(Error::ResponseError(message, value))
+            .map_err(Error::GenericReqwest)?;
+        Err(Error::Response(message, value))
     } else {
         let message = response
             .text()
             .await
-            .map_err(Error::GenericReqwestError)?;
+            .map_err(Error::GenericReqwest)?;
         Ok(message)
     }
 }

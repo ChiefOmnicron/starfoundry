@@ -65,7 +65,7 @@ pub async fn list(
             )
             .fetch_all(pool)
             .await
-            .map_err(|e| IndustryHubError::ListIndustryHubs(e))?
+            .map_err(IndustryHubError::ListIndustryHubs)?
             .into_iter()
             .map(|x| TmpIndustryHub {
                 id:          x.id,
@@ -100,7 +100,7 @@ pub async fn list(
             )
             .fetch_all(pool)
             .await
-            .map_err(|e| IndustryHubError::ListIndustryHubs(e))?
+            .map_err(IndustryHubError::ListIndustryHubs)?
             .into_iter()
             .map(|x| TmpIndustryHub {
                 id:          x.id,
@@ -129,7 +129,7 @@ pub async fn list(
 
         let structures = if shared {
             crate::structure::service::list_shared(
-                    &pool,
+                    pool,
                     eve_gateway_api_client,
                     StructureFilter {
                         structure_ids: Some(structure_ids),
@@ -139,7 +139,7 @@ pub async fn list(
                 .await?
         } else {
             crate::structure::service::list(
-                    &pool,
+                    pool,
                     eve_gateway_api_client,
                     character_id,
                     StructureFilter {

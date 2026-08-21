@@ -26,7 +26,7 @@ pub async fn update(
     .execute(pool)
     .await
     .map(drop)
-    .map_err(|e| ProjectGroupError::UpdateGroup(e, project_group_uuid).into())
+    .map_err(|e| ProjectGroupError::UpdateGroup(e, project_group_uuid))
 }
 
 #[derive(Debug, Deserialize, Serialize, ToSchema)]

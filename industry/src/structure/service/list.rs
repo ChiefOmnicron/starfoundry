@@ -18,6 +18,7 @@ pub async fn list(
     character_id:           CharacterId,
     filter:                 StructureFilter,
 ) -> Result<Vec<Structure>> {
+    dbg!(&filter, character_id);
     let structures = sqlx::query!(r#"
             SELECT
                 id,
@@ -51,17 +52,13 @@ pub async fn list(
         )
         .fetch_all(pool)
         .await
-        .map_err(|e| StructureError::ListStructures(e))?
+        .map_err(StructureError::ListStructures)?
         .into_iter()
         .filter(|x| {
             if let Some(true) = filter.include_npc {
                 true
             } else {
-                if x.type_id == 46767 || x.type_id == 52678 {
-                    false
-                } else {
-                    true
-                }
+                x.type_id != 46767 && x.type_id != 52678
             }
         })
         .map(|x| {
@@ -79,14 +76,12 @@ pub async fn list(
             }
         })
         .collect::<Vec<_>>();
-
     process_structure(
-            &pool,
+            pool,
             eve_gateway_api_client,
             structures,
         )
         .await
-        .map_err(Into::into)
 }
 
 pub(crate) async fn list_shared(
@@ -125,17 +120,13 @@ pub(crate) async fn list_shared(
         )
         .fetch_all(pool)
         .await
-        .map_err(|e| StructureError::ListStructures(e))?
+        .map_err(StructureError::ListStructures)?
         .into_iter()
         .filter(|x| {
             if let Some(true) = filter.include_npc {
                 true
             } else {
-                if x.type_id == 46767 || x.type_id == 52678 {
-                    false
-                } else {
-                    true
-                }
+                x.type_id == 46767 || x.type_id == 52678
             }
         })
         .map(|x| {
@@ -155,12 +146,11 @@ pub(crate) async fn list_shared(
         .collect::<Vec<_>>();
 
     process_structure(
-            &pool,
+            pool,
             eve_gateway_api_client,
             structures,
         )
         .await
-        .map_err(Into::into)
 }
 
 async fn process_structure(
@@ -285,6 +275,7 @@ async fn process_structure(
     Ok(structure_result)
 }
 
+#[derive(Debug)]
 struct TmpStructure {
     id:             Uuid,
     type_id:        i32,

@@ -15,10 +15,10 @@ pub enum Error {
     #[error("invalid target expected '{0}'. url: '{1}'")]
     InvalidTarget(String, String),
     #[error("error while sending notification, error: '{0}', body: '{1}'")]
-    ResponseError(String, serde_json::Value),
+    Response(String, serde_json::Value),
 
     #[error("error in reqwest, '{0}'")]
-    GenericReqwestError(#[from] reqwest::Error),
+    GenericReqwest(#[from] reqwest::Error),
     #[error("error in parsing struct to json, '{0}'")]
-    GenericSerdeParseError(#[from] serde_json::Error),
+    GenericSerdeParse(#[from] serde_json::Error),
 }

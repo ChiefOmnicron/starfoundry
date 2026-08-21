@@ -51,7 +51,7 @@ pub async fn by_player_station_task(
     };
 
     insert_structure_market(
-        &pool,
+        pool,
         task,
         additional_data.structure_id,
         RegionId(0),

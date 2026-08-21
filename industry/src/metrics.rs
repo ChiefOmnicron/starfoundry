@@ -46,7 +46,7 @@ impl Metric {
             host_count:         Family::<MetricHostLabel, Counter>::default(),
             http_request_total: Family::<MetricHttpRequestLabel, Counter>::default(),
             http_duration:      Family::new_with_constructor(|| {
-                Histogram::new(HTTP_DURATION_BUCKETS.into_iter())
+                Histogram::new(HTTP_DURATION_BUCKETS)
             }),
         }
     }

@@ -52,7 +52,7 @@ pub async fn api(
         (
             StatusCode::CREATED,
             Json(CreateProjectJobAssignmentResponse {
-                id: id.into(),
+                id,
             })
         )
     )

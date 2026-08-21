@@ -87,7 +87,7 @@ pub async fn sync(
 async fn sync_misc_tasks(
     pool: &PgPool,
 ) -> Result<()> {
-    for task in vec![
+    for task in [
         WorkerMarketTask::Sync,
         WorkerMarketTask::Cleanup,
         WorkerMarketTask::Prices,
@@ -152,12 +152,12 @@ async fn sync_npc_stations(
     // ensure that non authed structures are in the queue
     let mut new_entries = Vec::new();
     for (structure_id, region_id) in structures {
-        if let None = market_stations
+        if market_stations
             .iter()
             .find(|x| {
                 x.region_id == Some(region_id) &&
                 x.structure_id == Some(structure_id)
-            }) {
+            }).is_none() {
                 let additional_data = serde_json::json!({
                     "structure_id": structure_id,
                     "region_id": region_id,
@@ -203,9 +203,8 @@ async fn sync_player_stations(
         .await
         .map_err(Error::SyncError)?
         .into_iter()
-        .map(|x| TimeSlottedMarketEntry {
+        .map(|x| MarketEntry {
             main_character: x.main_character.into(),
-            character_id:   x.character_id.into(),
             corporation_id: x.corporation_id.into(),
             structure_id:   x.structure_id.into(),
             region_id:      x.region_id.into(),
@@ -214,7 +213,7 @@ async fn sync_player_stations(
         .for_each(|x| {
             registered_structures
                 .entry((x.main_character, x.structure_id))
-                .and_modify(|y: &mut Vec<TimeSlottedMarketEntry>| y.push(x.clone()))
+                .and_modify(|y: &mut Vec<MarketEntry>| y.push(x.clone()))
                 .or_insert(vec![x]);
         });
 
@@ -295,7 +294,7 @@ async fn sync_public_contract(
     let mut new_entries = Vec::new();
 
     // FIXME:_ configurable
-    for region_id in vec![10000002, 10000043] {
+    for region_id in [10000002, 10000043] {
         let public_contract = sqlx::query!("
                 SELECT
                     (additional_data ->> 'region_id')::INTEGER AS region_id
@@ -332,6 +331,7 @@ async fn sync_public_contract(
         .map_err(Error::SyncError)
 }
 
+/*
 async fn sync_private_orders(
     pool: &PgPool,
     host: String,
@@ -339,7 +339,7 @@ async fn sync_private_orders(
     let mut total_added = 0;
 
     // FIXME: only tmp
-    for character_id in vec![2117441999] {
+    for character_id in [2117441999] {
         let mut new_entries = Vec::new();
         let task_name: String = WorkerMarketTask::CharacterOrders.into();
         let public_contract = sqlx::query!("
@@ -382,7 +382,7 @@ async fn sync_private_orders(
     }
 
     // FIXME: only tmp
-    for corporation_id in vec![98024275] {
+    for corporation_id in [98024275] {
         let mut new_entries = Vec::new();
         let task_name: String = WorkerMarketTask::CorporationOrders.into();
         let public_contract = sqlx::query!("
@@ -426,80 +426,11 @@ async fn sync_private_orders(
     }
 
     Ok(total_added)
-}
-
-/*/// Market entries that are time slotted
-async fn time_slotted_market(
-    pool:      &PgPool,
-    task_name: WorkerMarketTask,
-    entries:   HashMap<(CharacterId, StructureId), Vec<TimeSlottedMarketEntry>>,
-) -> Result<usize> {
-    let task_name: String = task_name.into();
-
-    #[derive(Clone, Debug)]
-    struct TaskInformation {
-        process_after:   NaiveDateTime,
-        additional_data: serde_json::Value,
-    }
-
-    let mut new_entries = Vec::new();
-    for (_, structures) in entries {
-        let mut current_time_slot = Utc::now().naive_utc();
-        // 300 = 5 minutes in seconds
-        // at max 10 slots are available
-        let time_slot_diff = 300 / std::cmp::min(10, structures.len());
-
-        'outer: loop {
-            for structure in structures.iter() {
-                let date = current_time_slot;
-                if date.time().hour() == 11 && date.time().minute() < 30 {
-                    // during downtime new entries should be generated
-                    if new_entries.is_empty() {
-                        date
-                    } else {
-                        break 'outer;
-                    }
-                } else {
-                    date
-                };
-
-                new_entries.push(TaskInformation {
-                    process_after: current_time_slot,
-                    additional_data: serde_json::json!({
-                        "character_id": structure.character_id,
-                        "region_id": structure.region_id,
-                        "structure_id": structure.structure_id,
-                        "source": structure.source,
-                    }),
-                });
-                current_time_slot += Duration::from_secs(time_slot_diff as u64);
-            }
-        }
-    }
-
-    tracing::error!("Added {} new player market jobs", new_entries.len());
-    sqlx::query!("
-            INSERT INTO worker_queue (task, process_after, additional_data)
-            SELECT $1, * FROM UNNEST(
-                $2::TIMESTAMP[],
-                $3::JSONB[]
-            )
-        ",
-            &task_name,
-            &new_entries.iter().map(|x| x.process_after).collect::<Vec<_>>(),
-            &new_entries.iter().map(|x| x.additional_data.clone()).collect::<Vec<_>>(),
-        )
-        .execute(pool)
-        .await
-        .map(|_| new_entries.len())
-        .map_err(Error::SyncError)
 }*/
 
-// TODO:: remove
 #[derive(Clone, Debug)]
-struct TimeSlottedMarketEntry {
+struct MarketEntry {
     main_character: CharacterId,
-    character_id:   CharacterId,
     corporation_id: CorporationId,
     structure_id:   StructureId,
     region_id:      RegionId,

@@ -135,7 +135,7 @@ pub async fn sync(
 async fn sync_tasks(
     pool: &PgPool,
 ) -> Result<()> {
-    for task in vec![
+    for task in [
         WorkerEveGatewayTask::Sync,
         WorkerEveGatewayTask::SystemIndex,
         WorkerEveGatewayTask::SystemIndexCompress,
@@ -152,7 +152,7 @@ async fn sync_tasks(
             )
             .fetch_optional(pool)
             .await
-            .map_err(Error::SyncError)?;
+            .map_err(Error::Sync)?;
 
         if task_db.is_none() {
             sqlx::query!("
@@ -163,7 +163,7 @@ async fn sync_tasks(
             )
             .execute(pool)
             .await
-            .map_err(Error::SyncError)?;
+            .map_err(Error::Sync)?;
         }
     }
 
@@ -190,7 +190,7 @@ async fn sync_character_assets(
         )
         .fetch_all(pool)
         .await
-        .map_err(Error::GenericSqlxError)?;
+        .map_err(Error::GenericSqlx)?;
 
     let tasks = sqlx::query!("
             SELECT
@@ -205,16 +205,16 @@ async fn sync_character_assets(
         )
         .fetch_all(pool)
         .await
-        .map_err(Error::SyncError)?;
+        .map_err(Error::Sync)?;
 
     let mut new_entries = Vec::new();
     for entry in entries {
-        if let None = tasks
+        if tasks
             .iter()
             .find(|x| {
                 x.character_id == Some(entry.character_id) &&
                 x.source == Some(entry.domain.clone())
-            }) {
+            }).is_none() {
                 let additional_data = serde_json::json!({
                     "character_id": entry.character_id,
                     "corporation_id": entry.corporation_id,
@@ -237,7 +237,7 @@ async fn sync_character_assets(
         .execute(pool)
         .await
         .map(|_| new_entries.len())
-        .map_err(Error::SyncError)
+        .map_err(Error::Sync)
 }
 
 // TODO: replace with insert_task_with_credentials?
@@ -260,7 +260,7 @@ async fn sync_corporation_assets(
         )
         .fetch_all(pool)
         .await
-        .map_err(Error::GenericSqlxError)?;
+        .map_err(Error::GenericSqlx)?;
 
     let tasks = sqlx::query!("
             SELECT
@@ -275,16 +275,16 @@ async fn sync_corporation_assets(
         )
         .fetch_all(pool)
         .await
-        .map_err(Error::SyncError)?;
+        .map_err(Error::Sync)?;
 
     let mut new_entries = Vec::new();
     for entry in entries {
-        if let None = tasks
+        if tasks
             .iter()
             .find(|x| {
                 x.corporation_id == Some(entry.corporation_id) &&
                 x.source == Some(entry.domain.clone())
-            }) {
+            }).is_none() {
                 let additional_data = serde_json::json!({
                     "character_id": entry.character_id,
                     "corporation_id": entry.corporation_id,
@@ -307,7 +307,7 @@ async fn sync_corporation_assets(
         .execute(pool)
         .await
         .map(|_| new_entries.len())
-        .map_err(Error::SyncError)
+        .map_err(Error::Sync)
 }
 
 // TODO: replace with insert_task_with_credentials?
@@ -330,7 +330,7 @@ async fn sync_character_blueprints(
         )
         .fetch_all(pool)
         .await
-        .map_err(Error::GenericSqlxError)?;
+        .map_err(Error::GenericSqlx)?;
 
     let tasks = sqlx::query!("
             SELECT
@@ -345,16 +345,16 @@ async fn sync_character_blueprints(
         )
         .fetch_all(pool)
         .await
-        .map_err(Error::SyncError)?;
+        .map_err(Error::Sync)?;
 
     let mut new_entries = Vec::new();
     for entry in entries {
-        if let None = tasks
+        if tasks
             .iter()
             .find(|x| {
                 x.character_id == Some(entry.character_id) &&
                 x.source == Some(entry.domain.clone())
-            }) {
+            }).is_none() {
                 let additional_data = serde_json::json!({
                     "character_id": entry.character_id,
                     "corporation_id": entry.corporation_id,
@@ -377,7 +377,7 @@ async fn sync_character_blueprints(
         .execute(pool)
         .await
         .map(|_| new_entries.len())
-        .map_err(Error::SyncError)
+        .map_err(Error::Sync)
 }
 
 // TODO: replace with insert_task_with_credentials?
@@ -400,7 +400,7 @@ async fn sync_corporation_blueprints(
         )
         .fetch_all(pool)
         .await
-        .map_err(Error::GenericSqlxError)?;
+        .map_err(Error::GenericSqlx)?;
 
     let tasks = sqlx::query!("
             SELECT
@@ -415,17 +415,17 @@ async fn sync_corporation_blueprints(
         )
         .fetch_all(pool)
         .await
-        .map_err(Error::SyncError)?;
+        .map_err(Error::Sync)?;
 
     let mut new_entries = Vec::new();
     for entry in entries {
-        if let None = tasks
+        if tasks
             .iter()
             .find(|x| {
                 x.corporation_id == Some(entry.corporation_id) &&
                 x.character_id == Some(entry.character_id) &&
                 x.source == Some(entry.domain.clone())
-            }) {
+            }).is_none() {
                 let additional_data = serde_json::json!({
                     "character_id": entry.character_id,
                     "corporation_id": entry.corporation_id,
@@ -448,7 +448,7 @@ async fn sync_corporation_blueprints(
         .execute(pool)
         .await
         .map(|_| new_entries.len())
-        .map_err(Error::SyncError)
+        .map_err(Error::Sync)
 }
 
 async fn insert_task_with_credentials(
@@ -472,7 +472,7 @@ async fn insert_task_with_credentials(
         )
         .fetch_all(pool)
         .await
-        .map_err(Error::GenericSqlxError)?;
+        .map_err(Error::GenericSqlx)?;
 
     let tasks = sqlx::query!("
             SELECT
@@ -487,17 +487,18 @@ async fn insert_task_with_credentials(
         )
         .fetch_all(pool)
         .await
-        .map_err(Error::SyncError)?;
+        .map_err(Error::Sync)?;
 
     let mut new_entries = Vec::new();
     for entry in entries {
-        if let None = tasks
+        if tasks
             .iter()
             .find(|x| {
                 x.corporation_id == Some(entry.corporation_id) &&
                 x.character_id == Some(entry.character_id) &&
                 x.source == Some(entry.domain.clone())
-            }) {
+            })
+            .is_none() {
                 let additional_data = serde_json::json!({
                     "character_id": entry.character_id,
                     "corporation_id": entry.corporation_id,
@@ -520,7 +521,7 @@ async fn insert_task_with_credentials(
         .execute(pool)
         .await
         .map(|_| new_entries.len())
-        .map_err(Error::SyncError)
+        .map_err(Error::Sync)
 }
 
 async fn sync_alliance_standings(

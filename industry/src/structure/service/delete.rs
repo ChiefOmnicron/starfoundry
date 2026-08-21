@@ -22,7 +22,7 @@ pub async fn delete(
     .fetch_one(pool)
     .await
     .map(|x| StructureUuid::new(x.id))
-    .map_err(|e| StructureError::DeleteStructure(e, structure_id).into())
+    .map_err(|e| StructureError::DeleteStructure(e, structure_id))
 }
 
 #[cfg(test)]

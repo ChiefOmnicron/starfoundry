@@ -47,25 +47,25 @@ impl WorkerMetric {
             market_station_changed_rows: Family::<MarketOrderLabel, Gauge>::default(),
             market_station_deleted_rows: Family::<MarketOrderLabel, Gauge>::default(),
             market_station_update_duration: Family::new_with_constructor(|| {
-                Histogram::new(BUCKETS.into_iter())
+                Histogram::new(BUCKETS)
             }),
             market_station_delete_duration: Family::new_with_constructor(|| {
-                Histogram::new(BUCKETS.into_iter())
+                Histogram::new(BUCKETS)
             }),
 
             contract_added_count:    Family::<ContractLabel, Gauge>::default(),
             contract_added_duration: Family::new_with_constructor(|| {
-                Histogram::new(BUCKETS.into_iter())
+                Histogram::new(BUCKETS)
             }),
 
             contract_expired_count:    Family::<ContractLabel, Gauge>::default(),
             contract_expired_duration: Family::new_with_constructor(|| {
-                Histogram::new(BUCKETS.into_iter())
+                Histogram::new(BUCKETS)
             }),
 
             private_orders_added_count:    Family::<PrivateOrderLabel, Gauge>::default(),
             private_orders_added_duration: Family::new_with_constructor(|| {
-                Histogram::new(BUCKETS.into_iter())
+                Histogram::new(BUCKETS)
             }),
         }
     }

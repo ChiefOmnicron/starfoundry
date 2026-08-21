@@ -157,8 +157,8 @@ pub async fn check_resources(
     }
 
     let blueprint_type_ids = required_blueprints
-        .iter()
-        .map(|(type_id, _)| *type_id)
+        .keys()
+        .copied()
         .collect::<Vec<_>>();
     let mut type_ids = required_resources
         .keys()

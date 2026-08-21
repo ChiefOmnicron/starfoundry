@@ -114,7 +114,6 @@ impl<M, WT> Worker<M, WT>
                 },
                 _ => {
                     tracing::info!("no new tasks, waiting");
-                    ()
                 },
             }
 
@@ -132,5 +131,5 @@ pub async fn dummy<M, WT>(
         M: TaskMetric,
         WT: WorkerTask, {
 
-    return Ok(())
+    Ok(())
 }

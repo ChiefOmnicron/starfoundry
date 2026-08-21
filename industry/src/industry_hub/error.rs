@@ -2,7 +2,7 @@ use axum::extract::rejection::JsonRejection;
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::{IntoResponse, Response};
-use starfoundry_lib_gateway::ErrorResponse;
+use starfoundry_lib_gateway::{ErrorResponse, boxed_from};
 use starfoundry_lib_industry::IndustryHubUuid;
 use starfoundry_lib_types::CharacterId;
 use thiserror::Error;
@@ -47,7 +47,7 @@ pub enum IndustryHubError {
     #[error(transparent)]
     StructureError(#[from] StructureError),
     #[error(transparent)]
-    GatewayLibError(#[from] starfoundry_lib_gateway::error::Error),
+    GatewayLibError(Box<starfoundry_lib_gateway::error::Error>),
     #[error(transparent)]
     EveGatewayLibError(#[from] starfoundry_lib_eve_gateway::Error),
 }
@@ -115,3 +115,5 @@ impl IntoResponse for IndustryHubError {
         .into_response()
     }
 }
+
+boxed_from!(IndustryHubError::GatewayLibError, starfoundry_lib_gateway::error::Error);

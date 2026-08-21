@@ -155,7 +155,7 @@ pub async fn api(
     let job_splitting = if let Some(x) = config.job_splitting {
         x
             .into_iter()
-            .map(|x| (x.type_id, x.runs as u32))
+            .map(|x| (x.type_id, x.runs))
             .collect::<HashMap<_, _>>()
     } else {
         list_default_job_splitting(

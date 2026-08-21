@@ -18,7 +18,7 @@ pub async fn insert_private_orders(
     }
 
     let mut entries = entries;
-    entries.sort_by(|a, b| a.order_id.cmp(&b.order_id));
+    entries.sort_by_key(|a| a.order_id);
     entries.dedup_by_key(|x| x.order_id);
 
     let mut order_ids       = Vec::new();
@@ -31,8 +31,8 @@ pub async fn insert_private_orders(
 
     for entry in entries {
         structure_ids.push(*entry.location_id);
-        order_ids.push(*entry.order_id as i64);
-        type_id.push(*entry.type_id as i32);
+        order_ids.push(*entry.order_id);
+        type_id.push(*entry.type_id);
         price.push(entry.price as f64);
         remaining.push(entry.volume_remain as i32);
         expires.push(
