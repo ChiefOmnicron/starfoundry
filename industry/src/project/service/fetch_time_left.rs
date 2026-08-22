@@ -278,6 +278,15 @@ fn time_overwrite(type_id: TypeId) -> Option<i32> {
         28846 |
         // Rhea
         28844 => Some(60 * 60 * 24 * 14), // 14 days in seconds
+
+        // Gaia
+        92824 |
+        // Salvation
+        92822 |
+        // Ymir
+        92825 |
+        // Simurgh
+        92823 => Some(60 * 60 * 24 * 14), // 16 days in seconds
         _     => None
     }
 }

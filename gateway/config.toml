@@ -61,3 +61,7 @@ require_auth = false
 [routes."materials"]
 service_url = "http://localhost:8002"
 require_auth = false
+
+[routes."build-cost"]
+service_url = "http://localhost:8000"
+require_auth = false
