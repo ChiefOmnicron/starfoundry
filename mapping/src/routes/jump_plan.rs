@@ -2,7 +2,7 @@ use axum::extract::State;
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
-use pathfinding::directed::dijkstra::dijkstra;
+use pathfinding::directed::dijkstra::{dijkstra, dijkstra_all};
 use sqlx::PgPool;
 use starfoundry_lib_mapping::{CreateJumpPlan, JumpPlanEntry};
 use std::collections::HashMap;
@@ -73,7 +73,7 @@ pub async fn calculate_jump_plan(
                 SELECT system_id
                 FROM structure
                 WHERE system_id = ANY($1)
-                AND type_id = ANY(ARRAY[35834])
+                AND type_id = ANY(ARRAY[35834, 35833])
             ",
                 &systems.iter().map(|x| x.system_start).collect::<Vec<_>>(),
             )
@@ -178,7 +178,8 @@ struct SystemDistanceTmp {
 
 mod test {
     use sqlx::postgres::PgPoolOptions;
-    use starfoundry_lib_mapping::CreateJumpPlan;
+    use starfoundry_lib_eve_gateway::{EveGatewayApiClientSystem, EveGatewayClient};
+use starfoundry_lib_mapping::CreateJumpPlan;
 
     use super::calculate_jump_plan;
 
@@ -196,10 +197,8 @@ mod test {
                     ],
                     blacklist_system_ids: vec![
                     ],
-                    max_distance_ly: 6f32,
-                    //system_end_id: 30000772.into(), // C-J
-                    system_end_id: 30004691.into(), // EX6
-                    //system_start_id: 30004807.into(), // UALX
+                    max_distance_ly: 7f32,
+                    system_end_id: 30001254.into(),
                     system_start_id: 30004807.into(), // UALX
                 },
             )

@@ -3,6 +3,7 @@
   "private": true,
   "min-release-age": 7,
   "version": "0.0.0",
+  "main": "src/index.ts",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
