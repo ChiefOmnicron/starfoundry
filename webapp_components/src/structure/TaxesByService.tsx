@@ -1,5 +1,5 @@
-import type { StructureTax } from "@internal/services/structure/list";
 import { NumberInput } from "@mantine/core";
+import type { StructureTax } from "../services/structure/list";
 
 export const TAXES_SERVICE_MODULES = [{
     name: 'Biochemical Reactions',

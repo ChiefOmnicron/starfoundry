@@ -1,14 +1,14 @@
 import { Alert, Stack } from '@mantine/core';
-import { compareArray } from '@internal/misc/SaveDialog';
-import { ItemList } from '@internal/list/ItemList';
-import { LIST_PROJECT_GROUP_DEFAULT_BLACKLIST, useListProjectGroupDefaultBlacklist } from '@internal/services/project-group/listDefaultBlacklist';
-import { LoadingAnimation } from '@internal/misc/LoadingAnimation';
-import { LoadingError } from '@internal/misc/LoadingError';
-import { updateDefaultBlacklist } from '@internal/services/project-group/updateDefaultBlacklist';
+import { compareArray } from '../../misc/SaveDialog';
+import { ItemList } from '../../list/ItemList';
+import { LIST_PROJECT_GROUP_DEFAULT_BLACKLIST, useListProjectGroupDefaultBlacklist } from '../../services/project-group/listDefaultBlacklist';
+import { LoadingAnimation } from '../../misc/LoadingAnimation';
+import { LoadingError } from '../../misc/LoadingError';
+import { updateDefaultBlacklist } from '../../services/project-group/updateDefaultBlacklist';
 import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { Item } from '@internal/services/item/model';
-import type { Uuid } from '@internal/services/utils';
+import type { Item } from '../../services/item/model';
+import type { Uuid } from '../../services/utils';
 
 export function ProjectGroupDefaultsBlacklist({
     projectGroupId,

@@ -1,12 +1,12 @@
-import { axiosClient, type AbortSignal } from "@internal/services/client";
+import { axiosClient, type AbortSignal } from "../client";
 import { useQuery } from "@tanstack/react-query";
 import type { GenericAbortSignal } from "axios";
-import type { Item } from "@internal/services/item/model";
-import type { ProjectGroup } from "@internal/services/project-group/fetch";
-import type { ProjectProduct } from "@internal/services/projects/listProduct";
-import type { ProjectStatus } from "@internal/services/projects/list";
-import type { Tag } from "@internal/services/tags/list";
-import type { Uuid } from "@internal/services/utils";
+import type { Item } from "../item/model";
+import type { ProjectGroup } from "../project-group/fetch";
+import type { ProjectProduct } from "../projects/listProduct";
+import type { ProjectStatus } from "../projects/list";
+import type { Tag } from "../tags/list";
+import type { Uuid } from "../utils";
 
 export const FETCH_PROJECT = 'fetchProject';
 

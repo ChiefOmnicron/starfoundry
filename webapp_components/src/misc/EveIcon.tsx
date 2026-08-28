@@ -1,4 +1,4 @@
-import type { TypeId } from "@internal/services/utils"
+import type { TypeId } from "../services/utils"
 import { Image } from "@mantine/core";
 import type { ReactElement } from "react";
 

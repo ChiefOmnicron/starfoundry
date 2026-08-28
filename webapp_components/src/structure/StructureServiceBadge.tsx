@@ -1,6 +1,6 @@
-import { BadgeWrapper } from "@internal/wrapper/Badge";
+import { BadgeWrapper } from "../wrapper/Badge";
 import { Text, type MantineSize } from "@mantine/core"
-import type { Item } from "@internal/services/item/model"
+import type { Item } from "../services/item/model"
 
 export function StructureServiceBadge({
     services,

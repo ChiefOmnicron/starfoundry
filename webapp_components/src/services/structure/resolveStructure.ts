@@ -1,5 +1,5 @@
-import { axiosClient } from "@internal/services/client";
-import type { Item } from "@internal/services/item/model";
+import { axiosClient } from "../client";
+import type { Item } from "../item/model";
 import type { StructureRig, StructureService, System } from "./list";
 
 export const RESOLVE_STRUCTURE = "resolveStructure";

@@ -1,10 +1,10 @@
 import { CopyText } from "../misc/CopyText";
 import { createColumnHelper, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { EveIcon } from "@internal/misc/EveIcon";
+import { EveIcon } from "../misc/EveIcon";
 import type { ReactElement } from "react";
-import type { ProjectStock } from "@internal/services/projects/fetch";
-import { TableWrapper } from "@internal/wrapper/Table";
-import { CopyTable } from "@internal/misc/CopyTable";
+import type { ProjectStock } from "../services/projects/fetch";
+import { TableWrapper } from "../wrapper/Table";
+import { CopyTable } from "../misc/CopyTable";
 
 export function ProjectStockList({
     stock,

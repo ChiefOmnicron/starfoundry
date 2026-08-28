@@ -1,10 +1,10 @@
 import { Combobox, Group, Input, InputBase, Loader, Text, useCombobox } from "@mantine/core";
 import { EveIcon } from "../misc/EveIcon";
-import { listItem, type ItemFilter } from "@internal/services/item/list";
+import { listItem, type ItemFilter } from "../services/item/list";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { useState, type ReactElement } from "react";
-import type { Item } from "@internal/services/item/model";
-import type { TypeId } from "@internal/services/utils";
+import type { Item } from "../services/item/model";
+import type { TypeId } from "../services/utils";
 
 function SelectOption(item: Item) {
     return (

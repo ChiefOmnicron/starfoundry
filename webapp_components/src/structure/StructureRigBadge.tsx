@@ -1,7 +1,7 @@
+import { BadgeWrapper } from "../wrapper/Badge";
 import { Text } from "@mantine/core"
 import { useState } from "react";
-import type { StructureRig } from "@internal/services/structure/list";
-import { BadgeWrapper } from "@internal/wrapper/Badge";
+import type { StructureRig } from "../services/structure/list";
 
 export function StructureRigBadge({
     rigs,

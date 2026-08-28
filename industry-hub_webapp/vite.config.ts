@@ -19,7 +19,6 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url)),
-            '@internal': fileURLToPath(new URL('../webapp_components/src', import.meta.url)),
             '@starfoundry/components': fileURLToPath(new URL('../webapp_components/src', import.meta.url)),
         },
     },

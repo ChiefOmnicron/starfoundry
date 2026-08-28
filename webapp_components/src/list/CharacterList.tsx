@@ -1,10 +1,10 @@
-import { BadgeWrapper } from "@internal/wrapper/Badge";
+import { BadgeWrapper } from "../wrapper/Badge";
 import { CopyText } from "../misc/CopyText";
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
-import { EveIcon } from "@internal/misc/EveIcon";
+import { EveIcon } from "../misc/EveIcon";
 import { Flex, Table, Text } from "@mantine/core";
 import {useMemo, type ReactElement } from "react";
-import type { AuthedCharacterInfo } from "@internal/services/character/list";
+import type { AuthedCharacterInfo } from "../services/character/list";
 
 export function CharacterTable({
     characters,

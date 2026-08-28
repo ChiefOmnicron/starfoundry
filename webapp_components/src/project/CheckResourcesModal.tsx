@@ -1,11 +1,11 @@
 import { Alert, Button, Group, Stack, Textarea } from "@mantine/core";
-import { checkResources, type CheckMaterialsRequest, type CheckMaterialsResponse } from "@internal/services/projects/checkResource";
-import { LoadingError } from "@internal/misc/LoadingError";
-import { MaterialList } from "@internal/list/MaterialList";
+import { checkResources, type CheckMaterialsRequest, type CheckMaterialsResponse } from "../services/projects/checkResource";
+import { LoadingError } from "../misc/LoadingError";
+import { MaterialList } from "../list/MaterialList";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import type { Uuid } from "@internal/services/utils";
-import { ModalWrapper } from "@internal/wrapper/Modal";
+import type { Uuid } from "../services/utils";
+import { ModalWrapper } from "../wrapper/Modal";
 
 export function CheckResourcesModal({
     jobIds,

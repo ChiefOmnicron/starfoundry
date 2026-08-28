@@ -1,4 +1,4 @@
-import { axiosClient } from "@internal/services/client";
+import { axiosClient } from "../client";
 import type { Uuid } from "../utils";
 
 export const InitializeProject = async (

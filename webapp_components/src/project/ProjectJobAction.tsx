@@ -2,7 +2,7 @@ import { Button, Dialog, Group } from "@mantine/core";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { CheckResourcesModal } from "./CheckResourcesModal";
 import { CreateBuildOrderModal } from "./CreateBuildOrderModal";
-import type { Uuid } from "@internal/services/utils";
+import type { Uuid } from "../services/utils";
 
 export function ProjectJobAction({
     selected,

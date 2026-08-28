@@ -1,14 +1,14 @@
 import { Alert, Button, Group, Stack, Textarea, Title } from "@mantine/core";
-import { BlueprintList } from "@internal/list/BlueprintList";
-import { checkResources, type CheckMaterialsRequest, type CheckMaterialsResponse } from "@internal/services/projects/checkResource";
-import { createJobAssignment } from "@internal/services/job-assignments/createJobAssignment";
-import { LoadingError } from "@internal/misc/LoadingError";
-import { MaterialList } from "@internal/list/MaterialList";
-import { ModalWrapper } from "@internal/wrapper/Modal";
+import { BlueprintList } from "../list/BlueprintList";
+import { checkResources, type CheckMaterialsRequest, type CheckMaterialsResponse } from "../services/projects/checkResource";
+import { createJobAssignment } from "../services/job-assignments/createJobAssignment";
+import { LoadingError } from "../misc/LoadingError";
+import { MaterialList } from "../list/MaterialList";
+import { ModalWrapper } from "../wrapper/Modal";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import type { ProjectJobMinimal } from "./ProjectJobAction";
-import type { Uuid } from "@internal/services/utils";
+import type { Uuid } from "../services/utils";
 
 export function CreateBuildOrderModal({
     jobs,

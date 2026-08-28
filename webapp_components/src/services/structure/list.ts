@@ -1,7 +1,7 @@
-import { axiosClient, type AbortSignal } from "@internal/services/client";
+import { axiosClient, type AbortSignal } from "../client";
 import { useQuery } from "@tanstack/react-query";
-import type { Uuid } from "@internal/services/utils";
-import type { Category, Group, Item } from "@internal/services/item/model";
+import type { Uuid } from "../utils";
+import type { Category, Group, Item } from "../item/model";
 import type { GenericAbortSignal } from "axios";
 
 export const LIST_STRUCTURE = 'listStructure';

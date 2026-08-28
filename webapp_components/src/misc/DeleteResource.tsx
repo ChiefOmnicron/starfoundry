@@ -1,4 +1,4 @@
-import { ModalWrapper } from "@internal/wrapper/Modal";
+import { ModalWrapper } from "../wrapper/Modal";
 import { Button, Card, Flex, Grid, Stack, Text, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useEffect, useState, type ReactElement } from "react";

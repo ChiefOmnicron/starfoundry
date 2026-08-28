@@ -1,13 +1,13 @@
-import { ItemList } from "@internal/list/ItemList";
+import { ItemList } from "../list/ItemList";
 import { Accordion, Text } from "@mantine/core";
 import { JobSplittingRunList } from "./JobSplittingRunList";
 import { BlueprintOverwriteList } from "./BlueprintOverwriteList";
-import type { Item } from "@internal/services/item/model";
-import type { BlueprintOverwrite } from "@internal/services/project-group/listDefaultBlueprintOverwrites";
-import type { TypeId } from "@internal/services/utils";
-import type { JobSplittingRun } from "@internal/services/project-group/listDefaultJobSplitting";
-import type { Structure } from "@internal/services/structure/list";
-import { StructureList } from "@internal/list/StructureList";
+import type { TypeId } from "../services/utils";
+import { StructureList } from "../list/StructureList";
+import type { Item } from "../services/item/model";
+import type { BlueprintOverwrite } from "../services/project-group/listDefaultBlueprintOverwrites";
+import type { JobSplittingRun } from "../services/project-group/listDefaultJobSplitting";
+import type { Structure } from "../services/structure/list";
 
 export function TempProjectGroupConfiguration({
     blacklist = [],

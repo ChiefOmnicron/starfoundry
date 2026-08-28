@@ -1,11 +1,11 @@
-import type { Uuid } from "@internal/services/utils";
+import type { Uuid } from "../services/utils";
 import { ActionIcon, Combobox, Flex, Group, Input, InputBase, Text, useCombobox } from "@mantine/core";
 import { useEffect, useState, type ReactElement } from "react";
 import { faArrowsRotate } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useQueryClient } from "@tanstack/react-query";
-import type { ProjectGroup } from "@internal/services/project-group/fetch";
-import { LIST_PROJECT_GROUPS, type ProjectGroupMinimal } from "@internal/services/project-group/list";
+import type { ProjectGroup } from "../services/project-group/fetch";
+import { LIST_PROJECT_GROUPS, type ProjectGroupMinimal } from "../services/project-group/list";
 
 function SelectOption(projectGroup: ProjectGroup | ProjectGroupMinimal) {
     return (

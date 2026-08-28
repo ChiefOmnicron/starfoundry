@@ -1,5 +1,5 @@
 import { Text } from "@mantine/core";
-import type { ProjectJob } from "@internal/services/projects/listJobs"
+import type { ProjectJob } from "../services/projects/listJobs"
 
 export function NumberOfStartableJobs({
     jobs,

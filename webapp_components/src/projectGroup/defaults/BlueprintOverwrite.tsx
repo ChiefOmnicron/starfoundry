@@ -1,13 +1,13 @@
 import { Alert, Stack } from '@mantine/core';
 import { BlueprintOverwriteList } from '../BlueprintOverwriteList';
-import { compareArray } from '@internal/misc/SaveDialog';
-import { LIST_PROJECT_GROUP_DEFAULT_BLUEPRINT_OVERWRITES, useListProjectGroupDefaultBlueprintOverwrites, type BlueprintOverwrite } from '@internal/services/project-group/listDefaultBlueprintOverwrites';
-import { LoadingAnimation } from '@internal/misc/LoadingAnimation';
-import { LoadingError } from '@internal/misc/LoadingError';
-import { updateDefaultBlueprintOverwrite } from '@internal/services/project-group/updateDefaultBlueprintOverwrite';
+import { compareArray } from '../../misc/SaveDialog';
+import { LIST_PROJECT_GROUP_DEFAULT_BLUEPRINT_OVERWRITES, useListProjectGroupDefaultBlueprintOverwrites, type BlueprintOverwrite } from '../../services/project-group/listDefaultBlueprintOverwrites';
+import { LoadingAnimation } from '../../misc/LoadingAnimation';
+import { LoadingError } from '../../misc/LoadingError';
+import { updateDefaultBlueprintOverwrite } from '../../services/project-group/updateDefaultBlueprintOverwrite';
 import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { Uuid } from '@internal/services/utils';
+import type { Uuid } from '../../services/utils';
 
 export function ProjectGroupDefaultsBlueprintOverwrite({
     projectGroupId,

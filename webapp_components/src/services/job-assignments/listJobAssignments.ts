@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import type { AbortSignal } from "@internal/services/client";
+import type { AbortSignal } from "../client";
 import type { GenericAbortSignal } from "axios";
-import type { Item } from "@internal/services/item/model";
-import type { Uuid } from "@internal/services/utils";
+import type { Item } from "../item/model";
+import type { Uuid } from "../utils";
 
 export const LIST_JOB_ASSIGNMENT = 'listJobAssignment';
 

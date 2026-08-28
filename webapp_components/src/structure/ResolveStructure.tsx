@@ -1,5 +1,5 @@
-import { resolveStructure, type ResolveStructureResponse } from "@internal/services/structure/resolveStructure";
 import { Button, Flex, TextInput } from "@mantine/core";
+import { resolveStructure, type ResolveStructureResponse } from "../services/structure/resolveStructure";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 

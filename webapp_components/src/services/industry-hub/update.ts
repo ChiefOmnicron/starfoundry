@@ -1,6 +1,6 @@
-import { axiosClient } from "@internal/services/client";
-import type { IndustryHubShare } from "@internal/services/industry-hub/list";
-import type { Uuid } from "@internal/services/utils";
+import { axiosClient } from "../client";
+import type { IndustryHubShare } from "../industry-hub/list";
+import type { Uuid } from "../utils";
 
 export const updateIndustryHub = async (
     industryHubId: Uuid,

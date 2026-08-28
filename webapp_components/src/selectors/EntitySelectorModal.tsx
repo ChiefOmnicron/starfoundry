@@ -1,9 +1,9 @@
 import { Button, Flex, Stack, UnstyledButton } from "@mantine/core";
-import { EntityList, type Entity } from "@internal/list/EntityList";
+import { EntityList, type Entity } from "../list/EntityList";
 import { InGameSearch, type InGameSearchRef } from "./InGameSearch";
 import { useEffect, useRef, useState, type ReactElement } from "react";
-import type { Category } from "@internal/services/utils";
-import { ModalWrapper } from "@internal/wrapper/Modal";
+import type { Category } from "../services/utils";
+import { ModalWrapper } from "../wrapper/Modal";
 
 export function EntitySelectorModal({
     opened,

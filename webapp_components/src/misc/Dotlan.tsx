@@ -1,4 +1,4 @@
-import type { System } from "@internal/services/structure/list";
+import type { System } from "../services/structure/list";
 import { InternalLink } from "../links/InternalLink";
 
 export function Dotlan({

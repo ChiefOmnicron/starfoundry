@@ -1,7 +1,7 @@
 import { Button, Flex, InputBase, Modal, Stack, UnstyledButton } from "@mantine/core";
 import { StructureList } from "../list/StructureList";
 import { useEffect, useState, type ReactElement } from "react";
-import type { Structure } from "@internal/services/structure/list";
+import type { Structure } from "../services/structure/list";
 
 export function StructureSelectorModal({
     opened,

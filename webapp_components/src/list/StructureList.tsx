@@ -1,6 +1,6 @@
 import { SimpleGrid, Title } from '@mantine/core';
-import { StructureCard, type StructureCardAdditionalProps } from '@internal/cards/StructureCard';
-import type { Structure, System } from '@internal/services/structure/list';
+import { StructureCard, type StructureCardAdditionalProps } from '../cards/StructureCard';
+import type { Structure, System } from '../services/structure/list';
 
 export function StructureList({
     structures,

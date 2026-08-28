@@ -1,8 +1,8 @@
 import { MultiSelect } from "@mantine/core";
 import { useEffect, useState } from "react";
 
-import type { TypeId } from "@internal/services/utils";
-import type { StructureService } from "@internal/services/structure/list";
+import type { TypeId } from "../services/utils";
+import type { StructureService } from "../services/structure/list";
 
 export function ServiceSelector({
     services,

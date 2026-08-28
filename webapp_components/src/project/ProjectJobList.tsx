@@ -2,8 +2,8 @@ import { Stack, Title } from "@mantine/core";
 import { ProjectJobAction, type ProjectJobMinimal } from "./ProjectJobAction";
 import { ProjectJobListTable } from "./ProjectJobListTable";
 import { useState } from "react";
-import type { ProjectJobGroup, ProjectJobStatus } from "@internal/services/projects/listJobs"
-import type { Uuid } from "@internal/services/utils";
+import type { ProjectJobGroup, ProjectJobStatus } from "../services/projects/listJobs"
+import type { Uuid } from "../services/utils";
 
 export function ProjectJobList({
     projectId,

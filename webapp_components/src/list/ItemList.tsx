@@ -1,10 +1,10 @@
 import { Button, Flex, Table, Text } from "@mantine/core";
 import { CopyText } from "../misc/CopyText";
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { EveIcon } from "@internal/misc/EveIcon";
+import { EveIcon } from "../misc/EveIcon";
 import { ItemSelectorModal } from "../selectors/ItemSelectorModal";
 import { useDisclosure } from "@mantine/hooks";
-import type { Item } from "@internal/services/item/model";
+import type { Item } from "../services/item/model";
 import type {ReactElement } from "react";
 
 // Implementation for an editable list

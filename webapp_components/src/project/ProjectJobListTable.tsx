@@ -1,18 +1,18 @@
 import { Alert, Button, Checkbox, Group } from "@mantine/core";
-import { CopyTable } from "@internal/misc/CopyTable";
-import { CopyText } from "@internal/misc/CopyText";
-import { Countdown } from "@internal/misc/Countdown";
+import { CopyTable } from "../misc/CopyTable";
+import { CopyText } from "../misc/CopyText";
+import { Countdown } from "../misc/Countdown";
 import { createColumnHelper, getCoreRowModel, useReactTable, type RowSelectionState } from "@tanstack/react-table";
-import { EveIcon } from "@internal/misc/EveIcon";
+import { EveIcon } from "../misc/EveIcon";
 import { JobStatusBadge } from "./JobStatusBadge";
 import { memo, useEffect, useState } from "react";
-import { Nakamura } from "@internal/misc/Nakamura";
+import { Nakamura } from "../misc/Nakamura";
 import { ProjectJobEditModal } from "./ProjectJobEditModal";
-import { TableWrapper } from "@internal/wrapper/Table";
+import { TableWrapper } from "../wrapper/Table";
 import { useDisclosure } from "@mantine/hooks";
-import type { ProjectJob } from "@internal/services/projects/listJobs";
+import type { ProjectJob } from "../services/projects/listJobs";
 import type { ProjectJobMinimal } from "./ProjectJobAction";
-import type { Uuid } from "@internal/services/utils";
+import type { Uuid } from "../services/utils";
 
 export const ProjectJobListTable = function ProjectJobListTableImp({
     projectId,

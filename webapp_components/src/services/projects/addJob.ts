@@ -1,5 +1,5 @@
-import { axiosClient } from "@internal/services/client";
-import type { TypeId, Uuid } from "@internal/services/utils";
+import { axiosClient } from "../client";
+import type { TypeId, Uuid } from "../utils";
 
 export const addJobEntry = async (
     projectId:  Uuid,

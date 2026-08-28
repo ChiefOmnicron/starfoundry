@@ -1,4 +1,4 @@
-import { axiosClient, type AbortSignal } from "@internal/services/client";
+import { axiosClient, type AbortSignal } from "../client";
 import { useQuery } from "@tanstack/react-query";
 import type { GenericAbortSignal } from "axios";
 import type { ProjectJob } from "./listJobs";

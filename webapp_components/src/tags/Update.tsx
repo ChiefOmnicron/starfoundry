@@ -1,12 +1,12 @@
 import { Alert, Button, ColorInput, Grid, Group, InputBase, InputWrapper, SegmentedControl, Select, Stack, TextInput } from "@mantine/core";
-import { BadgeWrapper } from "@internal/wrapper/Badge";
-import { LIST_TAGS, type AutoTagCompare, type AutoTagSelect, type Tag, type TagType } from "@internal/services/tags/list";
-import { tagOptions } from "@internal/services/tags/options";
-import { updateTag } from "@internal/services/tags/update";
+import { BadgeWrapper } from "../wrapper/Badge";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { useState, type ReactElement } from "react";
-import type { CreateTag } from "@internal/services/tags/create";
+import type { CreateTag } from "../services/tags/create";
+import { updateTag } from "../services/tags/update";
+import { LIST_TAGS, type AutoTagCompare, type AutoTagSelect, type Tag, type TagType } from "../services/tags/list";
+import { TAG_OPTIONS } from "../services/tags/options";
 
 export function UpdateTag({
     tag,
@@ -70,7 +70,7 @@ export function UpdateTag({
                                     !field.state.meta.isValid && field.state.meta.errors.join(', ')
                                 }
                                 onChange={(x) => field.handleChange(x as any)}
-                                data={tagOptions}
+                                data={TAG_OPTIONS}
                                 withAsterisk
                             />
                         }}
@@ -96,7 +96,7 @@ export function UpdateTag({
                                         onChange={(x) => {
                                             field.handleChange(x as any)
                                         }}
-                                        data={(tagOptions.find(x => x.value === select) || { compare: [] }).compare}
+                                        data={(TAG_OPTIONS.find(x => x.value === select) || { compare: [] }).compare}
                                         allowDeselect={false}
                                         withAsterisk
                                     />

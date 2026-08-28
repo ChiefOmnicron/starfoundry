@@ -1,6 +1,6 @@
-import { axiosClient } from "@internal/services/client";
+import { axiosClient } from "../client";
 import type { StructurePosition } from "./list";
-import type { Uuid } from "@internal/services/utils";
+import type { Uuid } from "../utils";
 
 export const createStructure = async (
     data: CreateStructure,

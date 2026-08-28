@@ -1,18 +1,18 @@
-import { compareArray, SaveDialog } from "@internal/misc/SaveDialog";
+import { Button, Group, Stack, Table, Title } from "@mantine/core";
+import { compareArray, SaveDialog } from "../misc/SaveDialog";
+import { CopyText } from "../misc/CopyText";
+import { DeleteResource } from "../misc/DeleteResource";
+import { Dotlan } from "../misc/Dotlan";
+import { RigSelector } from "../selectors/RigSelector";
+import { ServiceSelector } from "../selectors/ServiceSelector";
+import { StructureScanModal } from "./StructureScanModal";
+import { TaxByService } from "./TaxesByService";
 import { useDisclosure } from "@mantine/hooks";
 import { useEffect, useState } from "react";
-import type { Structure, StructureTax } from "@internal/services/structure/list";
-import type { TypeId } from "@internal/services/utils";
-import { DeleteResource } from "@internal/misc/DeleteResource";
-import { Button, Group, Stack, Table, Title } from "@mantine/core";
-import type { Item } from "@internal/services/item/model";
-import { CopyText } from "@internal/misc/CopyText";
-import { RigSelector } from "@internal/selectors/RigSelector";
-import { ServiceSelector } from "@internal/selectors/ServiceSelector";
-import { StructureScanModal } from "./StructureScanModal";
-import { Dotlan } from "@internal/misc/Dotlan";
-import { TaxByService } from "./TaxesByService";
-import type { UpdateStructure } from "@internal/services/structure/update";
+import type { Item } from "../services/item/model";
+import type { Structure, StructureTax } from "../services/structure/list";
+import type { TypeId } from "../services/utils";
+import type { UpdateStructure } from "../services/structure/update";
 
 export function EditStructure({
     structure,

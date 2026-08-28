@@ -1,5 +1,5 @@
-import { axiosClient } from "@internal/services/client";
-import type { Category } from "@internal/services/utils";
+import { axiosClient } from "./client";
+import type { Category } from "./utils";
 import type { GenericAbortSignal } from "axios";
 
 export const LIST_ITEM = 'listItem';

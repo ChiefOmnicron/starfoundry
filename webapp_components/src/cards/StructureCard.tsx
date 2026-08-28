@@ -1,15 +1,15 @@
 import { BaseCard } from "./BaseCard";
-import { CopyText } from "@internal/misc/CopyText";
-import { Dotlan } from "@internal/misc/Dotlan";
-import { EveIcon } from "@internal/misc/EveIcon";
+import { CopyText } from "../misc/CopyText";
+import { Dotlan } from "../misc/Dotlan";
+import { EveIcon } from "../misc/EveIcon";
 import { Flex, Group, Stack, Text, Title, UnstyledButton } from "@mantine/core";
-import { InternalLink } from "@internal/links/InternalLink";
-import { StructureRigBadge } from "@internal/structure/StructureRigBadge";
-import { StructureServiceBadge } from "@internal/structure/StructureServiceBadge";
-import { StructureViewModal } from "@internal/detailView/StructureView";
+import { InternalLink } from "../links/InternalLink";
+import { StructureRigBadge } from "../structure/StructureRigBadge";
+import { StructureServiceBadge } from "../structure/StructureServiceBadge";
+import { StructureViewModal } from "../detailView/StructureView";
 import { useDisclosure } from "@mantine/hooks";
 import { useEffect, useState } from "react";
-import type { Structure } from "@internal/services/structure/list";
+import type { Structure } from "../services/structure/list";
 
 export function StructureCard({
     structure,

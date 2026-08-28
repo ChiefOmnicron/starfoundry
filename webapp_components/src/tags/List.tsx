@@ -1,15 +1,15 @@
 import { Alert, Button, Group } from "@mantine/core";
-import { BadgeWrapper } from "@internal/wrapper/Badge";
+import { BadgeWrapper } from "../wrapper/Badge";
 import { createColumnHelper, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { deleteTag } from "@internal/services/tags/delete";
-import { LIST_TAGS, type Tag } from "@internal/services/tags/list";
-import { ModalWrapper } from "@internal/wrapper/Modal";
-import { TableWrapper } from "@internal/wrapper/Table";
+import { deleteTag } from "../services/tags/delete";
+import { LIST_TAGS, type Tag } from "../services/tags/list";
+import { ModalWrapper } from "../wrapper/Modal";
+import { TableWrapper } from "../wrapper/Table";
 import { UpdateTag } from "./Update";
 import { useDisclosure } from "@mantine/hooks";
 import { useMutation, type MutationFunctionContext } from "@tanstack/react-query";
 import { useState, type ReactElement } from "react";
-import type { Uuid } from "@internal/services/utils";
+import type { Uuid } from "../services/utils";
 
 export function TagList({
     tags,

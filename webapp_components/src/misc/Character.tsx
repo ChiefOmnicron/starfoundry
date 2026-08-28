@@ -1,6 +1,6 @@
 import { Avatar, Group, Text, UnstyledButton } from "@mantine/core";
 import { LoadingError } from "./LoadingError";
-import { characterInfo, type CharacterInfo } from "@internal/services/client";
+import { characterInfo, type CharacterInfo } from "../services/client";
 
 export function CharacterComponent() {
     try {

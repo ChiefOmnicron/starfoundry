@@ -17,7 +17,7 @@ const comparePattern = {
     value: 'PATTERN'
 };
 
-export const tagOptions: TagOption[] = [{
+export const TAG_OPTIONS: TagOption[] = [{
     label: 'project.name',
     value: 'PROJECT_NAME',
     compare: [

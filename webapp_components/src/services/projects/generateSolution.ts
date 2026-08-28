@@ -1,6 +1,6 @@
-import { axiosClient } from "@internal/services/client";
-import type { Item } from "@internal/services/item/model";
-import type { Structure } from "@internal/services/structure/list";
+import { axiosClient } from "../client";
+import type { Item } from "../item/model";
+import type { Structure } from "../structure/list";
 import type { Uuid } from "../utils";
 import type { IndustryHub } from "../industry-hub/list";
 

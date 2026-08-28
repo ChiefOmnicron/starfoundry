@@ -1,5 +1,5 @@
 import { InputWrapper, SegmentedControl } from "@mantine/core";
-import type { ProjectStatus } from "@internal/services/projects/list";
+import type { ProjectStatus } from "../services/projects/list";
 
 const SELECTABLE_STATES = [{
     label: 'Ready to Start',

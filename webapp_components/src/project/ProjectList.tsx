@@ -1,8 +1,8 @@
-import { ProjectCard, type ProjectCardAdditionalProps } from "@internal/cards/ProjectCard";
+import { ProjectCard, type ProjectCardAdditionalProps } from "../cards/ProjectCard";
 import { SimpleGrid, Title } from "@mantine/core";
-import type { ProjectGroupMinimal } from "@internal/services/project-group/list";
-import type { ProjectListMinimal } from "@internal/services/projects/list";
-import type { Uuid } from "@internal/services/utils";
+import type { ProjectGroupMinimal } from "../services/project-group/list";
+import type { ProjectListMinimal } from "../services/projects/list";
+import type { Uuid } from "../services/utils";
 
 export function ProjectList({
     projects,

@@ -1,10 +1,10 @@
-import { BadgeWrapper } from "@internal/wrapper/Badge";
-import { BaseCard } from "@internal/cards/BaseCard";
+import { BadgeWrapper } from "../wrapper/Badge";
+import { BaseCard } from "../cards/BaseCard";
 import { Flex, Group, Stack, Text, Title } from "@mantine/core";
-import { InternalLink } from "@internal/links/InternalLink";
-import { ProjectProgressBar } from "@internal/misc/ProgressBar";
-import { useListProjectJobs } from "@internal/services/projects/listJobs";
-import type { ProjectListMinimal, ProjectStatus } from "@internal/services/projects/list";
+import { InternalLink } from "../links/InternalLink";
+import { ProjectProgressBar } from "../misc/ProgressBar";
+import { useListProjectJobs } from "../services/projects/listJobs";
+import type { ProjectListMinimal, ProjectStatus } from "../services/projects/list";
 
 export function ProjectCard({
     project,

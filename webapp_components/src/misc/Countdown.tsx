@@ -1,5 +1,5 @@
-import { BadgeWrapper } from "@internal/wrapper/Badge";
-import { formatTime } from "@internal/utils";
+import { formatTime } from "../utils";
+import { BadgeWrapper } from "../wrapper/Badge";
 import { useEffect, useState } from "react";
 
 export function Countdown({

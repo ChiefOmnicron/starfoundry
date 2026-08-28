@@ -1,11 +1,11 @@
 import { CloseButton, Flex, Table, Text, TextInput } from "@mantine/core";
 import { CopyText } from "../misc/CopyText";
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
-import { EveIcon } from "@internal/misc/EveIcon";
+import { EveIcon } from "../misc/EveIcon";
 import { LoadingAnimation } from "../misc/LoadingAnimation";
 import { LoadingError } from "../misc/LoadingError";
-import { systemRigBonusModifier } from "@internal/services/structure/utils";
-import { useListRigBlueprintBonus, type RigBlueprintBonus } from "@internal/services/structure/listRigBlueprintBonus";
+import { systemRigBonusModifier } from "../services/structure/utils";
+import { useListRigBlueprintBonus, type RigBlueprintBonus } from "../services/structure/listRigBlueprintBonus";
 import {useMemo, useRef, useState, type ReactElement } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 

@@ -1,11 +1,11 @@
 import { BlueprintBonusList } from '../list/BlueprintBonusList';
-import { CopyText } from '@internal/misc/CopyText';
-import { Dotlan } from '@internal/misc/Dotlan';
+import { CopyText } from '../misc/CopyText';
+import { Dotlan } from '../misc/Dotlan';
 import { Group, Modal, Stack, Table, Title } from '@mantine/core';
-import { StructureRigBadge } from '@internal/structure/StructureRigBadge';
-import { StructureServiceBadge } from '@internal/structure/StructureServiceBadge';
-import type { Structure } from '@internal/services/structure/list';
-import { TAXES_SERVICE_MODULES } from '@internal/structure/TaxesByService';
+import { StructureRigBadge } from '../structure/StructureRigBadge';
+import { StructureServiceBadge } from '../structure/StructureServiceBadge';
+import type { Structure } from '../services/structure/list';
+import { TAXES_SERVICE_MODULES } from '../structure/TaxesByService';
 import { useMediaQuery } from '@mantine/hooks';
 
 export function StructureView({

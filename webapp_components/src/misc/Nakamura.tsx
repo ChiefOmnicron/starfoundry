@@ -1,5 +1,5 @@
-import { InternalLink } from "@internal/links/InternalLink";
-import { formatDate } from "@internal/utils";
+import { InternalLink } from "../links/InternalLink";
+import { formatDate } from "../utils";
 
 export function Nakamura({
     endDate

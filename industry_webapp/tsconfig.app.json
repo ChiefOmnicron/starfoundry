@@ -36,6 +36,5 @@
   "include": [
     "src",
     "cypress/support/cypress.d.ts",
-    "../webapp_components/src"
   ]
 }

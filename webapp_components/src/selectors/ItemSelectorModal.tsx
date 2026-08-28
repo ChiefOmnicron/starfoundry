@@ -1,10 +1,10 @@
 import { Button, Checkbox, Flex, InputBase, Modal, Stack, Table, Text, UnstyledButton } from "@mantine/core";
 import { EveIcon } from "../misc/EveIcon";
-import { listItem, type ItemFilter } from "@internal/services/item/list";
+import { listItem, type ItemFilter } from "../services/item/list";
 import { LoadingAnimation } from "../misc/LoadingAnimation";
 import { useDebouncedCallback, useMediaQuery } from "@mantine/hooks";
 import { useEffect, useState, type JSX, type ReactElement } from "react";
-import type { Item } from "@internal/services/item/model";
+import type { Item } from "../services/item/model";
 
 export function ItemSelectorModal({
     opened,

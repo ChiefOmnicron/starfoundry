@@ -1,12 +1,12 @@
 import { ActionIcon, Button, Flex, Table, Text, Tooltip } from "@mantine/core";
 import { CopyText } from "../misc/CopyText";
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { EveIcon } from "@internal/misc/EveIcon";
+import { EveIcon } from "../misc/EveIcon";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useClipboard } from "@mantine/hooks";
 import {useEffect, useState, type ReactElement } from "react";
-import type { Item } from "@internal/services/item/model";
+import type { Item } from "../services/item/model";
 
 export function BlueprintList({
     blueprints,

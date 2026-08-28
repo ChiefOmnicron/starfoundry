@@ -1,15 +1,15 @@
 import { Alert, Button, Group, InputBase, NumberInput, Stack } from '@mantine/core';
-import { createProject, type CreateProject, type CreateProjectResponse } from '@internal/services/projects/create';
-import { LoadingAnimation } from '@internal/misc/LoadingAnimation';
-import { LoadingError } from '@internal/misc/LoadingError';
-import { ModalWrapper } from '@internal/wrapper/Modal';
-import { ProjectGroupSelector } from '@internal/selectors/ProjectGroupSelector';
+import { createProject, type CreateProject, type CreateProjectResponse } from '../services/projects/create';
+import { LoadingAnimation } from '../misc/LoadingAnimation';
+import { LoadingError } from '../misc/LoadingError';
+import { ModalWrapper } from '../wrapper/Modal';
+import { ProjectGroupSelector } from '../selectors/ProjectGroupSelector';
 import { useForm } from '@tanstack/react-form';
-import { useListProjectGroup } from '@internal/services/project-group/list';
+import { useListProjectGroup } from '../services/project-group/list';
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
-import type { Uuid } from '@internal/services/utils';
-import { MarkdownEditor } from '@internal/misc/MarkdownEditor';
+import type { Uuid } from '../services/utils';
+import { MarkdownEditor } from '../misc/MarkdownEditor';
 
 export function CreateProject({
     onCreate,

@@ -1,6 +1,6 @@
-import { axiosClient } from "@internal/services/client";
-import type { Uuid } from "@internal/services/utils";
-import type { CreateTag } from "@internal/services/tags/create";
+import { axiosClient } from "../client";
+import type { Uuid } from "../utils";
+import type { CreateTag } from "../tags/create";
 
 export const updateTag = async (
     id: Uuid,

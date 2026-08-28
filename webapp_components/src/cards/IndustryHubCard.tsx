@@ -1,18 +1,18 @@
 import { BaseCard } from "./BaseCard";
-import { cloneIndustryHub } from "@internal/services/industry-hub/clone";
-import { CopyText } from "@internal/misc/CopyText";
-import { Dotlan } from "@internal/misc/Dotlan";
+import { cloneIndustryHub } from "../services/industry-hub/clone";
+import { CopyText } from "../misc/CopyText";
+import { Dotlan } from "../misc/Dotlan";
 import { Flex, Group, Stack, Text, Title, UnstyledButton } from "@mantine/core";
-import { IndustryHubViewModal } from "@internal/detailView/IndustryHubView";
-import { InternalLink } from "@internal/links/InternalLink";
-import { StructureRigBadge } from "@internal/structure/StructureRigBadge";
-import { StructureServiceBadge } from "@internal/structure/StructureServiceBadge";
+import { IndustryHubViewModal } from "../detailView/IndustryHubView";
+import { InternalLink } from "../links/InternalLink";
+import { StructureRigBadge } from "../structure/StructureRigBadge";
+import { StructureServiceBadge } from "../structure/StructureServiceBadge";
 import { useDisclosure } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import type { IndustryHub } from "@internal/services/industry-hub/list";
-import type { Item } from "@internal/services/item/model";
-import type { StructureRig, System } from "@internal/services/structure/list";
+import type { IndustryHub } from "../services/industry-hub/list";
+import type { Item } from "../services/item/model";
+import type { StructureRig, System } from "../services/structure/list";
 
 export function IndustryHubCard({
     industryHub,

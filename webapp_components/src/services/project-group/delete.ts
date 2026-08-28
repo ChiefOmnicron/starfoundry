@@ -1,6 +1,6 @@
-import { axiosClient } from "@internal/services/client";
-import type { ProjectGroup } from "@internal/services/project-group/fetch";
-import type { Uuid } from "@internal/services/utils";
+import { axiosClient } from "../client";
+import type { ProjectGroup } from "../project-group/fetch";
+import type { Uuid } from "../utils";
 
 export const deleteProjectGroup = async (
     projectGroupUuid: Uuid,

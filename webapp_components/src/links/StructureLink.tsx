@@ -1,6 +1,6 @@
-import type { Structure } from "@internal/services/structure/list";
+import type { Structure } from "../services/structure/list";
 import { useDisclosure } from "@mantine/hooks";
-import { StructureViewModal } from "@internal/detailView/StructureView";
+import { StructureViewModal } from "../detailView/StructureView";
 import { UnstyledButton } from "@mantine/core";
 
 export function StructureLink({

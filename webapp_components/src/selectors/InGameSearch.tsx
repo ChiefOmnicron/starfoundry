@@ -1,9 +1,9 @@
 import { Avatar, Combobox, Group, Input, InputBase, Loader, Pill, Text, useCombobox } from "@mantine/core";
+import { inGameSearch, type InGameSearchFilter, type InGameSearchResponse } from "../services/inGameSearch";
+import { LoadingAnimation } from "../misc/LoadingAnimation";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { useState, type ReactElement } from "react";
-import type { Category } from "@internal/services/utils";
-import { inGameSearch, type InGameSearchFilter, type InGameSearchResponse } from "@internal/services/inGameSearch";
-import { LoadingAnimation } from "@internal/misc/LoadingAnimation";
+import type { Category } from "../services/utils";
 
 function SelectOption(searchResult: InGameSearchResponse) {
     let category;

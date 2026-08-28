@@ -1,17 +1,17 @@
 import { Alert, Button, Code, Flex, Stack } from '@mantine/core';
+import { compareArray } from '../../misc/SaveDialog';
+import { InternalLink } from '../../links/InternalLink';
+import { LIST_PROJECT_GROUP_DEFAULT_MARKETS, useListProjectGroupDefaultMarkets } from '../../services/project-group/listDefaultMarket';
+import { LoadingAnimation } from '../../misc/LoadingAnimation';
+import { LoadingError } from '../../misc/LoadingError';
+import { StructureList } from '../../list/StructureList';
+import { StructureSelectorModal } from '../../selectors/StructureSelectorModal';
+import { updateDefaultMarket } from '../../services/project-group/updateDefaultMarket';
 import { useDisclosure } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
+import { useListStructure, type Structure } from '../../services/structure/list';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useListStructure, type Structure } from '@internal/services/structure/list';
-import { LIST_PROJECT_GROUP_DEFAULT_MARKETS, useListProjectGroupDefaultMarkets } from '@internal/services/project-group/listDefaultMarket';
-import { updateDefaultMarket } from '@internal/services/project-group/updateDefaultMarket';
-import { compareArray } from '@internal/misc/SaveDialog';
-import { LoadingAnimation } from '@internal/misc/LoadingAnimation';
-import { LoadingError } from '@internal/misc/LoadingError';
-import { StructureSelectorModal } from '@internal/selectors/StructureSelectorModal';
-import { InternalLink } from '@internal/links/InternalLink';
-import { StructureList } from '@internal/list/StructureList';
-import type { Uuid } from '@internal/services/utils';
+import type { Uuid } from '../../services/utils';
 
 export function ProjectGroupDefaultsMarket({
     structureView,

@@ -1,8 +1,8 @@
 import { Button, Flex, InputBase, Stack, UnstyledButton } from "@mantine/core";
-import { type IndustryHub } from "@internal/services/industry-hub/list";
+import { type IndustryHub } from "../services/industry-hub/list";
 import { useEffect, useState, type ReactElement } from "react";
-import { IndustryHubList } from "@internal/list/IndustryHubList";
-import { ModalWrapper } from "@internal/wrapper/Modal";
+import { IndustryHubList } from "../list/IndustryHubList";
+import { ModalWrapper } from "../wrapper/Modal";
 
 export function IndustryHubSelectorModal({
     opened,

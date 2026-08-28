@@ -1,5 +1,5 @@
-import { BadgeWrapper } from "@internal/wrapper/Badge";
-import type { ProjectJobStatus } from "@internal/services/projects/listJobs";
+import { BadgeWrapper } from "../wrapper/Badge";
+import type { ProjectJobStatus } from "../services/projects/listJobs";
 
 export function JobStatusBadge({
     jobStatus,

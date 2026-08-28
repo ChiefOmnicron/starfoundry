@@ -26,11 +26,7 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true,
-
-    "paths": {
-      "@internal/*": ["./src/*"]
-    }
+    "noUncheckedSideEffectImports": true
   },
   "include": [
     "src"

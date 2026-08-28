@@ -1,4 +1,4 @@
-import { axiosClient } from "@internal/services/client";
+import { axiosClient } from "../client";
 
 export const createFitting = async (
     characterId:    number,

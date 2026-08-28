@@ -1,13 +1,13 @@
 import { Alert, Stack } from '@mantine/core';
-import { compareArray } from '@internal/misc/SaveDialog';
+import { compareArray } from '../../misc/SaveDialog';
 import { JobSplittingRunList } from '../JobSplittingRunList';
-import { LIST_PROJECT_GROUP_DEFAULT_JOB_SPLITTING, useListProjectGroupDefaultJobSplitting, type JobSplittingRun } from '@internal/services/project-group/listDefaultJobSplitting';
-import { LoadingAnimation } from '@internal/misc/LoadingAnimation';
-import { LoadingError } from '@internal/misc/LoadingError';
-import { updateDefaultJobSplitting } from '@internal/services/project-group/updateDefaultJobSplitting';
+import { LIST_PROJECT_GROUP_DEFAULT_JOB_SPLITTING, useListProjectGroupDefaultJobSplitting, type JobSplittingRun } from '../../services/project-group/listDefaultJobSplitting';
+import { LoadingAnimation } from '../../misc/LoadingAnimation';
+import { LoadingError } from '../../misc/LoadingError';
+import { updateDefaultJobSplitting } from '../../services/project-group/updateDefaultJobSplitting';
 import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { Uuid } from '@internal/services/utils';
+import type { Uuid } from '../../services/utils';
 
 export function ProjectGroupDefaultsJobSplitting({
     projectGroupId,

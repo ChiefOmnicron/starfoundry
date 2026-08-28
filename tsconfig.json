@@ -1,0 +1,10 @@
+{
+    "files": [],
+    "references": [{
+        "path": "webapp_components"
+    }, {
+        "path": "industry_webapp"
+    }, {
+        "path": "industry_hub_webapp"
+    }]
+}

@@ -1,8 +1,8 @@
 import { Button, Flex, Modal, Stack, Textarea, UnstyledButton } from "@mantine/core";
-import { parseItem } from "@internal/services/item/parse";
+import { parseItem } from "../services/item/parse";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import type { Item } from "@internal/services/item/model";
+import type { Item } from "../services/item/model";
 
 export function StructureScanModal({
     opened,

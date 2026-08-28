@@ -1,4 +1,4 @@
-import type { Structure } from "@internal/services/structure/list";
+import type { Structure } from "../services/structure/list";
 import { useEffect, useRef, useState } from "react";
 
 export function StructureLayout({

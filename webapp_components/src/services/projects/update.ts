@@ -1,5 +1,5 @@
-import { axiosClient } from "@internal/services/client";
-import type { Uuid } from "@internal/services/utils";
+import { axiosClient } from "../client";
+import type { Uuid } from "../utils";
 import type { ProjectStatus } from "./list";
 
 export const updateProject = async (

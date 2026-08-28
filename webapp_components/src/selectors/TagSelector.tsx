@@ -1,8 +1,8 @@
-import { BadgeWrapper } from "@internal/wrapper/Badge";
+import { BadgeWrapper } from "../wrapper/Badge";
 import { Combobox, Group, Pill, PillsInput, useCombobox } from "@mantine/core";
 import { useEffect, useState } from "react";
-import type { Tag } from "@internal/services/tags/list";
-import type { Uuid } from "@internal/services/utils";
+import type { Tag } from "../services/tags/list";
+import type { Uuid } from "../services/utils";
 
 export function TagSelector({
     disabled,

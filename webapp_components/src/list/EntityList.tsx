@@ -1,4 +1,4 @@
-import { EntityCard, type EntityAdditionalProps } from '@internal/cards/EntityCard';
+import { EntityCard, type EntityAdditionalProps } from '../cards/EntityCard';
 import { Center, SimpleGrid, Stack, Title } from '@mantine/core';
 
 export function EntityList({

@@ -1,8 +1,8 @@
-import { axiosClient, type AbortSignal } from "@internal/services/client";
+import { axiosClient, type AbortSignal } from "../client";
 import { useQuery } from "@tanstack/react-query";
 import type { GenericAbortSignal } from "axios";
 import type { ProjectGroupMinimal } from "../project-group/list";
-import type { Uuid } from "@internal/services/utils";
+import type { Uuid } from "../utils";
 
 export const LIST_PROJECT = 'listProject';
 

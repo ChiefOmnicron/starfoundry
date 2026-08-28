@@ -1,8 +1,8 @@
-import { axiosClient, type AbortSignal } from "@internal/services/client";
+import { axiosClient, type AbortSignal } from "../client";
 import { useQuery } from "@tanstack/react-query";
 import type { GenericAbortSignal } from "axios";
-import type { ProjectGroupMember } from "@internal/services/project-group/listMembers";
-import type { Uuid } from "@internal/services/utils";
+import type { ProjectGroupMember } from "../project-group/listMembers";
+import type { Uuid } from "../utils";
 
 export const FETCH_PROJECT_GROUP = 'fetchProjectGroup';
 

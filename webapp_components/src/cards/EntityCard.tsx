@@ -1,7 +1,7 @@
 import { Card, Flex, Group, Pill, Stack, Text, UnstyledButton } from "@mantine/core";
-import { CopyText } from "@internal/misc/CopyText";
-import { EveIcon } from "@internal/misc/EveIcon";
-import type { Entity } from "@internal/list/EntityList";
+import { CopyText } from "../misc/CopyText";
+import { EveIcon } from "../misc/EveIcon";
+import type { Entity } from "../list/EntityList";
 
 export function EntityCard({
     entity,

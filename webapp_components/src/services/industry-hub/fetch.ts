@@ -1,8 +1,8 @@
-import { axiosClient, type AbortSignal } from "@internal/services/client";
+import { axiosClient, type AbortSignal } from "../client";
 import { useQuery } from "@tanstack/react-query";
 import type { GenericAbortSignal } from "axios";
-import type { IndustryHub } from "@internal/services/industry-hub/list";
-import type { Uuid } from "@internal/services/utils";
+import type { IndustryHub } from "./list";
+import type { Uuid } from "../utils";
 
 export const FETCH_INDUSTRY_HUB = 'fetchIndustryHub';
 

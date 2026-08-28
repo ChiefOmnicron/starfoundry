@@ -1,17 +1,17 @@
-import { addExcessEntry, type AddExcessEntryRequest } from "@internal/services/projects/addExcess";
-import { addJobEntry, type AddJobEntryRequest } from "@internal/services/projects/addJob";
-import { addMarketEntry, type AddMarketEntryRequest } from "@internal/services/projects/addMarket";
+import { addExcessEntry, type AddExcessEntryRequest } from "../services/projects/addExcess";
+import { addJobEntry, type AddJobEntryRequest } from "../services/projects/addJob";
+import { addMarketEntry, type AddMarketEntryRequest } from "../services/projects/addMarket";
 import { Alert, Button, Grid, Group, NumberInput, SegmentedControl, Stack, Tabs, Text } from "@mantine/core";
-import { LIST_PROJECT_JOBS, type ProjectJob, type ProjectJobStatus } from "@internal/services/projects/listJobs";
-import { LoadingError } from "@internal/misc/LoadingError";
-import { MaterialList } from "@internal/list/MaterialList";
-import { ModalWrapper } from "@internal/wrapper/Modal";
-import { splitJobCheck, type SplitJobRequest, type SplitJobResponse } from "@internal/services/projects/splitJobCheck";
-import { updateProjectJob, type UpdateProjectJob } from "@internal/services/projects/updateJob";
+import { LIST_PROJECT_JOBS, type ProjectJob, type ProjectJobStatus } from "../services/projects/listJobs";
+import { LoadingError } from "../misc/LoadingError";
+import { MaterialList } from "../list/MaterialList";
+import { ModalWrapper } from "../wrapper/Modal";
+import { splitJobCheck, type SplitJobRequest, type SplitJobResponse } from "../services/projects/splitJobCheck";
+import { updateProjectJob, type UpdateProjectJob } from "../services/projects/updateJob";
 import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import type { Uuid } from "@internal/services/utils";
-import { EveIcon } from "@internal/misc/EveIcon";
+import type { Uuid } from "../services/utils";
+import { EveIcon } from "../misc/EveIcon";
 
 const SELECTABLE_STATES = [{
     label: 'Waiting for materials',

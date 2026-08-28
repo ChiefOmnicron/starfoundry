@@ -1,7 +1,7 @@
-import { axiosClient, type AbortSignal } from "@internal/services/client";
+import { axiosClient, type AbortSignal } from "../client";
 import { useQuery } from "@tanstack/react-query";
 import type { GenericAbortSignal } from "axios";
-import type { Item } from "@internal/services/item/model";
+import type { Item } from "../item/model";
 
 export const FETCH_RIG_STRUCTURE_BONUS = "listRigBlueprintBonus";
 

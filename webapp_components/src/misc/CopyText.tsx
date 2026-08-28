@@ -1,7 +1,7 @@
-import { formatDate, formatNumber, formatNumberUnit } from "@internal/utils";
 import { Tooltip } from "@mantine/core";
 import { useClipboard } from "@mantine/hooks";
 import { useEffect, useState } from "react";
+import { formatDate, formatNumber, formatNumberUnit } from "../utils";
 
 export function CopyText({
     value,

@@ -1,9 +1,9 @@
-import { CharacterTable } from "@internal/list/CharacterList";
-import { LoadingAnimation } from "@internal/misc/LoadingAnimation";
-import { LoadingError } from "@internal/misc/LoadingError";
-import { useListCharacters } from "@internal/services/character/list";
-import { axiosClient } from "@internal/services/client";
+import { CharacterTable } from "../list/CharacterList";
+import { LoadingAnimation } from "../misc/LoadingAnimation";
+import { LoadingError } from "../misc/LoadingError";
+import { useListCharacters } from "../services/character/list";
 import { Button, Group, Stack } from "@mantine/core";
+import { axiosClient } from "../services/client";
 
 export function CharacterList() {
     const {

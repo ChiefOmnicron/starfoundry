@@ -1,4 +1,4 @@
-import type { ProjectJob, ProjectJobGroup } from "@internal/services/projects/listJobs";
+import type { ProjectJob, ProjectJobGroup } from "../services/projects/listJobs";
 import { Flex } from "@mantine/core";
 
 export function ProjectProgressBar({

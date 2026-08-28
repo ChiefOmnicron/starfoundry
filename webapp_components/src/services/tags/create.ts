@@ -1,6 +1,6 @@
-import { axiosClient } from "@internal/services/client";
-import type { Uuid } from "@internal/services/utils";
-import type { TagType, AutoTagSelect, AutoTagCompare } from '@internal/services/tags/list';
+import { axiosClient } from "../client";
+import type { Uuid } from "../utils";
+import type { TagType, AutoTagSelect, AutoTagCompare } from '../tags/list';
 
 export const createTag = async (
     data: CreateTag,

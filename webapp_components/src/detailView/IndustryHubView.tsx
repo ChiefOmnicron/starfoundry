@@ -1,13 +1,13 @@
 import { Group, Modal, Stack, Title } from '@mantine/core';
-import { LoadingAnimation } from '@internal/misc/LoadingAnimation';
-import { LoadingError } from '@internal/misc/LoadingError';
+import { LoadingAnimation } from '../misc/LoadingAnimation';
+import { LoadingError } from '../misc/LoadingError';
 import { MarkdownView } from './MarkdownView';
-import { StructureList } from '@internal/list/StructureList';
-import { StructureRigBadge } from '@internal/structure/StructureRigBadge';
-import { StructureServiceBadge } from '@internal/structure/StructureServiceBadge';
-import { useFetchIndustryHub } from '@internal/services/industry-hub/fetch';
-import type { IndustryHub } from '@internal/services/industry-hub/list';
-import type { Uuid } from '@internal/services/utils';
+import { StructureList } from '../list/StructureList';
+import { StructureRigBadge } from '../structure/StructureRigBadge';
+import { StructureServiceBadge } from '../structure/StructureServiceBadge';
+import { useFetchIndustryHub } from '../services/industry-hub/fetch';
+import type { IndustryHub } from '../services/industry-hub/list';
+import type { Uuid } from '../services/utils';
 import { useMediaQuery } from '@mantine/hooks';
 
 export function IndustryHubView({

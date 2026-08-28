@@ -1,6 +1,6 @@
-import { IndustryHubCard, type IndustryHubCardAdditionalProps } from "@internal/cards/IndustryHubCard";
+import { IndustryHubCard, type IndustryHubCardAdditionalProps } from "../cards/IndustryHubCard";
 import { SimpleGrid } from "@mantine/core";
-import type { IndustryHub } from "@internal/services/industry-hub/list";
+import type { IndustryHub } from "../services/industry-hub/list";
 
 export function IndustryHubList({
     industryHubs,
