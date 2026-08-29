@@ -27,7 +27,7 @@ export function Footer({
                 are property of
 
                 <a
-                    href="https://www.ccpgames.com"
+                    href="https://fenris.com/"
                     target="_blank"
                     style={{
                         color: 'var(--mantine-color-blue-9)',
@@ -35,7 +35,7 @@ export function Footer({
                         textDecoration: 'none',
                     }}
                 >
-                    CCP Games
+                    Fenris Creations (formerly CCP Games)
                 </a>
 
                 See
