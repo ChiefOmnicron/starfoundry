@@ -1,3 +1,5 @@
+import { createTheme, DEFAULT_THEME, mergeMantineTheme } from "@mantine/core";
+
 export const formatNumber = (
     numberToFormat: number,
     withComma: boolean = false,
@@ -113,3 +115,16 @@ export const formatDate = (dateMs: number): string => {
 export const randomColor = () => {
     return '#' + Math.floor(Math.random() * 16777215).toString(16);
 }
+
+const themeOverride = createTheme({
+    fontFamily: '"Roboto Mono", monospace',
+    fontFamilyMonospace: '"Roboto Mono", monospace',
+    radius: {
+        lg: '0',
+        md: '0',
+        sm: '0',
+        xl: '0',
+        xs: '0',
+    },
+});
+export const THEME = mergeMantineTheme(DEFAULT_THEME, themeOverride);

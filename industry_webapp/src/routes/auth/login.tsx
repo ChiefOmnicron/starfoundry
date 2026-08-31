@@ -1,36 +1,16 @@
-import { Alert, AppShell, Center, Group, Image, Stack } from '@mantine/core'
-import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
+import { AppShell, Group, Image } from '@mantine/core'
+import { Link, Outlet } from '@tanstack/react-router'
 import { Route as AboutRoute } from '@/routes/about';
 import { Route as IndexRoute } from '@/routes';
 import { Route as LegalRoute } from '@/routes/legal';
 
+import { LoginComponent } from '@starfoundry/components/auth/Login';
+import { createFileRoute } from '@tanstack/react-router'
+
 export const Route = createFileRoute('/auth/login')({
-    component: RouteComponent,
-})
+    component: LoginComponent,
+});
 
-function RouteComponent() {
-    return <>
-        <Center>
-            <Stack>
-                <Alert
-                    variant="light"
-                    color="blue"
-                    title="Please Login"
-                >
-                    Please login to use the application
-                </Alert>
-
-                <img
-                    onClick={() => { window.location.href = "/api/auth/login"}}
-                    src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-black-large.png"
-                    style={{
-                        cursor: 'pointer'
-                    }}
-                />
-            </Stack>
-        </Center>
-    </>
-}
 
 export function UnauthorizedShell() {
     return <>

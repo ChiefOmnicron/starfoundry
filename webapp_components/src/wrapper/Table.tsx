@@ -16,8 +16,8 @@ export function TableWrapper<T>({
                             {
                                 headerGroup
                                     .headers
-                                    .map(header => (
-                                        <Table.Th
+                                    .map(header => {
+                                        return <Table.Th
                                             key={header.id}
                                             style={{
                                                 width: `${header.getSize()}%`
@@ -30,7 +30,7 @@ export function TableWrapper<T>({
                                                 )
                                             }
                                         </Table.Th>
-                                    ))
+                                    })
                             }
                         </Table.Tr>
                     ))

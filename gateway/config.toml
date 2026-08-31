@@ -65,3 +65,7 @@ require_auth = false
 [routes."build-cost"]
 service_url = "http://localhost:8000"
 require_auth = false
+
+[routes."appraisals"]
+service_url = "http://localhost:9984"
+require_auth = false

@@ -1,4 +1,4 @@
-import { Tooltip } from "@mantine/core";
+import { Text, Tooltip, type MantineFontSize } from "@mantine/core";
 import { useClipboard } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import { formatDate, formatNumber, formatNumberUnit } from "../utils";
@@ -14,6 +14,9 @@ export function CopyText({
     disabled = false,
     number = false,
     withUnit = false,
+    withComma = false,
+
+    size = 'sm'
 }: CopyTextProps) {
     const [opened, setOpened] = useState<boolean>(false);
     const clipboard = useClipboard();
@@ -34,9 +37,9 @@ export function CopyText({
             // using <NumberFormatter> from mantine has a problem with placing
             // the tooltip
             if (withUnit) {
-                return `${formatNumber(value as number)} ${suffix} (${formatNumberUnit(value as number)})`;
+                return `${formatNumber(value as number, withComma)} ${suffix} (${formatNumberUnit(value as number)})`;
             } else {
-                return `${formatNumber(value as number)} ${suffix}`;
+                return `${formatNumber(value as number, withComma)} ${suffix}`;
             }
         } else if (date && value) {
             return `${formatDate(value as number)} (local)`;
@@ -53,15 +56,16 @@ export function CopyText({
             label="Copied!"
             position="top"
         >
-            <span
+            <Text
                 onClick={clickEvent}
                 style={{
                     cursor: 'pointer',
                     color: disabled ? 'var(--mantine-color-disabled-color)' : '',
                 }}
+                size={size}
             >
                 { formatValue() }
-            </span>
+            </Text>
         </Tooltip>
     </> 
 }
@@ -77,4 +81,7 @@ export type CopyTextProps = {
     disabled?: boolean;
     number?: boolean;
     withUnit?: boolean;
+    withComma?: boolean;
+
+    size?: MantineFontSize,
 }

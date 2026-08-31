@@ -84,7 +84,7 @@ pub trait EveGatewayApiClientIndustry: ApiClient + ApiClientExtended {
         &self,
         system_id: SystemId,
         time_span: TimeSpanQuery,
-    ) -> Result<Option<SystemIndex>> {
+    ) -> Result<Vec<SystemIndex>> {
         self
             .fetch(&format!("industry/system-index/{}/history", system_id), &time_span)
             .await

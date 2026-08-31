@@ -3,6 +3,7 @@
     "private": true,
     "version": "0.0.0",
     "workspaces": [
+        "appraisal_webapp",
         "industry_webapp",
         "industry-hub_webapp",
         "webapp_components"

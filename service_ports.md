@@ -2,6 +2,8 @@
 
 | Service         | Name                  | Port | Type     |
 |-----------------| ----------------------|------|----------|
+| appraisal       | SF_APPRAISAL          | 9984 | App      |
+| appraisal       |                       | 9985 | Service  |
 | mapping         | SF_MAPPING            | 9986 | App      |
 | mapping         |                       | 9987 | Service  |
 | market          | SF_MARKET             | 9988 | App      |

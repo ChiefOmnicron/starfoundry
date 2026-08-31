@@ -1,0 +1,56 @@
+import { redirect } from '@tanstack/react-router';
+import * as React from "react";
+import { axiosClient, isAdmin as isAdminJwt } from '../services/client';
+
+export interface AuthContext {
+    isAuthenticated: () => Promise<boolean>;
+    isAdmin: () => Promise<boolean>;
+    login: () => any; // type signature is from redirect()
+}
+
+const AuthContext = React.createContext<AuthContext | null>(null);
+
+export function AuthProvider({
+    loginRoute,
+    children,
+}: AuthProviderProps) {
+    const login = React.useCallback(() => {
+        return redirect({
+            to: loginRoute,
+        });
+    }, []);
+
+    const isAuthenticated = React.useCallback(async () => {
+        return axiosClient()
+            .then(_ => {
+                return true;
+            })
+            .catch(_ => {
+                return false;
+            })
+    }, []);
+
+    const isAdmin = React.useCallback(async () => {
+        return isAdminJwt()
+            .catch(_ => false);
+    }, []);
+
+    return (
+        <AuthContext.Provider value={{ isAuthenticated, isAdmin, login }}>
+            {children}
+        </AuthContext.Provider>
+    );
+}
+
+export function useAuth() {
+    const context = React.useContext(AuthContext);
+    if (!context) {
+        throw new Error("useAuth must be used within an AuthProvider");
+    }
+    return context;
+}
+
+export type AuthProviderProps = {
+    loginRoute: any,
+    children: React.ReactNode,
+}

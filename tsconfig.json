@@ -3,8 +3,10 @@
     "references": [{
         "path": "webapp_components"
     }, {
+        "path": "appraisal_webapp"
+    }, {
         "path": "industry_webapp"
     }, {
-        "path": "industry_hub_webapp"
+        "path": "industry-hub_webapp"
     }]
 }
