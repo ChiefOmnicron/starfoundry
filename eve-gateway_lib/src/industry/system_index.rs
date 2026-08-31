@@ -1,3 +1,4 @@
+use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
@@ -87,4 +88,17 @@ pub struct SystemIndex {
     pub invention:            f32,
     pub researching_material: f32,
     pub researching_time:     f32,
+}
+
+/// System index by SystemId
+#[derive(Debug, Deserialize, Serialize, ToSchema)]
+pub struct SystemIndexHistory {
+    pub system:                 System,
+    pub manufacturing:          f32,
+    pub reaction:               f32,
+    pub copying:                f32,
+    pub invention:              f32,
+    pub researching_material:   f32,
+    pub researching_time:       f32,
+    pub timestamp:              NaiveDateTime,
 }

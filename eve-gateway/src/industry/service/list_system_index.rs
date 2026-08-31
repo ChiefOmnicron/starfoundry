@@ -1,6 +1,6 @@
 use chrono::NaiveTime;
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::{SystemIndex, TimeSpanQuery};
+use starfoundry_lib_eve_gateway::{SystemIndexHistory, TimeSpanQuery};
 use starfoundry_lib_types::SystemId;
 
 use crate::industry::error::{IndustryError, Result};
@@ -10,9 +10,10 @@ pub async fn list_system_index(
     pool:       &PgPool,
     system_id:  SystemId,
     time_span:  TimeSpanQuery,
-) -> Result<Vec<SystemIndex>> {
+) -> Result<Vec<SystemIndexHistory>> {
     let index = sqlx::query!(r#"
             SELECT
+                timestamp,
                 manufacturing,
                 reaction,
                 copying,
@@ -42,7 +43,7 @@ pub async fn list_system_index(
 
     let index = index
         .into_iter()
-        .map(|x| SystemIndex {
+        .map(|x| SystemIndexHistory {
             system:                 system.clone(),
             copying:                x.copying,
             invention:              x.invention,
@@ -50,6 +51,7 @@ pub async fn list_system_index(
             reaction:               x.reaction,
             researching_material:   x.research_material,
             researching_time:       x.research_time,
+            timestamp:              x.timestamp,
         })
         .collect::<Vec<_>>();
     Ok(index)

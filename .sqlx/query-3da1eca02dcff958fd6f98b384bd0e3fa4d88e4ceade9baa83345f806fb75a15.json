@@ -1,10 +1,21 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                manufacturing,\n                reaction,\n                copying,\n                invention,\n                research_time,\n                research_material\n            FROM system_index\n            WHERE system_id = $1\n            AND timestamp >= $2\n            AND timestamp <= $3\n            ORDER BY timestamp DESC\n        ",
+  "query": "\n            SELECT\n                timestamp,\n                manufacturing,\n                reaction,\n                copying,\n                invention,\n                research_time,\n                research_material\n            FROM system_index\n            WHERE system_id = $1\n            AND timestamp >= $2\n            AND timestamp <= $3\n            ORDER BY timestamp DESC\n        ",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
+        "name": "timestamp",
+        "type_info": "Timestamp",
+        "origin": {
+          "Table": {
+            "table": "system_index",
+            "name": "timestamp"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
         "name": "manufacturing",
         "type_info": "Float4",
         "origin": {
@@ -15,7 +26,7 @@
         }
       },
       {
-        "ordinal": 1,
+        "ordinal": 2,
         "name": "reaction",
         "type_info": "Float4",
         "origin": {
@@ -26,7 +37,7 @@
         }
       },
       {
-        "ordinal": 2,
+        "ordinal": 3,
         "name": "copying",
         "type_info": "Float4",
         "origin": {
@@ -37,7 +48,7 @@
         }
       },
       {
-        "ordinal": 3,
+        "ordinal": 4,
         "name": "invention",
         "type_info": "Float4",
         "origin": {
@@ -48,7 +59,7 @@
         }
       },
       {
-        "ordinal": 4,
+        "ordinal": 5,
         "name": "research_time",
         "type_info": "Float4",
         "origin": {
@@ -59,7 +70,7 @@
         }
       },
       {
-        "ordinal": 5,
+        "ordinal": 6,
         "name": "research_material",
         "type_info": "Float4",
         "origin": {
@@ -83,8 +94,9 @@
       false,
       false,
       false,
+      false,
       false
     ]
   },
-  "hash": "9fc4dc491f0dff9d145d310330fae469ed1b0d075fe83ab24ace8128f7677abe"
+  "hash": "3da1eca02dcff958fd6f98b384bd0e3fa4d88e4ceade9baa83345f806fb75a15"
 }
