@@ -35,7 +35,7 @@ pub fn appraisal(
             .collect::<Vec<_>>();
         let highest_buy = buy_prices.last().map(|x| x.price).unwrap_or(0f64);
         let lowest_buy = buy_prices.first().map(|x| x.price).unwrap_or(0f64);
-        let order_buy = buy_prices.iter().map(|x| x.quantity).sum();
+        let order_buy = buy_prices.len() as i32;
 
         // market_entries are already sorted by price
         let sell_prices = market_entries
@@ -45,13 +45,13 @@ pub fn appraisal(
             .collect::<Vec<_>>();
         let highest_sell = sell_prices.last().map(|x| x.price).unwrap_or(0f64);
         let lowest_sell = sell_prices.first().map(|x| x.price).unwrap_or(0f64);
-        let order_sell = sell_prices.iter().map(|x| x.quantity).sum();
+        let order_sell = sell_prices.len() as i32;
 
         let insufficient_data = !(highest_buy > 0f64 && lowest_sell > 0f64);
 
         let last_fetch = if let Some(x) = last_fetched.get(&structure_id) {
             x
-        } else {
+        } else { 
             &Utc::now().naive_utc()
         };
 
