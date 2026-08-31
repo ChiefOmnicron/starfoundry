@@ -18,6 +18,8 @@ pub enum IndustryError {
     FetchBlueprintJson(sqlx::Error, TypeId),
     #[error("error while fetching system index '{1}', error: '{0}'")]
     FetchSystemIndex(sqlx::Error, SystemId),
+    #[error("error while listing system index '{1}', error: '{0}'")]
+    ListSystemIndex(sqlx::Error, SystemId),
 
     #[error("no system found")]
     NoSystem,

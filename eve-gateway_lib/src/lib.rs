@@ -35,5 +35,21 @@ pub use self::structure::*;
 pub use self::structure_type::*;
 pub use self::system::*;
 
+use serde::{Deserialize, Serialize};
+use utoipa::{IntoParams, ToSchema};
+use chrono::{NaiveDate, Utc};
+
 pub const ENV_EVE_GATEWAY_API: &str      = "STARFOUNDRY_EVE_GATEWAY_API_URL";
 pub const ENV_EVE_GATEWAY_JWT_SIGN: &str = "STARFOUNDRY_EVE_GATEWAY_JWT_SIGN";
+
+#[derive(Debug, Default, Deserialize, Serialize, IntoParams, ToSchema)]
+#[into_params(parameter_in = Query)]
+pub struct TimeSpanQuery {
+    pub start:      NaiveDate,
+    #[serde(default = "default_end")]
+    pub end:        NaiveDate,
+}
+
+fn default_end() -> NaiveDate {
+    Utc::now().date_naive()
+}

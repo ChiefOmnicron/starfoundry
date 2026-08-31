@@ -11,7 +11,7 @@ pub use self::system_index::*;
 use starfoundry_lib_gateway::ApiClient;
 use starfoundry_lib_types::{SystemId, TypeId};
 
-use crate::{ApiClientExtended, Result};
+use crate::{ApiClientExtended, Result, TimeSpanQuery};
 
 pub trait EveGatewayApiClientIndustry: ApiClient + ApiClientExtended {
     #[allow(async_fn_in_trait)]
@@ -75,6 +75,18 @@ pub trait EveGatewayApiClientIndustry: ApiClient + ApiClientExtended {
     ) -> Result<Option<SystemIndex>> {
         self
             .fetch(&format!("industry/system-index/{}", system_id), &())
+            .await
+            .map_err(Into::into)
+    }
+
+    #[allow(async_fn_in_trait)]
+    async fn list_system_index_history(
+        &self,
+        system_id: SystemId,
+        time_span: TimeSpanQuery,
+    ) -> Result<Option<SystemIndex>> {
+        self
+            .fetch(&format!("industry/system-index/{}/history", system_id), &time_span)
             .await
             .map_err(Into::into)
     }

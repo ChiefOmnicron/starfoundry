@@ -2,6 +2,7 @@ mod error;
 mod fetch_blueprint_dependencies_bulk;
 mod fetch_blueprint_json;
 mod fetch_system_index;
+mod list_system_index;
 mod service;
 
 use utoipa_axum::router::OpenApiRouter;
@@ -11,17 +12,21 @@ use crate::state::AppState;
 
 /// Exposes all routes that are under `/industry`
 pub fn routes() -> OpenApiRouter<AppState> {
-    let fetch_system_index = OpenApiRouter::new()
-        .routes(routes!(self::fetch_system_index::api));
-
     let fetch_blueprint_dependencies = OpenApiRouter::new()
         .routes(routes!(self::fetch_blueprint_dependencies_bulk::api));
 
     let fetch_blueprint_json = OpenApiRouter::new()
         .routes(routes!(self::fetch_blueprint_json::api));
 
+    let fetch_system_index = OpenApiRouter::new()
+        .routes(routes!(self::fetch_system_index::api));
+    let list_system_index = OpenApiRouter::new()
+        .routes(routes!(self::list_system_index::api));
+
     OpenApiRouter::new()
         .merge(fetch_blueprint_dependencies)
         .merge(fetch_blueprint_json)
+
         .merge(fetch_system_index)
+        .merge(list_system_index)
 }
