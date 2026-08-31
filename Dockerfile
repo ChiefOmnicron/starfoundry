@@ -13,6 +13,7 @@ RUN         apt update && apt install cmake clang -y
 FROM chef AS planner
 COPY        ./Cargo.toml Cargo.toml
 COPY        ./.sqlx ./.sqlx
+COPY        ./appraisal ./appraisal
 COPY        ./eve-gateway ./eve-gateway
 COPY        ./eve-gateway_lib ./eve-gateway_lib
 COPY        ./eve-gateway_worker ./eve-gateway_worker
@@ -46,6 +47,7 @@ RUN         cargo chef cook --release --recipe-path recipe.json
 
 COPY        ./Cargo.toml Cargo.toml
 COPY        ./.sqlx ./.sqlx
+COPY        ./appraisal ./appraisal
 COPY        ./eve-gateway ./eve-gateway
 COPY        ./eve-gateway_lib ./eve-gateway_lib
 COPY        ./eve-gateway_worker ./eve-gateway_worker
@@ -65,6 +67,22 @@ COPY        ./meta_webserver ./meta_webserver
 COPY        ./notification_lib ./notification_lib
 COPY        ./worker_lib ./worker_lib
 COPY        ./worker-eve_sde_parser ./worker-eve_sde_parser
+
+###############################################################################
+#           appraisal_api
+###############################################################################
+FROM builder AS appraisal-api-builder
+RUN         cargo build --bin starfoundry_bin-eve_gateway --release
+
+FROM ubuntu:26.04 AS appraisal-api
+WORKDIR     /usr/local/bin
+
+RUN         apt-get update && \
+            apt-get install -y ca-certificates curl && \
+            apt-get clean
+
+COPY        --from=appraisal-api-builder /app/target/release/starfoundry_bin-appraisal /usr/local/bin/app
+CMD         ["/usr/local/bin/app"]
 
 ###############################################################################
 #           eve_gateway_api
