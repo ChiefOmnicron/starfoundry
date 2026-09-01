@@ -121,6 +121,7 @@ pub async fn system_index_compress(
         .await
         .map_err(Error::CompressSystemIndex)?;
 
+    dbg!(&timestamps);
     sqlx::query!("
             INSERT INTO system_index
             (
