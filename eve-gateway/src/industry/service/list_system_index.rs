@@ -1,4 +1,4 @@
-use chrono::NaiveTime;
+use chrono::{Days, NaiveTime};
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::{SystemIndexHistory, TimeSpanQuery};
 use starfoundry_lib_types::SystemId;
@@ -28,7 +28,7 @@ pub async fn list_system_index(
         "#,
             *system_id,
             time_span.start.and_time(NaiveTime::default()),
-            time_span.end.and_time(NaiveTime::default()),
+            time_span.end.and_time(NaiveTime::default()).checked_add_days(Days::new(1)),
         )
         .fetch_all(pool)
         .await
