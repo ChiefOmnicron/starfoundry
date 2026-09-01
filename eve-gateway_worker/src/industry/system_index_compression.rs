@@ -1,5 +1,6 @@
 use sqlx::PgPool;
 use starfoundry_lib_worker::Task;
+use uuid::Uuid;
 use std::collections::HashMap;
 
 use crate::error::{Error, Result};
@@ -12,13 +13,14 @@ pub async fn system_index_compress(
 ) -> Result<()> {
     #[derive(Clone, Debug,)]
     struct TmpStruct {
-        manufacturing:     f32,
-        copying:           f32,
-        invention:         f32,
-        reaction:          f32,
-        research_time:     f32,
-        research_material: f32,
-        system_id:         i32,
+        id:                 Uuid,
+        manufacturing:      f32,
+        copying:            f32,
+        invention:          f32,
+        reaction:           f32,
+        research_time:      f32,
+        research_material:  f32,
+        system_id:          i32,
     }
 
     let system_ids = sqlx::query!("
@@ -33,6 +35,7 @@ pub async fn system_index_compress(
         .into_iter()
         .map(|x| x.system_id);
 
+    let mut ids           = Vec::new();
     let mut timestamps    = Vec::new();
     let mut systems       = Vec::new();
     let mut manufacturing = Vec::new();
@@ -72,6 +75,7 @@ pub async fn system_index_compress(
             .into_iter()
             .for_each(|x| {
                 let tmp = TmpStruct {
+                    id:                x.id,
                     copying:           x.copying,
                     invention:         x.invention,
                     manufacturing:     x.manufacturing,
@@ -95,6 +99,7 @@ pub async fn system_index_compress(
             timestamps.push(timestamp);
             systems.push(entries[0].system_id);
 
+            ids.push(entries.iter().map(|x| x.id).collect::<Vec<_>>());
             manufacturing.push(entries.iter().map(|x| x.manufacturing).sum::<f32>() / entries.len() as f32);
             reaction.push(entries.iter().map(|x| x.reaction).sum::<f32>() / entries.len() as f32);
             copying.push(entries.iter().map(|x| x.copying).sum::<f32>() / entries.len() as f32);
@@ -112,16 +117,17 @@ pub async fn system_index_compress(
             Error::Transaction(e)
         })?;
 
+    let ids = ids.into_iter().flatten().collect::<Vec<_>>();
     sqlx::query!("
             DELETE FROM system_index
-            WHERE DATE(timestamp) > DATE(NOW() - INTERVAL '7 DAY')
-            AND DATE(timestamp) < DATE(NOW() - INTERVAL '3 DAY')
-        ")
+            WHERE id = ANY($1)
+        ",
+            &ids,
+        )
         .execute(&mut *transaction)
         .await
         .map_err(Error::CompressSystemIndex)?;
 
-    dbg!(&timestamps);
     sqlx::query!("
             INSERT INTO system_index
             (
