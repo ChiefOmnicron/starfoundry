@@ -1,4 +1,4 @@
-use starfoundry_lib_eve_gateway::{EveGatewayApiClient, EveGatewayApiClientSearch, EveGatewayApiClientSystem, EveGatewayClient};
+use starfoundry_lib_eve_gateway::{EveGatewayApiClient, EveGatewayApiClientSearch, EveGatewayApiClientSystem, EveGatewayClient, SystemSearchQuery};
 use starfoundry_lib_gateway::Identity;
 use std::collections::HashMap;
 use sqlx::PgPool;
@@ -26,7 +26,7 @@ pub async fn populate_structure_database(
     if has_still_waiting.is_none() {
         tracing::info!("Populating queue db");
         let systems = eve_gateway_client
-            .list_systems()
+            .list_systems(SystemSearchQuery::default())
             .await?;
         sqlx::query!("
                 INSERT INTO queue_system(

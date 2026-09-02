@@ -4,6 +4,7 @@ service_url = "http://localhost:9998"
 
 [routes."eve"]
 service_url = "http://localhost:9998"
+require_auth = false
 drop_prefix = true
 
 [routes."items"]
@@ -69,6 +70,16 @@ require_auth = false
 [routes."system-index"]
 service_url = "http://localhost:8000"
 require_auth = false
+
+[routes."statistics-public-industry"]
+service_url = "http://localhost:8002"
+require_auth = false
+drop_prefix = true
+
+[routes."statistics-public"]
+service_url = "http://localhost:8000"
+require_auth = false
+drop_prefix = true
 
 [routes."appraisals"]
 service_url = "http://localhost:9984"

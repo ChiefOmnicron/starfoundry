@@ -1,9 +1,8 @@
-use axum::extract::State;
+use axum::extract::{Query, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
-use starfoundry_lib_eve_gateway::System;
-use starfoundry_lib_types::TypeId;
+use starfoundry_lib_eve_gateway::{System, SystemSearchQuery};
 
 use crate::api_docs::{InternalServerError, NotFound};
 use crate::state::AppState;
@@ -24,7 +23,7 @@ use crate::system::services::list;
     path = "/",
     tag = "System",
     params(
-        TypeId,
+        ("name" = String, Query),
     ),
     responses(
         (
@@ -37,10 +36,12 @@ use crate::system::services::list;
     ),
 )]
 pub async fn api(
-    State(state):    State<AppState>,
+    State(state):   State<AppState>,
+    Query(filter):  Query<SystemSearchQuery>,
 ) -> Result<impl IntoResponse> {
     let entry = list(
         &state.postgres,
+        filter,
     ).await?;
 
     Ok(

@@ -25,3 +25,9 @@ pub struct System {
     pub security:           f32,
     pub security_str:       String,
 }
+
+#[derive(Debug, Default, Deserialize, Serialize, ToSchema)]
+pub struct SystemSearchQuery {
+    #[serde(default)]
+    pub name: Option<String>,
+}

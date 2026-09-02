@@ -1,4 +1,4 @@
-use starfoundry_lib_eve_gateway::{EveGatewayApiClientSystem, EveGatewayClient};
+use starfoundry_lib_eve_gateway::{EveGatewayApiClientSystem, EveGatewayClient, SystemSearchQuery};
 use sqlx::PgPool;
 
 use crate::SERVICE_NAME;
@@ -19,7 +19,7 @@ pub async fn populate_system(
     tracing::info!("Populating system cache");
     let eve_gateway_client = EveGatewayClient::new(SERVICE_NAME)?;
     let systems = eve_gateway_client
-        .list_systems()
+        .list_systems(SystemSearchQuery::default())
         .await?;
 
     sqlx::query!("

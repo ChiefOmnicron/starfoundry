@@ -1,10 +1,11 @@
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::System;
+use starfoundry_lib_eve_gateway::{System, SystemSearchQuery};
 
 use crate::system::error::{Result, SystemError};
 
 pub async fn list(
-    pool: &PgPool,
+    pool:   &PgPool,
+    filter: SystemSearchQuery,
 ) -> Result<Vec<System>> {
     let systems = sqlx::query!("
             SELECT
@@ -17,7 +18,14 @@ pub async fn list(
                 security,
                 security_str
             FROM system
-        ")
+            WHERE
+            (
+                NOT (LOWER(system_name) LIKE '%' || LOWER($1) || '%') IS FALSE
+            )
+            ORDER BY system_name ASC
+        ",
+            filter.name,
+        )
         .fetch_all(pool)
         .await
         .map_err(SystemError::ListSystem)?

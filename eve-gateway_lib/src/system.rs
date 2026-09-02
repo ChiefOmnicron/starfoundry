@@ -39,9 +39,10 @@ pub trait EveGatewayApiClientSystem: ApiClient {
     #[allow(async_fn_in_trait)]
     async fn list_systems(
         &self,
+        filter: SystemSearchQuery,
     ) -> Result<Vec<System>> {
         self
-            .fetch("systems", &())
+            .fetch("systems", &filter)
             .await
             .map_err(Into::into)
     }
