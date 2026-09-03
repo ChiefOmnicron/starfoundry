@@ -87,7 +87,17 @@ pub async fn catch_all_generic_get(
             .headers(headers)
             .query(&query)
             .send()
-            .await?;
+            .await;
+
+        let response = match response {
+            Ok(x) => x,
+            Err(e) => {
+                tracing::info!("[GET] - request failed, error: '{:?}'", e);
+                return Ok((
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                ).into_response());
+            }
+        };
 
         tracing::info!("[GET] - path: '{}'. Status: {}", path, response.status());
         if response.status().is_success() {
@@ -100,8 +110,12 @@ pub async fn catch_all_generic_get(
                 body,
             ).into_response());
         } else {
+            let status = response.status();
+            let content = response.text().await?;
+            tracing::error!("[GET] - status: {}, error: {}", status, content);
+
             return Ok((
-                response.status(),
+                status,
             ).into_response());
         }
     } else {
