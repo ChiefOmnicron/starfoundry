@@ -73,8 +73,8 @@ pub async fn calculate_jump_plan(
                 SELECT system_id
                 FROM structure
                 WHERE system_id = ANY($1)
-                AND type_id = ANY(ARRAY[35834, 35833])
-                --AND type_id = ANY(ARRAY[35834])
+                --AND type_id = ANY(ARRAY[35834, 35833])
+                AND type_id = ANY(ARRAY[35834])
             ",
                 &systems.iter().map(|x| x.system_start).collect::<Vec<_>>(),
             )
@@ -198,9 +198,9 @@ use starfoundry_lib_mapping::CreateJumpPlan;
                     ],
                     blacklist_system_ids: vec![
                     ],
-                    max_distance_ly: 7f32,
+                    max_distance_ly: 10f32,
                     //system_end_id: 30001252.into(),
-                    system_end_id: 30004691.into(),
+                    system_end_id: 30000772.into(),
                     system_start_id: 30004807.into(), // UALX
                 },
             )

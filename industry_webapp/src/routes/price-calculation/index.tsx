@@ -1,5 +1,5 @@
 import { Accordion, Button, Grid, Group, Stack, Table, Text, Textarea, Title } from '@mantine/core';
-import { CopyText } from '@starfoundry/components/misc';
+import { CopyText } from '@starfoundry/components/misc/CopyText';
 import { createColumnHelper, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { createFileRoute } from '@tanstack/react-router';
 import { EveIcon } from '@starfoundry/components/misc/EveIcon';

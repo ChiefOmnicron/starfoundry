@@ -11,6 +11,7 @@
     "skipLibCheck": true,
 
     /* Bundler mode */
+    "ignoreDeprecations": "6.0",
     "moduleResolution": "node",
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
