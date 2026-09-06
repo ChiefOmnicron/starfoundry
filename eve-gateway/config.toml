@@ -75,3 +75,16 @@ character_scopes = [
 ]
 corporation_scopes = []
 redirect = "https://map.dev.starfoundry.space/api/auth/login/callback"
+
+[domains."statistics.dev.starfoundry.space"]
+admins = [
+    2117441999,
+]
+whitelist = [
+    2117441999,
+]
+character_scopes = [
+    "publicData",
+]
+corporation_scopes = []
+redirect = "https://statistics.dev.starfoundry.space/api/auth/login/callback"

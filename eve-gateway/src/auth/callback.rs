@@ -48,7 +48,6 @@ const QUERY_PARAM_STATE: &str = "state";
         InternalServerError,
     ),
 )]
-// TODO: add whitelist check
 pub async fn callback(
     State(state):        State<AppState>,
     Query(query_params): Query<HashMap<String, String>>,
