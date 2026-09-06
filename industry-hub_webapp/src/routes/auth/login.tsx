@@ -20,13 +20,16 @@ function RouteComponent() {
                     Please login to use the application
                 </Alert>
 
-                <img
-                    onClick={() => { window.location.href = "/api/auth/login"}}
-                    src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-black-large.png"
-                    style={{
-                        cursor: 'pointer'
-                    }}
-                />
+                <Center>
+                    <Image
+                        onClick={() => { window.location.href = "/api/auth/login"}}
+                        src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-black-large.png"
+                        w={270}
+                        style={{
+                            cursor: 'pointer'
+                        }}
+                    />
+                </Center>
             </Stack>
         </Center>
     </>

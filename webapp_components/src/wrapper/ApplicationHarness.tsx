@@ -148,7 +148,7 @@ export function ApplicationShell({
                             fw={700}
                             size="xl"
                         >
-                                {name}
+                            {name}
                         </Text>
                     </Link>
 
