@@ -96,25 +96,29 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 });
 
 function RouteComponent(): ReactElement {
-    const { isAuthenticated } = Route.useLoaderData();
-
     return <>
         <MantineProvider
             forceColorScheme='dark'
             theme={THEME}
         >
-            <ApplicationShell
-                name='StarFoundry - Industry'
-
-                aboutRoute={AboutRoute.to}
-                indexRoute={IndexRoute.to}
-                legalRoute={LegalRoute.to}
-
-                routes={routes}
-
-                showSidebar={isAuthenticated}
-                isAuthenticated={isAuthenticated ? 'AUTHENTICATED' : 'UNAUTHENTICATED'}
-            />
+            {AppShell()}
         </MantineProvider>
     </>;
+}
+
+function AppShell() {
+    const { isAuthenticated } = Route.useLoaderData();
+
+    return <ApplicationShell
+        name='StarFoundry - Industry'
+
+        aboutRoute={AboutRoute.to}
+        indexRoute={IndexRoute.to}
+        legalRoute={LegalRoute.to}
+
+        routes={routes}
+
+        showSidebar={isAuthenticated}
+        isAuthenticated={isAuthenticated ? 'AUTHENTICATED' : 'UNAUTHENTICATED'}
+    />
 }

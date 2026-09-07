@@ -1,8 +1,9 @@
-import { AppShell, Burger, Divider, Group, ScrollArea, Text, UnstyledButton } from "@mantine/core";
+import { AppShell, Burger, Divider, Group, MantineProvider, ScrollArea, Text, UnstyledButton } from "@mantine/core";
 import { CharacterComponent } from "../misc/Character";
 import { CustomLink } from "../links/RouterLink";
 import { Footer } from "../misc/Footer";
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { THEME } from "../utils";
 import { useDisclosure } from "@mantine/hooks";
 import type { ReactElement } from "react";
 
@@ -115,104 +116,109 @@ export function ApplicationShell({
     }
 
     return <>
-        <AppShell
-            header={{ height: 60 }}
-            navbar={{
-                width: 225,
-                breakpoint: 'sm',
-                collapsed: {
-                    mobile: !opened
-                },
-            }}
-            padding="md"
+        <MantineProvider
+            forceColorScheme='dark'
+            theme={THEME}
         >
-            <AppShell.Header>
-                <Group
-                    h="100%"
-                    px="md"
-                    justify="space-between"
-                >
-                    {
-                        showSidebar
-                        ? <Burger
-                                opened={opened}
-                                onClick={toggle}
-                                hiddenFrom="sm"
-                                size="sm"
-                            />
-                        :   <></>
-                    }
-
-                    <Link
-                        key="index"
-                        to={indexRoute}
-                        style={{
-                            textDecoration: 'None',
-                            color: 'var(--mantine-color-dark-0)'
-                        }}
+            <AppShell
+                header={{ height: 60 }}
+                navbar={{
+                    width: 225,
+                    breakpoint: 'sm',
+                    collapsed: {
+                        mobile: !opened
+                    },
+                }}
+                padding="md"
+            >
+                <AppShell.Header>
+                    <Group
+                        h="100%"
+                        px="md"
+                        justify="space-between"
                     >
-                        <Text
-                            fw={700}
-                            size="xl"
-                        >
-                            {name}
-                        </Text>
-                    </Link>
+                        {
+                            showSidebar
+                            ? <Burger
+                                    opened={opened}
+                                    onClick={toggle}
+                                    hiddenFrom="sm"
+                                    size="sm"
+                                />
+                            :   <></>
+                        }
 
-                    <Group>
-                        <UnstyledButton
-                            component={Link}
-                            to={aboutRoute.to}
+                        <Link
+                            key="index"
+                            to={indexRoute}
                             style={{
                                 textDecoration: 'None',
                                 color: 'var(--mantine-color-dark-0)'
                             }}
                         >
-                            About
-                        </UnstyledButton>
+                            <Text
+                                fw={700}
+                                size="xl"
+                            >
+                                {name}
+                            </Text>
+                        </Link>
 
-                        {
-                            isAuthenticated === 'AUTHENTICATED'
-                            ?   <UnstyledButton
-                                    component={Link}
-                                    onClick={() => { window.location.href = "/api/auth/logout"}}
-                                    variant="subtle"
-                                >
-                                    Logout
-                                </UnstyledButton>
-                            :   <UnstyledButton
-                                    component={Link}
-                                    onClick={() => { window.location.href = "/auth/login"}}
-                                    variant="subtle"
-                                >
-                                    Login
-                                </UnstyledButton>
-                        }
+                        <Group>
+                            <UnstyledButton
+                                component={Link}
+                                to={aboutRoute.to}
+                                style={{
+                                    textDecoration: 'None',
+                                    color: 'var(--mantine-color-dark-0)'
+                                }}
+                            >
+                                About
+                            </UnstyledButton>
+
+                            {
+                                isAuthenticated === 'AUTHENTICATED'
+                                ?   <UnstyledButton
+                                        component={Link}
+                                        onClick={() => { window.location.href = "/api/auth/logout"}}
+                                        variant="subtle"
+                                    >
+                                        Logout
+                                    </UnstyledButton>
+                                :   <UnstyledButton
+                                        component={Link}
+                                        onClick={() => { window.location.href = "/auth/login"}}
+                                        variant="subtle"
+                                    >
+                                        Login
+                                    </UnstyledButton>
+                            }
+                        </Group>
                     </Group>
-                </Group>
-            </AppShell.Header>
+                </AppShell.Header>
 
-            <AppShell.Main
-                style={{
-                    paddingLeft: showSidebar ? undefined : 'var(--app-shell-padding)',
-                    paddingBottom: '10%'
-                }}
-            >
-                <Outlet />
-            </AppShell.Main>
+                <AppShell.Main
+                    style={{
+                        paddingLeft: showSidebar ? undefined : 'var(--app-shell-padding)',
+                        paddingBottom: '10%'
+                    }}
+                >
+                    <Outlet />
+                </AppShell.Main>
 
-            {
-                showSidebar
-                ?   sideNavigation()
-                :   <></>
-            }
+                {
+                    showSidebar
+                    ?   sideNavigation()
+                    :   <></>
+                }
 
-            <AppShell.Footer>
-                <Footer
-                    legalRoute={legalRoute}
-                />
-            </AppShell.Footer>
-        </AppShell>
+                <AppShell.Footer>
+                    <Footer
+                        legalRoute={legalRoute}
+                    />
+                </AppShell.Footer>
+            </AppShell>
+        </MantineProvider>
     </>
 }
 
