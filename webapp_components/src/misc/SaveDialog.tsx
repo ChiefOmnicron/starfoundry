@@ -1,7 +1,6 @@
 import { useBlocker } from "@tanstack/react-router";
-import { Button, Dialog, Group, Text } from "@mantine/core";
+import { ActionBar, Button, Text } from "@mantine/core";
 import { useState } from "react";
-import { useMediaQuery } from "@mantine/hooks";
 
 export function SaveDialog({
     show,
@@ -9,7 +8,6 @@ export function SaveDialog({
     onReset,
 }: Props) {
     const [shakeDialog, setShakeDialog] = useState<boolean>(false);
-    const isMobile = useMediaQuery('(max-width: 50em)');
 
     useBlocker({
         shouldBlockFn: () => {
@@ -27,36 +25,27 @@ export function SaveDialog({
     });
 
     return <>
-        <Dialog
+        <ActionBar
             opened={ show }
-            size="xl"
-            position={{
-                bottom: 50,
-                right: isMobile ? '0' : '35%',
-            }}
             className={`${shakeDialog ? 'shakeDialog' : ''}`}
         >
-            <Group grow>
-                <Text>
-                    Unsaved changes
-                </Text>
+            <Text>
+                Unsaved changes
+            </Text>
 
-                <Group align="flex-end" justify="end">
-                    <Button
-                        variant="default"
-                        onClick={onReset}
-                    >
-                        Reset
-                    </Button>
+            <Button
+                variant="default"
+                onClick={onReset}
+            >
+                Reset
+            </Button>
 
-                    <Button
-                        onClick={onSave}
-                    >
-                        Save
-                    </Button>
-                </Group>
-            </Group>
-        </Dialog>
+            <Button
+                onClick={onSave}
+            >
+                Save
+            </Button>
+        </ActionBar>
     </>
 }
 

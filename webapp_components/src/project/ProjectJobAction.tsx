@@ -1,5 +1,5 @@
-import { Button, Dialog, Group } from "@mantine/core";
-import { useDisclosure, useMediaQuery } from "@mantine/hooks";
+import { ActionBar, Button } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { CheckResourcesModal } from "./CheckResourcesModal";
 import { CreateBuildOrderModal } from "./CreateBuildOrderModal";
 import type { Uuid } from "../services/utils";
@@ -9,8 +9,6 @@ export function ProjectJobAction({
 
     onCreated,
 }: ProjectJobActionProps) {
-    const isMobile = useMediaQuery('(max-width: 50em)');
-
     const [checkResourcesModalOpened, { open: checkResourcesModalOpen, close: checkResourcesModalClose }] = useDisclosure(false);
     const [createBuildOrderModalOpened, { open: createBuildOrderModalOpen, close: createBuildOrderModalClose }] = useDisclosure(false);
 
@@ -32,28 +30,21 @@ export function ProjectJobAction({
             />
         }
 
-        <Dialog
+        <ActionBar
             opened={selected.length > 0 && !(checkResourcesModalOpened || createBuildOrderModalOpened)}
-            size="xl"
-            position={{
-                bottom: 50,
-                right: isMobile ? '0' : '35%',
-            }}
         >
-            <Group grow>
-                <Button
-                    onClick={() => createBuildOrderModalOpen()}
-                >
-                    Create build order
-                </Button>
+            <Button
+                onClick={() => createBuildOrderModalOpen()}
+            >
+                Create build order
+            </Button>
 
-                <Button
-                    onClick={() => checkResourcesModalOpen()}
-                >
-                    Check resources
-                </Button>
-            </Group>
-        </Dialog>
+            <Button
+                onClick={() => checkResourcesModalOpen()}
+            >
+                Check resources
+            </Button>
+        </ActionBar>
     </>
 }
 
