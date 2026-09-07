@@ -1,6 +1,6 @@
-import { Accordion, Alert, Button, Grid, Group, Stack, Text, Textarea, Title } from '@mantine/core';
+import { Accordion, Alert, Button, Grid, Group, Stack, Table, Text, Textarea, Title } from '@mantine/core';
 import { CopyText } from '@starfoundry/components/misc/CopyText';
-import { createColumnHelper, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { createColumnHelper, tableFeatures, useTable, columnSizingFeature, columnVisibilityFeature, flexRender } from '@tanstack/react-table';
 import { deleteProject } from '@starfoundry/components/services/projects/delete';
 import { DeleteResource } from '@starfoundry/components/misc/DeleteResource';
 import { EveIcon } from '@starfoundry/components/misc/EveIcon';
@@ -15,7 +15,6 @@ import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 import { Route as ProjectGroupDefaultsRoute } from '@/routes/project-groups_/$projectGroupId.defaults';
 import { Route as ProjectRoute } from '@/routes/projects/index';
 import { Route as ProjectView } from '@/routes/projects_/$projectId.overview';
-import { TableWrapper } from '@starfoundry/components/wrapper/Table';
 import { TempProjectGroupConfiguration } from '@starfoundry/components/projectGroup/TempConfiguration';
 import { useEffect, useState } from 'react';
 import { useListProjectGroupDefaultBlacklist } from '@starfoundry/components/services/project-group/listDefaultBlacklist';
@@ -26,7 +25,11 @@ import { useNavigate } from '@tanstack/react-router';
 import type { IndustryHub } from '@starfoundry/components/services/industry-hub/list';
 import type { Item } from '@starfoundry/components/services/item/model';
 
-const columnHelperMaterial = createColumnHelper<SolutionMaterial>();
+const features = tableFeatures({
+    columnSizingFeature,
+    columnVisibilityFeature,
+});
+const columnHelperMaterial = createColumnHelper<typeof features, SolutionMaterial>();
 const columnsMaterial = [
     columnHelperMaterial.display({
         id: 'icon',
@@ -75,7 +78,7 @@ const columnsMaterial = [
     }),
 ];
 
-const columnHelperManufacturing = createColumnHelper<SolutionManufacturing>();
+const columnHelperManufacturing = createColumnHelper<typeof features, SolutionManufacturing>();
 const columnsManufacturing = [
     columnHelperManufacturing.display({
         id: 'icon',
@@ -284,17 +287,15 @@ export function Solution({
         setSelectedJobSplittingRun(projectGroupDefaultJobSplittings.runs);
     }, [projectGroupBlacklist, projectGroupBlueprintOverwrite, projectGroupDefaultJobSplittings]);
 
-    const tableMaterials = useReactTable<SolutionMaterial>({
+    const tableMaterials = useTable<typeof features, SolutionMaterial>({
+        features: features,
         columns: columnsMaterial,
         data: selectedSolution ? selectedSolution.material : [],
-        autoResetPageIndex: false,
-        getCoreRowModel: getCoreRowModel(),
     });
-    const tableManufacturing = useReactTable<SolutionManufacturing>({
+    const tableManufacturing = useTable<typeof features, SolutionManufacturing>({
+        features: features,
         columns: columnsManufacturing,
         data: selectedSolution ? selectedSolution.manufacturing : [],
-        autoResetPageIndex: false,
-        getCoreRowModel: getCoreRowModel(),
     });
 
     if (isPendingBlacklist) {
@@ -382,10 +383,65 @@ export function Solution({
         }
 
         return <>
-            <TableWrapper
-                scrollable
-                table={tableMaterials}
-            />
+            <Table.ScrollContainer minWidth={100} maxHeight={500}>
+                <Table stickyHeader striped data-cy="data">
+                    <Table.Thead>
+                        {
+                            tableMaterials
+                                .getHeaderGroups()
+                                .map(headerGroup => (
+                                    <Table.Tr key={headerGroup.id}>
+                                        {
+                                            headerGroup
+                                                .headers
+                                                .map(header => {
+                                                    return <Table.Th
+                                                        key={header.id}
+                                                        style={{
+                                                            width: `${header.getSize()}%`
+                                                        }}
+                                                    >
+                                                        {
+                                                            flexRender(
+                                                                header.column.columnDef.header,
+                                                                header.getContext()
+                                                            )
+                                                        }
+                                                    </Table.Th>
+                                                })
+                                        }
+                                    </Table.Tr>
+                                ))
+                        }
+                    </Table.Thead>
+
+                    <Table.Tbody>
+                        {
+                            tableMaterials
+                                .getRowModel()
+                                .rows
+                                .map(row => (
+                                    <Table.Tr key={row.id}>
+                                        {
+                                            row
+                                                .getVisibleCells()
+                                                .map(cell => (
+                                                    <Table.Td key={cell.id}>
+                                                        {
+                                                            flexRender(
+                                                                cell.column.columnDef.cell,
+                                                                cell.getContext()
+                                                            )
+                                                        }
+                                                    </Table.Td>
+                                                ))
+                                        }
+                                    </Table.Tr>
+                                ))
+                        }
+                    </Table.Tbody>
+                </Table>
+            </Table.ScrollContainer>
         </>;
     }
 
@@ -395,10 +451,65 @@ export function Solution({
         }
 
         return <>
-            <TableWrapper
-                scrollable
-                table={tableManufacturing}
-            />
+            <Table.ScrollContainer minWidth={100} maxHeight={500}>
+                <Table stickyHeader striped data-cy="data">
+                    <Table.Thead>
+                        {
+                            tableManufacturing
+                                .getHeaderGroups()
+                                .map(headerGroup => (
+                                    <Table.Tr key={headerGroup.id}>
+                                        {
+                                            headerGroup
+                                                .headers
+                                                .map(header => {
+                                                    return <Table.Th
+                                                        key={header.id}
+                                                        style={{
+                                                            width: `${header.getSize()}%`
+                                                        }}
+                                                    >
+                                                        {
+                                                            flexRender(
+                                                                header.column.columnDef.header,
+                                                                header.getContext()
+                                                            )
+                                                        }
+                                                    </Table.Th>
+                                                })
+                                        }
+                                    </Table.Tr>
+                                ))
+                        }
+                    </Table.Thead>
+
+                    <Table.Tbody>
+                        {
+                            tableManufacturing
+                                .getRowModel()
+                                .rows
+                                .map(row => (
+                                    <Table.Tr key={row.id}>
+                                        {
+                                            row
+                                                .getVisibleCells()
+                                                .map(cell => (
+                                                    <Table.Td key={cell.id}>
+                                                        {
+                                                            flexRender(
+                                                                cell.column.columnDef.cell,
+                                                                cell.getContext()
+                                                            )
+                                                        }
+                                                    </Table.Td>
+                                                ))
+                                        }
+                                    </Table.Tr>
+                                ))
+                        }
+                    </Table.Tbody>
+                </Table>
+            </Table.ScrollContainer>
         </>;
     }
 

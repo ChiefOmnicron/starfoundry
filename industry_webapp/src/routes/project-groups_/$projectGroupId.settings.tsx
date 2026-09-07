@@ -295,7 +295,7 @@ function RouteComponent() {
                                     field.handleChange(value);
                                     setTouched(true);
                                 }}
-                                disabled={!canWrite()}
+                                editable={canWrite()}
                             />
                         </>
                     }}

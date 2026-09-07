@@ -1,6 +1,6 @@
 import { AddProjectGroup } from '@/routes/project-groups/-modal/add';
 import { Alert, Button, Card, Center, Flex, Pill, Stack, Table, Tabs, Title } from '@mantine/core';
-import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { createColumnHelper, flexRender, tableFeatures, useTable, columnSizingFeature, columnVisibilityFeature } from '@tanstack/react-table';
 import { createFileRoute } from '@tanstack/react-router';
 import { Filter, type FilterPropEntry, type SelectedFilter } from '@starfoundry/components/deprecated/Filter';
 import { InternalLink } from '@starfoundry/components/links/InternalLink';
@@ -38,36 +38,40 @@ const filters: FilterPropEntry[] = [{
     type: 'STRING',
 }];
 
-const columnHelper = createColumnHelper<ProjectGroupMinimal>();
+const features = tableFeatures({
+    columnSizingFeature,
+    columnVisibilityFeature,
+});
+const columnHelper = createColumnHelper<typeof features, ProjectGroupMinimal>();
 const columns = [
-    columnHelper.accessor('name', {
+    columnHelper.display({
         id: 'name',
         cell: info => <InternalLink
                 to={ ProjectGroupRoute.to }
                 params={{
                     projectGroupId: info.row.original.id,
                 } as any}
-                content={ info.getValue() }
+                content={ info.row.original.name }
             />,
         header: () => 'Name',
     }),
-    columnHelper.accessor('description', {
+    columnHelper.display({
         id: 'description',
-        cell: info => info.getValue(),
+        cell: info => info.row.original.description,
         header: () => 'Description',
     }),
-    columnHelper.accessor('is_owner', {
+    columnHelper.display({
         id: 'is_owner',
         cell: info => {
-            if (info.getValue()) {
+            if (info.row.original.is_owner) {
                 return <Pill>Owner</Pill>
             }
         },
         header: () => '',
     }),
-    columnHelper.accessor('project_count', {
+    columnHelper.display({
         id: 'project_count',
-        cell: info => info.getValue(),
+        cell: info => info.row.original.project_count,
         header: () => 'Projects',
     }),
 ];
@@ -96,11 +100,10 @@ function RouteComponent() {
         ...filterParams,
     });
 
-    const table = useReactTable<ProjectGroupMinimal>({
+    const table = useTable<typeof features, ProjectGroupMinimal>({
+        features: features,
         columns: columns,
         data: projectGroups,
-        autoResetPageIndex: false,
-        getCoreRowModel: getCoreRowModel(),
     });
 
     const onTabChange = (tab: string | null) => {

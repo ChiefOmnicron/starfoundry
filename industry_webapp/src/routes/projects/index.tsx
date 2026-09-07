@@ -9,7 +9,7 @@ import { Route as ProjectOverviewRoute } from '@/routes/projects_/$projectId.ove
 import { useDisclosure, useIsFirstRender } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
 import { useListProjects, type ProjectFilter } from '@starfoundry/components/services/projects/list';
-import { CompositeFiltersInput, useCompositeFilters, type ActiveFilter, type FilterDefinition } from 'mantine-composite-filters';
+import { CompositeFiltersInput, useCompositeFilters, type ActiveFilter, type FilterDefinition } from '@starfoundry/components/vendor/mantine-composite-filter';
 import type { Uuid } from '@starfoundry/components/services/utils';
 
 export interface QueryParams {

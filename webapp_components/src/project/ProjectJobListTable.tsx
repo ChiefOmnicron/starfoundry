@@ -1,14 +1,13 @@
-import { Alert, Button, Checkbox, Group } from "@mantine/core";
+import { Alert, Button, Checkbox, Group, Table } from "@mantine/core";
 import { CopyTable } from "../misc/CopyTable";
 import { CopyText } from "../misc/CopyText";
 import { Countdown } from "../misc/Countdown";
-import { createColumnHelper, getCoreRowModel, useReactTable, type RowSelectionState } from "@tanstack/react-table";
+import { createColumnHelper, useTable, type RowSelectionState, columnSizingFeature, columnVisibilityFeature, rowSelectionFeature, tableFeatures, flexRender } from "@tanstack/react-table";
 import { EveIcon } from "../misc/EveIcon";
 import { JobStatusBadge } from "./JobStatusBadge";
 import { memo, useEffect, useState } from "react";
 import { Nakamura } from "../misc/Nakamura";
 import { ProjectJobEditModal } from "./ProjectJobEditModal";
-import { TableWrapper } from "../wrapper/Table";
 import { useDisclosure } from "@mantine/hooks";
 import type { ProjectJob } from "../services/projects/listJobs";
 import type { ProjectJobMinimal } from "./ProjectJobAction";
@@ -39,7 +38,12 @@ export const ProjectJobListTable = function ProjectJobListTableImp({
 
     const [started, setStarted] = useState<Uuid[]>([]);
 
-    const columnHelper = createColumnHelper<ProjectJob>();
+    const features = tableFeatures({
+        columnSizingFeature,
+        columnVisibilityFeature,
+        rowSelectionFeature,
+    });
+    const columnHelper = createColumnHelper<typeof features, ProjectJob>();
     const columns = [
         columnHelper.display({
             id: 'check',
@@ -195,15 +199,14 @@ export const ProjectJobListTable = function ProjectJobListTableImp({
         }),
     ];
 
-    const table = useReactTable<ProjectJob>({
-        columns: columns,
-        data: jobs,
-        autoResetPageIndex: false,
+    const table = useTable<typeof features, ProjectJob>({
+        features:           features,
+        columns:            columns,
+        data:               jobs,
         onRowSelectionChange: (selected) => {
             setRowSelection(selected);
         },
-        getRowCanExpand: () => true,
-        getCoreRowModel: getCoreRowModel(),
+        //getRowCanExpand: () => true,
         getRowId: row => row.id,
         initialState: {
             columnVisibility: {
@@ -221,7 +224,6 @@ export const ProjectJobListTable = function ProjectJobListTableImp({
 
     // must stay, otherwise the selection change is not properly triggered
     useEffect(() => {
-        console.log('asdasdss')
         onSelect(
             projectId,
             table
@@ -265,10 +267,65 @@ export const ProjectJobListTable = function ProjectJobListTableImp({
             onJobSplit={onJobSplit}
         />
 
-        <TableWrapper
-            table={table}
-            scrollable
-        />
+        <Table.ScrollContainer minWidth={100} maxHeight={500}>
+            <Table stickyHeader striped data-cy="data">
+                <Table.Thead>
+                    {
+                        table
+                            .getHeaderGroups()
+                            .map(headerGroup => (
+                                <Table.Tr key={headerGroup.id}>
+                                    {
+                                        headerGroup
+                                            .headers
+                                            .map(header => {
+                                                return <Table.Th
+                                                    key={header.id}
+                                                    style={{
+                                                        width: `${header.getSize()}%`
+                                                    }}
+                                                >
+                                                    {
+                                                        flexRender(
+                                                            header.column.columnDef.header,
+                                                            header.getContext()
+                                                        )
+                                                    }
+                                                </Table.Th>
+                                            })
+                                    }
+                                </Table.Tr>
+                            ))
+                    }
+                </Table.Thead>
+
+                <Table.Tbody>
+                    {
+                        table
+                            .getRowModel()
+                            .rows
+                            .map(row => (
+                                <Table.Tr key={row.id}>
+                                    {
+                                        row
+                                            .getVisibleCells()
+                                            .map(cell => (
+                                                <Table.Td key={cell.id}>
+                                                    {
+                                                        flexRender(
+                                                            cell.column.columnDef.cell,
+                                                            cell.getContext()
+                                                        )
+                                                    }
+                                                </Table.Td>
+                                            ))
+                                    }
+                                </Table.Tr>
+                            ))
+                    }
+                </Table.Tbody>
+            </Table>
+        </Table.ScrollContainer>
     </>
 }
 

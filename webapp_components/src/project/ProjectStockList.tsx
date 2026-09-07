@@ -1,15 +1,19 @@
 import { CopyText } from "../misc/CopyText";
-import { createColumnHelper, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { createColumnHelper, tableFeatures, useTable, columnSizingFeature, columnVisibilityFeature, flexRender } from "@tanstack/react-table";
 import { EveIcon } from "../misc/EveIcon";
 import type { ReactElement } from "react";
 import type { ProjectStock } from "../services/projects/fetch";
-import { TableWrapper } from "../wrapper/Table";
 import { CopyTable } from "../misc/CopyTable";
+import { Table } from "@mantine/core";
 
 export function ProjectStockList({
     stock,
 }: ProjectStockListProp): ReactElement {
-    const columnHelper = createColumnHelper<ProjectStock>();
+    const features = tableFeatures({
+        columnSizingFeature,
+        columnVisibilityFeature,
+    });
+    const columnHelper = createColumnHelper<typeof features, ProjectStock>();
     const columns = [
         columnHelper.display({
             id: 'icon',
@@ -62,17 +66,70 @@ export function ProjectStockList({
         }),
     ];
 
-    const table = useReactTable<ProjectStock>({
-        columns: columns,
-        data: stock,
-        autoResetPageIndex: false,
-        getCoreRowModel: getCoreRowModel(),
+    const table = useTable<typeof features, ProjectStock>({
+        features:   features,
+        columns:    columns,
+        data:       stock,
     });
 
     return <>
-        <TableWrapper
-            table={table}
-        />
+        <Table stickyHeader striped data-cy="data">
+            <Table.Thead>
+                {
+                    table
+                        .getHeaderGroups()
+                        .map(headerGroup => (
+                            <Table.Tr key={headerGroup.id}>
+                                {
+                                    headerGroup
+                                        .headers
+                                        .map(header => {
+                                            return <Table.Th
+                                                key={header.id}
+                                                style={{
+                                                    width: `${header.getSize()}%`
+                                                }}
+                                            >
+                                                {
+                                                    flexRender(
+                                                        header.column.columnDef.header,
+                                                        header.getContext()
+                                                    )
+                                                }
+                                            </Table.Th>
+                                        })
+                                }
+                            </Table.Tr>
+                        ))
+                }
+            </Table.Thead>
+
+            <Table.Tbody>
+                {
+                    table
+                        .getRowModel()
+                        .rows
+                        .map(row => (
+                            <Table.Tr key={row.id}>
+                                {
+                                    row
+                                        .getVisibleCells()
+                                        .map(cell => (
+                                            <Table.Td key={cell.id}>
+                                                {
+                                                    flexRender(
+                                                        cell.column.columnDef.cell,
+                                                        cell.getContext()
+                                                    )
+                                                }
+                                            </Table.Td>
+                                        ))
+                                }
+                            </Table.Tr>
+                        ))
+                }
+            </Table.Tbody>
+        </Table>
     </>
 }
 

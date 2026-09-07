@@ -22,7 +22,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 function RouteComponent(): ReactElement {
     const { isAuthenticated } = Route.useLoaderData();
 
-    return (
+    return <>
         <MantineProvider
             forceColorScheme='dark'
             theme={THEME}
@@ -38,5 +38,5 @@ function RouteComponent(): ReactElement {
                 isAuthenticated={isAuthenticated ? 'AUTHENTICATED' : 'UNAUTHENTICATED'}
             />
         </MantineProvider>
-    );
+    </>;
 }

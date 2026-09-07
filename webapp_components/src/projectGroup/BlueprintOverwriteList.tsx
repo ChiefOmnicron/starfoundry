@@ -1,6 +1,6 @@
 import { Button, Flex, NumberInput, Table, Text } from "@mantine/core";
 import { CopyText } from "../misc/CopyText";
-import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { createColumnHelper, flexRender, tableFeatures, useTable, columnSizingFeature, columnVisibilityFeature } from "@tanstack/react-table";
 import { EveIcon } from "../misc/EveIcon";
 import { ItemSelector, type ItemSelectorRef } from "../selectors/ItemSelectorInline";
 import { useRef, useState, type ReactElement } from "react";
@@ -53,7 +53,11 @@ export function BlueprintOverwriteList({
     const [materialEfficiency, setMaterialEfficiency] = useState<number | undefined>();
     const ItemSelectorRef = useRef<ItemSelectorRef>({} as any);
 
-    const columnHelper = createColumnHelper<BlueprintOverwrite>();
+    const features = tableFeatures({
+        columnSizingFeature,
+        columnVisibilityFeature,
+    });
+    const columnHelper = createColumnHelper<typeof features, BlueprintOverwrite>();
     const columns = [
         columnHelper.display({
             id: 'icon',
@@ -178,11 +182,10 @@ export function BlueprintOverwriteList({
         </Table.Tfoot>
     }
 
-    const table = useReactTable<BlueprintOverwrite>({
+    const table = useTable<typeof features, BlueprintOverwrite>({
+        features: features,
         columns: columns,
         data: (entries || []).sort((a, b) => a.item.name.localeCompare(b.item.name)),
-        autoResetPageIndex: false,
-        getCoreRowModel: getCoreRowModel(),
         initialState: {
             columnVisibility: {
                 delete: editable,

@@ -9,22 +9,22 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as StructuresRouteRouteImport } from './routes/structures/route'
-import { Route as IndustryHubsRouteRouteImport } from './routes/industry-hubs/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as StructuresIndexRouteImport } from './routes/structures/index'
-import { Route as LegalIndexRouteImport } from './routes/legal/index'
-import { Route as IndustryHubsIndexRouteImport } from './routes/industry-hubs/index'
+import { Route as IndustryHubsRouteRouteImport } from './routes/industry-hubs/route'
+import { Route as StructuresRouteRouteImport } from './routes/structures/route'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
-import { Route as StructuresStructureIdRouteRouteImport } from './routes/structures_/$structureId.route'
+import { Route as IndustryHubsIndexRouteImport } from './routes/industry-hubs/index'
 import { Route as IndustryHubsIndustryHubIdRouteRouteImport } from './routes/industry-hubs_/$industryHubId.route'
-import { Route as StructuresStructureIdIndexRouteImport } from './routes/structures_/$structureId.index'
+import { Route as LegalIndexRouteImport } from './routes/legal/index'
+import { Route as StructuresIndexRouteImport } from './routes/structures/index'
+import { Route as StructuresStructureIdRouteRouteImport } from './routes/structures_/$structureId.route'
 import { Route as IndustryHubsIndustryHubIdIndexRouteImport } from './routes/industry-hubs_/$industryHubId.index'
+import { Route as StructuresStructureIdIndexRouteImport } from './routes/structures_/$structureId.index'
 
-const StructuresRouteRoute = StructuresRouteRouteImport.update({
-  id: '/structures',
-  path: '/structures',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndustryHubsRouteRoute = IndustryHubsRouteRouteImport.update({
@@ -32,25 +32,10 @@ const IndustryHubsRouteRoute = IndustryHubsRouteRouteImport.update({
   path: '/industry-hubs',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const StructuresRouteRoute = StructuresRouteRouteImport.update({
+  id: '/structures',
+  path: '/structures',
   getParentRoute: () => rootRouteImport,
-} as any)
-const StructuresIndexRoute = StructuresIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => StructuresRouteRoute,
-} as any)
-const LegalIndexRoute = LegalIndexRouteImport.update({
-  id: '/legal/',
-  path: '/legal/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IndustryHubsIndexRoute = IndustryHubsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => IndustryHubsRouteRoute,
 } as any)
 const AboutIndexRoute = AboutIndexRouteImport.update({
   id: '/about/',
@@ -62,29 +47,44 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const StructuresStructureIdRouteRoute =
-  StructuresStructureIdRouteRouteImport.update({
-    id: '/structures_/$structureId',
-    path: '/structures/$structureId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
+const IndustryHubsIndexRoute = IndustryHubsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => IndustryHubsRouteRoute,
+} as any)
 const IndustryHubsIndustryHubIdRouteRoute =
   IndustryHubsIndustryHubIdRouteRouteImport.update({
     id: '/industry-hubs_/$industryHubId',
     path: '/industry-hubs/$industryHubId',
     getParentRoute: () => rootRouteImport,
   } as any)
-const StructuresStructureIdIndexRoute =
-  StructuresStructureIdIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => StructuresStructureIdRouteRoute,
+const LegalIndexRoute = LegalIndexRouteImport.update({
+  id: '/legal/',
+  path: '/legal/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StructuresIndexRoute = StructuresIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => StructuresRouteRoute,
+} as any)
+const StructuresStructureIdRouteRoute =
+  StructuresStructureIdRouteRouteImport.update({
+    id: '/structures_/$structureId',
+    path: '/structures/$structureId',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const IndustryHubsIndustryHubIdIndexRoute =
   IndustryHubsIndustryHubIdIndexRouteImport.update({
     id: '/',
     path: '/',
     getParentRoute: () => IndustryHubsIndustryHubIdRouteRoute,
+  } as any)
+const StructuresStructureIdIndexRoute =
+  StructuresStructureIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => StructuresStructureIdRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -180,11 +180,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/structures': {
-      id: '/structures'
-      path: '/structures'
-      fullPath: '/structures'
-      preLoaderRoute: typeof StructuresRouteRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/industry-hubs': {
@@ -194,33 +194,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndustryHubsRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/structures': {
+      id: '/structures'
+      path: '/structures'
+      fullPath: '/structures'
+      preLoaderRoute: typeof StructuresRouteRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/structures/': {
-      id: '/structures/'
-      path: '/'
-      fullPath: '/structures/'
-      preLoaderRoute: typeof StructuresIndexRouteImport
-      parentRoute: typeof StructuresRouteRoute
-    }
-    '/legal/': {
-      id: '/legal/'
-      path: '/legal'
-      fullPath: '/legal/'
-      preLoaderRoute: typeof LegalIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/industry-hubs/': {
-      id: '/industry-hubs/'
-      path: '/'
-      fullPath: '/industry-hubs/'
-      preLoaderRoute: typeof IndustryHubsIndexRouteImport
-      parentRoute: typeof IndustryHubsRouteRoute
     }
     '/about/': {
       id: '/about/'
@@ -236,12 +215,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/structures_/$structureId': {
-      id: '/structures_/$structureId'
-      path: '/structures/$structureId'
-      fullPath: '/structures/$structureId'
-      preLoaderRoute: typeof StructuresStructureIdRouteRouteImport
-      parentRoute: typeof rootRouteImport
+    '/industry-hubs/': {
+      id: '/industry-hubs/'
+      path: '/'
+      fullPath: '/industry-hubs/'
+      preLoaderRoute: typeof IndustryHubsIndexRouteImport
+      parentRoute: typeof IndustryHubsRouteRoute
     }
     '/industry-hubs_/$industryHubId': {
       id: '/industry-hubs_/$industryHubId'
@@ -250,12 +229,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndustryHubsIndustryHubIdRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/structures_/$structureId/': {
-      id: '/structures_/$structureId/'
+    '/legal/': {
+      id: '/legal/'
+      path: '/legal'
+      fullPath: '/legal/'
+      preLoaderRoute: typeof LegalIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/structures/': {
+      id: '/structures/'
       path: '/'
-      fullPath: '/structures/$structureId/'
-      preLoaderRoute: typeof StructuresStructureIdIndexRouteImport
-      parentRoute: typeof StructuresStructureIdRouteRoute
+      fullPath: '/structures/'
+      preLoaderRoute: typeof StructuresIndexRouteImport
+      parentRoute: typeof StructuresRouteRoute
+    }
+    '/structures_/$structureId': {
+      id: '/structures_/$structureId'
+      path: '/structures/$structureId'
+      fullPath: '/structures/$structureId'
+      preLoaderRoute: typeof StructuresStructureIdRouteRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/industry-hubs_/$industryHubId/': {
       id: '/industry-hubs_/$industryHubId/'
@@ -263,6 +256,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/industry-hubs/$industryHubId/'
       preLoaderRoute: typeof IndustryHubsIndustryHubIdIndexRouteImport
       parentRoute: typeof IndustryHubsIndustryHubIdRouteRoute
+    }
+    '/structures_/$structureId/': {
+      id: '/structures_/$structureId/'
+      path: '/'
+      fullPath: '/structures/$structureId/'
+      preLoaderRoute: typeof StructuresStructureIdIndexRouteImport
+      parentRoute: typeof StructuresStructureIdRouteRoute
     }
   }
 }

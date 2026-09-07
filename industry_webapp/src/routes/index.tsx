@@ -16,9 +16,7 @@ async function RouteComponent() {
         navigation({
             to: ProjectRoute.to,
         });
-    } else if (isLoggedIn) {
-        return;
-    } else {
+    } else if (!isLoggedIn) {
         navigation({
             to: LoginRoute.to,
         });

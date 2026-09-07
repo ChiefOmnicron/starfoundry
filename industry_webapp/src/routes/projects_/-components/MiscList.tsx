@@ -1,7 +1,7 @@
 import { Button, Flex, NumberInput, Table, Text, TextInput } from "@mantine/core";
 import { CopyText } from "@starfoundry/components/misc/CopyText";
 import type { ProjectMisc } from "@starfoundry/components/services/projects/listMisc";
-import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { createColumnHelper, flexRender, tableFeatures, useTable, columnSizingFeature, columnVisibilityFeature } from "@tanstack/react-table";
 import { useState, type ReactElement } from "react";
 
 // Implementation for an editable list
@@ -50,7 +50,11 @@ export function ProjectMiscList({
     const [quantity, setQuantity] = useState<number | undefined>();
     const [description, setDescription] = useState<string | undefined>();
 
-    const columnHelper = createColumnHelper<ProjectMisc>();
+    const features = tableFeatures({
+        columnSizingFeature,
+        columnVisibilityFeature,
+    });
+    const columnHelper = createColumnHelper<typeof features, ProjectMisc>();
     const columns = [
         columnHelper.display({
             id: 'item',
@@ -196,12 +200,11 @@ export function ProjectMiscList({
         </Table.Tfoot>
     }
 
-    const table = useReactTable<ProjectMisc>({
+    const table = useTable<typeof features, ProjectMisc>({
+        features: features,
         columns: columns,
         data: entries
             .sort((a, b) => a.item.localeCompare(b.item)),
-        autoResetPageIndex: false,
-        getCoreRowModel: getCoreRowModel(),
         initialState: {
             columnVisibility: {
                 delete: editable,

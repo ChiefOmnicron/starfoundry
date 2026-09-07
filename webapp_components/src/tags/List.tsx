@@ -1,10 +1,9 @@
-import { Alert, Button, Group } from "@mantine/core";
+import { Alert, Button, Group, Table } from "@mantine/core";
 import { BadgeWrapper } from "../wrapper/Badge";
-import { createColumnHelper, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { createColumnHelper, tableFeatures, useTable, columnSizingFeature, columnVisibilityFeature, flexRender } from "@tanstack/react-table";
 import { deleteTag } from "../services/tags/delete";
 import { LIST_TAGS, type Tag } from "../services/tags/list";
 import { ModalWrapper } from "../wrapper/Modal";
-import { TableWrapper } from "../wrapper/Table";
 import { UpdateTag } from "./Update";
 import { useDisclosure } from "@mantine/hooks";
 import { useMutation, type MutationFunctionContext } from "@tanstack/react-query";
@@ -50,7 +49,11 @@ export function TagList({
         </ModalWrapper>
     }
 
-    const columnHelper = createColumnHelper<Tag>();
+    const features = tableFeatures({
+        columnSizingFeature,
+        columnVisibilityFeature,
+    });
+    const columnHelper = createColumnHelper<typeof features, Tag>();
     const columns = [
         columnHelper.display({
             id: 'tag',
@@ -96,12 +99,11 @@ export function TagList({
         }),
     ];
 
-    const table = useReactTable<Tag>({
-        columns: columns,
-        data: tags,
-        autoResetPageIndex: false,
-        getCoreRowModel: getCoreRowModel(),
-        getRowId: row => row.id,
+    const table = useTable<typeof features, Tag>({
+        features:   features,
+        columns:    columns,
+        data:       tags,
+        getRowId:   row => row.id,
     });
 
     const notification = () => {
@@ -137,9 +139,63 @@ export function TagList({
         {notification()}
         {updateTag()}
 
-        <TableWrapper
-            table={table}
-        />
+        <Table stickyHeader striped data-cy="data">
+            <Table.Thead>
+                {
+                    table
+                        .getHeaderGroups()
+                        .map(headerGroup => (
+                            <Table.Tr key={headerGroup.id}>
+                                {
+                                    headerGroup
+                                        .headers
+                                        .map(header => {
+                                            return <Table.Th
+                                                key={header.id}
+                                                style={{
+                                                    width: `${header.getSize()}%`
+                                                }}
+                                            >
+                                                {
+                                                    flexRender(
+                                                        header.column.columnDef.header,
+                                                        header.getContext()
+                                                    )
+                                                }
+                                            </Table.Th>
+                                        })
+                                }
+                            </Table.Tr>
+                        ))
+                }
+            </Table.Thead>
+
+            <Table.Tbody>
+                {
+                    table
+                        .getRowModel()
+                        .rows
+                        .map(row => (
+                            <Table.Tr key={row.id}>
+                                {
+                                    row
+                                        .getVisibleCells()
+                                        .map(cell => (
+                                            <Table.Td key={cell.id}>
+                                                {
+                                                    flexRender(
+                                                        cell.column.columnDef.cell,
+                                                        cell.getContext()
+                                                    )
+                                                }
+                                            </Table.Td>
+                                        ))
+                                }
+                            </Table.Tr>
+                        ))
+                }
+            </Table.Tbody>
+        </Table>
     </>;
 }
 

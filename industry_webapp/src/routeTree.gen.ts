@@ -18,6 +18,7 @@ import { Route as ProjectsRouteRouteImport } from './routes/projects/route'
 import { Route as StructuresRouteRouteImport } from './routes/structures/route'
 import { Route as TagsRouteRouteImport } from './routes/tags/route'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
+import { Route as AuthForbiddenRouteImport } from './routes/auth/forbidden'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as CharactersIndexRouteImport } from './routes/characters/index'
 import { Route as IndustryHubsIndexRouteImport } from './routes/industry-hubs/index'
@@ -93,6 +94,11 @@ const TagsRouteRoute = TagsRouteRouteImport.update({
 const AboutIndexRoute = AboutIndexRouteImport.update({
   id: '/about/',
   path: '/about/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthForbiddenRoute = AuthForbiddenRouteImport.update({
+  id: '/auth/forbidden',
+  path: '/auth/forbidden',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthLoginRoute = AuthLoginRouteImport.update({
@@ -278,6 +284,7 @@ export interface FileRoutesByFullPath {
   '/project-groups/$projectGroupId': typeof ProjectGroupsProjectGroupIdRouteRouteWithChildren
   '/projects/$projectId': typeof ProjectsProjectIdRouteRouteWithChildren
   '/structures/$structureId': typeof StructuresStructureIdRouteRouteWithChildren
+  '/auth/forbidden': typeof AuthForbiddenRoute
   '/auth/login': typeof AuthLoginRoute
   '/about/': typeof AboutIndexRoute
   '/characters/': typeof CharactersIndexRoute
@@ -311,6 +318,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/project-groups/$projectGroupId': typeof ProjectGroupsProjectGroupIdRouteRouteWithChildren
   '/projects/$projectId': typeof ProjectsProjectIdRouteRouteWithChildren
+  '/auth/forbidden': typeof AuthForbiddenRoute
   '/auth/login': typeof AuthLoginRoute
   '/about': typeof AboutIndexRoute
   '/characters': typeof CharactersIndexRoute
@@ -353,6 +361,7 @@ export interface FileRoutesById {
   '/project-groups_/$projectGroupId': typeof ProjectGroupsProjectGroupIdRouteRouteWithChildren
   '/projects_/$projectId': typeof ProjectsProjectIdRouteRouteWithChildren
   '/structures_/$structureId': typeof StructuresStructureIdRouteRouteWithChildren
+  '/auth/forbidden': typeof AuthForbiddenRoute
   '/auth/login': typeof AuthLoginRoute
   '/about/': typeof AboutIndexRoute
   '/characters/': typeof CharactersIndexRoute
@@ -397,6 +406,7 @@ export interface FileRouteTypes {
     | '/project-groups/$projectGroupId'
     | '/projects/$projectId'
     | '/structures/$structureId'
+    | '/auth/forbidden'
     | '/auth/login'
     | '/about/'
     | '/characters/'
@@ -430,6 +440,7 @@ export interface FileRouteTypes {
     | '/'
     | '/project-groups/$projectGroupId'
     | '/projects/$projectId'
+    | '/auth/forbidden'
     | '/auth/login'
     | '/about'
     | '/characters'
@@ -471,6 +482,7 @@ export interface FileRouteTypes {
     | '/project-groups_/$projectGroupId'
     | '/projects_/$projectId'
     | '/structures_/$structureId'
+    | '/auth/forbidden'
     | '/auth/login'
     | '/about/'
     | '/characters/'
@@ -514,6 +526,7 @@ export interface RootRouteChildren {
   ProjectGroupsProjectGroupIdRouteRoute: typeof ProjectGroupsProjectGroupIdRouteRouteWithChildren
   ProjectsProjectIdRouteRoute: typeof ProjectsProjectIdRouteRouteWithChildren
   StructuresStructureIdRouteRoute: typeof StructuresStructureIdRouteRouteWithChildren
+  AuthForbiddenRoute: typeof AuthForbiddenRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AboutIndexRoute: typeof AboutIndexRoute
   CharactersIndexRoute: typeof CharactersIndexRoute
@@ -584,6 +597,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about/'
       preLoaderRoute: typeof AboutIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/forbidden': {
+      id: '/auth/forbidden'
+      path: '/auth/forbidden'
+      fullPath: '/auth/forbidden'
+      preLoaderRoute: typeof AuthForbiddenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/login': {
@@ -1002,6 +1022,7 @@ const rootRouteChildren: RootRouteChildren = {
     ProjectGroupsProjectGroupIdRouteRouteWithChildren,
   ProjectsProjectIdRouteRoute: ProjectsProjectIdRouteRouteWithChildren,
   StructuresStructureIdRouteRoute: StructuresStructureIdRouteRouteWithChildren,
+  AuthForbiddenRoute: AuthForbiddenRoute,
   AuthLoginRoute: AuthLoginRoute,
   AboutIndexRoute: AboutIndexRoute,
   CharactersIndexRoute: CharactersIndexRoute,

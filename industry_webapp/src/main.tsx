@@ -1,5 +1,4 @@
 import '@mantine/core/styles.css';
-import 'mantine-composite-filters/styles.css';
 import '@/style.css';
 
 import { StrictMode } from 'react';
@@ -26,6 +25,14 @@ declare module '@tanstack/react-router' {
     }
 }
 
+function App() {
+    return (
+        <AuthProvider>
+            <Inner />
+        </AuthProvider>
+    );
+}
+
 function Inner() {
     const auth = useAuth();
     const queryClient = new QueryClient();
@@ -35,14 +42,6 @@ function Inner() {
             <RouterProvider router={router} context={{ auth, queryClient }} />
         </QueryClientProvider>
     )
-}
-
-function App() {
-    return (
-        <AuthProvider>
-            <Inner />
-        </AuthProvider>
-    );
 }
 
 // Render the app

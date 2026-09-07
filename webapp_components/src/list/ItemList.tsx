@@ -1,6 +1,6 @@
 import { Button, Flex, Table, Text } from "@mantine/core";
 import { CopyText } from "../misc/CopyText";
-import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { createColumnHelper, flexRender, tableFeatures, useTable, columnSizingFeature, columnVisibilityFeature } from "@tanstack/react-table";
 import { EveIcon } from "../misc/EveIcon";
 import { ItemSelectorModal } from "../selectors/ItemSelectorModal";
 import { useDisclosure } from "@mantine/hooks";
@@ -43,7 +43,11 @@ export function ItemList({
 }: ItemListProp): ReactElement {
     const [opened, { open, close }] = useDisclosure(false);
 
-    const columnHelper = createColumnHelper<Item>();
+    const features = tableFeatures({
+        columnSizingFeature,
+        columnVisibilityFeature,
+    });
+    const columnHelper = createColumnHelper<typeof features, Item>();
     const columns = [
         columnHelper.display({
             id: 'icon',
@@ -53,7 +57,7 @@ export function ItemList({
             size: 1,
             maxSize: 1,
         }),
-        columnHelper.accessor('name', {
+        columnHelper.display({
             id: 'name',
             cell: props => <CopyText
                 value={props.row.original.name}
@@ -105,12 +109,11 @@ export function ItemList({
         }
     }
 
-    const table = useReactTable<Item>({
+    const table = useTable<typeof features, Item>({
+        features: features,
         columns: columns,
         data: entries
             .sort((a, b) => a.name.localeCompare(b.name)),
-        autoResetPageIndex: false,
-        getCoreRowModel: getCoreRowModel(),
         initialState: {
             columnVisibility: {
                 delete: editable,

@@ -9,6 +9,7 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
+    "types": ["node"],
 
     /* Bundler mode */
     "ignoreDeprecations": "6.0",
@@ -30,6 +31,7 @@
     "noUncheckedSideEffectImports": true
   },
   "include": [
-    "src"
+    "src",
+    "./**/*.tsx", "./**/*.ts", "./**/*.css"
   ]
 }

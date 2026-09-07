@@ -1,6 +1,6 @@
 import { BadgeWrapper } from "../wrapper/Badge";
 import { CopyText } from "../misc/CopyText";
-import { createColumnHelper, flexRender, getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
+import { createColumnHelper, flexRender, tableFeatures, useTable, type ColumnDef, columnSizingFeature, columnVisibilityFeature } from "@tanstack/react-table";
 import { EveIcon } from "../misc/EveIcon";
 import { Flex, Table, Text } from "@mantine/core";
 import {useMemo, type ReactElement } from "react";
@@ -9,8 +9,12 @@ import type { AuthedCharacterInfo } from "../services/character/list";
 export function CharacterTable({
     characters,
 }: CharacterListProps): ReactElement {
-    const columnHelper = createColumnHelper<AuthedCharacterInfo>();
-    const columns = useMemo<ColumnDef<AuthedCharacterInfo>[]>(
+    const features = tableFeatures({
+        columnSizingFeature,
+        columnVisibilityFeature,
+    });
+    const columnHelper = createColumnHelper<typeof features, AuthedCharacterInfo>();
+    const columns = useMemo<ColumnDef<typeof features, AuthedCharacterInfo>[]>(
         () => [
             columnHelper.display({
                 id: 'character_icon',
@@ -62,11 +66,10 @@ export function CharacterTable({
         [],
     );
 
-    const table = useReactTable<AuthedCharacterInfo>({
+    const table = useTable<typeof features, AuthedCharacterInfo>({
+        features: features,
         columns: columns,
         data: characters,
-        autoResetPageIndex: false,
-        getCoreRowModel: getCoreRowModel(),
     });
 
     const emptyTable = () => {

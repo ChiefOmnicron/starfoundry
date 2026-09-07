@@ -1,0 +1,21 @@
+.container {
+  flex-shrink: 0;
+  height: calc(var(--mantine-spacing-md) * 1.5);
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  font-size: var(--mantine-font-size-sm);
+  height: auto;
+  min-height: unset;
+  padding: 0;
+  border: none;
+  background: transparent;
+  min-width: 100px;
+}
+
+.input::placeholder {
+  color: var(--mantine-color-dimmed);
+}
+

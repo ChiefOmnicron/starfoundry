@@ -1,6 +1,6 @@
 import { CloseButton, Flex, Table, Text, TextInput } from "@mantine/core";
 import { CopyText } from "../misc/CopyText";
-import { createColumnHelper, flexRender, getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
+import { createColumnHelper, tableFeatures, flexRender, useTable, type ColumnDef, rowSortingFeature, columnSizingFeature, columnVisibilityFeature } from "@tanstack/react-table";
 import { EveIcon } from "../misc/EveIcon";
 import { LoadingAnimation } from "../misc/LoadingAnimation";
 import { LoadingError } from "../misc/LoadingError";
@@ -19,8 +19,13 @@ export function BlueprintBonusList({
 
     const [search, setSearch] = useState('');
 
-    const columnHelper = createColumnHelper<RigBlueprintBonus>();
-    const columns = useMemo<ColumnDef<RigBlueprintBonus>[]>(
+    const features = tableFeatures({
+        columnSizingFeature,
+        columnVisibilityFeature,
+        rowSortingFeature
+    });
+    const columnHelper = createColumnHelper<typeof features, RigBlueprintBonus>();
+    const columns = useMemo<ColumnDef<typeof features, RigBlueprintBonus>[]>(
         () => [
             columnHelper.display({
                 id: 'icon',
@@ -69,11 +74,10 @@ export function BlueprintBonusList({
         services,
     });
 
-    const table = useReactTable<RigBlueprintBonus>({
+    const table = useTable<typeof features, RigBlueprintBonus>({
+        features: features,
         columns: columns,
         data: (blueprintBonuses || []).filter(x => x.blueprint.name.toLocaleLowerCase().indexOf(search.toLocaleLowerCase()) > -1),
-        autoResetPageIndex: false,
-        getCoreRowModel: getCoreRowModel(),
     });
 
     const parentRef = useRef<HTMLDivElement>(null);

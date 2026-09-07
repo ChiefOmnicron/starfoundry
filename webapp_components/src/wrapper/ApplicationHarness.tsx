@@ -1,4 +1,4 @@
-import { AppShell, Burger, Divider, Group, ScrollArea, Text } from "@mantine/core";
+import { AppShell, Burger, Divider, Group, ScrollArea, Text, UnstyledButton } from "@mantine/core";
 import { CharacterComponent } from "../misc/Character";
 import { CustomLink } from "../links/RouterLink";
 import { Footer } from "../misc/Footer";
@@ -90,18 +90,25 @@ export function ApplicationShell({
 
     const sideNavigation = (): ReactElement => {
         if (isAuthenticated === 'AUTHENTICATED') {
-            return (
+            return <>
                 <AppShell.Navbar>
                     <AppShell.Section grow my="md" component={ScrollArea}>
                         { navigation() }
                     </AppShell.Section>
 
-
                     <AppShell.Section>
                         <CharacterComponent />
                     </AppShell.Section>
                 </AppShell.Navbar>
-            );
+            </>;
+        } else if (showSidebar) {
+            return <>
+                <AppShell.Navbar>
+                    <AppShell.Section grow my="md" component={ScrollArea}>
+                        { navigation() }
+                    </AppShell.Section>
+                </AppShell.Navbar>
+            </>;
         } else {
             return <></>
         }
@@ -152,16 +159,36 @@ export function ApplicationShell({
                         </Text>
                     </Link>
 
-                    <Link
-                        key="about"
-                        to={aboutRoute}
-                        style={{
-                            textDecoration: 'None',
-                            color: 'var(--mantine-color-dark-0)'
-                        }}
-                    >
-                        About
-                    </Link>
+                    <Group>
+                        <UnstyledButton
+                            component={Link}
+                            to={aboutRoute.to}
+                            style={{
+                                textDecoration: 'None',
+                                color: 'var(--mantine-color-dark-0)'
+                            }}
+                        >
+                            About
+                        </UnstyledButton>
+
+                        {
+                            isAuthenticated === 'AUTHENTICATED'
+                            ?   <UnstyledButton
+                                    component={Link}
+                                    onClick={() => { window.location.href = "/api/auth/logout"}}
+                                    variant="subtle"
+                                >
+                                    Logout
+                                </UnstyledButton>
+                            :   <UnstyledButton
+                                    component={Link}
+                                    onClick={() => { window.location.href = "/auth/login"}}
+                                    variant="subtle"
+                                >
+                                    Login
+                                </UnstyledButton>
+                        }
+                    </Group>
                 </Group>
             </AppShell.Header>
 

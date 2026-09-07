@@ -1,6 +1,6 @@
 import { CopyTable } from "../misc/CopyTable";
 import { CopyText } from "../misc/CopyText";
-import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { createColumnHelper, flexRender, tableFeatures, useTable, columnSizingFeature, columnVisibilityFeature } from "@tanstack/react-table";
 import { EveIcon } from "../misc/EveIcon";
 import { Flex, Table, Text } from "@mantine/core";
 import type { Item } from "../services/item/model";
@@ -9,7 +9,11 @@ import type { ReactElement } from "react";
 export function MaterialList({
     materials,
 }: MaterialListProp): ReactElement {
-    const columnHelper = createColumnHelper<MaterialListItem>();
+    const features = tableFeatures({
+        columnSizingFeature,
+        columnVisibilityFeature,
+    });
+    const columnHelper = createColumnHelper<typeof features, MaterialListItem>();
     const columns = [
         columnHelper.display({
             id: 'icon',
@@ -66,11 +70,10 @@ export function MaterialList({
         }
     }
 
-    const table = useReactTable<MaterialListItem>({
-        columns: columns,
-        data: materials,
-        autoResetPageIndex: false,
-        getCoreRowModel: getCoreRowModel(),
+    const table = useTable<typeof features, MaterialListItem>({
+        features:   features,
+        columns:    columns,
+        data:       materials,
     });
 
     return <>

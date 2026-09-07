@@ -1,6 +1,6 @@
 import { ActionIcon, Button, Flex, Table, Text, Tooltip } from "@mantine/core";
 import { CopyText } from "../misc/CopyText";
-import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { createColumnHelper, flexRender, useTable, tableFeatures, columnSizingFeature, columnVisibilityFeature, } from "@tanstack/react-table";
 import { EveIcon } from "../misc/EveIcon";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -22,7 +22,11 @@ export function BlueprintList({
         }
     }, [tooltipOpened]);
 
-    const columnHelper = createColumnHelper<BlueprintListItem>();
+    const features = tableFeatures({
+        columnSizingFeature,
+        columnVisibilityFeature,
+    });
+    const columnHelper = createColumnHelper<typeof features, BlueprintListItem>();
     const columns = [
         columnHelper.display({
             id: 'icon',
@@ -117,11 +121,10 @@ export function BlueprintList({
         }
     }
 
-    const table = useReactTable<BlueprintListItem>({
+    const table = useTable<typeof features, BlueprintListItem>({
+        features: features,
         columns: columns,
         data: blueprints,
-        autoResetPageIndex: false,
-        getCoreRowModel: getCoreRowModel(),
     });
 
     return <>

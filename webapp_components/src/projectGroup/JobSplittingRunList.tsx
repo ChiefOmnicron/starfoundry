@@ -1,6 +1,6 @@
 import { Button, Flex, NumberInput, Table, Text } from "@mantine/core";
 import { CopyText } from "../misc/CopyText";
-import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { createColumnHelper, flexRender, tableFeatures, useTable, columnSizingFeature, columnVisibilityFeature } from "@tanstack/react-table";
 import { EveIcon } from "../misc/EveIcon";
 import { ItemSelector, type ItemSelectorRef } from "../selectors/ItemSelectorInline";
 import { useRef, useState, type ReactElement } from "react";
@@ -53,7 +53,11 @@ export function JobSplittingRunList({
     const [maxRuns, setNaxRuns] = useState<string | undefined>();
     const ItemSelectorRef = useRef<ItemSelectorRef>({} as any);
 
-    const columnHelper = createColumnHelper<JobSplittingRun>();
+    const features = tableFeatures({
+        columnSizingFeature,
+        columnVisibilityFeature,
+    });
+    const columnHelper = createColumnHelper<typeof features, JobSplittingRun>();
     const columns = [
         columnHelper.display({
             id: 'icon',
@@ -170,11 +174,10 @@ export function JobSplittingRunList({
         </Table.Tfoot>
     }
 
-    const table = useReactTable<JobSplittingRun>({
-        columns: columns,
-        data: entries,
-        autoResetPageIndex: false,
-        getCoreRowModel: getCoreRowModel(),
+    const table = useTable<typeof features, JobSplittingRun>({
+        features:   features,
+        columns:    columns,
+        data:       entries,
         initialState: {
             columnVisibility: {
                 delete: editable,

@@ -1,9 +1,8 @@
 import { TableWrapper } from "@starfoundry/components/wrapper/Table";
 import type { Appraisal, AppraisalItem } from "../create";
-import { createColumnHelper, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { createColumnHelper, useTable } from "@tanstack/react-table";
 import { EveIcon } from "@starfoundry/components/misc/EveIcon";
 import { CopyText } from "@starfoundry/components/misc/CopyText";
-import { Text } from "@mantine/core";
 
 export function AppraisalItemTable({
     appraisal,
@@ -124,11 +123,10 @@ export function AppraisalItemTable({
         }),
     ];
 
-    const table = useReactTable<AppraisalItem>({
+    const table = useTable<AppraisalItem>({
         columns: columns,
         data: appraisal.items,
         autoResetPageIndex: false,
-        getCoreRowModel: getCoreRowModel(),
     });
 
     return <>
