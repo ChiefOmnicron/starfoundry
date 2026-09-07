@@ -12,7 +12,7 @@ pub async fn create(
 ) -> Result<ProjectUuid> {
     project_info.validate()?;
 
-    let project_id = sqlx::query!(r#"
+    let project_id: ProjectUuid = sqlx::query!(r#"
             INSERT INTO project
             (
                 owner,
@@ -38,7 +38,30 @@ pub async fn create(
         )
         .fetch_one(pool)
         .await
-        .map_err(ProjectError::Create)?;
+        .map_err(ProjectError::Create)?
+        .id
+        .into();
 
-    Ok(project_id.id.into())
+    let tags = project_info
+        .tags
+        .map(|tags| tags.into_iter().map(|x| *x).collect::<Vec<_>>())
+        .unwrap_or_default();
+    sqlx::query!("
+            INSERT INTO project_tag
+            (
+                project_id,
+                tag_id
+            )
+            SELECT $1, * FROM UNNEST(
+                $2::UUID[]
+            )
+        ",
+            *project_id,
+            &tags,
+        )
+        .execute(pool)
+        .await
+        .map_err(ProjectError::Update)?;
+
+    Ok(project_id)
 }

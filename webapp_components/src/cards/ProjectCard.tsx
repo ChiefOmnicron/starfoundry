@@ -1,10 +1,10 @@
-import { BadgeWrapper } from "../wrapper/Badge";
 import { BaseCard } from "../cards/BaseCard";
 import { Flex, Group, Stack, Text, Title } from "@mantine/core";
 import { InternalLink } from "../links/InternalLink";
-import { ProjectProgressBar } from "../misc/ProgressBar";
+import { ProjectProgressBar } from "../misc/ProjectProgressBar";
+import { ProjectStatusBadge } from "../project/ProjectStatusBadge";
 import { useListProjectJobs } from "../services/projects/listJobs";
-import type { ProjectListMinimal, ProjectStatus } from "../services/projects/list";
+import type { ProjectListMinimal } from "../services/projects/list";
 
 export function ProjectCard({
     project,
@@ -17,22 +17,11 @@ export function ProjectCard({
         data: jobs,
     } = useListProjectJobs(project.id, {});
 
-    const status = (status: ProjectStatus) => {
-        switch(status) {
-            case 'DONE':
-                return <BadgeWrapper color="green">Done</BadgeWrapper>;
-            case 'IN_PROGRESS':
-                return <BadgeWrapper color="blue">In Progress</BadgeWrapper>;
-            case 'READY_TO_START':
-                return <BadgeWrapper color="cyan">Ready to start</BadgeWrapper>;
-            case 'PAUSED':
-                return <BadgeWrapper color="yellow">Pause</BadgeWrapper>;
-            default:
-                return <BadgeWrapper color="gray">Draft</BadgeWrapper>;
-        }
-    }
-
     const additionalMessage = () => {
+        if (project.status === 'DRAFT' || project.status === 'READY_TO_START') {
+            return <div></div>;
+        }
+
         const groupedJobs = (jobs || []).flatMap(x => x.entries);
         const done = groupedJobs.filter(x => x.status === 'DONE');
         const building = groupedJobs.filter(x => x.status === 'BUILDING');
@@ -43,7 +32,7 @@ export function ProjectCard({
         } else if (building.length === 0 && waiting.length > 0) {
             return <Text size='sm' c="red.9">No active jobs</Text>
         } else {
-            return <div></div>
+            return <div></div>;
         }
     }
 
@@ -52,8 +41,6 @@ export function ProjectCard({
             <Title order={3}>
                 { project.name }
             </Title>
-
-            {status(project.status)}
         </>
     }
 
@@ -61,7 +48,7 @@ export function ProjectCard({
         const waiting = (jobs || [])
             .flatMap(x => x.entries)
             .filter(x => x.status === 'WAITING_FOR_MATERIALS' || x.status === 'READY_TO_START')
-            .length;            
+            .length;
         const inProgress = (jobs || [])
             .flatMap(x => x.entries)
             .filter(x => x.status === 'BUILDING')
@@ -93,14 +80,36 @@ export function ProjectCard({
                 </Text>
             </Group>
 
+            {
+                project.status === 'DRAFT'
+                ?   <></>
+                :   <Group
+                        gap={'xs'}
+                    >
+                        <Text size='sm' fw={700}>Progress: </Text>
+                        <Text size='sm' c="red.9">{ waiting }</Text> /
+                        <Text size='sm' c="blue.9">{ inProgress }</Text> /
+                        <Text size='sm' c="green.9">{ done }</Text> /
+                        <Text size='sm'>{ total }</Text>
+                    </Group>
+            }
+
             <Group
                 gap={'xs'}
             >
-                <Text size='sm' fw={700}>Progress: </Text>
-                <Text size='sm' c="red.9">{ waiting }</Text> /
-                <Text size='sm' c="blue.9">{ inProgress }</Text> /
-                <Text size='sm' c="green.9">{ done }</Text> /
-                <Text size='sm'>{ total }</Text>
+                <Text
+                    size='sm'
+                    fw={700}
+                >
+                    Status:
+                </Text>
+                <Text
+                    size='sm'
+                >
+                    <ProjectStatusBadge
+                        status={project.status}
+                    />
+                </Text>
             </Group>
         </Stack>
     }

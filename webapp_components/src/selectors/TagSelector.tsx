@@ -29,7 +29,6 @@ export function TagSelector({
     }, []);
 
     const handleValueSelect = (selectedTagId: string) => {
-        console.log(value.find(x => x === selectedTagId))
         setValue((current) =>
             current.find(x => x === selectedTagId)
                 ? current.filter((x) => x !== selectedTagId)
@@ -48,6 +47,11 @@ export function TagSelector({
                 <BadgeWrapper
                     key={entry.id}
                     color={entry.color}
+                    onRemove={() => {
+                        setValue(value.filter((x) => x !== entry.id));
+                        onSelect(entry);
+                    }}
+                    withCloseButton
                 >
                     {entry.content}
                 </BadgeWrapper>
@@ -56,6 +60,7 @@ export function TagSelector({
 
     const options = () => {
         return tags
+            .filter(item => !selected.includes(item.id))
             .filter(item => item.content.toLowerCase().includes(search.trim().toLowerCase()))
             .filter(item => item.typ !== 'AUTO')
             .map((item) => <>

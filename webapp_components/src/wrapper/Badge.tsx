@@ -1,11 +1,14 @@
-import { Badge, type MantineColor, type MantineSize } from "@mantine/core"
+import { Badge, CloseButton, Group, type MantineColor, type MantineSize } from "@mantine/core"
 import type { ReactNode } from "react";
 
 export function BadgeWrapper({
     color,
+    size,
 
     onClick = () => {},
-    size,
+    onRemove = () => {},
+
+    withCloseButton = false,
 
     children,
 }: BadgeWrapperProps) {
@@ -15,8 +18,25 @@ export function BadgeWrapper({
         size={size}
         onClick={onClick}
         autoContrast
+        style={{
+            paddingRight: withCloseButton ? 0 : undefined,
+        }}
     >
-        {children}
+        {
+            withCloseButton
+            ?   <Group style={{
+                    gap: 0,
+                }}>
+                    {children}
+
+                    <CloseButton
+                        variant="transparent"
+                        size='xs'
+                        onClick={onRemove}
+                    />
+                </Group>
+            :   children
+        }
     </Badge>;
 }
 
@@ -25,6 +45,9 @@ export type BadgeWrapperProps = {
     size?:  MantineSize,
 
     onClick?: () => void;
+    onRemove?: () => void;
+
+    withCloseButton?: boolean;
 
     children: ReactNode;
 }

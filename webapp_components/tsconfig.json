@@ -31,7 +31,6 @@
     "noUncheckedSideEffectImports": true
   },
   "include": [
-    "src",
-    "./**/*.tsx", "./**/*.ts", "./**/*.css"
+    "src"
   ]
 }

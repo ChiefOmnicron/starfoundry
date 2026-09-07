@@ -1,15 +1,17 @@
-import { Alert, Button, Group, InputBase, NumberInput, Stack } from '@mantine/core';
+import { Alert, Button, Group, InputBase, InputWrapper, NumberInput, Stack } from '@mantine/core';
 import { createProject, type CreateProject, type CreateProjectResponse } from '../services/projects/create';
 import { LoadingAnimation } from '../misc/LoadingAnimation';
 import { LoadingError } from '../misc/LoadingError';
+import { MarkdownEditor } from '../misc/MarkdownEditor';
 import { ModalWrapper } from '../wrapper/Modal';
 import { ProjectGroupSelector } from '../selectors/ProjectGroupSelector';
+import { TagSelector } from '../selectors/TagSelector';
 import { useForm } from '@tanstack/react-form';
 import { useListProjectGroup } from '../services/project-group/list';
+import { useListTags } from '../services/tags/list';
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import type { Uuid } from '../services/utils';
-import { MarkdownEditor } from '../misc/MarkdownEditor';
 
 export function CreateProject({
     onCreate,
@@ -25,6 +27,13 @@ export function CreateProject({
         data: projectGroups,
     } = useListProjectGroup({
         archived: false,
+    });
+
+    const {
+        data: tags,
+    } = useListTags({
+        auto: true,
+        manual: true,
     });
 
     const createProjectMutation = useMutation({
@@ -50,6 +59,7 @@ export function CreateProject({
             notes: '',
 
             project_group_id: '',
+            tags: [] as string[],
         },
         onSubmit: async ({ value }) => {
             await createProjectMutation.mutateAsync(value);
@@ -199,6 +209,29 @@ export function CreateProject({
                                     }
                                 }}
                             />
+                        </>
+                    }}
+                />
+
+                <form.Field
+                    name="tags"
+                    children={(field) => {
+                        return <>
+                            <InputWrapper
+                                label="Tags"
+                                description="Select tags"
+                            >
+                                <TagSelector
+                                    selected={field.state.value}
+                                    tags={tags || []}
+                                    onSelect={(x) => {
+                                        const updated = field.state.value.find(y => y === x.id)
+                                            ? field.state.value.filter((y) => y !== x.id)
+                                            : [...field.state.value, x.id];
+                                        field.handleChange(updated);
+                                    }}
+                                />
+                            </InputWrapper>
                         </>
                     }}
                 />

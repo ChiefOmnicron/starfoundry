@@ -8,7 +8,7 @@ import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation'
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 import { MarkdownEditor } from '@starfoundry/components/misc/MarkdownEditor';
 import { ProjectGroupSelector } from '@starfoundry/components/selectors/ProjectGroupSelector';
-import { ProjectStatusSelector } from '@starfoundry/components/project/ProjectStatus';
+import { ProjectStatusSelector } from '@starfoundry/components/project/ProjectStatusSelector';
 import { Route as ProjectRoute } from '@/routes/projects/index';
 import { SaveDialog } from '@starfoundry/components/misc/SaveDialog';
 import { updateProject, type UpdateProjectRequest } from '@starfoundry/components/services/projects/update';

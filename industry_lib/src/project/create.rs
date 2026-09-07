@@ -1,8 +1,8 @@
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
-
-use crate::{Error, ProjectGroupUuid, ProjectUuid, Result};
 use uuid::Uuid;
+
+use crate::{Error, ProjectGroupUuid, ProjectUuid, Result, TagUuid};
 
 #[derive(Debug, Deserialize, Serialize, ToSchema)]
 pub struct CreateProject {
@@ -15,6 +15,8 @@ pub struct CreateProject {
 
     pub pre_products:       Option<String>,
     pub pre_additional:     Option<String>,
+
+    pub tags:               Option<Vec<TagUuid>>,
 }
 
 impl CreateProject {

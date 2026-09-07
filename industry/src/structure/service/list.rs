@@ -18,7 +18,6 @@ pub async fn list(
     character_id:           CharacterId,
     filter:                 StructureFilter,
 ) -> Result<Vec<Structure>> {
-    dbg!(&filter, character_id);
     let structures = sqlx::query!(r#"
             SELECT
                 id,

@@ -1,12 +1,14 @@
-import { Stack, Table, Title } from '@mantine/core';
-import { MarkdownView } from '@starfoundry/components/detailView/MarkdownView';
-import { ItemList } from '@starfoundry/components/list/ItemList';
 import { CopyText } from '@starfoundry/components/misc/CopyText';
+import { createFileRoute } from '@tanstack/react-router';
+import { ItemList } from '@starfoundry/components/list/ItemList';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
+import { MarkdownView } from '@starfoundry/components/detailView/MarkdownView';
+import { ProjectStatusBadge } from '@starfoundry/components/project/ProjectStatusBadge';
+import { Stack, Table, Title } from '@mantine/core';
+import { TagBadgeList } from '@starfoundry/components/tags';
 import { useFetchProject } from '@starfoundry/components/services/projects/fetch';
 import { useFetchProjectCost } from '@starfoundry/components/services/projects/fetchCost';
-import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/projects_/$projectId/overview')({
     component: RouteComponent,
@@ -68,6 +70,24 @@ function RouteComponent() {
                                 value={projectCost.sell_price}
                                 number
                                 withUnit
+                            />
+                        </Table.Td>
+                    </Table.Tr>
+                    <Table.Tr>
+                        <Table.Th>Status</Table.Th>
+                        <Table.Td>
+                            <ProjectStatusBadge
+                                status={project.status}
+                                size='md'
+                            />
+                        </Table.Td>
+                    </Table.Tr>
+                    <Table.Tr>
+                        <Table.Th>Tags</Table.Th>
+                        <Table.Td>
+                            <TagBadgeList
+                                tags={project.tags}
+                                size='md'
                             />
                         </Table.Td>
                     </Table.Tr>
