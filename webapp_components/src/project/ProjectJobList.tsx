@@ -48,9 +48,9 @@ export function ProjectJobList({
                 return 'Structure Components';
             case 'TOOLS':
                 return 'Tools';
-            case 'T1_STUFF':
+            case 'T1_MODULE':
                 return 'T1 Modules';
-            case 'T2_STUFF':
+            case 'T2_MODULE':
                 return 'T2 Modules';
             case 'CHARGES':
                 return 'Charges';
