@@ -44,6 +44,8 @@ export function ProjectJobList({
                 return 'Advanced Capital Construction Components';
             case 'CAPITAL_CONSTRUCTION_COMPONENTS':
                 return 'Capital Construction Components';
+            case 'STRUCTURE_COMPONENTS':
+                return 'Structure Components';
             case 'TOOLS':
                 return 'Tools';
             case 'T1_STUFF':
