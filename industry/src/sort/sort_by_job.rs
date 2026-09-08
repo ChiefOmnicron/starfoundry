@@ -23,6 +23,10 @@ macro_rules! sort_by_job {
                         insert_into_map(8, entry);
                         continue;
                     },
+                    22i32 => {
+                        insert_into_map(22, entry);
+                        continue;
+                    },
                     65i32 => {
                         insert_into_map(65, entry);
                         continue;
@@ -173,6 +177,7 @@ macro_rules! sort_by_job {
                 ("CHARGES",                                     8),
                 ("SHIPS",                                       6),
                 ("STRUCTURE",                                  65),
+                ("DEPLOYABLE",                                 22),
                 ("UNKNOWN",                                     0),
             ] {
                 if let Some(entries) = grouped_entries.get_mut(&id) {

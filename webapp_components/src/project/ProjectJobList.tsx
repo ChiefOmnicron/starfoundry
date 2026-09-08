@@ -60,6 +60,8 @@ export function ProjectJobList({
                 return 'Rigs';
             case 'STRUCTURE_RIGS':
                 return 'Structure Rigs';
+            case 'DEPLOYABLE':
+                return 'Deployable';
             default:
                 return 'Unknown'
         }
