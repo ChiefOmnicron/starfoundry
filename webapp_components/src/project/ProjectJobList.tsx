@@ -47,13 +47,17 @@ export function ProjectJobList({
             case 'TOOLS':
                 return 'Tools';
             case 'T1_STUFF':
-                return 'T1 Stuff';
+                return 'T1 Modules';
             case 'T2_STUFF':
-                return 'T2 Stuff';
+                return 'T2 Modules';
             case 'CHARGES':
                 return 'Charges';
             case 'SHIPS':
                 return 'Ships';
+            case 'RIGS':
+                return 'Rigs';
+            case 'STRUCTURE_RIGS':
+                return 'Structure Rigs';
             default:
                 return 'Unknown'
         }
