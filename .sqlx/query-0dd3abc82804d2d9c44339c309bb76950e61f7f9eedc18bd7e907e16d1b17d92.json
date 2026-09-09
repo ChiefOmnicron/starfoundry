@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO blueprint\n            (\n                type_id,\n                max_runs,\n                required_service_type_id\n            )\n            SELECT * FROM UNNEST(\n                $1::INTEGER[],\n                $2::INTEGER[],\n                $3::INTEGER[]\n            )\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4Array",
+        "Int4Array",
+        "Int4Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "0dd3abc82804d2d9c44339c309bb76950e61f7f9eedc18bd7e907e16d1b17d92"
+}

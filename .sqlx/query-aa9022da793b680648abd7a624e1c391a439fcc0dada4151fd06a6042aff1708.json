@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                            UPDATE queue_structure\n                            SET status = 'ERROR'\n                            WHERE structure_id = $1\n                        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "aa9022da793b680648abd7a624e1c391a439fcc0dada4151fd06a6042aff1708"
+}

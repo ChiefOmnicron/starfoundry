@@ -1,0 +1,53 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                system_start,\n                system_end,\n                distance_ly\n            FROM system_distance_cache\n            WHERE distance_ly <= $1\n            AND NOT (system_start = ANY($2))\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "system_start",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "system_distance_cache",
+            "name": "system_start"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "system_end",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "system_distance_cache",
+            "name": "system_end"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "distance_ly",
+        "type_info": "Float4",
+        "origin": {
+          "Table": {
+            "table": "system_distance_cache",
+            "name": "distance_ly"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Float4",
+        "Int4Array"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "7177d86fe372e2de225b310804806d7b7230ebcda09d3178371b1648793dcf03"
+}

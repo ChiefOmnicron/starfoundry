@@ -1,0 +1,52 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                type_id,\n                quantity,\n                material_efficiency\n            FROM solution_product sp\n            JOIN project p ON p.solution_id = sp.solution_id\n            WHERE p.id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "type_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "solution_product",
+            "name": "type_id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "quantity",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "solution_product",
+            "name": "quantity"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "material_efficiency",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "solution_product",
+            "name": "material_efficiency"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "1ed929c2f52cd68322866af43862980d3ac3ff3b74fb556b551fa88a6566b02d"
+}

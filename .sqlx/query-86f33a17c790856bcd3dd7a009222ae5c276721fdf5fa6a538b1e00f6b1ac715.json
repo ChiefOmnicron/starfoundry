@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO worker_queue (task, additional_data)\n            SELECT $1, * FROM UNNEST(\n                $2::JSONB[]\n            )\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Varchar",
+        "JsonbArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "86f33a17c790856bcd3dd7a009222ae5c276721fdf5fa6a538b1e00f6b1ac715"
+}

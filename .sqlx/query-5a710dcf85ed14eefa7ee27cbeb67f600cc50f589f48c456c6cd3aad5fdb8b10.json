@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                INSERT INTO project_excess (\n                    project_id,\n                    type_id,\n                    quantity\n                )\n                SELECT $1, * FROM UNNEST(\n                    $2::INTEGER[],\n                    $3::INTEGER[]\n                )\n                ON CONFLICT (project_id, type_id)\n                DO UPDATE SET\n                    quantity = project_excess.quantity + EXCLUDED.quantity\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4Array",
+        "Int4Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "5a710dcf85ed14eefa7ee27cbeb67f600cc50f589f48c456c6cd3aad5fdb8b10"
+}

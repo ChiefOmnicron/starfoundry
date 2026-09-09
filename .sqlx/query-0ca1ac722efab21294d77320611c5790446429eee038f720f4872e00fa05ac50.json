@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO standing\n            (\n                owner_id,\n                source,\n                contact_id,\n                contact_type,\n                standing\n            )\n            SELECT $1, 'corporation', * FROM UNNEST(\n                $2::INTEGER[],\n                $3::VARCHAR[],\n                $4::REAL[]\n            )\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4Array",
+        "VarcharArray",
+        "Float4Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "0ca1ac722efab21294d77320611c5790446429eee038f720f4872e00fa05ac50"
+}

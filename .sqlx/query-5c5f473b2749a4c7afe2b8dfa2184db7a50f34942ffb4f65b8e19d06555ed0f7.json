@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT structure_id\n            FROM project p\n            JOIN project_group_default_market pgdm ON pgdm.project_group_id = p.project_group_id\n            WHERE p.id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "structure_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "project_group_default_market",
+            "name": "structure_id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "5c5f473b2749a4c7afe2b8dfa2184db7a50f34942ffb4f65b8e19d06555ed0f7"
+}

@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM standing\n            WHERE owner_id = $1\n            AND source = 'alliance'\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "458ac23df0bb5e32be12843dae9fef4528fdfa328ad9ea62699818a0b91e8805"
+}

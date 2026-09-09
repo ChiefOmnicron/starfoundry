@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT industry_hub_id\n            FROM project_group_industry_hub pgm\n            WHERE project_group_id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "industry_hub_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "project_group_industry_hub",
+            "name": "industry_hub_id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "ea9175ef031c9fe5bfe055d843a4031baabaa270b47f0f91007310b92e069aea"
+}

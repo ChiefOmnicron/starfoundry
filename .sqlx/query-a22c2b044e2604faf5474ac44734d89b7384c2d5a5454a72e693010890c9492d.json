@@ -1,0 +1,26 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE worker_queue\n            SET\n                status = 'WAITING',\n                worker_id = NULL\n            WHERE id IN (\n                SELECT id\n                FROM worker_queue\n                WHERE started_at < NOW() - INTERVAL '15 minutes'\n                AND status = 'IN_PROGRESS'\n                LIMIT 1\n            )\n            RETURNING id\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "worker_queue",
+            "name": "id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "a22c2b044e2604faf5474ac44734d89b7384c2d5a5454a72e693010890c9492d"
+}

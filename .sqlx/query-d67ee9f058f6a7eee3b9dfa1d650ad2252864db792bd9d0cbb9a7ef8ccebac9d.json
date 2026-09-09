@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE industry_hub\n            SET\n                name = $3,\n                description = $4\n            WHERE\n                id = $1 AND\n                owner = $2\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4",
+        "Varchar",
+        "Varchar"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "d67ee9f058f6a7eee3b9dfa1d650ad2252864db792bd9d0cbb9a7ef8ccebac9d"
+}

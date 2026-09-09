@@ -1,0 +1,21 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO system_index\n            (\n                timestamp,\n                system_id,\n                manufacturing,\n                reaction,\n                copying,\n                invention,\n                research_time,\n                research_material\n            )\n            SELECT * FROM UNNEST\n            (\n                $1::TIMESTAMP[],\n                $2::INTEGER[],\n                $3::REAL[],\n                $4::REAL[],\n                $5::REAL[],\n                $6::REAL[],\n                $7::REAL[],\n                $8::REAL[]\n            )\n            ON CONFLICT (timestamp, system_id) DO UPDATE SET\n                manufacturing = EXCLUDED.manufacturing,\n                reaction = EXCLUDED.reaction,\n                copying = EXCLUDED.copying,\n                invention = EXCLUDED.invention,\n                research_time = EXCLUDED.research_time,\n                research_material = EXCLUDED.research_material\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "TimestampArray",
+        "Int4Array",
+        "Float4Array",
+        "Float4Array",
+        "Float4Array",
+        "Float4Array",
+        "Float4Array",
+        "Float4Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "88e77d30f61fdc664736a51d22d8bcf2b5347a778965df499552e87550e37072"
+}

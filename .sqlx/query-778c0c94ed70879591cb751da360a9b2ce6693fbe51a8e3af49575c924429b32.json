@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                INSERT INTO queue_system(\n                    system_id,\n                    system_name\n                )\n                SELECT * FROM UNNEST(\n                    $1::INTEGER[],\n                    $2::VARCHAR[]\n                )\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4Array",
+        "VarcharArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "778c0c94ed70879591cb751da360a9b2ce6693fbe51a8e3af49575c924429b32"
+}

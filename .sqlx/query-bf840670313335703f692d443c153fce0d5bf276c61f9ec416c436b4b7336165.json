@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO project_group_member\n            (\n                project_group_id,\n                permission,\n                character_id\n            )\n            SELECT $1, $2, * FROM UNNEST(\n                $3::INTEGER[]\n            )\n            ON CONFLICT (project_group_id, character_id) DO NOTHING\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4",
+        "Int4Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "bf840670313335703f692d443c153fce0d5bf276c61f9ec416c436b4b7336165"
+}

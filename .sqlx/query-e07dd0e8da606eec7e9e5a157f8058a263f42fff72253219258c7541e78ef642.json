@@ -1,0 +1,29 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO industry_hub\n            (\n                owner,\n                name,\n                description\n            )\n            VALUES(\n                $1,\n                (SELECT name FROM industry_hub WHERE id = $2),\n                (SELECT description FROM industry_hub WHERE id = $2)\n            )\n            RETURNING id\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "industry_hub",
+            "name": "id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "e07dd0e8da606eec7e9e5a157f8058a263f42fff72253219258c7541e78ef642"
+}

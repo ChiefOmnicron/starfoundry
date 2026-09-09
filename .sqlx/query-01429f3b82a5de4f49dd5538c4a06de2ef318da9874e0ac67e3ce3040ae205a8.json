@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO project_excess\n            (\n                project_id,\n                type_id,\n                quantity\n            )\n            SELECT $1, * FROM (\n                SELECT type_id, quantity\n                FROM solution_excess\n                WHERE solution_id = $2\n                AND quantity > 0\n            )\n            ON CONFLICT (project_id, type_id)\n            DO UPDATE SET\n                quantity = EXCLUDED.quantity\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "01429f3b82a5de4f49dd5538c4a06de2ef318da9874e0ac67e3ce3040ae205a8"
+}

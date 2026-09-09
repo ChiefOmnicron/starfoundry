@@ -198,7 +198,7 @@ pub async fn insert_structure_market(
     );
     task.append_log(format!("Deletes: {}", result.rows_affected()));
 
-    sqlx::query!("
+    /*sqlx::query!("
             INSERT INTO market_order_history (
                 order_id,
                 remaining
@@ -215,7 +215,7 @@ pub async fn insert_structure_market(
         )
         .execute(&mut *transaction)
         .await
-        .map_err(Error::InsertHistoryOrders)?;
+        .map_err(Error::InsertHistoryOrders)?;*/
 
     transaction
         .commit()

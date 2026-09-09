@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                INSERT INTO tag_auto\n                (\n                    tag_id,\n                    option,\n                    compare,\n                    value\n                )\n                SELECT $1, * FROM UNNEST(\n                    $2::VARCHAR[],\n                    $3::VARCHAR[],\n                    $4::VARCHAR[]\n                )\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "VarcharArray",
+        "VarcharArray",
+        "VarcharArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "e46e33377d472fe5b35301eec693e295ec48addee6c282298ff095f0209365cb"
+}

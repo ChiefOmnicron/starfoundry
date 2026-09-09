@@ -1,0 +1,30 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                (additional_data ->> 'corporation_id')::BIGINT AS \"corporation_id!\",\n                (additional_data ->> 'character_id')::INTEGER AS \"character_id!\"\n            FROM worker_queue\n            WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')\n            AND task = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "corporation_id!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 1,
+        "name": "character_id!",
+        "type_info": "Int4",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      null,
+      null
+    ]
+  },
+  "hash": "2d61738132413f9c96b92708de287d3aed0ebe26e7985fe28438ef134d8d1b7a"
+}

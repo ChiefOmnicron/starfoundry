@@ -103,7 +103,7 @@ export function ProjectSelectorModal({
                 <Button
                     onClick={() => onSelect(selectedProjects)}
                 >
-                    Select ({ selectedProjects.length }) structures
+                    Select ({ selectedProjects.length }) projects
                 </Button>
             </Flex>
         </Stack>

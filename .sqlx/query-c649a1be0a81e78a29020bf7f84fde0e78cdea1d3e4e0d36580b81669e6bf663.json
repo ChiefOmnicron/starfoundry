@@ -1,0 +1,29 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO login_attempt (domain, character_id, credential_type)\n            VALUES ($1, $2, 'CORPORATION')\n            RETURNING token\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "token",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "login_attempt",
+            "name": "token"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Varchar",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "c649a1be0a81e78a29020bf7f84fde0e78cdea1d3e4e0d36580b81669e6bf663"
+}

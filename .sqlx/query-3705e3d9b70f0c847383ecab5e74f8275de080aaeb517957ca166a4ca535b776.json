@@ -1,0 +1,21 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO market_private_order AS mol\n            (\n                issuer_id,\n                order_id,\n                structure_id,\n\n                type_id,\n                remaining,\n                price,\n                expires,\n                is_buy\n            )\n            SELECT $1, * FROM UNNEST(\n                $2::BIGINT[],\n                $3::BIGINT[],\n                $4::INTEGER[],\n                $5::INTEGER[],\n                $6::FLOAT[],\n                $7::TIMESTAMP[],\n                $8::BOOLEAN[]\n            )\n            ON CONFLICT (order_id)\n            DO UPDATE SET\n                remaining = EXCLUDED.remaining,\n                expires = EXCLUDED.expires,\n                price = EXCLUDED.price\n            WHERE mol.remaining != EXCLUDED.remaining\n            OR mol.expires != EXCLUDED.expires\n            OR mol.price != EXCLUDED.price\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int8Array",
+        "Int8Array",
+        "Int4Array",
+        "Int4Array",
+        "Float8Array",
+        "TimestampArray",
+        "BoolArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "3705e3d9b70f0c847383ecab5e74f8275de080aaeb517957ca166a4ca535b776"
+}

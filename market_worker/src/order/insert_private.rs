@@ -105,7 +105,7 @@ pub async fn insert_private_orders(
     );
     task.append_log(format!("Updates: {}", result.rows_affected()));
 
-    sqlx::query!("
+    /*sqlx::query!("
             INSERT INTO market_private_order_history (
                 order_id,
                 remaining
@@ -122,7 +122,7 @@ pub async fn insert_private_orders(
         )
         .execute(&mut *transaction)
         .await
-        .map_err(Error::InsertPrivateHistoryOrders)?;
+        .map_err(Error::InsertPrivateHistoryOrders)?;*/
 
     transaction
         .commit()

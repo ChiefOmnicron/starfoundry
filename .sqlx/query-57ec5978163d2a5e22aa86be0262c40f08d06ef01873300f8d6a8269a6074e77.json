@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT industry_hub_id\n            FROM solution\n            WHERE id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "industry_hub_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "solution",
+            "name": "industry_hub_id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "57ec5978163d2a5e22aa86be0262c40f08d06ef01873300f8d6a8269a6074e77"
+}

@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE market_order_latest AS mol\n            SET virtual_remaining = update.remaining\n            FROM UNNEST(\n                $1::BIGINT[],\n                $2::INTEGER[]\n            ) as update(order_id, remaining)\n            WHERE mol.order_id = update.order_id\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8Array",
+        "Int4Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "7c8486f0a7f85edb39e92aa3931ee3d52cadb867750f5e322c4de4ec7ed8e9e9"
+}

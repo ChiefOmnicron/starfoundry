@@ -1,0 +1,38 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                system_id,\n                system_name\n            FROM queue_system\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "system_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "queue_system",
+            "name": "system_id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "system_name",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "queue_system",
+            "name": "system_name"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "342fea1a9997a3e29e8f4dd67c68901f188d378b76acad814d3941953d73bc51"
+}

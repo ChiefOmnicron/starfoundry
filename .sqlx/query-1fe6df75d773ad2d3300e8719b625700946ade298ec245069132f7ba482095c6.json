@@ -1,0 +1,23 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO contract_item\n            (\n                contract_id,\n                is_included,\n                is_blueprint_copy,\n\n                quantity,\n\n                record_id,\n                type_id,\n                item_id,\n\n                material_efficiency,\n                time_efficiency,\n                runs\n            )\n            SELECT $1, * FROM UNNEST(\n                $2::BOOLEAN[],\n                $3::BOOLEAN[],\n                $4::BIGINT[],\n                $5::BIGINT[],\n                $6::INTEGER[],\n                $7::BIGINT[],\n                $8::INTEGER[],\n                $9::INTEGER[],\n                $10::INTEGER[]\n            )\n            ON CONFLICT (contract_id, record_id)\n            DO NOTHING\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "BoolArray",
+        "BoolArray",
+        "Int8Array",
+        "Int8Array",
+        "Int4Array",
+        "Int8Array",
+        "Int4Array",
+        "Int4Array",
+        "Int4Array"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "1fe6df75d773ad2d3300e8719b625700946ade298ec245069132f7ba482095c6"
+}

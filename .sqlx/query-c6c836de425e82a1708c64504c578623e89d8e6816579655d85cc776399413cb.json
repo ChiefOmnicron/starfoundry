@@ -1,0 +1,19 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO character (\n                character_id,\n                character_name,\n                corporation_id,\n                corporation_name,\n                alliance_id,\n                alliance_name\n            )\n            VALUES ($1, $2, $3, $4, $5, $6)\n            ON CONFLICT (character_id)\n            DO UPDATE SET\n                corporation_id = EXCLUDED.corporation_id,\n                corporation_name = EXCLUDED.corporation_name,\n                alliance_id = EXCLUDED.alliance_id,\n                alliance_name = EXCLUDED.alliance_name,\n                updated_at = NOW()\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Varchar",
+        "Int4",
+        "Varchar",
+        "Int4",
+        "Varchar"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "c6c836de425e82a1708c64504c578623e89d8e6816579655d85cc776399413cb"
+}

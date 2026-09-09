@@ -1,0 +1,29 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO structure\n            (\n                owner,\n                structure_id,\n                system_id,\n                type_id,\n                rigs,\n                services,\n                name,\n                x,\n                y,\n                z\n            )\n            SELECT\n                $1 AS owner,\n                s.structure_id,\n                s.system_id,\n                s.type_id,\n                s.rigs,\n                s.services,\n                s.name,\n                s.x,\n                s.y,\n                s.z\n            FROM industry_hub_structure ihs\n            JOIN structure s ON ihs.structure_id = s.id\n            WHERE ihs.industry_hub_id = $2\n            RETURNING id\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "structure",
+            "name": "id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "5cfcf035ea75121e6bbf3daac04505dc6039d159344a9438a107422371a83d7a"
+}

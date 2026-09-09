@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                UPDATE queue_system\n                SET status = 'DONE'\n                WHERE system_id = $1\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "26fe2a1c014fe3184f01feae81a04187632513dba5ad6009553c0538b38448e4"
+}

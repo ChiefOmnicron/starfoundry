@@ -1,0 +1,35 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO industry_hub_share\n            (\n                industry_hub_id,\n                share_id,\n                share_type,\n                name\n            )\n            SELECT $1, * FROM UNNEST(\n                $2::INTEGER[],\n                $3::SHARE_TYPE[],\n                $4::VARCHAR[]\n            )\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4Array",
+        {
+          "Custom": {
+            "name": "share_type[]",
+            "kind": {
+              "Array": {
+                "Custom": {
+                  "name": "share_type",
+                  "kind": {
+                    "Enum": [
+                      "CHARACTER",
+                      "CORPORATION",
+                      "ALLIANCE"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "VarcharArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "d1cd9b7c7ba678b431422a0290e8c6d2b251a1d2bd82cae1e6a7cd643f1bf5d6"
+}

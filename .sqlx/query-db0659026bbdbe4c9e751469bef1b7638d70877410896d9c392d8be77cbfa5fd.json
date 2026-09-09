@@ -1,0 +1,26 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                    SELECT structure_id\n                    FROM industry_hub_structure\n                    WHERE industry_hub_id = '00000000-0000-0000-0000-100000000001'\n                ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "structure_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "industry_hub_structure",
+            "name": "structure_id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "db0659026bbdbe4c9e751469bef1b7638d70877410896d9c392d8be77cbfa5fd"
+}

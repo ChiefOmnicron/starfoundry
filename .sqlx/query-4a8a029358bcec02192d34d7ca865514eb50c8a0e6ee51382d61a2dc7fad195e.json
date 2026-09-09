@@ -1,0 +1,18 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO structure (\n                main_character,\n                character_id,\n                structure_id,\n                region_id,\n                source\n            )\n            VALUES ($1, $2, $3, $4, $5)\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4",
+        "Int8",
+        "Int4",
+        "Varchar"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "4a8a029358bcec02192d34d7ca865514eb50c8a0e6ee51382d61a2dc7fad195e"
+}

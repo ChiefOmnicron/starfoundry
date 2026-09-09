@@ -1,0 +1,74 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT pg.*\n                FROM project_group_default_blueprint_overwrite pg\n                WHERE pg.project_group_id = '00000000-0000-0000-0000-000000000001'\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "project_group_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "project_group_default_blueprint_overwrite",
+            "name": "project_group_id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "type_id",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_group_default_blueprint_overwrite",
+            "name": "type_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "material_efficiency",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "project_group_default_blueprint_overwrite",
+            "name": "material_efficiency"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "created_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "project_group_default_blueprint_overwrite",
+            "name": "created_at"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "updated_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "project_group_default_blueprint_overwrite",
+            "name": "updated_at"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "7f19bce0c2abcc913088bfe6ea89cd1c0f16de04f090d243b3a55ec6b1882bc4"
+}
