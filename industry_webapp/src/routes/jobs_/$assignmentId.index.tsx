@@ -1,9 +1,266 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { Accordion, Button, Stack, Table, Text, Title } from '@mantine/core';
+import { CopyText } from '@starfoundry/components/misc/CopyText';
+import { createColumnHelper, flexRender, tableFeatures, useTable, columnSizingFeature, columnVisibilityFeature } from '@tanstack/react-table';
+import { createFileRoute } from '@tanstack/react-router';
+import { EveIcon } from '@starfoundry/components/misc/EveIcon';
+import { LIST_JOB_ASSIGNMENT, useListJobAssignmentsRefresh, type ProjectJobAssignment, type ProjectJobAssignmentGroup } from '@starfoundry/components/services/job-assignments/listJobAssignments';
+import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
+import { LoadingError } from '@starfoundry/components/misc/LoadingError';
+import { updateJobAssignment } from '@starfoundry/components/services/job-assignments/updateJobAssignment';
+import { useIsFirstRender } from '@mantine/hooks';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import type { Uuid } from '@starfoundry/components/services/utils';
+
+export interface QueryParams {
+    deleted?: boolean;
+}
 
 export const Route = createFileRoute('/jobs_/$assignmentId/')({
-  component: RouteComponent,
-})
+    component: RouteComponent,
+    validateSearch: (params: {
+        deleted: boolean,
+    }): QueryParams => {
+        return {
+            deleted: (params.deleted) || undefined
+        };
+    }
+});
 
 function RouteComponent() {
-  return <div>Hello "/jobs_/$assignmentId/"!</div>
+    const { assignmentId } = Route.useParams();
+    const isFirstRender = useIsFirstRender();
+
+    const {
+        isPending,
+        isError,
+        isFetching,
+        data: jobs,
+    } = useListJobAssignmentsRefresh(assignmentId);
+
+    if ((isPending || isFetching) && isFirstRender) {
+        return LoadingAnimation();
+    } else if (isError) {
+        return LoadingError();
+    }
+
+    const entries = () => {
+        if (!jobs) {
+            return <></>;
+        }
+
+        return jobs
+            .map(x => <>
+                    <JobAssignmentWrapper
+                        assignmentId={assignmentId}
+                        project={x.header}
+                        jobs={x.entries}
+                    />
+                </>
+            )
+    }
+
+    const jobCount = (jobs || [])
+        .flatMap(x => x.entries)
+        .filter(x => !x.started)
+        .reduce((prev) => prev += 1, 0);
+
+    return <>
+        <Stack>
+            <Title order={1}>Jobs ready to be started</Title>
+
+            <Text>Number of startable jobs: {jobCount}</Text>
+
+            <Accordion
+                defaultValue={(jobs || []).map(x => x.header)}
+                variant="contained"
+                multiple
+            >
+                {entries()}
+            </Accordion>
+        </Stack>
+    </>
+}
+
+// Wrapper so that every project can independently can load the jobs
+function JobAssignmentWrapper({
+    assignmentId,
+    project,
+    jobs,
+}: JobAssignmentWrapperProps) {
+    const queryClient = useQueryClient();
+
+    const updateEntryMutation = useMutation({
+        mutationFn: async (jobId: Uuid) => {
+            return await updateJobAssignment(assignmentId, jobId);
+        },
+        onMutate: async (newEntry, context) => {
+            const updated: ProjectJobAssignmentGroup[] = context
+                .client
+                .getQueryData([LIST_JOB_ASSIGNMENT]) || [];
+
+            updated
+                .map(x => {
+                    if (x.header === project) {
+                        x
+                            .entries
+                            .map(y => {
+                                if (y.id === newEntry) {
+                                    y.started = true;
+                                }
+
+                                return y;
+                            });
+                    }
+
+                    return x;
+                });
+            context.client.setQueryData([LIST_JOB_ASSIGNMENT], () => [...updated])
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [LIST_JOB_ASSIGNMENT ]});
+        },
+    });
+
+    const features = tableFeatures({
+        columnSizingFeature,
+        columnVisibilityFeature,
+    });
+    const columnHelper = createColumnHelper<typeof features, ProjectJobAssignment>();
+    const columns = [
+        columnHelper.display({
+            id: 'icon',
+            cell: ({ row }) => <EveIcon
+                id={row.original.item.type_id}
+            />,
+            size: 1,
+            maxSize: 1,
+        }),
+        columnHelper.display({
+            id: 'name',
+            cell: ({ row }) => <CopyText
+                value={row.original.item.name}
+                disabled={row.original.started}
+            />,
+            header: () => 'Name',
+            size: 20,
+        }),
+        columnHelper.display({
+            id: 'runs',
+            cell: ({ row }) => <CopyText
+                value={row.original.runs}
+                disabled={row.original.started}
+                number
+            />,
+            header: () => 'Runs',
+            size: 3,
+            maxSize: 3,
+        }),
+        columnHelper.display({
+            id: 'structure',
+            cell: ({ row }) => <CopyText
+                value={row.original.structure_name}
+                disabled={row.original.started}
+            />,
+            header: () => 'Structure',
+            size: 10,
+        }),
+        columnHelper.display({
+            id: 'action',
+            cell: ({ row }) => <Button
+                    onClick={() => {
+                        updateEntryMutation.mutate(row.original.id)
+                    }}
+                    disabled={row.original.started}
+                >
+                    Started
+                </Button>,
+            size: 1,
+            maxSize: 1,
+        }),
+    ];
+
+    const table = useTable<typeof features, ProjectJobAssignment>({
+        features: features,
+        columns: columns,
+        data: jobs,
+        getRowId: row => row.id,
+    });
+
+    return <>
+        <Accordion.Item
+            key={project}
+            value={project}
+        >
+            <Accordion.Control>
+                {project}
+            </Accordion.Control>
+            <Accordion.Panel>
+                <Table.ScrollContainer minWidth={100} maxHeight={500}>
+                    <Table stickyHeader striped data-cy="data">
+                        <Table.Thead>
+                            {
+                                table
+                                    .getHeaderGroups()
+                                    .map(headerGroup => (
+                                        <Table.Tr key={headerGroup.id}>
+                                            {
+                                                headerGroup
+                                                    .headers
+                                                    .map(header => {
+                                                        return <Table.Th
+                                                            key={header.id}
+                                                            style={{
+                                                                width: `${header.getSize()}%`
+                                                            }}
+                                                        >
+                                                            {
+                                                                flexRender(
+                                                                    header.column.columnDef.header,
+                                                                    header.getContext()
+                                                                )
+                                                            }
+                                                        </Table.Th>
+                                                    })
+                                            }
+                                        </Table.Tr>
+                                    ))
+                            }
+                        </Table.Thead>
+
+                        <Table.Tbody>
+                            {
+                                table
+                                    .getRowModel()
+                                    .rows
+                                    .map(row => (
+                                        <Table.Tr key={row.id}>
+                                            {
+                                                row
+                                                    .getVisibleCells()
+                                                    .map(cell => (
+                                                        <Table.Td key={cell.id}>
+                                                            {
+                                                                flexRender(
+                                                                    cell.column.columnDef.cell,
+                                                                    cell.getContext()
+                                                                )
+                                                            }
+                                                        </Table.Td>
+                                                    ))
+                                            }
+                                        </Table.Tr>
+                                    ))
+                            }
+                        </Table.Tbody>
+                    </Table>
+                </Table.ScrollContainer>
+            </Accordion.Panel>
+        </Accordion.Item>
+    </>
+}
+
+type JobAssignmentWrapperProps = {
+    assignmentId:   Uuid,
+    project:        string,
+    jobs:           ProjectJobAssignment[],
 }
