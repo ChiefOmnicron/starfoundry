@@ -68,12 +68,12 @@ export function ProjectGroupSelector({
                 ) >= 0
         })
         .filter((x: ProjectGroup | ProjectGroupMinimal) => selected !== x.id)
-        .map((item) => (
+        .map((projectGroup) => (
             <Combobox.Option
-                value={item.id}
-                key={item.id}
+                value={projectGroup.id}
+                key={projectGroup.id}
             >
-                <SelectOption key={item.id} {...item} />
+                <SelectOption key={projectGroup.id} {...projectGroup} />
             </Combobox.Option>
         ));
 

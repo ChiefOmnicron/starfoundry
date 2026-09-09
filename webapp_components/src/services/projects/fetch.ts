@@ -3,8 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import type { GenericAbortSignal } from "axios";
 import type { Item } from "../item/model";
 import type { ProjectGroup } from "../project-group/fetch";
+import type { ProjectListMinimal, ProjectStatus } from "../projects/list";
 import type { ProjectProduct } from "../projects/listProduct";
-import type { ProjectStatus } from "../projects/list";
 import type { Tag } from "../tags/list";
 import type { Uuid } from "../utils";
 
@@ -52,6 +52,7 @@ export type ProjectList = {
     stock:              ProjectStock[];
     excess:             ProjectExcess[];
     tags:               Tag[];
+    sub_projects?:      ProjectListMinimal[];
 
     note?:              string;
 

@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                id,\n                name,\n                status AS \"status: ProjectStatus\",\n                orderer,\n                sell_price,\n                project_group_id\n            FROM project\n            WHERE\n                (\n                    NOT (LOWER(name) LIKE '%' || LOWER($2) || '%') IS FALSE AND\n                    NOT (status = ANY($3::PROJECT_STATUS[])) IS FALSE AND\n                    NOT (LOWER(orderer) LIKE '%' || LOWER($4) || '%') IS FALSE AND\n                    NOT (project_group_id = $5::UUID) IS FALSE\n                )\n                AND\n                (\n                    -- check if the character is in the group\n                    (\n                        NOT (project_group_id = ANY($6::UUID[])) IS FALSE\n                    )\n                    OR\n                    -- as a fallback check if the character is the owner\n                    (\n                        owner = $1\n                    )\n                )\n            ORDER BY name\n        ",
+  "query": "\n            SELECT\n                id,\n                name,\n                status AS \"status: ProjectStatus\",\n                orderer,\n                sell_price,\n                project_group_id\n            FROM project\n            WHERE\n                (\n                    NOT (LOWER(name) LIKE '%' || LOWER($2) || '%') IS FALSE AND\n                    NOT (status = ANY($3::PROJECT_STATUS[])) IS FALSE AND\n                    NOT (LOWER(orderer) LIKE '%' || LOWER($4) || '%') IS FALSE AND\n                    NOT (project_group_id = $5::UUID) IS FALSE\n                )\n                AND\n                (\n                    -- check if the character is in the group\n                    (\n                        NOT (project_group_id = ANY($6::UUID[])) IS FALSE\n                    )\n                    OR\n                    -- as a fallback check if the character is the owner\n                    (\n                        owner = $1\n                    )\n                )\n            ORDER BY name\n            LIMIT $7\n        ",
   "describe": {
     "columns": [
       {
@@ -110,7 +110,8 @@
         },
         "Text",
         "Uuid",
-        "UuidArray"
+        "UuidArray",
+        "Int8"
       ]
     },
     "nullable": [
@@ -122,5 +123,5 @@
       false
     ]
   },
-  "hash": "0d567632cfc9d8b027301eb32d9ddd0d8d23b3d63f00402780df9049bbc31ae4"
+  "hash": "5df1611f8366071073c18654aa24aebcaf1a12864e78bac3c4f1710d48a6c27d"
 }

@@ -66,6 +66,33 @@ pub async fn update(
         .await
         .map_err(ProjectError::Update)?;
 
+    sqlx::query!("
+            DELETE FROM project_sub_project
+            WHERE project_id = $1
+        ",
+            *project_id,
+        )
+        .execute(&mut *transaction)
+        .await
+        .map_err(ProjectError::Update)?;
+
+    sqlx::query!("
+            INSERT INTO project_sub_project
+            (
+                project_id,
+                sub_project_id
+            )
+            SELECT $1, * FROM UNNEST(
+                $2::UUID[]
+            )
+        ",
+            *project_id,
+            &update.sub_projects.into_iter().map(|x| *x).collect::<Vec<_>>(),
+        )
+        .execute(&mut *transaction)
+        .await
+        .map_err(ProjectError::Update)?;
+
     transaction
         .commit()
         .await

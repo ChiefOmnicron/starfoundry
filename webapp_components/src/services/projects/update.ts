@@ -20,6 +20,7 @@ export type UpdateProjectRequest = {
     name:               string;
     status:             ProjectStatus;
     tags:               Uuid[];
+    sub_projects:       Uuid[];
 
     sell_price?:        number;
     note?:              string;

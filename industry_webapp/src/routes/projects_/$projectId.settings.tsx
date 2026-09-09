@@ -1,4 +1,4 @@
-import { Alert, Flex, InputBase, InputWrapper, NumberInput, Stack, TextInput, Title } from '@mantine/core';
+import { Alert, Button, Flex, Group, InputBase, InputWrapper, NumberInput, Stack, Text, TextInput, Title } from '@mantine/core';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { deleteProject } from '@starfoundry/components/services/projects/delete';
 import { DeleteResource } from '@starfoundry/components/misc/DeleteResource';
@@ -7,17 +7,17 @@ import { LIST_PROJECT } from '@starfoundry/components/services/projects/list';
 import { LoadingAnimation } from '@starfoundry/components/misc/LoadingAnimation';
 import { LoadingError } from '@starfoundry/components/misc/LoadingError';
 import { MarkdownEditor } from '@starfoundry/components/misc/MarkdownEditor';
-import { ProjectGroupSelector } from '@starfoundry/components/selectors/ProjectGroupSelector';
-import { ProjectStatusSelector } from '@starfoundry/components/project/ProjectStatusSelector';
+import { TagSelector, ProjectGroupSelector, ProjectStatusSelector, ProjectSelectorModal } from '@starfoundry/components/selectors';
 import { Route as ProjectRoute } from '@/routes/projects/index';
 import { SaveDialog } from '@starfoundry/components/misc/SaveDialog';
 import { updateProject, type UpdateProjectRequest } from '@starfoundry/components/services/projects/update';
 import { useForm } from '@tanstack/react-form';
 import { useListProjectGroup } from '@starfoundry/components/services/project-group/list';
+import { useListTags } from '@starfoundry/components/services/tags/list';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { TagSelector } from '@starfoundry/components/selectors/TagSelector';
-import { useListTags } from '@starfoundry/components/services/tags/list';
+import { useDisclosure } from '@mantine/hooks';
+import { ProjectList } from '@starfoundry/components/project/ProjectList';
 
 export interface QueryParams {
     created?: boolean;
@@ -38,6 +38,8 @@ function RouteComponent() {
     const [successfulUpdate, setSuccessfulUpdate] = useState<boolean>();
     const [errorDelete, setErrorDelete] = useState<string | undefined>();
     const [errorUpdate, setErrorUpdate] = useState<string | undefined>();
+
+    const [projectSelectorOpened, { open: openProjectSelector, close: closeProjectSelector }] = useDisclosure(false);
 
     const [touched, setTouched] = useState<boolean>(false);
 
@@ -96,16 +98,20 @@ function RouteComponent() {
 
     const form = useForm({
         defaultValues: {
-            name: project?.name || '',
-            project_group_id: project?.project_group.id || '',
-            orderer: project?.orderer || '',
-            sell_price: project?.sell_price || 0,
-            note: project?.note || '',
-            status: project?.status || 'READY_TO_START',
-            tags: project?.tags.map(x => x.id) || [],
+            name:               project?.name || '',
+            project_group_id:   project?.project_group.id || '',
+            orderer:            project?.orderer || '',
+            sell_price:         project?.sell_price || 0,
+            note:               project?.note || '',
+            status:             project?.status || 'READY_TO_START',
+            tags:               project?.tags.map(x => x.id) || [],
+            sub_projects:       project?.sub_projects?.map(x => x) || [],
         },
         onSubmit: async ({ value }) => await updateMutation
-            .mutateAsync(value)
+            .mutateAsync({
+                ...value,
+                sub_projects: value.sub_projects.map(x => x.id),
+            })
             .catch(error => {
                 setErrorUpdate(error);
                 setSuccessfulUpdate(false);
@@ -193,6 +199,8 @@ function RouteComponent() {
             }}
         >
             <Stack>
+                <Title order={2}>General</Title>
+
                 <form.Field
                     name="name"
                     validators={{
@@ -352,6 +360,44 @@ function RouteComponent() {
                                     setTouched(true);
                                 }}
                             />
+                        </>
+                    }}
+                />
+
+                <Group justify='space-between'>
+                    <Title order={2}>Sub Projects</Title>
+
+                    <Button onClick={() => {
+                        openProjectSelector();
+                        setTouched(false);
+                    }}>
+                        Set projects
+                    </Button>
+                </Group>
+
+                <form.Field
+                    name="sub_projects"
+                    children={(field) => {
+                        return <>
+                            <ProjectSelectorModal
+                                opened={projectSelectorOpened}
+                                onClose={closeProjectSelector}
+                                selected={field.state.value}
+                                onSelect={(x) => {
+                                    field.handleChange(x);
+                                    setTouched(true);
+                                    closeProjectSelector();
+                                }}
+                            />
+
+                            {
+                                field.state.value.length === 0
+                                ?   <Text>No projects selected</Text>
+                                :   <ProjectList
+                                        projects={field.state.value}
+                                        groupByProjectGroup={false}
+                                    />
+                            }
                         </>
                     }}
                 />

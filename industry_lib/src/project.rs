@@ -389,6 +389,36 @@ pub trait IndustryApiClientProject: ApiClient {
     }
 
     #[allow(async_fn_in_trait)]
+    async fn project_update_price(
+        &self,
+        project_id: &ProjectUuid,
+        request:    f64,
+    ) -> Result<()> {
+        self
+            .put(
+                format!("projects/{project_id}/price"),
+                request,
+            )
+            .await
+            .map_err(Into::into)
+    }
+
+    #[allow(async_fn_in_trait)]
+    async fn project_update_sub_project(
+        &self,
+        project_id: &ProjectUuid,
+        request:    Vec<ProjectUuid>,
+    ) -> Result<()> {
+        self
+            .put(
+                format!("projects/{project_id}/sub-project"),
+                request,
+            )
+            .await
+            .map_err(Into::into)
+    }
+
+    #[allow(async_fn_in_trait)]
     async fn project_update_notes(
         &self,
         project_id: &ProjectUuid,

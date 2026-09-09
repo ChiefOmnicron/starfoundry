@@ -9,7 +9,7 @@ export function ServiceSelector({
     selected = [],
     onSelect,
     readonly = false,
-}: Props) {
+}: ServiceSelectorProps) {
     const [value, setValue] = useState<string[]>([]);
 
     useEffect(() => {
@@ -49,7 +49,7 @@ export function ServiceSelector({
     </>
 }
 
-export type Props = {
+export type ServiceSelectorProps = {
     // list of all rigs
     services:  StructureService;
     // selected value

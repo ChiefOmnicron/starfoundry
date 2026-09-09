@@ -28,6 +28,7 @@ export const listProjects = async (
 export type ProjectFilter = {
     name?: string;
     status?: string;
+    limit?: number;
     project_group_id?: string;
 }
 

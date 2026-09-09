@@ -65,6 +65,7 @@ pub async fn list(
                     )
                 )
             ORDER BY name
+            LIMIT $7
         "#,
             *character_id,
             filter.name,
@@ -72,6 +73,7 @@ pub async fn list(
             filter.orderer,
             filter.project_group_id.map(|x| *x),
             &user_project_groups,
+            filter.limit,
         )
         .fetch_all(pool)
         .await

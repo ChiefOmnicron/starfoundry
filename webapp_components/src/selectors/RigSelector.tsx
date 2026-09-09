@@ -9,7 +9,7 @@ export function RigSelector({
     selected = [],
     onSelect,
     readonly = false,
-}: Props) {
+}: RigSelectorProps) {
     const [value, setValue] = useState<string[]>([]);
 
     useEffect(() => {
@@ -51,7 +51,7 @@ export function RigSelector({
     </>
 }
 
-export type Props = {
+export type RigSelectorProps = {
     // list of all rigs
     rigs:      StructureRig[];
     // selected value

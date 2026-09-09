@@ -26,6 +26,8 @@ mod update_market_entry;
 mod update_misc;
 mod update_notes;
 mod update_orderer;
+mod update_price;
+mod update_sub_project;
 mod update;
 
 pub mod error;
@@ -130,6 +132,12 @@ pub fn routes(
     let update_orderer = OpenApiRouter::new()
         .routes(routes!(update_orderer::api))
         .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+    let update_price = OpenApiRouter::new()
+        .routes(routes!(update_price::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
+    let update_sub_project = OpenApiRouter::new()
+        .routes(routes!(update_sub_project::api))
+        .route_layer(middleware::from_fn_with_state(state.clone(), assert_exists));
 
     OpenApiRouter::new()
         .merge(create)
@@ -161,6 +169,8 @@ pub fn routes(
 
         .merge(update_orderer)
         .merge(update_notes)
+        .merge(update_price)
+        .merge(update_sub_project)
 }
 
 #[cfg(test)]

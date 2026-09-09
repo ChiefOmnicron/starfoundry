@@ -3,6 +3,7 @@ import { Flex, Group, Stack, Text, Title } from "@mantine/core";
 import { InternalLink } from "../links/InternalLink";
 import { ProjectProgressBar } from "../misc/ProjectProgressBar";
 import { ProjectStatusBadge } from "../project/ProjectStatusBadge";
+import { useEffect, useState } from "react";
 import { useListProjectJobs } from "../services/projects/listJobs";
 import type { ProjectListMinimal } from "../services/projects/list";
 
@@ -11,11 +12,38 @@ export function ProjectCard({
 
     viewLink        = undefined,
     assistantLink   = undefined,
+
+    checkable = false,
+    checked = [],
+    onChange = () => {},
 }: ProjectCardProps) {
+    const [isSelected, setIsSelected] = useState<boolean>(false);
+
     const {
         isPending,
         data: jobs,
     } = useListProjectJobs(project.id, {});
+
+    useEffect(() => {
+        setIsSelected(!!checked.find(x => x.id === project.id));
+    }, [project, checked]);
+
+    const selectProject = (
+        state: 'checked' | 'unchecked',
+    ) => {
+        if (!checkable) {
+            return;
+        }
+
+        // TODO: properly wrap the state
+        setIsSelected(state === 'checked');
+
+        if (state === 'checked') {
+            onChange('checked', project);
+        } else {
+            onChange('unchecked', project);
+        }
+    }
 
     const additionalMessage = () => {
         if (project.status === 'DRAFT' || project.status === 'READY_TO_START') {
@@ -103,13 +131,10 @@ export function ProjectCard({
                 >
                     Status:
                 </Text>
-                <Text
-                    size='sm'
-                >
-                    <ProjectStatusBadge
-                        status={project.status}
-                    />
-                </Text>
+
+                <ProjectStatusBadge
+                    status={project.status}
+                />
             </Group>
         </Stack>
     }
@@ -168,6 +193,10 @@ export function ProjectCard({
             footer={footer()}
             bottom={bottom()}
 
+            checkable={checkable}
+            selected={isSelected}
+            onCheckChange={selectProject}
+
             loading={isPending}
         >
             {body()}
@@ -182,6 +211,11 @@ type ProjectRequiredCardProps = {
 export type ProjectCardAdditionalProps = {
     viewLink?:      string;
     assistantLink?: string;
+
+    // Determines if a checkbox is added or not
+    checkable?: boolean,
+    checked?: ProjectListMinimal[];
+    onChange?: (event: 'checked' | 'unchecked', project: ProjectListMinimal) => void;
 }
 
 export type ProjectCardProps = ProjectRequiredCardProps & ProjectCardAdditionalProps;

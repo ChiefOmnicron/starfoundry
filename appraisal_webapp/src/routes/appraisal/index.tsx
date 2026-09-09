@@ -18,10 +18,8 @@ function RouteComponent() {
             return await createAppraisal(info);
         },
         onError: () => {
-            console.error("asdasd")
         },
         onSuccess: (data) => {
-            console.log(data);
             setAppraisal(data)
         },
     });

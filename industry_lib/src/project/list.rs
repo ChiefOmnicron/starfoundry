@@ -39,6 +39,13 @@ pub struct ProjectFilter {
         required = false,
     )]
     pub orderer: Option<String>,
+
+    #[serde(default)]
+    #[param(
+        example = json!(10),
+        required = false,
+    )]
+    pub limit: Option<i64>,
 }
 
 fn default_status() -> Option<String> {

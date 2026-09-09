@@ -5,7 +5,7 @@ use uuid::Uuid;
 use starfoundry_lib_market::MarketBulkResponse;
 
 use crate::{ProjectUuid, SolutionUuid};
-use crate::project::{ProjectExcess, ProjectStatus};
+use crate::project::{ProjectExcess, ProjectMinimal, ProjectStatus};
 use crate::project_group::ProjectGroup;
 use crate::tag::Tag;
 
@@ -32,6 +32,8 @@ pub struct Project {
 
     pub note:           Option<String>,
     pub sell_price:     Option<f64>,
+    pub sub_projects:   Option<Vec<ProjectMinimal>>,
+
     #[serde(skip)]
     pub solution_id:    Option<SolutionUuid>,
 

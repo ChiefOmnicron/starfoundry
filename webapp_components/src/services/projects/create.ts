@@ -11,10 +11,12 @@ export const createProject = async (
     .then(x => x.data);
 
 export type CreateProject = {
-    sell_price?:      number;
-    project_group_id: Uuid;
-    orderer:          string;
-    name:             string;
+    sell_price?:        number;
+    tags?:              Uuid[];
+
+    project_group_id:   Uuid;
+    orderer:            string;
+    name:               string;
 }
 
 export type CreateProjectResponse = {

@@ -15,7 +15,6 @@ export function CreateTag({
 
     const createTagMutation = useMutation({
         mutationFn: async (value: CreateTag) => {
-            console.log(value)
             return await createTag(value)
         },
         onError: () => {

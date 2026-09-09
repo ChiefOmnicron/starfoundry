@@ -7,6 +7,8 @@ import type { Uuid } from "../services/utils";
 export function ProjectList({
     projects,
 
+    groupByProjectGroup = true,
+
     projectCardProps,
 }: ProjectListProps) {
     const groups: ProjectGroupMinimal[] = [];
@@ -21,37 +23,53 @@ export function ProjectList({
         return projects
             .filter(x => x.project_group.id === projectGroupId)
             .map(x => <ProjectCard
+                key={x.id}
                 project={x}
                 {...projectCardProps}
             />);
     }
 
-    const projectGroups = groups
-        .map(x => {
-            return <>
-                <Title
-                    order={2}
-                    mt='xs'
-                >
-                    { x.name }
-                </Title>
+    if (groupByProjectGroup) {
+        return groups
+            .map(x => {
+                return <>
+                    <Title
+                        order={2}
+                        mt='xs'
+                    >
+                        { x.name }
+                    </Title>
 
-                <SimpleGrid cols={{
-                    base: 1,
-                    sm: 4,
-                }}>
-                    { groupCards(x.id) }
-                </SimpleGrid>
-            </>
-        });
-
-    return <>
-        { projectGroups }
-    </>
+                    <SimpleGrid cols={{
+                        base: 1,
+                        sm: 4,
+                    }}>
+                        { groupCards(x.id) }
+                    </SimpleGrid>
+                </>
+            });
+    } else {
+        return <>
+            <SimpleGrid cols={{
+                base: 1,
+                sm: 4,
+            }}>
+                {
+                    projects
+                        .map(x => <ProjectCard
+                            project={x}
+                            {...projectCardProps}
+                        />)
+                }
+            </SimpleGrid>
+        </>
+    }
 }
 
 export type ProjectListProps = {
     projects: ProjectListMinimal[];
+
+    groupByProjectGroup?: boolean;
 
     projectCardProps?: ProjectCardAdditionalProps;
 }
