@@ -36,6 +36,27 @@ pub struct Item {
     pub repackaged: Option<i32>,
 }
 
+impl Item {
+    pub fn new_broken() -> Self {
+        Self {
+            type_id: TypeId(0),
+            category: Category {
+                category_id: CategoryId(0),
+                name: "Undefined".into()
+            },
+            group: Group {
+                category_id: CategoryId(0),
+                group_id: GroupId(0),
+                name: "Undefined".into(),
+            },
+            volume: 0f32,
+            name: "Undefined".into(),
+            meta_group: None,
+            repackaged: None
+        }
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 #[schema(
     example = json!({

@@ -49,23 +49,23 @@ services:
           path: ./target/debug/starfoundry_bin-gateway
           target: /usr/local/bin/app
 
-  market:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-      target: market-api
-    ports:
-      - "9988:9988"
-      - "9989:9989"
-    env_file: market/.env
-    network_mode: "host"
-    depends_on:
-      - eve-gateway
-    develop:
-      watch:
-        - action: sync+restart
-          path: ./target/debug/starfoundry_bin-market
-          target: /usr/local/bin/app
+  #market:
+  #  build:
+  #    context: .
+  #    dockerfile: Dockerfile.dev
+  #    target: market-api
+  #  ports:
+  #    - "9988:9988"
+  #    - "9989:9989"
+  #  env_file: market/.env
+  #  network_mode: "host"
+  #  depends_on:
+  #    - eve-gateway
+  #  develop:
+  #    watch:
+  #      - action: sync+restart
+  #        path: ./target/debug/starfoundry_bin-market
+  #        target: /usr/local/bin/app
   market-worker:
     build:
       context: .

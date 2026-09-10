@@ -248,6 +248,7 @@ impl AsteroidCompressionProblem {
                     .or_insert(MarketProblemResult {
                         quantity: quantity,
                         price: entry.price,
+                        type_id: entry.type_id,
                     });
             }
         }

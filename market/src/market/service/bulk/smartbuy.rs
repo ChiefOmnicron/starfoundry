@@ -137,26 +137,26 @@ pub fn smartbuy(
             lp.solve(wanted_item.quantity)
         };
 
-        let item = if let Some(x) = items.get(&wanted_item.type_id) {
-            x
-        } else {
-            continue;
-        };
-
         if let Ok(x) = result {
-            let result = x.into_iter()
-                .map(|(structure_id, x)| MarketBulkResponse {
+            for (structure_id, entry) in x {
+                let item = if let Some(x) = items.get(&entry.type_id) {
+                    x
+                } else {
+                    continue;
+                };
+
+                let result = MarketBulkResponse {
                     insufficient_data:  false,
-                    price:              x.price,
+                    price:              entry.price,
                     buy_price:          None,
                     sell_price:         None,
-                    quantity:           x.quantity as u64,
+                    quantity:           entry.quantity as u64,
                     source:             structure_id,
                     item:               item.clone(),
                     last_fetch:         last_fetched.get(&structure_id).cloned(),
-                })
-                .collect::<Vec<_>>();
-            results.extend(result);
+                };
+                results.push(result);
+            }
         } else {
             results.push(MarketBulkResponse {
                 insufficient_data:  true,
@@ -165,7 +165,7 @@ pub fn smartbuy(
                 sell_price:         None,
                 quantity:           wanted_item.quantity as u64,
                 source:             StructureId(0),
-                item:               item.clone(),
+                item:               Item::new_broken(),
                 last_fetch:         None,
             });
         }
