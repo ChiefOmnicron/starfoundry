@@ -13,14 +13,14 @@ use crate::utils::api_client_auth;
 
 const SCOPE: &str = "esi-assets.read_assets.v1";
 
-/// Fetch Player Market
+/// Resolve Character Asset
 /// 
 /// - Alternative route: `/latest/eve/corporations/{CharacterId}/assets`
 /// - Alternative route: `/v1/eve/corporations/{CharacterId}/assets`
 /// 
 /// ---
 /// 
-/// Resolves the market data for the given region
+/// Resolve ItemIds to their name, for example for ships and containers.
 /// 
 #[utoipa::path(
     post,

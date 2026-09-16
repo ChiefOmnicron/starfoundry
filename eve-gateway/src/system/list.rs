@@ -9,7 +9,7 @@ use crate::state::AppState;
 use crate::system::error::Result;
 use crate::system::services::list;
 
-/// Fetch System
+/// List Systems
 /// 
 /// - Alternative route: `/latest/systems`
 /// - Alternative route: `/v1/systems`

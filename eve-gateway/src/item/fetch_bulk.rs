@@ -10,7 +10,7 @@ use crate::item::services::fetch_item_bulk;
 use crate::state::AppState;
 use crate::item::error::Result;
 
-/// Bulk Fetch an item
+/// Bulk Fetch Items
 /// 
 /// - Alternative route: `/latest/items`
 /// - Alternative route: `/v1/items`

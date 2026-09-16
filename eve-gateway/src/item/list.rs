@@ -10,7 +10,7 @@ use crate::state::AppState;
 
 use crate::item::error::Result;
 
-/// Fetch an item
+/// List Items
 /// 
 /// - Alternative route: `/latest/items`
 /// - Alternative route: `/v1/items`

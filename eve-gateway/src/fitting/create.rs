@@ -13,7 +13,7 @@ use crate::utils::api_client_auth;
 
 const SCOPE: &str = "esi-fittings.write_fittings.v1";
 
-/// Create Fit
+/// Create Character Fit
 /// 
 /// - Alternative route: `/latest/character/{CharacterId}/fittings`
 /// - Alternative route: `/latest/character/{CharacterId}/fittings`
@@ -25,7 +25,7 @@ const SCOPE: &str = "esi-fittings.write_fittings.v1";
 #[utoipa::path(
     post,
     path = "/{CharacterId}/fittings",
-    tag = "Character - Fit",
+    tag = "Fits",
     request_body = EveFit,
     params(
         CharacterId,

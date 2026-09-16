@@ -25,7 +25,7 @@ pub async fn last_fetched(
         .ok_or(MarketError::NotFound(*structure_id))?;
 
     if let Some(x) = entry.finished_at {
-        Ok(x)
+        Ok(x.naive_utc())
     } else {
         Err(MarketError::NotFound(*structure_id))
     }

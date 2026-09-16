@@ -1,6 +1,8 @@
 import { Alert, Center, Image, Stack } from '@mantine/core'
 
-export function LoginComponent() {
+export function LoginComponent({
+    message,
+}: LoginComponentProps) {
     return <>
         <Center>
             <Stack>
@@ -9,7 +11,7 @@ export function LoginComponent() {
                     color="blue"
                     title="Please Login"
                 >
-                    Please login to use the application
+                    {message}
                 </Alert>
 
                 <Center>
@@ -25,4 +27,8 @@ export function LoginComponent() {
             </Stack>
         </Center>
     </>
+}
+
+export type LoginComponentProps = {
+    message: string,
 }

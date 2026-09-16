@@ -6,7 +6,8 @@ Handles the auth side and wrapping the EVE-API for all services within the StarF
 
 ### Config file
 
-The file supports one or more domains to be configured.
+The service can be configured to serve as login provider for multiple application
+running with different scopes, admins and whitelists.
 
 ``` toml
 # config.toml
@@ -67,6 +68,7 @@ STARFOUNDRY_EVE_GATEWAY_SERVICE_ADDRESS=0.0.0.0:9999
 # User-Agent that is used to communicate with the EVE-API
 # For example your in-game name, or another identifier that the EVE-Devs can
 # reach you
+# e.g. "StarFoundry Eve-Gateway (github.com/chiefomnicron/starfoundry/eve-gateway, 0.0.0)"
 STARFOUNDRY_USER_AGENT="{SOME_IDENTIFIER}"
 
 # EVE-API Client API, can be obtained under https://developers.eveonline.com/applications

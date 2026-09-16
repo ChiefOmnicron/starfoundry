@@ -1,4 +1,4 @@
-import { axiosClient } from "../client";
+import { axiosClient } from "../axiosClient";
 import type { Uuid } from "../utils";
 import type { TagType, AutoTagSelect, AutoTagCompare } from '../tags/list';
 

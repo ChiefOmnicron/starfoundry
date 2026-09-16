@@ -3,7 +3,7 @@ import { LoadingAnimation } from "../misc/LoadingAnimation";
 import { LoadingError } from "../misc/LoadingError";
 import { useListCharacters } from "../services/character/list";
 import { Button, Group, Stack } from "@mantine/core";
-import { axiosClient } from "../services/client";
+import { axiosClient } from "../services/axiosClient";
 
 export function CharacterList() {
     const {

@@ -11,7 +11,7 @@ use crate::state::AppState;
 
 use crate::item::error::Result;
 
-/// Fetch an item
+/// Fetch Item
 /// 
 /// - Alternative route: `/latest/items/{TypeId}`
 /// - Alternative route: `/v1/items/{TypeId}`

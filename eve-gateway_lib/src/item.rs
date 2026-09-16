@@ -4,6 +4,7 @@ use utoipa::{IntoParams, ToSchema};
 use starfoundry_lib_gateway::ApiClient;
 
 use crate::Result;
+use std::collections::HashMap;
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
 #[schema(
@@ -52,7 +53,7 @@ impl Item {
             volume: 0f32,
             name: "Undefined".into(),
             meta_group: None,
-            repackaged: None
+            repackaged: None,
         }
     }
 }
@@ -81,6 +82,18 @@ pub struct Group {
     pub group_id:    GroupId,
     pub category_id: CategoryId,
     pub name:        String,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
+#[schema(
+    example = json!({
+        "type_id": 25268,
+        "quantity": 1
+    })
+)]
+pub struct Reprocessing {
+    pub type_id:    TypeId,
+    pub quantity:   i32,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize, ToSchema, IntoParams)]
@@ -156,6 +169,32 @@ pub trait EveGatewayApiClientItem: ApiClient {
 
         self
             .post("items", type_ids)
+            .await
+            .map_err(Into::into)
+    }
+
+    #[allow(async_fn_in_trait)]
+    async fn fetch_reprocessing(
+        &self,
+        type_id: TypeId,
+    ) -> Result<Vec<Reprocessing>> {
+        self
+            .fetch(&format!("items/{}/reprocessing", *type_id), &())
+            .await
+            .map_err(Into::into)
+    }
+
+    #[allow(async_fn_in_trait)]
+    async fn fetch_bulk_reprocessing(
+        &self,  
+        type_ids: Vec<TypeId>,
+    ) -> Result<HashMap<TypeId, Vec<Reprocessing>>> {
+        let mut type_ids = type_ids;
+        type_ids.sort();
+        type_ids.dedup();
+
+        self
+            .post("items/reprocessing", type_ids)
             .await
             .map_err(Into::into)
     }

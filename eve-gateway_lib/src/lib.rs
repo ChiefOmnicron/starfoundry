@@ -1,6 +1,7 @@
 #![allow(clippy::redundant_field_names)]
 
 mod asset;
+mod auth;
 mod character;
 mod client_trait;
 mod client;
@@ -20,6 +21,7 @@ mod utils;
 pub mod contract;
 
 pub use self::asset::*;
+pub use self::auth::*;
 pub use self::character::*;
 pub use self::client::*;
 pub use self::client_trait::*;

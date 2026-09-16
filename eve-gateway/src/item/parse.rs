@@ -7,7 +7,7 @@ use crate::api_docs::{InternalServerError, NotFound};
 use crate::item::error::Result;
 use crate::item::services::{load_items_by_name, parse};
 
-/// Fetch an item
+/// Parse Items
 /// 
 /// - Alternative route: `/latest/items/parse`
 /// - Alternative route: `/v1/items/parse`

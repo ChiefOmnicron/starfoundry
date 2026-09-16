@@ -71,7 +71,7 @@ export const ProjectJobListTable = function ProjectJobListTableImp({
             id: 'name',
             cell: ({ row }) => <CopyText
                 value={row.original.item.name}
-                disabled={started.indexOf(row.original.id) > -1}
+                muted={started.indexOf(row.original.id) > -1}
             />,
             header: () => 'Name',
             size: 20,
@@ -80,7 +80,7 @@ export const ProjectJobListTable = function ProjectJobListTableImp({
             id: 'runs',
             cell: ({ row }) => <CopyText
                 value={row.original.runs}
-                disabled={started.indexOf(row.original.id) > -1}
+                muted={started.indexOf(row.original.id) > -1}
             />,
             header: () => 'Runs',
             size: 3,
@@ -90,7 +90,7 @@ export const ProjectJobListTable = function ProjectJobListTableImp({
             id: 'structure',
             cell: ({ row }) => <CopyText
                 value={row.original.structure.name}
-                disabled={started.indexOf(row.original.id) > -1}
+                muted={started.indexOf(row.original.id) > -1}
             />,
             header: () => 'Structure',
             size: 10,

@@ -81,6 +81,14 @@ service_url = "http://localhost:8000"
 require_auth = false
 drop_prefix = true
 
+[routes."statistics-private-industry"]
+service_url = "http://localhost:8002"
+drop_prefix = true
+
+[routes."statistics-private"]
+service_url = "http://localhost:8000"
+drop_prefix = true
+
 [routes."appraisals"]
 service_url = "http://localhost:9984"
 require_auth = false

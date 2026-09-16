@@ -15,6 +15,9 @@ members = [
   'gp_lib-types',
   'worker_lib',
 
+   'appraisal',
+   'appraisal_lib',
+
   # gateway
   'gateway',
   'gateway_lib',
@@ -43,7 +46,7 @@ members = [
 
   #'meta_webserver',
   # needs rewrite to match new worker
-  'worker-eve_sde_parser', "appraisal",
+  'worker-eve_sde_parser',
 ]
 resolver = "2"
 

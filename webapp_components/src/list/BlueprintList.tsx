@@ -41,7 +41,7 @@ export function BlueprintList({
             id: 'name',
             cell: props => <CopyText
                 value={props.row.original.item.name}
-                disabled={storedBlueprints.indexOf(props.row.original.item.type_id) > -1}
+                muted={storedBlueprints.indexOf(props.row.original.item.type_id) > -1}
             />,
             header: () => 'Name',
             size: 50,
@@ -51,7 +51,7 @@ export function BlueprintList({
             cell: props => <>
                 <CopyText
                     value={props.row.original.runs.length}
-                    disabled={storedBlueprints.indexOf(props.row.original.item.type_id) > -1}
+                    muted={storedBlueprints.indexOf(props.row.original.item.type_id) > -1}
                 />
             </>,
             header: () => 'Quantity',
@@ -62,7 +62,7 @@ export function BlueprintList({
             cell: props => <>
                 <CopyText
                     value={props.row.original.runs.map(x => `${x}`).join(', ')}
-                    disabled={storedBlueprints.indexOf(props.row.original.item.type_id) > -1}
+                    muted={storedBlueprints.indexOf(props.row.original.item.type_id) > -1}
                 />
             </>,
             header: () => 'Runs',

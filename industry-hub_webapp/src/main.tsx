@@ -7,7 +7,8 @@ import { RouterProvider, createRouter } from '@tanstack/react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import ReactDOM from 'react-dom/client';
-import { AuthProvider, useAuth, type AuthContext } from './auth';
+import { Route as LoginRoute } from '@/routes/auth/login';
+import { AuthProvider, useAuth, type AuthContext } from '@starfoundry/components/auth/auth';
 
 // Create a new router instance
 const router = createRouter({
@@ -38,7 +39,9 @@ function Inner() {
 
 function App() {
     return (
-        <AuthProvider>
+        <AuthProvider
+            loginRoute={LoginRoute.to}
+        >
             <Inner />
         </AuthProvider>
     );

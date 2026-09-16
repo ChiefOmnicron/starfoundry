@@ -10,7 +10,7 @@ use crate::state::AppState;
 use crate::system::error::Result;
 use crate::system::services::fetch_system_bulk;
 
-/// Fetch an item
+/// Fetch Bulk Systems
 /// 
 /// - Alternative route: `/latest/systems`
 /// - Alternative route: `/v1/systems`

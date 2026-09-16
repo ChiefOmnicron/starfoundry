@@ -34,6 +34,8 @@ function RouteComponent(): ReactElement {
                 indexRoute={IndexRoute.to}
                 legalRoute={LegalRoute.to}
 
+                showLogin={false}
+
                 showSidebar={isAuthenticated}
                 isAuthenticated={isAuthenticated ? 'AUTHENTICATED' : 'UNAUTHENTICATED'}
             />

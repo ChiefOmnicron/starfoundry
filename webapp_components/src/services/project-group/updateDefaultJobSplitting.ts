@@ -1,4 +1,4 @@
-import { axiosClient } from "../client";
+import { axiosClient } from "../axiosClient";
 import type { TypeId, Uuid } from "../utils";
 
 export const updateDefaultJobSplitting = async (

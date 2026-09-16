@@ -362,7 +362,7 @@ impl<M, WT> Task<M, WT>
                     VALUES ($1, $2, $3)
                 ",
                     self.task.into(),
-                    task_wait_until,
+                    task_wait_until.and_utc(),
                     self.additional_data,
                 )
                 .execute(pool)

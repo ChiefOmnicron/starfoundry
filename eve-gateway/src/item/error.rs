@@ -19,10 +19,14 @@ pub enum ItemError {
     Fetch(sqlx::Error, TypeId),
     #[error("error while fetching bulk items, error: '{0}'")]
     FetchBulk(sqlx::Error),
+    #[error("error while fetching bulk reprocessing, error: '{0}'")]
+    FetchBulkReprocessing(sqlx::Error),
     #[error("error while fetching category '{1}', error: '{0}'")]
     FetchCategory(sqlx::Error, CategoryId),
     #[error("error while fetching group '{1}', error: '{0}'")]
     FetchGroup(sqlx::Error, GroupId),
+    #[error("error while fetching reprocessing '{1}', error: '{0}'")]
+    FetchReprocessing(sqlx::Error, TypeId),
     #[error("error while listing items, error: '{0}'")]
     List(sqlx::Error),
 }

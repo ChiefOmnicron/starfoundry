@@ -10,7 +10,7 @@ use crate::industry::error::Result;
 use crate::industry::service::fetch_blueprint_json;
 use crate::state::AppState;
 
-/// Fetch System Index
+/// Fetch Blueprint JSON
 /// 
 /// - Alternative route: `/latest/industry/blueprints/{TypeId}/json`
 /// - Alternative route: `/v1/industry/blueprints/{TypeId}/json`

@@ -14,6 +14,8 @@ export function ApplicationShell({
     indexRoute,
     legalRoute,
 
+    showLogin = true,
+
     showSidebar = true,
     isAuthenticated = 'UNAUTHENTICATED',
 
@@ -167,7 +169,7 @@ export function ApplicationShell({
                         <Group>
                             <UnstyledButton
                                 component={Link}
-                                to={aboutRoute.to}
+                                to={aboutRoute}
                                 style={{
                                     textDecoration: 'None',
                                     color: 'var(--mantine-color-dark-0)'
@@ -177,21 +179,23 @@ export function ApplicationShell({
                             </UnstyledButton>
 
                             {
-                                isAuthenticated === 'AUTHENTICATED'
-                                ?   <UnstyledButton
-                                        component={Link}
-                                        onClick={() => { window.location.href = "/api/auth/logout"}}
-                                        variant="subtle"
-                                    >
-                                        Logout
-                                    </UnstyledButton>
-                                :   <UnstyledButton
-                                        component={Link}
-                                        onClick={() => { window.location.href = "/auth/login"}}
-                                        variant="subtle"
-                                    >
-                                        Login
-                                    </UnstyledButton>
+                                showLogin
+                                ?   isAuthenticated === 'AUTHENTICATED'
+                                    ?   <UnstyledButton
+                                            component={Link}
+                                            onClick={() => { window.location.href = "/api/auth/logout"}}
+                                            variant="subtle"
+                                        >
+                                            Logout
+                                        </UnstyledButton>
+                                    :   <UnstyledButton
+                                            component={Link}
+                                            onClick={() => { window.location.href = "/auth/login"}}
+                                            variant="subtle"
+                                        >
+                                            Login
+                                        </UnstyledButton>
+                                :   <></>
                             }
                         </Group>
                     </Group>
@@ -228,6 +232,8 @@ export type ApplicationShellProps = {
     aboutRoute: any;
     indexRoute: any;
     legalRoute: any;
+
+    showLogin?: boolean;
 
     showSidebar?: boolean;
     isAuthenticated?: 'AUTHENTICATED' | 'UNAUTHENTICATED';

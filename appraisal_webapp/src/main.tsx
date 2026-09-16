@@ -7,6 +7,7 @@ import { RouterProvider, createRouter } from '@tanstack/react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import ReactDOM from 'react-dom/client';
+import { DEFAULT_QUERY_CLIENT } from '@starfoundry/components/services/queryClient';
 
 // Create a new router instance
 const router = createRouter({
@@ -26,7 +27,7 @@ declare module '@tanstack/react-router' {
 
 function Inner() {
     //const auth = useAuth();
-    const queryClient = new QueryClient();
+    const queryClient = DEFAULT_QUERY_CLIENT;
 
     /*return (
         <QueryClientProvider client={queryClient}>

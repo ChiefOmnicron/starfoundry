@@ -1,4 +1,4 @@
-import { axiosClient } from "../client";
+import { axiosClient } from "../axiosClient";
 import type { StructurePosition } from "./list";
 import type { Uuid } from "../utils";
 

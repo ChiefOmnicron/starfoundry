@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import type { AbortSignal } from "../client";
+import type { AbortSignal } from "../axiosClient";
 import type { GenericAbortSignal } from "axios";
 import type { Item } from "../item/model";
 import type { Uuid } from "../utils";

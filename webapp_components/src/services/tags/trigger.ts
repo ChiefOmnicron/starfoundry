@@ -1,4 +1,4 @@
-import { axiosClient } from "../client";
+import { axiosClient } from "../axiosClient";
 
 export const triggerTag = async (): Promise<void> => (await axiosClient())
     .put(

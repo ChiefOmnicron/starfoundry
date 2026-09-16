@@ -1,0 +1,124 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                code,\n                market_id,\n                price_modifier,\n                market_info,\n                invalid_items,\n                comment,\n                raw,\n                mode,\n                created_at\n            FROM appraisal\n            WHERE code = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "code",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "appraisal",
+            "name": "code"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "market_id",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "appraisal",
+            "name": "market_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "price_modifier",
+        "type_info": "Int2",
+        "origin": {
+          "Table": {
+            "table": "appraisal",
+            "name": "price_modifier"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "market_info",
+        "type_info": "Jsonb",
+        "origin": {
+          "Table": {
+            "table": "appraisal",
+            "name": "market_info"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "invalid_items",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "appraisal",
+            "name": "invalid_items"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "comment",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "appraisal",
+            "name": "comment"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "raw",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "appraisal",
+            "name": "raw"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "mode",
+        "type_info": "Varchar",
+        "origin": {
+          "Table": {
+            "table": "appraisal",
+            "name": "mode"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "created_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "appraisal",
+            "name": "created_at"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "fe589ee62fef85504177e7e8947d7443fab2f00147047f04a88876bb4adfebf3"
+}

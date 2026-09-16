@@ -11,7 +11,7 @@ use crate::proxy::error::{ProxyError, Result};
 use crate::state::AppState;
 use crate::utils::api_client_auth;
 
-/// Proxy List Auth Character
+/// Proxy List Auth Corporation
 /// 
 /// - Alternative route: `/latest/proxy/auth/corporations/{*path}`
 /// - Alternative route: `/v1/proxy/auth/corporations/{*path}`

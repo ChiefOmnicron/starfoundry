@@ -10,19 +10,20 @@ use crate::asset::Result;
 use crate::state::AppState;
 use crate::asset::service::list_blueprints;
 
-/// Fetch Character
+/// List Blueprints
 /// 
 /// - Alternative route: `/latest/assets/blueprints`
 /// - Alternative route: `/v1/assets/blueprints`
 /// 
 /// ---
 /// 
-/// Fetches information about a character
+/// Lists all blueprints the character has access to. This includes for all
+/// characters and corporations the main character is linked to
 /// 
 #[utoipa::path(
     get,
     path = "/blueprint",
-    tag = "Asset",
+    tag = "Assets",
     params(
         CharacterId,
     ),

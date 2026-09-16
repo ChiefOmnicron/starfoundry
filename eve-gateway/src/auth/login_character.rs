@@ -4,16 +4,17 @@ use axum::Json;
 use axum::response::IntoResponse;
 use reqwest::header::HOST;
 use starfoundry_lib_eve_client::EveApiClient;
+use starfoundry_lib_eve_gateway::LoginRedirect;
 use starfoundry_lib_gateway::ExtractIdentity;
 
-use crate::api_docs::InternalServerError;
+use crate::api_docs::{BadRequest, InternalServerError};
 use crate::auth::error::{AuthError, Result};
 use crate::state::AppState;
 
 /// Login Alt
 /// 
-/// Alternative route: `/latest/auth/login/character`
-/// Alternative route: `/v1/auth/login/character`
+/// - Alternative route: `/latest/auth/login/character`
+/// - Alternative route: `/v1/auth/login/character`
 /// 
 /// ---
 /// 
@@ -26,12 +27,12 @@ use crate::state::AppState;
     tag = "Auth",
     responses(
         (
-            status = TEMPORARY_REDIRECT,
-            description = "Redirects to the Eve Login Server",
-            body = String,
-            content_type = "text/plain",
-            example = json!("https://login.eveonline.com/v2/oauth/authorize/")
+            status = OK,
+            description = "Object containing the redirect URL",
+            body = LoginRedirect,
+            content_type = "application/json",
         ),
+        BadRequest,
         InternalServerError,
     ),
 )]
@@ -79,8 +80,8 @@ pub async fn login_character(
 
     Ok((
         StatusCode::OK,
-        Json(serde_json::json!({
-            "url": url,
-        }))
+        Json(LoginRedirect {
+            url,
+        })
     ).into_response())
 }

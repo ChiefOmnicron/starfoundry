@@ -14,6 +14,7 @@ FROM chef AS planner
 COPY        ./Cargo.toml Cargo.toml
 COPY        ./.sqlx ./.sqlx
 COPY        ./appraisal ./appraisal
+COPY        ./appraisal_lib ./appraisal_lib
 COPY        ./eve-gateway ./eve-gateway
 COPY        ./eve-gateway_lib ./eve-gateway_lib
 COPY        ./eve-gateway_worker ./eve-gateway_worker
@@ -48,6 +49,7 @@ RUN         cargo chef cook --release --recipe-path recipe.json
 COPY        ./Cargo.toml Cargo.toml
 COPY        ./.sqlx ./.sqlx
 COPY        ./appraisal ./appraisal
+COPY        ./appraisal_lib ./appraisal_lib
 COPY        ./eve-gateway ./eve-gateway
 COPY        ./eve-gateway_lib ./eve-gateway_lib
 COPY        ./eve-gateway_worker ./eve-gateway_worker

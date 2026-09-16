@@ -1,4 +1,4 @@
-import { axiosClient } from "../client";
+import { axiosClient } from "../axiosClient";
 import type { ProjectGroup } from "../project-group/fetch";
 import type { Uuid } from "../utils";
 

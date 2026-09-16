@@ -3,7 +3,7 @@ use axum::http::HeaderMap;
 use axum::response::IntoResponse;
 use reqwest::header::HOST;
 use reqwest::StatusCode;
-use serde::Deserialize;
+use starfoundry_lib_eve_gateway::LoginRedirect;
 use starfoundry_lib_gateway::StarFoundryApiClient;
 use std::collections::HashMap;
 
@@ -55,7 +55,7 @@ pub async fn catch_all_auth_login_corporation(
             .await?;
 
         if response.status().is_success() {
-            let body: AuthLoginResponse = response.json().await?;
+            let body: LoginRedirect = response.json().await?;
 
             return Ok((
                 StatusCode::OK,
@@ -74,9 +74,4 @@ pub async fn catch_all_auth_login_corporation(
             StatusCode::BAD_GATEWAY,
         ).into_response());
     }
-}
-
-#[derive(Debug, Deserialize)]
-struct AuthLoginResponse {
-    url: String,
 }

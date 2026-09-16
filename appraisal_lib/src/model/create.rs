@@ -1,11 +1,11 @@
 use serde::{Deserialize, Serialize};
-use starfoundry_lib_market::{MarketBulkResponse, MarketItem};
-use starfoundry_lib_types::StructureId;
 use utoipa::ToSchema;
+use starfoundry_lib_types::StructureId;
+use starfoundry_lib_market::MarketItem;
+use crate::{AppraisalMode, AppraisalPersistence};
+use crate::error::{Error, Result};
 
-use crate::appraisal::{AppraisalCode, AppraisalError, Result};
-
-#[derive(Debug, Deserialize, ToSchema)]
+#[derive(Debug, Deserialize, Serialize, ToSchema)]
 #[schema(
     examples(
         json!({
@@ -71,7 +71,7 @@ impl CreateAppraisalRequest {
         if self.item_list.is_some() || self.item_str.is_some() {
             Ok(true)
         } else {
-            Err(AppraisalError::InvalidAppraisal("either `item_list` or `item_str` must be set".into()))
+            Err(Error::InvalidAppraisal("either `item_list` or `item_str` must be set".into()))
         }
     }
 }
@@ -82,54 +82,4 @@ fn default_market() -> StructureId {
 
 fn default_price_modifier() -> u32 {
     100u32
-}
-
-#[derive(Debug, Deserialize, Serialize, ToSchema)]
-#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
-#[non_exhaustive]
-pub enum AppraisalMode {
-    Appraisal,
-    Multibuy,
-}
-
-impl Default for AppraisalMode {
-    fn default() -> Self {
-        Self::Appraisal
-    }
-}
-
-#[derive(Debug, Deserialize, Serialize, ToSchema)]
-#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
-#[non_exhaustive]
-pub enum AppraisalPersistence {
-    Persist,
-    NoPersist,
-}
-
-impl Default for AppraisalPersistence {
-    fn default() -> Self {
-        Self::Persist
-    }
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-pub struct Appraisal {
-    pub code:           AppraisalCode,
-    pub created_at_ts:  i64,
-
-    pub invalid:        Vec<String>,
-    pub items:          Vec<MarketBulkResponse>,
-    
-    pub market_id:      StructureId,
-    pub total:          AppraisalTotal,
-
-    pub modifier:       u32,
-    pub comment:        Option<String>,
-    pub raw:            Option<String>,
-}
-
-#[derive(Debug, Serialize, ToSchema)]
-pub struct AppraisalTotal {
-    pub buy:        f64,
-    pub sell:       f64,
 }

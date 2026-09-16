@@ -4,8 +4,9 @@ use axum::http::header::HOST;
 use axum::Json;
 use axum::response::IntoResponse;
 use starfoundry_lib_eve_client::EveApiClient;
+use starfoundry_lib_eve_gateway::LoginRedirect;
 
-use crate::api_docs::InternalServerError;
+use crate::api_docs::{BadRequest, InternalServerError};
 use crate::auth::error::{AuthError, Result};
 use crate::state::AppState;
 
@@ -40,10 +41,11 @@ use crate::state::AppState;
     responses(
         (
             status = OK,
-            description = "Redirects to the Eve Login Server",
-            content_type = "text/plain",
-            example = json!("https://login.eveonline.com/v2/oauth/authorize/")
+            description = "Object containing the redirect URL",
+            body = LoginRedirect,
+            content_type = "application/json",
         ),
+        BadRequest,
         InternalServerError,
     ),
 )]
@@ -89,8 +91,8 @@ pub async fn login(
 
     Ok((
         StatusCode::OK,
-        Json(serde_json::json!({
-            "url": url,
-        }))
+        Json(LoginRedirect {
+            url,
+        })
     ).into_response())
 }

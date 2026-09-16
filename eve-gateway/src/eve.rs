@@ -14,7 +14,4 @@ pub fn routes() -> OpenApiRouter<AppState> {
         // assets
         .merge(resolve_character_asset)
         .merge(resolve_corporation_asset)
-
-        // fittings
-        .merge(crate::fitting::routes())
 }

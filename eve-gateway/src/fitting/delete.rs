@@ -13,7 +13,7 @@ use crate::utils::api_client_auth;
 
 const SCOPE: &str = "esi-fittings.write_fittings.v1";
 
-/// Delete Fit
+/// Delete Character Fit
 /// 
 /// - Alternative route: `/latest/characters/{CharacterId}/fittings/{FittingId}`
 /// - Alternative route: `/latest/characters/{CharacterId}/fittings/{FittingId}`
@@ -25,7 +25,7 @@ const SCOPE: &str = "esi-fittings.write_fittings.v1";
 #[utoipa::path(
     delete,
     path = "/{CharacterId}/fittings/{FittingId}",
-    tag = "Character - Fit",
+    tag = "Fits",
     params(
         CharacterId,
         FittingId,

@@ -6,17 +6,19 @@ use starfoundry_lib_gateway::ErrorResponse;
 use thiserror::Error;
 
 use crate::api_docs::format_json_errors;
-use crate::appraisal::AppraisalCode;
 
 pub type Result<T, E = AppraisalError> = std::result::Result<T, E>;
 
 #[derive(Debug, Error)]
 #[non_exhaustive]
 pub enum AppraisalError {
-    #[error("the requested appraisal could not be found, {0}")]
-    AppraisalNotFound(AppraisalCode),
     #[error("invalid appraisal, additional info: {0}")]
     InvalidAppraisal(String),
+
+    #[error("generic sqlx error: {0}")]
+    GenericSqlxError(#[from] sqlx::Error),
+    #[error("failed to parse market data, {0}")]
+    ParseMarketData(serde_json::Error),
 
     #[error(transparent)]
     JsonExtractorRejection(#[from] JsonRejection),
@@ -24,23 +26,13 @@ pub enum AppraisalError {
     EveGatewayError(#[from] starfoundry_lib_eve_gateway::Error),
     #[error(transparent)]
     MarketLibError(#[from] starfoundry_lib_market::Error),
+    #[error(transparent)]
+    AppraisalLibError(#[from] starfoundry_lib_appraisal::Error),
 }
 
 impl IntoResponse for AppraisalError {
     fn into_response(self) -> Response {
         match self {
-            Self::AppraisalNotFound(_) => {
-                tracing::info!("{}", self.to_string());
-                (
-                    StatusCode::NOT_FOUND,
-                    Json(
-                        ErrorResponse {
-                            error: "NOT_FOUND".into(),
-                            description: self.to_string(),
-                        }
-                    )
-                ).into_response()
-            },
             Self::InvalidAppraisal(_) => {
                 tracing::info!("{}", self.to_string());
                 (
@@ -52,6 +44,9 @@ impl IntoResponse for AppraisalError {
                         }
                     )
                 ).into_response()
+            },
+            Self::AppraisalLibError(e) => {
+                starfoundry_lib_appraisal::Error::into_response(e)
             },
 
             Self::JsonExtractorRejection(x) => {

@@ -1,4 +1,4 @@
-import { axiosClient } from "./client";
+import { axiosClient } from "./axiosClient";
 import type { Category } from "./utils";
 import type { GenericAbortSignal } from "axios";
 

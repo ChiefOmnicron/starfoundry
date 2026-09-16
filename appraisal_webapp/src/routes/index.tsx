@@ -1,5 +1,5 @@
 import { createFileRoute, useLocation, useNavigate } from '@tanstack/react-router'
-import { Route as AppraisalRoute } from '@/routes/appraisal/index';
+import { Route as AppraisalRoute } from '@/routes/appraisals/index';
 
 export const Route = createFileRoute('/')({
     component: IndexComponent,

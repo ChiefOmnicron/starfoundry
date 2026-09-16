@@ -7,11 +7,12 @@ export function CopyText({
     value,
     display,
 
+    prefix = '',
     suffix = '',
 
     date = false,
     dateUtc = false,
-    disabled = false,
+    muted = false,
     number = false,
     withUnit = false,
     withComma = false,
@@ -37,9 +38,9 @@ export function CopyText({
             // using <NumberFormatter> from mantine has a problem with placing
             // the tooltip
             if (withUnit) {
-                return `${formatNumber(value as number, withComma)} ${suffix} (${formatNumberUnit(value as number)})`;
+                return `${prefix}${formatNumber(value as number, withComma)} ${suffix} (${formatNumberUnit(value as number)})`;
             } else {
-                return `${formatNumber(value as number, withComma)} ${suffix}`;
+                return `${prefix}${formatNumber(value as number, withComma)} ${suffix}`;
             }
         } else if (date && value) {
             return `${formatDate(value as number)} (local)`;
@@ -60,7 +61,7 @@ export function CopyText({
                 onClick={clickEvent}
                 style={{
                     cursor: 'pointer',
-                    color: disabled ? 'var(--mantine-color-disabled-color)' : '',
+                    color: muted ? 'var(--mantine-color-disabled-color)' : '',
                 }}
                 size={size}
             >
@@ -74,11 +75,12 @@ export type CopyTextProps = {
     value: string | number | undefined;
     display?: string | number | undefined;
 
+    prefix?: string;
     suffix?: string;
 
     date?: boolean;
     dateUtc?: boolean;
-    disabled?: boolean;
+    muted?: boolean;
     number?: boolean;
     withUnit?: boolean;
     withComma?: boolean;

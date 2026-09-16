@@ -116,7 +116,7 @@ function JobAssignmentWrapper({
                 });
             context.client.setQueryData([LIST_JOB_ASSIGNMENT], () => [...updated])
         },
-        onSuccess: () => {
+        onSettled: () => {
             queryClient.invalidateQueries({ queryKey: [LIST_JOB_ASSIGNMENT ]});
         },
     });
@@ -139,7 +139,7 @@ function JobAssignmentWrapper({
             id: 'name',
             cell: ({ row }) => <CopyText
                 value={row.original.item.name}
-                disabled={row.original.started}
+                muted={row.original.started}
             />,
             header: () => 'Name',
             size: 20,
@@ -148,7 +148,7 @@ function JobAssignmentWrapper({
             id: 'runs',
             cell: ({ row }) => <CopyText
                 value={row.original.runs}
-                disabled={row.original.started}
+                muted={row.original.started}
                 number
             />,
             header: () => 'Runs',
@@ -159,7 +159,7 @@ function JobAssignmentWrapper({
             id: 'structure',
             cell: ({ row }) => <CopyText
                 value={row.original.structure_name}
-                disabled={row.original.started}
+                muted={row.original.started}
             />,
             header: () => 'Structure',
             size: 10,

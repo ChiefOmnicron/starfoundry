@@ -82,7 +82,7 @@ fn app(
 ) -> Router {
     // build our application with a route
     let (router, api) = OpenApiRouter::with_openapi(ApiDoc::openapi())
-        .nest("/appraisals", appraisal::routes(state.clone()))
+        .nest("/appraisals", appraisal::routes())
         .layer(
             ServiceBuilder::new()
                 .layer(middleware::from_fn_with_state(state.clone(), path_metrics))

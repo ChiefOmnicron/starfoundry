@@ -10,7 +10,7 @@ use crate::industry::error::Result;
 use crate::industry::service::fetch_system_index;
 use crate::state::AppState;
 
-/// Fetch System Index
+/// Fetch System-Index
 /// 
 /// - Alternative route: `/latest/industry/system-index/{SystemId}`
 /// - Alternative route: `/v1/industry/system-index/{SystemId}`

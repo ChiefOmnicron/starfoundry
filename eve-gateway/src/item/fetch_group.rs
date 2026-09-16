@@ -11,7 +11,7 @@ use crate::state::AppState;
 
 use crate::item::error::Result;
 
-/// Fetch a group
+/// Fetch Group
 /// 
 /// - Alternative route: `/latest/items/group/{GroupId}`
 /// - Alternative route: `/v1/items/group/{GroupId}`

@@ -11,9 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
-import { Route as AppraisalIndexRouteImport } from './routes/appraisal/index'
+import { Route as AppraisalsIndexRouteImport } from './routes/appraisals/index'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as LegalIndexRouteImport } from './routes/legal/index'
+import { Route as AppraisalsCodeIndexRouteImport } from './routes/appraisals_/$code.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -25,9 +26,9 @@ const AboutIndexRoute = AboutIndexRouteImport.update({
   path: '/about/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppraisalIndexRoute = AppraisalIndexRouteImport.update({
-  id: '/appraisal/',
-  path: '/appraisal/',
+const AppraisalsIndexRoute = AppraisalsIndexRouteImport.update({
+  id: '/appraisals/',
+  path: '/appraisals/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthLoginRoute = AuthLoginRouteImport.update({
@@ -40,43 +41,71 @@ const LegalIndexRoute = LegalIndexRouteImport.update({
   path: '/legal/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppraisalsCodeIndexRoute = AppraisalsCodeIndexRouteImport.update({
+  id: '/appraisals_/$code/',
+  path: '/appraisals/$code/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/about/': typeof AboutIndexRoute
-  '/appraisal/': typeof AppraisalIndexRoute
+  '/appraisals/': typeof AppraisalsIndexRoute
   '/legal/': typeof LegalIndexRoute
+  '/appraisals/$code/': typeof AppraisalsCodeIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/about': typeof AboutIndexRoute
-  '/appraisal': typeof AppraisalIndexRoute
+  '/appraisals': typeof AppraisalsIndexRoute
   '/legal': typeof LegalIndexRoute
+  '/appraisals/$code': typeof AppraisalsCodeIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/about/': typeof AboutIndexRoute
-  '/appraisal/': typeof AppraisalIndexRoute
+  '/appraisals/': typeof AppraisalsIndexRoute
   '/legal/': typeof LegalIndexRoute
+  '/appraisals_/$code/': typeof AppraisalsCodeIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth/login' | '/about/' | '/appraisal/' | '/legal/'
+  fullPaths:
+    | '/'
+    | '/auth/login'
+    | '/about/'
+    | '/appraisals/'
+    | '/legal/'
+    | '/appraisals/$code/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth/login' | '/about' | '/appraisal' | '/legal'
-  id: '__root__' | '/' | '/auth/login' | '/about/' | '/appraisal/' | '/legal/'
+  to:
+    | '/'
+    | '/auth/login'
+    | '/about'
+    | '/appraisals'
+    | '/legal'
+    | '/appraisals/$code'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth/login'
+    | '/about/'
+    | '/appraisals/'
+    | '/legal/'
+    | '/appraisals_/$code/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AboutIndexRoute: typeof AboutIndexRoute
-  AppraisalIndexRoute: typeof AppraisalIndexRoute
+  AppraisalsIndexRoute: typeof AppraisalsIndexRoute
   LegalIndexRoute: typeof LegalIndexRoute
+  AppraisalsCodeIndexRoute: typeof AppraisalsCodeIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -95,11 +124,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/appraisal/': {
-      id: '/appraisal/'
-      path: '/appraisal'
-      fullPath: '/appraisal/'
-      preLoaderRoute: typeof AppraisalIndexRouteImport
+    '/appraisals/': {
+      id: '/appraisals/'
+      path: '/appraisals'
+      fullPath: '/appraisals/'
+      preLoaderRoute: typeof AppraisalsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/login': {
@@ -116,6 +145,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LegalIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/appraisals_/$code/': {
+      id: '/appraisals_/$code/'
+      path: '/appraisals/$code'
+      fullPath: '/appraisals/$code/'
+      preLoaderRoute: typeof AppraisalsCodeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -123,8 +159,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthLoginRoute: AuthLoginRoute,
   AboutIndexRoute: AboutIndexRoute,
-  AppraisalIndexRoute: AppraisalIndexRoute,
+  AppraisalsIndexRoute: AppraisalsIndexRoute,
   LegalIndexRoute: LegalIndexRoute,
+  AppraisalsCodeIndexRoute: AppraisalsCodeIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

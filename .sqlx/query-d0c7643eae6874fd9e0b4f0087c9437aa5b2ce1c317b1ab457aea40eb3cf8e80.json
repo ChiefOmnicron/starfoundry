@@ -1,0 +1,21 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                INSERT INTO appraisal(\n                    code,\n                    market_id,\n                    price_modifier,\n                    market_info,\n                    invalid_items,\n                    comment,\n                    raw,\n                    mode\n                )\n                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Varchar",
+        "Int8",
+        "Int2",
+        "Jsonb",
+        "Varchar",
+        "Varchar",
+        "Varchar",
+        "Varchar"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "d0c7643eae6874fd9e0b4f0087c9437aa5b2ce1c317b1ab457aea40eb3cf8e80"
+}

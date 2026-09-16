@@ -11,7 +11,7 @@ use crate::state::AppState;
 
 use crate::item::error::Result;
 
-/// Fetch a category
+/// Fetch Category
 /// 
 /// - Alternative route: `/latest/items/category/{CategoryId}`
 /// - Alternative route: `/v1/items/category/{CategoryId}`

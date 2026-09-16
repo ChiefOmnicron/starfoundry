@@ -11,7 +11,7 @@ use crate::utils::api_client_auth;
 use starfoundry_lib_eve_client::EveApiClient;
 use axum::http::HeaderMap;
 
-/// Proxy List Auth Character
+/// Proxy Auth
 /// 
 /// - Alternative route: `/latest/proxy/auth/{*path}`
 /// - Alternative route: `/v1/proxy/auth/{*path}`

@@ -1,6 +1,6 @@
 import { redirect } from '@tanstack/react-router';
 import * as React from "react";
-import { axiosClient, isAdmin as isAdminJwt } from '../services/client';
+import { axiosClient, isAdmin as isAdminJwt } from '../services/axiosClient';
 
 export interface AuthContext {
     isAuthenticated: () => Promise<boolean>;

@@ -1,10 +1,15 @@
-import { Button, Center, Group, Select, Stack, Textarea } from '@mantine/core'
+import { Alert, Button, Center, Group, Select, Stack, Textarea } from '@mantine/core'
+import { MARKETS } from '@/services/utils';
 import { useMediaQuery } from '@mantine/hooks';
-import { useState, type ReactNode } from 'react';
-import type { AppraisalMode, CreateAppraisal } from '@/services/appraisal/create';
+import { useEffect, useState, type ReactNode } from 'react';
+import type { AppraisalMode } from '@starfoundry/components/services/appraisal/fetch';
+import type { CreateAppraisal } from '@starfoundry/components/services/appraisal/create';
 
 export function AppraisalInput({
     fullSize = false,
+    showCreateError = false,
+
+    content,
 
     onCreate,
 }: AppraisalInputProps): ReactNode {
@@ -14,19 +19,35 @@ export function AppraisalInput({
     const [mode, setMode] = useState<AppraisalMode>('APPRAISAL');
     const [appraisalStr, setAppraisalStr] = useState<string>('Tritanium 100');
 
-    const MARKETS = [
-        { value: '60003760', label: 'Jita 4-4' },
-        { value: '60008494', label: 'Amarr' },
-        { value: '1046664001931', label: 'UALX-3' },
-        { value: '1049588174021', label: 'C-J6MT' },
-    ];
+    useEffect(() => {
+        if (content) {
+            setAppraisalStr(content);
+        }
+    }, [content]);
+
     const MODE = [
         { value: 'APPRAISAL', label: 'Appraisal' },
         { value: 'MULTIBUY', label: 'Multibuy' },
     ];
 
+    const notification = () => {
+        if (showCreateError) {
+            return <Alert
+                mt="sm"
+                variant='light'
+                color='red'
+                title='Error while creating appraisal'
+                data-cy="error"
+            >
+                There was an error while creating the appraisal. Please try again later.
+            </Alert>
+        }
+    }
+
     return <>
         <Center>
+            {notification()}
+
             <Stack
                 w={(isMobile || fullSize) ? '100%' : '50%'}
             >
@@ -86,6 +107,9 @@ Isogen x1000'
 
 export type AppraisalInputProps = {
     fullSize?: boolean;
+    showCreateError?: boolean;
+
+    content?: string,
 
     onCreate: (info: CreateAppraisal) => void;
 }

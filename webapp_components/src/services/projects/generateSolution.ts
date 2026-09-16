@@ -1,4 +1,4 @@
-import { axiosClient } from "../client";
+import { axiosClient } from "../axiosClient";
 import type { Item } from "../item/model";
 import type { Structure } from "../structure/list";
 import type { Uuid } from "../utils";

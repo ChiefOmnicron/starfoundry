@@ -37,5 +37,5 @@
   }],
   "include": [
     "src"
-, "../webapp_components/src/auth/auth.tsx"  ]
+, "../webapp_components/src/auth/auth.tsx", "../webapp_components/src/services/appraisal/fetch.ts", "../webapp_components/src/services/appraisal/create.ts"  ]
 }

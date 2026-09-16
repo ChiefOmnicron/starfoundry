@@ -10,7 +10,7 @@ use crate::industry::error::Result;
 use crate::state::AppState;
 use crate::industry::service::fetch_blueprint_dependency_bulk;
 
-/// Fetch System Index
+/// Fetch Blueprint Dependencies
 /// 
 /// - Alternative route: `/latest/industry/blueprints/dependencies/bulk`
 /// - Alternative route: `/v1/industry/blueprints/dependencies/bulk`
