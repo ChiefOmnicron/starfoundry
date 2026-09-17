@@ -8,5 +8,8 @@
         "industry_webapp",
         "industry-hub_webapp",
         "webapp_components"
-    ]
+    ],
+    "dependencies": {
+        "@tanstack/react-router": "1.170.38"
+    }
 }
