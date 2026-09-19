@@ -17,8 +17,9 @@ export function TableWrapper<TFeatures extends TableFeatures, TData extends RowD
     }
 
     const columns = (row: any) => {
+        console.log(table._features)
         if (table._features.columnVisibilityFeature) {
-            (row as any)
+            return (row as any)
                 .getVisibleCells()
                 .map((cell: any) => (
                     <Table.Td key={cell.id}>
@@ -29,7 +30,7 @@ export function TableWrapper<TFeatures extends TableFeatures, TData extends RowD
                             )
                         }
                     </Table.Td>
-                ))
+                ));
         } else {
             return row
                 .getAllCells()
@@ -60,7 +61,8 @@ export function TableWrapper<TFeatures extends TableFeatures, TData extends RowD
                                         return <Table.Th
                                             key={header.id}
                                             style={{
-                                                width: headerWidth(header)
+                                                width: headerWidth(header),
+                                                textAlign: (header.column.columnDef.meta as any)?.rightAlign ? 'right' : 'left',
                                             }}
                                         >
                                             {

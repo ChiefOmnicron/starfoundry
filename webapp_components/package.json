@@ -32,7 +32,6 @@
     "@tanstack/router-plugin": "^1.168.35",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
-    "jwt-decode": "^4.0.0",
-    "typescript": "~6.0.3"
+    "jwt-decode": "^4.0.0"
   }
 }

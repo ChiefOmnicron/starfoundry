@@ -195,7 +195,7 @@ function JobAssignmentWrapper({
                 {project}
             </Accordion.Control>
             <Accordion.Panel>
-                <Table.ScrollContainer minWidth={100} maxHeight={500}>
+                <Table.ScrollContainer minWidth={100} maxHeight={600}>
                     <Table stickyHeader striped data-cy="data">
                         <Table.Thead>
                             {

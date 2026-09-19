@@ -7,9 +7,13 @@
         "appraisal_webapp",
         "industry_webapp",
         "industry-hub_webapp",
+        "mapping_webapp",
         "webapp_components"
     ],
-    "dependencies": {
-        "@tanstack/react-router": "1.170.38"
+    "devDependencies": {
+        "@tanstack/react-router": "1.170.38",
+        "typescript": "~6.0.3",
+        "typescript-eslint": "^8.70.0",
+        "vite": "^8.3.0"
     }
 }

@@ -1,8 +1,10 @@
-import type { Appraisal, AppraisalItem } from "@starfoundry/components/src/services/appraisal/create";
-import { createColumnHelper, flexRender, tableFeatures, useTable, columnSizingFeature, columnVisibilityFeature, metaHelper } from "@tanstack/react-table";
+import { createColumnHelper, tableFeatures, useTable, columnSizingFeature, columnVisibilityFeature, metaHelper } from "@tanstack/react-table";
 import { EveIcon } from "@starfoundry/components/misc/EveIcon";
 import { CopyText } from "@starfoundry/components/misc/CopyText";
-import { Group, Stack, Table, Text } from "@mantine/core";
+import { Group, Stack } from "@mantine/core";
+import { TableWrapper } from '@starfoundry/components/wrapper';
+import { CopyTable } from '@starfoundry/components/misc';
+import type { Appraisal, AppraisalItem } from "@starfoundry/components/services/appraisal/fetch";
 
 export function ItemTable({
     appraisal,
@@ -51,6 +53,34 @@ export function ItemTable({
             id: 'icon',
             cell: ({ row }) => <EveIcon
                 id={row.original.item.type_id}
+            />,
+            header: () => <CopyTable
+                value={appraisal.items.map(x => {
+                        const itemName = x.item.name;
+                        const itemQuantity = x.quantity;
+                        const totalVolume = x.quantity * x.item.volume;
+                        const singleVolume = x.item.volume;
+
+                        const totalBuy = x.quantity * x.buy_price.max;
+                        const singleBuy = x.buy_price.max;
+                        const totalSplit = (
+                            (x.quantity * x.buy_price.max) +
+                            (x.quantity * x.sell_price.min)
+                        ) / 2;
+                        const singleSplit = (
+                            (x.buy_price.max) +
+                            (x.sell_price.min)
+                        ) / 2;
+                        const totalSell = x.quantity * x.sell_price.min;
+                        const singleSell = x.sell_price.min;
+
+                        const totalString = `${totalVolume}\t${totalBuy}\t${totalSplit}\t${totalSell}`;
+                        const singleString = `${singleVolume}\t${singleBuy}\t${singleSplit}\t${singleSell}`;
+
+                        return `${itemName}\t${itemQuantity}\t${totalString}\t${singleString}`;
+                    })
+                    .join("\n")
+                }
             />,
             size: 1,
             maxSize: 1,
@@ -177,64 +207,9 @@ export function ItemTable({
     });
 
     return <>
-        <Table striped highlightOnHover data-cy="data">
-            <Table.Thead>
-                {
-                    table
-                        .getHeaderGroups()
-                        .map(headerGroup => (
-                            <Table.Tr key={headerGroup.id}>
-                                {
-                                    headerGroup
-                                        .headers
-                                        .map(header => {
-                                            return <Table.Th
-                                                key={header.id}
-                                                style={{
-                                                    width: `${header.getSize()}%`,
-                                                    textAlign: header.column.columnDef.meta?.rightAlign ? 'right' : 'left'
-                                                }}
-                                            >
-                                                {
-                                                    flexRender(
-                                                        header.column.columnDef.header,
-                                                        header.getContext()
-                                                    )
-                                                }
-                                            </Table.Th>
-                                        })
-                                }
-                            </Table.Tr>
-                        ))
-                }
-            </Table.Thead>
-
-            <Table.Tbody>
-                {
-                    table
-                        .getRowModel()
-                        .rows
-                        .map(row => (
-                            <Table.Tr key={row.id}>
-                                {
-                                    row
-                                        .getVisibleCells()
-                                        .map(cell => (
-                                            <Table.Td key={cell.id}>
-                                                {
-                                                    flexRender(
-                                                        cell.column.columnDef.cell,
-                                                        cell.getContext()
-                                                    )
-                                                }
-                                            </Table.Td>
-                                        ))
-                                }
-                            </Table.Tr>
-                        ))
-                }
-            </Table.Tbody>
-        </Table>
+        <TableWrapper
+            table={table}
+        />
     </>
 }
 

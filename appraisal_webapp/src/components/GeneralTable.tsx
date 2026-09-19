@@ -1,7 +1,7 @@
-import { Group, Table } from "@mantine/core";
-import type { Appraisal } from "@starfoundry/components/src/services/appraisal/create";
 import { CopyText } from "@starfoundry/components/misc/CopyText";
+import { Group, Table } from "@mantine/core";
 import { MARKETS } from "@/services/utils";
+import type { Appraisal } from "@starfoundry/components/services/appraisal/fetch";
 
 export function GeneralTable({
     appraisal,
