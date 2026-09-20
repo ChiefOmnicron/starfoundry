@@ -23,6 +23,7 @@ export function ProjectGroupSelector({
     onSelect,
     projectGroups,
     selected,
+    loading = false,
 }: ProjectGroupSelectorProp): ReactElement {
     const queryClient = useQueryClient();
 
@@ -121,6 +122,7 @@ export function ProjectGroupSelector({
                         style={{
                             width: '100%'
                         }}
+                        loading={loading}
                         inputContainer={(children) => {
                             return <Flex>
                                 <div style={{ width: '100%' }}>
@@ -176,4 +178,6 @@ export type ProjectGroupSelectorProp = {
     selected?:      Uuid,
 
     projectGroups:  ProjectGroup[] | ProjectGroupMinimal[],
+
+    loading?:       boolean;
 }

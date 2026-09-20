@@ -34,6 +34,12 @@ const filterDefinitions: FilterDefinition[] = [{
     placeholder: 'Search ...',
     operators: ['contains']
 }, {
+    label: 'Orderer',
+    key: 'orderer',
+    type: 'text',
+    placeholder: 'Search ...',
+    operators: ['contains']
+}, {
     label: 'Status',
     key: 'status',
     type: 'select',
@@ -97,10 +103,13 @@ function RouteComponent() {
             return;
         }
 
-        setFilterParams({
-            name: filters.find(x => x.key === 'name')?.value as string,
-            status: filters.find(x => x.key === 'status')?.value as string,
-        });
+        const filterParams: ProjectFilter = {};
+        for (const filter of filters) {
+            // @ts-ignore
+            filterParams[filter.key] = filter.value;
+        }
+
+        setFilterParams(filterParams);
     };
 
     useEffect(() => {

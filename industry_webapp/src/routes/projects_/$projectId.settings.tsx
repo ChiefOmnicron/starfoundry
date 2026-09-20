@@ -402,6 +402,18 @@ function RouteComponent() {
                     }}
                 />
 
+                {
+                    project.parent_projects
+                    ?   <>
+                            <Title order={2}>Parent Projects</Title>
+                            <ProjectList
+                                projects={project.parent_projects}
+                                groupByProjectGroup={false}
+                            />
+                        </>
+                    :   <></>
+                }
+
                 <form.Subscribe
                     selector={(state) => [state.canSubmit, state.isSubmitting]}
                     children={() => (

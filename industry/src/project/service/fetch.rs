@@ -5,7 +5,7 @@ use starfoundry_lib_industry::ProjectUuid;
 use starfoundry_lib_types::CharacterId;
 
 use crate::project::error::{ProjectError, Result};
-use crate::project::service::{list_excess, list_products, list_stock, list_sub_projects, list_tags};
+use crate::project::service::{list_excess, list_parent_projects, list_products, list_stock, list_sub_projects, list_tags};
 
 pub async fn fetch(
     pool:                   &PgPool,
@@ -83,25 +83,33 @@ pub async fn fetch(
             )
             .await?;
 
+        let parent_projects = list_parent_projects(
+                pool,
+                character_id,
+                project_id,
+            )
+            .await?;
+
         let project = Project {
-            id:             x.id.into(),
-            name:           x.name,
-            status:         x.status,
-            orderer:        x.orderer,
-            sell_price:     x.sell_price,
-            products:       products,
-            stock:          stock,
-            excess:         excess,
-            tags:           tags,
+            id:                 x.id.into(),
+            name:               x.name,
+            status:             x.status,
+            orderer:            x.orderer,
+            sell_price:         x.sell_price,
+            products:           products,
+            stock:              stock,
+            excess:             excess,
+            tags:               tags,
 
-            note:           x.note,
-            project_group:  project_group,
-            sub_projects:   sub_projects,
+            note:               x.note,
+            project_group:      project_group,
+            sub_projects:       sub_projects,
+            parent_projects:    parent_projects,
 
-            solution_id:    x.solution_id.map(Into::into),
+            solution_id:        x.solution_id.map(Into::into),
 
-            pre_products:   x.pre_products,
-            pre_additional: x.pre_additional,
+            pre_products:       x.pre_products,
+            pre_additional:     x.pre_additional,
         };
         Ok(Some(project))
     } else {

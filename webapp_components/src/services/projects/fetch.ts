@@ -52,6 +52,8 @@ export type ProjectList = {
     stock:              ProjectStock[];
     excess:             ProjectExcess[];
     tags:               Tag[];
+
+    parent_projects?:   ProjectListMinimal[];
     sub_projects?:      ProjectListMinimal[];
 
     note?:              string;

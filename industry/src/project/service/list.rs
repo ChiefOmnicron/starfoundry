@@ -36,6 +36,14 @@ pub async fn list(
         ]
     };
 
+    let limit = if
+        filter_status.is_empty() ||
+        (filter_status.len() == 1 && filter_status.contains(&"DONE".into())) {
+        Some(25i64)
+    } else {
+        filter.limit
+    };
+
     let entries = sqlx::query!(r#"
             SELECT
                 id,
@@ -73,7 +81,7 @@ pub async fn list(
             filter.orderer,
             filter.project_group_id.map(|x| *x),
             &user_project_groups,
-            filter.limit,
+            limit,
         )
         .fetch_all(pool)
         .await

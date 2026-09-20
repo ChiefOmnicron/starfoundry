@@ -150,6 +150,7 @@ export function CreateProject({
                                 projectGroups={ projectGroups }
                                 onSelect={(e) => field.handleChange(e.id)}
                                 selected={field.state.value}
+                                loading={!projectGroups}
                             />
                         </>
                     }}

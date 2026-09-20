@@ -42,7 +42,9 @@ export function ProjectList({
 
                     <SimpleGrid cols={{
                         base: 1,
-                        sm: 4,
+                        lg: 4,
+                        md: 3,
+                        sm: 2,
                     }}>
                         { groupCards(x.id) }
                     </SimpleGrid>
@@ -52,7 +54,9 @@ export function ProjectList({
         return <>
             <SimpleGrid cols={{
                 base: 1,
-                sm: 4,
+                lg: 4,
+                md: 3,
+                sm: 2,
             }}>
                 {
                     projects

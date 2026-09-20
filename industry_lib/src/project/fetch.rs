@@ -20,27 +20,28 @@ use crate::tag::Tag;
     })
 )]
 pub struct Project {
-    pub id:             ProjectUuid,
-    pub name:           String,
-    pub status:         ProjectStatus,
-    pub orderer:        String,
-    pub project_group:  ProjectGroup,
-    pub products:       Vec<ProjectProduct>,
-    pub stock:          Vec<ProjectStock>,
-    pub excess:         Vec<ProjectExcess>,
-    pub tags:           Vec<Tag>,
+    pub id:                 ProjectUuid,
+    pub name:               String,
+    pub status:             ProjectStatus,
+    pub orderer:            String,
+    pub project_group:      ProjectGroup,
+    pub products:           Vec<ProjectProduct>,
+    pub stock:              Vec<ProjectStock>,
+    pub excess:             Vec<ProjectExcess>,
+    pub tags:               Vec<Tag>,
 
-    pub note:           Option<String>,
-    pub sell_price:     Option<f64>,
-    pub sub_projects:   Option<Vec<ProjectMinimal>>,
+    pub note:               Option<String>,
+    pub sell_price:         Option<f64>,
+    pub sub_projects:       Option<Vec<ProjectMinimal>>,
+    pub parent_projects:    Option<Vec<ProjectMinimal>>,
 
     #[serde(skip)]
-    pub solution_id:    Option<SolutionUuid>,
+    pub solution_id:        Option<SolutionUuid>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub pre_products:   Option<String>,
+    pub pre_products:       Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub pre_additional: Option<String>,
+    pub pre_additional:     Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
