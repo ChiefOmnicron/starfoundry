@@ -160,25 +160,25 @@ macro_rules! sort_by_job {
                 insert_into_map(0, entry.clone());
             }
 
-            for (header, id) in vec![
-                ("INTERMEDIATE_REACTIONS",                    428),
-                ("COMPOSITE_REACTIONS",                       429),
-                ("BIOCHEM_REACTIONS",                        4096),
-                ("HYBRID_REACTIONS",                          974),
-                ("CONSTRUCTION_COMPONENTS",                   334),
-                ("ADVANCED_CAPITAL_CONSTRUCTION_COMPONENTS",  913),
-                ("CAPITAL_CONSTRUCTION_COMPONENTS",           873),
-                ("STRUCTURE_COMPONENTS",                      536),
-                ("TOOLS",                                     332),
-                ("T1_MODULE",                                   1),
-                ("T2_MODULE",                                   2),
-                ("RIGS",                                     1308),
-                ("STRUCTURE_RIGS",                             66),
-                ("CHARGES",                                     8),
-                ("SHIPS",                                       6),
-                ("STRUCTURE",                                  65),
-                ("DEPLOYABLE",                                 22),
-                ("UNKNOWN",                                     0),
+            for id in vec![
+                428,
+                429,
+                4096,
+                974,
+                334,
+                913,
+                873,
+                536,
+                332,
+                1,
+                2,
+                1308,
+                66,
+                8,
+                6,
+                65,
+                22,
+                0,
             ] {
                 if let Some(entries) = grouped_entries.get_mut(&id) {
                     entries.sort_by_key(|x| x.item.name.clone());
@@ -199,7 +199,7 @@ macro_rules! sort_by_job {
                         .collect::<Vec<_>>();
                     job_lists.push(
                         $typ_out {
-                            header:  header.into(),
+                            header:  crate::utils::group_id_to_job_type(id).into(),
                             entries: entries.clone(),
                         }
                     );

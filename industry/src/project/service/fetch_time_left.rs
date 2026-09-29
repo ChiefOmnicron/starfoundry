@@ -67,13 +67,11 @@ pub async fn fetch_time_left(
 
     // materials are bought, and no jobs started yet
     if market_count > 0 && job_count == 0 {
-        dbg!("RAW", project_id);
         return Ok(ProjectTimeLeft {
             date_ms:    0,
             state:      "RAW_MATERIALS".into(),
         });
     } else if market_count == 0 && job_count == 0 {
-        dbg!("CREATED", project_id);
         return Ok(ProjectTimeLeft {
             date_ms:    0,
             state:      "CREATED".into(),
@@ -130,6 +128,10 @@ pub async fn fetch_time_left(
             //    build a diff from now until the project finishes
             let end_date = x.and_utc().timestamp();
             let diff = end_date - now;
+
+            if diff < 0 {
+                continue;
+            }
 
             let time_to_build = Duration::from_secs(diff as u64);
             projected_end_date += time_to_build;

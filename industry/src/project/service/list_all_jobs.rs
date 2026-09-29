@@ -1,9 +1,11 @@
 use chrono::NaiveDateTime;
 use sqlx::PgPool;
 use starfoundry_lib_eve_gateway::EveGatewayApiClient;
-use starfoundry_lib_industry::project::{ProjectFilter, ProjectJob, ProjectJobAllGroup, ProjectJobStatus};
+use starfoundry_lib_industry::project::{ProjectFilter, ProjectJob, ProjectJobAllGroup, ProjectAllJobFilter, ProjectJobStatus};
 use starfoundry_lib_types::CharacterId;
 use std::collections::HashMap;
+use std::str::FromStr;
+use uuid::Uuid;
 
 use crate::{sort_by_job_flat};
 use crate::project::error::{ProjectError, Result};
@@ -14,12 +16,26 @@ pub async fn list_all_jobs(
     pool:                   &PgPool,
     character_id:           CharacterId,
     eve_gateway_api_client: &impl EveGatewayApiClient,
+    filters:                ProjectAllJobFilter,
 ) -> Result<Vec<ProjectJobAllGroup>> {
+    let tags = filters
+        .tags
+        .map(|x|
+                x.split(",")
+                    .map(|y| Uuid::from_str(y))
+                    .filter(|y| y.is_ok())
+                    // unwrap is safe here, the filter would catch all
+                    .map(|y| y.unwrap().into())
+                    .collect::<Vec<_>>()
+        )
+        .unwrap_or_default();
+
     let projects = list(
             pool,
             character_id,
             ProjectFilter {
                 status: Some("IN_PROGRESS".into()),
+                tags: Some(tags),
                 ..Default::default()
             },
         )

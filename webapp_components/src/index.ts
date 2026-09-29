@@ -1,1 +1,2 @@
-export * from './tags/index';
+export * from './misc';
+export * from './tags';

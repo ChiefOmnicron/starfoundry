@@ -36,6 +36,12 @@ pub async fn list(
         ]
     };
 
+    let tags = if let Some(x) = filter.tags {
+        x
+    } else {
+        Vec::new()
+    };
+
     let limit = if
         filter_status.is_empty() ||
         (filter_status.len() == 1 && filter_status.contains(&"DONE".into())) {
@@ -52,13 +58,22 @@ pub async fn list(
                 orderer,
                 sell_price,
                 project_group_id
-            FROM project
+            FROM project p
             WHERE
                 (
                     NOT (LOWER(name) LIKE '%' || LOWER($2) || '%') IS FALSE AND
                     NOT (status = ANY($3::PROJECT_STATUS[])) IS FALSE AND
                     NOT (LOWER(orderer) LIKE '%' || LOWER($4) || '%') IS FALSE AND
-                    NOT (project_group_id = $5::UUID) IS FALSE
+                    NOT (project_group_id = $5::UUID) IS FALSE AND
+                    NOT (
+                        ARRAY_LENGTH($7::UUID[], 1) = 0 OR
+                        EXISTS(
+                            SELECT 1
+                            FROM project_tag
+                            WHERE project_id = p.id
+                            AND tag_id = ANY($7::UUID[])
+                        )
+                    ) IS FALSE
                 )
                 AND
                 (
@@ -73,7 +88,7 @@ pub async fn list(
                     )
                 )
             ORDER BY name
-            LIMIT $7
+            LIMIT $8
         "#,
             *character_id,
             filter.name,
@@ -81,6 +96,7 @@ pub async fn list(
             filter.orderer,
             filter.project_group_id.map(|x| *x),
             &user_project_groups,
+            &tags.into_iter().map(|x| *x).collect::<Vec<_>>(),
             limit,
         )
         .fetch_all(pool)

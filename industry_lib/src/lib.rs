@@ -1,6 +1,7 @@
 mod client;
 mod error;
 
+pub mod filter;
 pub mod industry_hub;
 pub mod industry;
 pub mod project;
@@ -19,6 +20,7 @@ pub use starfoundry_lib_market::OreReprocessingEfficiency;
 
 pub const ENV_INDUSTRY_API: &str = "STARFOUNDRY_INDUSTRY_API_URL";
 
+starfoundry_uuid!(FilterUuid, "FilterUuid");
 starfoundry_uuid!(IndustryHubUuid, "IndustryHubUuid");
 starfoundry_uuid!(MarketUuid, "MarketUuid");
 starfoundry_uuid!(ProjectGroupUuid, "ProjectGroupUuid");

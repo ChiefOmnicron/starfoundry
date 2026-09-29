@@ -128,3 +128,17 @@ const themeOverride = createTheme({
     },
 });
 export const THEME = mergeMantineTheme(DEFAULT_THEME, themeOverride);
+
+const themeOverrideAdmin = createTheme({
+    fontFamily: '"Roboto Mono", monospace',
+    fontFamilyMonospace: '"Roboto Mono", monospace',
+    radius: {
+        lg: '0',
+        md: '0',
+        sm: '0',
+        xl: '0',
+        xs: '0',
+    },
+    primaryColor: 'red'
+});
+export const THEME_ADMIN = mergeMantineTheme(DEFAULT_THEME, themeOverrideAdmin);

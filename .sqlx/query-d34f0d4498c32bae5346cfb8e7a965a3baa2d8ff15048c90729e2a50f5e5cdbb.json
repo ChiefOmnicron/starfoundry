@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                id,\n                name,\n                status AS \"status: ProjectStatus\",\n                orderer,\n                sell_price,\n                project_group_id\n            FROM project\n            WHERE\n                (\n                    NOT (LOWER(name) LIKE '%' || LOWER($2) || '%') IS FALSE AND\n                    NOT (status = ANY($3::PROJECT_STATUS[])) IS FALSE AND\n                    NOT (LOWER(orderer) LIKE '%' || LOWER($4) || '%') IS FALSE AND\n                    NOT (project_group_id = $5::UUID) IS FALSE\n                )\n                AND\n                (\n                    -- check if the character is in the group\n                    (\n                        NOT (project_group_id = ANY($6::UUID[])) IS FALSE\n                    )\n                    OR\n                    -- as a fallback check if the character is the owner\n                    (\n                        owner = $1\n                    )\n                )\n            ORDER BY name\n            LIMIT $7\n        ",
+  "query": "\n            SELECT\n                id,\n                name,\n                status AS \"status: ProjectStatus\",\n                orderer,\n                sell_price,\n                project_group_id\n            FROM project p\n            WHERE\n                (\n                    NOT (LOWER(name) LIKE '%' || LOWER($2) || '%') IS FALSE AND\n                    NOT (status = ANY($3::PROJECT_STATUS[])) IS FALSE AND\n                    NOT (LOWER(orderer) LIKE '%' || LOWER($4) || '%') IS FALSE AND\n                    NOT (project_group_id = $5::UUID) IS FALSE AND\n                    NOT (\n                        ARRAY_LENGTH($7::UUID[], 1) = 0 OR\n                        EXISTS(\n                            SELECT 1\n                            FROM project_tag\n                            WHERE project_id = p.id\n                            AND tag_id = ANY($7::UUID[])\n                        )\n                    ) IS FALSE\n                )\n                AND\n                (\n                    -- check if the character is in the group\n                    (\n                        NOT (project_group_id = ANY($6::UUID[])) IS FALSE\n                    )\n                    OR\n                    -- as a fallback check if the character is the owner\n                    (\n                        owner = $1\n                    )\n                )\n            ORDER BY name\n            LIMIT $8\n        ",
   "describe": {
     "columns": [
       {
@@ -111,6 +111,7 @@
         "Text",
         "Uuid",
         "UuidArray",
+        "UuidArray",
         "Int8"
       ]
     },
@@ -123,5 +124,5 @@
       false
     ]
   },
-  "hash": "5df1611f8366071073c18654aa24aebcaf1a12864e78bac3c4f1710d48a6c27d"
+  "hash": "d34f0d4498c32bae5346cfb8e7a965a3baa2d8ff15048c90729e2a50f5e5cdbb"
 }

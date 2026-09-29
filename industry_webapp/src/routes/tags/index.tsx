@@ -92,7 +92,6 @@ function RouteComponent() {
         </Group>
     }
 
-
     const notification = () => {
         if (hasError) {
             return <Alert

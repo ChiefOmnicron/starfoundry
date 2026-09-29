@@ -4,7 +4,7 @@ use starfoundry_lib_eve_gateway::Item;
 use starfoundry_lib_types::CharacterId;
 use utoipa::{IntoParams, ToSchema};
 
-use crate::{ProjectGroupUuid, ProjectJobUuid, ProjectUuid};
+use crate::{ProjectGroupUuid, ProjectJobUuid, ProjectUuid, TagUuid};
 use crate::project::{ProjectJobStatus, ProjectStatus};
 use crate::structure::Structure;
 use crate::project_group::ProjectGroupMinimal;
@@ -46,6 +46,13 @@ pub struct ProjectFilter {
         required = false,
     )]
     pub limit: Option<i64>,
+
+    #[serde(default)]
+    #[param(
+        example = json!(["01a0e02c-a5cf-78ca-8b8e-dcd27b5f3ced"]),
+        required = false,
+    )]
+    pub tags: Option<Vec<TagUuid>>,
 }
 
 fn default_status() -> Option<String> {
@@ -101,6 +108,16 @@ pub struct ProjectJobFilter {
     #[serde(default)]
     pub startable: Option<bool>,
 }
+
+#[derive(Debug, Default, Deserialize, Serialize, ToSchema, IntoParams)]
+#[into_params(parameter_in = Query)]
+pub struct ProjectAllJobFilter {
+    #[serde(default)]
+    pub name:   Option<String>,
+    #[serde(default)]
+    pub tags:   Option<String>,
+}
+
 
 #[derive(Debug, Deserialize, Serialize, ToSchema)]
 pub struct ProjectJobAllGroup {

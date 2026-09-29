@@ -30,6 +30,7 @@ use crate::project::service::list_jobs;
     tag = "projects",
     params(
         ProjectUuid,
+        ProjectJobFilter,
     ),
     responses(
         (

@@ -34,8 +34,8 @@ export function ProjectJobList({
                 return 'Intermediate Reactions';
             case 'COMPOSITE_REACTIONS':
                 return 'Composite Reactions';
-            case 'BIOCHEM_REACTIONS':
-                return 'Biochemical Reactions';
+            case 'MOLECULAR_FORGED_REACTIONS':
+                return 'Molecular-Forged Reactions';
             case 'HYBRID_REACTIONS':
                 return 'Hybrid Reactions';
             case 'CONSTRUCTION_COMPONENTS':
