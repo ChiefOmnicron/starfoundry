@@ -1,5 +1,6 @@
 use regex::Regex;
 use sqlx::PgPool;
+use starfoundry_lib_industry::{ProjectUuid, TagUuid};
 use starfoundry_lib_industry::project::{ProjectFilter, ProjectMinimal};
 use starfoundry_lib_industry::tag::{Tag, TagAutoCompare, TagAutoSelect};
 use starfoundry_lib_types::CharacterId;
@@ -24,19 +25,41 @@ pub async fn trigger(
     )
     .await?;
 
-    let mut tag_ids = Vec::new();
-    let mut project_ids = Vec::new();
+    let mut tag_updates = Vec::new();
 
     for tag in tags.iter() {
         for project in projects.iter() {
             if is_valid(tag, project) {
-                tag_ids.push(*tag.id);
-                project_ids.push(*project.id);
+                tag_updates.push(TmpTag {
+                    project_id: project.id,
+                    tag_id:     tag.id,
+                });
             }
         }
     }
 
-    if !tag_ids.is_empty() {
+    sqlx::query!("
+            SELECT *
+            FROM project_tag
+        ")
+        .fetch_all(pool)
+        .await
+        .map_err(TagError::SqlxError)?
+        .into_iter()
+        .for_each(|x| {
+            if tag_updates
+                .iter()
+                .find(|y| y.project_id == x.project_id.into() && y.tag_id == x.tag_id.into())
+                .is_none() {
+
+                tag_updates.push(TmpTag {
+                    project_id: x.project_id.into(),
+                    tag_id:     x.tag_id.into(),
+                })
+            }
+        });
+
+    if !tag_updates.is_empty() {
         sqlx::query!("
                 DELETE FROM project_tag
             ")
@@ -55,8 +78,8 @@ pub async fn trigger(
                     $2::UUID[]
                 )
             ",
-                &project_ids,
-                &tag_ids,
+                &tag_updates.iter().map(|x| *x.project_id).collect::<Vec<_>>(),
+                &tag_updates.iter().map(|x| *x.tag_id).collect::<Vec<_>>()
             )
             .execute(pool)
             .await
@@ -128,4 +151,9 @@ fn match_compare(
             }
         },
     }
+}
+
+struct TmpTag {
+    tag_id:     TagUuid,
+    project_id: ProjectUuid,
 }
