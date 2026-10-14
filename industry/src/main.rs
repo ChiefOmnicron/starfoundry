@@ -1,6 +1,6 @@
 mod api_docs;
 mod config;
-//mod filter;
+mod filter;
 mod healthcheck;
 mod industry_hub;
 mod industry;
@@ -90,7 +90,7 @@ fn app(
 ) -> Router {
     // build our application with a route
     let (router, api) = OpenApiRouter::with_openapi(ApiDoc::openapi())
-        //.nest("/filters", filter::routes())
+        .nest("/filters", filter::routes())
         .nest("/projects", project::routes(state.clone()))
         .nest("/project-groups", project_group::routes(state.clone()))
         .nest("/structures", structure::routes(state.clone()))

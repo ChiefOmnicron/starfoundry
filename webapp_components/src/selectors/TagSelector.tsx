@@ -6,6 +6,7 @@ import type { Uuid } from "../services/utils";
 
 export function TagSelector({
     disabled,
+    withinPortal = false,
 
     onSelect,
 
@@ -62,7 +63,6 @@ export function TagSelector({
         return tags
             .filter(item => !selected.includes(item.id))
             .filter(item => item.content.toLowerCase().includes(search.trim().toLowerCase()))
-            .filter(item => item.typ !== 'AUTO')
             .map((item) => <>
                     <Combobox.Option
                         value={item.id}
@@ -89,7 +89,7 @@ export function TagSelector({
                 handleValueSelect(val);
                 onSelect(tags.find(x => x.id === val) as any);
             }}
-            withinPortal={false}
+            withinPortal={withinPortal}
         >
             <Combobox.DropdownTarget>
                 <PillsInput onClick={() => combobox.openDropdown()}>
@@ -139,6 +139,7 @@ export function TagSelector({
 export type TagSelectorProps = {
     // disables the input
     disabled?: boolean;
+    withinPortal?: boolean;
 
     onSelect: (entry: Tag) => void;
 

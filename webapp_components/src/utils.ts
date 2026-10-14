@@ -117,8 +117,8 @@ export const randomColor = () => {
 }
 
 const themeOverride = createTheme({
-    fontFamily: '"Roboto Mono", monospace',
-    fontFamilyMonospace: '"Roboto Mono", monospace',
+    fontFamily: '"Geist Mono", "Roboto Mono", monospace',
+    fontFamilyMonospace: '"Geist Mono", "Roboto Mono", monospace',
     radius: {
         lg: '0',
         md: '0',
@@ -130,8 +130,8 @@ const themeOverride = createTheme({
 export const THEME = mergeMantineTheme(DEFAULT_THEME, themeOverride);
 
 const themeOverrideAdmin = createTheme({
-    fontFamily: '"Roboto Mono", monospace',
-    fontFamilyMonospace: '"Roboto Mono", monospace',
+    fontFamily: '"Geist Mono", "Roboto Mono", monospace',
+    fontFamilyMonospace: '"Geist Mono", "Roboto Mono", monospace',
     radius: {
         lg: '0',
         md: '0',

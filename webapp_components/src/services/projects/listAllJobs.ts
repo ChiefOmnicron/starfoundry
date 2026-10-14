@@ -7,16 +7,14 @@ import type { Uuid } from "../utils";
 export const LIST_PROJECT_ALL_JOBS = 'listProjectAllJobs';
 
 export const listProjectAllJobs = async (
-    filter: any,
+    filter: ProjectAllJobFilter,
     signal?: GenericAbortSignal,
 ): Promise<ProjectJobAllGroup[]> => (await axiosClient())
     .get(
         `/api/projects/jobs`,
         {
             signal,
-            params: {
-                ...filter,
-            }
+            params: filter,
         }
     )
     .then(x => {
@@ -28,20 +26,13 @@ export const listProjectAllJobs = async (
     });
 
 export const useListProjectAllJobs = (
-    filters: any[] = [],
+    filters: ProjectAllJobFilter,
 ) => {
-    console.log(filters)
-    const keyValueFilters: {[key: string]: string} = {};
-    for (const filter of filters) {
-        keyValueFilters[filter.key] = filter.value;
-    }
-
-    console.log(filters)
     return useQuery({
-        queryKey: [LIST_PROJECT_ALL_JOBS, keyValueFilters],
+        queryKey: [LIST_PROJECT_ALL_JOBS, filters],
         queryFn: async ({
             signal
-        }: AbortSignal) => listProjectAllJobs(keyValueFilters, signal),
+        }: AbortSignal) => listProjectAllJobs(filters, signal),
         // 10 minutes (ms * s * m)
         staleTime: 1000 * 60 * 10,
         // refetch it every 60 seconds
@@ -54,4 +45,9 @@ export type ProjectJobAllGroup = {
     header:     string;
     project_id: Uuid,
     entries:    ProjectJob[];
+}
+
+export type ProjectAllJobFilter = {
+    name?:  string;
+    tags?:  string;
 }

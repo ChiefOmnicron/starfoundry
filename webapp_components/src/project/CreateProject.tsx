@@ -16,7 +16,6 @@ import type { Uuid } from '../services/utils';
 export function CreateProject({
     onCreate,
 }: CreateProjectProps) {
-
     const [successCreate, setSuccessCreate] = useState<string | undefined>();
     const [errorCreate, setErrorCreate] = useState<string | undefined>();
     const [createMore, setCreateMore] = useState<boolean>(false);

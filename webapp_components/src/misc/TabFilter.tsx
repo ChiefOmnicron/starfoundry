@@ -2,6 +2,10 @@ import { Button, Pill, Table, Tabs } from "@mantine/core";
 import { useState, type ReactNode } from "react";
 import { ModalWrapper } from "../wrapper";
 import { useDisclosure } from "@mantine/hooks";
+import { useMutation } from "@tanstack/react-query";
+import { deleteFilter } from "../services/filter/delete";
+import type { Uuid } from "../services/utils";
+import { LIST_FILTERS } from "../services/filter/list";
 
 export function TabFilter({
     filters,
@@ -10,17 +14,17 @@ export function TabFilter({
     createFilter,
     editFilter,
 
-    onDelete,
+    onDelete = () => {},
 }: TabFilterProps) {
     if (!renderComponent) {
         return <></>;
     }
 
-    //const [activeTab, setActiveTab] = useState<string | null>('settings');
-    const [activeTab, setActiveTab] = useState<string | null>(filters[0].filter_name);
+    const [activeTab, setActiveTab] = useState<string | null>('settings');
+    //const [activeTab, setActiveTab] = useState<string | null>(filters[0].filter_name);
 
-    const tabs = filters.map(x => <Tabs.Tab value={x.filter_name}>{`${x.filter_name}`}</Tabs.Tab>);
-    const panels = filters.map(x => <Tabs.Panel value={x.filter_name}>{renderComponent(x.filters)}</Tabs.Panel>);
+    const tabs = filters.map(x => <Tabs.Tab value={x.name}>{`${x.name}`}</Tabs.Tab>);
+    const panels = filters.map(x => <Tabs.Panel value={x.name}>{renderComponent(x.filters)}</Tabs.Panel>);
 
     return <>
         <Tabs value={activeTab} onChange={setActiveTab}>
@@ -37,7 +41,7 @@ export function TabFilter({
             {panels}
 
             <Tabs.Panel value="all">
-                {renderComponent([])}
+                {renderComponent({})}
             </Tabs.Panel>
 
             <Tabs.Panel value="settings">
@@ -63,14 +67,42 @@ export function TabFilterSetting({
     onDelete,
 }: TabFilterSettingProps) {
     const [addFilterModalOpened, { open: openAddFilterModal, close: closeAddFilterModal }] = useDisclosure(false);
-    // TODO: Modal for Create and Edit
+    const [editFilterModalOpened, { open: openEditFilterModal, close: closeEditFilterModal }] = useDisclosure(false);
+    const [filterEdit, setFilterEdit] = useState<TabFilterDefinition | undefined>(undefined);
+
+    const [successDelete, setSuccessDelete] = useState<string | undefined>();
+    const [errorDelete, setErrorDelete] = useState<string | undefined>();
+
+    const deleteFilterMutation = useMutation({
+        mutationFn: async (filter: TabFilterDefinition) => {
+            return await deleteFilter(filter.id);
+        },  
+        onError: (error) => {
+            setSuccessDelete(undefined);
+            setErrorDelete(error.message);
+        },
+        onSettled: (_data, _err, original, _result, context) => {
+            setSuccessDelete('success');
+            setErrorDelete(undefined);
+            onDelete(original);
+
+            context.client.invalidateQueries({ queryKey: [LIST_FILTERS]});
+        },
+    });
 
     return <>
         <ModalWrapper
             title="Add Filter"
-            children={createFilter()}
+            children={createFilter(closeAddFilterModal)}
             opened={addFilterModalOpened}
             close={closeAddFilterModal}
+        />
+
+        <ModalWrapper
+            title="Edit Filter"
+            children={editFilter(filterEdit, closeEditFilterModal)}
+            opened={editFilterModalOpened}
+            close={closeEditFilterModal}
         />
 
         <Table>
@@ -91,17 +123,30 @@ export function TabFilterSetting({
                                     D
                                 </Table.Td>
                                 <Table.Td>
-                                    {x.filter_name}
+                                    {x.name}
                                 </Table.Td>
                                 <Table.Td>
-                                    {x.filters.map(y => <Pill>{y.key}: {y.value}</Pill>)}
+                                    {Object.keys(x.filters).map(y => <Pill>{y}: {x.filters[y]}</Pill>)}
                                 </Table.Td>
                                 <Table.Td>
-                                    <Button onClick={() => onDelete(x)}>
-                                        Delete
-                                    </Button>
-                                    <Button onClick={() => editFilter(x)}>
+                                    <Button
+                                        onClick={() => {
+                                            setFilterEdit(x);
+                                            openEditFilterModal();
+                                        }}
+                                        variant="subtle"
+                                        color="blue.9"
+                                    >
                                         Edit
+                                    </Button>
+                                    <Button
+                                            onClick={() => {
+                                            deleteFilterMutation.mutate(x)
+                                        }}
+                                        variant="subtle"
+                                        color="red.9"
+                                    >
+                                        Delete
                                     </Button>
                                 </Table.Td>
                             </Table.Tr>
@@ -121,28 +166,26 @@ export function TabFilterSetting({
 export type TabFilterProps = {
     filters:            TabFilterDefinition[];
 
-    createFilter:       () => ReactNode;
-    editFilter:         (filter: TabFilterDefinition) => ReactNode;
-    renderComponent:    (filter: TabFilterFilterDefinition[]) => ReactNode;
+    createFilter:       (close: () => void) => ReactNode;
+    editFilter:         (filter: TabFilterDefinition | undefined, close: () => void) => ReactNode;
+    renderComponent:    (filter: TabFilterFilterDefinition) => ReactNode;
 
-    onDelete:           (filter: TabFilterDefinition) => void;
+    onDelete?:          (filter: TabFilterDefinition) => void;
 };
 
 export type TabFilterSettingProps = {
     filters:        TabFilterDefinition[];
 
-    createFilter:   () => ReactNode;
-    editFilter:     (filter: TabFilterDefinition) => ReactNode;
+    createFilter:   (close: () => void) => ReactNode;
+    editFilter:     (filter: TabFilterDefinition | undefined, close: () => void) => ReactNode;
 
     onDelete:       (filter: TabFilterDefinition) => void;
 }
 
 export type TabFilterDefinition = {
-    filter_name: string;
-    filters: TabFilterFilterDefinition[];
+    id:         Uuid;
+    name:       string;
+    filters:    TabFilterFilterDefinition;
 }
 
-export type TabFilterFilterDefinition = {
-    key:    string;
-    value:  string | number;
-}
+export type TabFilterFilterDefinition = { [key: string]: string };

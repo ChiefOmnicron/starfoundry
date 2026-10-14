@@ -1,11 +1,15 @@
-import { Button, Group, InputBase, InputWrapper, Stack, TreeSelect, type TreeNodeData } from "@mantine/core";
-import type { TabFilterDefinition, TabFilterFilterDefinition } from "@starfoundry/components/misc";
+import { Button, Group, InputBase, InputWrapper, Stack } from "@mantine/core";
+import { createFilter, type CreateFilter } from '@starfoundry/components/services/filter/create';
 import { TagSelector } from "@starfoundry/components/selectors";
-import { useListTags } from "@starfoundry/components/services/tags/list";
 import { useForm } from "@tanstack/react-form";
+import { useListTags } from "@starfoundry/components/services/tags/list";
+import { useMutation } from "@tanstack/react-query";
+import type { TabFilterDefinition, TabFilterFilterDefinition } from "@starfoundry/components/misc";
 
 export function ProjectJobSetting({
     filter,
+
+    close,
     onChange = () => {},
 }: ProjectJobSettingProps) {
     const {
@@ -15,29 +19,49 @@ export function ProjectJobSetting({
         manual: true,
     });
 
+    const createFilterMutation = useMutation({
+        mutationFn: async (filter: CreateFilter) => {
+            return await createFilter(filter);
+        },
+        onError: () => {
+
+        },
+        onSettled: () => {
+            onChange();
+            close();
+        },
+    })
+
     const form = useForm({
         defaultValues: {
-            filterName: filter?.filter_name || '',
-            tags: (filter?.filters.find(x => x.key === 'tags')?.value as string || '').split(',').filter(x => x.length > 0),
+            filterName: filter?.name || '',
+            tags: (filter?.filters['tags'] as string || '').split(',').filter(x => x.length > 0),
         },
         onSubmit: async ({ value }) => {
             // TODO: create filter endpoint
             // TODO: create the filter
             // TODO: invalidate the tag filters
-            const filterEntries: TabFilterFilterDefinition[] = [];
+            const filterEntries: TabFilterFilterDefinition = {};
 
-            if (value.tags && value.tags.length > 0) {
-                filterEntries.push({
-                    key: 'tags',
-                    value: value.tags.join(','),
-                })
-            }
+            Object
+                .keys(value)
+                .forEach((x: string) => {
+                    if (x === 'filterName') {
+                        return;
+                    }
 
-            const filterInfo: TabFilterDefinition = {
-                filter_name: value.filterName,
+                    if (x === 'tags') {
+                        filterEntries[x] = value[x].join(',')
+                    } else {
+                        filterEntries[x] = (value as any)[x];
+                    }
+                });
+
+            createFilterMutation.mutate({
+                name: value.filterName,
                 filters: filterEntries,
-            }
-            onChange(filterInfo)
+                typ: 'PROJECT_JOB',
+            });
         },
     });
 
@@ -63,13 +87,15 @@ export function ProjectJobSetting({
                 }}
             />
 
-            <TreeSelect
-                label="Job Type"
-                placeholder="Pick one or more"
-                data={JOB_TYPES}
-                mode="checkbox"
-                defaultExpandAll
-            />
+            {
+                //<TreeSelect
+                //    label="Job Type"
+                //    placeholder="Pick one or more"
+                //    data={JOB_TYPES}
+                //    mode="checkbox"
+                //    defaultExpandAll
+                ///>
+            }
 
             <form.Field
                 name="tags"
@@ -88,6 +114,7 @@ export function ProjectJobSetting({
                             }}
                             tags={tags || []}
                             selected={field.state.value}
+                            withinPortal
                         />
                     </InputWrapper>
                 }}
@@ -118,10 +145,12 @@ export function ProjectJobSetting({
 
 export type ProjectJobSettingProps = {
     filter?: TabFilterDefinition,
-    onChange?: (filter: TabFilterDefinition) => void,
+
+    close: () => void,
+    onChange?: () => void,
 }
 
-const JOB_TYPES: TreeNodeData[] = [{
+/*const JOB_TYPES: TreeNodeData[] = [{
     value: 'REACTION',
     label: 'Reactions',
     children: [{
@@ -193,3 +222,4 @@ const JOB_TYPES: TreeNodeData[] = [{
         }]
     }],
 }];
+*/
