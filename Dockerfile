@@ -98,7 +98,7 @@ CMD         ["/usr/local/bin/app"]
 #           eve_gateway_worker
 ###############################################################################
 FROM builder AS eve-gateway-worker-builder
-RUN         cargo build --bin starfoundry-eve_gateway_worker --release
+RUN         cargo build --bin starfoundry-eve-gateway_worker --release
 
 FROM ubuntu:26.04 AS eve-gateway-worker
 WORKDIR     /usr/local/bin
@@ -107,7 +107,7 @@ RUN         apt-get update && \
             apt-get install -y ca-certificates curl && \
             apt-get clean
 
-COPY        --from=eve-gateway-worker-builder /app/target/release/starfoundry-eve_gateway_worker /usr/local/bin/app
+COPY        --from=eve-gateway-worker-builder /app/target/release/starfoundry-eve-gateway_worker /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
 ###############################################################################
@@ -180,13 +180,15 @@ CMD         ["/usr/local/bin/app"]
 #           industry_api
 ###############################################################################
 FROM builder AS industry-api-builder
-RUN         cargo build --bin starfoundry-industry_bin-server --release
+RUN         apt-get install -y clang coinor-cbc coinor-libcbc-dev && \
+            cargo build --bin starfoundry-industry_bin-server --release
 
 FROM ubuntu:26.04 AS industry-api
 WORKDIR     /usr/local/bin
 
 RUN         apt-get update && \
-            apt-get install -y ca-certificates curl && \
+            apt-get install -y ca-certificates curl coinor-libcbc3.1 && \
+            cp /usr/lib/x86_64-linux-gnu/libCbcSolver.so.3.1 /usr/lib/x86_64-linux-gnu/libCbcSolver.so.3 && \
             apt-get clean
 
 COPY        --from=industry-api-builder /app/target/release/starfoundry-industry_bin-server /usr/local/bin/app
