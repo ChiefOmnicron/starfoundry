@@ -1,43 +1,40 @@
-use sqlx::PgPool;
 use std::collections::HashMap;
 use std::time::Instant;
 
-use crate::Error;
+use sqlx::PgPool;
+
+use crate::EveSdeParserError;
+use crate::parser::constellations::Constellation;
 use crate::parser::regions::Region;
 use crate::parser::systems::System;
-use crate::parser::constellations::Constellation;
 
 pub async fn run(
-    pool:           &PgPool,
-    regions:        &Vec<Region>,
-    constellations: &Vec<Constellation>,
-    systems:        &Vec<System>,
-) -> Result<(), Error> {
+    pool: &PgPool,
+    regions: &[Region],
+    constellations: &[Constellation],
+    systems: &[System],
+) -> Result<(), EveSdeParserError> {
     tracing::info!("Processing systems");
     let start = Instant::now();
 
-    insert_into_database(
-            &pool,
-            &systems,
-            &constellations,
-            &regions,
-        )
-        .await?;
+    insert_into_database(&pool, &systems, &constellations, &regions).await?;
 
     tracing::info!(
         "Finished processing systems, task took {:.2}s",
-        start.elapsed().as_secs_f64()
+        start
+            .elapsed()
+            .as_secs_f64()
     );
 
     Ok(())
 }
 
 async fn insert_into_database(
-    pool:           &PgPool,
-    systems:        &Vec<System>,
-    constellations: &Vec<Constellation>,
-    regions:        &Vec<Region>,
-) -> Result<(), Error> {
+    pool: &PgPool,
+    systems: &[System],
+    constellations: &[Constellation],
+    regions: &[Region],
+) -> Result<(), EveSdeParserError> {
     let constellations = constellations
         .iter()
         .map(|x| (x.constellation_id, x))
@@ -50,15 +47,17 @@ async fn insert_into_database(
     let mut transaction = pool
         .begin()
         .await
-        .map_err(Error::TransactionError)?;
+        .map_err(EveSdeParserError::TransactionError)?;
 
     tracing::debug!("Clearing system database");
-    sqlx::query!("
+    sqlx::query!(
+        "
             DELETE FROM system
-        ")
-        .execute(&mut *transaction)
-        .await
-        .map_err(Error::DeleteSystems)?;
+        "
+    )
+    .execute(&mut *transaction)
+    .await
+    .map_err(EveSdeParserError::DeleteSystems)?;
     tracing::debug!("Clearing systems database done");
 
     let region_ids = systems
@@ -67,7 +66,13 @@ async fn insert_into_database(
         .collect::<Vec<_>>();
     let region_names = systems
         .iter()
-        .map(|x| regions.get(&x.region_id).unwrap().name.clone())
+        .map(|x| {
+            regions
+                .get(&x.region_id)
+                .unwrap()
+                .name
+                .clone()
+        })
         .collect::<Vec<_>>();
     let constellation_ids = systems
         .iter()
@@ -75,7 +80,13 @@ async fn insert_into_database(
         .collect::<Vec<_>>();
     let constellation_names = systems
         .iter()
-        .map(|x| constellations.get(&x.constellation_id).unwrap().name.clone())
+        .map(|x| {
+            constellations
+                .get(&x.constellation_id)
+                .unwrap()
+                .name
+                .clone()
+        })
         .collect::<Vec<_>>();
     let system_ids = systems
         .iter()
@@ -93,7 +104,7 @@ async fn insert_into_database(
         .iter()
         .map(|x| x.security)
         .map(|x| {
-            if x > 0f32 && x < 0.45f32 {
+            if x > 0.0f32 && x < 0.45f32 {
                 "LOWSEC".into()
             } else if x >= 0.45f32 {
                 "HIGHSEC".into()
@@ -116,7 +127,8 @@ async fn insert_into_database(
         .collect::<Vec<_>>();
 
     tracing::debug!("Inserting data");
-    sqlx::query!("
+    sqlx::query!(
+        "
             INSERT INTO system
             (
                 region_id,
@@ -145,26 +157,26 @@ async fn insert_into_database(
                 $11::DOUBLE PRECISION[]
             )
         ",
-            &region_ids,
-            &region_names,
-            &constellation_ids,
-            &constellation_names,
-            &system_ids,
-            &system_names,
-            &security,
-            &security_str,
-            &position_x,
-            &position_y,
-            &position_z,
-        )
-        .execute(&mut *transaction)
-        .await
-        .map_err(Error::InsertSystem)?;
+        &region_ids,
+        &region_names,
+        &constellation_ids,
+        &constellation_names,
+        &system_ids,
+        &system_names,
+        &security,
+        &security_str,
+        &position_x,
+        &position_y,
+        &position_z,
+    )
+    .execute(&mut *transaction)
+    .await
+    .map_err(EveSdeParserError::InsertSystem)?;
 
     transaction
         .commit()
         .await
-        .map_err(Error::TransactionError)?;
+        .map_err(EveSdeParserError::TransactionError)?;
     tracing::debug!("Inserting data done");
 
     Ok(())

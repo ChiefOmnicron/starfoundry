@@ -1,9 +1,10 @@
-use axum::extract::{FromRef, FromRequestParts};
-use axum::http::request::Parts;
-use jsonwebtoken::DecodingKey;
 use std::collections::HashMap;
 use std::convert::Infallible;
 use std::sync::Arc;
+
+use axum::extract::{FromRef, FromRequestParts};
+use axum::http::request::Parts;
+use jsonwebtoken::DecodingKey;
 
 use crate::config::ConfigFileRoute;
 use crate::metrics::Metric;
@@ -29,7 +30,7 @@ where
 
     async fn from_request_parts(
         _: &mut Parts,
-        state: &S
+        state: &S,
     ) -> Result<Self, Self::Rejection> {
         Ok(Self::from_ref(state))
     }

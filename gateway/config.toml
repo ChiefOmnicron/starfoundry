@@ -38,6 +38,9 @@ service_url = "http://localhost:9994"
 [routes."tags"]
 service_url = "http://localhost:9994"
 
+[routes."filters"]
+service_url = "http://localhost:9994"
+
 # store
 [routes."products"]
 service_url = "http://localhost:9996"

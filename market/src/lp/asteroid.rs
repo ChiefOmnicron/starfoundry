@@ -1,7 +1,12 @@
-use good_lp::{Constraint, Expression, ProblemVariables, Solution, SolverModel, Variable, WithTimeLimit, constraint, default_solver, variable, variables};
-use starfoundry_lib_market::{Asteroid, Mineral, OreReprocessingEfficiency};
-use starfoundry_lib_types::{StructureId, TypeId};
 use std::collections::HashMap;
+
+use good_lp::{
+    Constraint, Expression, ProblemVariables, Solution, SolverModel, Variable, WithTimeLimit, constraint, default_solver, variable, variables
+};
+use starfoundry_eve_gateway::item::{
+    Asteroid, Mineral, OreReprocessingEfficiency
+};
+use starfoundry_lib_types::{StructureId, TypeId};
 
 use crate::lp::{LpError, MarketProblemResult, Result};
 use crate::market::MarketEntry;
@@ -13,27 +18,25 @@ pub struct AsteroidCompressionProblem {
 
     total_price: Expression,
 
-    mapping_order_id_market:    HashMap<i64, MarketEntry>,
-    max_price_per_entry:        HashMap<Asteroid, f64>,
-    minerals:                   HashMap<Mineral, Expression>,
+    mapping_order_id_market: HashMap<i64, MarketEntry>,
+    max_price_per_entry:     HashMap<Asteroid, f64>,
+    minerals:                HashMap<Mineral, Expression>,
 
-    mineral_compression:        Option<OreReprocessingEfficiency>,
+    mineral_compression: Option<OreReprocessingEfficiency>,
 }
 
 impl AsteroidCompressionProblem {
-    pub fn new(
-        mineral_compression: Option<OreReprocessingEfficiency>,
-    ) -> Self {
+    pub fn new(mineral_compression: Option<OreReprocessingEfficiency>) -> Self {
         Self {
-            vars: variables!(),
-            variables: Vec::new(),
+            vars:        variables!(),
+            variables:   Vec::new(),
             constraints: Vec::new(),
 
-            total_price: 0f64.into(),
+            total_price: 0.0f64.into(),
 
             mapping_order_id_market: HashMap::new(),
-            max_price_per_entry: HashMap::new(),
-            minerals: HashMap::new(),
+            max_price_per_entry:     HashMap::new(),
+            minerals:                HashMap::new(),
 
             mineral_compression: mineral_compression,
         }
@@ -50,30 +53,43 @@ impl AsteroidCompressionProblem {
             }
 
             let definition = variable().name(entry.name());
-            let var = self.vars.add(definition);
-            self.variables.push(var);
-            self.mapping_order_id_market.insert(entry.order_id, entry.clone());
+            let var = self
+                .vars
+                .add(definition);
+            self.variables
+                .push(var);
+            self.mapping_order_id_market
+                .insert(entry.order_id, entry.clone());
 
             // get the max price that was recorded for the market
-            let mut max_price = self.max_price_per_entry.get(&asteroid).unwrap_or(&0f64);
+            let mut max_price = self
+                .max_price_per_entry
+                .get(&asteroid)
+                .unwrap_or(&0.0f64);
 
             if entry.price > *max_price {
                 max_price = &entry.price;
-                self.max_price_per_entry.insert(asteroid.clone(), entry.price);
+                self.max_price_per_entry
+                    .insert(asteroid.clone(), entry.price);
             }
 
-            self.total_price += *max_price * var + self.hauling_cost(entry.structure_id, var, entry.item_volume);
-            self.constraints.push(constraint!(var >= 0));
+            self.total_price += *max_price * var
+                + self.hauling_cost(entry.structure_id, var, entry.item_volume);
+            self.constraints
+                .push(constraint!(var >= 0));
 
             if asteroid.is_any_asteroid() {
                 let quantity = ((entry.quantity / 100) as f64).floor();
-                self.constraints.push(constraint!(var <= quantity));
+                self.constraints
+                    .push(constraint!(var <= quantity));
             } else {
-                self.constraints.push(constraint!(var <= entry.quantity as f64));
+                self.constraints
+                    .push(constraint!(var <= entry.quantity as f64));
             }
 
             for (mineral, quantity) in asteroid.minerals() {
-                let efficiency = self.mineral_compression
+                let efficiency = self
+                    .mineral_compression
                     .unwrap_or_default()
                     .efficiency();
 
@@ -82,7 +98,6 @@ impl AsteroidCompressionProblem {
                 } else {
                     var * quantity
                 };
-
 
                 self.minerals
                     .entry(mineral)
@@ -116,26 +131,42 @@ impl AsteroidCompressionProblem {
 
                 let name = reprocess_type.prismatic_name();
                 let definition = variable().name(name);
-                let var = self.vars.add(definition);
-                self.variables.push(var);
-                self.mapping_order_id_market.insert(entry.order_id, entry.clone());
+                let var = self
+                    .vars
+                    .add(definition);
+                self.variables
+                    .push(var);
+                self.mapping_order_id_market
+                    .insert(entry.order_id, entry.clone());
 
                 // get the max price that was recorded for the market
-                let mut max_price = self.max_price_per_entry.get(&asteroid).unwrap_or(&0f64);
+                let mut max_price = self
+                    .max_price_per_entry
+                    .get(&asteroid)
+                    .unwrap_or(&0.0f64);
 
                 if entry.price > *max_price {
                     max_price = &entry.price;
-                    self.max_price_per_entry.insert(reprocess_type.clone(), entry.price);
+                    self.max_price_per_entry
+                        .insert(reprocess_type.clone(), entry.price);
                 }
 
-                self.total_price += *max_price * var + self.hauling_cost(entry.structure_id, var, entry.item_volume);
-                self.constraints.push(constraint!(var >= 0));
+                self.total_price += *max_price * var
+                    + self.hauling_cost(
+                        entry.structure_id,
+                        var,
+                        entry.item_volume,
+                    );
+                self.constraints
+                    .push(constraint!(var >= 0));
 
                 let quantity = ((entry.quantity / 100) as f64).floor();
-                self.constraints.push(constraint!(var <= quantity));
+                self.constraints
+                    .push(constraint!(var <= quantity));
 
                 for (mineral, quantity) in reprocess_type.minerals() {
-                    let efficiency = self.mineral_compression
+                    let efficiency = self
+                        .mineral_compression
                         .unwrap_or_default()
                         .efficiency();
 
@@ -159,26 +190,24 @@ impl AsteroidCompressionProblem {
         match *structure_id {
             // UALX
             1046664001931i64 => {
-                let hauling_full = 370_000f64;
-                let hauling_fuel = 19_816_099f64;
+                let hauling_full = 370_000.0f64;
+                let hauling_fuel = 19_816_099.0f64;
                 let hauling_per_m3 = hauling_fuel / hauling_full;
                 (quantity * volume) * hauling_per_m3
             },
             // C-J
             1049588174021i64 => {
-                let hauling_full = 370_000f64;
-                let hauling_fuel = 113_886_795f64;
+                let hauling_full = 370_000.0f64;
+                let hauling_fuel = 113_886_795.0f64;
                 let hauling_per_m3 = hauling_fuel / hauling_full;
                 (quantity * volume) * hauling_per_m3
             },
             // Jita
-            60003760i64 => {
-                (quantity * volume) * 475f64
-            },
+            60003760i64 => (quantity * volume) * 475.0f64,
             // Amarr
             60008494i64 => {
-                let hauling_full = 370_000f64;
-                let hauling_fuel = 173_566_003f64;
+                let hauling_full = 370_000.0f64;
+                let hauling_fuel = 173_566_003.0f64;
                 let hauling_per_m3 = hauling_fuel / hauling_full;
                 (quantity * volume) * hauling_per_m3
             },
@@ -191,17 +220,30 @@ impl AsteroidCompressionProblem {
         minerals: HashMap<Mineral, f64>,
     ) -> Result<HashMap<(StructureId, TypeId), MarketProblemResult>> {
         for (mineral, quantity) in minerals {
-            if let Some(x) = self.minerals.get(&mineral) {
-                self.constraints.push(constraint!(x.clone() >= quantity));
+            if let Some(x) = self
+                .minerals
+                .get(&mineral)
+            {
+                self.constraints
+                    .push(constraint!(x.clone() >= quantity));
             }
         }
 
-        let mapping = self.variables
+        let mapping = self
+            .variables
             .into_iter()
-            .map(|var| (var, self.vars.display(&var).to_string()))
+            .map(|var| {
+                (
+                    var,
+                    self.vars
+                        .display(&var)
+                        .to_string(),
+                )
+            })
             .collect::<HashMap<_, _>>();
 
-        let problem_result = self.vars
+        let problem_result = self
+            .vars
             .minimise(self.total_price)
             .using(default_solver)
             .with_all(self.constraints)
@@ -212,20 +254,26 @@ impl AsteroidCompressionProblem {
         let mut result = HashMap::new();
         for (var, definition) in mapping.iter() {
             let buy_quantity = problem_result.value(*var);
-            if buy_quantity > 0f64 {
+            if buy_quantity > 0.0f64 {
                 let name = definition.to_string();
 
                 let order_id = name
                     .split_once("_")
                     .iter()
                     .next_back()
-                    .unwrap().1
+                    .unwrap()
+                    .1
                     .parse::<i64>()
                     .unwrap();
-                let entry = self.mapping_order_id_market.get(&order_id).unwrap();
+                let entry = self
+                    .mapping_order_id_market
+                    .get(&order_id)
+                    .unwrap();
 
-                let quantity = if Asteroid::from_type_id(entry.type_id).is_any_asteroid() {
-                    buy_quantity.ceil() * 100f64
+                let quantity = if Asteroid::from_type_id(entry.type_id)
+                    .is_any_asteroid()
+                {
+                    buy_quantity.ceil() * 100.0f64
                 } else {
                     buy_quantity
                 } as i32;
@@ -233,7 +281,7 @@ impl AsteroidCompressionProblem {
                 result
                     .entry((entry.structure_id, entry.type_id))
                     .and_modify(|x: &mut MarketProblemResult| {
-                        //x.push(MarketProblemResult {
+                        // x.push(MarketProblemResult {
                         //    quantity: buy_quantity as i32,
                         //    price: entry.price,
                         //    type_id: entry.type_id,
@@ -247,8 +295,8 @@ impl AsteroidCompressionProblem {
                     })
                     .or_insert(MarketProblemResult {
                         quantity: quantity,
-                        price: entry.price,
-                        type_id: entry.type_id,
+                        price:    entry.price,
+                        type_id:  entry.type_id,
                     });
             }
         }
@@ -256,5 +304,3 @@ impl AsteroidCompressionProblem {
         Ok(result)
     }
 }
-
-

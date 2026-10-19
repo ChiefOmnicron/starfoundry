@@ -2,39 +2,41 @@ use axum::extract::{Path, Request, State};
 use axum::middleware::Next;
 use axum::response::IntoResponse;
 use sqlx::PgPool;
-use starfoundry_lib_gateway::ExtractIdentity;
-use starfoundry_lib_industry::project_group::ProjectGroupPermissionCode;
-use starfoundry_lib_industry::ProjectGroupUuid;
+use starfoundry_gateway::ExtractIdentity;
 use starfoundry_lib_types::CharacterId;
 
-use crate::AppState;
 use crate::project_group::error::{ProjectGroupError, Result};
+use crate::project_group::permission::ProjectGroupPermissionCode;
+use crate::{AppState, ProjectGroupUuid};
 
 pub async fn assert_write(
-    State(state):             State<AppState>,
+    State(state): State<AppState>,
     Path(project_group_uuid): Path<ProjectGroupUuid>,
-    identity:                 ExtractIdentity,
-    request:                  Request,
-    next:                     Next,
+    identity: ExtractIdentity,
+    request: Request,
+    next: Next,
 ) -> Result<impl IntoResponse> {
     assert_write_access_check(
-            &state.postgres,
-            project_group_uuid,
-            identity.character_id,
-            ProjectGroupPermissionCode::WriteGroup,
-        )
-        .await?;
+        &state.postgres,
+        project_group_uuid,
+        identity.character_id,
+        ProjectGroupPermissionCode::WriteGroup,
+    )
+    .await?;
 
-    Ok(next.run(request).await)
+    Ok(next
+        .run(request)
+        .await)
 }
 
 pub async fn assert_write_access_check(
-    pool:               &PgPool,
+    pool: &PgPool,
     project_group_uuid: ProjectGroupUuid,
-    character_id:       CharacterId,
-    permission:         ProjectGroupPermissionCode,
+    character_id: CharacterId,
+    permission: ProjectGroupPermissionCode,
 ) -> Result<()> {
-    let result = sqlx::query!("
+    let result = sqlx::query!(
+        "
             SELECT pg.id
             FROM project_group pg
             JOIN project_group_member pgm ON pgm.project_group_id = pg.id
@@ -45,14 +47,16 @@ pub async fn assert_write_access_check(
                 permission & $4 = $4
             )
         ",
-            *project_group_uuid,
-            *character_id,
-            *ProjectGroupPermissionCode::Owner,
-            *permission,
-        )
-        .fetch_optional(pool)
-        .await
-        .map_err(|e| ProjectGroupError::FetchGroupPermissions(e, project_group_uuid))?;
+        *project_group_uuid,
+        *character_id,
+        *ProjectGroupPermissionCode::Owner,
+        *permission,
+    )
+    .fetch_optional(pool)
+    .await
+    .map_err(|e| {
+        ProjectGroupError::FetchGroupPermissions(e, project_group_uuid)
+    })?;
 
     if result.is_none() {
         Err(ProjectGroupError::Forbidden(project_group_uuid, character_id))

@@ -5,9 +5,7 @@ use crate::error::{EveApiError, Result};
 use crate::eve_client::EveApiClient;
 
 impl EveApiClient {
-    pub async fn jwt_keys(
-        jwt_key_url: Url,
-    ) -> Result<EveApiJwtKeys> {
+    pub async fn jwt_keys(jwt_key_url: Url) -> Result<EveApiJwtKeys> {
         #[derive(Debug, Deserialize)]
         struct Response {
             keys: Vec<EveApiJwtKey>,
@@ -19,9 +17,7 @@ impl EveApiClient {
             .json::<Response>()
             .await
             .map(|x| EveApiJwtKeys(x.keys))
-            .map_err(|e| {
-                EveApiError::FetchEveJwtToken(e)
-            })
+            .map_err(|e| EveApiError::FetchEveJwtToken(e))
     }
 }
 
@@ -36,9 +32,7 @@ pub struct EveApiJwtKey {
 pub struct EveApiJwtKeys(Vec<EveApiJwtKey>);
 
 impl EveApiJwtKeys {
-    pub fn rs256(
-        &self
-    ) -> Option<(String, String)> {
+    pub fn rs256(&self) -> Option<(String, String)> {
         self.0
             .iter()
             .find(|x| x.alg == "RS256" && x.kty == "RSA")

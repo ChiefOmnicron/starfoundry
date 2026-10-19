@@ -1,26 +1,34 @@
+use axum::Json;
 use axum::extract::State;
 use axum::http::StatusCode;
-use axum::Json;
 use axum::response::IntoResponse;
-use sqlx::PgPool;
-use starfoundry_lib_appraisal::{Appraisal, AppraisalCode, AppraisalMode, AppraisalTotal, CreateAppraisalRequest};
-use starfoundry_lib_eve_gateway::{EveGatewayApiClientItem, EveGatewayClient};
-use starfoundry_lib_market::{MarketApiClientOrder, MarketBulkRequest, MarketClient, MarketItem, MarketStrategy};
 use chrono::Utc;
+use serde::{Deserialize, Serialize};
+use sqlx::PgPool;
+use starfoundry_eve_gateway::EveGatewayClient;
+use starfoundry_eve_gateway::item::EveGatewayApiClientItem;
+use starfoundry_lib_types::StructureId;
+use starfoundry_market::MarketClient;
+use starfoundry_market::market::{
+    MarketApiClientOrder, MarketBulkRequest, MarketItem, MarketStrategy
+};
+use utoipa::ToSchema;
 
 use crate::api_docs::{BadRequest, InternalServerError, UnsupportedMediaType};
-use crate::appraisal::{AppraisalError, Result};
+use crate::appraisal::code::AppraisalCode;
+use crate::appraisal::{
+    Appraisal, AppraisalError, AppraisalMode, AppraisalPersistence, AppraisalTotal, Result
+};
 use crate::{AppState, SERVICE_NAME};
 
 /// Create Appraisal
-/// 
+///
 /// - Alternative route: `/latest/appraisals`
 /// - Alternative route: `/v1/appraisals`
-/// 
+///
 /// ---
-/// 
+///
 /// Creates a new appraisal
-/// 
 #[utoipa::path(
     post,
     path = "/",
@@ -38,36 +46,30 @@ use crate::{AppState, SERVICE_NAME};
     ),
 )]
 pub async fn api(
-    State(state):           State<AppState>,
-    Json(appraisal_info):   Json<CreateAppraisalRequest>,
+    State(state): State<AppState>,
+    Json(appraisal_info): Json<CreateAppraisalRequest>,
 ) -> Result<impl IntoResponse> {
     appraisal_info.validate()?;
 
-    let result = create(
-            &state.postgres,
-            appraisal_info,
-        ).await?;
+    let result = create(&state.postgres, appraisal_info).await?;
 
-    Ok(
-        (
-            StatusCode::CREATED,
-            Json(result)
-        )
-    )
+    Ok((StatusCode::CREATED, Json(result)))
 }
 
 async fn create(
-    pool:           &PgPool,
+    pool: &PgPool,
     appraisal_info: CreateAppraisalRequest,
 ) -> Result<Appraisal> {
     let code = AppraisalCode::new();
     let strategy = match appraisal_info.mode {
-        AppraisalMode::Appraisal    => MarketStrategy::Appraisal,
-        AppraisalMode::Multibuy     => MarketStrategy::MultiBuy,
-        _                           => unimplemented!("Invalid appraisal mode: {:?}", appraisal_info.mode),
+        AppraisalMode::Appraisal => MarketStrategy::Appraisal,
+        AppraisalMode::Multibuy => MarketStrategy::MultiBuy,
     };
 
-    let raw_content = if let Some(x) = appraisal_info.item_str.as_ref() {
+    let raw_content = if let Some(x) = appraisal_info
+        .item_str
+        .as_ref()
+    {
         Some(x.into())
     } else {
         None
@@ -87,51 +89,75 @@ async fn create(
             invalid_items = x.invalid;
             x.items
                 .into_iter()
-                .map(|x| MarketItem {
-                    quantity:   x.quantity as i32,
-                    type_id:    x.type_id,
+                .map(|x| {
+                    MarketItem {
+                        quantity: x.quantity as i32,
+                        type_id:  x.type_id,
+                    }
                 })
                 .collect::<Vec<_>>()
         } else {
             Vec::new()
         }
     } else {
-        return Err(AppraisalError::InvalidAppraisal("either `item_list` or `item_str` must be set".into()));
+        return Err(AppraisalError::InvalidAppraisal(
+            "either `item_list` or `item_str` must be set".into(),
+        ));
     };
 
     let market_client = MarketClient::new(SERVICE_NAME)?;
     let entries = market_client
         .bulk_latest_orders(MarketBulkRequest {
-            item_list:          Some(market_items),
-            markets:            vec![appraisal_info.market_id],
-            strategy:           strategy,
+            item_list: Some(market_items),
+            markets:   vec![appraisal_info.market_id],
+            strategy:  strategy,
 
-            item_list_str:      None,
-            smart_buy_config:   None,
-            virtual_market:     false,
+            item_list_str:    None,
+            smart_buy_config: None,
+            virtual_market:   false,
         })
         .await?;
 
     let total_buy = entries
         .iter()
-        .filter(|x| x.buy_price.is_some())
-        .map(|x| x.buy_price.as_ref().map(|y| y.max * x.quantity as f64).unwrap_or_default())
+        .filter(|x| {
+            x.buy_price
+                .is_some()
+        })
+        .map(|x| {
+            x.buy_price
+                .as_ref()
+                .map(|y| y.max * x.quantity as f64)
+                .unwrap_or_default()
+        })
         .sum();
     let total_sell = entries
         .iter()
-        .filter(|x| x.sell_price.is_some())
-        .map(|x| x.sell_price.as_ref().map(|y| y.min * x.quantity as f64).unwrap_or_default())
+        .filter(|x| {
+            x.sell_price
+                .is_some()
+        })
+        .map(|x| {
+            x.sell_price
+                .as_ref()
+                .map(|y| y.min * x.quantity as f64)
+                .unwrap_or_default()
+        })
         .sum();
     let total = AppraisalTotal {
-        buy:    total_buy,
-        sell:   total_sell,
+        buy:  total_buy,
+        sell: total_sell,
     };
 
-    // attempt to insert the information into the database. If it fails, it fails
-    // silently
+    // attempt to insert the information into the database. If it fails, it
+    // fails silently
     if let Ok(market_entries) = serde_json::to_value(&entries) {
-        let mode: String = appraisal_info.mode.clone().into();
-        let result = sqlx::query!("
+        let mode: String = appraisal_info
+            .mode
+            .clone()
+            .into();
+        let result = sqlx::query!(
+            "
                 INSERT INTO appraisal(
                     code,
                     market_id,
@@ -144,17 +170,17 @@ async fn create(
                 )
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
             ",
-                &*code,
-                *appraisal_info.market_id,
-                appraisal_info.modifier as i16,
-                market_entries,
-                invalid_items.join("\n"),
-                appraisal_info.comment,
-                raw_content,
-                &mode,
-            )
-            .execute(pool)
-            .await;
+            &*code,
+            *appraisal_info.market_id,
+            appraisal_info.modifier as i16,
+            market_entries,
+            invalid_items.join("\n"),
+            appraisal_info.comment,
+            raw_content,
+            &mode,
+        )
+        .execute(pool)
+        .await;
 
         if let Err(e) = result {
             tracing::error!("{e}");
@@ -162,21 +188,110 @@ async fn create(
     }
 
     let appraisal = Appraisal {
-        code:           code,
-        created_at_ts:  Utc::now().to_utc().timestamp_millis(),
+        code:          code,
+        created_at_ts: Utc::now()
+            .to_utc()
+            .timestamp_millis(),
 
-        invalid:        invalid_items,
-        items:          entries,
-        total:          total,
+        invalid: invalid_items,
+        items:   entries,
+        total:   total,
 
-        market_id:      appraisal_info.market_id,
+        market_id: appraisal_info.market_id,
 
-        mode:           appraisal_info.mode,
+        mode: appraisal_info.mode,
 
-        modifier:       appraisal_info.modifier,
-        comment:        appraisal_info.comment,
-        raw:            raw_content,
+        modifier: appraisal_info.modifier,
+        comment:  appraisal_info.comment,
+        raw:      raw_content,
     };
 
     Ok(appraisal)
+}
+
+#[derive(Debug, Deserialize, Serialize, ToSchema)]
+#[schema(
+    examples(
+        json!({
+            "item_str": "Tritanium\t100\nPyerite\t100",
+            "market": 60003760,
+            "modifier": 100
+        }),
+        json!({
+            "item_str": "Tritanium\t100\nPyerite\t100",
+            "market": 60003760,
+            "modifier": 110,
+            "mode": "MULTIBUY",
+            "persist": "NO_PERSIST"
+        })
+    )
+)]
+pub struct CreateAppraisalRequest {
+    /// Market that should be used to create the appraisal
+    /// Uses Jita per default
+    #[serde(default = "default_market")]
+    pub market_id: StructureId,
+
+    /// List of items. TypeId and Quantity
+    /// Either `item_list` or `item_str` must be set
+    #[serde(default)]
+    pub item_list: Option<Vec<MarketItem>>,
+    /// List of items in a string. One item per line
+    /// Either `item_list` or `item_str` must be set
+    #[serde(default)]
+    pub item_str:  Option<String>,
+
+    /// Appraisal mode
+    ///
+    /// `APPRAISAL` -> Creates an appraisal based on the most expensive buy, or
+    /// the cheapest sell `MULTIBUY` -> Behaves like the in-game Multibuy
+    /// window
+    ///
+    /// Default: `APPRAISAL`
+    #[serde(default)]
+    pub mode: AppraisalMode,
+
+    /// Persist
+    ///
+    /// `PERSIST`       -> Persist the appraisal for future calls
+    /// `NO_PERSIST`    -> Does not persist the appraisal, use this if you
+    /// create a lot
+    ///
+    /// Default: `PERSIST`
+    #[serde(default)]
+    pub persist: AppraisalPersistence,
+
+    /// Optional comment
+    #[serde(default)]
+    pub comment: Option<String>,
+
+    /// Optional price modifier
+    #[serde(default = "default_price_modifier")]
+    pub modifier: u32,
+}
+
+impl CreateAppraisalRequest {
+    pub fn validate(&self) -> Result<bool> {
+        if self
+            .item_list
+            .is_some()
+            || self
+                .item_str
+                .is_some()
+        {
+            Ok(true)
+        } else {
+            Err(AppraisalError::InvalidAppraisal(
+                "either `item_list` or `item_str` must be set".into(),
+            ))
+        }
+    }
+}
+
+fn default_market() -> StructureId {
+    StructureId(60003760)
+}
+
+fn default_price_modifier() -> u32 {
+    100u32
 }

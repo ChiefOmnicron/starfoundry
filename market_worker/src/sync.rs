@@ -1,21 +1,22 @@
-use sqlx::PgPool;
-use starfoundry_lib_types::{CharacterId, CorporationId, RegionId, StructureId};
-use starfoundry_lib_worker::Task;
 use std::collections::HashMap;
 
-use crate::error::{Error, Result};
-use crate::metric::WorkerMetric;
+use sqlx::PgPool;
+use starfoundry_lib_types::{
+    CharacterId, CorporationId, RegionId, StructureId
+};
+use starfoundry_lib_worker::Task;
+
 use crate::WorkerMarketTask;
+use crate::error::{MarketWorkerError, Result};
+use crate::metric::WorkerMetric;
 
 /// Ensures that all necessary tasks are in the queue and new structures
 /// are added into the rotation
 pub async fn sync_task(
-    pool:   &PgPool,
-    task:   &mut Task<WorkerMetric, WorkerMarketTask>,
+    pool: &PgPool,
+    task: &mut Task<WorkerMetric, WorkerMarketTask>,
 ) -> Result<()> {
-    match sync_player_stations(
-        pool,
-    ).await {
+    match sync_player_stations(pool).await {
         Ok(new_entries) => {
             if new_entries > 0 {
                 task.append_log(format!("added {new_entries} player markets"))
@@ -24,9 +25,7 @@ pub async fn sync_task(
         Err(e) => task.append_error(e.to_string()),
     };
 
-    match sync_npc_stations(
-        pool,
-    ).await {
+    match sync_npc_stations(pool).await {
         Ok(new_entries) => {
             if new_entries > 0 {
                 task.append_log(format!("added {new_entries} npc markets"))
@@ -35,9 +34,7 @@ pub async fn sync_task(
         Err(e) => task.append_error(e.to_string()),
     };
 
-    match sync_public_contract(
-        pool,
-    ).await {
+    match sync_public_contract(pool).await {
         Ok(new_entries) => {
             if new_entries > 0 {
                 task.append_log(format!("added {new_entries} public contracts"))
@@ -46,9 +43,7 @@ pub async fn sync_task(
         Err(e) => task.append_error(e.to_string()),
     };
 
-    match sync_misc_tasks(
-        pool,
-    ).await {
+    match sync_misc_tasks(pool).await {
         Ok(_) => {},
         Err(e) => task.append_error(e.to_string()),
     };
@@ -58,35 +53,23 @@ pub async fn sync_task(
 
 /// Ensures that all necessary tasks are in the queue and new structures
 /// are added into the rotation
-pub async fn sync(
-    pool:   &PgPool,
-) -> Result<()> {
-    sync_player_stations(
-        pool,
-    ).await?;
+pub async fn sync(pool: &PgPool) -> Result<()> {
+    sync_player_stations(pool).await?;
 
-    /*sync_private_orders(
-        pool,
-    ).await?;*/
+    // sync_private_orders(
+    // pool,
+    // ).await?;
 
-    sync_npc_stations(
-        pool,
-    ).await?;
+    sync_npc_stations(pool).await?;
 
-    sync_public_contract(
-        pool,
-    ).await?;
+    sync_public_contract(pool).await?;
 
-    sync_misc_tasks(
-        pool,
-    ).await?;
+    sync_misc_tasks(pool).await?;
 
     Ok(())
 }
 
-async fn sync_misc_tasks(
-    pool: &PgPool,
-) -> Result<()> {
+async fn sync_misc_tasks(pool: &PgPool) -> Result<()> {
     for task in [
         WorkerMarketTask::Sync,
         WorkerMarketTask::Cleanup,
@@ -94,20 +77,22 @@ async fn sync_misc_tasks(
     ] {
         let task: String = task.into();
 
-        let task_db = sqlx::query!("
+        let task_db = sqlx::query!(
+            "
                 SELECT 1 as exists
                 FROM worker_queue
                 WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
                 AND task = $1
             ",
-                task,
-            )
-            .fetch_optional(pool)
-            .await
-            .map_err(Error::SyncError)?;
+            task,
+        )
+        .fetch_optional(pool)
+        .await
+        .map_err(MarketWorkerError::SyncError)?;
 
         if task_db.is_none() {
-            sqlx::query!("
+            sqlx::query!(
+                "
                 INSERT INTO worker_queue (task)
                 SELECT $1
             ",
@@ -115,16 +100,14 @@ async fn sync_misc_tasks(
             )
             .execute(pool)
             .await
-            .map_err(Error::SyncError)?;
+            .map_err(MarketWorkerError::SyncError)?;
         }
     }
 
     Ok(())
 }
 
-async fn sync_npc_stations(
-    pool: &PgPool,
-) -> Result<usize> {
+async fn sync_npc_stations(pool: &PgPool) -> Result<usize> {
     let task_name: String = WorkerMarketTask::LatestNpc.into();
 
     // (structureId, regionId)
@@ -135,7 +118,8 @@ async fn sync_npc_stations(
         (60008494, 10000043),
     ];
 
-    let market_stations = sqlx::query!("
+    let market_stations = sqlx::query!(
+        "
             SELECT
                 (additional_data ->> 'structure_id')::BIGINT AS structure_id,
                 (additional_data ->> 'region_id')::INTEGER AS region_id
@@ -143,11 +127,11 @@ async fn sync_npc_stations(
             WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
             AND task = $1
         ",
-            &task_name,
-        )
-        .fetch_all(pool)
-        .await
-        .map_err(Error::SyncError)?;
+        &task_name,
+    )
+    .fetch_all(pool)
+    .await
+    .map_err(MarketWorkerError::SyncError)?;
 
     // ensure that non authed structures are in the queue
     let mut new_entries = Vec::new();
@@ -155,40 +139,42 @@ async fn sync_npc_stations(
         if market_stations
             .iter()
             .find(|x| {
-                x.region_id == Some(region_id) &&
-                x.structure_id == Some(structure_id)
-            }).is_none() {
-                let additional_data = serde_json::json!({
-                    "structure_id": structure_id,
-                    "region_id": region_id,
-                });
-                new_entries.push(additional_data);
-            }
+                x.region_id == Some(region_id)
+                    && x.structure_id == Some(structure_id)
+            })
+            .is_none()
+        {
+            let additional_data = serde_json::json!({
+                "structure_id": structure_id,
+                "region_id": region_id,
+            });
+            new_entries.push(additional_data);
+        }
     }
 
     tracing::info!("Added {} new npc market jobs", new_entries.len());
-    sqlx::query!("
+    sqlx::query!(
+        "
             INSERT INTO worker_queue (task, additional_data)
             SELECT $1, * FROM UNNEST(
                 $2::JSONB[]
             )
         ",
-            &task_name,
-            &new_entries
-        )
-        .execute(pool)
-        .await
-        .map(|_| new_entries.len())
-        .map_err(Error::SyncError)
+        &task_name,
+        &new_entries
+    )
+    .execute(pool)
+    .await
+    .map(|_| new_entries.len())
+    .map_err(MarketWorkerError::SyncError)
 }
 
-async fn sync_player_stations(
-    pool: &PgPool,
-) -> Result<usize> {
+async fn sync_player_stations(pool: &PgPool) -> Result<usize> {
     let task_name: String = WorkerMarketTask::LatestPlayer.into();
 
     let mut registered_structures = HashMap::new();
-    sqlx::query!("
+    sqlx::query!(
+        "
             SELECT
                 main_character,
                 character_id,
@@ -198,24 +184,35 @@ async fn sync_player_stations(
                 source
             FROM structure
             WHERE structure_id > 1000000000000
-        ")
-        .fetch_all(pool)
-        .await
-        .map_err(Error::SyncError)?
-        .into_iter()
-        .map(|x| MarketEntry {
-            main_character: x.main_character.into(),
-            corporation_id: x.corporation_id.into(),
-            structure_id:   x.structure_id.into(),
-            region_id:      x.region_id.into(),
+        "
+    )
+    .fetch_all(pool)
+    .await
+    .map_err(MarketWorkerError::SyncError)?
+    .into_iter()
+    .map(|x| {
+        MarketEntry {
+            main_character: x
+                .main_character
+                .into(),
+            corporation_id: x
+                .corporation_id
+                .into(),
+            structure_id:   x
+                .structure_id
+                .into(),
+            region_id:      x
+                .region_id
+                .into(),
             source:         x.source,
-        })
-        .for_each(|x| {
-            registered_structures
-                .entry((x.main_character, x.structure_id))
-                .and_modify(|y: &mut Vec<MarketEntry>| y.push(x.clone()))
-                .or_insert(vec![x]);
-        });
+        }
+    })
+    .for_each(|x| {
+        registered_structures
+            .entry((x.main_character, x.structure_id))
+            .and_modify(|y: &mut Vec<MarketEntry>| y.push(x.clone()))
+            .or_insert(vec![x]);
+    });
 
     let market_stations = sqlx::query!(r#"
             SELECT
@@ -231,7 +228,7 @@ async fn sync_player_stations(
         )
         .fetch_all(pool)
         .await
-        .map_err(Error::SyncError)?;
+        .map_err(MarketWorkerError::SyncError)?;
 
     // if there is at least one entry, skip it
     if !market_stations.is_empty() {
@@ -245,14 +242,20 @@ async fn sync_player_stations(
         }
 
         for structure in structures {
-            if let None = market_stations
+            if market_stations
                 .iter()
                 .find(|x| {
-                    x.character_id == *character_id &&
-                    x.structure_id == *structure_id &&
-                    x.source == Some(structure.source.clone())
-                }) {
-
+                    x.character_id == *character_id
+                        && x.structure_id == *structure_id
+                        && x.source
+                            == Some(
+                                structure
+                                    .source
+                                    .clone(),
+                            )
+                })
+                .is_none()
+            {
                 let additional_data = serde_json::json!({
                     "structure_id": structure.structure_id,
                     "character_id": character_id,
@@ -266,47 +269,47 @@ async fn sync_player_stations(
     }
 
     tracing::info!("Added {} new player market jobs", new_entries.len());
-    sqlx::query!("
+    sqlx::query!(
+        "
             INSERT INTO worker_queue (task, additional_data)
             SELECT $1, * FROM UNNEST(
                 $2::JSONB[]
             )
         ",
-            &task_name,
-            &new_entries
-        )
-        .execute(pool)
-        .await
-        .map(|_| new_entries.len())
-        .map_err(Error::SyncError)
+        &task_name,
+        &new_entries
+    )
+    .execute(pool)
+    .await
+    .map(|_| new_entries.len())
+    .map_err(MarketWorkerError::SyncError)
 
-    //time_slotted_market(
+    // time_slotted_market(
     //    pool,
     //    WorkerMarketTask::LatestPlayer,
     //    registered_structures,
     //).await
 }
 
-async fn sync_public_contract(
-    pool: &PgPool,
-) -> Result<usize> {
+async fn sync_public_contract(pool: &PgPool) -> Result<usize> {
     let task_name: String = WorkerMarketTask::PublicContracts.into();
     let mut new_entries = Vec::new();
 
     // FIXME:_ configurable
     for region_id in [10000002, 10000043] {
-        let public_contract = sqlx::query!("
+        let public_contract = sqlx::query!(
+            "
                 SELECT
                     (additional_data ->> 'region_id')::INTEGER AS region_id
                 FROM worker_queue
                 WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
                 AND task = $1
             ",
-                &task_name,
-            )
-            .fetch_optional(pool)
-            .await
-            .map_err(Error::SyncError)?;
+            &task_name,
+        )
+        .fetch_optional(pool)
+        .await
+        .map_err(MarketWorkerError::SyncError)?;
 
         if public_contract.is_none() {
             new_entries.push(serde_json::json!({
@@ -316,117 +319,117 @@ async fn sync_public_contract(
     }
 
     tracing::info!("Added {} new player market jobs", new_entries.len());
-    sqlx::query!("
+    sqlx::query!(
+        "
             INSERT INTO worker_queue (task, additional_data)
             SELECT $1, * FROM UNNEST(
                 $2::JSONB[]
             )
         ",
-            &task_name,
-            &new_entries
-        )
-        .execute(pool)
-        .await
-        .map(|_| new_entries.len())
-        .map_err(Error::SyncError)
+        &task_name,
+        &new_entries
+    )
+    .execute(pool)
+    .await
+    .map(|_| new_entries.len())
+    .map_err(MarketWorkerError::SyncError)
 }
 
-/*
-async fn sync_private_orders(
-    pool: &PgPool,
-    host: String,
-) -> Result<usize> {
-    let mut total_added = 0;
-
-    // FIXME: only tmp
-    for character_id in [2117441999] {
-        let mut new_entries = Vec::new();
-        let task_name: String = WorkerMarketTask::CharacterOrders.into();
-        let public_contract = sqlx::query!("
-                SELECT
-                    (additional_data ->> 'character_id')::INTEGER AS character_id,
-                    (additional_data ->> 'corporation_id')::INTEGER AS corporation_id,
-                    (additional_data ->> 'source')::INTEGER AS source
-                FROM worker_queue
-                WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
-                AND task = $1
-            ",
-                &task_name,
-            )
-            .fetch_optional(pool)
-            .await
-            .map_err(Error::SyncError)?;
-
-        if public_contract.is_none() {
-            new_entries.push(serde_json::json!({
-                "character_id": character_id,
-                "source": host.clone(),
-            }))
-        }
-
-        tracing::info!("Added {} new character orders", new_entries.len());
-        sqlx::query!("
-                INSERT INTO worker_queue (task, additional_data)
-                SELECT $1, * FROM UNNEST(
-                    $2::JSONB[]
-                )
-            ",
-                &task_name,
-                &new_entries
-            )
-            .execute(pool)
-            .await
-            .map(|_| new_entries.len())
-            .map_err(Error::SyncError)?;
-        total_added += new_entries.len();
-    }
-
-    // FIXME: only tmp
-    for corporation_id in [98024275] {
-        let mut new_entries = Vec::new();
-        let task_name: String = WorkerMarketTask::CorporationOrders.into();
-        let public_contract = sqlx::query!("
-                SELECT
-                    (additional_data ->> 'character_id')::INTEGER AS character_id,
-                    (additional_data ->> 'corporation_id')::INTEGER AS corporation_id,
-                    (additional_data ->> 'source')::INTEGER AS source
-                FROM worker_queue
-                WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
-                AND task = $1
-            ",
-                &task_name,
-            )
-            .fetch_optional(pool)
-            .await
-            .map_err(Error::SyncError)?;
-
-        if public_contract.is_none() {
-            new_entries.push(serde_json::json!({
-                "corporation_id": corporation_id,
-                "character_id": 2117441999,
-                "source": host.clone(),
-            }))
-        }
-
-        tracing::info!("Added {} new corporation orders", new_entries.len());
-        sqlx::query!("
-                INSERT INTO worker_queue (task, additional_data)
-                SELECT $1, * FROM UNNEST(
-                    $2::JSONB[]
-                )
-            ",
-                &task_name,
-                &new_entries
-            )
-            .execute(pool)
-            .await
-            .map(|_| new_entries.len())
-            .map_err(Error::SyncError)?;
-        total_added += new_entries.len();
-    }
-
-    Ok(total_added)
-}*/
+// async fn sync_private_orders(
+// pool: &PgPool,
+// host: String,
+// ) -> Result<usize> {
+// let mut total_added = 0;
+//
+// FIXME: only tmp
+// for character_id in [2117441999] {
+// let mut new_entries = Vec::new();
+// let task_name: String = WorkerMarketTask::CharacterOrders.into();
+// let public_contract = sqlx::query!("
+// SELECT
+// (additional_data ->> 'character_id')::INTEGER AS character_id,
+// (additional_data ->> 'corporation_id')::INTEGER AS corporation_id,
+// (additional_data ->> 'source')::INTEGER AS source
+// FROM worker_queue
+// WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
+// AND task = $1
+// ",
+// &task_name,
+// )
+// .fetch_optional(pool)
+// .await
+// .map_err(Error::SyncError)?;
+//
+// if public_contract.is_none() {
+// new_entries.push(serde_json::json!({
+// "character_id": character_id,
+// "source": host.clone(),
+// }))
+// }
+//
+// tracing::info!("Added {} new character orders", new_entries.len());
+// sqlx::query!("
+// INSERT INTO worker_queue (task, additional_data)
+// SELECT $1, * FROM UNNEST(
+// $2::JSONB[]
+// )
+// ",
+// &task_name,
+// &new_entries
+// )
+// .execute(pool)
+// .await
+// .map(|_| new_entries.len())
+// .map_err(Error::SyncError)?;
+// total_added += new_entries.len();
+// }
+//
+// FIXME: only tmp
+// for corporation_id in [98024275] {
+// let mut new_entries = Vec::new();
+// let task_name: String = WorkerMarketTask::CorporationOrders.into();
+// let public_contract = sqlx::query!("
+// SELECT
+// (additional_data ->> 'character_id')::INTEGER AS character_id,
+// (additional_data ->> 'corporation_id')::INTEGER AS corporation_id,
+// (additional_data ->> 'source')::INTEGER AS source
+// FROM worker_queue
+// WHERE (status = 'WAITING' OR status = 'IN_PROGRESS')
+// AND task = $1
+// ",
+// &task_name,
+// )
+// .fetch_optional(pool)
+// .await
+// .map_err(Error::SyncError)?;
+//
+// if public_contract.is_none() {
+// new_entries.push(serde_json::json!({
+// "corporation_id": corporation_id,
+// "character_id": 2117441999,
+// "source": host.clone(),
+// }))
+// }
+//
+// tracing::info!("Added {} new corporation orders", new_entries.len());
+// sqlx::query!("
+// INSERT INTO worker_queue (task, additional_data)
+// SELECT $1, * FROM UNNEST(
+// $2::JSONB[]
+// )
+// ",
+// &task_name,
+// &new_entries
+// )
+// .execute(pool)
+// .await
+// .map(|_| new_entries.len())
+// .map_err(Error::SyncError)?;
+// total_added += new_entries.len();
+// }
+//
+// Ok(total_added)
+// }
 
 #[derive(Clone, Debug)]
 struct MarketEntry {

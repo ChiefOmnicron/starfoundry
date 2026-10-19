@@ -1,49 +1,47 @@
-use serde::Deserialize;
-use starfoundry_lib_types::TypeId;
 use std::collections::HashMap;
 use std::fs::File;
 use std::path::Path;
 use std::time::Instant;
 
-use crate::{FOLDER_INPUT, Error};
+use serde::Deserialize;
+use starfoundry_lib_types::TypeId;
+
 use super::type_ids::TypeIdEntry;
+use crate::{EveSdeParserError, FOLDER_INPUT};
 
 pub fn parse(
-    directory: &str,
-) -> Result<HashMap<TypeId, BlueprintEntry>, Error> {
+    directory: &str
+) -> Result<HashMap<TypeId, BlueprintEntry>, EveSdeParserError> {
     tracing::info!("Parsing blueprints.yaml");
     let start = Instant::now();
 
-    let path = format!(
-        "{}/{}/blueprints.yaml",
-        directory,
-        FOLDER_INPUT,
-    );
+    let path = format!("{}/{}/blueprints.yaml", directory, FOLDER_INPUT,);
 
     if !Path::new(&path).exists() {
-        return Err(Error::FileDoesNotExist(path));
+        return Err(EveSdeParserError::FileDoesNotExist(path));
     }
 
     let file = File::open(&path)
-        .map_err(|x| Error::CannotOpenBlueprintsFile(x, path))?;
+        .map_err(|x| EveSdeParserError::CannotOpenBlueprintsFile(x, path))?;
 
     serde_yaml::from_reader(file)
         .map(|x| {
             tracing::info!(
                 "Finished parsing blueprints.yaml, task took {:.2}s",
-                start.elapsed().as_secs_f64()
+                start
+                    .elapsed()
+                    .as_secs_f64()
             );
             x
         })
-        .map_err(Error::ParseBlueprints)
+        .map_err(EveSdeParserError::ParseBlueprints)
 }
 
 /// Instead of having the blueprint type id, have the product of
 /// the blueprint as key.
-/// 
 pub fn product_type_id_as_key(
     blueprints: &HashMap<TypeId, BlueprintEntry>,
-    type_ids:   &HashMap<TypeId, TypeIdEntry>,
+    type_ids: &HashMap<TypeId, TypeIdEntry>,
 ) -> HashMap<TypeId, BlueprintEntry> {
     // Map with the product as key
     blueprints
@@ -57,11 +55,20 @@ pub fn product_type_id_as_key(
             }
         })
         .map(|(_, e)| e)
-        .filter(|e| e.product().is_some())
-        .filter(|e| e.materials().len() > 1)
+        .filter(|e| {
+            e.product()
+                .is_some()
+        })
+        .filter(|e| {
+            e.materials()
+                .len()
+                > 1
+        })
         .map(|e| {
             // Unwrap is save because of the filter
-            let ptype_id = e.product().unwrap();
+            let ptype_id = e
+                .product()
+                .unwrap();
             (ptype_id, e)
         })
         .collect::<HashMap<_, _>>()
@@ -88,9 +95,10 @@ impl BlueprintEntry {
     ///
     /// * `true`  -> If the entry is a reaction
     /// * `false` -> If there are not reactions
-    ///
     pub fn is_reaction(&self) -> bool {
-        self.activities.get(&ActivityName::Reaction).is_some()
+        self.activities
+            .get(&ActivityName::Reaction)
+            .is_some()
     }
 
     /// Checks if the blueprint has a manufacture or reaction job.
@@ -99,10 +107,13 @@ impl BlueprintEntry {
     ///
     /// * `true`  -> If there is either a manufacture or reaction job
     /// * `false` -> If there are not jobs
-    ///
     pub fn has_job(&self) -> bool {
-        let manufacture = self.activities.get(&ActivityName::Manufacturing);
-        let reaction = self.activities.get(&ActivityName::Reaction);
+        let manufacture = self
+            .activities
+            .get(&ActivityName::Manufacturing);
+        let reaction = self
+            .activities
+            .get(&ActivityName::Reaction);
         manufacture.is_some() || reaction.is_some()
     }
 
@@ -112,12 +123,25 @@ impl BlueprintEntry {
     ///
     /// * `None` -> If there is no product
     /// * `Some` -> TypeId of the product
-    ///
     pub fn product(&self) -> Option<TypeId> {
-        if let Some(x) = self.activities.get(&ActivityName::Manufacturing) {
-            Some(x.products.get(0)?.type_id)
-        } else if let Some(x) = self.activities.get(&ActivityName::Reaction) {
-            Some(x.products.get(0)?.type_id)
+        if let Some(x) = self
+            .activities
+            .get(&ActivityName::Manufacturing)
+        {
+            Some(
+                x.products
+                    .get(0)?
+                    .type_id,
+            )
+        } else if let Some(x) = self
+            .activities
+            .get(&ActivityName::Reaction)
+        {
+            Some(
+                x.products
+                    .get(0)?
+                    .type_id,
+            )
         } else {
             None
         }
@@ -129,12 +153,25 @@ impl BlueprintEntry {
     ///
     /// * `None` -> If there is no product
     /// * `Some` -> Quantity of the produced product
-    ///
     pub fn product_quantity(&self) -> Option<i32> {
-        if let Some(x) = self.activities.get(&ActivityName::Manufacturing) {
-            Some(x.products.get(0)?.quantity)
-        } else if let Some(x) = self.activities.get(&ActivityName::Reaction) {
-            Some(x.products.get(0)?.quantity)
+        if let Some(x) = self
+            .activities
+            .get(&ActivityName::Manufacturing)
+        {
+            Some(
+                x.products
+                    .get(0)?
+                    .quantity,
+            )
+        } else if let Some(x) = self
+            .activities
+            .get(&ActivityName::Reaction)
+        {
+            Some(
+                x.products
+                    .get(0)?
+                    .quantity,
+            )
         } else {
             None
         }
@@ -146,12 +183,19 @@ impl BlueprintEntry {
     ///
     /// List of all required materials. If there is no manufacturing or reaction
     /// job, an empty vec is returned.
-    ///
     pub fn materials(&self) -> Vec<Material> {
-        if let Some(x) = self.activities.get(&ActivityName::Manufacturing) {
-            x.materials.clone()
-        } else if let Some(x) = self.activities.get(&ActivityName::Reaction) {
-            x.materials.clone()
+        if let Some(x) = self
+            .activities
+            .get(&ActivityName::Manufacturing)
+        {
+            x.materials
+                .clone()
+        } else if let Some(x) = self
+            .activities
+            .get(&ActivityName::Reaction)
+        {
+            x.materials
+                .clone()
         } else {
             Vec::new()
         }
@@ -163,15 +207,20 @@ impl BlueprintEntry {
     ///
     /// - `None` -> If the BP has no manufacture job
     /// - `Some` -> Time of the action
-    ///
     pub fn manufacture_time(&self) -> Option<i32> {
         if !self.has_job() {
             return None;
         }
 
-        if let Some(x) = self.activities.get(&ActivityName::Manufacturing) {
+        if let Some(x) = self
+            .activities
+            .get(&ActivityName::Manufacturing)
+        {
             Some(x.time)
-        } else if let Some(x) = self.activities.get(&ActivityName::Reaction) {
+        } else if let Some(x) = self
+            .activities
+            .get(&ActivityName::Reaction)
+        {
             Some(x.time)
         } else {
             None
@@ -219,6 +268,5 @@ pub struct Material {
     pub quantity: i32,
     /// TypeId of the material that is required
     #[serde(rename = "typeID")]
-    pub type_id: TypeId,
+    pub type_id:  TypeId,
 }
-

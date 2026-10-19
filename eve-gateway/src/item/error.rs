@@ -1,5 +1,5 @@
-use axum::http::StatusCode;
 use axum::Json;
+use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 use starfoundry_lib_types::{CategoryId, GroupId, TypeId};
 use thiserror::Error;
@@ -36,12 +36,12 @@ impl IntoResponse for ItemError {
         tracing::error!("{}", self.to_string());
         (
             StatusCode::INTERNAL_SERVER_ERROR,
-            Json(
-                ErrorResponse {
-                    error: "UNKNOWN".into(),
-                    description: "An unknown error occurred, please try again later.".into(),
-                }
-            )
-        ).into_response()
+            Json(ErrorResponse {
+                error:       "UNKNOWN".into(),
+                description:
+                    "An unknown error occurred, please try again later.".into(),
+            }),
+        )
+            .into_response()
     }
 }

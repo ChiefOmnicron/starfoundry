@@ -1,0 +1,71 @@
+use axum::Json;
+use axum::response::{IntoResponse, Response};
+use reqwest::StatusCode;
+use starfoundry_gateway::{ErrorResponse, boxed_from};
+use thiserror::Error;
+
+pub type Result<T, E = IndustryError> = std::result::Result<T, E>;
+
+#[derive(Error, Debug)]
+pub enum IndustryError {
+    #[error("{0}")]
+    GatewayClientError(Box<starfoundry_gateway::GatewayError>),
+
+    #[error("the env {0} is not set")]
+    EnvNotSet(&'static str),
+    #[error(
+        "error while parsing url. Validate the environment variables, error: '{0}'"
+    )]
+    UrlParseError(url::ParseError),
+    #[error("error while parsing string into enum, value: {0}, enum: {1}")]
+    EnumParseError(String, &'static str),
+
+    #[error("Validating the input data failed, '{0}'")]
+    ValidationError(String),
+
+    #[error(
+        "the given category '{0}' is not valid, it must be one of: 'agent', 'alliance', 'character', 'constellation', 'corporation', 'faction', 'inventory_type', 'region', 'solar_system', 'station', 'structure'"
+    )]
+    InvalidSearchCategory(String),
+}
+
+impl IntoResponse for IndustryError {
+    fn into_response(self) -> Response {
+        match self {
+            Self::ValidationError(_) => {
+                tracing::warn!("{}", self.to_string());
+                (
+                    StatusCode::BAD_REQUEST,
+                    Json(ErrorResponse {
+                        error:       "INVALID_RESPONSE".into(),
+                        description: self.to_string(),
+                    }),
+                )
+                    .into_response()
+            },
+
+            Self::GatewayClientError(_)
+            | Self::EnvNotSet(_)
+            | Self::UrlParseError(_)
+            | Self::EnumParseError(..)
+            | Self::InvalidSearchCategory(_) => {
+                tracing::error!("{}", self.to_string());
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(ErrorResponse {
+                        error:       "UNKNOWN".into(),
+                        description:
+                            "An unknown error occurred, please try again later."
+                                .into(),
+                    }),
+                )
+                    .into_response()
+            },
+        }
+    }
+}
+
+boxed_from!(
+    IndustryError::GatewayClientError,
+    starfoundry_gateway::GatewayError
+);

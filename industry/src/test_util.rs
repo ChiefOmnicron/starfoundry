@@ -1,9 +1,21 @@
 use serde::Serialize;
-use starfoundry_lib_eve_gateway::{ApiClientExtended, EveGatewayApiClient, EveGatewayApiClientAsset, EveGatewayApiClientEveAsset, EveGatewayApiClientFitting, EveGatewayApiClientIndustry, EveGatewayApiClientItem, EveGatewayApiClientMarket, EveGatewayApiClientSearch, EveGatewayApiClientStanding, EveGatewayApiClientSystem};
-use starfoundry_lib_eve_gateway::contract::EveGatewayApiClientContract;
-use starfoundry_lib_gateway::ApiClient;
-use starfoundry_lib_market::{MarketApiClient, MarketApiClientOrder, MarketApiClientPrice};
+use starfoundry_eve_gateway::asset::EveGatewayApiClientAsset;
+use starfoundry_eve_gateway::character::EveGatewayApiClientCharacter;
+use starfoundry_eve_gateway::contract::EveGatewayApiClientContract;
+use starfoundry_eve_gateway::fitting::EveGatewayApiClientFitting;
+use starfoundry_eve_gateway::industry::EveGatewayApiClientIndustry;
+use starfoundry_eve_gateway::item::EveGatewayApiClientItem;
+use starfoundry_eve_gateway::market::EveGatewayApiClientMarket;
+use starfoundry_eve_gateway::search::EveGatewayApiClientSearch;
+use starfoundry_eve_gateway::standing::EveGatewayApiClientStanding;
+use starfoundry_eve_gateway::structure::EveGatewayApiClientStructure;
+use starfoundry_eve_gateway::system::EveGatewayApiClientSystem;
+use starfoundry_eve_gateway::{ApiClientExtended, EveGatewayApiClient};
+use starfoundry_gateway::ApiClient;
 use starfoundry_lib_types::{SystemId, TypeId};
+use starfoundry_market::MarketApiClient;
+use starfoundry_market::market::MarketApiClientOrder;
+use starfoundry_market::price::MarketApiClientPrice;
 
 #[derive(Clone)]
 pub struct EveGatewayTestApiClient;
@@ -16,13 +28,14 @@ impl EveGatewayTestApiClient {
 
 impl EveGatewayApiClient for EveGatewayTestApiClient {}
 impl EveGatewayApiClientAsset for EveGatewayTestApiClient {}
+impl EveGatewayApiClientCharacter for EveGatewayTestApiClient {}
 impl EveGatewayApiClientContract for EveGatewayTestApiClient {}
-impl EveGatewayApiClientEveAsset for EveGatewayTestApiClient {}
 impl EveGatewayApiClientFitting for EveGatewayTestApiClient {}
 impl EveGatewayApiClientIndustry for EveGatewayTestApiClient {}
 impl EveGatewayApiClientMarket for EveGatewayTestApiClient {}
 impl EveGatewayApiClientItem for EveGatewayTestApiClient {}
 impl EveGatewayApiClientSearch for EveGatewayTestApiClient {}
+impl EveGatewayApiClientStructure for EveGatewayTestApiClient {}
 impl EveGatewayApiClientStanding for EveGatewayTestApiClient {}
 impl EveGatewayApiClientSystem for EveGatewayTestApiClient {}
 
@@ -41,17 +54,16 @@ impl MarketApiClientPrice for MarketTestApiClient {}
 
 impl ApiClient for EveGatewayTestApiClient {
     async fn fetch<Q: Serialize, T>(
-            &self,
-            path:   impl Into<String>,
-            _query: &Q,
-        ) -> starfoundry_lib_gateway::error::Result<T>
-        where
-            T: serde::de::DeserializeOwned {
-
+        &self,
+        path: impl Into<String>,
+        _query: &Q,
+    ) -> starfoundry_gateway::Result<T>
+    where
+        T: serde::de::DeserializeOwned,
+    {
         let path = path.into();
         let response = match path.as_ref() {
-            "characters/1" |
-            "characters/2" => {
+            "characters/1" | "characters/2" => {
                 serde_json::json!({
                     "alliance_id": 1,
                     "alliance_name": "SomeAlliance",
@@ -148,30 +160,31 @@ impl ApiClient for EveGatewayTestApiClient {
             },
             _ => {
                 serde_json::json!({})
-            }
+            },
         };
 
-        Ok(
-            serde_json::from_value(response).unwrap(),
-        )
+        Ok(serde_json::from_value(response).unwrap())
     }
 
     async fn post<D, T>(
         &self,
         path: impl Into<String>,
         data: D,
-    ) -> starfoundry_lib_gateway::error::Result<T>
+    ) -> starfoundry_gateway::Result<T>
     where
         D: std::fmt::Debug + serde::Serialize + Send + Sync,
-        T: serde::de::DeserializeOwned {
-
+        T: serde::de::DeserializeOwned,
+    {
         let path = path.into();
         dbg!(&path);
         let response = match path.as_ref() {
             "items" => {
                 let mut result = Vec::new();
 
-                let type_ids: Vec<TypeId> = serde_json::from_value(serde_json::to_value(&data).unwrap()).unwrap();
+                let type_ids: Vec<TypeId> = serde_json::from_value(
+                    serde_json::to_value(&data).unwrap(),
+                )
+                .unwrap();
                 for type_id in type_ids {
                     if type_id == TypeId(21027) {
                         result.push(serde_json::json!({
@@ -305,7 +318,10 @@ impl ApiClient for EveGatewayTestApiClient {
                 serde_json::json!(result)
             },
             "systems" => {
-                let data: Vec<SystemId> = serde_json::from_value(serde_json::to_value(&data).unwrap()).unwrap();
+                let data: Vec<SystemId> = serde_json::from_value(
+                    serde_json::to_value(&data).unwrap(),
+                )
+                .unwrap();
                 if data.is_empty() {
                     serde_json::json!([])
                 } else {
@@ -323,31 +339,31 @@ impl ApiClient for EveGatewayTestApiClient {
             },
             _ => {
                 serde_json::json!({})
-            }
+            },
         };
 
-        Ok(
-            serde_json::from_value(response).unwrap(),
-        )
+        Ok(serde_json::from_value(response).unwrap())
     }
 
     async fn put<D, T>(
         &self,
         _path: impl Into<String>,
         _data: D,
-    ) -> starfoundry_lib_gateway::error::Result<T>
+    ) -> starfoundry_gateway::Result<T>
     where
         D: std::fmt::Debug + serde::Serialize + Send + Sync,
-        T: serde::de::DeserializeOwned {
+        T: serde::de::DeserializeOwned,
+    {
         unimplemented!()
     }
 
     async fn delete<T>(
         &self,
         _path: impl Into<String>,
-    ) -> starfoundry_lib_gateway::error::Result<T>
+    ) -> starfoundry_gateway::Result<T>
     where
-        T: serde::de::DeserializeOwned {
+        T: serde::de::DeserializeOwned,
+    {
         unimplemented!()
     }
 }
@@ -356,9 +372,9 @@ impl ApiClientExtended for EveGatewayTestApiClient {
     async fn fetch_page<T>(
         &self,
         _: impl Into<String>,
-    ) -> starfoundry_lib_eve_gateway::Result<Vec<T>>
+    ) -> starfoundry_eve_gateway::Result<Vec<T>>
     where
-        T: serde::de::DeserializeOwned + Send
+        T: serde::de::DeserializeOwned + Send,
     {
         unimplemented!()
     }
@@ -366,23 +382,25 @@ impl ApiClientExtended for EveGatewayTestApiClient {
 
 impl ApiClient for MarketTestApiClient {
     async fn fetch<Q: Serialize, T>(
-            &self,
-            _path:  impl Into<String>,
-            _query: &Q,
-        ) -> starfoundry_lib_gateway::Result<T>
-        where
-            T: serde::de::DeserializeOwned {
+        &self,
+        _path: impl Into<String>,
+        _query: &Q,
+    ) -> starfoundry_gateway::Result<T>
+    where
+        T: serde::de::DeserializeOwned,
+    {
         unimplemented!()
     }
 
     async fn post<D, T>(
-            &self,
-            _path: impl Into<String>,
-            _data: D,
-        ) -> starfoundry_lib_gateway::Result<T>
-        where
-            D: std::fmt::Debug + Serialize + Send + Sync,
-            T: serde::de::DeserializeOwned {
+        &self,
+        _path: impl Into<String>,
+        _data: D,
+    ) -> starfoundry_gateway::Result<T>
+    where
+        D: std::fmt::Debug + Serialize + Send + Sync,
+        T: serde::de::DeserializeOwned,
+    {
         unimplemented!()
     }
 
@@ -390,19 +408,21 @@ impl ApiClient for MarketTestApiClient {
         &self,
         _path: impl Into<String>,
         _data: D,
-    ) -> starfoundry_lib_gateway::error::Result<T>
+    ) -> starfoundry_gateway::Result<T>
     where
         D: std::fmt::Debug + serde::Serialize + Send + Sync,
-        T: serde::de::DeserializeOwned {
+        T: serde::de::DeserializeOwned,
+    {
         unimplemented!()
     }
 
     async fn delete<T>(
         &self,
-        _path:      impl Into<String>,
-    ) -> starfoundry_lib_gateway::error::Result<T>
+        _path: impl Into<String>,
+    ) -> starfoundry_gateway::Result<T>
     where
-        T: serde::de::DeserializeOwned {
+        T: serde::de::DeserializeOwned,
+    {
         unimplemented!()
     }
 }

@@ -1,11 +1,11 @@
+use axum::Json;
 use axum::extract::rejection::JsonRejection;
 use axum::http::StatusCode;
-use axum::Json;
 use axum::response::{IntoResponse, Response};
-use starfoundry_lib_gateway::ErrorResponse;
-use starfoundry_lib_industry::{FilterUuid};
+use starfoundry_gateway::ErrorResponse;
 use thiserror::Error;
 
+use crate::FilterUuid;
 use crate::api_docs::format_json_errors;
 
 pub type Result<T, E = FilterError> = std::result::Result<T, E>;
@@ -36,30 +36,30 @@ impl IntoResponse for FilterError {
                 tracing::info!("{}", self.to_string());
                 (
                     StatusCode::NOT_FOUND,
-                    Json(
-                        ErrorResponse {
-                            error: "NOT_FOUND".into(),
-                            description: self.to_string(),
-                        }
-                    )
-                ).into_response()
+                    Json(ErrorResponse {
+                        error:       "NOT_FOUND".into(),
+                        description: self.to_string(),
+                    }),
+                )
+                    .into_response()
             },
 
             Self::JsonExtractorRejection(x) => {
                 format_json_errors(x).into_response()
             },
 
-            _ => {
+            Self::List(_) | Self::Create(_) | Self::Delete(_) => {
                 tracing::error!("{}", self.to_string());
                 (
                     StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(
-                        ErrorResponse {
-                            error: "UNKNOWN".into(),
-                            description: "An unknown error occurred, please try again later.".into(),
-                        }
-                    )
-                ).into_response()
+                    Json(ErrorResponse {
+                        error:       "UNKNOWN".into(),
+                        description:
+                            "An unknown error occurred, please try again later."
+                                .into(),
+                    }),
+                )
+                    .into_response()
             },
         }
         .into_response()

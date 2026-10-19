@@ -14,7 +14,7 @@ services:
     develop:
       watch:
         - action: sync+restart
-          path: ./target/debug/starfoundry_bin-eve_gateway
+          path: ./target/debug/starfoundry-eve-gateway_bin-server
           target: /usr/local/bin/app
   eve-gateway-worker:
     build:
@@ -26,7 +26,7 @@ services:
     develop:
       watch:
         - action: sync+restart
-          path: ./target/debug/starfoundry_bin-eve_gateway_worker
+          path: ./target/debug/starfoundry-eve-gateway_worker
           target: /usr/local/bin/app
 
   gateway:
@@ -46,7 +46,7 @@ services:
     develop:
       watch:
         - action: sync+restart
-          path: ./target/debug/starfoundry_bin-gateway
+          path: ./target/debug/starfoundry-gateway_bin-server
           target: /usr/local/bin/app
 
   market:
@@ -64,7 +64,7 @@ services:
     develop:
       watch:
         - action: sync+restart
-          path: ./target/debug/starfoundry_bin-market
+          path: ./target/debug/starfoundry-market_bin-server
           target: /usr/local/bin/app
   market-worker:
     build:
@@ -78,5 +78,5 @@ services:
     develop:
       watch:
         - action: sync+restart
-          path: ./target/debug/starfoundry_bin-market_worker
+          path: ./target/debug/starfoundry-market_worker
           target: /usr/local/bin/app

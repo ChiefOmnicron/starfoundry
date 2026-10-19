@@ -16,29 +16,22 @@ members = [
   'worker_lib',
 
    'appraisal',
-   'appraisal_lib',
 
-  # gateway
   'gateway',
-  'gateway_lib',
 
   # eve gateway
-  'eve-gateway_lib',
   'eve-gateway_worker',
   'eve-gateway',
 
   # industry
   'industry',
-  'industry_lib',
   'industry_worker',
 
   # mapping
   'mapping',
-  'mapping_lib',
 
   # market
   'market',
-  'market_lib',
   'market_worker',
 
   # notification
@@ -65,6 +58,5 @@ fallible_impl_from = "deny"
 wildcard_enum_match_arm = "deny"
 unneeded_field_pattern = "deny"
 fn_params_excessive_bools = "deny"
-must_use_candidate = "deny"
 error_impl_error = "deny"
 wildcard_imports = "deny"

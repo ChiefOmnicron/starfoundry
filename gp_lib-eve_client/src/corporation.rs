@@ -13,18 +13,13 @@ impl EveApiClient {
     /// # Returns
     ///
     /// Corporation information
-    ///
     pub async fn corporation_info_by_id(
         &self,
         corporation_id: CorporationId,
     ) -> Result<Option<EveCorporationInfo>> {
-        let path = format!(
-            "latest/corporations/{}",
-            corporation_id,
-        );
+        let path = format!("latest/corporations/{}", corporation_id,);
 
-        self
-            .fetch(&path, &())
+        self.fetch(&path, &())
             .await
     }
 }
@@ -35,5 +30,5 @@ pub struct EveCorporationInfo {
     /// Optional alliance id the character is in
     pub alliance_id: Option<AllianceId>,
     /// Name of the character
-    pub name: String,
+    pub name:        String,
 }

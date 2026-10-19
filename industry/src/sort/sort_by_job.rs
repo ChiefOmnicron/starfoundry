@@ -2,7 +2,7 @@
 macro_rules! sort_by_job {
     ($name:ident, $typ_in:ty, $typ_out:ident) => {
         pub fn $name(entries: Vec<$typ_in>) -> Vec<$typ_out> {
-            let mut job_lists       = Vec::new();
+            let mut job_lists = Vec::new();
             let mut grouped_entries = std::collections::HashMap::new();
 
             let mut insert_into_map = |id: i32, entry: $typ_in| {
@@ -14,7 +14,11 @@ macro_rules! sort_by_job {
 
             // First go through all entries, and sort them into the map
             for entry in entries.into_iter() {
-                match *entry.item.category.category_id {
+                match *entry
+                    .item
+                    .category
+                    .category_id
+                {
                     6i32 => {
                         insert_into_map(6, entry);
                         continue;
@@ -35,10 +39,14 @@ macro_rules! sort_by_job {
                         insert_into_map(66, entry);
                         continue;
                     },
-                    _  => {}
+                    _ => {},
                 }
 
-                match *entry.item.group.group_id {
+                match *entry
+                    .item
+                    .group
+                    .group_id
+                {
                     332i32 => {
                         insert_into_map(332, entry);
                         continue;
@@ -136,10 +144,13 @@ macro_rules! sort_by_job {
                         insert_into_map(1308, entry);
                         continue;
                     },
-                    _  => {}
+                    _ => {},
                 }
 
-                if let Some(meta_group) = entry.item.meta_group {
+                if let Some(meta_group) = entry
+                    .item
+                    .meta_group
+                {
                     match *meta_group {
                         1i32 => {
                             insert_into_map(1, entry);
@@ -153,7 +164,7 @@ macro_rules! sort_by_job {
                             insert_into_map(8, entry);
                             continue;
                         },
-                        _  => {}
+                        _ => {},
                     }
                 }
 
@@ -161,35 +172,34 @@ macro_rules! sort_by_job {
             }
 
             for id in vec![
-                428,
-                429,
-                4096,
-                974,
-                334,
-                913,
-                873,
-                536,
-                332,
-                1,
-                2,
-                1308,
-                66,
-                8,
-                6,
-                65,
-                22,
-                0,
+                428, 429, 4096, 974, 334, 913, 873, 536, 332, 1, 2, 1308, 66,
+                8, 6, 65, 22, 0,
             ] {
                 if let Some(entries) = grouped_entries.get_mut(&id) {
-                    entries.sort_by_key(|x| x.item.name.clone());
+                    entries.sort_by_key(|x| {
+                        x.item
+                            .name
+                            .clone()
+                    });
                     let mut entries = entries
-                        .chunk_by(|a, b| a.item.name == b.item.name)
+                        .chunk_by(|a, b| {
+                            a.item
+                                .name
+                                == b.item
+                                    .name
+                        })
                         .map(|x| x.into())
                         .collect::<Vec<Vec<$typ_in>>>();
                     let entries = entries
                         .iter_mut()
                         .map(|x| {
-                            x.sort_by_key(|y| (y.runs.clone(), y.id));
+                            x.sort_by_key(|y| {
+                                (
+                                    y.runs
+                                        .clone(),
+                                    y.id,
+                                )
+                            });
                             x.reverse();
                             x.clone()
                         })
@@ -197,16 +207,14 @@ macro_rules! sort_by_job {
                         .into_iter()
                         .flatten()
                         .collect::<Vec<_>>();
-                    job_lists.push(
-                        $typ_out {
-                            header:  crate::utils::group_id_to_job_type(id).into(),
-                            entries: entries.clone(),
-                        }
-                    );
+                    job_lists.push($typ_out {
+                        header:  crate::utils::group_id_to_job_type(id).into(),
+                        entries: entries.clone(),
+                    });
                 }
             }
 
             job_lists
         }
-    }
+    };
 }

@@ -1,10 +1,10 @@
 use thiserror::Error;
 
-pub type Result<T, E = Error> = std::result::Result<T, E>;
+pub type Result<T, E = NotificationError> = std::result::Result<T, E>;
 
 #[derive(Error, Debug)]
 #[non_exhaustive]
-pub enum Error {
+pub enum NotificationError {
     #[error("More than 25 fields were added to the message")]
     TooManyFields,
     #[error("More than 256 characters for a field name")]

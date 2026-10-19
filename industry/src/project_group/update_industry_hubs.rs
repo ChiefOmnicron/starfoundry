@@ -1,27 +1,29 @@
+use axum::Json;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
-use axum::Json;
 use axum::response::IntoResponse;
-use starfoundry_lib_industry::{IndustryHubUuid, ProjectGroupUuid, StructureUuid};
+use sqlx::PgPool;
 
-use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized, UnprocessableEntity, UnsupportedMediaType};
-use crate::AppState;
+use crate::api_docs::{
+    Forbidden, InternalServerError, NotFound, Unauthorized, UnprocessableEntity, UnsupportedMediaType
+};
+use crate::project_group::ProjectGroupError;
 use crate::project_group::error::Result;
-use crate::project_group::service::update_industry_hubs;
+use crate::{AppState, IndustryHubUuid, ProjectGroupUuid, StructureUuid};
 
 /// Update Default Market
-/// 
+///
 /// - Alternative route: `/v1/project-groups/{ProjectGroupUuid}/defaults/market`
-/// - Alternative route: `/latest/project-groups/{ProjectGroupUuid}/defaults/market`
-/// 
+/// - Alternative route:
+///   `/latest/project-groups/{ProjectGroupUuid}/defaults/market`
+///
 /// ---
-/// 
+///
 /// Updates a default market
-/// 
+///
 /// ## Security
 /// - authenticated
 /// - project_group:write
-/// 
 #[utoipa::path(
     put,
     path = "/{ProjectGroupUuid}/industry-hubs",
@@ -47,43 +49,104 @@ use crate::project_group::service::update_industry_hubs;
     ),
 )]
 pub async fn api(
-    State(state):             State<AppState>,
+    State(state): State<AppState>,
     Path(project_group_uuid): Path<ProjectGroupUuid>,
-    Json(update_info):        Json<Vec<IndustryHubUuid>>,
+    Json(update_info): Json<Vec<IndustryHubUuid>>,
 ) -> Result<impl IntoResponse> {
-    update_industry_hubs(
-        &state.postgres,
-        project_group_uuid,
-        update_info,
-    ).await?;
+    update_industry_hubs(&state.postgres, project_group_uuid, update_info)
+        .await?;
 
-    Ok((
-        StatusCode::NO_CONTENT,
-    ))
+    Ok((StatusCode::NO_CONTENT,))
+}
+
+pub async fn update_industry_hubs(
+    pool: &PgPool,
+    project_group_uuid: ProjectGroupUuid,
+    update_info: Vec<IndustryHubUuid>,
+) -> Result<()> {
+    let mut transaction = pool
+        .begin()
+        .await
+        .map_err(ProjectGroupError::TransactionError)?;
+
+    sqlx::query!(
+        "
+            DELETE FROM project_group_industry_hub
+            WHERE project_group_id = $1
+        ",
+        *project_group_uuid,
+    )
+    .execute(&mut *transaction)
+    .await
+    .map_err(|e| {
+        ProjectGroupError::DeleteIndustryHubs(e, project_group_uuid)
+    })?;
+
+    sqlx::query!(
+        "
+            INSERT INTO project_group_industry_hub
+            (
+                project_group_id,
+                industry_hub_id
+            )
+            SELECT $1, * FROM UNNEST(
+                $2::UUID[]
+            )
+        ",
+        *project_group_uuid,
+        &update_info
+            .into_iter()
+            .map(|x| *x)
+            .collect::<Vec<_>>(),
+    )
+    .execute(&mut *transaction)
+    .await
+    .map_err(|e| {
+        ProjectGroupError::UpdateIndustryHubs(e, project_group_uuid)
+    })?;
+
+    transaction
+        .commit()
+        .await
+        .map_err(ProjectGroupError::TransactionError)
 }
 
 #[cfg(test)]
-mod tests {
+mod update_default_blueprint_overwrite_project_group_test {
+    use std::str::FromStr;
+
     use axum::body::Body;
     use axum::extract::Request;
-    use axum::http::header::{CONTENT_TYPE, HOST};
     use axum::http::StatusCode;
+    use axum::http::header::{CONTENT_TYPE, HOST};
     use sqlx::PgPool;
-    use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID, HEADER_SERVICE};
-    use starfoundry_lib_industry::StructureUuid;
+    use starfoundry_gateway::{
+        HEADER_CHARACTER_ID, HEADER_CORPORATION_ID, HEADER_SERVICE
+    };
     use starfoundry_lib_types::TypeId;
-    use std::str::FromStr;
     use uuid::Uuid;
 
+    use crate::StructureUuid;
     use crate::project_group::project_group_test_routes;
 
-    #[sqlx::test(
-        fixtures("base"),
-    )]
-    async fn happy_path(
-        pool: PgPool,
-    ) {
-        let structure_id = StructureUuid::from(Uuid::from_str("00000000-0000-0000-0000-000000000003").unwrap());
+    #[sqlx::test(fixtures(path = "./fixtures", scripts("base"),))]
+    async fn direct_happy_path(pool: PgPool) {
+        let response = super::update_industry_hubs(
+            &pool,
+            Uuid::from_str("00000000-0000-0000-0000-000000000001")
+                .unwrap()
+                .into(),
+            vec![],
+        )
+        .await;
+        assert!(response.is_ok());
+    }
+
+    #[sqlx::test(fixtures("base"))]
+    async fn happy_path(pool: PgPool) {
+        let structure_id = StructureUuid::from(
+            Uuid::from_str("00000000-0000-0000-0000-000000000003").unwrap(),
+        );
 
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000001/defaults/market")
@@ -94,9 +157,7 @@ mod tests {
             .header(HOST, "test.starfoundry.space")
             .method("PUT")
             .body(Body::new(
-                serde_json::to_string(&vec![
-                    structure_id,
-                ]).unwrap()
+                serde_json::to_string(&vec![structure_id]).unwrap(),
             ))
             .unwrap();
         let response = project_group_test_routes(pool.clone(), request).await;
@@ -113,12 +174,8 @@ mod tests {
         assert_eq!(entry.structure_id, *structure_id);
     }
 
-    #[sqlx::test(
-        fixtures("base"),
-    )]
-    async fn unsupported_media_type(
-        pool: PgPool,
-    ) {
+    #[sqlx::test(fixtures("base"))]
+    async fn unsupported_media_type(pool: PgPool) {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000001/defaults/market")
             .header(CONTENT_TYPE, "text/plain")
@@ -127,20 +184,14 @@ mod tests {
             .header(HEADER_CORPORATION_ID, 1)
             .header(HOST, "test.starfoundry.space")
             .method("PUT")
-            .body(Body::new(
-                serde_json::to_string(&vec![TypeId(1)]).unwrap()
-            ))
+            .body(Body::new(serde_json::to_string(&vec![TypeId(1)]).unwrap()))
             .unwrap();
         let response = project_group_test_routes(pool, request).await;
         assert_eq!(response.status(), StatusCode::UNSUPPORTED_MEDIA_TYPE);
     }
 
-    #[sqlx::test(
-        fixtures("base"),
-    )]
-    async fn bad_request_no_body(
-        pool: PgPool,
-    ) {
+    #[sqlx::test(fixtures("base"))]
+    async fn bad_request_no_body(pool: PgPool) {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000001/defaults/market")
             .header(CONTENT_TYPE, "application/json")
@@ -155,30 +206,20 @@ mod tests {
         assert_eq!(response.status(), StatusCode::BAD_REQUEST);
     }
 
-    #[sqlx::test(
-        fixtures("base"),
-    )]
-    async fn unauthorized(
-        pool: PgPool,
-    ) {
+    #[sqlx::test(fixtures("base"))]
+    async fn unauthorized(pool: PgPool) {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000001/defaults/market")
             .header(CONTENT_TYPE, "application/json")
             .method("PUT")
-            .body(Body::new(
-                serde_json::to_string(&vec![TypeId(1)]).unwrap()
-            ))
+            .body(Body::new(serde_json::to_string(&vec![TypeId(1)]).unwrap()))
             .unwrap();
         let response = project_group_test_routes(pool.clone(), request).await;
         assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
     }
 
-    #[sqlx::test(
-        fixtures("base"),
-    )]
-    async fn forbidden(
-        pool: PgPool,
-    ) {
+    #[sqlx::test(fixtures("base"))]
+    async fn forbidden(pool: PgPool) {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000001/defaults/market")
             .header(CONTENT_TYPE, "application/json")
@@ -187,20 +228,14 @@ mod tests {
             .header(HEADER_CORPORATION_ID, 1)
             .header(HOST, "test.starfoundry.space")
             .method("PUT")
-            .body(Body::new(
-                serde_json::to_string(&vec![TypeId(1)]).unwrap()
-            ))
+            .body(Body::new(serde_json::to_string(&vec![TypeId(1)]).unwrap()))
             .unwrap();
         let response = project_group_test_routes(pool.clone(), request).await;
         assert_eq!(response.status(), StatusCode::FORBIDDEN);
     }
 
-    #[sqlx::test(
-        fixtures("base"),
-    )]
-    async fn not_found(
-        pool: PgPool,
-    ) {
+    #[sqlx::test(fixtures("base"))]
+    async fn not_found(pool: PgPool) {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000010/defaults/market")
             .header(CONTENT_TYPE, "application/json")
@@ -209,9 +244,7 @@ mod tests {
             .header(HEADER_CORPORATION_ID, 1)
             .header(HOST, "test.starfoundry.space")
             .method("PUT")
-            .body(Body::new(
-                serde_json::to_string(&vec![TypeId(1)]).unwrap()
-            ))
+            .body(Body::new(serde_json::to_string(&vec![TypeId(1)]).unwrap()))
             .unwrap();
         let response = project_group_test_routes(pool.clone(), request).await;
         assert_eq!(response.status(), StatusCode::NOT_FOUND);

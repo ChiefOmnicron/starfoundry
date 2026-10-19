@@ -1,5 +1,5 @@
-use axum::http::StatusCode;
 use axum::Json;
+use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 use starfoundry_lib_eve_client::EveApiError;
 use thiserror::Error;
@@ -31,26 +31,31 @@ impl IntoResponse for CharacterError {
                 tracing::error!("{}", self.to_string());
                 (
                     StatusCode::NOT_FOUND,
-                    Json(
-                        ErrorResponse {
-                            error: "NOT_FOUND".into(),
-                            description: "The requested resource could not be found.".into(),
-                        }
-                    )
-                ).into_response()
-            }
+                    Json(ErrorResponse {
+                        error:       "NOT_FOUND".into(),
+                        description:
+                            "The requested resource could not be found.".into(),
+                    }),
+                )
+                    .into_response()
+            },
 
-            _ => {
+            Self::FetchCharacter(_)
+            | Self::FetchCharacterBulk(_)
+            | Self::InsertCharacter(_)
+            | Self::NotFound
+            | Self::EveApiError(_) => {
                 tracing::error!("{}", self.to_string());
                 (
                     StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(
-                        ErrorResponse {
-                            error: "UNKNOWN".into(),
-                            description: "An unknown error occurred, please try again later.".into(),
-                        }
-                    )
-                ).into_response()
+                    Json(ErrorResponse {
+                        error:       "UNKNOWN".into(),
+                        description:
+                            "An unknown error occurred, please try again later."
+                                .into(),
+                    }),
+                )
+                    .into_response()
             },
         }
         .into_response()

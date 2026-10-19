@@ -1,8 +1,8 @@
 use axum::Json;
 use axum::response::{IntoResponse, Response};
 use reqwest::StatusCode;
+use starfoundry_gateway::ErrorResponse;
 use starfoundry_lib_eve_client::EveApiError;
-use starfoundry_lib_gateway::ErrorResponse;
 use thiserror::Error;
 
 pub type Result<T, E = SearchError> = std::result::Result<T, E>;
@@ -16,7 +16,7 @@ pub enum SearchError {
     #[error("eve api error, error: '{0}'")]
     EveApiError(#[from] EveApiError),
     #[error("gateway error, error: '{0:?}'")]
-    GatewayError(#[from] starfoundry_lib_gateway::Error),
+    GatewayError(#[from] starfoundry_gateway::GatewayError),
 }
 
 impl IntoResponse for SearchError {
@@ -25,20 +25,17 @@ impl IntoResponse for SearchError {
             Self::TooShort => {
                 (
                     StatusCode::BAD_REQUEST,
-                    Json(
-                        ErrorResponse {
-                            error: "BAD_REQUEST".into(),
-                            description: self.to_string(),
-                        }
-                    )
-                ).into_response()
-            }
-
-            Self::EveApiError(e) => {
-                EveApiError::into_response(e)
+                    Json(ErrorResponse {
+                        error:       "BAD_REQUEST".into(),
+                        description: self.to_string(),
+                    }),
+                )
+                    .into_response()
             },
+
+            Self::EveApiError(e) => EveApiError::into_response(e),
             Self::GatewayError(e) => {
-                starfoundry_lib_gateway::Error::into_response(e)
+                starfoundry_gateway::GatewayError::into_response(e)
             },
         }
         .into_response()

@@ -1,17 +1,18 @@
 use serde::Serialize;
-use crate::error::{Error, Result};
+
+use crate::error::{NotificationError, Result};
 
 #[derive(Debug, Serialize)]
 pub struct Discord {
-    pub content:    String,
-    pub embeds:     Vec<DiscordEmbedding>,
+    pub content: String,
+    pub embeds:  Vec<DiscordEmbedding>,
 }
 
 impl Discord {
     pub fn new() -> Self {
         Self {
-            content:    "".into(),
-            embeds:     Vec::new(),
+            content: "".into(),
+            embeds:  Vec::new(),
         }
     }
 
@@ -19,7 +20,8 @@ impl Discord {
         &mut self,
         embedding: DiscordEmbedding,
     ) {
-        self.embeds.push(embedding);
+        self.embeds
+            .push(embedding);
     }
 }
 
@@ -33,9 +35,9 @@ pub struct DiscordEmbedding {
 
 impl DiscordEmbedding {
     pub fn new<S: Into<String>>(
-        title:       S,
+        title: S,
         description: S,
-        color:       DiscordColor,
+        color: DiscordColor,
     ) -> Self {
         Self {
             title:       title.into(),
@@ -51,11 +53,16 @@ impl DiscordEmbedding {
         &mut self,
         field: DiscordField,
     ) -> Result<()> {
-        if self.fields.len() == 25 {
+        if self
+            .fields
+            .len()
+            == 25
+        {
             tracing::error!("Max discord fields of 25 reached");
-            Err(Error::TooManyFields)
+            Err(NotificationError::TooManyFields)
         } else {
-            self.fields.push(field);
+            self.fields
+                .push(field);
             Ok(())
         }
     }
@@ -70,18 +77,18 @@ pub struct DiscordField {
 
 impl DiscordField {
     pub fn new<S: Into<String>>(
-        name:   S,
-        value:  S,
+        name: S,
+        value: S,
         inline: bool,
-    ) -> Result<Self, Error> {
+    ) -> Result<Self, NotificationError> {
         let name = name.into();
         let value = value.into();
 
         if name.len() > 256 {
-            return Err(Error::TooManyFieldCharacters);
+            return Err(NotificationError::TooManyFieldCharacters);
         }
         if value.len() > 256 {
-            return Err(Error::TooManyValueCharacters);
+            return Err(NotificationError::TooManyValueCharacters);
         }
 
         Ok(Self {
@@ -125,30 +132,30 @@ pub enum DiscordColor {
 impl DiscordColor {
     pub fn as_code(&self) -> i32 {
         match self {
-            Self::Default           => 0,
-            Self::Aqua              => 1752220,
-            Self::DarkAqua          => 1146986,
-            Self::Green             => 5763719,
-            Self::DarkGreen         => 2067276,
-            Self::Blue              => 3447003,
-            Self::DarkBlue          => 2123412,
-            Self::Purple            => 10181046,
-            Self::DarkPurple        => 7419530,
+            Self::Default => 0,
+            Self::Aqua => 1752220,
+            Self::DarkAqua => 1146986,
+            Self::Green => 5763719,
+            Self::DarkGreen => 2067276,
+            Self::Blue => 3447003,
+            Self::DarkBlue => 2123412,
+            Self::Purple => 10181046,
+            Self::DarkPurple => 7419530,
             Self::LuminousVividPink => 15277667,
-            Self::DarkVividPink     => 11342935,
-            Self::Gold              => 15844367,
-            Self::DarkGold          => 12745742,
-            Self::Orange            => 15105570,
-            Self::DarkOrange        => 11027200,
-            Self::Red               => 15548997,
-            Self::DarkRed           => 10038562,
-            Self::Grey              => 9807270,
-            Self::DarkGrey          => 9936031,
-            Self::DarkerGrey        => 8359053,
-            Self::LightGrey         => 12370112,
-            Self::Navy              => 3426654,
-            Self::DarkNavy          => 2899536,
-            Self::Yellow            => 16776960,
+            Self::DarkVividPink => 11342935,
+            Self::Gold => 15844367,
+            Self::DarkGold => 12745742,
+            Self::Orange => 15105570,
+            Self::DarkOrange => 11027200,
+            Self::Red => 15548997,
+            Self::DarkRed => 10038562,
+            Self::Grey => 9807270,
+            Self::DarkGrey => 9936031,
+            Self::DarkerGrey => 8359053,
+            Self::LightGrey => 12370112,
+            Self::Navy => 3426654,
+            Self::DarkNavy => 2899536,
+            Self::Yellow => 16776960,
         }
     }
 }

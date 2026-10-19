@@ -1,9 +1,12 @@
-use starfoundry_lib_industry::structure::Structure;
-use starfoundry_lib_types::{SystemId, TypeId};
 use std::collections::HashMap;
 
-use crate::industry::job_planner::models::{BlueprintBonus, Dependency, StructureMapping};
+use starfoundry_lib_types::{SystemId, TypeId};
+
+use crate::industry::job_planner::models::{
+    BlueprintBonus, Dependency, StructureMapping
+};
 use crate::industry::job_planner::project_config::ProjectConfig;
+use crate::structure::Structure;
 
 // TODO: rename
 #[derive(Debug)]
@@ -18,15 +21,15 @@ pub struct ProjectConfigBuilder {
     structure_mappings:  Vec<StructureMapping>,
 
     /// maximum amount of runs that can be done on a blueprint/formula
-    max_runs:            HashMap<TypeId, u32>,
+    max_runs: HashMap<TypeId, u32>,
     /// max time a job can take before it is split
-    max_time:            i32,
+    max_time: i32,
 
     /// does not calculate children
-    skip_children:       bool,
+    skip_children: bool,
 
-    system_index:        HashMap<SystemId, (f32, f32)>,
-    material_cost:       HashMap<TypeId, f64>,
+    system_index:  HashMap<SystemId, (f32, f32)>,
+    material_cost: HashMap<TypeId, f64>,
 }
 
 impl ProjectConfigBuilder {
@@ -34,7 +37,8 @@ impl ProjectConfigBuilder {
         mut self,
         overwrites: HashMap<TypeId, BlueprintBonus>,
     ) -> Self {
-        self.blueprint_overwrite.extend(overwrites);
+        self.blueprint_overwrite
+            .extend(overwrites);
         self
     }
 
@@ -46,7 +50,8 @@ impl ProjectConfigBuilder {
             .into_iter()
             .map(Into::into)
             .collect::<Vec<_>>();
-        self.blacklist.extend(entries);
+        self.blacklist
+            .extend(entries);
         self
     }
 
@@ -54,7 +59,8 @@ impl ProjectConfigBuilder {
         mut self,
         structures: Vec<Structure>,
     ) -> Self {
-        self.structures.extend(structures);
+        self.structures
+            .extend(structures);
         self
     }
 
@@ -62,7 +68,8 @@ impl ProjectConfigBuilder {
         mut self,
         structure_mappings: Vec<StructureMapping>,
     ) -> Self {
-        self.structure_mappings.extend(structure_mappings);
+        self.structure_mappings
+            .extend(structure_mappings);
         self
     }
 
@@ -92,7 +99,7 @@ impl ProjectConfigBuilder {
 
     pub fn set_skip_children(
         mut self,
-        skip_children: bool
+        skip_children: bool,
     ) -> Self {
         self.skip_children = skip_children;
         self
@@ -106,13 +113,13 @@ impl ProjectConfigBuilder {
             structures:          self.structures,
             structure_mappings:  self.structure_mappings,
 
-            max_runs:            self.max_runs,
-            max_time:            self.max_time,
+            max_runs: self.max_runs,
+            max_time: self.max_time,
 
-            skip_children:       self.skip_children,
+            skip_children: self.skip_children,
 
-            system_index:        self.system_index,
-            material_cost:       self.material_cost,
+            system_index:  self.system_index,
+            material_cost: self.material_cost,
         }
     }
 }
@@ -121,19 +128,19 @@ impl Default for ProjectConfigBuilder {
     fn default() -> Self {
         Self {
             blueprint_overwrite: default_blueprint_overwrites(),
-            dependencies:       Vec::new(),
-            blacklist:          Vec::new(),
-            structures:         Vec::new(),
-            structure_mappings: Vec::new(),
+            dependencies:        Vec::new(),
+            blacklist:           Vec::new(),
+            structures:          Vec::new(),
+            structure_mappings:  Vec::new(),
 
-            max_runs:           HashMap::new(),
+            max_runs: HashMap::new(),
             // Three days in seconds
-            max_time:           259_200i32,
+            max_time: 259_200i32,
 
-            skip_children:      false,
+            skip_children: false,
 
-            system_index:       HashMap::new(),
-            material_cost:      HashMap::new(),
+            system_index:  HashMap::new(),
+            material_cost: HashMap::new(),
         }
     }
 }
@@ -141,7 +148,6 @@ impl Default for ProjectConfigBuilder {
 /// There are a couple blueprints that can never be above ME 0, TE 0, these are
 /// added here
 /// The list is not complete
-/// 
 fn default_blueprint_overwrites() -> HashMap<TypeId, BlueprintBonus> {
     vec![
         // TODO: fetch them from the database
@@ -153,10 +159,8 @@ fn default_blueprint_overwrites() -> HashMap<TypeId, BlueprintBonus> {
         (53036.into(), BlueprintBonus::no_bonus(53036.into())),
         // Capital Absorption Thruster Array
         (53037.into(), BlueprintBonus::no_bonus(53037.into())),
-
         // Ultratidal Entropic Disintegrator I
         (73793.into(), BlueprintBonus::no_bonus(52915.into())),
-
         // Naglfar Fleet Issue
         (73787.into(), BlueprintBonus::no_bonus(73787.into())),
         // Revelation Navy Issue

@@ -2,7 +2,6 @@ use axum::Json;
 use axum::response::{IntoResponse, Response};
 use reqwest::StatusCode;
 use serde::Serialize;
-use starfoundry_lib_types::CharacterId;
 use thiserror::Error;
 use url::Url;
 
@@ -11,24 +10,8 @@ pub type Result<T, E = EveApiError> = std::result::Result<T, E>;
 /// Holds all possible errors that can occur in this library.
 ///
 /// Besides that it contains helper functions for easier construction of errors.
-///
 #[derive(Debug, Error)]
-#[non_exhaustive]
 pub enum EveApiError {
-    /// The payload could not be decoded
-    #[deprecated]
-    #[error("dummy")]
-    OAuthPayloadDecode(base64::DecodeError),
-    /// Could not parse the decoded payload
-    #[deprecated]
-    #[error("dummy")]
-    OAuthParseError(serde_json::Error),
-
-    /// The requested [CharacterId] could not be found in the cache
-    #[deprecated]
-    #[error("dummy")]
-    NoSuchIdentity(CharacterId),
-
     /// An ENV was not set, contains which variable is missing
     #[error("environment not set {0}")]
     EnvNotSet(&'static str),
@@ -41,15 +24,21 @@ pub enum EveApiError {
     NotModified(Url),
     #[error("the character is not allowed to access the resource, '{0}'")]
     Forbidden(Url),
-    #[error("the last received data is still valid, and the server is not ready to give new data, '{0}'")]
+    #[error(
+        "the last received data is still valid, and the server is not ready to give new data, '{0}'"
+    )]
     DataNotExpired(Url),
     #[error("the eve Server not reachable")]
     ServiceUnavailable,
     #[error("the eve Server not reachable")]
     BadGateway,
-    #[error("the client is either forbidden to access the resource or unauthorized, '{0}', '{1}'")]
+    #[error(
+        "the client is either forbidden to access the resource or unauthorized, '{0}', '{1}'"
+    )]
     Unauthorized(Url, String),
-    #[error("the request to the given URL failed 3 times in a row, '{0}', '{1}', '{2}'")]
+    #[error(
+        "the request to the given URL failed 3 times in a row, '{0}', '{1}', '{2}'"
+    )]
     TooManyRetries(Url, StatusCode, String),
 
     #[error("error while fetching eve jwt keys, error: '{0}'")]
@@ -67,7 +56,9 @@ pub enum EveApiError {
     ReqwestError(reqwest::Error, Url),
     #[error("error while constructing reqwest client, error: '{0}'")]
     CouldNotConstructClient(reqwest::Error),
-    #[error("error while parsing url. Validate the environment variables, error: '{0}'")]
+    #[error(
+        "error while parsing url. Validate the environment variables, error: '{0}'"
+    )]
     UrlParseError(url::ParseError),
 
     #[error("client is not authenticated")]
@@ -80,7 +71,9 @@ pub enum EveApiError {
     #[error("no identity found")]
     NoIdentity,
 
-    #[error("error while parsing eve response data, url: '{2}', text: '{1}', error: '{0:?}'")]
+    #[error(
+        "error while parsing eve response data, url: '{2}', text: '{1}', error: '{0:?}'"
+    )]
     JsonParseError(serde_json::Error, String, Url),
 }
 
@@ -91,122 +84,125 @@ impl IntoResponse for EveApiError {
                 tracing::warn!("{}", self.to_string());
                 (
                     StatusCode::IM_A_TEAPOT,
-                    Json(
-                        ErrorResponse {
-                            error: "RATE_LIMIT".into(),
-                            description: format!("{}", self),
-                        }
-                    )
-                ).into_response()
+                    Json(ErrorResponse {
+                        error:       "RATE_LIMIT".into(),
+                        description: format!("{}", self),
+                    }),
+                )
+                    .into_response()
             },
             Self::NotFound(_) => {
                 tracing::warn!("{}", self.to_string());
                 (
                     StatusCode::NOT_FOUND,
-                    Json(
-                        ErrorResponse {
-                            error: "NOT_FOUND".into(),
-                            description: format!("{}", self),
-                        }
-                    )
-                ).into_response()
+                    Json(ErrorResponse {
+                        error:       "NOT_FOUND".into(),
+                        description: format!("{}", self),
+                    }),
+                )
+                    .into_response()
             },
-            Self::DataNotExpired(_) |
-            Self::NotModified(_) => {
+            Self::DataNotExpired(_) | Self::NotModified(_) => {
                 tracing::warn!("{}", self.to_string());
                 (
                     StatusCode::NOT_MODIFIED,
-                    Json(
-                        ErrorResponse {
-                            error: "NOT_MODIFIED".into(),
-                            description: format!("{}", self),
-                        }
-                    )
-                ).into_response()
+                    Json(ErrorResponse {
+                        error:       "NOT_MODIFIED".into(),
+                        description: format!("{}", self),
+                    }),
+                )
+                    .into_response()
             },
             Self::ServiceUnavailable => {
                 tracing::warn!("{}", self.to_string());
                 (
                     StatusCode::SERVICE_UNAVAILABLE,
-                    Json(
-                        ErrorResponse {
-                            error: "SERVICE_UNAVAILABLE".into(),
-                            description: format!("{}", self),
-                        }
-                    )
-                ).into_response()
+                    Json(ErrorResponse {
+                        error:       "SERVICE_UNAVAILABLE".into(),
+                        description: format!("{}", self),
+                    }),
+                )
+                    .into_response()
             },
             Self::BadGateway => {
                 tracing::warn!("{}", self.to_string());
                 (
                     StatusCode::BAD_GATEWAY,
-                    Json(
-                        ErrorResponse {
-                            error: "BAD_GATEWAY".into(),
-                            description: format!("{}", self),
-                        }
-                    )
-                ).into_response()
+                    Json(ErrorResponse {
+                        error:       "BAD_GATEWAY".into(),
+                        description: format!("{}", self),
+                    }),
+                )
+                    .into_response()
             },
             Self::Forbidden(_) => {
                 tracing::warn!("{}", self.to_string());
                 (
                     StatusCode::FORBIDDEN,
-                    Json(
-                        ErrorResponse {
-                            error: "FORBIDDEN".into(),
-                            description: format!("{}", self),
-                        }
-                    )
-                ).into_response()
+                    Json(ErrorResponse {
+                        error:       "FORBIDDEN".into(),
+                        description: format!("{}", self),
+                    }),
+                )
+                    .into_response()
             },
-            Self::Unauthorized(_, _) => {
+            Self::Unauthorized(..) => {
                 tracing::warn!("{}", self.to_string());
                 (
                     StatusCode::UNAUTHORIZED,
-                    Json(
-                        ErrorResponse {
-                            error: "UNAUTHORIZED".into(),
-                            description: format!("{}", self),
-                        }
-                    )
-                ).into_response()
+                    Json(ErrorResponse {
+                        error:       "UNAUTHORIZED".into(),
+                        description: format!("{}", self),
+                    }),
+                )
+                    .into_response()
             },
-            Self::TooManyRetries(_, _, _) => {
+            Self::TooManyRetries(..) => {
                 tracing::warn!("{}", self.to_string());
                 (
                     StatusCode::BAD_REQUEST,
-                    Json(
-                        ErrorResponse {
-                            error: "BAD_REQUEST".into(),
-                            description: format!("{}", self),
-                        }
-                    )
-                ).into_response()
+                    Json(ErrorResponse {
+                        error:       "BAD_REQUEST".into(),
+                        description: format!("{}", self),
+                    }),
+                )
+                    .into_response()
             },
             Self::NoIdentity => {
                 tracing::warn!("{}", self.to_string());
                 (
                     StatusCode::UNAUTHORIZED,
-                    Json(
-                        ErrorResponse {
-                            error: "UNAUTHORIZED".into(),
-                            description: "UNAUTHORIZED".into(),
-                        }
-                    )
-                ).into_response()
+                    Json(ErrorResponse {
+                        error:       "UNAUTHORIZED".into(),
+                        description: "UNAUTHORIZED".into(),
+                    }),
+                )
+                    .into_response()
             },
-            _ => {
+            Self::ClientNotAuthenticated
+            | Self::CouldNotConstructClient(_)
+            | Self::EnvNotSet(_)
+            | Self::FetchEveJwtToken(_)
+            | Self::GetTokenError
+            | Self::GetTokenRequestError(_)
+            | Self::InvalidRS256Key
+            | Self::JsonParseError(..)
+            | Self::NoRs256Key
+            | Self::OAuthParseCharacterId(_)
+            | Self::ParseEveJwtAccessToken(_)
+            | Self::ReqwestError(..)
+            | Self::UrlParseError(_) => {
                 tracing::error!("{}", self.to_string());
                 (
                     StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(
-                        ErrorResponse {
-                            error: "UNKNOWN".into(),
-                            description: "An unknown error occurred, please try again later.".into(),
-                        }
-                    )
-                ).into_response()
+                    Json(ErrorResponse {
+                        error:       "UNKNOWN".into(),
+                        description:
+                            "An unknown error occurred, please try again later."
+                                .into(),
+                    }),
+                )
+                    .into_response()
             },
         }
         .into_response()
@@ -217,7 +213,7 @@ impl IntoResponse for EveApiError {
 #[derive(Serialize)]
 pub struct ErrorResponse {
     /// General error name
-    pub error: String,
+    pub error:       String,
     /// Human description of the error
     pub description: String,
 }

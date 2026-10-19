@@ -1,15 +1,15 @@
 use crate::discord::Discord;
-use crate::error::{Error, Result};
+use crate::error::{NotificationError, Result};
 
 mod discord;
 mod error;
 
 pub async fn send_discord(
-    url:      String,
+    url: String,
     messages: Vec<Discord>,
 ) -> Result<String> {
     if !url.contains("https://discord.com/api") {
-        return Err(Error::InvalidTarget("DISCORD".into(), url));
+        return Err(NotificationError::InvalidTarget("DISCORD".into(), url));
     }
 
     for message in messages {
@@ -24,7 +24,7 @@ pub async fn send_discord(
 }
 
 pub async fn send_json(
-    url:   String,
+    url: String,
     value: serde_json::Value,
 ) -> Result<String> {
     let client = reqwest::Client::new();
@@ -34,24 +34,29 @@ pub async fn send_json(
         .send()
         .await?;
 
-    if !response.status().is_success() {
+    if !response
+        .status()
+        .is_success()
+    {
         let message = response
             .text()
             .await
-            .map_err(Error::GenericReqwest)?;
-        Err(Error::Response(message, value))
+            .map_err(NotificationError::GenericReqwest)?;
+        Err(NotificationError::Response(message, value))
     } else {
         let message = response
             .text()
             .await
-            .map_err(Error::GenericReqwest)?;
+            .map_err(NotificationError::GenericReqwest)?;
         Ok(message)
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::discord::{Discord, DiscordColor, DiscordEmbedding, DiscordField};
+    use crate::discord::{
+        Discord, DiscordColor, DiscordEmbedding, DiscordField
+    };
     use crate::send_discord;
 
     #[tokio::test]
@@ -59,31 +64,17 @@ mod tests {
         let discord_test_key = std::env::var("DISCORD_TEST_KEY").unwrap();
 
         let mut discord_message = Discord::new();
-        let mut embedding = DiscordEmbedding::new(
-            "Test",
-            "Message",
-            DiscordColor::Aqua,
-        );
-        embedding.add_field(DiscordField::new(
-                "Field 1",
-                "Value 1",
-                true,
-            )
-            .unwrap()
-        ).unwrap();
-        embedding.add_field(DiscordField::new(
-                "Field 2",
-                "Value 2",
-                true,
-            )
-            .unwrap()
-        ).unwrap();
+        let mut embedding =
+            DiscordEmbedding::new("Test", "Message", DiscordColor::Aqua);
+        embedding
+            .add_field(DiscordField::new("Field 1", "Value 1", true).unwrap())
+            .unwrap();
+        embedding
+            .add_field(DiscordField::new("Field 2", "Value 2", true).unwrap())
+            .unwrap();
         discord_message.add_embedding(embedding);
-        let result = send_discord(
-                discord_test_key.into(),
-                vec![discord_message],
-            )
-            .await;
+        let result =
+            send_discord(discord_test_key.into(), vec![discord_message]).await;
 
         assert!(result.is_ok());
     }
@@ -93,11 +84,8 @@ mod tests {
         let discord_test_key = std::env::var("DISCORD_TEST_KEY").unwrap();
 
         let mut discord_message = Discord::new();
-        let mut embedding = DiscordEmbedding::new(
-            "Test",
-            "Message",
-            DiscordColor::Aqua,
-        );
+        let mut embedding =
+            DiscordEmbedding::new("Test", "Message", DiscordColor::Aqua);
         embedding.add_field(DiscordField::new(
                 "ThisFieldMessageIsWayTooLongAndShouldThrowAnErrorIfItDoesNotDoThatThenThereIsSomethingVeryWrongAndItNeedsToBeFixedOtherwiseThereMightBeErrorsInALaterStageOfTheApplicationWhichOfCourseIsNotAnDesiredOutcomeIStillHaveACoupleMoreRequiredCharactersBeforeIReachTheGoalAndIAmRunningOutOfIdeas",
                 "Value 1",
@@ -106,11 +94,8 @@ mod tests {
             .unwrap()
         ).unwrap();
         discord_message.add_embedding(embedding);
-        let result = send_discord(
-                discord_test_key.into(),
-                vec![discord_message],
-            )
-            .await;
+        let result =
+            send_discord(discord_test_key.into(), vec![discord_message]).await;
 
         assert!(result.is_err());
     }

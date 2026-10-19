@@ -1,13 +1,14 @@
 use serde::Deserialize;
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::{EveGatewayApiClientStanding, EveGatewayClient};
-use starfoundry_lib_gateway::Identity;
+use starfoundry_eve_gateway::EveGatewayClient;
+use starfoundry_eve_gateway::standing::EveGatewayApiClientStanding;
+use starfoundry_gateway::Identity;
 use starfoundry_lib_types::{CharacterId, CorporationId};
 use starfoundry_lib_worker::Task;
 
-use crate::error::{Error, Result};
-use crate::metric::WorkerMetric;
 use crate::SERVICE_NAME;
+use crate::error::{EveGatewayWorkerError, Result};
+use crate::metric::WorkerMetric;
 use crate::tasks::WorkerEveGatewayTask;
 
 pub async fn character_standings(
@@ -16,16 +17,20 @@ pub async fn character_standings(
 ) -> Result<()> {
     let additional_data: AdditionalData = match task.additional_data() {
         Ok(Some(x)) => x,
-        Ok(None)    => {
+        Ok(None) => {
             tracing::error!("[{:?}] missing additional data", task.task);
             task.append_error("Missing additional data");
-            return Err(Error::ParseAdditionalData)
+            return Err(EveGatewayWorkerError::ParseAdditionalData)
         },
-        Err(e)      => {
-            tracing::error!("[{:?}] error parsing additional data, {}", task.task, e);
+        Err(e) => {
+            tracing::error!(
+                "[{:?}] error parsing additional data, {}",
+                task.task,
+                e
+            );
             task.append_error(format!("Missing additional data {}", e));
-            return Err(Error::ParseAdditionalData)
-        }
+            return Err(EveGatewayWorkerError::ParseAdditionalData)
+        },
     };
 
     let identity = Identity::new(
@@ -36,25 +41,26 @@ pub async fn character_standings(
     let client = EveGatewayClient::new_with_identity(SERVICE_NAME, identity)?;
     let entries = match client
         .list_character_standings()
-        .await {
-
-        Ok(x) => {
-            x
-        },
+        .await
+    {
+        Ok(x) => x,
         Err(e) => {
-            tracing::error!("Error while fetching character standings data, {:?}", e);
+            tracing::error!(
+                "Error while fetching character standings data, {:?}",
+                e
+            );
             task.append_error(e.to_string());
             return Err(e.into());
-        }
+        },
     };
 
     if entries.is_empty() {
         return Ok(());
     }
 
-    let mut contact_ids   = Vec::new();
+    let mut contact_ids = Vec::new();
     let mut contact_types = Vec::new();
-    let mut standings     = Vec::new();
+    let mut standings = Vec::new();
 
     for entry in entries {
         contact_ids.push(*entry.contact_id);
@@ -62,21 +68,23 @@ pub async fn character_standings(
         standings.push(entry.standing);
     }
 
-    sqlx::query!("
+    sqlx::query!(
+        "
             DELETE FROM standing
             WHERE owner_id = $1
             AND source = 'character'
         ",
-            *additional_data.character_id,
-        )
-        .execute(pool)
-        .await
-        .map_err(|e| {
-            task.append_error(format!("{e}"));
-            Error::CleanupStandings(e)
-        })?;
+        *additional_data.character_id,
+    )
+    .execute(pool)
+    .await
+    .map_err(|e| {
+        task.append_error(format!("{e}"));
+        EveGatewayWorkerError::CleanupStandings(e)
+    })?;
 
-    sqlx::query!("
+    sqlx::query!(
+        "
             INSERT INTO standing
             (
                 owner_id,
@@ -91,17 +99,17 @@ pub async fn character_standings(
                 $4::REAL[]
             )
         ",
-            *additional_data.character_id,
-            &contact_ids,
-            &contact_types,
-            &standings,
-        )
-        .execute(pool)
-        .await
-        .map_err(|e| {
-            task.append_error(format!("{e}"));
-            Error::InsertStandings(e)
-        })?;
+        *additional_data.character_id,
+        &contact_ids,
+        &contact_types,
+        &standings,
+    )
+    .execute(pool)
+    .await
+    .map_err(|e| {
+        task.append_error(format!("{e}"));
+        EveGatewayWorkerError::InsertStandings(e)
+    })?;
 
     Ok(())
 }

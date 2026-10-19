@@ -5,22 +5,21 @@ mod metric;
 mod task;
 mod worker;
 
-pub use self::cleanup::*;
-pub use self::error::*;
-pub use self::task::*;
-pub use self::metric::TaskMetric;
-
+use std::net::SocketAddr;
 use std::time::Duration;
 
 use prometheus_client::registry::Registry;
 use sqlx::PgPool;
-use std::net::SocketAddr;
 use tokio::sync::mpsc;
 use tokio::time::sleep;
 use uuid::Uuid;
 
-use crate::metric::InternalMetric;
+pub use self::cleanup::*;
+pub use self::error::*;
+pub use self::metric::TaskMetric;
+pub use self::task::*;
 use crate::api::api;
+use crate::metric::InternalMetric;
 
 pub struct Worker<M: TaskMetric, WT: WorkerTask> {
     pool:        PgPool,
@@ -32,16 +31,16 @@ pub struct Worker<M: TaskMetric, WT: WorkerTask> {
 }
 
 impl<M, WT> Worker<M, WT>
-    where
-        M: TaskMetric,
-        WT: WorkerTask,
-        <WT as TryFrom<String>>::Error: std::fmt::Debug {
-
+where
+    M: TaskMetric,
+    WT: WorkerTask,
+    <WT as TryFrom<String>>::Error: std::fmt::Debug,
+{
     pub async fn init(
-        pool:            PgPool,
-        mpsc_sender:     mpsc::Sender<Task<M, WT>>,
+        pool: PgPool,
+        mpsc_sender: mpsc::Sender<Task<M, WT>>,
 
-        metric:          M,
+        metric: M,
         metric_registry: &mut Registry,
     ) -> Result<Self> {
         let worker_id = worker::register_worker(&pool).await?;
@@ -63,12 +62,18 @@ impl<M, WT> Worker<M, WT>
     pub async fn run(
         self,
         metric_registry: Registry,
-        socket_addr:     SocketAddr,
+        socket_addr: SocketAddr,
     ) -> Result<()> {
-        let api = api(self.pool.clone(), metric_registry, socket_addr);
+        let api = api(
+            self.pool
+                .clone(),
+            metric_registry,
+            socket_addr,
+        );
 
         let background_task = worker::background_task(
-            self.pool.clone(),
+            self.pool
+                .clone(),
             self.self_uuid,
         );
 
@@ -84,32 +89,32 @@ impl<M, WT> Worker<M, WT>
         Ok(())
     }
 
-    pub fn worker_id(
-        &self,
-    ) -> Uuid {
+    pub fn worker_id(&self) -> Uuid {
         self.self_uuid
     }
 
-    async fn pull_task(
-        &self,
-    ) {
+    async fn pull_task(&self) {
         loop {
             match fetch_task(
-                    &self.pool,
-                    &self.self_uuid,
-
-                    self.metric.clone(),
-                    self.internal_metric.clone(),
-                )
-                .await {
-
+                &self.pool,
+                &self.self_uuid,
+                self.metric
+                    .clone(),
+                self.internal_metric
+                    .clone(),
+            )
+            .await
+            {
                 Err(e) => {
                     tracing::error!("error while fetching task, {}", e);
                     continue;
                 },
                 Ok(Some(x)) => {
                     tracing::info!("new task {:?}", x.task);
-                    self.mpsc_sender.send(x).await.unwrap();
+                    self.mpsc_sender
+                        .send(x)
+                        .await
+                        .unwrap();
                     continue;
                 },
                 _ => {
@@ -127,9 +132,9 @@ pub async fn dummy<M, WT>(
     _: &PgPool,
     _: &mut Task<M, WT>,
 ) -> Result<()>
-    where
-        M: TaskMetric,
-        WT: WorkerTask, {
-
+where
+    M: TaskMetric,
+    WT: WorkerTask,
+{
     Ok(())
 }

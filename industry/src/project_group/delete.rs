@@ -1,26 +1,25 @@
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
-use starfoundry_lib_industry::ProjectGroupUuid;
+use sqlx::PgPool;
 
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
-use crate::AppState;
+use crate::project_group::ProjectGroupError;
 use crate::project_group::error::Result;
-use crate::project_group::service::delete;
+use crate::{AppState, ProjectGroupUuid};
 
 /// Delete Group
-/// 
+///
 /// - Alternative route: `/latest/project-groups/{ProjectGroupUuid}`
 /// - Alternative route: `/v1/project-groups/{ProjectGroupUuid}`
-/// 
+///
 /// ---
-/// 
+///
 /// Deletes the group
-/// 
+///
 /// ## Security
 /// - authenticated
 /// - project_group:write
-/// 
 #[utoipa::path(
     delete,
     path = "/{ProjectGroupUuid}",
@@ -43,37 +42,90 @@ use crate::project_group::service::delete;
     ),
 )]
 pub async fn api(
-    State(state):             State<AppState>,
+    State(state): State<AppState>,
     Path(project_group_uuid): Path<ProjectGroupUuid>,
 ) -> Result<impl IntoResponse> {
-    delete(
-        &state.postgres,
-        project_group_uuid,
-    ).await?;
+    delete(&state.postgres, project_group_uuid).await?;
 
-    Ok((
-        StatusCode::NO_CONTENT,
-        ()
-    ))
+    Ok((StatusCode::NO_CONTENT, ()))
+}
+
+pub async fn delete(
+    pool: &PgPool,
+    group_id: ProjectGroupUuid,
+) -> Result<ProjectGroupUuid> {
+    let has_project = sqlx::query!(
+        "
+            SELECT 1 AS entry
+            FROM project
+            WHERE project_group_id = $1
+        ",
+        *group_id,
+    )
+    .fetch_optional(pool)
+    .await
+    .map_err(|e| ProjectGroupError::DeleteGroup(e, group_id))?;
+
+    if has_project.is_some() {
+        return Err(ProjectGroupError::ProjectIsAssignedToGroup);
+    }
+
+    sqlx::query!(
+        "
+        DELETE FROM project_group
+        WHERE id = $1
+        RETURNING id
+    ",
+        *group_id,
+    )
+    .fetch_one(pool)
+    .await
+    .map(|x| ProjectGroupUuid::new(x.id))
+    .map_err(|e| ProjectGroupError::DeleteGroup(e, group_id))
 }
 
 #[cfg(test)]
-mod tests {
+mod delete_project_group_test {
+    use std::str::FromStr;
+
     use axum::body::Body;
     use axum::extract::Request;
-    use axum::http::header::HOST;
     use axum::http::StatusCode;
+    use axum::http::header::HOST;
     use sqlx::PgPool;
-    use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID, HEADER_SERVICE};
+    use starfoundry_gateway::{
+        HEADER_CHARACTER_ID, HEADER_CORPORATION_ID, HEADER_SERVICE
+    };
+    use uuid::Uuid;
 
     use crate::project_group::project_group_test_routes;
 
-    #[sqlx::test(
-        fixtures("base", "delete"),
-    )]
-    async fn happy_path(
-        pool: PgPool,
-    ) {
+    #[sqlx::test(fixtures(path = "./fixtures", scripts("base", "delete")))]
+    async fn direct_happy_path(pool: PgPool) {
+        let result = super::delete(
+            &pool,
+            Uuid::from_str("00000000-0000-0000-0000-000000000010")
+                .unwrap()
+                .into(),
+        )
+        .await;
+        assert!(result.is_ok());
+    }
+
+    #[sqlx::test(fixtures(path = "./fixtures", scripts("base")))]
+    async fn dont_delete_if_a_project_is_connected(pool: PgPool) {
+        let result = super::delete(
+            &pool,
+            Uuid::from_str("00000000-0000-0000-0000-000000000001")
+                .unwrap()
+                .into(),
+        )
+        .await;
+        assert!(result.is_err());
+    }
+
+    #[sqlx::test(fixtures("base", "delete"))]
+    async fn happy_path(pool: PgPool) {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000010")
             .method("DELETE")
@@ -87,12 +139,8 @@ mod tests {
         assert_eq!(response.status(), StatusCode::NO_CONTENT);
     }
 
-    #[sqlx::test(
-        fixtures("base"),
-    )]
-    async fn dont_delete_if_a_project_is_connected(
-        pool: PgPool,
-    ) {
+    #[sqlx::test(fixtures("base"))]
+    async fn direct_dont_delete_if_a_project_is_connected(pool: PgPool) {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000001")
             .method("DELETE")
@@ -106,12 +154,8 @@ mod tests {
         assert_eq!(response.status(), StatusCode::BAD_REQUEST);
     }
 
-    #[sqlx::test(
-        fixtures("base"),
-    )]
-    async fn unauthorized(
-        pool: PgPool,
-    ) {
+    #[sqlx::test(fixtures("base"))]
+    async fn unauthorized(pool: PgPool) {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000001")
             .method("DELETE")
@@ -122,13 +166,8 @@ mod tests {
         assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
     }
 
-    #[sqlx::test(
-        fixtures("base"),
-    )]
-    async fn forbidden(
-        pool: PgPool,
-    ) {
-        
+    #[sqlx::test(fixtures("base"))]
+    async fn forbidden(pool: PgPool) {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000001")
             .method("DELETE")
@@ -156,12 +195,8 @@ mod tests {
         assert_eq!(response.status(), StatusCode::FORBIDDEN);
     }
 
-    #[sqlx::test(
-        fixtures("base"),
-    )]
-    async fn not_found(
-        pool: PgPool,
-    ) {
+    #[sqlx::test(fixtures("base"))]
+    async fn not_found(pool: PgPool) {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000010")
             .method("DELETE")

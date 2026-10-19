@@ -1,0 +1,31 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO filter\n            (\n                name,\n                typ,\n                filter,\n                owner\n            )\n            VALUES ($1, $2, $3, $4)\n            RETURNING id\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "filter",
+            "name": "id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Varchar",
+        "Varchar",
+        "Jsonb",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "0e3b6036367e5e22d17afe086a95471d6f478038df96bf9eedef401472d26e7a"
+}

@@ -1,10 +1,10 @@
 use thiserror::Error;
 use uuid::Uuid;
 
-pub type Result<T, E = Error> = std::result::Result<T, E>;
+pub type Result<T, E = WorkerError> = std::result::Result<T, E>;
 
 #[derive(Error, Debug)]
-pub enum Error {
+pub enum WorkerError {
     #[error("error registering worker in the database, '{0}'")]
     RegisterWorker(sqlx::Error),
     #[error("error deleting dead workers, '{0}'")]

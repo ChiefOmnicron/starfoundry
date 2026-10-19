@@ -1,10 +1,10 @@
 use thiserror::Error;
 
-pub type Result<T, E = Error> = std::result::Result<T, E>;
+pub type Result<T, E = IndustryWorkerError> = std::result::Result<T, E>;
 
 #[derive(Debug, Error)]
 #[non_exhaustive]
-pub enum Error {
+pub enum IndustryWorkerError {
     #[error("error while fetching jobs, error: '{0}'")]
     ListJobs(sqlx::Error),
     #[error("error while inserting jobs, error: '{0}'")]
@@ -29,7 +29,7 @@ pub enum Error {
     InvalidWorkerTask(String),
 
     #[error(transparent)]
-    WorkerLibError(#[from] starfoundry_lib_worker::Error),
+    WorkerLibError(#[from] starfoundry_lib_worker::WorkerError),
     #[error(transparent)]
-    EveGatewayError(#[from] starfoundry_lib_eve_gateway::Error),
+    EveGatewayError(#[from] starfoundry_eve_gateway::EveGatewayError),
 }

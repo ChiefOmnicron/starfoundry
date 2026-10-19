@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM filter\n            WHERE id = $1\n            AND owner = $2\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "218c591701fd297de05f2b0cffae5db3a5acdc7b7fb42a908c616cb4a5542be1"
+}

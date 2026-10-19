@@ -1,16 +1,16 @@
 use sqlx::PgPool;
+use starfoundry_eve_gateway::asset::Asset;
 use starfoundry_lib_worker::Task;
-use starfoundry_lib_eve_gateway::Asset;
 
-use crate::error::{Error, Result};
+use crate::error::{EveGatewayWorkerError, Result};
 use crate::metric::WorkerMetric;
 use crate::tasks::WorkerEveGatewayTask;
 
 pub async fn insert_assets(
-    pool:     &PgPool,
-    task:     &mut Task<WorkerMetric, WorkerEveGatewayTask>,
+    pool: &PgPool,
+    task: &mut Task<WorkerMetric, WorkerEveGatewayTask>,
     owner_id: i32,
-    entries:  Vec<Asset>,
+    entries: Vec<Asset>,
 ) -> Result<()> {
     if entries.is_empty() {
         return Ok(());
@@ -20,19 +20,17 @@ pub async fn insert_assets(
     entries.sort_by_key(|a| a.item_id);
     entries.dedup_by_key(|x| x.item_id);
 
-    let mut item_ids            = Vec::new();
-    let mut location_id         = Vec::new();
-    let mut type_ids            = Vec::new();
-    let mut location_flags      = Vec::new();
-    let mut location_type       = Vec::new();
-    let mut quantity            = Vec::new();
-    let mut is_singleton        = Vec::new();
-    let mut is_blueprint_copy   = Vec::new();
+    let mut item_ids = Vec::new();
+    let mut location_id = Vec::new();
+    let mut type_ids = Vec::new();
+    let mut location_flags = Vec::new();
+    let mut location_type = Vec::new();
+    let mut quantity = Vec::new();
+    let mut is_singleton = Vec::new();
+    let mut is_blueprint_copy = Vec::new();
 
     for entry in entries {
-        let location_flag = serde_json::to_string(
-                &entry.location_flag
-            )
+        let location_flag = serde_json::to_string(&entry.location_flag)
             .unwrap_or("Unknown".into());
 
         item_ids.push(*entry.item_id);
@@ -48,10 +46,11 @@ pub async fn insert_assets(
     let mut transaction = pool
         .begin()
         .await
-        .map_err(Error::Transaction)?;
+        .map_err(EveGatewayWorkerError::Transaction)?;
 
     let update_start = std::time::Instant::now();
-    let result = sqlx::query!("
+    let result = sqlx::query!(
+        "
             INSERT INTO asset
             (
                 owner_id,
@@ -83,60 +82,56 @@ pub async fn insert_assets(
                 quantity = EXCLUDED.quantity,
                 is_singleton = EXCLUDED.is_singleton
         ",
-            owner_id,
-
-            &item_ids,
-            &location_id,
-            &type_ids,
-            &location_flags,
-            &location_type,
-            &quantity,
-            &is_singleton,
-            &is_blueprint_copy as _,
-        )
-        .execute(&mut *transaction)
-        .await
-        .map_err(|e| Error::InsertAsset(e, owner_id))?;
+        owner_id,
+        &item_ids,
+        &location_id,
+        &type_ids,
+        &location_flags,
+        &location_type,
+        &quantity,
+        &is_singleton,
+        &is_blueprint_copy as _,
+    )
+    .execute(&mut *transaction)
+    .await
+    .map_err(|e| EveGatewayWorkerError::InsertAsset(e, owner_id))?;
     // TODO: refactor to `as_millis_f64()` when https://github.com/rust-lang/rust/issues/122451 is stable
-    let update_time = update_start.elapsed().as_millis();
-    task.metric.asset_insert_row_change(
-        owner_id,
-        result.rows_affected(),
-    );
-    task.metric.asset_insert_duration(
-        owner_id,
-        update_time,
-    );
+    let update_time = update_start
+        .elapsed()
+        .as_millis();
+    task.metric
+        .asset_insert_row_change(owner_id, result.rows_affected());
+    task.metric
+        .asset_insert_duration(owner_id, update_time);
     task.append_log(format!("Updates: {}", result.rows_affected()));
 
     let delete_start = std::time::Instant::now();
-    let result = sqlx::query!("
+    let result = sqlx::query!(
+        "
             DELETE FROM asset
             WHERE owner_id = $1
             AND NOT item_id = ANY($2)
         ",
-            owner_id,
-            &item_ids,
-        )
-        .execute(&mut *transaction)
-        .await
-        .map_err(|e| Error::CleanupItems(e, owner_id))?;
+        owner_id,
+        &item_ids,
+    )
+    .execute(&mut *transaction)
+    .await
+    .map_err(|e| EveGatewayWorkerError::CleanupItems(e, owner_id))?;
     // TODO: refactor to `as_millis_f64()` when https://github.com/rust-lang/rust/issues/122451 is stable
-    let delete_time = delete_start.elapsed().as_millis();
-    task.metric.asset_delete_row_change(
-        owner_id,
-        result.rows_affected(),
-    );
-    task.metric.asset_delete_duration(
-        owner_id,
-        delete_time,
-    );
+    let delete_time = delete_start
+        .elapsed()
+        .as_millis();
+    task.metric
+        .asset_delete_row_change(owner_id, result.rows_affected());
+    task.metric
+        .asset_delete_duration(owner_id, delete_time);
     task.append_log(format!("Deletes: {}", result.rows_affected()));
 
     transaction
         .commit()
         .await
-        .map_err(Error::Transaction)?;
+        .map_err(EveGatewayWorkerError::Transaction)?;
 
     Ok(())
 }

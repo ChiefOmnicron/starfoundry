@@ -1,21 +1,24 @@
+use std::collections::HashMap;
+
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::EveGatewayApiClient;
-use starfoundry_lib_types::{CharacterId, CorporationId, ItemId, JobId, TypeId};
-use std::collections::HashMap;
+use starfoundry_eve_gateway::EveGatewayApiClient;
+use starfoundry_lib_types::{
+    CharacterId, CorporationId, ItemId, JobId, TypeId
+};
 use utoipa::ToSchema;
 use uuid::Uuid;
 
-use crate::{error::{Error, Result}, jobs::UnmatchedJob};
+use crate::error::{IndustryWorkerError, Result};
+use crate::jobs::UnmatchedJob;
 
 /// Fetches both the default group and the specific group jobs and joins them
 /// together.
 /// The jobs are sorted by the date the project was created
-/// 
 pub async fn fetch_startable_jobs(
-    pool:           &PgPool,
-    character_id:   CharacterId,
+    pool: &PgPool,
+    character_id: CharacterId,
 ) -> Result<Vec<StartableIndustryJobs>> {
     // TODO: consider introducing the READY_TO_START flag
     sqlx::query_as!(
@@ -45,64 +48,62 @@ pub async fn fetch_startable_jobs(
         )
         .fetch_all(pool)
         .await
-        .map_err(Error::ListJobs)
+        .map_err(IndustryWorkerError::ListJobs)
 }
 
 pub async fn fetch_done_job_ids(
-    pool:    &PgPool,
+    pool: &PgPool,
     job_ids: Vec<i32>,
 ) -> Result<Vec<JobId>> {
-    sqlx::query!(r#"
+    sqlx::query!(
+        r#"
             SELECT job_id AS "job_id!"
             FROM project_job
             WHERE job_id = ANY($1)
             AND status = 'DONE'
         "#,
-            &job_ids,
-        )
-        .fetch_all(pool)
-        .await
-        .map_err(Error::ListJobs)
-        .map(|x| {
-            x.into_iter()
-                .map(|x| x.job_id.into())
-                .collect::<Vec<_>>()
-        })
+        &job_ids,
+    )
+    .fetch_all(pool)
+    .await
+    .map_err(IndustryWorkerError::ListJobs)
+    .map(|x| {
+        x.into_iter()
+            .map(|x| x.job_id.into())
+            .collect::<Vec<_>>()
+    })
 }
 
 pub async fn resolve_corporation_asset_name(
-    _pool:                  &PgPool,
+    _pool: &PgPool,
     eve_gateway_api_client: &impl EveGatewayApiClient,
-    corporation_id:         CorporationId,
-    location_ids:           &Vec<ItemId>,
-    output_location_ids:    &Vec<ItemId>,
+    corporation_id: CorporationId,
+    location_ids: &[ItemId],
+    output_location_ids: &[ItemId],
 ) -> Result<HashMap<ItemId, String>> {
     let mut containers = HashMap::new();
 
     let mut item_ids = output_location_ids
-        .into_iter()
-        .filter(|x| !location_ids.contains(&x))
+        .iter()
+        .filter(|x| !location_ids.contains(x))
         .collect::<Vec<_>>();
     item_ids.sort();
     item_ids.dedup();
 
     for item_id in item_ids {
         let result = match eve_gateway_api_client
-                .eve_resolve_corporation_asset(
-                    corporation_id,
-                    vec![*item_id],
-                )
-                .await {
-
-                Ok(x)  => x,
-                Err(_) => {
-                    // ignore errors
-                    continue;
-                }
-            }
-            .into_iter()
-            .map(|x| (x.item_id, x.name))
-            .collect::<HashMap<_, _>>();
+            .eve_resolve_corporation_asset(corporation_id, vec![*item_id])
+            .await
+        {
+            Ok(x) => x,
+            Err(_) => {
+                // ignore errors
+                continue;
+            },
+        }
+        .into_iter()
+        .map(|x| (x.item_id, x.name))
+        .collect::<HashMap<_, _>>();
         containers.extend(result);
     }
 
@@ -110,7 +111,7 @@ pub async fn resolve_corporation_asset_name(
 }
 
 pub async fn update_industry_jobs(
-    pool:    &PgPool,
+    pool: &PgPool,
     updates: &HashMap<Uuid, Vec<UpdateJobRequest>>,
 ) -> Result<()> {
     if updates.is_empty() {
@@ -128,14 +129,15 @@ pub async fn update_industry_jobs(
             .collect::<Vec<_>>();
         let status = updates
             .iter()
-            .map(|x| x.status.clone())
+            .map(|x| x.status)
             .collect::<Vec<_>>();
         let job_ids = updates
             .iter()
-            .map(|x| x.job_id.clone())
+            .map(|x| x.job_id)
             .collect::<Vec<_>>();
 
-        sqlx::query!("
+        sqlx::query!(
+            "
                 UPDATE project_job
                 SET cost   =       data.cost,
                     status =       data.status,
@@ -150,31 +152,38 @@ pub async fn update_industry_jobs(
                 WHERE project_id = $1
                 AND project_job.id = data.id
             ",
-                project_id,
-                &ids,
-                &costs as _,
-                &status as _,
-                &job_ids as _,
-            )
-            .execute(pool)
-            .await
-            .map(drop)
-            .map_err(Error::UpdateJob)?;
+            project_id,
+            &ids,
+            &costs as _,
+            &status as _,
+            &job_ids as _,
+        )
+        .execute(pool)
+        .await
+        .map(drop)
+        .map_err(IndustryWorkerError::UpdateJob)?;
 
         // TODO: implement a better solution
         // resets entries that don't have a cost, but a job id
         for entry in updates {
-            if entry.cost.is_none() && entry.job_id.is_some() {
-                sqlx::query!("
+            if entry
+                .cost
+                .is_none()
+                && entry
+                    .job_id
+                    .is_some()
+            {
+                sqlx::query!(
+                    "
                         UPDATE project_job
                         SET job_id = NULL
                         WHERE id = $1
                     ",
-                        entry.id,
-                    )
-                    .execute(pool)
-                    .await
-                    .unwrap();
+                    entry.id,
+                )
+                .execute(pool)
+                .await
+                .unwrap();
             }
         }
     }
@@ -182,10 +191,9 @@ pub async fn update_industry_jobs(
     Ok(())
 }
 
-pub async fn update_finished_jobs(
-    pool: &PgPool,
-) -> Result<()> {
-    sqlx::query!("
+pub async fn update_finished_jobs(pool: &PgPool) -> Result<()> {
+    sqlx::query!(
+        "
             UPDATE project_job
             SET status = 'DONE'
             WHERE status = 'BUILDING'
@@ -197,53 +205,78 @@ pub async fn update_finished_jobs(
                 AND TO_TIMESTAMP(end_date, 'YYYY-MM-DDTHH:MI:SS') < NOW()
                 AND ij.is_delivered = true
             )
-        ")
-        .execute(pool)
-        .await
-        .map(drop)
-        .map_err(Error::UpdateJob)
+        "
+    )
+    .execute(pool)
+    .await
+    .map(drop)
+    .map_err(IndustryWorkerError::UpdateJob)
 }
 
 pub async fn insert_job_detection_log(
-    pool:           &PgPool,
-    updates:        &HashMap<Uuid, Vec<UpdateJobRequest>>,
+    pool: &PgPool,
+    updates: &HashMap<Uuid, Vec<UpdateJobRequest>>,
     unmatched_jobs: &Vec<UnmatchedJob>,
 ) -> Result<()> {
-    let mut type_ids    = Vec::new();
-    let mut job_ids     = Vec::new();
+    let mut type_ids = Vec::new();
+    let mut job_ids = Vec::new();
     let mut project_ids = Vec::new();
-    let mut result      = Vec::new();
+    let mut result = Vec::new();
 
     let updates = updates
-        .into_iter()
-        .map(|(_, x)| x)
+        .values()
         .flatten()
         .collect::<Vec<_>>();
 
     for entry in updates {
-        if job_ids.contains(&entry.job_id.unwrap_or_default()) {
+        if job_ids.contains(
+            &entry
+                .job_id
+                .unwrap_or_default(),
+        ) {
             continue;
         }
 
         type_ids.push(entry.type_id);
         // if it was matched, it will always have a job_id
-        job_ids.push(entry.job_id.unwrap_or_default());
+        job_ids.push(
+            entry
+                .job_id
+                .unwrap_or_default(),
+        );
         project_ids.push(entry.project_id);
         result.push("MATCHED".into());
     }
 
     for entry in unmatched_jobs {
-        if job_ids.contains(&entry.job.job_id) {
+        if job_ids.contains(
+            &entry
+                .job
+                .job_id,
+        ) {
             continue;
         }
 
-        type_ids.push(entry.job.product_type_id);
-        job_ids.push(*entry.job.job_id);
+        type_ids.push(
+            entry
+                .job
+                .product_type_id,
+        );
+        job_ids.push(
+            *entry
+                .job
+                .job_id,
+        );
         project_ids.push(entry.project_id);
-        result.push(entry.reason.into_string());
+        result.push(
+            entry
+                .reason
+                .into_string(),
+        );
     }
 
-    sqlx::query!("
+    sqlx::query!(
+        "
             INSERT INTO job_detection_log
             (
                 type_id,
@@ -261,38 +294,49 @@ pub async fn insert_job_detection_log(
             DO UPDATE SET
                 result = EXCLUDED.result
         ",
-            &type_ids as _,
-            &job_ids,
-            &project_ids as _,
-            &result as _,
-        )
-        .execute(pool)
-        .await
-        .map(drop)
-        .map_err(Error::InsertJobDetectionLog)
+        &type_ids as _,
+        &job_ids,
+        &project_ids as _,
+        &result as _,
+    )
+    .execute(pool)
+    .await
+    .map(drop)
+    .map_err(IndustryWorkerError::InsertJobDetectionLog)
 }
 
 pub async fn cleanup_delivered_jobs(
-    pool:                     &PgPool,
-    //character_corporation_id: i32,
+    pool: &PgPool,
+    // character_corporation_id: i32,
 ) -> Result<()> {
-    sqlx::query!("
+    sqlx::query!(
+        "
             UPDATE industry_job
             SET is_delivered = true
             WHERE is_delivered = false
             AND end_date::TIMESTAMPTZ < NOW()
             RETURNING job_id
-        ")
-        .fetch_all(pool)
-        .await
-        .map(drop)
-        .map_err(Error::Cleanup)
+        "
+    )
+    .fetch_all(pool)
+    .await
+    .map(drop)
+    .map_err(IndustryWorkerError::Cleanup)
 }
 
 #[derive(
-    Clone, Debug, Copy, Hash,
-    PartialEq, Eq, PartialOrd, Ord,
-    sqlx::Type, Deserialize, Serialize, ToSchema,
+    Clone,
+    Debug,
+    Copy,
+    Hash,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    sqlx::Type,
+    Deserialize,
+    Serialize,
+    ToSchema,
 )]
 #[sqlx(type_name = "PROJECT_JOB_STATUS")]
 #[sqlx(rename_all = "SCREAMING_SNAKE_CASE")]
@@ -318,11 +362,11 @@ pub struct StartableIndustryJobs {
 
 #[derive(Clone, Debug)]
 pub struct UpdateJobRequest {
-    pub id:             Uuid,
-    pub character_id:   Option<CharacterId>,
-    pub project_id:     Option<Uuid>,
-    pub type_id:        TypeId,
-    pub status:         ProjectJobStatusDatabase,
-    pub cost:           Option<f32>,
-    pub job_id:         Option<i32>,
+    pub id:           Uuid,
+    pub character_id: Option<CharacterId>,
+    pub project_id:   Option<Uuid>,
+    pub type_id:      TypeId,
+    pub status:       ProjectJobStatusDatabase,
+    pub cost:         Option<f32>,
+    pub job_id:       Option<i32>,
 }

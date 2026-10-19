@@ -1,32 +1,42 @@
-use serde::Deserialize;
-use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::{EveGatewayApiClientIndustry, EveGatewayClient, IndustryActivity};
-use starfoundry_lib_gateway::Identity;
-use starfoundry_lib_types::{CharacterId, CorporationId, ItemId};
-use starfoundry_lib_worker::Task;
 use std::collections::HashMap;
 
-use crate::error::{Error, Result};
-use crate::{SERVICE_NAME, WorkerIndustryTask};
+use serde::Deserialize;
+use sqlx::PgPool;
+use starfoundry_eve_gateway::EveGatewayClient;
+use starfoundry_eve_gateway::industry::{
+    EveGatewayApiClientIndustry, IndustryActivity
+};
+use starfoundry_gateway::Identity;
+use starfoundry_lib_types::{CharacterId, CorporationId, ItemId};
+use starfoundry_lib_worker::Task;
+
+use crate::error::{IndustryWorkerError, Result};
+use crate::jobs::{
+    cleanup_delivered_jobs, fetch_done_job_ids, fetch_startable_jobs, insert_job_detection_log, job_detection, resolve_corporation_asset_name, update_finished_jobs, update_industry_jobs
+};
 use crate::metric::WorkerMetric;
-use crate::jobs::{cleanup_delivered_jobs, fetch_done_job_ids, fetch_startable_jobs, insert_job_detection_log, job_detection, resolve_corporation_asset_name, update_finished_jobs, update_industry_jobs};
+use crate::{SERVICE_NAME, WorkerIndustryTask};
 
 pub async fn corporation_jobs(
-    pool:        &PgPool,
-    task:        &mut Task<WorkerMetric, WorkerIndustryTask>,
+    pool: &PgPool,
+    task: &mut Task<WorkerMetric, WorkerIndustryTask>,
 ) -> Result<()> {
     let additional_data: AdditionalData = match task.additional_data() {
         Ok(Some(x)) => x,
-        Ok(None)    => {
+        Ok(None) => {
             tracing::error!("[{:?}] missing additional data", task.task);
             task.append_error("Missing additional data");
-            return Err(Error::ParseAdditionalData)
+            return Err(IndustryWorkerError::ParseAdditionalData)
         },
-        Err(e)      => {
-            tracing::error!("[{:?}] error parsing additional data, {}", task.task, e);
+        Err(e) => {
+            tracing::error!(
+                "[{:?}] error parsing additional data, {}",
+                task.task,
+                e
+            );
             task.append_error(format!("Missing additional data {}", e));
-            return Err(Error::ParseAdditionalData)
-        }
+            return Err(IndustryWorkerError::ParseAdditionalData)
+        },
     };
 
     let identity = Identity::new(
@@ -37,16 +47,14 @@ pub async fn corporation_jobs(
     let client = EveGatewayClient::new_with_identity(SERVICE_NAME, identity)?;
     let entries = match client
         .list_corporation_jobs()
-        .await {
-
-        Ok(x) => {
-            x
-        },
+        .await
+    {
+        Ok(x) => x,
         Err(e) => {
             tracing::error!("Error while fetching job data, {:?}", e);
             task.append_error(e.to_string());
             return Err(e.into());
-        }
+        },
     };
     task.append_log(format!("Job entries: {}", entries.len()));
 
@@ -76,74 +84,87 @@ pub async fn corporation_jobs(
 
     // resolve all container ids
     let container_names = match resolve_corporation_asset_name(
-        &pool,
+        pool,
         &client,
         additional_data.corporation_id,
         &location_ids,
         &output_location_ids,
-    ).await {
-        Ok(x)  => x,
+    )
+    .await
+    {
+        Ok(x) => x,
         Err(e) => {
             tracing::error!("Error resolving container names {}", e);
             task.append_error(e.to_string());
             HashMap::new()
-        }
+        },
     };
 
-    let startable_jobs = match fetch_startable_jobs(
-        pool,
-        additional_data.character_main_id,
-    ).await {
-
-        Ok(x)  => x,
-        Err(e) => {
-            task.append_error(e.to_string());
-            Vec::new()
-        }
-    };
+    let startable_jobs =
+        match fetch_startable_jobs(pool, additional_data.character_main_id)
+            .await
+        {
+            Ok(x) => x,
+            Err(e) => {
+                task.append_error(e.to_string());
+                Vec::new()
+            },
+        };
 
     let finished_job_ids = match fetch_done_job_ids(pool, job_ids).await {
-        Ok(x)  => x,
+        Ok(x) => x,
         Err(e) => {
             task.append_error(e.to_string());
             Vec::new()
-        }
+        },
     };
 
-    let mut updates      = HashMap::new();
-    let mut unmatched    = Vec::new();
-    let mut used_ids     = Vec::new();
+    let mut updates = HashMap::new();
+    let mut unmatched = Vec::new();
+    let mut used_ids = Vec::new();
     let mut used_job_ids = Vec::new();
 
-    let mut blueprint_id          = Vec::new();
+    let mut blueprint_id = Vec::new();
     let mut blueprint_location_id = Vec::new();
-    let mut blueprint_type_id     = Vec::new();
-    let mut facility_id           = Vec::new();
-    let mut installer_id          = Vec::new();
-    let mut job_id                = Vec::new();
-    let mut runs                  = Vec::new();
-    let mut cost                  = Vec::new();
-    let mut end_date              = Vec::new();
-    let mut activity              = Vec::new();
+    let mut blueprint_type_id = Vec::new();
+    let mut facility_id = Vec::new();
+    let mut installer_id = Vec::new();
+    let mut job_id = Vec::new();
+    let mut runs = Vec::new();
+    let mut cost = Vec::new();
+    let mut end_date = Vec::new();
+    let mut activity = Vec::new();
 
     for entry in entries.iter() {
         blueprint_id.push(*entry.blueprint_id);
         blueprint_location_id.push(*entry.blueprint_location_id);
         blueprint_type_id.push(*entry.blueprint_type_id);
-        facility_id.push(entry.facility_id as i64);
+        facility_id.push(entry.facility_id);
         installer_id.push(*entry.installer_id);
-        job_id.push(*entry.job_id as i32);
-        runs.push(entry.runs as i32);
-        cost.push(entry.cost.unwrap_or_default() as f32);
-        end_date.push(entry.end_date.clone());
-        activity.push(entry.activity.clone());
+        job_id.push(*entry.job_id);
+        runs.push(entry.runs);
+        cost.push(
+            entry
+                .cost
+                .unwrap_or_default(),
+        );
+        end_date.push(
+            entry
+                .end_date
+                .clone(),
+        );
+        activity.push(
+            entry
+                .activity
+                .clone(),
+        );
 
         let industry_jobs = entries
             .iter()
-            .filter(|x|
-                x.activity == IndustryActivity::Manufacturing ||
-                x.activity == IndustryActivity::Reactions
-            )
+            .filter(|x| {
+                x.activity == IndustryActivity::Manufacturing
+                    || x.activity == IndustryActivity::Reactions
+            })
             .cloned()
             .collect::<Vec<_>>();
         let (updates_, unmatched_) = job_detection(
@@ -161,15 +182,16 @@ pub async fn corporation_jobs(
     task.append_log(format!("Updates: {}", updates.len()));
     task.append_log(format!("Unmatched: {}", unmatched.len()));
 
-
     // TODO: check if this is okay here
-    //if let Err(e) = cleanup_delivered_jobs(pool, *additional_data.corporation_id).await {
+    // if let Err(e) = cleanup_delivered_jobs(pool,
+    // *additional_data.corporation_id).await {
     if let Err(e) = cleanup_delivered_jobs(pool).await {
         tracing::warn!("{}", e);
         task.append_error(e.to_string());
     }
 
-    sqlx::query!("
+    sqlx::query!(
+        "
             INSERT INTO industry_job
             (
                 character_corporation_id,
@@ -199,22 +221,22 @@ pub async fn corporation_jobs(
             ON CONFLICT (job_id)
             DO UPDATE SET is_delivered = false
         ",
-            *additional_data.corporation_id,
-            &blueprint_id,
-            &blueprint_location_id,
-            &blueprint_type_id,
-            &facility_id,
-            &installer_id,
-            &job_id,
-            &runs,
-            &cost,
-            &end_date,
-            activity as _,
-        )
-        .execute(pool)
-        .await
-        .map(drop)
-        .map_err(Error::InsertJobs)?;
+        *additional_data.corporation_id,
+        &blueprint_id,
+        &blueprint_location_id,
+        &blueprint_type_id,
+        &facility_id,
+        &installer_id,
+        &job_id,
+        &runs,
+        &cost,
+        &end_date,
+        activity as _,
+    )
+    .execute(pool)
+    .await
+    .map(drop)
+    .map_err(IndustryWorkerError::InsertJobs)?;
 
     update_industry_jobs(pool, &updates).await?;
     update_finished_jobs(pool).await?;
@@ -225,8 +247,8 @@ pub async fn corporation_jobs(
 
 #[derive(Debug, Deserialize)]
 struct AdditionalData {
-    source:             String,
-    corporation_id:     CorporationId,
-    character_main_id:  CharacterId,
-    character_id:       CharacterId,
+    source:            String,
+    corporation_id:    CorporationId,
+    character_main_id: CharacterId,
+    character_id:      CharacterId,
 }

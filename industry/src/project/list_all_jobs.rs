@@ -1,28 +1,41 @@
+use std::collections::HashMap;
+use std::str::FromStr;
+
+use axum::Json;
 use axum::extract::{Query, State};
 use axum::http::StatusCode;
-use axum::Json;
 use axum::response::IntoResponse;
-use starfoundry_lib_gateway::ExtractIdentity;
-use starfoundry_lib_industry::project::{ProjectAllJobFilter, ProjectJobAllGroup};
+use chrono::NaiveDateTime;
+use sqlx::PgPool;
+use starfoundry_eve_gateway::EveGatewayApiClient;
+use starfoundry_gateway::ExtractIdentity;
+use starfoundry_lib_types::CharacterId;
+use uuid::Uuid;
 
-use crate::api_docs::{BadRequest, InternalServerError, NotFound, Unauthorized};
-use crate::{AppState, eve_gateway_api_client};
-use crate::project::error::Result;
-use crate::project::service::list_all_jobs;
+use crate::api_docs::{
+    BadRequest, InternalServerError, NotFound, Unauthorized
+};
+use crate::project::ProjectJobStatus;
+use crate::project::error::{ProjectError, Result};
+use crate::project::list::{
+    ProjectAllJobFilter, ProjectFilter, ProjectJob, ProjectJobAllGroup, list
+};
+use crate::project::list_jobs::determine_ready_to_start;
+use crate::structure::fetch::{FetchStructureQuery, fetch_bulk};
+use crate::{AppState, eve_gateway_api_client, sort_by_job_flat};
 
 /// List All Jobs
-/// 
+///
 /// - Alternative route: `/latest/projects/jobs`
 /// - Alternative route: `/v1/projects/jobs`
-/// 
+///
 /// ---
-/// 
+///
 /// Lists all startable jobs over all projects
-/// 
+///
 /// ## Security
 /// - authenticated
 /// - project:read
-/// 
 #[utoipa::path(
     get,
     path = "/jobs",
@@ -50,32 +63,219 @@ use crate::project::service::list_all_jobs;
     ),
 )]
 pub async fn api(
-    identity:       ExtractIdentity,
-    State(state):   State<AppState>,
-    Query(filter):  Query<ProjectAllJobFilter>,
+    identity: ExtractIdentity,
+    State(state): State<AppState>,
+    Query(filter): Query<ProjectAllJobFilter>,
 ) -> Result<impl IntoResponse> {
     let data = list_all_jobs(
-            &state.postgres,
-            identity.character_id,
-            &eve_gateway_api_client()?,
-            filter,
-        ).await?;
+        &state.postgres,
+        identity.character_id,
+        &eve_gateway_api_client()?,
+        filter,
+    )
+    .await?;
 
     if data.is_empty() {
-        Ok(
-            (
-                StatusCode::NO_CONTENT,
-                Json(data),
-            )
-            .into_response()
-        )
+        Ok((StatusCode::NO_CONTENT, Json(data)).into_response())
     } else {
-        Ok(
-            (
-                StatusCode::OK,
-                Json(data),
-            )
-            .into_response()
-        )
+        Ok((StatusCode::OK, Json(data)).into_response())
     }
 }
+
+pub async fn list_all_jobs(
+    pool: &PgPool,
+    character_id: CharacterId,
+    eve_gateway_api_client: &impl EveGatewayApiClient,
+    filters: ProjectAllJobFilter,
+) -> Result<Vec<ProjectJobAllGroup>> {
+    let tags = filters
+        .tags
+        .map(|x| {
+            x.split(",")
+                .map(|y| Uuid::from_str(y))
+                .filter(|y| y.is_ok())
+                // unwrap is safe here, the filter would catch all
+                .map(|y| {
+                    y.unwrap()
+                        .into()
+                })
+                .collect::<Vec<_>>()
+        })
+        .unwrap_or_default();
+
+    let projects = list(
+        pool,
+        character_id,
+        ProjectFilter {
+            status: Some("IN_PROGRESS".into()),
+            tags: Some(tags),
+            ..Default::default()
+        },
+    )
+    .await?;
+    let project_ids = projects
+        .iter()
+        .map(|x| *x.id)
+        .collect::<Vec<_>>();
+
+    // TODO: merge end_date into project_job?
+    // TODO: find out why in github test all the force overwrites are required
+    let entries = sqlx::query!(
+        r#"
+            SELECT
+                pj.id           AS "id!",
+                pj.runs         AS "runs!",
+                pj.status       AS "status!: ProjectJobStatus",
+                pj.cost,
+                pj.job_id,
+                pj.structure_id AS "structure_id!",
+                pj.type_id      AS "type_id!",
+                pj.started_by,
+                pj.project_id   AS "project_id!",
+                ij.end_date     AS "end_date?"
+            FROM project_job pj
+            LEFT JOIN industry_job ij ON pj.job_id = ij.job_id
+            WHERE project_id = ANY($1)
+        "#,
+        &project_ids,
+    )
+    .fetch_all(pool)
+    .await
+    .map_err(ProjectError::ListJobs)?;
+
+    let mut type_ids = entries
+        .iter()
+        .map(|x| x.type_id)
+        .map(Into::into)
+        .collect::<Vec<_>>();
+    type_ids.sort();
+    type_ids.dedup();
+
+    let mut structure_ids = entries
+        .iter()
+        .map(|x| x.structure_id)
+        .map(Into::into)
+        .collect::<Vec<_>>();
+    structure_ids.sort();
+    structure_ids.dedup();
+
+    let items = eve_gateway_api_client
+        .fetch_item_bulk(type_ids)
+        .await?
+        .into_iter()
+        .map(|x| (x.type_id, x))
+        .collect::<HashMap<_, _>>();
+    let structures = fetch_bulk(
+        pool,
+        eve_gateway_api_client,
+        character_id,
+        structure_ids,
+        FetchStructureQuery::default(),
+    )
+    .await?
+    .into_iter()
+    .map(|x| (x.id, x))
+    .collect::<HashMap<_, _>>();
+
+    let mut project_jobs = HashMap::new();
+    for entry in entries {
+        let item = if let Some(x) = items.get(
+            &entry
+                .type_id
+                .into(),
+        ) {
+            x
+        } else {
+            continue;
+        };
+        let structure = if let Some(x) = structures.get(
+            &entry
+                .structure_id
+                .into(),
+        ) {
+            x
+        } else {
+            continue;
+        };
+
+        let end_date = if let Some(x) = entry.end_date {
+            NaiveDateTime::parse_from_str(&x, "%Y-%m-%dT%H:%M:%SZ")
+                .map(Some)
+                .unwrap_or(None)
+        } else {
+            None
+        };
+
+        let project_job = ProjectJob {
+            id:         entry.id.into(),
+            project_id: entry
+                .project_id
+                .into(),
+            job_id:     entry.job_id,
+            status:     entry.status,
+
+            cost: entry.cost,
+            runs: entry.runs,
+
+            item:       item.clone(),
+            structure:  structure.clone(),
+            started_by: entry
+                .started_by
+                .map(Into::into),
+
+            end_date: end_date,
+        };
+
+        project_jobs
+            .entry(entry.project_id)
+            .and_modify(|x: &mut Vec<ProjectJob>| x.push(project_job.clone()))
+            .or_insert(vec![project_job]);
+    }
+
+    for (project_id, jobs) in project_jobs.iter_mut() {
+        determine_ready_to_start(
+            pool,
+            (*project_id).into(),
+            eve_gateway_api_client,
+            jobs,
+        )
+        .await?;
+    }
+
+    let mut result = Vec::new();
+    for (project_id, jobs) in project_jobs.iter() {
+        let project_name = if let Some(x) = projects
+            .iter()
+            .find(|x| x.id == (*project_id).into())
+            .map(|x| x.name.clone())
+        {
+            x
+        } else {
+            continue;
+        };
+
+        let jobs = jobs
+            .iter()
+            .filter(|x| x.status == ProjectJobStatus::ReadyToStart)
+            .cloned()
+            .collect::<Vec<_>>();
+        if jobs.is_empty() {
+            continue;
+        }
+
+        let group = ProjectJobAllGroup {
+            header:     project_name,
+            project_id: (*project_id).into(),
+            entries:    sort_jobs(jobs),
+        };
+        result.push(group);
+    }
+    result.sort_by_key(|x| {
+        x.header
+            .clone()
+    });
+
+    Ok(result)
+}
+
+sort_by_job_flat!(sort_jobs, ProjectJob);

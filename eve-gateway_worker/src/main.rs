@@ -8,12 +8,13 @@ mod standing;
 mod sync;
 mod tasks;
 
+use std::time::Duration;
+
 use prometheus_client::registry::Registry;
 use sqlx::PgPool;
 use sqlx::postgres::PgPoolOptions;
 use starfoundry_lib_eve_client::EveApiClientMetric;
 use starfoundry_lib_worker::{Task, TaskStatus, Worker};
-use std::time::Duration;
 use tokio::sync::mpsc;
 use tracing_subscriber::EnvFilter;
 
@@ -45,31 +46,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let pool = PgPoolOptions::new()
         .connect(&config.database_url)
         .await?;
-    sqlx::migrate!().run(&pool).await?;
+    sqlx::migrate!()
+        .run(&pool)
+        .await?;
 
-    let mut metric_registry = Registry::with_prefix("starfoundry_eve_gateway_worker");
+    let mut metric_registry =
+        Registry::with_prefix("starfoundry_eve_gateway_worker");
     let metric = WorkerMetric::new();
     let eve_api_metric = EveApiClientMetric::new();
     eve_api_metric.register(&mut metric_registry);
 
     let (tx, mut rx) = mpsc::channel(5);
 
-    let worker: Worker<WorkerMetric, WorkerEveGatewayTask> = Worker::init(
-            pool.clone(),
-            tx,
+    let worker: Worker<WorkerMetric, WorkerEveGatewayTask> =
+        Worker::init(pool.clone(), tx, metric, &mut metric_registry)
+            .await
+            .unwrap();
 
-            metric,
-            &mut metric_registry,
-        )
-        .await
-        .unwrap();
-
-    tokio::task::spawn(
-        worker.run(
-            metric_registry,
-            config.service_address,
-        )
-    );
+    tokio::task::spawn(worker.run(metric_registry, config.service_address));
 
     sync(&pool).await?;
 
@@ -122,73 +116,41 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 async fn task_select(
-    pool:   &PgPool,
-    task:   &mut Task<WorkerMetric, WorkerEveGatewayTask>,
+    pool: &PgPool,
+    task: &mut Task<WorkerMetric, WorkerEveGatewayTask>,
 ) -> Result<()> {
     match task.task {
-        WorkerEveGatewayTask::Sync => {
-            sync_task(
-                pool,
-                task,
-            ).await
-        },
+        WorkerEveGatewayTask::Sync => sync_task(pool, task).await,
 
         WorkerEveGatewayTask::CharacterAssets => {
-            crate::asset::character::assets(
-                pool,
-                task,
-            ).await
+            crate::asset::character::assets(pool, task).await
         },
         WorkerEveGatewayTask::CorporationAssets => {
-            crate::asset::corporation::assets(
-                pool,
-                task,
-            ).await
+            crate::asset::corporation::assets(pool, task).await
         },
 
         WorkerEveGatewayTask::CharacterBlueprints => {
-            crate::blueprint::character::blueprints(
-                pool,
-                task,
-            ).await
+            crate::blueprint::character::blueprints(pool, task).await
         },
         WorkerEveGatewayTask::CorporationBlueprints => {
-            crate::blueprint::corporation::blueprints(
-                pool,
-                task,
-            ).await
+            crate::blueprint::corporation::blueprints(pool, task).await
         },
 
         WorkerEveGatewayTask::SystemIndex => {
-            crate::industry::system_index(
-                pool,
-                task,
-            ).await
+            crate::industry::system_index(pool, task).await
         },
         WorkerEveGatewayTask::SystemIndexCompress => {
-            crate::industry::system_index_compress(
-                pool,
-                task,
-            ).await
+            crate::industry::system_index_compress(pool, task).await
         },
 
         WorkerEveGatewayTask::AllianceStanding => {
-            crate::standing::alliance_standings(
-                pool,
-                task
-            ).await
+            crate::standing::alliance_standings(pool, task).await
         },
         WorkerEveGatewayTask::CharacterStanding => {
-            crate::standing::character_standings(
-                pool,
-                task
-            ).await
+            crate::standing::character_standings(pool, task).await
         },
         WorkerEveGatewayTask::CorporationStanding => {
-            crate::standing::corporation_standings(
-                pool,
-                task
-            ).await
+            crate::standing::corporation_standings(pool, task).await
         },
     }
 }

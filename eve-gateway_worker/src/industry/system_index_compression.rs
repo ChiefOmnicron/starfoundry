@@ -1,9 +1,10 @@
+use std::collections::HashMap;
+
 use sqlx::PgPool;
 use starfoundry_lib_worker::Task;
 use uuid::Uuid;
-use std::collections::HashMap;
 
-use crate::error::{Error, Result};
+use crate::error::{EveGatewayWorkerError, Result};
 use crate::metric::WorkerMetric;
 use crate::tasks::WorkerEveGatewayTask;
 
@@ -11,44 +12,47 @@ pub async fn system_index_compress(
     pool: &PgPool,
     task: &mut Task<WorkerMetric, WorkerEveGatewayTask>,
 ) -> Result<()> {
-    #[derive(Clone, Debug,)]
+    #[derive(Clone, Debug)]
     struct TmpStruct {
-        id:                 Uuid,
-        manufacturing:      f32,
-        copying:            f32,
-        invention:          f32,
-        reaction:           f32,
-        research_time:      f32,
-        research_material:  f32,
-        system_id:          i32,
+        id:                Uuid,
+        manufacturing:     f32,
+        copying:           f32,
+        invention:         f32,
+        reaction:          f32,
+        research_time:     f32,
+        research_material: f32,
+        system_id:         i32,
     }
 
-    let system_ids = sqlx::query!("
+    let system_ids = sqlx::query!(
+        "
             SELECT DISTINCT(system_id) FROM system_index
-        ")
-        .fetch_all(pool)
-        .await
-        .map_err(|e| {
-            task.append_error(format!("{e}"));
-            Error::CompressSystemIndex(e)
-        })?
-        .into_iter()
-        .map(|x| x.system_id);
+        "
+    )
+    .fetch_all(pool)
+    .await
+    .map_err(|e| {
+        task.append_error(format!("{e}"));
+        EveGatewayWorkerError::CompressSystemIndex(e)
+    })?
+    .into_iter()
+    .map(|x| x.system_id);
 
-    let mut ids           = Vec::new();
-    let mut timestamps    = Vec::new();
-    let mut systems       = Vec::new();
+    let mut ids = Vec::new();
+    let mut timestamps = Vec::new();
+    let mut systems = Vec::new();
     let mut manufacturing = Vec::new();
-    let mut reaction      = Vec::new();
-    let mut copying       = Vec::new();
-    let mut invention     = Vec::new();
-    let mut rme           = Vec::new();
-    let mut rte           = Vec::new();
+    let mut reaction = Vec::new();
+    let mut copying = Vec::new();
+    let mut invention = Vec::new();
+    let mut rme = Vec::new();
+    let mut rte = Vec::new();
 
     for system_id in system_ids {
         let mut grouped_by_day = HashMap::new();
 
-        sqlx::query!(r#"
+        sqlx::query!(
+            r#"
                 SELECT
                     id,
                     DATE(timestamp) AS "date!",
@@ -64,32 +68,32 @@ pub async fn system_index_compress(
                 AND DATE(timestamp) > DATE(NOW() - INTERVAL '7 DAY')
                 AND DATE(timestamp) < DATE(NOW() - INTERVAL '3 DAY')
             "#,
-                system_id,
-            )
-            .fetch_all(pool)
-            .await
-            .map_err(|e| {
-                task.append_error(format!("{e}"));
-                Error::CompressSystemIndex(e)
-            })?
-            .into_iter()
-            .for_each(|x| {
-                let tmp = TmpStruct {
-                    id:                x.id,
-                    copying:           x.copying,
-                    invention:         x.invention,
-                    manufacturing:     x.manufacturing,
-                    reaction:          x.reaction,
-                    research_time:     x.research_time,
-                    research_material: x.research_material,
-                    system_id:         x.system_id,
-                };
+            system_id,
+        )
+        .fetch_all(pool)
+        .await
+        .map_err(|e| {
+            task.append_error(format!("{e}"));
+            EveGatewayWorkerError::CompressSystemIndex(e)
+        })?
+        .into_iter()
+        .for_each(|x| {
+            let tmp = TmpStruct {
+                id:                x.id,
+                copying:           x.copying,
+                invention:         x.invention,
+                manufacturing:     x.manufacturing,
+                reaction:          x.reaction,
+                research_time:     x.research_time,
+                research_material: x.research_material,
+                system_id:         x.system_id,
+            };
 
-                grouped_by_day
-                    .entry(x.date)
-                    .and_modify(|x: &mut Vec<TmpStruct>| x.push(tmp.clone()))
-                    .or_insert(vec![tmp]);
-            });
+            grouped_by_day
+                .entry(x.date)
+                .and_modify(|x: &mut Vec<TmpStruct>| x.push(tmp.clone()))
+                .or_insert(vec![tmp]);
+        });
 
         for (timestamp, entries) in grouped_by_day {
             if entries.len() == 1 {
@@ -97,15 +101,61 @@ pub async fn system_index_compress(
             }
 
             timestamps.push(timestamp);
-            systems.push(entries[0].system_id);
+            systems.push(
+                entries
+                    .first()
+                    .unwrap()
+                    .system_id,
+            );
 
-            ids.push(entries.iter().map(|x| x.id).collect::<Vec<_>>());
-            manufacturing.push(entries.iter().map(|x| x.manufacturing).sum::<f32>() / entries.len() as f32);
-            reaction.push(entries.iter().map(|x| x.reaction).sum::<f32>() / entries.len() as f32);
-            copying.push(entries.iter().map(|x| x.copying).sum::<f32>() / entries.len() as f32);
-            invention.push(entries.iter().map(|x| x.invention).sum::<f32>() / entries.len() as f32);
-            rme.push(entries.iter().map(|x| x.research_material).sum::<f32>() / entries.len() as f32);
-            rte.push(entries.iter().map(|x| x.research_time).sum::<f32>() / entries.len() as f32);
+            ids.push(
+                entries
+                    .iter()
+                    .map(|x| x.id)
+                    .collect::<Vec<_>>(),
+            );
+            manufacturing.push(
+                entries
+                    .iter()
+                    .map(|x| x.manufacturing)
+                    .sum::<f32>()
+                    / entries.len() as f32,
+            );
+            reaction.push(
+                entries
+                    .iter()
+                    .map(|x| x.reaction)
+                    .sum::<f32>()
+                    / entries.len() as f32,
+            );
+            copying.push(
+                entries
+                    .iter()
+                    .map(|x| x.copying)
+                    .sum::<f32>()
+                    / entries.len() as f32,
+            );
+            invention.push(
+                entries
+                    .iter()
+                    .map(|x| x.invention)
+                    .sum::<f32>()
+                    / entries.len() as f32,
+            );
+            rme.push(
+                entries
+                    .iter()
+                    .map(|x| x.research_material)
+                    .sum::<f32>()
+                    / entries.len() as f32,
+            );
+            rte.push(
+                entries
+                    .iter()
+                    .map(|x| x.research_time)
+                    .sum::<f32>()
+                    / entries.len() as f32,
+            );
         }
     }
 
@@ -114,21 +164,26 @@ pub async fn system_index_compress(
         .await
         .map_err(|e| {
             task.append_error(format!("{e}"));
-            Error::Transaction(e)
+            EveGatewayWorkerError::Transaction(e)
         })?;
 
-    let ids = ids.into_iter().flatten().collect::<Vec<_>>();
-    sqlx::query!("
+    let ids = ids
+        .into_iter()
+        .flatten()
+        .collect::<Vec<_>>();
+    sqlx::query!(
+        "
             DELETE FROM system_index
             WHERE id = ANY($1)
         ",
-            &ids,
-        )
-        .execute(&mut *transaction)
-        .await
-        .map_err(Error::CompressSystemIndex)?;
+        &ids,
+    )
+    .execute(&mut *transaction)
+    .await
+    .map_err(EveGatewayWorkerError::CompressSystemIndex)?;
 
-    sqlx::query!("
+    sqlx::query!(
+        "
             INSERT INTO system_index
             (
                 timestamp,
@@ -159,28 +214,28 @@ pub async fn system_index_compress(
                 research_time = EXCLUDED.research_time,
                 research_material = EXCLUDED.research_material
         ",
-            &timestamps as _,
-            &systems,
-            &manufacturing,
-            &reaction,
-            &copying,
-            &invention,
-            &rte,
-            &rme,
-        )
-        .execute(&mut *transaction)
-        .await
-        .map_err(|e| {
-            task.append_error(format!("{e}"));
-            Error::CompressSystemIndex(e)
-        })?;
+        &timestamps as _,
+        &systems,
+        &manufacturing,
+        &reaction,
+        &copying,
+        &invention,
+        &rte,
+        &rme,
+    )
+    .execute(&mut *transaction)
+    .await
+    .map_err(|e| {
+        task.append_error(format!("{e}"));
+        EveGatewayWorkerError::CompressSystemIndex(e)
+    })?;
 
     transaction
         .commit()
         .await
         .map_err(|e| {
             task.append_error(format!("{e}"));
-            Error::Transaction(e)
+            EveGatewayWorkerError::Transaction(e)
         })?;
 
     Ok(())

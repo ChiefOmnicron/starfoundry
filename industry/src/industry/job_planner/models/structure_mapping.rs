@@ -1,5 +1,6 @@
 use serde::Serialize;
-use starfoundry_lib_industry::StructureUuid;
+
+use crate::StructureUuid;
 
 #[derive(Clone, Debug, Serialize)]
 pub struct StructureMapping {

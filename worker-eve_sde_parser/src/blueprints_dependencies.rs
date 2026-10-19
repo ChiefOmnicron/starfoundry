@@ -1,40 +1,38 @@
-use sqlx::PgPool;
-use starfoundry_lib_types::TypeId;
 use std::collections::HashMap;
 use std::time::Instant;
 
-use crate::Error;
+use sqlx::PgPool;
+use starfoundry_lib_types::TypeId;
+
+use crate::EveSdeParserError;
 use crate::parser::blueprints::BlueprintEntry;
 use crate::parser::type_ids::TypeIdEntry;
 
 pub async fn run(
-    pool:       &PgPool,
+    pool: &PgPool,
     blueprints: &HashMap<TypeId, BlueprintEntry>,
-    type_ids:   &HashMap<TypeId, TypeIdEntry>,
-) -> Result<(), Error> {
+    type_ids: &HashMap<TypeId, TypeIdEntry>,
+) -> Result<(), EveSdeParserError> {
     tracing::info!("Processing blueprint json");
     let start = Instant::now();
 
-    insert_into_database(
-            &pool,
-            &blueprints,
-            &type_ids
-        )
-        .await?;
+    insert_into_database(&pool, &blueprints, &type_ids).await?;
 
     tracing::info!(
         "Finished processing blueprint json, task took {:.2}s",
-        start.elapsed().as_secs_f64()
+        start
+            .elapsed()
+            .as_secs_f64()
     );
 
     Ok(())
 }
 
 async fn insert_into_database(
-    pool:       &PgPool,
+    pool: &PgPool,
     blueprints: &HashMap<TypeId, BlueprintEntry>,
-    type_ids:   &HashMap<TypeId, TypeIdEntry>,
-) -> Result<(), Error> {
+    type_ids: &HashMap<TypeId, TypeIdEntry>,
+) -> Result<(), EveSdeParserError> {
     let products = crate::parser::blueprints::product_type_id_as_key(
         &blueprints,
         &type_ids,
@@ -43,8 +41,15 @@ async fn insert_into_database(
     let find_btype_id = |ptype_id: TypeId| {
         blueprints
             .iter()
-            .filter(|(_, x)| x.product().is_some())
-            .find(|(_, x)| x.product().unwrap() == ptype_id)
+            .filter(|(_, x)| {
+                x.product()
+                    .is_some()
+            })
+            .find(|(_, x)| {
+                x.product()
+                    .unwrap()
+                    == ptype_id
+            })
             .map(|(y, _)| y)
             .unwrap()
             .clone()
@@ -53,29 +58,34 @@ async fn insert_into_database(
     let mut transaction = pool
         .begin()
         .await
-        .map_err(Error::TransactionError)?;
+        .map_err(EveSdeParserError::TransactionError)?;
 
     tracing::debug!("Clearing blueprint_dependencies database");
-    sqlx::query!("
+    sqlx::query!(
+        "
             DELETE FROM blueprint_dependency
-        ")
-        .execute(&mut *transaction)
-        .await
-        .map_err(Error::DeleteBlueprintJson)?;
+        "
+    )
+    .execute(&mut *transaction)
+    .await
+    .map_err(EveSdeParserError::DeleteBlueprintJson)?;
     tracing::debug!("Clearing blueprint_dependencies database done");
 
     tracing::debug!("Inserting data");
     for (ptype_id, pentry) in products.iter() {
         let blueprint_type_id = *find_btype_id(*ptype_id);
         let product_type_id = **ptype_id;
-        let time = pentry.manufacture_time().unwrap() as i32;
+        let time = pentry
+            .manufacture_time()
+            .unwrap() as i32;
         let depends_on = pentry
             .materials()
             .into_iter()
             .map(|x| *x.type_id)
             .collect::<Vec<_>>();
 
-        sqlx::query!("
+        sqlx::query!(
+            "
             INSERT INTO blueprint_dependency
             (
                 blueprint_type_id,
@@ -98,13 +108,13 @@ async fn insert_into_database(
         )
         .execute(&mut *transaction)
         .await
-        .map_err(Error::InsertBlueprintJson)?;
+        .map_err(EveSdeParserError::InsertBlueprintJson)?;
     }
 
     transaction
         .commit()
         .await
-        .map_err(Error::TransactionError)?;
+        .map_err(EveSdeParserError::TransactionError)?;
     tracing::debug!("Transaction commited");
     Ok(())
 }

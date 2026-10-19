@@ -1,10 +1,9 @@
-use axum::http::{header, StatusCode};
+use axum::http::{StatusCode, header};
 use axum::response::IntoResponse;
 
 /// Healthz
 ///
 /// Checks if the service is ready to accept connections
-/// 
 #[utoipa::path(
     get,
     path = "/healthz",
@@ -19,11 +18,5 @@ use axum::response::IntoResponse;
     ),
 )]
 pub async fn healthz() -> impl IntoResponse {
-    (
-        StatusCode::OK,
-        [(
-            header::CACHE_CONTROL, "no-cache"
-        )],
-        "healthy"
-    )
+    (StatusCode::OK, [(header::CACHE_CONTROL, "no-cache")], "healthy")
 }

@@ -1,10 +1,11 @@
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::{EveGatewayApiClientIndustry, EveGatewayClient};
+use starfoundry_eve_gateway::EveGatewayClient;
+use starfoundry_eve_gateway::industry::EveGatewayApiClientIndustry;
 use starfoundry_lib_worker::Task;
 
-use crate::error::{Error, Result};
-use crate::metric::WorkerMetric;
 use crate::SERVICE_NAME;
+use crate::error::{EveGatewayWorkerError, Result};
+use crate::metric::WorkerMetric;
 use crate::tasks::WorkerEveGatewayTask;
 
 pub async fn system_index(
@@ -14,16 +15,17 @@ pub async fn system_index(
     let client = EveGatewayClient::new(SERVICE_NAME)?;
     let entries = match client
         .list_system_index()
-        .await {
-
-        Ok(x) => {
-            x
-        },
+        .await
+    {
+        Ok(x) => x,
         Err(e) => {
-            tracing::error!("Error while fetching corporation blueprint data, {:?}", e);
+            tracing::error!(
+                "Error while fetching corporation blueprint data, {:?}",
+                e
+            );
             task.append_error(e.to_string());
             return Err(e.into());
-        }
+        },
     };
 
     if entries.is_empty() {
@@ -33,13 +35,13 @@ pub async fn system_index(
 
     task.append_log(format!("Adds {} entries", entries.len()));
 
-    let mut systems       = Vec::new();
+    let mut systems = Vec::new();
     let mut manufacturing = Vec::new();
-    let mut reaction      = Vec::new();
-    let mut copying       = Vec::new();
-    let mut invention     = Vec::new();
-    let mut rme           = Vec::new();
-    let mut rte           = Vec::new();
+    let mut reaction = Vec::new();
+    let mut copying = Vec::new();
+    let mut invention = Vec::new();
+    let mut rme = Vec::new();
+    let mut rte = Vec::new();
 
     for entry in entries {
         let activity = entry.index_by_activity();
@@ -53,7 +55,8 @@ pub async fn system_index(
         rte.push(activity.researching_time);
     }
 
-    sqlx::query!("
+    sqlx::query!(
+        "
             INSERT INTO system_index
             (
                 system_id,
@@ -74,20 +77,20 @@ pub async fn system_index(
                 $7::REAL[]
             )
         ",
-            &systems,
-            &manufacturing,
-            &reaction,
-            &copying,
-            &invention,
-            &rme,
-            &rte,
-        )
-        .execute(pool)
-        .await
-        .map_err(|e| {
-            task.append_error(format!("{e}"));
-            Error::InsertSystemIndex(e)
-        })?;
+        &systems,
+        &manufacturing,
+        &reaction,
+        &copying,
+        &invention,
+        &rme,
+        &rte,
+    )
+    .execute(pool)
+    .await
+    .map_err(|e| {
+        task.append_error(format!("{e}"));
+        EveGatewayWorkerError::InsertSystemIndex(e)
+    })?;
 
     Ok(())
 }

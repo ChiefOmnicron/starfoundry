@@ -1,26 +1,27 @@
 mod env;
 mod file;
 
-pub use self::file::*;
-
 use std::collections::HashMap;
+
 use tokio::net::TcpListener;
 
+pub use self::file::*;
 use crate::config::env::ConfigEnv;
 
 /// General application config
 #[derive(Debug)]
 pub struct Config {
-    /// postgres connection string, containing the username, password, address and database name
-    pub database_url:     String,
+    /// postgres connection string, containing the username, password, address
+    /// and database name
+    pub database_url: String,
 
     /// address under which the application should be exposed
-    pub app_address:      TcpListener,
+    pub app_address:     TcpListener,
     /// address under which health checks and metrics are exposed
-    pub service_address:  TcpListener,
+    pub service_address: TcpListener,
 
     /// list of domains that are allowed to use this service for authentication
-    pub domains:          HashMap<String, ConfigFileDomain>,
+    pub domains: HashMap<String, ConfigFileDomain>,
 }
 
 impl Config {
@@ -35,20 +36,14 @@ impl Config {
 }
 
 impl From<(ConfigEnv, ConfigFile)> for Config {
-    fn from((
-        env,
-        file,
-    ): (
-        ConfigEnv,
-        ConfigFile,
-    )) -> Self {
+    fn from((env, file): (ConfigEnv, ConfigFile)) -> Self {
         Self {
-            database_url:     env.database_url,
+            database_url: env.database_url,
 
-            app_address:      env.app_address,
-            service_address:  env.service_address,
+            app_address:     env.app_address,
+            service_address: env.service_address,
 
-            domains:          file.domains,
+            domains: file.domains,
         }
     }
 }

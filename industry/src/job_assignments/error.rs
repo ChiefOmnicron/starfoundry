@@ -1,7 +1,7 @@
-use axum::http::StatusCode;
 use axum::Json;
+use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
-use starfoundry_lib_gateway::ErrorResponse;
+use starfoundry_gateway::ErrorResponse;
 use thiserror::Error;
 
 pub type Result<T, E = JobAssignmentError> = std::result::Result<T, E>;
@@ -19,7 +19,7 @@ pub enum JobAssignmentError {
     Update(sqlx::Error),
 
     #[error(transparent)]
-    EveGatewayLibError(#[from] starfoundry_lib_eve_gateway::Error),
+    EveGatewayLibError(#[from] starfoundry_eve_gateway::EveGatewayError),
 }
 
 impl IntoResponse for JobAssignmentError {
@@ -31,13 +31,14 @@ impl IntoResponse for JobAssignmentError {
                 tracing::error!("{}", self.to_string());
                 (
                     StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(
-                        ErrorResponse {
-                            error: "UNKNOWN".into(),
-                            description: "An unknown error occurred, please try again later.".into(),
-                        }
-                    )
-                ).into_response()
+                    Json(ErrorResponse {
+                        error:       "UNKNOWN".into(),
+                        description:
+                            "An unknown error occurred, please try again later."
+                                .into(),
+                    }),
+                )
+                    .into_response()
             },
         }
         .into_response()

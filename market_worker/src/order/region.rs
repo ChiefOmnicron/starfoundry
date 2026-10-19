@@ -1,30 +1,35 @@
 use chrono::Days;
 use serde::Deserialize;
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::{EveGatewayApiClientMarket, EveGatewayClient};
+use starfoundry_eve_gateway::EveGatewayClient;
+use starfoundry_eve_gateway::market::EveGatewayApiClientMarket;
 use starfoundry_lib_types::RegionId;
 use starfoundry_lib_worker::Task;
 
-use crate::error::Error;
+use crate::error::MarketWorkerError;
 use crate::metric::WorkerMetric;
 use crate::{SERVICE_NAME, WorkerMarketTask};
 
 pub async fn by_region_task(
     pool: &PgPool,
     task: &mut Task<WorkerMetric, WorkerMarketTask>,
-) -> Result<(), Error> {
+) -> Result<(), MarketWorkerError> {
     let additional_data: AdditionalData = match task.additional_data() {
         Ok(Some(x)) => x,
-        Ok(None)    => {
+        Ok(None) => {
             tracing::error!("[{:?}] missing additional data", task.task);
             task.append_error("Missing additional data");
-            return Err(Error::ParseAdditionalData)
+            return Err(MarketWorkerError::ParseAdditionalData)
         },
-        Err(e)      => {
-            tracing::error!("[{:?}] error parsing additional data, {}", task.task, e);
+        Err(e) => {
+            tracing::error!(
+                "[{:?}] error parsing additional data, {}",
+                task.task,
+                e
+            );
             task.append_error(format!("Missing additional data {}", e));
-            return Err(Error::ParseAdditionalData)
-        }
+            return Err(MarketWorkerError::ParseAdditionalData)
+        },
     };
 
     let client = EveGatewayClient::new(SERVICE_NAME)?;
@@ -52,23 +57,27 @@ pub async fn by_region_task(
         .collect::<Vec<_>>();
     let expires = entries
         .iter()
-        .map(|x| x
-            .issued
-            .checked_add_days(Days::new(x.duration as u64))
-            .unwrap()
-        )
+        .map(|x| {
+            x.issued
+                .checked_add_days(Days::new(x.duration as u64))
+                .unwrap()
+        })
         .collect::<Vec<_>>();
     let is_buy = entries
         .iter()
-        .map(|x| x.is_buy_order.into())
+        .map(|x| {
+            x.is_buy_order
+                .into()
+        })
         .collect::<Vec<_>>();
 
     let mut transaction = pool
         .begin()
         .await
-        .map_err(Error::TransactionError)?;
+        .map_err(MarketWorkerError::TransactionError)?;
 
-    sqlx::query!("
+    sqlx::query!(
+        "
             INSERT INTO market_order_latest AS mol
             (
                 structure_id,
@@ -98,20 +107,22 @@ pub async fn by_region_task(
             OR mol.expires != EXCLUDED.expires
             OR mol.price != EXCLUDED.price
         ",
-            *additional_data.region_id,
-            &order_ids,
+        *additional_data.region_id,
+        &order_ids,
+        &type_id,
+        &remaining,
+        &price,
+        &expires,
+        &is_buy,
+    )
+    .execute(&mut *transaction)
+    .await
+    .map_err(|e| {
+        MarketWorkerError::InsertRegionOrders(e, additional_data.region_id)
+    })?;
 
-            &type_id,
-            &remaining,
-            &price,
-            &expires,
-            &is_buy,
-        )
-        .execute(&mut *transaction)
-        .await
-        .map_err(|e| Error::InsertRegionOrders(e, additional_data.region_id))?;
-
-    sqlx::query!("
+    sqlx::query!(
+        "
             DELETE FROM market_order_latest
             WHERE region_id = $1
             AND structure_id = 0
@@ -121,23 +132,25 @@ pub async fn by_region_task(
                 expires   < NOW()
             )
         ",
-            *additional_data.region_id,
-            &order_ids,
-        )
-        .execute(&mut *transaction)
-        .await
-        // proper error
-        .map_err(|e| Error::DeleteRegionOrders(e, additional_data.region_id))?;
+        *additional_data.region_id,
+        &order_ids,
+    )
+    .execute(&mut *transaction)
+    .await
+    // proper error
+    .map_err(|e| {
+        MarketWorkerError::DeleteRegionOrders(e, additional_data.region_id)
+    })?;
 
     transaction
         .commit()
         .await
-        .map_err(Error::TransactionError)?;
+        .map_err(MarketWorkerError::TransactionError)?;
 
     Ok(())
 }
 
 #[derive(Debug, Deserialize)]
 struct AdditionalData {
-    region_id:    RegionId,
+    region_id: RegionId,
 }

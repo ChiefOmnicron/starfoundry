@@ -1,7 +1,7 @@
 use axum::http::header::AUTHORIZATION;
 use serde::Serialize;
-use utoipa::{Modify, OpenApi};
 use utoipa::openapi::security::{ApiKey, ApiKeyValue, SecurityScheme};
+use utoipa::{Modify, OpenApi};
 
 /// Helper struct for exposing the OpenAPI documentation
 #[derive(OpenApi)]
@@ -23,19 +23,25 @@ pub struct ApiDoc;
 struct SecurityAddon;
 
 impl Modify for SecurityAddon {
-    fn modify(&self, openapi: &mut utoipa::openapi::OpenApi) {
-        if let Some(components) = openapi.components.as_mut() {
+    fn modify(
+        &self,
+        openapi: &mut utoipa::openapi::OpenApi,
+    ) {
+        if let Some(components) = openapi
+            .components
+            .as_mut()
+        {
             components.add_security_scheme(
                 "api_key",
-                SecurityScheme::ApiKey(
-                    ApiKey::Header(ApiKeyValue::new(AUTHORIZATION.to_string()))
-                ),
+                SecurityScheme::ApiKey(ApiKey::Header(ApiKeyValue::new(
+                    AUTHORIZATION.to_string(),
+                ))),
             );
             components.add_security_scheme(
                 "token",
-                SecurityScheme::ApiKey(
-                    ApiKey::Header(ApiKeyValue::new(AUTHORIZATION.to_string()))
-                ),
+                SecurityScheme::ApiKey(ApiKey::Header(ApiKeyValue::new(
+                    AUTHORIZATION.to_string(),
+                ))),
             );
         }
     }
@@ -53,7 +59,7 @@ impl Modify for SecurityAddon {
 )]
 pub struct BadRequest {
     /// General error name
-    pub error: String,
+    pub error:       String,
     /// Human description of the error
     pub description: String,
 }
@@ -71,7 +77,7 @@ pub struct BadRequest {
 )]
 pub struct Unauthorized {
     /// General error name
-    pub error: String,
+    pub error:       String,
     /// Human description of the error
     pub description: String,
 }
@@ -89,7 +95,7 @@ pub struct Unauthorized {
 )]
 pub struct Forbidden {
     /// General error name
-    pub error: String,
+    pub error:       String,
     /// Human description of the error
     pub description: String,
 }
@@ -107,7 +113,7 @@ pub struct Forbidden {
 )]
 pub struct NotFound {
     /// General error name
-    pub error: String,
+    pub error:       String,
     /// Human description of the error
     pub description: String,
 }
@@ -124,7 +130,7 @@ pub struct NotFound {
 )]
 pub struct InternalServerError {
     /// General error name
-    pub error: String,
+    pub error:       String,
     /// Human description of the error
     pub description: String,
 }
@@ -142,7 +148,7 @@ pub struct InternalServerError {
 )]
 pub struct UnsupportedMediaType {
     /// General error name
-    pub error: String,
+    pub error:       String,
     /// Human description of the error
     pub description: String,
 }
@@ -160,7 +166,7 @@ pub struct UnsupportedMediaType {
 )]
 pub struct UnprocessableEntity {
     /// General error name
-    pub error: String,
+    pub error:       String,
     /// Human description of the error
     pub description: String,
 }
@@ -169,7 +175,7 @@ pub struct UnprocessableEntity {
 #[derive(Serialize)]
 pub struct ErrorResponse {
     /// General error name
-    pub error: String,
+    pub error:       String,
     /// Human description of the error
     pub description: String,
 }

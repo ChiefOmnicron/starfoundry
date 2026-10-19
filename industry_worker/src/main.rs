@@ -5,22 +5,21 @@ mod metric;
 mod sync;
 mod tasks;
 
+use std::time::Duration;
+
 use prometheus_client::registry::Registry;
 use sqlx::PgPool;
 use sqlx::postgres::PgPoolOptions;
 use starfoundry_lib_worker::{Task, TaskStatus, Worker};
-use std::time::Duration;
 use tokio::sync::mpsc;
 use tracing_subscriber::EnvFilter;
 
-pub use self::tasks::*;
-
 use self::sync::{sync, sync_task};
-
+pub use self::tasks::*;
 use crate::config::Config;
 use crate::error::Result;
-use crate::metric::WorkerMetric;
 use crate::jobs::corporation_jobs;
+use crate::metric::WorkerMetric;
 
 pub const SERVICE_NAME: &str = "SF_INDUSTRY_WORKER";
 
@@ -44,33 +43,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let pool = PgPoolOptions::new()
         .connect(&config.database_url)
         .await?;
-    sqlx::migrate!().run(&pool).await?;
+    sqlx::migrate!()
+        .run(&pool)
+        .await?;
 
-    let mut metric_registry = Registry::with_prefix("starfoundry_industry_worker");
+    let mut metric_registry =
+        Registry::with_prefix("starfoundry_industry_worker");
     let metric = WorkerMetric::new();
 
     let (tx, mut rx) = mpsc::channel(5);
 
-    let worker: Worker<WorkerMetric, WorkerIndustryTask> = Worker::init(
-            pool.clone(),
-            tx,
+    let worker: Worker<WorkerMetric, WorkerIndustryTask> =
+        Worker::init(pool.clone(), tx, metric, &mut metric_registry)
+            .await
+            .unwrap();
 
-            metric,
-            &mut metric_registry,
-        )
-        .await
-        .unwrap();
+    tokio::task::spawn(worker.run(metric_registry, config.service_address));
 
-    tokio::task::spawn(
-        worker.run(
-            metric_registry,
-            config.service_address,
-        )
-    );
-
-    sync(
-        &pool,
-    ).await?;
+    sync(&pool).await?;
 
     while let Some(task) = rx.recv().await {
         // 15 Minutes
@@ -121,25 +111,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 async fn task_select(
-    pool:   &PgPool,
-    task:   &mut Task<WorkerMetric, WorkerIndustryTask>,
+    pool: &PgPool,
+    task: &mut Task<WorkerMetric, WorkerIndustryTask>,
 ) -> Result<()> {
     match task.task {
-        WorkerIndustryTask::Sync            => {
-            sync_task(
-                pool,
-                task,
-            ).await
-        },
-        WorkerIndustryTask::JobCharacter    => {
+        WorkerIndustryTask::Sync => sync_task(pool, task).await,
+        WorkerIndustryTask::JobCharacter => {
             unimplemented!()
         },
-        WorkerIndustryTask::JobCorporation  => {
-            corporation_jobs(
-                    pool,
-                    task,
-                )
-                .await
+        WorkerIndustryTask::JobCorporation => {
+            corporation_jobs(pool, task).await
         },
     }
 }

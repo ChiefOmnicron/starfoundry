@@ -1,30 +1,28 @@
+use std::collections::HashMap;
+
 use axum::extract::Query;
-use axum::http::{HeaderMap, StatusCode};
 use axum::http::header::{LOCATION, SET_COOKIE};
+use axum::http::{HeaderMap, StatusCode};
 use axum::response::IntoResponse;
 use reqwest::header::HOST;
-use std::collections::HashMap;
 
 pub async fn catch_all_auth_login_callback(
     Query(params): Query<HashMap<String, String>>,
-    headers:       HeaderMap,
+    headers: HeaderMap,
 ) -> impl IntoResponse {
     let host = if let Some(x) = headers.get(HOST) {
-        x.to_str().unwrap_or_default()
+        x.to_str()
+            .unwrap_or_default()
     } else {
-        return (
-            StatusCode::BAD_REQUEST,
-        ).into_response()
+        return (StatusCode::BAD_REQUEST,).into_response()
     };
 
-    if let Some(_) = params.get("additional_character") {
-        return (
-            StatusCode::FOUND,
-            [(
-                LOCATION,
-                format!("https://{host}"),
-            )],
-        ).into_response()
+    if params
+        .get("additional_character")
+        .is_some()
+    {
+        return (StatusCode::FOUND, [(LOCATION, format!("https://{host}"))])
+            .into_response()
     }
 
     let refresh_token = if let Some(x) = params.get("refresh_token") {
@@ -32,11 +30,9 @@ pub async fn catch_all_auth_login_callback(
     } else {
         return (
             StatusCode::FOUND,
-            [(
-                LOCATION,
-                format!("https://{host}/auth/forbidden"),
-            )]
-        ).into_response()
+            [(LOCATION, format!("https://{host}/auth/forbidden"))],
+        )
+            .into_response()
     };
 
     (

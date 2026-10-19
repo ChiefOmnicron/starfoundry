@@ -1,8 +1,9 @@
 use sqlx::PgPool;
-use starfoundry_lib_eve_gateway::{EveGatewayApiClientMarket, EveGatewayClient};
+use starfoundry_eve_gateway::EveGatewayClient;
+use starfoundry_eve_gateway::market::EveGatewayApiClientMarket;
 use starfoundry_lib_worker::Task;
 
-use crate::error::{Error, Result};
+use crate::error::{MarketWorkerError, Result};
 use crate::metric::WorkerMetric;
 use crate::{SERVICE_NAME, WorkerMarketTask};
 
@@ -13,16 +14,14 @@ pub async fn prices(
     let client = EveGatewayClient::new(SERVICE_NAME)?;
     let entries = match client
         .list_prices()
-        .await {
-
-        Ok(x) => {
-            x
-        },
+        .await
+    {
+        Ok(x) => x,
         Err(e) => {
             tracing::error!("Error while fetching market data, {}", e);
             task.append_error(e.to_string());
             return Err(e.into());
-        }
+        },
     };
 
     let mut type_ids = Vec::new();
@@ -37,7 +36,8 @@ pub async fn prices(
             type_ids.push(*x.type_id);
         });
 
-    sqlx::query!("
+    sqlx::query!(
+        "
             INSERT INTO market_price
             (
                 adjusted_price,
@@ -54,13 +54,13 @@ pub async fn prices(
                 adjusted_price = EXCLUDED.adjusted_price,
                 average_price = EXCLUDED.average_price
         ",
-            &adjusted_prices,
-            &average_prices,
-            &type_ids
-        )
-        .execute(pool)
-        .await
-        .map_err(Error::InsertMarketPrices)?;
+        &adjusted_prices,
+        &average_prices,
+        &type_ids
+    )
+    .execute(pool)
+    .await
+    .map_err(MarketWorkerError::InsertMarketPrices)?;
 
     Ok(())
 }

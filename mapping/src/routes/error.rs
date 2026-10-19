@@ -1,5 +1,5 @@
-use axum::http::StatusCode;
 use axum::Json;
+use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 use thiserror::Error;
 
@@ -9,8 +9,7 @@ pub type Result<T, E = RouteError> = std::result::Result<T, E>;
 
 #[derive(Debug, Error)]
 #[non_exhaustive]
-pub enum RouteError {
-}
+pub enum RouteError {}
 
 impl IntoResponse for RouteError {
     // for future extension this is fine
@@ -21,13 +20,14 @@ impl IntoResponse for RouteError {
                 tracing::error!("{}", self.to_string());
                 (
                     StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(
-                        ErrorResponse {
-                            error: "UNKNOWN".into(),
-                            description: "An unknown error occurred, please try again later.".into(),
-                        }
-                    )
-                ).into_response()
+                    Json(ErrorResponse {
+                        error:       "UNKNOWN".into(),
+                        description:
+                            "An unknown error occurred, please try again later."
+                                .into(),
+                    }),
+                )
+                    .into_response()
             },
         }
         .into_response()

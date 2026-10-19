@@ -1,24 +1,22 @@
+use axum::Json;
 use axum::extract::{Query, State};
 use axum::http::StatusCode;
-use axum::Json;
 use axum::response::IntoResponse;
-use starfoundry_lib_eve_gateway::{Item, ListItemFilter};
+use sqlx::PgPool;
 
 use crate::api_docs::{InternalServerError, NotFound};
-use crate::item::services::list_items;
+use crate::asset::{Category, Group, Item, ListItemFilter};
+use crate::item::error::{ItemError, Result};
 use crate::state::AppState;
 
-use crate::item::error::Result;
-
 /// List Items
-/// 
+///
 /// - Alternative route: `/latest/items`
 /// - Alternative route: `/v1/items`
-/// 
+///
 /// ---
-/// 
+///
 /// Resolves all information about all items
-/// 
 #[utoipa::path(
     get,
     path = "/",
@@ -38,19 +36,202 @@ use crate::item::error::Result;
     ),
 )]
 pub async fn api(
-    State(state):  State<AppState>,
+    State(state): State<AppState>,
     Query(filter): Query<ListItemFilter>,
 ) -> Result<impl IntoResponse> {
-    let entry = list_items(
-        &state.postgres,
-        filter,
-    ).await?;
+    let entry = list_items(&state.postgres, filter).await?;
 
-    Ok(
-        (
-            StatusCode::OK,
-            Json(entry)
+    Ok((StatusCode::OK, Json(entry)).into_response())
+}
+
+pub async fn list_items(
+    pool: &PgPool,
+    filter: ListItemFilter,
+) -> Result<Vec<Item>> {
+    if let Some(true) = filter.blueprint {
+        blueprint(pool, filter).await
+    } else if let Some(true) = filter.buildable {
+        buildable(pool, filter).await
+    } else {
+        all(pool, filter).await
+    }
+}
+
+async fn all(
+    pool: &PgPool,
+    filter: ListItemFilter,
+) -> Result<Vec<Item>> {
+    let items = sqlx::query!(r#"
+            SELECT
+                type_id,
+                volume,
+                meta_group_id,
+                repackaged,
+                i.category_id,
+                i.group_id,
+                i.name,
+                c.name AS "category_name",
+                g.name AS "group_name"
+            FROM item i
+            JOIN category c ON i.category_id = c.category_id
+            JOIN groups g ON i.group_id = g.group_id
+            WHERE
+                NOT (LOWER(i.name) LIKE '%' || LOWER($1) || '%') IS FALSE AND
+                NOT ($2::INTEGER[] IS NULL OR i.group_id = ANY($2)) IS FALSE AND
+                NOT ($3::INTEGER[] IS NULL OR i.category_id = ANY($3)) IS FALSE AND
+                -- exclude unnecessary categories
+                i.category_id != ALL(ARRAY[2, 11, 14, 30, 63, 91, 2118, 350001])
+            ORDER BY i.name ASC
+            LIMIT $4
+        "#,
+            filter.name,
+            &filter.groups.map(|x| x.into_iter().map(|y| *y).collect::<Vec<_>>()) as _,
+            &filter.categories.map(|x| x.into_iter().map(|y| *y).collect::<Vec<_>>()) as _,
+            filter.limit,
         )
-        .into_response()
-    )
+        .fetch_all(pool)
+        .await
+        .map_err(ItemError::List)?
+        .into_iter()
+        .map(|x| {
+            Item {
+                category:      Category {
+                    category_id: x.category_id.into(),
+                    name:        x.category_name
+                },
+                group:         Group {
+                    group_id:    x.group_id.into(),
+                    category_id: x.category_id.into(),
+                    name:        x.group_name,
+                },
+                name:    x.name,
+                type_id: x.type_id.into(),
+                volume:  x.volume,
+
+                meta_group: x.meta_group_id.map(Into::into),
+                repackaged: x.repackaged,
+            }
+        })
+        .collect::<Vec<_>>();
+    Ok(items)
+}
+
+async fn blueprint(
+    pool: &PgPool,
+    filter: ListItemFilter,
+) -> Result<Vec<Item>> {
+    // TODO: fix query
+    let items = sqlx::query!(r#"
+            SELECT
+                type_id,
+                volume,
+                meta_group_id,
+                repackaged,
+                i.category_id,
+                i.group_id,
+                i.name,
+                c.name AS "category_name",
+                g.name AS "group_name"
+            FROM blueprint_json bsjon
+            JOIN item i ON i.type_id = bsjon.blueprint_type_id
+            JOIN category c ON i.category_id = c.category_id
+            JOIN groups g ON i.group_id = g.group_id
+            WHERE
+                (LOWER(i.name) LIKE '%' || LOWER($1) || '%blueprint')-- IS FALSE AND
+                --NOT ($2::INTEGER[] IS NULL OR i.group_id = ANY($2)) IS FALSE
+                --NOT ($3::INTEGER[] IS NULL OR i.category_id = ANY($3)) IS FALSE
+            ORDER BY i.name ASC
+            LIMIT $2
+        "#,
+            filter.name,
+            //&filter.groups.map(|x| x.into_iter().map(|y| *y).collect::<Vec<_>>()).unwrap_or_default() as _,
+            //&filter.categories.map(|x| x.into_iter().map(|y| *y).collect::<Vec<_>>()) as _,
+            filter.limit,
+        )
+        .fetch_all(pool)
+        .await
+        .map_err(ItemError::List)?
+        .into_iter()
+        .map(|x| {
+            Item {
+                category:      Category {
+                    category_id: x.category_id.into(),
+                    name:        x.category_name
+                },
+                group:         Group {
+                    group_id:    x.group_id.into(),
+                    category_id: x.category_id.into(),
+                    name:        x.group_name,
+                },
+                name:           x.name,
+                type_id:        x.type_id.into(),
+                volume:         x.volume,
+
+                meta_group:     x.meta_group_id.map(Into::into),
+                repackaged:     x.repackaged,
+            }
+        })
+        .collect::<Vec<_>>();
+    Ok(items)
+}
+
+async fn buildable(
+    pool: &PgPool,
+    filter: ListItemFilter,
+) -> Result<Vec<Item>> {
+    let items = sqlx::query!(r#"
+            SELECT
+                i.type_id,
+                i.volume,
+                i.meta_group_id,
+                i.repackaged,
+                i.category_id,
+                i.group_id,
+                i.name,
+                c.name AS "category_name",
+                g.name AS "group_name"
+            FROM blueprint_json bsjon
+            JOIN item i ON i.type_id = bsjon.product_type_id
+            JOIN category c ON i.category_id = c.category_id
+            JOIN groups g ON i.group_id = g.group_id
+            JOIN blueprint b ON b.type_id = bsjon.blueprint_type_id
+            WHERE
+                NOT (LOWER(i.name) LIKE '%' || LOWER($1) || '%') IS FALSE AND
+                NOT ($2::INTEGER[] IS NULL OR i.group_id = ANY($2)) IS FALSE AND
+                NOT ($3::INTEGER[] IS NULL OR i.category_id = ANY($3)) IS FALSE AND
+                NOT ($4::INTEGER[] IS NULL OR b.required_service_type_id = ANY($4)) IS FALSE
+            ORDER BY i.name ASC
+            LIMIT $5
+        "#,
+            filter.name,
+            &filter.groups.map(|x| x.into_iter().map(|y| *y).collect::<Vec<_>>()) as _,
+            &filter.categories.map(|x| x.into_iter().map(|y| *y).collect::<Vec<_>>()) as _,
+            &filter.services.map(|x| x.into_iter().map(|y| *y).collect::<Vec<_>>()) as _,
+            filter.limit,
+        )
+        .fetch_all(pool)
+        .await
+        .map_err(ItemError::List)?
+        .into_iter()
+        .map(|x| {
+            Item {
+                category:      Category {
+                    category_id: x.category_id.into(),
+                    name:        x.category_name
+                },
+                group:         Group {
+                    group_id:    x.group_id.into(),
+                    category_id: x.category_id.into(),
+                    name:        x.group_name,
+                },
+                name:          x.name,
+                type_id:       x.type_id.into(),
+                volume:        x.volume,
+
+                meta_group: x.meta_group_id.map(Into::into),
+                repackaged:    x.repackaged,
+            }
+        })
+        .collect::<Vec<_>>();
+    Ok(items)
 }

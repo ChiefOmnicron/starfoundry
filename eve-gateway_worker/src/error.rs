@@ -1,9 +1,9 @@
 use thiserror::Error;
 
-pub type Result<T, E = Error> = std::result::Result<T, E>;
+pub type Result<T, E = EveGatewayWorkerError> = std::result::Result<T, E>;
 
 #[derive(Error, Debug)]
-pub enum Error {
+pub enum EveGatewayWorkerError {
     #[error("error during transaction, '{0}'")]
     Transaction(sqlx::Error),
 
@@ -35,7 +35,7 @@ pub enum Error {
     GenericSqlx(sqlx::Error),
 
     #[error(transparent)]
-    WorkerLib(#[from] starfoundry_lib_worker::Error),
+    WorkerLib(#[from] starfoundry_lib_worker::WorkerError),
     #[error(transparent)]
-    EveGateway(#[from] starfoundry_lib_eve_gateway::Error),
+    EveGateway(#[from] starfoundry_eve_gateway::EveGatewayError),
 }

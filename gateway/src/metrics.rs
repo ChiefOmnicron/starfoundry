@@ -1,9 +1,9 @@
 mod middleware;
 
-pub use self::middleware::*;
+use std::sync::Arc;
 
-use axum::http::header::CONTENT_TYPE;
 use axum::http::StatusCode;
+use axum::http::header::CONTENT_TYPE;
 use axum::response::IntoResponse;
 use prometheus_client::encoding::EncodeLabelSet;
 use prometheus_client::encoding::text::encode;
@@ -11,27 +11,19 @@ use prometheus_client::metrics::counter::Counter;
 use prometheus_client::metrics::family::Family;
 use prometheus_client::metrics::histogram::Histogram;
 use prometheus_client::registry::Registry;
-use std::sync::Arc;
 
-const HTTP_DURATION_BUCKETS: [f64; 12] = [
-    0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0, 30.0,
-];
+pub use self::middleware::*;
+
+const HTTP_DURATION_BUCKETS: [f64; 12] =
+    [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0, 30.0];
 
 /// Exports prometheus metrics
-pub fn route(
-    registry: Arc<Registry>,
-) -> impl IntoResponse {
+#[must_use]
+pub fn route(registry: Arc<Registry>) -> impl IntoResponse {
     let mut buffer = String::new();
     encode(&mut buffer, &registry).unwrap();
 
-    (
-        StatusCode::OK,
-        [(
-            CONTENT_TYPE,
-            "text/plain; version=0.0.4"
-        )],
-        buffer,
-    )
+    (StatusCode::OK, [(CONTENT_TYPE, "text/plain; version=0.0.4")], buffer)
 }
 
 pub struct Metric {
@@ -41,12 +33,14 @@ pub struct Metric {
 }
 
 impl Metric {
+    #[must_use]
     pub fn new() -> Self {
-        Self  {
+        Self {
             host_count:         Family::<MetricHostLabel, Counter>::default(),
-            http_request_total: Family::<MetricHttpRequestLabel, Counter>::default(),
+            http_request_total:
+                Family::<MetricHttpRequestLabel, Counter>::default(),
             http_duration:      Family::new_with_constructor(|| {
-                Histogram::new(HTTP_DURATION_BUCKETS.into_iter())
+                Histogram::new(HTTP_DURATION_BUCKETS)
             }),
         }
     }
@@ -55,8 +49,7 @@ impl Metric {
         &self,
         host: S,
     ) {
-        self
-            .host_count
+        self.host_count
             .get_or_create(&MetricHostLabel {
                 host: host.into(),
             })
@@ -66,12 +59,11 @@ impl Metric {
     pub fn increase_http_request_total<S: Into<String>>(
         &self,
         method: S,
-        path:   S,
+        path: S,
         status: S,
-        agent:  S,
+        agent: S,
     ) {
-        self
-            .http_request_total
+        self.http_request_total
             .get_or_create(&MetricHttpRequestLabel {
                 method: method.into(),
                 path:   path.into(),
@@ -83,14 +75,13 @@ impl Metric {
 
     pub fn record_http_request_total<S: Into<String>>(
         &self,
-        method:   S,
-        path:     S,
-        status:   S,
-        agent:    S,
+        method: S,
+        path: S,
+        status: S,
+        agent: S,
         duration: f64,
     ) {
-        self
-            .http_duration
+        self.http_duration
             .get_or_create(&MetricDurationLabel {
                 method: method.into(),
                 path:   path.into(),
@@ -107,18 +98,27 @@ impl Metric {
         registry.register(
             "host_count",
             "API calls by hostname",
-            self.host_count.clone()
+            self.host_count
+                .clone(),
         );
         registry.register(
             "http_duration",
             "Time it took to fullfil a request",
-            self.http_duration.clone()
+            self.http_duration
+                .clone(),
         );
         registry.register(
             "http_request_total",
             "Requests responses by path",
-            self.http_request_total.clone()
+            self.http_request_total
+                .clone(),
         );
+    }
+}
+
+impl Default for Metric {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

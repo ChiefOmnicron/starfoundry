@@ -1,5 +1,5 @@
-use axum::http::StatusCode;
 use axum::Json;
+use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 use starfoundry_lib_eve_client::EveApiError;
 use starfoundry_lib_types::TypeId;
@@ -25,13 +25,19 @@ pub enum StructureError {
     #[error("error performing eve api call, error: '{0}'")]
     EveApiError(#[from] EveApiError),
     #[error("gateway error, error: '{0:?}'")]
-    GatewayError(#[from] starfoundry_lib_gateway::Error),
+    GatewayError(#[from] starfoundry_gateway::GatewayError),
 
-    #[error("error while fetching structure rigs, type_id: '{1}', error: '{0}'")]
+    #[error(
+        "error while fetching structure rigs, type_id: '{1}', error: '{0}'"
+    )]
     FetchStructureRigs(sqlx::Error, TypeId),
-    #[error("error while fetching rig information, type_id: '{1}', error: '{0}'")]
+    #[error(
+        "error while fetching rig information, type_id: '{1}', error: '{0}'"
+    )]
     FetchRigInformation(sqlx::Error, TypeId),
-    #[error("error while fetching structure services, type_id: '{1}', error: '{0}'")]
+    #[error(
+        "error while fetching structure services, type_id: '{1}', error: '{0}'"
+    )]
     FetchStructureServices(sqlx::Error, TypeId),
 
     #[error("the item information are not available")]
@@ -47,20 +53,28 @@ impl IntoResponse for StructureError {
                 starfoundry_lib_eve_client::EveApiError::into_response(e)
             },
             Self::GatewayError(e) => {
-                starfoundry_lib_gateway::Error::into_response(e)
+                starfoundry_gateway::GatewayError::into_response(e)
             },
 
-            _ => {
+            Self::AuthError(_)
+            | Self::ItemError(_)
+            | Self::SystemError(_)
+            | Self::FetchStructureRigs(..)
+            | Self::FetchRigInformation(..)
+            | Self::FetchStructureServices(..)
+            | Self::ItemNotFound
+            | Self::SystemNotFound => {
                 tracing::error!("{}", self.to_string());
                 (
                     StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(
-                        ErrorResponse {
-                            error: "UNKNOWN".into(),
-                            description: "An unknown error occurred, please try again later.".into(),
-                        }
-                    )
-                ).into_response()
+                    Json(ErrorResponse {
+                        error:       "UNKNOWN".into(),
+                        description:
+                            "An unknown error occurred, please try again later."
+                                .into(),
+                    }),
+                )
+                    .into_response()
             },
         }
         .into_response()

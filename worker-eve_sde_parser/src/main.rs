@@ -1,8 +1,9 @@
 //! Parses parts of the EVE provided SDE-File into SQL-Statements for the main
 //! application.
 
-use sqlx::postgres::PgPoolOptions;
 use std::time::Instant;
+
+use sqlx::postgres::PgPoolOptions;
 use tracing_subscriber::EnvFilter;
 
 #[tokio::main]
@@ -13,19 +14,27 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .with_env_filter(EnvFilter::from_default_env())
         .init();
 
-    let pg_addr = std::env::var("STARFOUNDRY_EVE_GATEWAY_DATABASE_URL")
-        .expect("Expected that a STARFOUNDRY_EVE_GATEWAY_DATABASE_URL ENV is set");
+    let pg_addr = std::env::var("STARFOUNDRY_EVE_GATEWAY_DATABASE_URL").expect(
+        "Expected that a STARFOUNDRY_EVE_GATEWAY_DATABASE_URL ENV is set",
+    );
     let pool = PgPoolOptions::new()
         .min_connections(20)
         .connect(&pg_addr)
         .await?;
-    sqlx::migrate!().run(&pool).await?;
+    sqlx::migrate!()
+        .run(&pool)
+        .await?;
 
     let start = Instant::now();
 
     starfoundry_lib_eve_sde_parser::import_sde(&pool, None).await?;
 
-    tracing::info!("Total run time: {}ms", start.elapsed().as_millis());
+    tracing::info!(
+        "Total run time: {}ms",
+        start
+            .elapsed()
+            .as_millis()
+    );
 
     Ok(())
 }

@@ -1,0 +1,121 @@
+use std::sync::Arc;
+
+use axum::routing::get;
+use axum::{Router, middleware};
+use prometheus_client::registry::Registry;
+use starfoundry_gateway::catch_all::{
+    catch_all_auth_callback, catch_all_auth_login, catch_all_auth_login_callback, catch_all_auth_login_corporation, catch_all_auth_logout, catch_all_auth_token, catch_all_generic_delete, catch_all_generic_get, catch_all_generic_post, catch_all_generic_put, catch_all_well_known
+};
+use starfoundry_gateway::metrics::{self, Metric, path_metrics};
+use starfoundry_gateway::{AppState, Config, healthcheck, load_signature};
+use tokio::select;
+use tower::ServiceBuilder;
+use tower_http::compression::CompressionLayer;
+use tower_http::decompression::RequestDecompressionLayer;
+use tracing_subscriber::EnvFilter;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    dotenvy::dotenv().ok();
+
+    if cfg!(debug_assertions) {
+        tracing_subscriber::fmt()
+            .with_env_filter(EnvFilter::from_default_env())
+            .init();
+    } else {
+        tracing_subscriber::fmt()
+            .json()
+            .with_env_filter(EnvFilter::from_default_env())
+            .init();
+    }
+
+    let config = Config::load().await?;
+
+    let decoding_key = load_signature(config.eve_gateway_jwk_url).await?;
+    let decoding_key = Arc::new(decoding_key);
+
+    let mut metric_registry = Registry::with_prefix("starfoundry_gateway_api");
+    let metric = Metric::new();
+    metric.register(&mut metric_registry);
+
+    let state = AppState {
+        routes: Arc::new(config.routes),
+        metric: Arc::new(metric),
+
+        decoding_key,
+    };
+
+    tracing::info!(
+        "Starting app server on {}",
+        config
+            .app_address
+            .local_addr()
+            .unwrap()
+    );
+    tracing::info!(
+        "Starting service server on {}",
+        config
+            .service_address
+            .local_addr()
+            .unwrap()
+    );
+
+    select! {
+        r = axum::serve(config.app_address, app(state.clone())) => {
+            if r.is_err() {
+                tracing::error!("Error in app thread, error: {:?}", r);
+            }
+        },
+        r = axum::serve(config.service_address, service(
+            state.clone(),
+            Arc::new(metric_registry),
+        )) => {
+            if r.is_err() {
+                tracing::error!("Error in service thread, error: {:?}", r);
+            }
+        },
+    }
+
+    panic!("Error while execution, see logs")
+}
+
+fn app(state: AppState) -> Router {
+    Router::new()
+        .route("/.well-known/jwks", get(catch_all_well_known))
+        .route("/auth/callback", get(catch_all_auth_callback))
+        .route("/auth/login", get(catch_all_auth_login))
+        .route("/auth/logout", get(catch_all_auth_logout))
+        .route("/auth/login/corporation", get(catch_all_auth_login_corporation))
+        .route("/auth/login/callback", get(catch_all_auth_login_callback))
+        .route("/auth/token", get(catch_all_auth_token))
+        .route(
+            "/{*key}",
+            get(catch_all_generic_get)
+                .delete(catch_all_generic_delete)
+                .post(catch_all_generic_post)
+                .put(catch_all_generic_put),
+        )
+        .layer(
+            ServiceBuilder::new()
+                .layer(middleware::from_fn_with_state(
+                    state.clone(),
+                    path_metrics,
+                ))
+                .layer(RequestDecompressionLayer::new())
+                .layer(CompressionLayer::new()),
+        )
+        .with_state(state.clone())
+}
+
+/// General service routes that do not need to be publicly accessible
+fn service(
+    state: AppState,
+    registry: Arc<Registry>,
+) -> Router {
+    Router::new()
+        .nest("/health", healthcheck::routes().with_state(state))
+        .route(
+            "/metrics",
+            axum::routing::get(|| async move { metrics::route(registry) }),
+        )
+}

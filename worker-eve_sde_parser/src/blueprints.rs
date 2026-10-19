@@ -1,9 +1,10 @@
-use sqlx::PgPool;
-use starfoundry_lib_types::TypeId;
 use std::collections::HashMap;
 use std::time::Instant;
 
-use crate::Error;
+use sqlx::PgPool;
+use starfoundry_lib_types::TypeId;
+
+use crate::EveSdeParserError;
 use crate::parser::blueprints::BlueprintEntry;
 use crate::parser::type_ids::TypeIdEntry;
 
@@ -15,33 +16,30 @@ const STANDUP_COMPOSITE_REACTION: i32 = 45537;
 const STANDUP_HYBRID_REACTION: i32 = 45538;
 
 pub async fn run(
-    pool:       &PgPool,
+    pool: &PgPool,
     blueprints: &HashMap<TypeId, BlueprintEntry>,
-    items:      &HashMap<TypeId, TypeIdEntry>,
-) -> Result<(), Error> {
+    items: &HashMap<TypeId, TypeIdEntry>,
+) -> Result<(), EveSdeParserError> {
     tracing::info!("Processing blueprints");
     let start = Instant::now();
 
-    insert_into_database(
-            &pool,
-            &blueprints,
-            &items,
-        )
-        .await?;
+    insert_into_database(&pool, &blueprints, &items).await?;
 
     tracing::info!(
         "Finished processing blueprints, task took {:.2}s",
-        start.elapsed().as_secs_f64()
+        start
+            .elapsed()
+            .as_secs_f64()
     );
 
     Ok(())
 }
 
 pub async fn insert_into_database(
-    pool:       &PgPool,
+    pool: &PgPool,
     blueprints: &HashMap<TypeId, BlueprintEntry>,
-    items:      &HashMap<TypeId, TypeIdEntry>,
-) -> Result<(), Error> {
+    items: &HashMap<TypeId, TypeIdEntry>,
+) -> Result<(), EveSdeParserError> {
     let type_ids = blueprints
         .iter()
         .map(|(type_id, _)| **type_id as i32)
@@ -55,38 +53,42 @@ pub async fn insert_into_database(
         .map(|(a, _)| {
             match items.get(a) {
                 Some(x) => {
-                    if x.group_id == 1013.into()|| x.group_id == 110.into() {
+                    if x.group_id == 1013.into() || x.group_id == 110.into() {
                         STANDUP_SUPER_CAPITAL_SHIPYARD
-                    } else if
-                        x.group_id == 944.into() ||
-                        x.group_id == 537.into() ||
-                        x.group_id == 643.into() ||
-                        x.group_id == 1718.into() {
-
+                    } else if x.group_id == 944.into()
+                        || x.group_id == 537.into()
+                        || x.group_id == 643.into()
+                        || x.group_id == 1718.into()
+                    {
                         STANDUP_CAPITAL_SHIPYARD
                     } else if x.group_id == 1890.into() {
                         STANDUP_BIOCHEMICAL_REACTION
                     } else if x.group_id == 1888.into() {
                         STANDUP_COMPOSITE_REACTION
-                    } else if x.group_id == 1889.into() || x.group_id == 4097.into() {
+                    } else if x.group_id == 1889.into()
+                        || x.group_id == 4097.into()
+                    {
                         STANDUP_HYBRID_REACTION
                     } else {
                         STANDUP_MANUFACTURING_PLANT
                     }
                 },
-                None => STANDUP_MANUFACTURING_PLANT
+                None => STANDUP_MANUFACTURING_PLANT,
             }
         })
         .collect::<Vec<_>>();
 
-    sqlx::query!("
+    sqlx::query!(
+        "
             DELETE FROM blueprint
-        ")
-        .execute(pool)
-        .await
-        .unwrap();
+        "
+    )
+    .execute(pool)
+    .await
+    .unwrap();
 
-    sqlx::query!("
+    sqlx::query!(
+        "
             INSERT INTO blueprint
             (
                 type_id,
@@ -99,13 +101,13 @@ pub async fn insert_into_database(
                 $3::INTEGER[]
             )
         ",
-            &type_ids,
-            &max_runs,
-            &service_modules,
-        )
-        .execute(pool)
-        .await
-        .unwrap();
+        &type_ids,
+        &max_runs,
+        &service_modules,
+    )
+    .execute(pool)
+    .await
+    .unwrap();
 
     Ok(())
 }

@@ -1,40 +1,39 @@
-use serde::{Deserialize, Deserializer};
-use starfoundry_lib_types::{TypeId, GroupId};
 use std::collections::HashMap;
 use std::fs::File;
 use std::path::Path;
 use std::time::Instant;
 
-use crate::{FOLDER_INPUT, Error};
+use serde::{Deserialize, Deserializer};
+use starfoundry_lib_types::{GroupId, TypeId};
+
+use crate::{EveSdeParserError, FOLDER_INPUT};
 
 pub fn parse(
-    directory: &str,
-) -> Result<HashMap<TypeId, TypeIdEntry>, Error> {
+    directory: &str
+) -> Result<HashMap<TypeId, TypeIdEntry>, EveSdeParserError> {
     tracing::info!("Parsing type.yaml");
     let start = Instant::now();
 
-    let path = format!(
-        "{}/{}/types.yaml",
-        directory,
-        FOLDER_INPUT,
-    );
+    let path = format!("{}/{}/types.yaml", directory, FOLDER_INPUT,);
 
     if !Path::new(&path).exists() {
-        return Err(Error::FileDoesNotExist(path));
+        return Err(EveSdeParserError::FileDoesNotExist(path));
     }
 
     let file = File::open(&path)
-        .map_err(|x| Error::CannotOpenTypeIdsFile(x, path))?;
+        .map_err(|x| EveSdeParserError::CannotOpenTypeIdsFile(x, path))?;
 
     serde_yaml::from_reader(file)
         .map(|x| {
             tracing::info!(
                 "Finished parsing type.yaml, task took {:.2}s",
-                start.elapsed().as_secs_f64()
+                start
+                    .elapsed()
+                    .as_secs_f64()
             );
             x
         })
-        .map_err(Error::ParseTypeIds)
+        .map_err(EveSdeParserError::ParseTypeIds)
 }
 
 /// Represents a single entry in the yaml for a type
@@ -69,15 +68,18 @@ impl TypeIdEntry {
     ///
     /// If the english translation exists, it is returned, if not [None] is
     /// returned.
-    ///
     pub fn name(&self) -> Option<String> {
-        self.name.get("en").cloned()
+        self.name
+            .get("en")
+            .cloned()
     }
 }
 
 // for some reason some of the "meta_group_id" fields have an float instead of a
 // integer, so we make sure to convert it
-fn deserialize_meta_group_id<'de, D>(deserializer: D) -> Result<Option<GroupId>, D::Error>
+fn deserialize_meta_group_id<'de, D>(
+    deserializer: D
+) -> Result<Option<GroupId>, D::Error>
 where
     D: Deserializer<'de>,
 {

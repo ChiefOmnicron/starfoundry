@@ -1,11 +1,11 @@
-use thiserror::Error;
 use starfoundry_lib_types::{RegionId, StructureId};
+use thiserror::Error;
 
-pub type Result<T, E = Error> = std::result::Result<T, E>;
+pub type Result<T, E = MarketWorkerError> = std::result::Result<T, E>;
 
 #[derive(Debug, Error)]
 #[non_exhaustive]
-pub enum Error {
+pub enum MarketWorkerError {
     #[error("error creating transaction, error: '{0}'")]
     TransactionError(sqlx::Error),
 
@@ -41,7 +41,7 @@ pub enum Error {
     InvalidWorkerTask(String),
 
     #[error(transparent)]
-    WorkerLibError(#[from] starfoundry_lib_worker::Error),
+    WorkerLibError(#[from] starfoundry_lib_worker::WorkerError),
     #[error(transparent)]
-    EveGatewayError(#[from] starfoundry_lib_eve_gateway::Error),
+    EveGatewayError(#[from] starfoundry_eve_gateway::EveGatewayError),
 }

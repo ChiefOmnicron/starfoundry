@@ -10,17 +10,15 @@ pub enum FittingError {
     #[error("eve api error, error: '{0:?}'")]
     EveApiError(#[from] EveApiError),
     #[error("gateway error, error: '{0:?}'")]
-    GatewayError(#[from] starfoundry_lib_gateway::Error),
+    GatewayError(#[from] starfoundry_gateway::GatewayError),
 }
 
 impl IntoResponse for FittingError {
     fn into_response(self) -> Response {
         match self {
-            Self::EveApiError(e) => {
-                EveApiError::into_response(e)
-            },
+            Self::EveApiError(e) => EveApiError::into_response(e),
             Self::GatewayError(e) => {
-                starfoundry_lib_gateway::Error::into_response(e)
+                starfoundry_gateway::GatewayError::into_response(e)
             },
         }
         .into_response()

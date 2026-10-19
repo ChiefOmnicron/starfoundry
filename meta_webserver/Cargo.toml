@@ -1,5 +1,5 @@
 [package]
-name = "starfoundry_bin-meta_webserver"
+name = "starfoundry-meta_webserver"
 authors.workspace = true
 edition.workspace = true
 version.workspace = true

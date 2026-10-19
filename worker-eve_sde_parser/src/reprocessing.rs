@@ -1,35 +1,38 @@
-use sqlx::PgPool;
-use starfoundry_lib_types::TypeId;
 use std::collections::HashMap;
 use std::time::Instant;
 
+use sqlx::PgPool;
+use starfoundry_lib_types::TypeId;
+
+use crate::EveSdeParserError;
 use crate::parser::type_material::TypeMaterial;
-use crate::Error;
 
 pub async fn run(
-    pool:           &PgPool,
+    pool: &PgPool,
     type_materials: &HashMap<TypeId, Vec<TypeMaterial>>,
-) -> Result<(), Error> {
+) -> Result<(), EveSdeParserError> {
     tracing::info!("Processing items");
     let start = Instant::now();
 
     let mut transaction = pool
         .begin()
         .await
-        .map_err(Error::TransactionError)?;
+        .map_err(EveSdeParserError::TransactionError)?;
 
     tracing::debug!("Clearing database");
-    sqlx::query!("
+    sqlx::query!(
+        "
             DELETE FROM item_reprocessing
-        ")
-        .execute(&mut *transaction)
-        .await
-        .map_err(Error::DeleteItems)?;
+        "
+    )
+    .execute(&mut *transaction)
+    .await
+    .map_err(EveSdeParserError::DeleteItems)?;
     tracing::debug!("Clearing database done");
 
-    let mut product_type_ids  = Vec::new();
+    let mut product_type_ids = Vec::new();
     let mut material_type_ids = Vec::new();
-    let mut quantities       = Vec::new();
+    let mut quantities = Vec::new();
 
     for (type_id, materials) in type_materials {
         for material in materials {
@@ -40,7 +43,8 @@ pub async fn run(
     }
 
     tracing::debug!("Inserting data");
-    sqlx::query!("
+    sqlx::query!(
+        "
             INSERT INTO item_reprocessing
             (
                 type_id,
@@ -53,24 +57,26 @@ pub async fn run(
                 $3::INTEGER[]
             )
         ",
-            &product_type_ids,
-            &material_type_ids,
-            &quantities,
-        )
-        .execute(&mut *transaction)
-        .await
-        .map_err(Error::InsertItemReprocessing)?;
+        &product_type_ids,
+        &material_type_ids,
+        &quantities,
+    )
+    .execute(&mut *transaction)
+    .await
+    .map_err(EveSdeParserError::InsertItemReprocessing)?;
     tracing::debug!("Inserting data done");
 
     transaction
         .commit()
         .await
-        .map_err(Error::TransactionError)?;
+        .map_err(EveSdeParserError::TransactionError)?;
     tracing::debug!("Transaction commited");
 
     tracing::info!(
         "Finished processing item reprocessing, task took {:.2}s",
-        start.elapsed().as_secs_f64()
+        start
+            .elapsed()
+            .as_secs_f64()
     );
 
     Ok(())

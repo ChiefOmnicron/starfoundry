@@ -13,27 +13,23 @@ RUN         apt update && apt install cmake clang -y
 FROM chef AS planner
 COPY        ./Cargo.toml Cargo.toml
 COPY        ./.sqlx ./.sqlx
+
 COPY        ./appraisal ./appraisal
-COPY        ./appraisal_lib ./appraisal_lib
 COPY        ./eve-gateway ./eve-gateway
-COPY        ./eve-gateway_lib ./eve-gateway_lib
 COPY        ./eve-gateway_worker ./eve-gateway_worker
 COPY        ./gateway ./gateway
-COPY        ./gateway_lib ./gateway_lib
-COPY        ./gp_lib-eve_client ./gp_lib-eve_client
-COPY        ./gp_lib-types ./gp_lib-types
 COPY        ./industry ./industry
-COPY        ./industry_lib ./industry_lib
 COPY        ./industry_worker ./industry_worker
 COPY        ./mapping ./mapping
-COPY        ./mapping_lib ./mapping_lib
 COPY        ./market ./market
-COPY        ./market_lib ./market_lib
 COPY        ./market_worker ./market_worker
 COPY        ./meta_webserver ./meta_webserver
+COPY        ./worker-eve_sde_parser ./worker-eve_sde_parser
+
+COPY        ./gp_lib-eve_client ./gp_lib-eve_client
+COPY        ./gp_lib-types ./gp_lib-types
 COPY        ./notification_lib ./notification_lib
 COPY        ./worker_lib ./worker_lib
-COPY        ./worker-eve_sde_parser ./worker-eve_sde_parser
 
 RUN         cargo chef prepare --recipe-path recipe.json
 
@@ -48,33 +44,29 @@ RUN         cargo chef cook --release --recipe-path recipe.json
 
 COPY        ./Cargo.toml Cargo.toml
 COPY        ./.sqlx ./.sqlx
+
 COPY        ./appraisal ./appraisal
-COPY        ./appraisal_lib ./appraisal_lib
 COPY        ./eve-gateway ./eve-gateway
-COPY        ./eve-gateway_lib ./eve-gateway_lib
 COPY        ./eve-gateway_worker ./eve-gateway_worker
 COPY        ./gateway ./gateway
-COPY        ./gateway_lib ./gateway_lib
-COPY        ./gp_lib-eve_client ./gp_lib-eve_client
-COPY        ./gp_lib-types ./gp_lib-types
 COPY        ./industry ./industry
-COPY        ./industry_lib ./industry_lib
 COPY        ./industry_worker ./industry_worker
 COPY        ./mapping ./mapping
-COPY        ./mapping_lib ./mapping_lib
 COPY        ./market ./market
-COPY        ./market_lib ./market_lib
 COPY        ./market_worker ./market_worker
 COPY        ./meta_webserver ./meta_webserver
+COPY        ./worker-eve_sde_parser ./worker-eve_sde_parser
+
+COPY        ./gp_lib-eve_client ./gp_lib-eve_client
+COPY        ./gp_lib-types ./gp_lib-types
 COPY        ./notification_lib ./notification_lib
 COPY        ./worker_lib ./worker_lib
-COPY        ./worker-eve_sde_parser ./worker-eve_sde_parser
 
 ###############################################################################
 #           appraisal_api
 ###############################################################################
 FROM builder AS appraisal-api-builder
-RUN         cargo build --bin starfoundry_bin-eve_gateway --release
+RUN         cargo build --bin starfoundry-appraisal_bin-server --release
 
 FROM ubuntu:26.04 AS appraisal-api
 WORKDIR     /usr/local/bin
@@ -83,14 +75,14 @@ RUN         apt-get update && \
             apt-get install -y ca-certificates curl && \
             apt-get clean
 
-COPY        --from=appraisal-api-builder /app/target/release/starfoundry_bin-appraisal /usr/local/bin/app
+COPY        --from=appraisal-api-builder /app/target/release/starfoundry-appraisal_bin-server /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
 ###############################################################################
 #           eve_gateway_api
 ###############################################################################
 FROM builder AS eve-gateway-api-builder
-RUN         cargo build --bin starfoundry_bin-eve_gateway --release
+RUN         cargo build --bin starfoundry-eve-gateway_bin-server --release
 
 FROM ubuntu:26.04 AS eve-gateway-api
 WORKDIR     /usr/local/bin
@@ -99,14 +91,14 @@ RUN         apt-get update && \
             apt-get install -y ca-certificates curl && \
             apt-get clean
 
-COPY        --from=eve-gateway-api-builder /app/target/release/starfoundry_bin-eve_gateway /usr/local/bin/app
+COPY        --from=eve-gateway-api-builder /app/target/release/starfoundry-eve-gateway_bin-server /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
 ###############################################################################
 #           eve_gateway_worker
 ###############################################################################
 FROM builder AS eve-gateway-worker-builder
-RUN         cargo build --bin starfoundry_bin-eve_gateway_worker --release
+RUN         cargo build --bin starfoundry-eve_gateway_worker --release
 
 FROM ubuntu:26.04 AS eve-gateway-worker
 WORKDIR     /usr/local/bin
@@ -115,14 +107,14 @@ RUN         apt-get update && \
             apt-get install -y ca-certificates curl && \
             apt-get clean
 
-COPY        --from=eve-gateway-worker-builder /app/target/release/starfoundry_bin-eve_gateway_worker /usr/local/bin/app
+COPY        --from=eve-gateway-worker-builder /app/target/release/starfoundry-eve_gateway_worker /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
 ###############################################################################
 #           gateway_api
 ###############################################################################
 FROM builder AS gateway-api-builder
-RUN         cargo build --bin starfoundry_bin-gateway --release
+RUN         cargo build --bin starfoundry-gateway_bin-server --release
 
 FROM ubuntu:26.04 AS gateway-api
 WORKDIR     /usr/local/bin
@@ -131,14 +123,14 @@ RUN         apt-get update && \
             apt-get install -y ca-certificates curl && \
             apt-get clean
 
-COPY        --from=gateway-api-builder /app/target/release/starfoundry_bin-gateway /usr/local/bin/app
+COPY        --from=gateway-api-builder /app/target/release/starfoundry-gateway_bin-server /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
 ###############################################################################
 #           mapping_api
 ###############################################################################
 FROM builder AS mapping-api-builder
-RUN         cargo build --bin starfoundry_bin-mapping --release
+RUN         cargo build --bin starfoundry-mapping_bin-server --release
 
 FROM ubuntu:26.04 AS mapping-api
 WORKDIR     /usr/local/bin
@@ -147,7 +139,7 @@ RUN         apt-get update && \
             apt-get install -y ca-certificates curl && \
             apt-get clean
 
-COPY        --from=market-api-builder /app/target/release/starfoundry_bin-market /usr/local/bin/app
+COPY        --from=market-api-builder /app/target/release/starfoundry-mapping_bin-server /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
 ###############################################################################
@@ -155,7 +147,7 @@ CMD         ["/usr/local/bin/app"]
 ###############################################################################
 FROM builder AS market-api-builder
 RUN         apt-get install -y clang coinor-cbc coinor-libcbc-dev && \
-            cargo build --bin starfoundry_bin-market --release
+            cargo build --bin starfoundry-market_bin-server --release
 
 FROM ubuntu:26.04 AS market-api
 WORKDIR     /usr/local/bin
@@ -165,14 +157,14 @@ RUN         apt-get update && \
             cp /usr/lib/x86_64-linux-gnu/libCbcSolver.so.3.1 /usr/lib/x86_64-linux-gnu/libCbcSolver.so.3 && \
             apt-get clean
 
-COPY        --from=market-api-builder /app/target/release/starfoundry_bin-market /usr/local/bin/app
+COPY        --from=market-api-builder /app/target/release/starfoundry-market_bin-server /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
 ###############################################################################
 #           market_worker
 ###############################################################################
 FROM builder AS market-worker-builder
-RUN         cargo build --bin starfoundry_bin-market_worker --release
+RUN         cargo build --bin starfoundry-market_worker --release
 
 FROM ubuntu:26.04 AS market-worker
 WORKDIR     /usr/local/bin
@@ -181,14 +173,14 @@ RUN         apt-get update && \
             apt-get install -y ca-certificates curl && \
             apt-get clean
 
-COPY        --from=market-worker-builder /app/target/release/starfoundry_bin-market_worker /usr/local/bin/app
+COPY        --from=market-worker-builder /app/target/release/starfoundry-market_worker /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
 ###############################################################################
 #           industry_api
 ###############################################################################
 FROM builder AS industry-api-builder
-RUN         cargo build --bin starfoundry_bin-industry --release
+RUN         cargo build --bin starfoundry-industry_bin-server --release
 
 FROM ubuntu:26.04 AS industry-api
 WORKDIR     /usr/local/bin
@@ -197,14 +189,14 @@ RUN         apt-get update && \
             apt-get install -y ca-certificates curl && \
             apt-get clean
 
-COPY        --from=industry-api-builder /app/target/release/starfoundry_bin-industry /usr/local/bin/app
+COPY        --from=industry-api-builder /app/target/release/starfoundry-industry_bin-server /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
 ###############################################################################
 #           industry_worker
 ###############################################################################
 FROM builder AS industry-worker-builder
-RUN         cargo build --bin starfoundry_bin-industry_worker --release
+RUN         cargo build --bin starfoundry-industry_worker --release
 
 FROM ubuntu:26.04 AS industry-worker
 WORKDIR     /usr/local/bin
@@ -213,7 +205,7 @@ RUN         apt-get update && \
             apt-get install -y ca-certificates curl && \
             apt-get clean
 
-COPY        --from=industry-worker-builder /app/target/release/starfoundry_bin-industry_worker /usr/local/bin/app
+COPY        --from=industry-worker-builder /app/target/release/starfoundry-industry_worker /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
 ###############################################################################

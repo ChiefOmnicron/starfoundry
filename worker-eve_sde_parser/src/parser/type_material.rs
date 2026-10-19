@@ -1,40 +1,39 @@
-use serde::Deserialize;
-use starfoundry_lib_types::TypeId;
 use std::collections::HashMap;
 use std::fs::File;
 use std::path::Path;
 use std::time::Instant;
 
-use crate::{FOLDER_INPUT, Error};
+use serde::Deserialize;
+use starfoundry_lib_types::TypeId;
+
+use crate::{EveSdeParserError, FOLDER_INPUT};
 
 pub fn parse(
-    directory: &str,
-) -> Result<HashMap<TypeId, Vec<TypeMaterial>>, Error> {
+    directory: &str
+) -> Result<HashMap<TypeId, Vec<TypeMaterial>>, EveSdeParserError> {
     tracing::info!("Parsing typeMaterials.yaml");
     let start = Instant::now();
 
-    let path = format!(
-        "{}/{}/typeMaterials.yaml",
-        directory,
-        FOLDER_INPUT,
-    );
+    let path = format!("{}/{}/typeMaterials.yaml", directory, FOLDER_INPUT,);
 
     if !Path::new(&path).exists() {
-        return Err(Error::FileDoesNotExist(path));
+        return Err(EveSdeParserError::FileDoesNotExist(path));
     }
 
     let file = File::open(&path)
-        .map_err(|x| Error::CannotOpenTypeIdsFile(x, path))?;
+        .map_err(|x| EveSdeParserError::CannotOpenTypeIdsFile(x, path))?;
 
     let parsed: HashMap<TypeId, ParseWrapper> = serde_yaml::from_reader(file)
         .map(|x| {
             tracing::info!(
                 "Finished parsing typeMaterials.yaml, task took {:.2}s",
-                start.elapsed().as_secs_f64()
+                start
+                    .elapsed()
+                    .as_secs_f64()
             );
             x
         })
-        .map_err(Error::ParseTypeIds)?;
+        .map_err(EveSdeParserError::ParseTypeIds)?;
     let parsed = parsed
         .into_iter()
         // ignore Prismaticite

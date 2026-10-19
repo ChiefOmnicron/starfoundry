@@ -11,16 +11,23 @@
 ///
 /// * `name` - Name of the ID
 /// * `typ`  - Datatype of the ID (e.g. i32)
-///
 #[macro_export]
 macro_rules! eve_id {
     ($name:ident, $name_str:tt, $typ:ty, $typ2:ty) => {
         /// Represents an ID-Type from EVE
         #[derive(
-            Clone, Copy, Debug, Hash,
-            PartialEq, Eq, PartialOrd, Ord,
+            Clone,
+            Copy,
+            Debug,
+            Hash,
+            PartialEq,
+            Eq,
+            PartialOrd,
+            Ord,
+            sqlx::Type,
+            serde::Deserialize,
+            serde::Serialize,
         )]
-        #[derive(sqlx::Type, serde::Deserialize, serde::Serialize)]
         #[sqlx(transparent)]
         #[serde(transparent)]
         #[derive(utoipa::ToSchema, utoipa::IntoParams)]
@@ -60,7 +67,10 @@ macro_rules! eve_id {
         }
 
         impl std::fmt::Display for $name {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            fn fmt(
+                &self,
+                f: &mut std::fmt::Formatter<'_>,
+            ) -> std::fmt::Result {
                 write!(f, "{}", self.0)
             }
         }

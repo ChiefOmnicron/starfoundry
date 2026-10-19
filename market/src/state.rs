@@ -1,14 +1,14 @@
+use std::convert::Infallible;
+use std::sync::Arc;
+
 use axum::extract::{FromRef, FromRequestParts};
 use axum::http::request::Parts;
 use sqlx::PgPool;
-use std::convert::Infallible;
-use std::sync::Arc;
 
 use crate::metrics::Metric;
 
 #[derive(Clone)]
-pub struct AppState
-where {
+pub struct AppState {
     /// Postgres connection pool
     pub postgres: PgPool,
     /// Track metrics for the application
@@ -24,7 +24,7 @@ where
 
     async fn from_request_parts(
         _: &mut Parts,
-        state: &S
+        state: &S,
     ) -> Result<Self, Self::Rejection> {
         Ok(Self::from_ref(state))
     }

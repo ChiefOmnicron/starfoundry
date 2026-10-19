@@ -1,24 +1,24 @@
+use axum::Json;
 use axum::extract::State;
 use axum::http::StatusCode;
-use axum::Json;
 use axum::response::IntoResponse;
-use starfoundry_lib_eve_gateway::Item;
+use sqlx::PgPool;
 use starfoundry_lib_types::TypeId;
 
 use crate::api_docs::{InternalServerError, NotFound};
-use crate::item::services::fetch_item_bulk;
+use crate::asset::{Category, Group, Item};
+use crate::item::error::{ItemError, Result};
+use crate::item::parse::load_items_by_type_id;
 use crate::state::AppState;
-use crate::item::error::Result;
 
 /// Bulk Fetch Items
-/// 
+///
 /// - Alternative route: `/latest/items`
 /// - Alternative route: `/v1/items`
-/// 
+///
 /// ---
-/// 
+///
 /// Bulk resolve items by their type_id
-/// 
 #[utoipa::path(
     post,
     path = "/",
@@ -35,19 +35,103 @@ use crate::item::error::Result;
     ),
 )]
 pub async fn api(
-    State(state):   State<AppState>,
+    State(state): State<AppState>,
     Json(type_ids): Json<Vec<TypeId>>,
 ) -> Result<impl IntoResponse> {
-    let entry = fetch_item_bulk(
-        &state.postgres,
-        type_ids,
-    ).await?;
+    let entry = fetch_item_bulk(&state.postgres, type_ids).await?;
 
-    Ok(
-        (
-            StatusCode::OK,
-            Json(entry)
-        )
-        .into_response()
+    Ok((StatusCode::OK, Json(entry)).into_response())
+}
+
+/// Fetches the character information for the given ids from the database.
+/// If the character does not exist yet, it will be fetched using the EVE-API.
+pub async fn fetch_item_bulk(
+    pool: &PgPool,
+    type_ids: Vec<TypeId>,
+) -> Result<Vec<Item>> {
+    if type_ids.is_empty() {
+        return Ok(Vec::new());
+    }
+
+    let items = load_items_by_type_id();
+    if items.is_empty() {
+        fetch_db(pool, type_ids).await
+    } else {
+        let mut item_vec = Vec::new();
+
+        for type_id in type_ids {
+            if let Some(y) = items.get(&type_id) {
+                item_vec.push(y.clone());
+            } else {
+                continue;
+            }
+        }
+        Ok(item_vec)
+    }
+}
+
+async fn fetch_db(
+    pool: &PgPool,
+    type_ids: Vec<TypeId>,
+) -> Result<Vec<Item>> {
+    let items = sqlx::query!(
+        r#"
+            SELECT
+                type_id,
+                volume,
+                meta_group_id,
+                repackaged,
+                i.category_id,
+                i.group_id,
+                i.name,
+                c.name AS "category_name",
+                g.name AS "group_name"
+            FROM item i
+            JOIN category c ON i.category_id = c.category_id
+            JOIN groups g ON i.group_id = g.group_id
+            WHERE type_id = ANY($1)
+            ORDER BY name
+        "#,
+        &type_ids
+            .clone()
+            .into_iter()
+            .map(|x| *x)
+            .collect::<Vec<_>>(),
     )
+    .fetch_all(pool)
+    .await
+    .map_err(ItemError::FetchBulk)?
+    .into_iter()
+    .map(|x| {
+        Item {
+            category: Category {
+                category_id: x
+                    .category_id
+                    .into(),
+                name:        x.category_name,
+            },
+            group:    Group {
+                group_id:    x
+                    .group_id
+                    .into(),
+                category_id: x
+                    .category_id
+                    .into(),
+                name:        x.group_name,
+            },
+            name:     x.name,
+            type_id:  x
+                .type_id
+                .into(),
+            volume:   x.volume,
+
+            meta_group: x
+                .meta_group_id
+                .map(Into::into),
+            repackaged: x.repackaged,
+        }
+    })
+    .collect::<Vec<_>>();
+
+    Ok(items)
 }

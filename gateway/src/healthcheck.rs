@@ -1,13 +1,12 @@
 mod healthz;
 mod readyz;
 
-use axum::routing::get;
 use axum::Router;
-
-use crate::state::AppState;
+use axum::routing::get;
 
 pub use self::healthz::*;
 pub use self::readyz::*;
+use crate::state::AppState;
 
 /// Returns all routes under the `/healthcheck` path
 pub fn routes() -> Router<AppState> {

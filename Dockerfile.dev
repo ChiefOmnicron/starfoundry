@@ -2,21 +2,21 @@ FROM ubuntu:latest AS eve-gateway-api
 WORKDIR     /usr/local/bin
 RUN         apt-get update && \
             apt-get install -y ca-certificates
-COPY        ./target/debug/starfoundry_bin-eve_gateway /usr/local/bin/app
+COPY        ./target/debug/starfoundry-eve-gateway_bin-server /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
 FROM ubuntu:latest AS eve-gateway-worker
 WORKDIR     /usr/local/bin
 RUN         apt-get update && \
             apt-get install -y ca-certificates
-COPY        ./target/debug/starfoundry_bin-eve_gateway_worker /usr/local/bin/app
+COPY        ./target/debug/starfoundry-eve-gateway_worker /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
 FROM ubuntu:latest AS gateway-api
 WORKDIR     /usr/local/bin
 RUN         apt-get update && \
             apt-get install -y ca-certificates
-COPY        ./target/debug/starfoundry_bin-gateway /usr/local/bin/app
+COPY        ./target/debug/starfoundry-gateway_bin-server /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
 FROM ubuntu:latest AS market-api
@@ -24,12 +24,12 @@ WORKDIR     /usr/local/bin
 RUN         apt-get update && \
             apt-get install -y ca-certificates coinor-libcbc3.1 && \
             cp /usr/lib/x86_64-linux-gnu/libCbcSolver.so.3.1 /usr/lib/x86_64-linux-gnu/libCbcSolver.so.3
-COPY        ./target/debug/starfoundry_bin-market /usr/local/bin/app
+COPY        ./target/debug/starfoundry-market_bin-server /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]
 
 FROM ubuntu:latest AS market-worker
 WORKDIR     /usr/local/bin
 RUN         apt-get update && \
             apt-get install -y ca-certificates
-COPY        ./target/debug/starfoundry_bin-market_worker /usr/local/bin/app
+COPY        ./target/debug/starfoundry-market_worker /usr/local/bin/app
 CMD         ["/usr/local/bin/app"]

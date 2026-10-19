@@ -1,11 +1,11 @@
 use thiserror::Error;
 
-pub type Result<T, E = Error> = std::result::Result<T, E>;
+pub type Result<T, E = EveSdeParserError> = std::result::Result<T, E>;
 
 /// Holds all errors within the application
 #[derive(Debug, Error)]
 #[non_exhaustive]
-pub enum Error {
+pub enum EveSdeParserError {
     #[error("the requested file does not exist at the location, '{0}'")]
     FileDoesNotExist(String),
     #[error("there was an error while creating a transaction, '{0}'")]
@@ -13,7 +13,9 @@ pub enum Error {
 
     #[error("the file `blueprints.yaml` couldn`t be parsed, '{0}'")]
     ParseBlueprints(serde_yaml::Error),
-    #[error("the file `blueprints.yaml` is not at the expected location, file '{1}', error '{0}'")]
+    #[error(
+        "the file `blueprints.yaml` is not at the expected location, file '{1}', error '{0}'"
+    )]
     CannotOpenBlueprintsFile(std::io::Error, String),
     #[error("error while deleting the blueprint json database, '{0}'")]
     DeleteBlueprintJson(sqlx::Error),
@@ -54,17 +56,23 @@ pub enum Error {
 
     #[error("the file `industrymodifiersources` couldn`t be parsed, '{0}'")]
     ParseIndustryModifierSources(serde_yaml::Error),
-    #[error("the file `industrymodifiersources.json` is not at the expected location, '{0}'")]
+    #[error(
+        "the file `industrymodifiersources.json` is not at the expected location, '{0}'"
+    )]
     CannotOpenIndustryModifierSources(std::io::Error, String),
 
     #[error("the file `industrytargetfilters` couldn`t be parsed, '{0}'")]
     ParseIndustryTargetFilters(serde_yaml::Error),
-    #[error("the file `industrytargetfilters.json` is not at the expected location, '{0}'")]
+    #[error(
+        "the file `industrytargetfilters.json` is not at the expected location, '{0}'"
+    )]
     CannotOpenIndustryTargetFilters(std::io::Error, String),
 
     #[error("the file `repackagedvolumes` couldn`t be parsed, '{0}'")]
     ParseRepackagedVolumes(serde_json::Error),
-    #[error("the file `repackagedvolumes.json` is not at the expected location, '{0}'")]
+    #[error(
+        "the file `repackagedvolumes.json` is not at the expected location, '{0}'"
+    )]
     CannotOpenRepackagedVolumes(std::io::Error, String),
 
     #[error("the file `typeDogma` couldn`t be parsed, '{0}'")]
@@ -87,7 +95,7 @@ pub enum Error {
     UnzipError(std::io::Error),
 }
 
-impl From<reqwest::Error> for Error {
+impl From<reqwest::Error> for EveSdeParserError {
     fn from(value: reqwest::Error) -> Self {
         Self::ReqwestError(value)
     }

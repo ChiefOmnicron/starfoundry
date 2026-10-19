@@ -2,7 +2,7 @@
 macro_rules! sort_by_market_group {
     ($name:ident, $typ_in:ty, $typ_out:ident) => {
         pub fn $name(entries: Vec<$typ_in>) -> Vec<$typ_out> {
-            let mut market_groups   = Vec::new();
+            let mut market_groups = Vec::new();
             let mut grouped_entries = std::collections::HashMap::new();
 
             let mut insert_into_map = |id: i32, entry: $typ_in| {
@@ -14,7 +14,11 @@ macro_rules! sort_by_market_group {
 
             // First go through all entries, and sort them into the map
             for entry in entries.into_iter() {
-                match *entry.item.category.category_id {
+                match *entry
+                    .item
+                    .category
+                    .category_id
+                {
                     7i32 => {
                         insert_into_map(7, entry);
                         continue;
@@ -27,10 +31,14 @@ macro_rules! sort_by_market_group {
                         insert_into_map(25, entry);
                         continue;
                     },
-                    _  => {}
+                    _ => {},
                 }
 
-                match *entry.item.group.group_id {
+                match *entry
+                    .item
+                    .group
+                    .group_id
+                {
                     18i32 => {
                         insert_into_map(18, entry);
                         continue;
@@ -107,50 +115,52 @@ macro_rules! sort_by_market_group {
                         insert_into_map(4168, entry);
                         continue;
                     },
-                    _  => {
+                    _ => {
                         insert_into_map(0, entry);
-                    }
+                    },
                 }
             }
 
             // Secondly give the groups a name, and sort the entries
             for (header, id) in vec![
-                ("COMPRESSED_MINERALS",       25),
-                ("MINERALS",                  18),
-                ("MOON_MATERIALS",           427),
-                ("COMPRESSED_GAS",          4168),
-                ("GAS",                      711),
-                ("FUEL_BLOCKS",             1136),
-                ("INTERMEDIATE_COMPOSITE",   428),
-                ("COMPOSITE",                429),
-                ("HYBRID_POLYMERS",          974),
-                ("PI_TIER_1",               1042),
-                ("PI_TIER_2",               1034),
-                ("PI_TIER_3",               1040),
-                ("PI_TIER_4",               1041),
-                ("COMMODITIES",              526),
-                ("CONSTRUCTION_COMPONENTS",  334),
-                ("SALVAGE",                  754),
-                ("MODULES",                    7),
-                ("CHARGES",                    8),
-                ("BOOSTER",                  303),
-                ("ICE",                      423),
-                ("BIOCHEMICAL",              712),
-                ("ABYSSAL_MATERIALS",       1996),
-                ("UNGROUPED",                  0),
+                ("COMPRESSED_MINERALS", 25),
+                ("MINERALS", 18),
+                ("MOON_MATERIALS", 427),
+                ("COMPRESSED_GAS", 4168),
+                ("GAS", 711),
+                ("FUEL_BLOCKS", 1136),
+                ("INTERMEDIATE_COMPOSITE", 428),
+                ("COMPOSITE", 429),
+                ("HYBRID_POLYMERS", 974),
+                ("PI_TIER_1", 1042),
+                ("PI_TIER_2", 1034),
+                ("PI_TIER_3", 1040),
+                ("PI_TIER_4", 1041),
+                ("COMMODITIES", 526),
+                ("CONSTRUCTION_COMPONENTS", 334),
+                ("SALVAGE", 754),
+                ("MODULES", 7),
+                ("CHARGES", 8),
+                ("BOOSTER", 303),
+                ("ICE", 423),
+                ("BIOCHEMICAL", 712),
+                ("ABYSSAL_MATERIALS", 1996),
+                ("UNGROUPED", 0),
             ] {
                 if let Some(x) = grouped_entries.get_mut(&id) {
-                    x.sort_by_key(|x| x.item.name.clone());
-                    market_groups.push(
-                        $typ_out {
-                            header:  header.into(),
-                            entries: x.clone(),
-                        }
-                    );
+                    x.sort_by_key(|x| {
+                        x.item
+                            .name
+                            .clone()
+                    });
+                    market_groups.push($typ_out {
+                        header:  header.into(),
+                        entries: x.clone(),
+                    });
                 }
             }
 
             market_groups
         }
-    }
+    };
 }

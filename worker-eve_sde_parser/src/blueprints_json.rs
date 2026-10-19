@@ -1,54 +1,57 @@
-use serde::Serialize;
-use sqlx::PgPool;
-use starfoundry_lib_types::{CategoryId, GroupId, TypeId};
 use std::collections::{HashMap, VecDeque};
 use std::time::Instant;
-use starfoundry_lib_eve_gateway::Item;
 
-use crate::Error;
+use serde::Serialize;
+use sqlx::PgPool;
+use starfoundry_eve_gateway::asset::Item;
+use starfoundry_lib_types::{CategoryId, GroupId, TypeId};
+
+use crate::EveSdeParserError;
+use crate::items::get_item;
 use crate::parser::blueprints::BlueprintEntry;
+use crate::parser::categories::CategoryIdEntry;
 use crate::parser::groups::GroupIdEntry;
 use crate::parser::type_ids::TypeIdEntry;
-use crate::items::get_item;
-use crate::parser::categories::CategoryIdEntry;
 
 pub async fn run(
-    pool:         &PgPool,
-    blueprints:   &HashMap<TypeId, BlueprintEntry>,
+    pool: &PgPool,
+    blueprints: &HashMap<TypeId, BlueprintEntry>,
     category_ids: &HashMap<CategoryId, CategoryIdEntry>,
-    group_ids:    &HashMap<GroupId, GroupIdEntry>,
-    type_ids:     &HashMap<TypeId, TypeIdEntry>,
-    repackaged:   &HashMap<TypeId, i32>,
-) -> Result<(), Error> {
+    group_ids: &HashMap<GroupId, GroupIdEntry>,
+    type_ids: &HashMap<TypeId, TypeIdEntry>,
+    repackaged: &HashMap<TypeId, i32>,
+) -> Result<(), EveSdeParserError> {
     tracing::info!("Processing blueprints");
     let start = Instant::now();
 
     insert_into_database(
-            &pool,
-            &blueprints,
-            &category_ids,
-            &group_ids,
-            &type_ids,
-            &repackaged,
-        )
-        .await?;
+        &pool,
+        &blueprints,
+        &category_ids,
+        &group_ids,
+        &type_ids,
+        &repackaged,
+    )
+    .await?;
 
     tracing::info!(
         "Finished processing blueprints, task took {:.2}s",
-        start.elapsed().as_secs_f64()
+        start
+            .elapsed()
+            .as_secs_f64()
     );
 
     Ok(())
 }
 
 async fn insert_into_database(
-    pool:         &PgPool,
-    blueprints:   &HashMap<TypeId, BlueprintEntry>,
+    pool: &PgPool,
+    blueprints: &HashMap<TypeId, BlueprintEntry>,
     category_ids: &HashMap<CategoryId, CategoryIdEntry>,
-    group_ids:    &HashMap<GroupId, GroupIdEntry>,
-    type_ids:     &HashMap<TypeId, TypeIdEntry>,
-    repackaged:   &HashMap<TypeId, i32>,
-) -> Result<(), Error> {
+    group_ids: &HashMap<GroupId, GroupIdEntry>,
+    type_ids: &HashMap<TypeId, TypeIdEntry>,
+    repackaged: &HashMap<TypeId, i32>,
+) -> Result<(), EveSdeParserError> {
     let products = crate::parser::blueprints::product_type_id_as_key(
         &blueprints,
         &type_ids,
@@ -57,8 +60,15 @@ async fn insert_into_database(
     let find_blueprint_type_id = |product_type_id: TypeId| {
         blueprints
             .iter()
-            .filter(|(_, x)| x.product().is_some())
-            .find(|(_, x)| x.product().unwrap() == product_type_id)
+            .filter(|(_, x)| {
+                x.product()
+                    .is_some()
+            })
+            .find(|(_, x)| {
+                x.product()
+                    .unwrap()
+                    == product_type_id
+            })
             .map(|(y, _)| y)
             .unwrap()
             .clone()
@@ -72,7 +82,9 @@ async fn insert_into_database(
             continue;
         }
 
-        let ientry = type_ids.get(&product_type_id).unwrap();
+        let ientry = type_ids
+            .get(&product_type_id)
+            .unwrap();
         if !ientry.published {
             continue;
         }
@@ -84,44 +96,53 @@ async fn insert_into_database(
         };
 
         let mut dependency = Dependency {
-            product_type_id: *product_type_id,
+            product_type_id:   *product_type_id,
             blueprint_type_id: find_blueprint_type_id(*product_type_id),
-            item: get_item(
+            item:              get_item(
                 *product_type_id,
                 category_ids,
                 group_ids,
                 type_ids,
                 repackaged,
             ),
-            needed: 0f32,
-            time: pentry.manufacture_time().unwrap() as f32,
-            produces: pentry.product_quantity().unwrap(),
-            typ: typ,
-            components: Vec::new(),
+            needed:            0.0f32,
+            time:              pentry
+                .manufacture_time()
+                .unwrap() as f32,
+            produces:          pentry
+                .product_quantity()
+                .unwrap(),
+            typ:               typ,
+            components:        Vec::new(),
         };
 
         let mut components = Vec::new();
         for material in pentry.materials() {
-            if products.contains_key(&material.type_id) && entries.contains_key(&material.type_id) {
-                let mut entry = entries.get(&material.type_id).unwrap().clone();
+            if products.contains_key(&material.type_id)
+                && entries.contains_key(&material.type_id)
+            {
+                let mut entry = entries
+                    .get(&material.type_id)
+                    .unwrap()
+                    .clone();
                 entry.needed = material.quantity as f32;
                 components.push(entry);
             } else if !products.contains_key(&material.type_id) {
                 let dependency = Dependency {
-                    product_type_id: material.type_id,
+                    product_type_id:   material.type_id,
                     blueprint_type_id: 0.into(),
-                    time: 0f32,
-                    needed: material.quantity as f32,
-                    produces: 0,
-                    item: get_item(
+                    time:              0.0f32,
+                    needed:            material.quantity as f32,
+                    produces:          0,
+                    item:              get_item(
                         material.type_id,
                         category_ids,
                         group_ids,
                         type_ids,
                         repackaged,
                     ),
-                    typ: BlueprintTyp::Material,
-                    components: Vec::new(),
+                    typ:               BlueprintTyp::Material,
+                    components:        Vec::new(),
                 };
                 components.push(dependency);
             } else {
@@ -130,7 +151,11 @@ async fn insert_into_database(
             }
         }
 
-        if components.len() == pentry.materials().len() {
+        if components.len()
+            == pentry
+                .materials()
+                .len()
+        {
             dependency.components = components;
             entries.insert(*product_type_id, dependency);
         } else {
@@ -140,30 +165,40 @@ async fn insert_into_database(
 
     while let Some(pentry) = queue.pop_front() {
         let mut entry = pentry;
-        let materials = products.get(&entry.product_type_id).unwrap().materials();
+        let materials = products
+            .get(&entry.product_type_id)
+            .unwrap()
+            .materials();
 
         let mut components = Vec::new();
         for material in materials.iter() {
-            if products.contains_key(&material.type_id) && entries.contains_key(&material.type_id) {
-                let mut entry = entries.get(&material.type_id).unwrap().clone();
+            if products.contains_key(&material.type_id)
+                && entries.contains_key(&material.type_id)
+            {
+                let mut entry = entries
+                    .get(&material.type_id)
+                    .unwrap()
+                    .clone();
                 entry.needed = material.quantity as f32;
                 components.push(entry);
             } else if !products.contains_key(&material.type_id) {
                 let dependency = Dependency {
-                    product_type_id: material.type_id.into(),
+                    product_type_id:   material
+                        .type_id
+                        .into(),
                     blueprint_type_id: 0.into(),
-                    time: 0f32,
-                    needed: material.quantity as f32,
-                    produces: 0,
-                    item: get_item(
+                    time:              0.0f32,
+                    needed:            material.quantity as f32,
+                    produces:          0,
+                    item:              get_item(
                         material.type_id,
                         category_ids,
                         group_ids,
                         type_ids,
                         repackaged,
                     ),
-                    typ: BlueprintTyp::Material,
-                    components: Vec::new(),
+                    typ:               BlueprintTyp::Material,
+                    components:        Vec::new(),
                 };
                 components.push(dependency);
             } else {
@@ -181,19 +216,25 @@ async fn insert_into_database(
     }
 
     tracing::debug!("Clearing blueprint_json database");
-    sqlx::query!("
+    sqlx::query!(
+        "
             DELETE FROM blueprint_json
-        ")
-        .execute(pool)
-        .await
-        .map_err(Error::DeleteBlueprintJson)?;
+        "
+    )
+    .execute(pool)
+    .await
+    .map_err(EveSdeParserError::DeleteBlueprintJson)?;
     tracing::debug!("Clearing blueprint_json database done");
 
     // joining this into a transaction might cause an OOM on the db server
     // to keep it save, do one at a time
     tracing::debug!("Inserting data");
-    for (index, (_, entry)) in entries.iter().enumerate() {
-        sqlx::query!("
+    for (index, (_, entry)) in entries
+        .iter()
+        .enumerate()
+    {
+        sqlx::query!(
+            "
                 INSERT INTO blueprint_json
                 (
                     blueprint_type_id,
@@ -201,49 +242,47 @@ async fn insert_into_database(
                     data
                 ) VALUES ($1, $2, $3)
             ",
-                &*entry.blueprint_type_id,
-                &*entry.product_type_id,
-                &serde_json::to_value(&entry).unwrap(),
-            )
-            .execute(pool)
-            .await
-            .map_err(Error::InsertBlueprintJson)?;
-        tracing::info!("[{:4} / {:4}] Blueprint json finished", index, entries.len() - 1);
+            &*entry.blueprint_type_id,
+            &*entry.product_type_id,
+            &serde_json::to_value(&entry).unwrap(),
+        )
+        .execute(pool)
+        .await
+        .map_err(EveSdeParserError::InsertBlueprintJson)?;
+        tracing::info!(
+            "[{:4} / {:4}] Blueprint json finished",
+            index,
+            entries.len() - 1
+        );
     }
     tracing::debug!("Inserting data done");
 
     Ok(())
 }
 
-/*#[derive(Clone, Debug, Serialize)]
-struct Dependency {
-    blueprint_type_id: TypeId,
-    blueprint_name: String,
-    product_type_id: TypeId,
-    time: u32,
-    quantity: u32,
-    produces: u32,
-    item: Item,
-    typ: DependencyType,
-    components: Vec<Dependency>,
-}
+// #[derive(Clone, Debug, Serialize)]
+// struct Dependency {
+// blueprint_type_id: TypeId,
+// blueprint_name: String,
+// product_type_id: TypeId,
+// time: u32,
+// quantity: u32,
+// produces: u32,
+// item: Item,
+// typ: DependencyType,
+// components: Vec<Dependency>,
+// }
+//
+// #[derive(Clone, Debug, Serialize)]
+// struct DependencyInfo {
+// type_id: TypeId,
+// category_id: u32,
+// group_id: u32,
+// meta_group_id: Option<i32>,
+// name: String,
+// }
 
-#[derive(Clone, Debug, Serialize)]
-struct DependencyInfo {
-    type_id: TypeId,
-    category_id: u32,
-    group_id: u32,
-    meta_group_id: Option<i32>,
-    name: String,
-}
-*/
-
-#[derive
-(
-    Copy, Clone, Debug,
-    Eq, PartialEq,
-    Serialize,
-)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Serialize)]
 pub enum BlueprintTyp {
     Blueprint,
     Reaction,

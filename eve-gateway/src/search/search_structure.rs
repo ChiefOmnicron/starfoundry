@@ -3,7 +3,7 @@ use axum::extract::{Query, State};
 use axum::response::IntoResponse;
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
-use starfoundry_lib_gateway::ExtractIdentity;
+use starfoundry_gateway::ExtractIdentity;
 use utoipa::IntoParams;
 
 use crate::api_docs::{BadRequest, InternalServerError, Unauthorized};
@@ -21,7 +21,6 @@ const SCOPE: &str = "esi-search.search_structures.v1";
 /// ---
 ///
 /// Searches for the given string and category
-///
 #[utoipa::path(
     get,
     path = "/structure",
@@ -49,7 +48,11 @@ pub async fn api(
     State(state): State<AppState>,
     Query(search_param): Query<SearchParam>,
 ) -> Result<impl IntoResponse> {
-    if search_param.search.len() < 3 {
+    if search_param
+        .search
+        .len()
+        < 3
+    {
         return Err(SearchError::TooShort);
     }
 
@@ -71,7 +74,7 @@ pub async fn api(
     #[derive(Serialize)]
     struct Query {
         categories: String,
-        search: String,
+        search:     String,
     }
 
     let path = format!("latest/characters/{}/search", identity.character_id);
@@ -80,7 +83,7 @@ pub async fn api(
             &path,
             &Query {
                 categories: "structure".into(),
-                search: search_param.search,
+                search:     search_param.search,
             },
         )
         .await?;
@@ -93,15 +96,15 @@ pub async fn api(
             StatusCode::OK,
             Json(ids),
         )
-        .into_response());
+            .into_response());
     }
 
     Ok((StatusCode::OK, Json(ids)).into_response())
 }
 
-/// The EVE-API returns some unfavorable data types, always using them will cause
-/// more issues, so this type is a wrapper type to properly parse the EVE-API result
-///
+/// The EVE-API returns some unfavorable data types, always using them will
+/// cause more issues, so this type is a wrapper type to properly parse the
+/// EVE-API result
 #[derive(Debug, Deserialize, IntoParams)]
 pub struct SearchParam {
     pub search: String,

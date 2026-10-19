@@ -1,39 +1,38 @@
-use axum::extract::State;
-use axum::http::{HeaderMap, StatusCode};
-use axum::http::header::HOST;
 use axum::Json;
+use axum::extract::State;
+use axum::http::header::HOST;
+use axum::http::{HeaderMap, StatusCode};
 use axum::response::IntoResponse;
+use starfoundry_gateway::LoginRedirect;
 use starfoundry_lib_eve_client::EveApiClient;
-use starfoundry_lib_eve_gateway::LoginRedirect;
 
 use crate::api_docs::{BadRequest, InternalServerError};
 use crate::auth::error::{AuthError, Result};
 use crate::state::AppState;
 
 /// Login Main
-/// 
+///
 /// - Alternative route: `/latest/auth/login`
 /// - Alternative route: `/v1/auth/login`
-/// 
+///
 /// ---
-/// 
+///
 /// Logs in a new main character.
 /// For alt characters or corporations the endpoints `/login/character` or
 /// `/login/corporation` should be used.
-/// 
-/// 
+///
+///
 /// The `HOST` header from the requester MUST match a host in the config file,
 /// otherwise an error will be returned.
 /// The API will return a `BAD_REQUEST` in that case, without giving further
 /// information.
 /// The service logs will contain more information.
-/// 
+///
 /// It will return a redirect to the EVE-SSO.
 /// The requester should follow the redirect.
-/// 
+///
 /// After a successful login, the user will be redirect to the `/callback` route
 /// to complete the login.
-/// 
 #[utoipa::path(
     get,
     path = "/login",
@@ -54,45 +53,49 @@ pub async fn login(
     header: HeaderMap,
 ) -> Result<impl IntoResponse> {
     let host = if let Some(x) = header.get(HOST) {
-        x.to_str().unwrap_or_default()
+        x.to_str()
+            .unwrap_or_default()
     } else {
         tracing::error!("{HOST} header not present");
-        return Ok((
-            StatusCode::BAD_REQUEST,
-        ).into_response())
+        return Ok((StatusCode::BAD_REQUEST,).into_response())
     };
 
-    let domain = if let Some(x) = state.auth_domains.get(host) {
+    let domain = if let Some(x) = state
+        .auth_domains
+        .get(host)
+    {
         x
     } else {
         tracing::error!("'{host}' is not in the list of valid domains");
-        return Ok((
-            StatusCode::BAD_REQUEST,
-        ).into_response())
+        return Ok((StatusCode::BAD_REQUEST,).into_response())
     };
 
-    let token = sqlx::query!("
+    let token = sqlx::query!(
+        "
             INSERT INTO login_attempt (domain, credential_type)
             VALUES ($1, 'CHARACTER')
             RETURNING token
         ",
-            host,
-        )
-        .fetch_one(&state.postgres)
-        .await
-        .map_err(AuthError::InsertLoginAttempt)?
-        .token;
+        host,
+    )
+    .fetch_one(&state.postgres)
+    .await
+    .map_err(AuthError::InsertLoginAttempt)?
+    .token;
 
     let url = EveApiClient::auth_uri(
-            &token.to_string(),
-            &domain.character_scopes.join(" "),
-        )?
-        .to_string();
+        &token.to_string(),
+        &domain
+            .character_scopes
+            .join(" "),
+    )?
+    .to_string();
 
     Ok((
         StatusCode::OK,
         Json(LoginRedirect {
             url,
-        })
-    ).into_response())
+        }),
+    )
+        .into_response())
 }

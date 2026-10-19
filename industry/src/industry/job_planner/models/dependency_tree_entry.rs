@@ -1,11 +1,12 @@
-use serde::Serialize;
-use starfoundry_lib_eve_gateway::Item;
-use starfoundry_lib_industry::structure::Structure;
-use starfoundry_lib_types::TypeId;
 use std::collections::HashMap;
+
+use serde::Serialize;
+use starfoundry_eve_gateway::asset::Item;
+use starfoundry_lib_types::TypeId;
 
 use super::{Bonus, DependencyBuildCost};
 use crate::industry::job_planner::models::BlueprintTyp;
+use crate::structure::Structure;
 
 #[derive(Clone, Debug, Serialize)]
 pub struct DependencyTreeEntry {

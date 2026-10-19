@@ -2,22 +2,186 @@ mod error;
 mod search_all;
 mod search_structure;
 
+use serde::{Deserialize, Serialize};
+use starfoundry_gateway::ApiClient;
+use utoipa::ToSchema;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
 
 pub use self::error::*;
 pub use self::search_all::*;
-
+use crate::EveGatewayError;
 use crate::state::AppState;
 
 /// Exposes all routes that are under `/structures`
 pub fn routes() -> OpenApiRouter<AppState> {
-    let fetch = OpenApiRouter::new()
-        .routes(routes!(search_all::api));
-    let fetch_structure = OpenApiRouter::new()
-        .routes(routes!(search_structure::api));
+    let fetch = OpenApiRouter::new().routes(routes!(search_all::api));
+    let fetch_structure =
+        OpenApiRouter::new().routes(routes!(search_structure::api));
 
     OpenApiRouter::new()
         .merge(fetch)
         .merge(fetch_structure)
+}
+
+/// One of:
+/// - agent
+/// - alliance
+/// - character
+/// - constellation
+/// - corporation
+/// - faction
+/// - inventory_type
+/// - region
+/// - solar_system
+/// - station
+/// - structure
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
+#[schema(
+    example = json!([])
+)]
+pub struct SearchResult(pub Vec<i64>);
+
+pub trait EveGatewayApiClientSearch: ApiClient {
+    #[allow(async_fn_in_trait)]
+    async fn in_game_search<S: Into<String>>(
+        &self,
+        category: SearchCategory,
+        search: S,
+    ) -> Result<SearchResult> {
+        #[derive(Debug, Serialize)]
+        struct Query {
+            categories: String,
+            search:     String,
+        }
+
+        let category_str: String = category
+            .clone()
+            .into();
+        let query = &Query {
+            categories: category_str,
+            search:     search.into(),
+        };
+
+        self.fetch("/search", query)
+            .await
+            .map_err(Into::into)
+            .map(|x: EveSearchResult| {
+                let result = match category {
+                    SearchCategory::Agent => x.agent,
+                    SearchCategory::Alliance => x.alliance,
+                    SearchCategory::Character => x.character,
+                    SearchCategory::Constellation => x.constellation,
+                    SearchCategory::Corporation => x.corporation,
+                    SearchCategory::Faction => x.faction,
+                    SearchCategory::InventoryType => x.inventory_type,
+                    SearchCategory::Region => x.region,
+                    SearchCategory::SolarSystem => x.solar_system,
+                    SearchCategory::Station => x.station,
+                    SearchCategory::Structure => x.structure,
+                };
+                SearchResult(result)
+            })
+    }
+
+    #[allow(async_fn_in_trait)]
+    async fn search_structure<S: Into<String>>(
+        &self,
+        search: S,
+    ) -> Result<Vec<i64>> {
+        #[derive(Debug, Serialize)]
+        struct Query {
+            search: String,
+        }
+
+        let query = &Query {
+            search: search.into(),
+        };
+
+        self.fetch("/search/structure", query)
+            .await
+            .map_err(Into::into)
+    }
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all_fields = "lowercase")]
+pub enum SearchCategory {
+    Agent,
+    Alliance,
+    Character,
+    Constellation,
+    Corporation,
+    Faction,
+    InventoryType,
+    Region,
+    SolarSystem,
+    Station,
+    Structure,
+}
+
+impl TryFrom<String> for SearchCategory {
+    type Error = EveGatewayError;
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        match value.as_ref() {
+            "agent" => Ok(Self::Agent),
+            "alliance" => Ok(Self::Alliance),
+            "character" => Ok(Self::Character),
+            "constellation" => Ok(Self::Constellation),
+            "corporation" => Ok(Self::Corporation),
+            "faction" => Ok(Self::Faction),
+            "inventory_type" => Ok(Self::InventoryType),
+            "region" => Ok(Self::Region),
+            "solar_system" => Ok(Self::SolarSystem),
+            "station" => Ok(Self::Station),
+            "structure" => Ok(Self::Structure),
+            _ => Err(EveGatewayError::InvalidSearchCategory(value)),
+        }
+    }
+}
+
+impl From<SearchCategory> for String {
+    fn from(value: SearchCategory) -> Self {
+        match value {
+            SearchCategory::Agent => "agent",
+            SearchCategory::Alliance => "alliance",
+            SearchCategory::Character => "character",
+            SearchCategory::Constellation => "constellation",
+            SearchCategory::Corporation => "corporation",
+            SearchCategory::Faction => "faction",
+            SearchCategory::InventoryType => "inventory_type",
+            SearchCategory::Region => "region",
+            SearchCategory::SolarSystem => "solar_system",
+            SearchCategory::Station => "station",
+            SearchCategory::Structure => "structure",
+        }
+        .into()
+    }
+}
+
+#[derive(Default, Deserialize)]
+struct EveSearchResult {
+    #[serde(default)]
+    agent:          Vec<i64>,
+    #[serde(default)]
+    alliance:       Vec<i64>,
+    #[serde(default)]
+    character:      Vec<i64>,
+    #[serde(default)]
+    constellation:  Vec<i64>,
+    #[serde(default)]
+    corporation:    Vec<i64>,
+    #[serde(default)]
+    faction:        Vec<i64>,
+    #[serde(default)]
+    inventory_type: Vec<i64>,
+    #[serde(default)]
+    region:         Vec<i64>,
+    #[serde(default)]
+    solar_system:   Vec<i64>,
+    #[serde(default)]
+    station:        Vec<i64>,
+    #[serde(default)]
+    structure:      Vec<i64>,
 }

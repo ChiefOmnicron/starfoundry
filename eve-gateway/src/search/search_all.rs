@@ -1,9 +1,9 @@
-use axum::extract::{Query, State};
 use axum::Json;
+use axum::extract::{Query, State};
 use axum::response::IntoResponse;
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
-use starfoundry_lib_gateway::ExtractIdentity;
+use starfoundry_gateway::ExtractIdentity;
 use utoipa::{IntoParams, ToSchema};
 
 use crate::api_docs::{BadRequest, InternalServerError, Unauthorized};
@@ -14,14 +14,13 @@ use crate::utils::api_client_auth;
 const SCOPE: &str = "esi-search.search_structures.v1";
 
 /// Search
-/// 
+///
 /// - Alternative route: `/latest/search`
 /// - Alternative route: `/v1/search`
-/// 
+///
 /// ---
-/// 
+///
 /// Searches for the given string and category
-/// 
 #[utoipa::path(
     get,
     path = "/",
@@ -46,34 +45,31 @@ const SCOPE: &str = "esi-search.search_structures.v1";
     ),
 )]
 pub async fn api(
-    identity:            ExtractIdentity,
-    State(state):        State<AppState>,
+    identity: ExtractIdentity,
+    State(state): State<AppState>,
     Query(search_param): Query<SearchParam>,
 ) -> Result<impl IntoResponse> {
-    if search_param.search.len() < 3 {
+    if search_param
+        .search
+        .len()
+        < 3
+    {
         return Err(SearchError::TooShort);
     }
 
     let api_client = api_client_auth(
-            &state.postgres,
-            state.eve_api_metric,
-            identity.host()?,
-            identity.character_id,
-            vec![
-                SCOPE.into(),
-            ],
-        )
-        .await?;
+        &state.postgres,
+        state.eve_api_metric,
+        identity.host()?,
+        identity.character_id,
+        vec![SCOPE.into()],
+    )
+    .await?;
 
     let api_client = if let Some(x) = api_client {
         x
     } else {
-        return Ok(
-            (
-                StatusCode::UNAUTHORIZED,
-            )
-            .into_response()
-        )
+        return Ok((StatusCode::UNAUTHORIZED,).into_response())
     };
 
     #[derive(Serialize)]
@@ -87,9 +83,11 @@ pub async fn api(
         .fetch_auth::<_, EveSearchResult>(
             &path,
             &Query {
-                categories: search_param.categories.clone(),
+                categories: search_param
+                    .categories
+                    .clone(),
                 search:     search_param.search,
-            }
+            },
         )
         .await?;
     let mut ids = Vec::new();
@@ -98,37 +96,22 @@ pub async fn api(
     ids.extend(search_data.character);
 
     if ids.is_empty() {
-        return Ok(
-            (
-                StatusCode::NO_CONTENT,
-                Json(ids),
-            )
-            .into_response()
-        )
+        return Ok((StatusCode::NO_CONTENT, Json(ids)).into_response())
     }
 
     let entries = api_client
-        .post::<Vec<i64>, Vec<IdToName>>(
-            "/universe/names",
-            ids,
-        )
+        .post::<Vec<i64>, Vec<IdToName>>("/universe/names", ids)
         .await?;
 
-    Ok(
-        (
-            StatusCode::OK,
-            Json(entries),
-        )
-        .into_response()
-    )
+    Ok((StatusCode::OK, Json(entries)).into_response())
 }
 
-/// The EVE-API returns some unfavorable data types, always using them will cause
-/// more issues, so this type is a wrapper type to properly parse the EVE-API result
-/// 
+/// The EVE-API returns some unfavorable data types, always using them will
+/// cause more issues, so this type is a wrapper type to properly parse the
+/// EVE-API result
 #[derive(Debug, Deserialize, IntoParams)]
 pub struct SearchParam {
-    pub search:     String,
+    pub search: String,
 
     #[param(
         default = json!("alliance,character,corporation"),
@@ -140,7 +123,8 @@ pub struct SearchParam {
 #[derive(Debug, Deserialize, Serialize, ToSchema)]
 pub struct IdToName {
     pub id:       i64,
-    /// Allowed values: alliance, character, constellation, corporation, inventory_type, region, solar_system, station, faction
+    /// Allowed values: alliance, character, constellation, corporation,
+    /// inventory_type, region, solar_system, station, faction
     pub category: String,
     pub name:     String,
 }
@@ -148,9 +132,9 @@ pub struct IdToName {
 #[derive(Default, Deserialize)]
 struct EveSearchResult {
     #[serde(default)]
-    alliance:       Vec<i64>,
+    alliance:    Vec<i64>,
     #[serde(default)]
-    character:      Vec<i64>,
+    character:   Vec<i64>,
     #[serde(default)]
-    corporation:    Vec<i64>,
+    corporation: Vec<i64>,
 }

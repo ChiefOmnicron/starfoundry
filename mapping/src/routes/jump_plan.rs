@@ -1,26 +1,27 @@
+use std::collections::HashMap;
+
+use axum::Json;
 use axum::extract::State;
 use axum::http::StatusCode;
-use axum::Json;
 use axum::response::IntoResponse;
 use pathfinding::directed::dijkstra::{dijkstra, dijkstra_all};
+use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-use starfoundry_lib_mapping::{CreateJumpPlan, JumpPlanEntry};
-use std::collections::HashMap;
 use starfoundry_lib_types::SystemId;
+use utoipa::ToSchema;
 
 use crate::api_docs::{InternalServerError, NotFound};
 use crate::routes::error::Result;
 use crate::state::AppState;
 
 /// Fetch Route
-/// 
+///
 /// - Alternative route: `/latest/routes/jump-plans`
 /// - Alternative route: `/v1/routes/jump-plans`
-/// 
+///
 /// ---
-/// 
+///
 /// Plans a route based on the given information
-/// 
 #[utoipa::path(
     get,
     path = "/jump-plans",
@@ -36,22 +37,22 @@ use crate::state::AppState;
     ),
 )]
 pub async fn api(
-    State(state):   State<AppState>,
-    Json(body):     Json<CreateJumpPlan>,
+    State(state): State<AppState>,
+    Json(body): Json<CreateJumpPlan>,
 ) -> Result<impl IntoResponse> {
-    Ok((
-        StatusCode::OK,
-    ))
+    Ok((StatusCode::OK,))
 }
 
 pub async fn calculate_jump_plan(
-    pool:       &PgPool,
-    jump_plan:  CreateJumpPlan,
+    pool: &PgPool,
+    jump_plan: CreateJumpPlan,
 ) -> Result<Vec<JumpPlanEntry>> {
     type SystemIdDijkstra = i32;
 
-    let mut all_systems: HashMap<SystemId, Vec<SystemDistanceTmp>> = HashMap::new();
-    let systems = sqlx::query!("
+    let mut all_systems: HashMap<SystemId, Vec<SystemDistanceTmp>> =
+        HashMap::new();
+    let systems = sqlx::query!(
+        "
             SELECT
                 system_start,
                 system_end,
@@ -60,33 +61,44 @@ pub async fn calculate_jump_plan(
             WHERE distance_ly <= $1
             AND NOT (system_start = ANY($2))
         ",
-            jump_plan.max_distance_ly,
-            &jump_plan.blacklist_system_ids.iter().map(|x| **x).collect::<Vec<_>>(),
-        )
-        .fetch_all(pool)
-        .await
-        .unwrap();
+        jump_plan.max_distance_ly,
+        &jump_plan
+            .blacklist_system_ids
+            .iter()
+            .map(|x| **x)
+            .collect::<Vec<_>>(),
+    )
+    .fetch_all(pool)
+    .await
+    .unwrap();
 
     // TODO: check if a structure limit is set
     let systems = if true {
-        let filtered_systems = sqlx::query!("
+        let filtered_systems = sqlx::query!(
+            "
                 SELECT system_id
                 FROM structure
                 WHERE system_id = ANY($1)
                 --AND type_id = ANY(ARRAY[35834, 35833])
                 AND type_id = ANY(ARRAY[35834])
             ",
-                &systems.iter().map(|x| x.system_start).collect::<Vec<_>>(),
-            )
-            .fetch_all(pool)
-            .await
-            .unwrap()
-            .into_iter()
-            .map(|x| x.system_id)
-            .collect::<Vec<_>>();
+            &systems
+                .iter()
+                .map(|x| x.system_start)
+                .collect::<Vec<_>>(),
+        )
+        .fetch_all(pool)
+        .await
+        .unwrap()
+        .into_iter()
+        .map(|x| x.system_id)
+        .collect::<Vec<_>>();
         systems
             .into_iter()
-            .filter(|x| filtered_systems.contains(&x.system_start) && filtered_systems.contains(&x.system_end))
+            .filter(|x| {
+                filtered_systems.contains(&x.system_start)
+                    && filtered_systems.contains(&x.system_end)
+            })
             .collect::<Vec<_>>()
     } else {
         systems
@@ -94,10 +106,12 @@ pub async fn calculate_jump_plan(
 
     systems
         .into_iter()
-        .map(|x| SystemDistanceTmp {
-            distance_ly: (x.distance_ly * 10_000f32).ceil() as u32,
-            system_start: SystemId(x.system_start),
-            system_end: SystemId(x.system_end),
+        .map(|x| {
+            SystemDistanceTmp {
+                distance_ly:  (x.distance_ly * 10_000.0f32).ceil() as u32,
+                system_start: SystemId(x.system_start),
+                system_end:   SystemId(x.system_end),
+            }
         })
         .for_each(|x| {
             all_systems
@@ -106,18 +120,27 @@ pub async fn calculate_jump_plan(
                 .or_insert(vec![x]);
         });
 
-    let mut graph: HashMap<SystemIdDijkstra, Vec<(SystemIdDijkstra, u32)>> = HashMap::new();
+    let mut graph: HashMap<SystemIdDijkstra, Vec<(SystemIdDijkstra, u32)>> =
+        HashMap::new();
     for (system, connections) in all_systems {
         for connection in connections {
             graph
                 .entry(*system)
-                .and_modify(|x: &mut Vec<(SystemIdDijkstra, u32)>| x.push((*connection.system_end, connection.distance_ly)))
-                .or_insert(vec![(*connection.system_end, connection.distance_ly)]);
+                .and_modify(|x: &mut Vec<(SystemIdDijkstra, u32)>| {
+                    x.push((*connection.system_end, connection.distance_ly))
+                })
+                .or_insert(vec![(
+                    *connection.system_end,
+                    connection.distance_ly,
+                )]);
         }
     }
 
     let successors = |node: &SystemIdDijkstra| -> Vec<(SystemIdDijkstra, u32)> {
-        graph.get(node).cloned().unwrap_or_default()
+        graph
+            .get(node)
+            .cloned()
+            .unwrap_or_default()
     };
 
     let mut start_system_id = jump_plan.system_start_id;
@@ -134,34 +157,28 @@ pub async fn calculate_jump_plan(
             continue;
         }
 
-        let result = dijkstra(
-            &*start_system_id,
-            successors,
-            |&node| node == *end_system_id
-        );
+        let result = dijkstra(&*start_system_id, successors, |&node| {
+            node == *end_system_id
+        });
 
-        match result {
-            Some((path, cost)) => {
-                dbg!(&cost);
-                let mut intermediate_start_system_id = start_system_id;
+        if let Some((path, cost)) = result {
+            let mut intermediate_start_system_id = start_system_id;
 
-                for system in path {
-                    if start_system_id == system.into() {
-                        intermediate_start_system_id = system.into();
-                        continue;
-                    }
-
-                    let jump = JumpPlanEntry {
-                        system_id_start:    intermediate_start_system_id,
-                        system_id_end:      system.into(),
-                        distance:           (cost / 10_000) as i32,
-                    };
-                    jumps.push(jump);
-
+            for system in path {
+                if start_system_id == system.into() {
                     intermediate_start_system_id = system.into();
+                    continue;
                 }
+
+                let jump = JumpPlanEntry {
+                    system_id_start: intermediate_start_system_id,
+                    system_id_end:   system.into(),
+                    distance:        (cost / 10_000) as i32,
+                };
+                jumps.push(jump);
+
+                intermediate_start_system_id = system.into();
             }
-            None => (),
         }
 
         start_system_id = end_system_id;
@@ -172,78 +189,80 @@ pub async fn calculate_jump_plan(
 
 #[derive(Clone, Debug)]
 struct SystemDistanceTmp {
-    distance_ly:    u32,
-    system_start:   SystemId,
-    system_end:     SystemId,
+    distance_ly:  u32,
+    system_start: SystemId,
+    system_end:   SystemId,
 }
 
 mod test {
     use sqlx::postgres::PgPoolOptions;
-    use starfoundry_lib_eve_gateway::{EveGatewayApiClientSystem, EveGatewayClient};
-use starfoundry_lib_mapping::CreateJumpPlan;
 
     use super::calculate_jump_plan;
+    use crate::routes::jump_plan::CreateJumpPlan;
 
     #[tokio::test]
     async fn route_test() {
         let pool = PgPoolOptions::new()
-            .connect("postgresql://postgres:postgres@localhost:5432/dev-sf-mapping")
-            .await
-            .unwrap();
-
-        let jump_plan_entries = calculate_jump_plan(
-                &pool,
-                CreateJumpPlan {
-                    intermediate_system_ids: vec![
-                    ],
-                    blacklist_system_ids: vec![
-                    ],
-                    max_distance_ly: 10f32,
-                    //system_end_id: 30001252.into(),
-                    system_end_id: 30000772.into(),
-                    system_start_id: 30004807.into(), // UALX
-                },
+            .connect(
+                "postgresql://postgres:postgres@localhost:5432/dev-sf-mapping",
             )
             .await
             .unwrap();
 
+        let jump_plan_entries = calculate_jump_plan(
+            &pool,
+            CreateJumpPlan {
+                intermediate_system_ids: vec![],
+                blacklist_system_ids:    vec![],
+                max_distance_ly:         10.0f32,
+                // system_end_id: 30001252.into(),
+                system_end_id:           30000772.into(),
+                system_start_id:         30004807.into(), // UALX
+            },
+        )
+        .await
+        .unwrap();
+
         let mut systems = Vec::new();
         for entry in jump_plan_entries {
-            let start_system = sqlx::query!("
+            let start_system = sqlx::query!(
+                "
                     SELECT system_name
                     FROM system_cache
                     WHERE system_id = $1
                 ",
-                    *entry.system_id_start,
-                )
-                .fetch_one(&pool)
-                .await
-                .unwrap()
-                .system_name;
-            let end_system = sqlx::query!("
+                *entry.system_id_start,
+            )
+            .fetch_one(&pool)
+            .await
+            .unwrap()
+            .system_name;
+            let end_system = sqlx::query!(
+                "
                     SELECT system_name
                     FROM system_cache
                     WHERE system_id = $1
                 ",
-                    *entry.system_id_end,
-                )
-                .fetch_one(&pool)
-                .await
-                .unwrap()
-                .system_name;
-            let distance_ly = sqlx::query!("
+                *entry.system_id_end,
+            )
+            .fetch_one(&pool)
+            .await
+            .unwrap()
+            .system_name;
+            let distance_ly = sqlx::query!(
+                "
                     SELECT distance_ly
                     FROM system_distance_cache
                     WHERE system_start = $1
                     AND system_end = $2
                 ",
-                    *entry.system_id_start,
-                    *entry.system_id_end,
-                )
-                .fetch_one(&pool)
-                .await
-                .unwrap()
-                .distance_ly;
+                *entry.system_id_start,
+                *entry.system_id_end,
+            )
+            .fetch_one(&pool)
+            .await
+            .unwrap()
+            .distance_ly;
 
             println!("{} -> {} ({})", start_system, end_system, distance_ly);
 
@@ -252,7 +271,29 @@ use starfoundry_lib_mapping::CreateJumpPlan;
         }
 
         systems.dedup();
-        println!("https://evemaps.dotlan.net/jump/Thanatos,544/{}", systems.join(":"));
+        println!(
+            "https://evemaps.dotlan.net/jump/Thanatos,544/{}",
+            systems.join(":")
+        );
         panic!("asdasd");
     }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
+pub struct JumpPlanEntry {
+    pub system_id_start: SystemId,
+    pub system_id_end:   SystemId,
+    pub distance:        i32,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
+pub struct CreateJumpPlan {
+    pub system_start_id: SystemId,
+    pub system_end_id:   SystemId,
+    pub max_distance_ly: f32,
+
+    #[serde(default)]
+    pub blacklist_system_ids:    Vec<SystemId>,
+    #[serde(default)]
+    pub intermediate_system_ids: Vec<SystemId>,
 }

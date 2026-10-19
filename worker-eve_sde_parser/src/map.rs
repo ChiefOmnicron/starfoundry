@@ -4,8 +4,8 @@ use std::io::Write;
 use starfoundry_lib_types::RegionId;
 
 use crate::parser::regions::Region;
-use crate::parser::systems::System;
 use crate::parser::stargate::Stargate;
+use crate::parser::systems::System;
 
 const BASE_SVG: &str = r#"<svg
     xmlns="http://www.w3.org/2000/svg"
@@ -29,14 +29,14 @@ const BASE_SVG: &str = r#"<svg
 </svg>"#;
 
 pub fn full_map(
-    systems:    Vec<System>,
-    stargates:  Vec<Stargate>,
-    regions:    Vec<Region>,
+    systems: Vec<System>,
+    stargates: Vec<Stargate>,
+    regions: Vec<Region>,
 ) {
-    let mut x_min = 0f64;
-    let mut x_max = 0f64;
-    let mut y_min = 0f64;
-    let mut y_max = 0f64;
+    let mut x_min = 0.0f64;
+    let mut x_max = 0.0f64;
+    let mut y_min = 0.0f64;
+    let mut y_max = 0.0f64;
 
     for system in systems.iter() {
         let position = if let Some(x) = &system.position_2d {
@@ -45,18 +45,26 @@ pub fn full_map(
             continue;
         };
 
-        x_min = position.x.min(x_min);
-        x_max = position.x.max(x_max);
+        x_min = position
+            .x
+            .min(x_min);
+        x_max = position
+            .x
+            .max(x_max);
 
-        y_min = position.y.min(y_min);
-        y_max = position.y.max(x_max);
+        y_min = position
+            .y
+            .min(y_min);
+        y_max = position
+            .y
+            .max(x_max);
     }
 
-    let image_size = 512f64;
+    let image_size = 512.0f64;
     let map_size = (x_max - x_min).min(y_max - y_min);
     dbg!(map_size);
 
-    let ignored_regions = vec![
+    let ignored_regions = [
         RegionId(10000004),
         RegionId(10000017),
         RegionId(10000018),
@@ -76,9 +84,7 @@ pub fn full_map(
 
             format!(
                 r#"<circle r="10" cx="{}" cy="{}" id="r{}" fill="red" />"#,
-                x_pos,
-                y_pos,
-                x.region_id,
+                x_pos, y_pos, x.region_id,
             )
         })
         .collect::<Vec<_>>()
@@ -86,22 +92,25 @@ pub fn full_map(
     let points_constellation = systems
         .iter()
         .filter(|x| !ignored_regions.contains(&x.region_id))
-        .filter(|x| x.position_2d.is_some())
+        .filter(|x| {
+            x.position_2d
+                .is_some()
+        })
         .map(|x| {
             // unwrap is safe as the filter above would have skipped this if
             // it's none
-            //let position = x.position_2d.as_ref().unwrap();
-            let position = x.position.clone();
+            // let position = x.position_2d.as_ref().unwrap();
+            let position = x
+                .position
+                .clone();
 
             let x_pos = (position.x - x_min) / map_size * image_size;
-            //let y_pos = (-(position.y - y_max)) / map_size * image_size;
+            // let y_pos = (-(position.y - y_max)) / map_size * image_size;
             let y_pos = (-(position.z - y_max)) / map_size * image_size;
 
             format!(
                 r#"<circle r="1" cx="{}" cy="{}" id="s{}" fill="blue" />"#,
-                x_pos,
-                y_pos,
-                x.system_id,
+                x_pos, y_pos, x.system_id,
             )
         })
         .collect::<Vec<_>>()
@@ -152,7 +161,8 @@ pub fn full_map(
         .replace("{REPLACE_ME_FOR_REGION}", &points_regions)
         .replace("{REPLACE_ME_FOR_CONSTELLATION}", &points_constellation)
         .replace("{REPLACE_ME_FOR_GATES}", &points_gates);
-    let html = format!(r##"<html>
+    let html = format!(
+        r##"<html>
     <body>
         {full_map}
     </body>
@@ -196,8 +206,10 @@ pub fn full_map(
             g.attr('transform', `translate(${{event.transform.x}}, ${{event.transform.y}}) scale(${{event.transform.k}})`);
         }};
     </script>
-</html>"##);
+</html>"##
+    );
 
     let mut file = File::create("index.html").unwrap();
-    file.write_all(html.as_bytes()).unwrap();
+    file.write_all(html.as_bytes())
+        .unwrap();
 }

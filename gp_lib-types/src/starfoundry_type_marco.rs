@@ -1,3 +1,5 @@
+#[rustfmt::skip]
+
 /// Generator for StarFoundry-Uuids
 ///
 /// Automatically derives a bunch of useful traits.
@@ -6,17 +8,24 @@
 /// [std::convert::Into].
 ///
 /// The generated new type struct is marked as an serde::transparent struct.
-///
 #[macro_export]
 macro_rules! starfoundry_uuid {
     ($name:ident, $name_str:tt) => {
         /// Uuid wrapper for tool specific ids. Mostly for type safety and
         /// code clarity
         #[derive(
-            Clone, Copy, Debug, Hash,
-            PartialEq, Eq, PartialOrd, Ord,
+            Clone,
+            Copy,
+            Debug,
+            Hash,
+            PartialEq,
+            Eq,
+            PartialOrd,
+            Ord,
+            sqlx::Type,
+            serde::Deserialize,
+            serde::Serialize,
         )]
-        #[derive(sqlx::Type, serde::Deserialize, serde::Serialize)]
         #[sqlx(transparent)]
         #[serde(transparent)]
         #[derive(utoipa::ToSchema, utoipa::IntoParams)]
@@ -58,7 +67,10 @@ macro_rules! starfoundry_uuid {
         }
 
         impl std::fmt::Display for $name {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            fn fmt(
+                &self,
+                f: &mut std::fmt::Formatter<'_>,
+            ) -> std::fmt::Result {
                 write!(f, "{}", self.0)
             }
         }

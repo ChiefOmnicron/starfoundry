@@ -2,22 +2,21 @@ use axum::Json;
 use axum::response::IntoResponse;
 use jsonwebtoken::{Algorithm, DecodingKey, TokenData, Validation};
 use jwk_kit::generator::ecdsa::extract_es256_coordinates;
-use jwk_kit::jwk::{create_jwks, JwkBuilder};
+use jwk_kit::jwk::{JwkBuilder, create_jwks};
 use reqwest::StatusCode;
 use serde::Deserialize;
-use starfoundry_lib_eve_gateway::CharacterInfo;
 use utoipa::ToSchema;
 
 use crate::api_docs::InternalServerError;
 use crate::auth::error::{AuthError, Result};
 use crate::auth::{issuer, public_ecdsa_key};
+use crate::character::CharacterInfo;
 
 /// JWKS
-/// 
+///
 /// ---
-/// 
+///
 /// Returns the public keys for validating the JWT signature.
-/// 
 #[utoipa::path(
     get,
     path = "/jwks",
@@ -37,7 +36,7 @@ pub async fn jwks_json() -> Result<impl IntoResponse> {
     let (x, y) = extract_es256_coordinates(&public_pem)
         .map_err(AuthError::EcPublicKeyExtractXY)?;
 
-        let ec_jwk = JwkBuilder::new("EC")
+    let ec_jwk = JwkBuilder::new("EC")
         .set_key_use("sig")
         .set_algorithm("ES256")
         .set_key_id("starfoundry-eve-gateway")
@@ -48,40 +47,28 @@ pub async fn jwks_json() -> Result<impl IntoResponse> {
         .map_err(AuthError::EcPublicKeyBuildResponse)?;
     let jwks = create_jwks(vec![ec_jwk]);
 
-    Ok((
-        StatusCode::OK,
-        Json(jwks),
-    ).into_response())
+    Ok((StatusCode::OK, Json(jwks)).into_response())
 }
 
 pub fn verify(
     access_token: &str,
-    audience:     Vec<String>,
+    audience: Vec<String>,
 ) -> Result<TokenData<Claims>> {
     let public_pem = public_ecdsa_key()?;
     let (x, y) = extract_es256_coordinates(&public_pem)
         .map_err(AuthError::EcPublicKeyExtractXY)?;
 
-    let decoding_key = DecodingKey::from_ec_components(
-            &x,
-            &y,
-        )
+    let decoding_key = DecodingKey::from_ec_components(&x, &y)
         .map_err(AuthError::InvalidES256Key)?;
 
     let mut validation = Validation::new(Algorithm::ES256);
     validation.set_required_spec_claims(&["exp", "iss", "aud", "kid"]);
-    validation.set_issuer(&[
-        issuer()?,
-    ]);
+    validation.set_issuer(&[issuer()?]);
     validation.set_audience(&audience);
     validation.validate_exp = true;
     validation.validate_aud = true;
 
-    jsonwebtoken::decode::<Claims>(
-            &access_token,
-            &decoding_key,
-            &validation
-        )
+    jsonwebtoken::decode::<Claims>(&access_token, &decoding_key, &validation)
         .map_err(AuthError::InvalidAccessToken)
 }
 
@@ -109,7 +96,7 @@ pub struct Claims {
     })
 )]
 struct Jwks {
-    keys: Vec<Jwk>
+    keys: Vec<Jwk>,
 }
 
 // only required as a type hint for utoipa

@@ -1,11 +1,9 @@
 use std::fs;
 use std::process::Command;
 
-use crate::{Error, FOLDER_INPUT, Result};
+use crate::{EveSdeParserError, FOLDER_INPUT, Result};
 
-pub async fn checksum(
-    directory: &str,
-) -> Result<String> {
+pub async fn checksum(directory: &str) -> Result<String> {
     download_file(
         directory,
         "https://eve-static-data-export.s3-eu-west-1.amazonaws.com/tranquility/checksum",
@@ -14,7 +12,8 @@ pub async fn checksum(
     .await?;
 
     let path = format!("{directory}/{FOLDER_INPUT}/checksum");
-    let checksum = fs::read_to_string(path.clone()).map_err(|e| Error::FileWriteError(e, path))?;
+    let checksum = fs::read_to_string(path.clone())
+        .map_err(|e| EveSdeParserError::FileWriteError(e, path))?;
     let sde_checksum: String = checksum
         .split("\n")
         .find(|x| x.ends_with("sde.zip"))
@@ -28,9 +27,7 @@ pub async fn checksum(
     Ok(sde_checksum)
 }
 
-pub async fn download_assets(
-    directory: &str,
-) -> Result<()> {
+pub async fn download_assets(directory: &str) -> Result<()> {
     let _ = fs::create_dir(format!("{directory}/{FOLDER_INPUT}"));
 
     download_file(
@@ -47,18 +44,15 @@ pub async fn download_assets(
     )
     .await?;
 
-    unzip(
-        directory,
-        "sde.zip",
-    )?;
+    unzip(directory, "sde.zip")?;
 
     Ok(())
 }
 
 async fn download_file(
     directory: &str,
-    url:       &str,
-    filename:  &str,
+    url: &str,
+    filename: &str,
 ) -> Result<()> {
     let out = format!("{directory}/{FOLDER_INPUT}/{filename}");
     let _ = fs::remove_file(&out);
@@ -67,14 +61,15 @@ async fn download_file(
         .await?
         .bytes()
         .await?;
-    fs::write(&out, sde).map_err(|e| Error::FileWriteError(e, out))?;
+    fs::write(&out, sde)
+        .map_err(|e| EveSdeParserError::FileWriteError(e, out))?;
 
     Ok(())
 }
 
 fn unzip(
     directory: &str,
-    filename:  &str,
+    filename: &str,
 ) -> Result<()> {
     let input = format!("{directory}/{FOLDER_INPUT}/{filename}");
     let out = format!("{directory}/{FOLDER_INPUT}");
@@ -83,5 +78,5 @@ fn unzip(
         .args([input, "-d".into(), out])
         .output()
         .map(drop)
-        .map_err(Error::UnzipError)
+        .map_err(EveSdeParserError::UnzipError)
 }

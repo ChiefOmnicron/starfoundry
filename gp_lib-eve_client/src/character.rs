@@ -13,18 +13,13 @@ impl EveApiClient {
     /// # Returns
     ///
     /// Character information
-    ///
     pub async fn character_info(
         &self,
         character_id: CharacterId,
     ) -> Result<Option<EveCharacterInfo>> {
-        let path = format!(
-            "latest/characters/{}/",
-            character_id,
-        );
+        let path = format!("latest/characters/{}/", character_id,);
 
-        self
-            .fetch(&path, &())
+        self.fetch(&path, &())
             .await
     }
 
@@ -37,7 +32,6 @@ impl EveApiClient {
     /// # Returns
     ///
     /// Alliance name
-    ///
     pub async fn alliance_name_by_id(
         &self,
         alliance_id: AllianceId,
@@ -49,13 +43,9 @@ impl EveApiClient {
             name: String,
         }
 
-        let path = format!(
-            "latest/alliances/{}",
-            alliance_id,
-        );
+        let path = format!("latest/alliances/{}", alliance_id,);
 
-        self
-            .fetch::<_, Option<Alliance>>(&path, &())
+        self.fetch::<_, Option<Alliance>>(&path, &())
             .await
             .map(|x| x.map(|y| y.name))
     }

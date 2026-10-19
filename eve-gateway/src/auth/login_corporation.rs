@@ -1,26 +1,25 @@
+use axum::Json;
 use axum::extract::State;
 use axum::http::{HeaderMap, StatusCode};
-use axum::Json;
 use axum::response::IntoResponse;
 use reqwest::header::HOST;
+use starfoundry_gateway::{ExtractIdentity, LoginRedirect};
 use starfoundry_lib_eve_client::EveApiClient;
-use starfoundry_lib_eve_gateway::LoginRedirect;
-use starfoundry_lib_gateway::ExtractIdentity;
 
 use crate::api_docs::{BadRequest, InternalServerError};
 use crate::auth::error::{AuthError, Result};
 use crate::state::AppState;
 
 /// Login Corporation
-/// 
+///
 /// Alternative route: `/latest/auth/login/corporation`
 /// Alternative route: `/v1/auth/login/corporation`
-/// 
+///
 /// ---
-/// 
+///
 /// Logs in a corporation.
-/// For main characters or alt characters the endpoints `/login` or `/login/character` should be used
-/// 
+/// For main characters or alt characters the endpoints `/login` or
+/// `/login/character` should be used
 #[utoipa::path(
     get,
     path = "/login/corporation",
@@ -37,54 +36,59 @@ use crate::state::AppState;
     ),
 )]
 pub async fn login_corporation(
-    identity:     ExtractIdentity,
+    identity: ExtractIdentity,
     State(state): State<AppState>,
-    header:       HeaderMap,
+    header: HeaderMap,
 ) -> Result<impl IntoResponse> {
     let host = if let Some(x) = header.get(HOST) {
-        x.to_str().unwrap_or_default()
+        x.to_str()
+            .unwrap_or_default()
     } else {
         tracing::error!("{HOST} header not present");
-        return Ok((
-            StatusCode::BAD_REQUEST,
-        ).into_response())
+        return Ok((StatusCode::BAD_REQUEST,).into_response())
     };
 
-    let domain = if let Some(x) = state.auth_domains.get(host) {
+    let domain = if let Some(x) = state
+        .auth_domains
+        .get(host)
+    {
         x
     } else {
         tracing::error!("'{host}' is not in the list of valid domains");
-        return Ok((
-            StatusCode::BAD_REQUEST,
-        ).into_response())
+        return Ok((StatusCode::BAD_REQUEST,).into_response())
     };
 
-    let token = sqlx::query!("
+    let token = sqlx::query!(
+        "
             INSERT INTO login_attempt (domain, character_id, credential_type)
             VALUES ($1, $2, 'CORPORATION')
             RETURNING token
         ",
-            host,
-            *identity.character_id,
-        )
-        .fetch_one(&state.postgres)
-        .await
-        .map_err(AuthError::InsertLoginAttempt)?
-        .token;
+        host,
+        *identity.character_id,
+    )
+    .fetch_one(&state.postgres)
+    .await
+    .map_err(AuthError::InsertLoginAttempt)?
+    .token;
 
-    let mut scopes = domain.character_scopes.clone();
-    scopes.extend(domain.corporation_scopes.clone());
+    let mut scopes = domain
+        .character_scopes
+        .clone();
+    scopes.extend(
+        domain
+            .corporation_scopes
+            .clone(),
+    );
 
-    let url = EveApiClient::auth_uri(
-            &token.to_string(),
-            &scopes.join(" "),
-        )?
+    let url = EveApiClient::auth_uri(&token.to_string(), &scopes.join(" "))?
         .to_string();
 
     Ok((
         StatusCode::OK,
         Json(LoginRedirect {
             url,
-        })
-    ).into_response())
+        }),
+    )
+        .into_response())
 }

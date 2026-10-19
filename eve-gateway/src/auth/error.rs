@@ -1,8 +1,8 @@
-use axum::http::StatusCode;
 use axum::Json;
+use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
+use starfoundry_gateway::boxed_from;
 use starfoundry_lib_eve_client::EveApiError;
-use starfoundry_lib_gateway::boxed_from;
 use thiserror::Error;
 
 use crate::api_docs::ErrorResponse;
@@ -88,7 +88,28 @@ impl IntoResponse for AuthError {
                             }
                         )
                     ).into_response(),
-                    _ => (
+                    EveApiError::EnvNotSet(_) |
+                    EveApiError::RateLimit(_) |
+                    EveApiError::NotFound(_) |
+                    EveApiError::NotModified(_) |
+                    EveApiError::Forbidden(_) |
+                    EveApiError::DataNotExpired(_) |
+                    EveApiError::ServiceUnavailable |
+                    EveApiError::Unauthorized(..) |
+                    EveApiError::TooManyRetries(..) |
+                    EveApiError::FetchEveJwtToken(_) |
+                    EveApiError::NoRs256Key |
+                    EveApiError::InvalidRS256Key |
+                    EveApiError::ParseEveJwtAccessToken(_) |
+                    EveApiError::OAuthParseCharacterId(_) |
+                    EveApiError::ReqwestError(..) |
+                    EveApiError::CouldNotConstructClient(_) |
+                    EveApiError::UrlParseError(_) |
+                    EveApiError::ClientNotAuthenticated |
+                    EveApiError::GetTokenError |
+                    EveApiError::GetTokenRequestError(_) |
+                    EveApiError::NoIdentity |
+                    EveApiError::JsonParseError(..) => (
                         StatusCode::BAD_REQUEST,
                         Json(
                             ErrorResponse {
@@ -113,7 +134,18 @@ impl IntoResponse for AuthError {
                 ).into_response()
             }
 
-            _ => {
+            Self::InsertRefreshToken(_) |
+            Self::InsertEveCredential(_) |
+            Self::InsertLoginAttempt(_) |
+            Self::InsertLoginHistory(_) |
+            Self::UpdateLogin(_) |
+            Self::CharacterError(_) |
+            Self::EcPublicKeyExtractXY(_) |
+            Self::EcPublicKeyBuildResponse(_) |
+            Self::LoadEcPem(_) |
+            Self::InvalidES256Key(_) |
+            Self::InvalidAccessToken(_) |
+            Self::EnvNotSet(_) => {
                 (
                     StatusCode::INTERNAL_SERVER_ERROR,
                     Json(

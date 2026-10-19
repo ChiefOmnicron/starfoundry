@@ -1,8 +1,10 @@
-use serde::Serialize;
-use starfoundry_lib_industry::industry::StockMinimal;
-use starfoundry_lib_types::TypeId;
-use std::{collections::HashMap, fs::File};
+use std::collections::HashMap;
+use std::fs::File;
 
+use serde::Serialize;
+use starfoundry_lib_types::TypeId;
+
+use crate::industry::StockMinimal;
 use crate::industry::job_planner::models::DependencyTreeEntry;
 use crate::industry::job_planner::project_config::ProjectConfig;
 
@@ -14,18 +16,17 @@ pub struct EngineResult {
 }
 
 impl EngineResult {
-    pub fn total_cost(
-        &self,
-    ) -> f32 {
-        self
-            .tree
+    pub fn total_cost(&self) -> f32 {
+        self.tree
             .values()
-            .map(|x| x.build_cost.total_job_cost)
+            .map(|x| {
+                x.build_cost
+                    .total_job_cost
+            })
             .sum()
     }
 
     /// Writes the current tree to disk
-    /// 
     #[allow(unused)]
     pub fn write_debug_file(&self) -> &Self {
         let mut file = File::create("FlatTreeDebug.json").unwrap();

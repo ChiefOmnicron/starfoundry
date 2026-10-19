@@ -1,43 +1,47 @@
-use reqwest::{Client, Response, StatusCode};
-use reqwest::header::{HeaderMap, HeaderValue};
-use serde::de::DeserializeOwned;
-use serde::Serialize;
-use starfoundry_lib_types::CharacterId;
 use std::collections::HashMap;
 use std::fmt::Debug;
 use std::ops::Deref;
 use std::sync::{Arc, Mutex};
+
+use reqwest::header::{HeaderMap, HeaderValue};
+use reqwest::{Client, Response, StatusCode};
+use serde::Serialize;
+use serde::de::DeserializeOwned;
+use starfoundry_lib_types::CharacterId;
 use url::Url;
 
-use crate::{EveApiError, EveJwtToken, EveApiClientMetric, Result};
+use crate::{EveApiClientMetric, EveApiError, EveJwtToken, Result};
 
 /// Required by the EVE-Api
-const COMPATIBILITY_DATE_HEADER: &str       = "X-Compatibility-Date";
-const COMPATIBILITY_DATE_VALUE: HeaderValue = HeaderValue::from_static("2020-01-01");
+const COMPATIBILITY_DATE_HEADER: &str = "X-Compatibility-Date";
+const COMPATIBILITY_DATE_VALUE: HeaderValue =
+    HeaderValue::from_static("2020-01-01");
 
-const ENV_API_URL: &str                     = "STARFOUNDRY_EVE_GATEWAY_EVE_API_URL";
-const ENV_OAUTH_AUTHORIZATION_URL: &str     = "STARFOUNDRY_EVE_GATEWAY_EVE_OAUTH_AUTHORIZATION_URL";
-const ENV_OAUTH_JWT_KEYS_URL: &str          = "STARFOUNDRY_EVE_GATEWAY_EVE_OAUTH_JWT_KEYS_URL";
-const ENV_OAUTH_TOKEN_URL: &str             = "STARFOUNDRY_EVE_GATEWAY_EVE_OAUTH_TOKEN_URL";
+const ENV_API_URL: &str = "STARFOUNDRY_EVE_GATEWAY_EVE_API_URL";
+const ENV_OAUTH_AUTHORIZATION_URL: &str =
+    "STARFOUNDRY_EVE_GATEWAY_EVE_OAUTH_AUTHORIZATION_URL";
+const ENV_OAUTH_JWT_KEYS_URL: &str =
+    "STARFOUNDRY_EVE_GATEWAY_EVE_OAUTH_JWT_KEYS_URL";
+const ENV_OAUTH_TOKEN_URL: &str = "STARFOUNDRY_EVE_GATEWAY_EVE_OAUTH_TOKEN_URL";
 
-const ENV_USER_AGENT: &str                  = "STARFOUNDRY_EVE_GATEWAY_USER_AGENT";
+const ENV_USER_AGENT: &str = "STARFOUNDRY_EVE_GATEWAY_USER_AGENT";
 
 /// Environment variable for setting the client id
-pub const ENV_CLIENT_ID: &str               = "STARFOUNDRY_EVE_GATEWAY_EVE_CLIENT_ID";
+pub const ENV_CLIENT_ID: &str = "STARFOUNDRY_EVE_GATEWAY_EVE_CLIENT_ID";
 /// Environment variable for setting the secret key
-pub const ENV_SECRET_KEY: &str              = "STARFOUNDRY_EVE_GATEWAY_EVE_SECRET_KEY";
+pub const ENV_SECRET_KEY: &str = "STARFOUNDRY_EVE_GATEWAY_EVE_SECRET_KEY";
 /// Environment variable for setting the callback
-pub const ENV_CALLBACK: &str                = "STARFOUNDRY_EVE_GATEWAY_EVE_CALLBACK";
+pub const ENV_CALLBACK: &str = "STARFOUNDRY_EVE_GATEWAY_EVE_CALLBACK";
 
 /// Client for communicating with the EVE-API.
 /// The client can either do unauthenticated requests or do them with an authed
 /// corporation or character.
-/// 
-/// If an authenticated client is constructed, only the refresh_token is required,
-/// an access token will be fetched as needed.
-/// 
+///
+/// If an authenticated client is constructed, only the refresh_token is
+/// required, an access token will be fetched as needed.
+///
 /// # Required ENV
-/// 
+///
 /// If not all required ENVs are set, an error will be returned.
 /// All values for the ENV can be found
 /// [here](https://developers.eveonline.com/applications)
@@ -45,33 +49,31 @@ pub const ENV_CALLBACK: &str                = "STARFOUNDRY_EVE_GATEWAY_EVE_CALLB
 /// * `EVE_CALLBACK`   -> Url to callback after authentication
 /// * `ÈVE_CLIENT_ID`  -> Client ID of the application
 /// * `EVE_SECRET_KEY` -> Secret key of the application
-/// 
 #[derive(Clone)]
 pub struct EveApiClient {
     /// Determines if the client is an authenticated client
-    authenticated:      Option<AuthenticatedClient>,
+    authenticated: Option<AuthenticatedClient>,
 
     /// Client for communicating with EVE
-    client:             Client,
+    client: Client,
 
     /// Token needed to get data that is behind auth
-    access_token:       Arc<Mutex<Option<String>>>,
+    access_token: Arc<Mutex<Option<String>>>,
 
-    metric:             Arc<EveApiClientMetric>,
+    metric: Arc<EveApiClientMetric>,
 }
 
 impl EveApiClient {
     /// Constructs a new [EveApiClient].
-    /// 
+    ///
     /// The instance will not be authenticated.
     /// Calling routes that require authentication with this client will result
     /// in an error.
-    /// 
+    ///
     /// # Errors
-    /// 
+    ///
     /// - If the reqwest Client cannot be constructed.
     /// - If the ENV '[ENV_CLIENT_ID]' is not set
-    /// 
     pub fn new(
         // TODO: remove them and put them into the proxy function
         metric: Arc<EveApiClientMetric>,
@@ -79,58 +81,54 @@ impl EveApiClient {
         let client = Self::client()?;
 
         Ok(Self {
-            client:        client,
-            access_token:  Arc::new(Mutex::new(None)),
+            client:       client,
+            access_token: Arc::new(Mutex::new(None)),
 
             authenticated: None,
 
-            metric:        metric,
+            metric: metric,
         })
     }
 
-    /// Constructs a new authenticated [EveApiClient] from a given refresh token.
-    /// The client will get an access_token if necessary of if an already
-    /// fetched one is expired.
-    /// 
+    /// Constructs a new authenticated [EveApiClient] from a given refresh
+    /// token. The client will get an access_token if necessary of if an
+    /// already fetched one is expired.
+    ///
     /// # Errors
-    /// 
+    ///
     /// - If the reqwest client cannot be constructed
-    /// 
     pub fn new_with_refresh_token(
-        metric:        Arc<EveApiClientMetric>,
-        character_id:  CharacterId,
+        metric: Arc<EveApiClientMetric>,
+        character_id: CharacterId,
         refresh_token: impl Into<String>,
     ) -> Result<Self> {
         let client = Self::client()?;
 
         Ok(Self {
-            client:         client,
+            client: client,
 
-            access_token:   Arc::new(Mutex::new(None)),
+            access_token: Arc::new(Mutex::new(None)),
 
-            authenticated:  Some(AuthenticatedClient {
+            authenticated: Some(AuthenticatedClient {
                 refresh_token: refresh_token.into(),
                 character_id,
             }),
 
-            metric:         metric,
+            metric: metric,
         })
     }
 
     /// Gets the initial access token.
     ///
     /// [More information](https://docs.esi.evetech.net/docs/sso/web_based_sso_flow.html)
-    /// 
+    ///
     /// # Errors
-    /// 
+    ///
     /// - If the retrieving of an `access_token` fails
     /// - If the ENV '[ENV_CLIENT_ID]' is not set
     /// - If the ENV '[ENV_SECRET_KEY]' is not set
     /// - If the ENV '[ENV_OAUTH_TOKEN_URL]' is not set
-    ///
-    pub async fn access_token(
-        code: &str,
-    ) -> Result<EveJwtToken> {
+    pub async fn access_token(code: &str) -> Result<EveJwtToken> {
         let mut map = HashMap::new();
         map.insert("grant_type", "authorization_code");
         map.insert("code", code);
@@ -139,22 +137,21 @@ impl EveApiClient {
     }
 
     /// Generates a url for authenticating a character against the EVE-API.
-    /// 
+    ///
     /// # Params
-    /// 
+    ///
     /// * `state` -> Unique key to allow to identify the user when he comes back
     ///   using the callback route
     /// * `scope` -> Required scope, must be a list of space separated entries
-    /// 
+    ///
     /// # Errors
-    /// 
+    ///
     /// - If the ENV '[ENV_CLIENT_ID]' is not set
     /// - If the ENV '[ENV_CALLBACK]' is not set
     /// - If the ENV '[ENV_OAUTH_AUTHORIZATION_URL]' is not set
-    /// 
     pub fn auth_uri(
         state: &str,
-        scope: &str
+        scope: &str,
     ) -> Result<Url> {
         let client_id = Self::client_id()?;
         let callback = Self::callback()?;
@@ -171,18 +168,17 @@ impl EveApiClient {
 
     /// Makes a single request to the given path and returns parses the result
     /// the given struct.
-    /// 
+    ///
     /// The response will be deserialized into the given model `T`.
-    /// 
+    ///
     /// # Errors
-    /// 
+    ///
     /// - Request fails
     /// - Parsing the response fails
-    /// 
     #[deprecated]
     pub async fn fetch<Q: Serialize, T>(
         &self,
-        path:  impl Into<String>,
+        path: impl Into<String>,
         query: &Q,
     ) -> Result<T>
     where
@@ -200,7 +196,10 @@ impl EveApiClient {
             return Ok(T::default());
         }
 
-        match response.text().await {
+        match response
+            .text()
+            .await
+        {
             Err(e) => {
                 tracing::error!("Error parsing json, {}", e);
                 Err(EveApiError::ReqwestError(e, api_url))
@@ -208,7 +207,7 @@ impl EveApiClient {
             Ok(x) => {
                 serde_json::from_str(&x)
                     .map_err(|e| EveApiError::JsonParseError(e, x, api_url))
-            }
+            },
         }
     }
 
@@ -227,11 +226,10 @@ impl EveApiClient {
     /// # Returns
     ///
     /// Parsed json data
-    ///
     #[deprecated]
     pub async fn fetch_auth<Q: Serialize, T>(
         &self,
-        path:  impl Into<String>,
+        path: impl Into<String>,
         query: &Q,
     ) -> Result<T>
     where
@@ -249,7 +247,10 @@ impl EveApiClient {
             return Ok(T::default());
         }
 
-        match response.text().await {
+        match response
+            .text()
+            .await
+        {
             Err(e) => {
                 tracing::error!("Error parsing json, {}", e);
                 Err(EveApiError::ReqwestError(e, api_url))
@@ -257,7 +258,7 @@ impl EveApiClient {
             Ok(x) => {
                 serde_json::from_str(&x)
                     .map_err(|e| EveApiError::JsonParseError(e, x, api_url))
-            }
+            },
         }
     }
 
@@ -276,7 +277,6 @@ impl EveApiClient {
     /// # Returns
     ///
     /// Vector of parsed json
-    ///
     #[deprecated]
     pub async fn fetch_page<T>(
         &self,
@@ -307,10 +307,7 @@ impl EveApiClient {
 
         for page in 2..=pages {
             let next_page = self
-                .send(
-                    api_url.clone(),
-                    &[("page", &page.to_string())],
-                )
+                .send(api_url.clone(), &[("page", &page.to_string())])
                 .await?;
 
             if !self.has_content(&next_page) {
@@ -342,8 +339,6 @@ impl EveApiClient {
     /// # Returns
     ///
     /// Vector of parsed json
-    ///
-    /// 
     #[deprecated]
     pub async fn fetch_page_auth<T>(
         &self,
@@ -374,10 +369,7 @@ impl EveApiClient {
 
         for page in 2..=pages {
             let next_page = self
-                .send_auth(
-                    api_url.clone(),
-                    &[("page", &page.to_string())],
-                )
+                .send_auth(api_url.clone(), &[("page", &page.to_string())])
                 .await?;
 
             if !self.has_content(&next_page) {
@@ -410,7 +402,6 @@ impl EveApiClient {
     /// # Returns
     ///
     /// Parsed json data
-    ///
     pub async fn post<D, T>(
         &self,
         path: impl Into<String>,
@@ -447,7 +438,6 @@ impl EveApiClient {
     /// # Returns
     ///
     /// Parsed json data
-    ///
     pub async fn delete<T>(
         &self,
         path: impl Into<String>,
@@ -488,15 +478,14 @@ impl EveApiClient {
     /// # Returns
     ///
     /// Response of the request, ready to work with
-    ///
     pub async fn send<Q: Serialize>(
         &self,
         request_uri: Url,
-        query:       &Q,
+        query: &Q,
     ) -> Result<Response> {
         let mut retry_counter = 0usize;
-        let mut last_status   = StatusCode::OK;
-        let mut last_text     = String::new();
+        let mut last_status = StatusCode::OK;
+        let mut last_text = String::new();
 
         loop {
             if retry_counter == 3 {
@@ -514,26 +503,42 @@ impl EveApiClient {
                 .query(query)
                 .send()
                 .await
-                .map_err(|x| EveApiError::ReqwestError(x, request_uri.clone()))?;
+                .map_err(|x| {
+                    EveApiError::ReqwestError(x, request_uri.clone())
+                })?;
 
-            if response.headers().get("X-Ratelimit-Group").is_some() {
-                let group = response.headers().get("X-Ratelimit-Group").unwrap().to_str().unwrap();
-                let remaining: i64 = response.headers().get("X-Ratelimit-Remaining").unwrap().to_str().unwrap().parse::<i64>().unwrap();
+            if response
+                .headers()
+                .get("X-Ratelimit-Group")
+                .is_some()
+            {
+                let group = response
+                    .headers()
+                    .get("X-Ratelimit-Group")
+                    .unwrap()
+                    .to_str()
+                    .unwrap();
+                let remaining: i64 = response
+                    .headers()
+                    .get("X-Ratelimit-Remaining")
+                    .unwrap()
+                    .to_str()
+                    .unwrap()
+                    .parse::<i64>()
+                    .unwrap();
 
-                self
-                    .metric
-                    .set_eve_rate_limit(
-                        group,
-                        None,
-                        remaining,
-                    );
+                self.metric
+                    .set_eve_rate_limit(group, None, remaining);
             }
 
-            self
-                .metric
+            self.metric
                 .increase_eve_status(
-                    response.status().to_string(),
-                    request_uri.clone().to_string(),
+                    response
+                        .status()
+                        .to_string(),
+                    request_uri
+                        .clone()
+                        .to_string(),
                 );
 
             match response.status() {
@@ -546,9 +551,11 @@ impl EveApiClient {
                 StatusCode::NOT_MODIFIED => {
                     return Err(EveApiError::NotModified(request_uri));
                 },
-                StatusCode::FORBIDDEN |
-                StatusCode::UNAUTHORIZED => {
-                    let content = response.text().await.unwrap_or_default();
+                StatusCode::FORBIDDEN | StatusCode::UNAUTHORIZED => {
+                    let content = response
+                        .text()
+                        .await
+                        .unwrap_or_default();
                     return Err(EveApiError::Unauthorized(request_uri, content));
                 },
                 StatusCode::BAD_GATEWAY => {
@@ -557,13 +564,13 @@ impl EveApiClient {
                 StatusCode::SERVICE_UNAVAILABLE => {
                     return Err(EveApiError::ServiceUnavailable);
                 },
-                _ => {}
+                _ => {},
             };
 
             let response_status = response.status();
             if !response_status.is_success() {
                 last_status = response_status;
-                last_text   = response
+                last_text = response
                     .text()
                     .await
                     .unwrap_or_default();
@@ -596,10 +603,7 @@ impl EveApiClient {
     /// # Errors
     ///
     /// - If the retrieving of an `access_token` fails
-    /// 
-    async fn get_access_token(
-        &self,
-    ) -> Result<String> {
+    async fn get_access_token(&self) -> Result<String> {
         let authenticated = if let Some(x) = &self.authenticated {
             x
         } else {
@@ -614,7 +618,14 @@ impl EveApiClient {
 
         #[allow(clippy::unwrap_used)]
         {
-            *self.access_token.lock().unwrap() = Some(token.access_token.clone());
+            *self
+                .access_token
+                .lock()
+                .unwrap() = Some(
+                token
+                    .access_token
+                    .clone(),
+            );
         }
 
         Ok(token.access_token)
@@ -641,27 +652,33 @@ impl EveApiClient {
     /// # Returns
     ///
     /// Response of the request, ready to work with
-    ///
     pub async fn send_auth<Q: Serialize>(
         &self,
         request_uri: Url,
-        query:       &Q,
+        query: &Q,
     ) -> Result<Response> {
         let access_token = {
             #[allow(clippy::unwrap_used)]
-            self.access_token.lock().unwrap().clone()
+            self.access_token
+                .lock()
+                .unwrap()
+                .clone()
         };
         let mut access_token = if access_token.is_none() {
-            self.get_access_token().await?;
+            self.get_access_token()
+                .await?;
             #[allow(clippy::unwrap_used)]
-            self.access_token.lock().unwrap().clone()
+            self.access_token
+                .lock()
+                .unwrap()
+                .clone()
         } else {
             access_token
         };
 
         let mut retry_counter = 0usize;
-        let mut last_status   = StatusCode::OK;
-        let mut last_text     = String::new();
+        let mut last_status = StatusCode::OK;
+        let mut last_text = String::new();
 
         loop {
             if retry_counter == 3 {
@@ -683,36 +700,52 @@ impl EveApiClient {
                 .bearer_auth(token)
                 .send()
                 .await
-                .map_err(|x| EveApiError::ReqwestError(x, request_uri.clone()))?;
+                .map_err(|x| {
+                    EveApiError::ReqwestError(x, request_uri.clone())
+                })?;
 
-            if response.headers().get("X-Ratelimit-Group").is_some() {
-                let group = response.headers().get("X-Ratelimit-Group").unwrap().to_str().unwrap();
-                let remaining: i64 = response.headers().get("X-Ratelimit-Remaining").unwrap().to_str().unwrap().parse::<i64>().unwrap();
+            if response
+                .headers()
+                .get("X-Ratelimit-Group")
+                .is_some()
+            {
+                let group = response
+                    .headers()
+                    .get("X-Ratelimit-Group")
+                    .unwrap()
+                    .to_str()
+                    .unwrap();
+                let remaining: i64 = response
+                    .headers()
+                    .get("X-Ratelimit-Remaining")
+                    .unwrap()
+                    .to_str()
+                    .unwrap()
+                    .parse::<i64>()
+                    .unwrap();
 
                 let character_id = if let Some(x) = self
                     .authenticated
                     .clone()
-                    .map(|x| x.character_id) {
-
+                    .map(|x| x.character_id)
+                {
                     x
                 } else {
                     CharacterId(0)
                 };
 
-                self
-                    .metric
-                    .set_eve_rate_limit(
-                        group,
-                        Some(character_id),
-                        remaining,
-                    );
+                self.metric
+                    .set_eve_rate_limit(group, Some(character_id), remaining);
             }
 
-            self
-                .metric
+            self.metric
                 .increase_eve_status(
-                    response.status().to_string(),
-                    request_uri.clone().to_string(),
+                    response
+                        .status()
+                        .to_string(),
+                    request_uri
+                        .clone()
+                        .to_string(),
                 );
 
             match response.status() {
@@ -730,13 +763,16 @@ impl EveApiClient {
                 },
                 StatusCode::UNAUTHORIZED => {
                     last_status = response.status();
-                    last_text   = response
+                    last_text = response
                         .text()
                         .await
                         .unwrap_or_default();
 
                     retry_counter += 1;
-                    access_token = Some(self.get_access_token().await?);
+                    access_token = Some(
+                        self.get_access_token()
+                            .await?,
+                    );
 
                     // Wait a second before trying again
                     std::thread::sleep(std::time::Duration::from_secs(1));
@@ -748,13 +784,13 @@ impl EveApiClient {
                 StatusCode::SERVICE_UNAVAILABLE => {
                     return Err(EveApiError::ServiceUnavailable);
                 },
-                _ => {}
+                _ => {},
             };
 
             let response_status = response.status();
             if !response_status.is_success() {
                 last_status = response_status;
-                last_text   = response
+                last_text = response
                     .text()
                     .await
                     .unwrap_or_default();
@@ -801,10 +837,9 @@ impl EveApiClient {
     /// # Returns
     ///
     /// Response of the request, ready to work with
-    ///
     async fn send_post<R>(
         &self,
-        data:        R,
+        data: R,
         request_uri: Url,
     ) -> Result<Response>
     where
@@ -812,19 +847,26 @@ impl EveApiClient {
     {
         let access_token = {
             #[allow(clippy::unwrap_used)]
-            self.access_token.lock().unwrap().clone()
+            self.access_token
+                .lock()
+                .unwrap()
+                .clone()
         };
         let access_token = if access_token.is_none() {
-            self.get_access_token().await?;
+            self.get_access_token()
+                .await?;
             #[allow(clippy::unwrap_used)]
-            self.access_token.lock().unwrap().clone()
+            self.access_token
+                .lock()
+                .unwrap()
+                .clone()
         } else {
             access_token
         };
 
         let mut retry_counter = 0usize;
-        let mut last_status   = StatusCode::OK;
-        let mut last_text     = String::new();
+        let mut last_status = StatusCode::OK;
+        let mut last_text = String::new();
 
         loop {
             if retry_counter == 3 {
@@ -846,13 +888,18 @@ impl EveApiClient {
                 .bearer_auth(token)
                 .send()
                 .await
-                .map_err(|x| EveApiError::ReqwestError(x, request_uri.clone()))?;
+                .map_err(|x| {
+                    EveApiError::ReqwestError(x, request_uri.clone())
+                })?;
 
-            self
-                .metric
+            self.metric
                 .increase_eve_status(
-                    response.status().to_string(),
-                    request_uri.clone().to_string(),
+                    response
+                        .status()
+                        .to_string(),
+                    request_uri
+                        .clone()
+                        .to_string(),
                 );
 
             match response.status() {
@@ -865,9 +912,11 @@ impl EveApiClient {
                 StatusCode::NOT_MODIFIED => {
                     return Err(EveApiError::NotModified(request_uri));
                 },
-                StatusCode::FORBIDDEN |
-                StatusCode::UNAUTHORIZED => {
-                    let content = response.text().await.unwrap_or_default();
+                StatusCode::FORBIDDEN | StatusCode::UNAUTHORIZED => {
+                    let content = response
+                        .text()
+                        .await
+                        .unwrap_or_default();
                     return Err(EveApiError::Unauthorized(request_uri, content));
                 },
                 StatusCode::BAD_GATEWAY => {
@@ -876,13 +925,13 @@ impl EveApiClient {
                 StatusCode::SERVICE_UNAVAILABLE => {
                     return Err(EveApiError::ServiceUnavailable);
                 },
-                _ => {}
+                _ => {},
             };
 
             let response_status = response.status();
             if !response_status.is_success() {
                 last_status = response.status();
-                last_text   = response
+                last_text = response
                     .text()
                     .await
                     .unwrap_or_default();
@@ -926,26 +975,32 @@ impl EveApiClient {
     /// # Returns
     ///
     /// Response of the request, ready to work with
-    ///
     async fn send_delete(
         &self,
         request_uri: Url,
     ) -> Result<Response> {
         let access_token = {
             #[allow(clippy::unwrap_used)]
-            self.access_token.lock().unwrap().clone()
+            self.access_token
+                .lock()
+                .unwrap()
+                .clone()
         };
         let access_token = if access_token.is_none() {
-            self.get_access_token().await?;
+            self.get_access_token()
+                .await?;
             #[allow(clippy::unwrap_used)]
-            self.access_token.lock().unwrap().clone()
+            self.access_token
+                .lock()
+                .unwrap()
+                .clone()
         } else {
             access_token
         };
 
         let mut retry_counter = 0usize;
-        let mut last_status   = StatusCode::OK;
-        let mut last_text     = String::new();
+        let mut last_status = StatusCode::OK;
+        let mut last_text = String::new();
 
         loop {
             if retry_counter == 3 {
@@ -966,13 +1021,18 @@ impl EveApiClient {
                 .bearer_auth(token)
                 .send()
                 .await
-                .map_err(|x| EveApiError::ReqwestError(x, request_uri.clone()))?;
+                .map_err(|x| {
+                    EveApiError::ReqwestError(x, request_uri.clone())
+                })?;
 
-            self
-                .metric
+            self.metric
                 .increase_eve_status(
-                    response.status().to_string(),
-                    request_uri.clone().to_string(),
+                    response
+                        .status()
+                        .to_string(),
+                    request_uri
+                        .clone()
+                        .to_string(),
                 );
 
             match response.status() {
@@ -985,9 +1045,11 @@ impl EveApiClient {
                 StatusCode::NOT_MODIFIED => {
                     return Err(EveApiError::NotModified(request_uri));
                 },
-                StatusCode::FORBIDDEN |
-                StatusCode::UNAUTHORIZED => {
-                    let content = response.text().await.unwrap_or_default();
+                StatusCode::FORBIDDEN | StatusCode::UNAUTHORIZED => {
+                    let content = response
+                        .text()
+                        .await
+                        .unwrap_or_default();
                     return Err(EveApiError::Unauthorized(request_uri, content));
                 },
                 StatusCode::BAD_GATEWAY => {
@@ -996,13 +1058,13 @@ impl EveApiClient {
                 StatusCode::SERVICE_UNAVAILABLE => {
                     return Err(EveApiError::ServiceUnavailable);
                 },
-                _ => {}
+                _ => {},
             };
 
             let response_status = response.status();
             if !response_status.is_success() {
                 last_status = response.status();
-                last_text   = response
+                last_text = response
                     .text()
                     .await
                     .unwrap_or_default();
@@ -1039,10 +1101,7 @@ impl EveApiClient {
     /// # Returns
     ///
     /// New token object
-    ///
-    async fn get_token(
-        form: HashMap<&str, &str>,
-    ) -> Result<EveJwtToken> {
+    async fn get_token(form: HashMap<&str, &str>) -> Result<EveJwtToken> {
         let client_id = (*Self::client_id()?).clone();
         let secret_key = (*Self::secret_key()?).clone();
         let oauth_token_url = Self::oauth_token_url()?;
@@ -1056,20 +1115,25 @@ impl EveApiClient {
             .await
             .map_err(EveApiError::GetTokenRequestError)?;
 
-        if response.status().is_success() {
+        if response
+            .status()
+            .is_success()
+        {
             let token: EveJwtToken = response
                 .json()
                 .await
                 .map_err(|e| EveApiError::ReqwestError(e, oauth_token_url))?;
-            token.validate(
-                Self::oauth_jwt_keys_url()?,
-                Self::client_id()?,
-            ).await?;
+            token
+                .validate(Self::oauth_jwt_keys_url()?, Self::client_id()?)
+                .await?;
 
             Ok(token)
         } else {
             let status = response.status();
-            let content = response.text().await.unwrap_or_default();
+            let content = response
+                .text()
+                .await
+                .unwrap_or_default();
             tracing::error!(
                 "Failed to get token, status: {}, url: {}, content: {}",
                 status,
@@ -1089,11 +1153,13 @@ impl EveApiClient {
     /// # Returns
     ///
     /// - If the header is not present a 0 is returned
-    /// - If the header exists, it will try to parse it, if that fails a 0 is
-    ///   is returned
-    ///
+    /// - If the header exists, it will try to parse it, if that fails a 0 is is
+    ///   returned
     #[deprecated]
-    fn page_count(&self, response: &Response) -> u16 {
+    fn page_count(
+        &self,
+        response: &Response,
+    ) -> u16 {
         let headers = response.headers();
         if let Some(x) = headers.get("x-pages") {
             x.to_str()
@@ -1106,7 +1172,7 @@ impl EveApiClient {
     }
 
     /// Checks if the return has content in it.
-    /// 
+    ///
     /// # Params
     ///
     /// * `response` -> Response to get the header from
@@ -1114,20 +1180,20 @@ impl EveApiClient {
     /// # Returns
     ///
     /// - False if the header does not exists
-    /// - False if the content does not contain data
-    ///   True if the content contains data
-    ///
+    /// - False if the content does not contain data True if the content
+    ///   contains data
     #[deprecated]
     fn has_content(
         &self,
-        response: &Response
+        response: &Response,
     ) -> bool {
         let headers = response.headers();
         if let Some(x) = headers.get("content-length") {
             x.to_str()
                 .unwrap_or_default()
                 .parse::<u64>()
-                .unwrap_or_default() > 0
+                .unwrap_or_default()
+                > 0
         } else {
             false
         }
@@ -1135,10 +1201,7 @@ impl EveApiClient {
 
     fn client() -> Result<Client> {
         let mut headers = HeaderMap::new();
-        headers.insert(
-            COMPATIBILITY_DATE_HEADER,
-            COMPATIBILITY_DATE_VALUE,
-        );
+        headers.insert(COMPATIBILITY_DATE_HEADER, COMPATIBILITY_DATE_VALUE);
 
         Client::builder()
             .user_agent(Self::user_agent())
@@ -1148,39 +1211,48 @@ impl EveApiClient {
             .map_err(EveApiError::CouldNotConstructClient)
     }
 
-    /// Reads the EVE API URL from the environment `STARFOUNDRY_EVE_CLIENT_API_URL
-    /// 
+    /// Reads the EVE API URL from the environment
+    /// `STARFOUNDRY_EVE_CLIENT_API_URL
     pub fn api_url() -> Result<Url> {
         std::env::var(ENV_API_URL)
             .map(|x| Url::parse(&x).map_err(EveApiError::UrlParseError))
-            .unwrap_or(Url::parse("https://esi.evetech.net").map_err(EveApiError::UrlParseError))
+            .unwrap_or(
+                Url::parse("https://esi.evetech.net")
+                    .map_err(EveApiError::UrlParseError),
+            )
     }
 
     /// Reads the EVE OAuth authorization URL from the environment
     /// `STARFOUNDRY_EVE_CLIENT_OAUTH_AUTHORIZATION_URL
-    /// 
     pub fn oauth_authorization_url() -> Result<Url> {
         std::env::var(ENV_OAUTH_AUTHORIZATION_URL)
             .map(|x| Url::parse(&x).map_err(EveApiError::UrlParseError))
-            .unwrap_or(Url::parse("https://login.eveonline.com/v2/oauth/authorize").map_err(EveApiError::UrlParseError))
+            .unwrap_or(
+                Url::parse("https://login.eveonline.com/v2/oauth/authorize")
+                    .map_err(EveApiError::UrlParseError),
+            )
     }
 
     /// Reads the EVE jwt key URL from the environment
     /// `STARFOUNDRY_EVE_CLIENT_OAUTH_JWT_KEYS_URL
-    /// 
     pub fn oauth_jwt_keys_url() -> Result<Url> {
         std::env::var(ENV_OAUTH_JWT_KEYS_URL)
             .map(|x| Url::parse(&x).map_err(EveApiError::UrlParseError))
-            .unwrap_or(Url::parse("https://login.eveonline.com/oauth/jwks").map_err(EveApiError::UrlParseError))
+            .unwrap_or(
+                Url::parse("https://login.eveonline.com/oauth/jwks")
+                    .map_err(EveApiError::UrlParseError),
+            )
     }
 
     /// Reads the EVE oauth token URL from the environment
     /// `STARFOUNDRY_EVE_CLIENT_OAUTH_TOKEN_URL
-    /// 
     pub fn oauth_token_url() -> Result<Url> {
         std::env::var(ENV_OAUTH_TOKEN_URL)
             .map(|x| Url::parse(&x).map_err(EveApiError::UrlParseError))
-            .unwrap_or(Url::parse("https://login.eveonline.com/v2/oauth/token").map_err(EveApiError::UrlParseError))
+            .unwrap_or(
+                Url::parse("https://login.eveonline.com/v2/oauth/token")
+                    .map_err(EveApiError::UrlParseError),
+            )
     }
 
     fn user_agent() -> String {
@@ -1188,7 +1260,6 @@ impl EveApiClient {
     }
 
     /// Gets the client_id from the environment `STARFOUNDRY_EVE_CLIENT_ID`
-    /// 
     pub fn client_id() -> Result<EveClientId> {
         std::env::var(ENV_CLIENT_ID)
             .map(EveClientId)
@@ -1211,9 +1282,9 @@ impl EveApiClient {
 #[derive(Clone, Debug)]
 pub struct AuthenticatedClient {
     /// [CharacterId] of the character this authenticated client belongs to
-    pub character_id:   CharacterId,
+    pub character_id: CharacterId,
 
-    refresh_token:       String,
+    refresh_token: String,
 }
 
 /// Wrapper struct the the ClientId, given by CCP
@@ -1229,7 +1300,10 @@ impl Deref for EveClientId {
 }
 
 impl Debug for EveClientId {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
         write!(f, "{}", self.0)
     }
 }
@@ -1247,7 +1321,10 @@ impl Deref for EveSecretKey {
 }
 
 impl Debug for EveSecretKey {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
         write!(f, "****")
     }
 }

@@ -1,15 +1,15 @@
+use axum::Json;
 use axum::extract::rejection::JsonRejection;
 use axum::http::StatusCode;
-use axum::Json;
 use axum::response::{IntoResponse, Response};
-use starfoundry_lib_gateway::{ErrorResponse, boxed_from};
-use starfoundry_lib_industry::{ProjectJobUuid, ProjectUuid};
+use starfoundry_gateway::{ErrorResponse, boxed_from};
 use starfoundry_lib_types::CharacterId;
 use thiserror::Error;
 
 use crate::api_docs::format_json_errors;
 use crate::industry_hub::IndustryHubError;
 use crate::project_group::ProjectGroupError;
+use crate::{ProjectJobUuid, ProjectUuid};
 
 pub type Result<T, E = ProjectError> = std::result::Result<T, E>;
 
@@ -59,6 +59,8 @@ pub enum ProjectError {
 
     #[error("transaction error, '{0}'")]
     TransactionError(sqlx::Error),
+    #[error("Validating the input data failed, '{0}'")]
+    ValidationError(String),
 
     #[error(transparent)]
     JsonExtractorRejection(#[from] JsonRejection),
@@ -67,11 +69,11 @@ pub enum ProjectError {
     #[error(transparent)]
     IndustryHubError(Box<IndustryHubError>),
     #[error(transparent)]
-    EveGatewayLibError(#[from] starfoundry_lib_eve_gateway::Error),
+    EveGatewayLibError(#[from] starfoundry_eve_gateway::EveGatewayError),
     #[error(transparent)]
-    MarketLibError(#[from] starfoundry_lib_market::Error),
+    MarketLibError(#[from] starfoundry_market::MarketError),
     #[error(transparent)]
-    ProjectLibError(Box<starfoundry_lib_industry::Error>),
+    ProjectLibError(Box<crate::IndustryError>),
     #[error(transparent)]
     StructureError(#[from] crate::structure::StructureError),
 }
@@ -79,47 +81,68 @@ pub enum ProjectError {
 impl IntoResponse for ProjectError {
     fn into_response(self) -> Response {
         match self {
-            Self::Forbidden(_, _) => {
+            Self::Forbidden(..) => {
                 tracing::info!("{}", self.to_string());
                 (
                     StatusCode::FORBIDDEN,
-                    Json(
-                        ErrorResponse {
-                            error: "FORBIDDEN".into(),
-                            description: "You are not allowed this resource".into(),
-                        }
-                    )
-                ).into_response()
+                    Json(ErrorResponse {
+                        error:       "FORBIDDEN".into(),
+                        description: "You are not allowed this resource".into(),
+                    }),
+                )
+                    .into_response()
             },
 
             Self::NotFound(_) => {
                 tracing::info!("{}", self.to_string());
                 (
                     StatusCode::NOT_FOUND,
-                    Json(
-                        ErrorResponse {
-                            error: "NOT_FOUND".into(),
-                            description: self.to_string(),
-                        }
-                    )
-                ).into_response()
+                    Json(ErrorResponse {
+                        error:       "NOT_FOUND".into(),
+                        description: self.to_string(),
+                    }),
+                )
+                    .into_response()
             },
 
             Self::JsonExtractorRejection(x) => {
                 format_json_errors(x).into_response()
             },
 
-            _ => {
+            Self::JobNotFound(..)
+            | Self::NoIndustryHub
+            | Self::SolutionNotFound
+            | Self::AddExcessEntry(_)
+            | Self::AddJobEntry(_)
+            | Self::AddMarketEntry(_)
+            | Self::List(_)
+            | Self::ListJobs(_)
+            | Self::ListMisc(_)
+            | Self::Fetch(..)
+            | Self::FetchCost(..)
+            | Self::Delete(..)
+            | Self::Create(_)
+            | Self::Initialize(_)
+            | Self::Update(_)
+            | Self::TransactionError(_)
+            | Self::ValidationError(_)
+            | Self::ProjectGroupError(_)
+            | Self::IndustryHubError(_)
+            | Self::EveGatewayLibError(_)
+            | Self::MarketLibError(_)
+            | Self::ProjectLibError(_)
+            | Self::StructureError(_) => {
                 tracing::error!("{}", self.to_string());
                 (
                     StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(
-                        ErrorResponse {
-                            error: "UNKNOWN".into(),
-                            description: "An unknown error occurred, please try again later.".into(),
-                        }
-                    )
-                ).into_response()
+                    Json(ErrorResponse {
+                        error:       "UNKNOWN".into(),
+                        description:
+                            "An unknown error occurred, please try again later."
+                                .into(),
+                    }),
+                )
+                    .into_response()
             },
         }
         .into_response()
@@ -128,4 +151,4 @@ impl IntoResponse for ProjectError {
 
 boxed_from!(ProjectError::ProjectGroupError, ProjectGroupError);
 boxed_from!(ProjectError::IndustryHubError, IndustryHubError);
-boxed_from!(ProjectError::ProjectLibError, starfoundry_lib_industry::Error);
+boxed_from!(ProjectError::ProjectLibError, crate::IndustryError);

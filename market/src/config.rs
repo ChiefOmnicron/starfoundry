@@ -6,10 +6,10 @@ use crate::config::env::ConfigEnv;
 
 #[derive(Debug)]
 pub struct Config {
-    pub database_url:     String,
+    pub database_url: String,
 
-    pub app_address:      TcpListener,
-    pub service_address:  TcpListener,
+    pub app_address:     TcpListener,
+    pub service_address: TcpListener,
 }
 
 impl Config {
@@ -23,10 +23,10 @@ impl Config {
 impl From<ConfigEnv> for Config {
     fn from(env: ConfigEnv) -> Self {
         Self {
-            database_url:       env.database_url,
+            database_url: env.database_url,
 
-            app_address:        env.app_address,
-            service_address:    env.service_address,
+            app_address:     env.app_address,
+            service_address: env.service_address,
         }
     }
 }

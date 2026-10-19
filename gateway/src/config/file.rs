@@ -1,8 +1,9 @@
-use serde::Deserialize;
 use std::collections::HashMap;
 use std::env;
 use std::fs::File;
 use std::io::Read;
+
+use serde::Deserialize;
 use url::Url;
 
 /// Represents the configuration file with all it's fields
@@ -20,7 +21,8 @@ pub struct ConfigFileRoute {
     /// drops the first prefix instead of redirecting it to the target
     #[serde(default)]
     pub drop_prefix:  bool,
-    /// if the route requires the user to be authenticated or not, per default true
+    /// if the route requires the user to be authenticated or not, per default
+    /// true
     #[serde(default = "require_auth_default")]
     pub require_auth: bool,
 }
@@ -36,14 +38,15 @@ impl ConfigFile {
         let mut toml_config = String::new();
         toml_config_file.read_to_string(&mut toml_config)?;
 
-        let config_file: ConfigFile = if let Ok(x) = toml::from_str(&toml_config) {
-            x
-        } else {
-            tracing::error!("Invalid config.toml");
-            Self {
-                routes: HashMap::new(),
-            }
-        };
+        let config_file: ConfigFile =
+            if let Ok(x) = toml::from_str(&toml_config) {
+                x
+            } else {
+                tracing::error!("Invalid config.toml");
+                Self {
+                    routes: HashMap::new(),
+                }
+            };
 
         Ok(config_file)
     }

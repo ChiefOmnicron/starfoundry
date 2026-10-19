@@ -1,12 +1,12 @@
+use axum::Json;
 use axum::extract::rejection::JsonRejection;
 use axum::http::StatusCode;
-use axum::Json;
 use axum::response::{IntoResponse, Response};
-use starfoundry_lib_gateway::{ErrorResponse, boxed_from};
-use starfoundry_lib_industry::StructureUuid;
+use starfoundry_gateway::{ErrorResponse, boxed_from};
 use starfoundry_lib_types::CharacterId;
 use thiserror::Error;
 
+use crate::StructureUuid;
 use crate::api_docs::format_json_errors;
 
 pub type Result<T, E = StructureError> = std::result::Result<T, E>;
@@ -23,7 +23,9 @@ pub enum StructureError {
     NotFound(StructureUuid),
     #[error("Validating the input data failed, '{0}'")]
     ValidationError(String),
-    #[error("error while fetching permissions for structure '{1}', error: '{0}'")]
+    #[error(
+        "error while fetching permissions for structure '{1}', error: '{0}'"
+    )]
     FetchPermission(sqlx::Error, StructureUuid),
 
     #[error("error while creating structure, error: '{0}'")]
@@ -42,73 +44,78 @@ pub enum StructureError {
     #[error(transparent)]
     JsonExtractorRejection(#[from] JsonRejection),
     #[error(transparent)]
-    GatewayLibError(Box<starfoundry_lib_gateway::error::Error>),
+    GatewayLibError(Box<starfoundry_gateway::GatewayError>),
     #[error(transparent)]
-    EveGatewayLibError(#[from] starfoundry_lib_eve_gateway::Error),
+    EveGatewayLibError(#[from] starfoundry_eve_gateway::EveGatewayError),
 }
 
 impl IntoResponse for StructureError {
     fn into_response(self) -> Response {
         match self {
-            Self::Forbidden(_, _) |
-            Self::FetchPermission(_, _) => {
+            Self::Forbidden(..) | Self::FetchPermission(..) => {
                 tracing::info!("{}", self.to_string());
                 (
                     StatusCode::FORBIDDEN,
-                    Json(
-                        ErrorResponse {
-                            error: "FORBIDDEN".into(),
-                            description: "You are not allowed this resource".into(),
-                        }
-                    )
-                ).into_response()
+                    Json(ErrorResponse {
+                        error:       "FORBIDDEN".into(),
+                        description: "You are not allowed this resource".into(),
+                    }),
+                )
+                    .into_response()
             },
 
             Self::NotFound(_) => {
                 tracing::info!("{}", self.to_string());
                 (
                     StatusCode::NOT_FOUND,
-                    Json(
-                        ErrorResponse {
-                            error: "NOT_FOUND".into(),
-                            description: self.to_string(),
-                        }
-                    )
-                ).into_response()
+                    Json(ErrorResponse {
+                        error:       "NOT_FOUND".into(),
+                        description: self.to_string(),
+                    }),
+                )
+                    .into_response()
             },
 
             Self::ValidationError(_) => {
                 tracing::info!("{}", self.to_string());
                 (
                     StatusCode::UNPROCESSABLE_ENTITY,
-                    Json(
-                        ErrorResponse {
-                            error: "UNPROCESSABLE_ENTITY".into(),
-                            description: self.to_string(),
-                        }
-                    )
-                ).into_response()
+                    Json(ErrorResponse {
+                        error:       "UNPROCESSABLE_ENTITY".into(),
+                        description: self.to_string(),
+                    }),
+                )
+                    .into_response()
             },
 
             Self::JsonExtractorRejection(x) => {
                 format_json_errors(x).into_response()
             },
 
-            _ => {
+            Self::TransactionError(_)
+            | Self::CreateStructure(_)
+            | Self::FetchStructures(..)
+            | Self::FetchStructureTax(..)
+            | Self::ListStructures(_)
+            | Self::DeleteStructure(..)
+            | Self::UpdateStructure(..)
+            | Self::GatewayLibError(_)
+            | Self::EveGatewayLibError(_) => {
                 tracing::error!("{}", self.to_string());
                 (
                     StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(
-                        ErrorResponse {
-                            error: "UNKNOWN".into(),
-                            description: "An unknown error occurred, please try again later.".into(),
-                        }
-                    )
-                ).into_response()
+                    Json(ErrorResponse {
+                        error:       "UNKNOWN".into(),
+                        description:
+                            "An unknown error occurred, please try again later."
+                                .into(),
+                    }),
+                )
+                    .into_response()
             },
         }
         .into_response()
     }
 }
 
-boxed_from!(StructureError::GatewayLibError, starfoundry_lib_gateway::error::Error);
+boxed_from!(StructureError::GatewayLibError, starfoundry_gateway::GatewayError);

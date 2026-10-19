@@ -1,18 +1,19 @@
-use prometheus_client::encoding::text::encode;
-use prometheus_client::registry::Registry;
-use sqlx::PgPool;
 use std::convert::Infallible;
 use std::net::SocketAddr;
 use std::sync::Arc;
+
+use prometheus_client::encoding::text::encode;
+use prometheus_client::registry::Registry;
+use sqlx::PgPool;
 use warp::Filter;
+use warp::filters::BoxedFilter;
 use warp::http::Response;
 use warp::reject::Rejection;
 use warp::reply::Reply;
-use warp::filters::BoxedFilter;
 
 pub async fn api(
-    pool:        PgPool,
-    registry:    Registry,
+    pool: PgPool,
+    registry: Registry,
     socket_addr: SocketAddr,
 ) {
     let metric = warp::path!("metrics")
@@ -21,16 +22,15 @@ pub async fn api(
         .and_then(metrics)
         .boxed();
 
-    let routes = health_check(pool.clone())
-        .or(metric);
+    let routes = health_check(pool.clone()).or(metric);
 
     tracing::info!("Starting service server on {}", socket_addr);
-    warp::serve(routes).run(socket_addr).await;
+    warp::serve(routes)
+        .run(socket_addr)
+        .await;
 }
 
-pub fn health_check(
-    pool: PgPool,
-) -> BoxedFilter<(impl Reply,)> {
+pub fn health_check(pool: PgPool) -> BoxedFilter<(impl Reply,)> {
     let livez = warp::path!("healthz")
         .and(warp::get())
         .and_then(livez)
@@ -47,9 +47,7 @@ pub fn health_check(
         .boxed()
 }
 
-async fn metrics(
-    registry: Arc<Registry>,
-) -> Result<impl Reply, Rejection> {
+async fn metrics(registry: Arc<Registry>) -> Result<impl Reply, Rejection> {
     let mut buffer = String::new();
     encode(&mut buffer, &registry).unwrap();
 
@@ -66,13 +64,11 @@ async fn livez() -> Result<impl Reply, Rejection> {
             warp::http::StatusCode::OK,
         ),
         "Cache-Control",
-        "no-cache"
+        "no-cache",
     ))
 }
 
-async fn readyz(
-    pool: PgPool,
-) -> Result<impl Reply, Rejection> {
+async fn readyz(pool: PgPool) -> Result<impl Reply, Rejection> {
     let postgres_version = sqlx::query!("SELECT version()")
         .fetch_one(&pool)
         .await;
@@ -84,7 +80,7 @@ async fn readyz(
                 warp::http::StatusCode::INTERNAL_SERVER_ERROR,
             ),
             "Cache-Control",
-            "no-cache"
+            "no-cache",
         ));
     }
 
@@ -94,18 +90,18 @@ async fn readyz(
             warp::http::StatusCode::OK,
         ),
         "Cache-Control",
-        "no-cache"
+        "no-cache",
     ))
 }
 
 fn with_pool(
-    pool: PgPool,
+    pool: PgPool
 ) -> impl Filter<Extract = (PgPool,), Error = Infallible> + Clone {
     warp::any().map(move || pool.clone())
 }
 
 fn with_registry(
-    registry: Arc<Registry>,
+    registry: Arc<Registry>
 ) -> impl Filter<Extract = (Arc<Registry>,), Error = Infallible> + Clone {
     warp::any().map(move || registry.clone())
 }

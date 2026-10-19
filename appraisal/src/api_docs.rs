@@ -1,11 +1,9 @@
-use axum::extract::rejection::JsonRejection;
-use axum::http::header::AUTHORIZATION;
-use axum::http::StatusCode;
 use axum::Json;
+use axum::extract::rejection::JsonRejection;
 use axum::response::IntoResponse;
-use starfoundry_lib_gateway::ErrorResponse;
-use utoipa::{Modify, OpenApi};
-use utoipa::openapi::security::{ApiKey, ApiKeyValue, SecurityScheme};
+use reqwest::StatusCode;
+use starfoundry_gateway::ErrorResponse;
+use utoipa::OpenApi;
 
 #[derive(OpenApi)]
 #[openapi(
@@ -19,24 +17,8 @@ use utoipa::openapi::security::{ApiKey, ApiKeyValue, SecurityScheme};
             name = "Dual licensed under Apache-2.0 and MIT"
         ),
     ),
-    modifiers(&SecurityAddon),
 )]
 pub struct ApiDoc;
-
-struct SecurityAddon;
-
-impl Modify for SecurityAddon {
-    fn modify(&self, openapi: &mut utoipa::openapi::OpenApi) {
-        if let Some(components) = openapi.components.as_mut() {
-            components.add_security_scheme(
-                "api_key",
-                SecurityScheme::ApiKey(
-                    ApiKey::Header(ApiKeyValue::new(AUTHORIZATION.to_string()))
-                ),
-            )
-        }
-    }
-}
 
 /// the given parameters are incorrect
 #[allow(dead_code)]
@@ -50,7 +32,7 @@ impl Modify for SecurityAddon {
 )]
 pub struct BadRequest {
     /// General error name
-    pub error: String,
+    pub error:       String,
     /// Human description of the error
     pub description: String,
 }
@@ -68,7 +50,7 @@ pub struct BadRequest {
 )]
 pub struct Unauthorized {
     /// General error name
-    pub error: String,
+    pub error:       String,
     /// Human description of the error
     pub description: String,
 }
@@ -86,7 +68,7 @@ pub struct Unauthorized {
 )]
 pub struct Forbidden {
     /// General error name
-    pub error: String,
+    pub error:       String,
     /// Human description of the error
     pub description: String,
 }
@@ -104,7 +86,7 @@ pub struct Forbidden {
 )]
 pub struct NotFound {
     /// General error name
-    pub error: String,
+    pub error:       String,
     /// Human description of the error
     pub description: String,
 }
@@ -121,7 +103,7 @@ pub struct NotFound {
 )]
 pub struct InternalServerError {
     /// General error name
-    pub error: String,
+    pub error:       String,
     /// Human description of the error
     pub description: String,
 }
@@ -139,7 +121,7 @@ pub struct InternalServerError {
 )]
 pub struct UnsupportedMediaType {
     /// General error name
-    pub error: String,
+    pub error:       String,
     /// Human description of the error
     pub description: String,
 }
@@ -157,58 +139,53 @@ pub struct UnsupportedMediaType {
 )]
 pub struct UnprocessableEntity {
     /// General error name
-    pub error: String,
+    pub error:       String,
     /// Human description of the error
     pub description: String,
 }
 
-pub fn format_json_errors(
-    error: JsonRejection,
-) -> impl IntoResponse {
+pub fn format_json_errors(error: JsonRejection) -> impl IntoResponse {
     match error {
         JsonRejection::JsonDataError(_) => {
             (
                 StatusCode::UNPROCESSABLE_ENTITY,
-                Json(
-                    ErrorResponse {
-                        error: "UNPROCESSABLE_ENTITY".into(),
-                        description: "Make sure that all required fields are set".into(),
-                    }
-                )
+                Json(ErrorResponse {
+                    error:       "UNPROCESSABLE_ENTITY".into(),
+                    description: "Make sure that all required fields are set"
+                        .into(),
+                }),
             )
         },
         JsonRejection::JsonSyntaxError(_) => {
             (
                 StatusCode::BAD_REQUEST,
-                Json(
-                    ErrorResponse {
-                        error: "BAD_REQUEST".into(),
-                        description: "Validate that the data you send is valid".into(),
-                    }
-                )
+                Json(ErrorResponse {
+                    error:       "BAD_REQUEST".into(),
+                    description: "Validate that the data you send is valid"
+                        .into(),
+                }),
             )
         },
         JsonRejection::MissingJsonContentType(_) => {
             (
                 StatusCode::UNSUPPORTED_MEDIA_TYPE,
-                Json(
-                    ErrorResponse {
-                        error: "UNSUPPORTED_MEDIA_TYPE".into(),
-                        description: "The datatype is invalid. Try application/json".into(),
-                    }
-                )
+                Json(ErrorResponse {
+                    error:       "UNSUPPORTED_MEDIA_TYPE".into(),
+                    description:
+                        "The datatype is invalid. Try application/json".into(),
+                }),
             )
         },
-        _ => {
+        JsonRejection::BytesRejection(_) | _ => {
             (
                 StatusCode::INTERNAL_SERVER_ERROR,
-                Json(
-                    ErrorResponse {
-                        error: "UNKNOWN".into(),
-                        description: "An unknown error occurred, please try again later.".into(),
-                    }
-                )
+                Json(ErrorResponse {
+                    error:       "UNKNOWN".into(),
+                    description:
+                        "An unknown error occurred, please try again later."
+                            .into(),
+                }),
             )
-        }
+        },
     }
 }

@@ -1,28 +1,31 @@
+use axum::Json;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
-use axum::Json;
 use axum::response::IntoResponse;
-use starfoundry_lib_industry::ProjectGroupUuid;
+use sqlx::PgPool;
 use starfoundry_lib_types::TypeId;
 
-use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized, UnprocessableEntity, UnsupportedMediaType};
-use crate::AppState;
+use crate::api_docs::{
+    Forbidden, InternalServerError, NotFound, Unauthorized, UnprocessableEntity, UnsupportedMediaType
+};
+use crate::project_group::ProjectGroupError;
 use crate::project_group::error::Result;
-use crate::project_group::service::update_default_blacklist;
+use crate::{AppState, ProjectGroupUuid};
 
 /// Update Default Blacklist
-/// 
-/// - Alternative route: `/v1/project-groups/{ProjectGroupUuid}/defaults/blacklist`
-/// - Alternative route: `/latest/project-groups/{ProjectGroupUuid}/defaults/blacklist`
-/// 
+///
+/// - Alternative route:
+///   `/v1/project-groups/{ProjectGroupUuid}/defaults/blacklist`
+/// - Alternative route:
+///   `/latest/project-groups/{ProjectGroupUuid}/defaults/blacklist`
+///
 /// ---
-/// 
+///
 /// Updates a default blacklist
-/// 
+///
 /// ## Security
 /// - authenticated
 /// - project_group:write
-/// 
 #[utoipa::path(
     put,
     path = "/{ProjectGroupUuid}/defaults/blacklist",
@@ -48,39 +51,100 @@ use crate::project_group::service::update_default_blacklist;
     ),
 )]
 pub async fn api(
-    State(state):             State<AppState>,
+    State(state): State<AppState>,
     Path(project_group_uuid): Path<ProjectGroupUuid>,
-    Json(update_info):        Json<Vec<TypeId>>,
+    Json(update_info): Json<Vec<TypeId>>,
 ) -> Result<impl IntoResponse> {
-    update_default_blacklist(
-        &state.postgres,
-        project_group_uuid,
-        update_info,
-    ).await?;
+    update_default_blacklist(&state.postgres, project_group_uuid, update_info)
+        .await?;
 
-    Ok((
-        StatusCode::NO_CONTENT,
-    ))
+    Ok((StatusCode::NO_CONTENT,))
+}
+
+pub async fn update_default_blacklist(
+    pool: &PgPool,
+    project_group_uuid: ProjectGroupUuid,
+    type_ids: Vec<TypeId>,
+) -> Result<()> {
+    let mut transaction = pool
+        .begin()
+        .await
+        .map_err(ProjectGroupError::TransactionError)?;
+
+    sqlx::query!(
+        "
+            DELETE FROM project_group_default_blacklist
+            WHERE project_group_id = $1
+        ",
+        *project_group_uuid,
+    )
+    .execute(&mut *transaction)
+    .await
+    .map_err(|e| {
+        ProjectGroupError::DeleteGroupDefaults(e, project_group_uuid)
+    })?;
+
+    sqlx::query!(
+        "
+            INSERT INTO project_group_default_blacklist
+            (
+                project_group_id,
+                type_id
+            )
+            SELECT $1, * FROM UNNEST(
+                $2::INTEGER[]
+            )
+        ",
+        *project_group_uuid,
+        &type_ids
+            .into_iter()
+            .map(|x| *x)
+            .collect::<Vec<_>>(),
+    )
+    .execute(&mut *transaction)
+    .await
+    .map_err(|e| {
+        ProjectGroupError::UpdateGroupDefaults(e, project_group_uuid)
+    })?;
+
+    transaction
+        .commit()
+        .await
+        .map_err(ProjectGroupError::TransactionError)
 }
 
 #[cfg(test)]
-mod tests {
+mod update_default_blacklist_project_group_test {
+    use std::str::FromStr;
+
     use axum::body::Body;
     use axum::extract::Request;
-    use axum::http::header::{CONTENT_TYPE, HOST};
     use axum::http::StatusCode;
+    use axum::http::header::{CONTENT_TYPE, HOST};
     use sqlx::PgPool;
-    use starfoundry_lib_gateway::{HEADER_CHARACTER_ID, HEADER_CORPORATION_ID, HEADER_SERVICE};
+    use starfoundry_gateway::{
+        HEADER_CHARACTER_ID, HEADER_CORPORATION_ID, HEADER_SERVICE
+    };
     use starfoundry_lib_types::TypeId;
+    use uuid::Uuid;
 
     use crate::project_group::project_group_test_routes;
 
-    #[sqlx::test(
-        fixtures("base"),
-    )]
-    async fn happy_path(
-        pool: PgPool,
-    ) {
+    #[sqlx::test(fixtures(path = "./fixtures", scripts("base"),))]
+    async fn direct_happy_path(pool: PgPool) {
+        let response = super::update_default_blacklist(
+            &pool,
+            Uuid::from_str("00000000-0000-0000-0000-000000000001")
+                .unwrap()
+                .into(),
+            vec![TypeId(1)],
+        )
+        .await;
+        assert!(response.is_ok());
+    }
+
+    #[sqlx::test(fixtures("base"))]
+    async fn happy_path(pool: PgPool) {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000001/defaults/blacklist")
             .header(CONTENT_TYPE, "application/json")
@@ -94,7 +158,8 @@ mod tests {
                     TypeId(4051),
                     TypeId(4246),
                     TypeId(4247),
-                ]).unwrap()
+                ])
+                .unwrap(),
             ))
             .unwrap();
         let response = project_group_test_routes(pool.clone(), request).await;
@@ -111,12 +176,8 @@ mod tests {
         assert_eq!(entries.len(), 3);
     }
 
-    #[sqlx::test(
-        fixtures("base"),
-    )]
-    async fn unsupported_media_type(
-        pool: PgPool,
-    ) {
+    #[sqlx::test(fixtures("base"))]
+    async fn unsupported_media_type(pool: PgPool) {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000001/defaults/blacklist")
             .header(CONTENT_TYPE, "text/plain")
@@ -125,20 +186,14 @@ mod tests {
             .header(HEADER_CORPORATION_ID, 1)
             .header(HOST, "test.starfoundry.space")
             .method("PUT")
-            .body(Body::new(
-                serde_json::to_string(&vec![TypeId(1)]).unwrap()
-            ))
+            .body(Body::new(serde_json::to_string(&vec![TypeId(1)]).unwrap()))
             .unwrap();
         let response = project_group_test_routes(pool, request).await;
         assert_eq!(response.status(), StatusCode::UNSUPPORTED_MEDIA_TYPE);
     }
 
-    #[sqlx::test(
-        fixtures("base"),
-    )]
-    async fn bad_request_no_body(
-        pool: PgPool,
-    ) {
+    #[sqlx::test(fixtures("base"))]
+    async fn bad_request_no_body(pool: PgPool) {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000001/defaults/blacklist")
             .header(CONTENT_TYPE, "application/json")
@@ -153,30 +208,20 @@ mod tests {
         assert_eq!(response.status(), StatusCode::BAD_REQUEST);
     }
 
-    #[sqlx::test(
-        fixtures("base"),
-    )]
-    async fn unauthorized(
-        pool: PgPool,
-    ) {
+    #[sqlx::test(fixtures("base"))]
+    async fn unauthorized(pool: PgPool) {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000001/defaults/blacklist")
             .header(CONTENT_TYPE, "application/json")
             .method("PUT")
-            .body(Body::new(
-                serde_json::to_string(&vec![TypeId(1)]).unwrap()
-            ))
+            .body(Body::new(serde_json::to_string(&vec![TypeId(1)]).unwrap()))
             .unwrap();
         let response = project_group_test_routes(pool.clone(), request).await;
         assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
     }
 
-    #[sqlx::test(
-        fixtures("base"),
-    )]
-    async fn forbidden(
-        pool: PgPool,
-    ) {
+    #[sqlx::test(fixtures("base"))]
+    async fn forbidden(pool: PgPool) {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000001/defaults/blacklist")
             .header(CONTENT_TYPE, "application/json")
@@ -185,20 +230,14 @@ mod tests {
             .header(HEADER_CORPORATION_ID, 1)
             .header(HOST, "test.starfoundry.space")
             .method("PUT")
-            .body(Body::new(
-                serde_json::to_string(&vec![TypeId(1)]).unwrap()
-            ))
+            .body(Body::new(serde_json::to_string(&vec![TypeId(1)]).unwrap()))
             .unwrap();
         let response = project_group_test_routes(pool.clone(), request).await;
         assert_eq!(response.status(), StatusCode::FORBIDDEN);
     }
 
-    #[sqlx::test(
-        fixtures("base"),
-    )]
-    async fn not_found(
-        pool: PgPool,
-    ) {
+    #[sqlx::test(fixtures("base"))]
+    async fn not_found(pool: PgPool) {
         let request = Request::builder()
             .uri("/00000000-0000-0000-0000-000000000010/defaults/blacklist")
             .header(CONTENT_TYPE, "application/json")
@@ -207,9 +246,7 @@ mod tests {
             .header(HEADER_CORPORATION_ID, 1)
             .header(HOST, "test.starfoundry.space")
             .method("PUT")
-            .body(Body::new(
-                serde_json::to_string(&vec![TypeId(1)]).unwrap()
-            ))
+            .body(Body::new(serde_json::to_string(&vec![TypeId(1)]).unwrap()))
             .unwrap();
         let response = project_group_test_routes(pool.clone(), request).await;
         assert_eq!(response.status(), StatusCode::NOT_FOUND);

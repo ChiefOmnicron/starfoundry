@@ -1,24 +1,26 @@
-use axum::extract::{Path, State};
 use axum::Json;
+use axum::extract::{Path, State};
 use axum::response::IntoResponse;
 use reqwest::StatusCode;
-use starfoundry_lib_eve_gateway::StructureRigResponse;
-use starfoundry_lib_types::TypeId;
+use serde::{Deserialize, Serialize};
+use sqlx::PgPool;
+use starfoundry_lib_types::{CategoryId, GroupId, TypeId};
+use utoipa::ToSchema;
 
 use crate::api_docs::{InternalServerError, NotFound};
+use crate::asset::{Category, Group, Item};
+use crate::item::{fetch_category, fetch_group, fetch_item};
 use crate::state::AppState;
-use crate::structure::error::Result;
-use crate::structure::services::fetch_rig;
+use crate::structure::error::{Result, StructureError};
 
 /// Fetch structure rigs
-/// 
+///
 /// - Alternative route: `/latest/structures/rigs/{TypeId}`
 /// - Alternative route: `/v1/structures/rigs/{TypeId}`
-/// 
+///
 /// ---
-/// 
+///
 /// Returns all rigs that can be installed in the structure
-/// 
 #[utoipa::path(
     get,
     path = "/rigs/{TypeId}",
@@ -37,19 +39,192 @@ use crate::structure::services::fetch_rig;
     ),
 )]
 pub async fn api(
-    State(state):            State<AppState>,
+    State(state): State<AppState>,
     Path(structure_type_id): Path<TypeId>,
 ) -> Result<impl IntoResponse> {
-    let entry = fetch_rig(
-        &state.postgres,
-        structure_type_id,
-    ).await?;
+    let entry = fetch_rig(&state.postgres, structure_type_id).await?;
 
-    Ok(
-        (
-            StatusCode::OK,
-            Json(entry)
-        )
-        .into_response()
+    Ok((StatusCode::OK, Json(entry)).into_response())
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, ToSchema)]
+pub struct StructureRigResponse {
+    pub item:     Item,
+    pub excludes: Vec<TypeId>,
+
+    pub material:   Option<f32>,
+    pub time:       Option<f32>,
+    pub categories: Vec<Category>,
+    pub groups:     Vec<Group>,
+}
+
+impl StructureRigResponse {
+    pub fn has_category(
+        &self,
+        category_id: CategoryId,
+    ) -> bool {
+        self.categories
+            .iter()
+            .find(|x| x.category_id == category_id)
+            .is_some()
+    }
+
+    pub fn has_group(
+        &self,
+        group_id: GroupId,
+    ) -> bool {
+        self.groups
+            .iter()
+            .find(|x| x.group_id == group_id)
+            .is_some()
+    }
+}
+
+pub async fn fetch_rig(
+    pool: &PgPool,
+    rig_type_id: TypeId,
+) -> Result<Option<StructureRigResponse>> {
+    let rig = sqlx::query!(
+        r#"
+            SELECT
+                type_id,
+                excludes
+            FROM structure_rig
+            WHERE type_id = $1
+        "#,
+        *rig_type_id,
     )
+    .fetch_optional(pool)
+    .await
+    .map_err(|e| StructureError::FetchRigInformation(e, rig_type_id))?;
+
+    let rig = if let Some(x) = rig {
+        x
+    } else {
+        return Ok(None)
+    };
+
+    let item = fetch_item(
+        pool,
+        rig.type_id
+            .into(),
+    )
+    .await?;
+    let item = if let Some(x) = item {
+        x
+    } else {
+        return Ok(None);
+    };
+
+    let bonuses = sqlx::query!(
+        r#"
+            SELECT
+                modifier AS "modifier!: BonusModifier",
+                amount,
+                categories,
+                groups,
+                i.name
+            FROM structure_dogma
+            JOIN item i ON i.type_id = structure_dogma.type_id
+            WHERE structure_dogma.type_id = $1
+        "#,
+        rig.type_id,
+    )
+    .fetch_all(pool)
+    .await;
+
+    let bonuses = bonuses.unwrap_or_default();
+
+    let mut material = None;
+    let mut time = None;
+    let mut categories = Vec::new();
+    let mut groups = Vec::new();
+
+    for bonus in bonuses.iter() {
+        match bonus.modifier {
+            BonusModifier::ManufactureMaterial
+            | BonusModifier::ReactionMaterial => {
+                material = Some(bonus.amount as f32);
+            },
+            BonusModifier::ManufactureTime | BonusModifier::ReactionTime => {
+                time = Some(bonus.amount as f32);
+            },
+        }
+    }
+
+    let mut rig_categories = bonuses
+        .iter()
+        .flat_map(|x| {
+            x.categories
+                .clone()
+        })
+        .map(Into::into)
+        .collect::<Vec<_>>();
+    rig_categories.sort();
+    rig_categories.dedup();
+    for category_id in rig_categories {
+        if let Some(x) = fetch_category(pool, category_id).await? {
+            categories.push(x)
+        }
+    }
+
+    let mut rig_groups = bonuses
+        .iter()
+        .flat_map(|x| {
+            x.groups
+                .clone()
+        })
+        .map(Into::into)
+        .collect::<Vec<_>>();
+    rig_groups.sort();
+    rig_groups.dedup();
+    for group_id in rig_groups {
+        if let Some(x) = fetch_group(pool, group_id).await? {
+            groups.push(x)
+        }
+    }
+
+    let result = StructureRigResponse {
+        excludes: rig
+            .excludes
+            .into_iter()
+            .map(Into::into)
+            .collect::<Vec<_>>(),
+        item: item,
+
+        material,
+        time,
+        categories,
+        groups,
+    };
+
+    Ok(Some(result))
+}
+
+#[derive(Clone, Copy, Debug, sqlx::Type)]
+#[sqlx(type_name = "BONUS_MODIFIER")]
+#[sqlx(rename_all = "SCREAMING_SNAKE_CASE")]
+#[cfg_attr(test, derive(serde::Deserialize))]
+pub enum BonusModifier {
+    ManufactureMaterial,
+    ManufactureTime,
+    ReactionMaterial,
+    ReactionTime,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct StructureRigBlueprintBonus {
+    pub bonus_me: f64,
+    pub bonus_te: f64,
+
+    pub is_manufacturing: bool,
+    pub is_reaction:      bool,
+
+    pub blueprint: Item,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct BlueprintBonusByRig {
+    pub rigs:     Vec<TypeId>,
+    pub services: Vec<TypeId>,
 }

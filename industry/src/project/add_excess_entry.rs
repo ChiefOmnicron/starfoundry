@@ -1,28 +1,28 @@
+use axum::Json;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
-use axum::Json;
 use axum::response::IntoResponse;
-use starfoundry_lib_industry::project::AddExcessEntryRequest;
-use starfoundry_lib_industry::ProjectUuid;
+use serde::{Deserialize, Serialize};
+use sqlx::PgPool;
+use starfoundry_lib_types::TypeId;
+use utoipa::ToSchema;
 
 use crate::api_docs::{BadRequest, InternalServerError, Unauthorized};
-use crate::AppState;
-use crate::project::error::Result;
-use crate::project::service::add_excess;
+use crate::project::error::{ProjectError, Result};
+use crate::{AppState, ProjectUuid};
 
 /// List Groups
-/// 
+///
 /// - Alternative route: `/latest/projects/{ProjectUuid}/excess`
 /// - Alternative route: `/v1/projects/{ProjectUuid}/excess`
-/// 
+///
 /// ---
-/// 
+///
 /// Adds additional excess entries.
-/// 
+///
 /// ## Security
 /// - authenticated
 /// - project_group:read
-/// 
 #[utoipa::path(
     post,
     path = "/{ProjectUuid}/excess",
@@ -42,20 +42,54 @@ use crate::project::service::add_excess;
     ),
 )]
 pub async fn api(
-    State(state):       State<AppState>,
-    Path(project_id):   Path<ProjectUuid>,
-    Json(entries):      Json<Vec<AddExcessEntryRequest>>,
+    State(state): State<AppState>,
+    Path(project_id): Path<ProjectUuid>,
+    Json(entries): Json<Vec<AddExcessEntryRequest>>,
 ) -> Result<impl IntoResponse> {
-    add_excess(
-            &state.postgres,
-            project_id,
-            entries,
-        ).await?;
+    add_excess(&state.postgres, project_id, entries).await?;
 
-    Ok(
-        (
-            StatusCode::CREATED,
-            Json(())
-        )
+    Ok((StatusCode::CREATED, Json(())))
+}
+
+pub async fn add_excess(
+    pool: &PgPool,
+    project_id: ProjectUuid,
+    entries: Vec<AddExcessEntryRequest>,
+) -> Result<()> {
+    let type_ids = entries
+        .iter()
+        .map(|x| *x.type_id)
+        .collect::<Vec<_>>();
+    let quantities = entries
+        .iter()
+        .map(|x| x.quantity)
+        .collect::<Vec<_>>();
+
+    sqlx::query!(
+        "
+            INSERT INTO project_excess
+            (
+                project_id,
+                type_id,
+                quantity
+            )
+            SELECT $1, * FROM UNNEST(
+                $2::INTEGER[],
+                $3::INTEGER[]
+            )
+        ",
+        *project_id,
+        &type_ids,
+        &quantities,
     )
+    .execute(pool)
+    .await
+    .map(drop)
+    .map_err(ProjectError::AddExcessEntry)
+}
+
+#[derive(Debug, Deserialize, Serialize, ToSchema)]
+pub struct AddExcessEntryRequest {
+    pub type_id:  TypeId,
+    pub quantity: i32,
 }

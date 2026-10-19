@@ -3,12 +3,15 @@ mod extractor;
 mod history;
 mod jwks;
 mod jwt;
+mod login;
 mod login_character;
 mod login_corporation;
-mod login;
 mod token;
 
 pub mod error;
+
+use utoipa_axum::router::OpenApiRouter;
+use utoipa_axum::routes;
 
 pub use self::callback::*;
 pub use self::extractor::*;
@@ -18,10 +21,6 @@ pub use self::login::*;
 pub use self::login_character::*;
 pub use self::login_corporation::*;
 pub use self::token::*;
-
-use utoipa_axum::router::OpenApiRouter;
-use utoipa_axum::routes;
-
 use crate::state::AppState;
 
 /// returns all routes under the path `/auth`
@@ -36,6 +35,5 @@ pub fn routes() -> OpenApiRouter<AppState> {
 
 /// returns all routes under the path `/.well-known`
 pub fn well_known_routes() -> OpenApiRouter<AppState> {
-    OpenApiRouter::new()
-        .routes(routes!(jwks_json))
+    OpenApiRouter::new().routes(routes!(jwks_json))
 }

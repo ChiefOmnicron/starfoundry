@@ -1,15 +1,16 @@
-use sqlx::PgPool;
-use starfoundry_lib_types::SystemId;
+use std::collections::HashSet;
 use std::time::Instant;
 
-use crate::Error;
+use sqlx::PgPool;
+use starfoundry_lib_types::SystemId;
+
+use crate::EveSdeParserError;
 use crate::parser::systems::System;
-use std::collections::HashSet;
 
 pub async fn run(
-    pool:       &PgPool,
-    systems:    &Vec<System>,
-) -> Result<(), Error> {
+    pool: &PgPool,
+    systems: &Vec<System>,
+) -> Result<(), EveSdeParserError> {
     tracing::info!("Processing system distances");
     let start = Instant::now();
 
@@ -26,19 +27,36 @@ pub async fn run(
                 continue;
             }
 
-            let distance = (
-                (system_a.position.x - system_b.position.x).powf(2.0) +
-                (system_a.position.y - system_b.position.y).powf(2.0) +
-                (system_a.position.z - system_b.position.z).powf(2.0)
-            ).sqrt();
+            let distance = ((system_a
+                .position
+                .x
+                - system_b
+                    .position
+                    .x)
+                .powf(2.0)
+                + (system_a
+                    .position
+                    .y
+                    - system_b
+                        .position
+                        .y)
+                    .powf(2.0)
+                + (system_a
+                    .position
+                    .z
+                    - system_b
+                        .position
+                        .z)
+                    .powf(2.0))
+            .sqrt();
 
-            if distance <= 10f64 * 9_460_000_000_000_000f64 {
-                let distance = distance / 9_460_000_000_000_000f64;
-                let distance = (distance * 1_000f64).round() / 1_000f64;
+            if distance <= 10.0f64 * 9_460_000_000_000_000.0f64 {
+                let distance = distance / 9_460_000_000_000_000.0f64;
+                let distance = (distance * 1_000.0f64).round() / 1_000.0f64;
                 system_distance.push(SystemDistance {
-                    distance_ly:        distance,
-                    system_id_start:    system_a.system_id,
-                    system_id_end:      system_b.system_id,
+                    distance_ly:     distance,
+                    system_id_start: system_a.system_id,
+                    system_id_end:   system_b.system_id,
                 });
             }
 
@@ -46,36 +64,36 @@ pub async fn run(
         }
     }
 
-    insert_into_database(
-            &pool,
-            system_distance,
-        )
-        .await?;
+    insert_into_database(&pool, system_distance).await?;
 
     tracing::info!(
         "Finished processing system distance, task took {:.2}s",
-        start.elapsed().as_secs_f64()
+        start
+            .elapsed()
+            .as_secs_f64()
     );
 
     Ok(())
 }
 
 async fn insert_into_database(
-    pool:           &PgPool,
-    systems:        Vec<SystemDistance>,
-) -> Result<(), Error> {
+    pool: &PgPool,
+    systems: Vec<SystemDistance>,
+) -> Result<(), EveSdeParserError> {
     let mut transaction = pool
         .begin()
         .await
-        .map_err(Error::TransactionError)?;
+        .map_err(EveSdeParserError::TransactionError)?;
 
     tracing::debug!("Clearing system_distance database");
-    sqlx::query!("
+    sqlx::query!(
+        "
             DELETE FROM system_distance
-        ")
-        .execute(&mut *transaction)
-        .await
-        .map_err(Error::DeleteSystems)?;
+        "
+    )
+    .execute(&mut *transaction)
+    .await
+    .map_err(EveSdeParserError::DeleteSystems)?;
     tracing::debug!("Clearing system_distance database done");
 
     let distance_ly = systems
@@ -92,7 +110,8 @@ async fn insert_into_database(
         .collect::<Vec<_>>();
 
     tracing::debug!("Inserting data");
-    sqlx::query!("
+    sqlx::query!(
+        "
             INSERT INTO system_distance
             (
                 system_start,
@@ -105,25 +124,25 @@ async fn insert_into_database(
                 $3::DOUBLE PRECISION[]
             )
         ",
-            &system_id_start,
-            &system_id_end,
-            &distance_ly,
-        )
-        .execute(&mut *transaction)
-        .await
-        .map_err(Error::InsertSystem)?;
+        &system_id_start,
+        &system_id_end,
+        &distance_ly,
+    )
+    .execute(&mut *transaction)
+    .await
+    .map_err(EveSdeParserError::InsertSystem)?;
 
     transaction
         .commit()
         .await
-        .map_err(Error::TransactionError)?;
+        .map_err(EveSdeParserError::TransactionError)?;
     tracing::debug!("Inserting data done");
 
     Ok(())
 }
 
 struct SystemDistance {
-    system_id_start:    SystemId,
-    system_id_end:      SystemId,
-    distance_ly:        f64,
+    system_id_start: SystemId,
+    system_id_end:   SystemId,
+    distance_ly:     f64,
 }

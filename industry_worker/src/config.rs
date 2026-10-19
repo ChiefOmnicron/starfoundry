@@ -1,13 +1,14 @@
-use starfoundry_lib_eve_gateway::ENV_EVE_GATEWAY_API;
-use starfoundry_lib_gateway::ENV_USER_AGENT;
 use std::net::SocketAddr;
 
-const ENV_DATABASE_URL: &str    = "STARFOUNDRY_INDUSTRY_WORKER_DATABASE_URL";
+use starfoundry_eve_gateway::ENV_EVE_GATEWAY_API;
+use starfoundry_gateway::ENV_USER_AGENT;
+
+const ENV_DATABASE_URL: &str = "STARFOUNDRY_INDUSTRY_WORKER_DATABASE_URL";
 const ENV_SERVICE_ADDRESS: &str = "STARFOUNDRY_INDUSTRY_WORKER_SERVICE_ADDRESS";
 
 #[derive(Clone, Debug)]
 pub struct Config {
-    pub database_url:    String,
+    pub database_url: String,
 
     pub service_address: SocketAddr,
 }
@@ -22,9 +23,12 @@ impl Config {
         let service_address: SocketAddr = match service_address.parse() {
             Ok(x) => x,
             Err(e) => {
-                tracing::error!("Error validating config {ENV_SERVICE_ADDRESS}. Error: {}", e);
+                tracing::error!(
+                    "Error validating config {ENV_SERVICE_ADDRESS}. Error: {}",
+                    e
+                );
                 return Err("Error while parsing address".into());
-            }
+            },
         };
 
         let database_url = std::env::var(ENV_DATABASE_URL)?;
@@ -36,12 +40,10 @@ impl Config {
     }
 
     fn validate_env() -> usize {
-        vec![
+        [
             ENV_DATABASE_URL,
             ENV_SERVICE_ADDRESS,
-
             ENV_USER_AGENT,
-
             ENV_EVE_GATEWAY_API,
         ]
         .iter()

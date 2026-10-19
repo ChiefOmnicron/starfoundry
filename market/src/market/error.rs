@@ -1,11 +1,11 @@
+use axum::Json;
 use axum::extract::rejection::JsonRejection;
 use axum::http::StatusCode;
-use axum::Json;
 use axum::response::{IntoResponse, Response};
 use starfoundry_lib_types::StructureId;
 use thiserror::Error;
 
-use crate::api_docs::{format_json_errors, ErrorResponse};
+use crate::api_docs::{ErrorResponse, format_json_errors};
 use crate::lp::LpError;
 
 pub type Result<T, E = MarketError> = std::result::Result<T, E>;
@@ -26,7 +26,7 @@ pub enum MarketError {
     #[error(transparent)]
     LpError(#[from] LpError),
     #[error(transparent)]
-    EveGatewayLibError(#[from] starfoundry_lib_eve_gateway::Error),
+    EveGatewayLibError(#[from] starfoundry_eve_gateway::EveGatewayError),
 }
 
 impl IntoResponse for MarketError {
@@ -35,30 +35,33 @@ impl IntoResponse for MarketError {
             Self::NotFound(_) => {
                 (
                     StatusCode::NOT_FOUND,
-                    Json(
-                        ErrorResponse {
-                            error: "NOT_FOUND".into(),
-                            description: self.to_string(),
-                        }
-                    )
-                ).into_response()
-            }
+                    Json(ErrorResponse {
+                        error:       "NOT_FOUND".into(),
+                        description: self.to_string(),
+                    }),
+                )
+                    .into_response()
+            },
 
             Self::JsonExtractorRejection(x) => {
                 format_json_errors(x).into_response()
             },
 
-            _ => {
+            Self::LatestFetch(_)
+            | Self::FetchMarketEntries(_)
+            | Self::LpError(_)
+            | Self::EveGatewayLibError(_) => {
                 tracing::error!("{}", self.to_string());
                 (
                     StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(
-                        ErrorResponse {
-                            error: "UNKNOWN".into(),
-                            description: "An unknown error occurred, please try again later.".into(),
-                        }
-                    )
-                ).into_response()
+                    Json(ErrorResponse {
+                        error:       "UNKNOWN".into(),
+                        description:
+                            "An unknown error occurred, please try again later."
+                                .into(),
+                    }),
+                )
+                    .into_response()
             },
         }
         .into_response()

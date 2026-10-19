@@ -13,20 +13,21 @@ pub struct EveApiClientMetric {
 impl EveApiClientMetric {
     #[must_use]
     pub fn new() -> Self {
-        Self  {
-            eve_api_rate_limit: Family::<MetricEveRateLimitLabel, Gauge>::default(),
-            eve_api_status:     Family::<MetricEveStatusLabel, Counter>::default(),
+        Self {
+            eve_api_rate_limit:
+                Family::<MetricEveRateLimitLabel, Gauge>::default(),
+            eve_api_status:
+                Family::<MetricEveStatusLabel, Counter>::default(),
         }
     }
 
     pub fn set_eve_rate_limit<S: Into<String>>(
         &self,
-        group:        S,
+        group: S,
         character_id: Option<CharacterId>,
-        value:        i64,
+        value: i64,
     ) {
-        self
-            .eve_api_rate_limit
+        self.eve_api_rate_limit
             .get_or_create(&MetricEveRateLimitLabel {
                 group:        group.into(),
                 character_id: character_id.map(|x| x.to_string()),
@@ -37,10 +38,9 @@ impl EveApiClientMetric {
     pub fn increase_eve_status(
         &self,
         status_code: String,
-        path:        String,
+        path: String,
     ) {
-        self
-            .eve_api_status
+        self.eve_api_status
             .get_or_create(&MetricEveStatusLabel {
                 status_code,
                 path,
@@ -55,12 +55,14 @@ impl EveApiClientMetric {
         registry.register(
             "eve_api_rate_limit",
             "Rate limit by group and characterId",
-            self.eve_api_rate_limit.clone()
+            self.eve_api_rate_limit
+                .clone(),
         );
         registry.register(
             "eve_api_status",
             "Statuses returned by the EVE API",
-            self.eve_api_status.clone()
+            self.eve_api_status
+                .clone(),
         );
     }
 }

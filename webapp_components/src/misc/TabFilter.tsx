@@ -70,8 +70,8 @@ export function TabFilterSetting({
     const [editFilterModalOpened, { open: openEditFilterModal, close: closeEditFilterModal }] = useDisclosure(false);
     const [filterEdit, setFilterEdit] = useState<TabFilterDefinition | undefined>(undefined);
 
-    const [successDelete, setSuccessDelete] = useState<string | undefined>();
-    const [errorDelete, setErrorDelete] = useState<string | undefined>();
+    const [_successDelete, setSuccessDelete] = useState<string | undefined>();
+    const [_errorDelete, setErrorDelete] = useState<string | undefined>();
 
     const deleteFilterMutation = useMutation({
         mutationFn: async (filter: TabFilterDefinition) => {

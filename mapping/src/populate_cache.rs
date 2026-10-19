@@ -1,18 +1,27 @@
-use starfoundry_lib_eve_gateway::{EveGatewayApiClientSystem, EveGatewayClient, SystemSearchQuery};
 use sqlx::PgPool;
+use starfoundry_eve_gateway::EveGatewayClient;
+use starfoundry_eve_gateway::system::{
+    EveGatewayApiClientSystem, SystemSearchQuery
+};
 
 use crate::SERVICE_NAME;
 
 pub async fn populate_system(
-    pool: &PgPool,
+    pool: &PgPool
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let entries = sqlx::query!("
+    let entries = sqlx::query!(
+        "
             SELECT COUNT(1) FROM system_cache
-        ")
-        .fetch_one(pool)
-        .await?;
+        "
+    )
+    .fetch_one(pool)
+    .await?;
 
-    if entries.count.unwrap_or_default() > 0 {
+    if entries
+        .count
+        .unwrap_or_default()
+        > 0
+    {
         return Ok(())
     }
 
@@ -22,7 +31,8 @@ pub async fn populate_system(
         .list_systems(SystemSearchQuery::default())
         .await?;
 
-    sqlx::query!("
+    sqlx::query!(
+        "
             INSERT INTO system_cache (
                 region_id,
                 constellation_id,
@@ -48,35 +58,75 @@ pub async fn populate_system(
                 $8::VARCHAR[]
             )
         ",
-            &systems.iter().map(|x| *x.region_id).collect::<Vec<_>>(),
-            &systems.iter().map(|x| *x.constellation_id).collect::<Vec<_>>(),
-            &systems.iter().map(|x| *x.system_id).collect::<Vec<_>>(),
-
-            &systems.iter().map(|x| x.region_name.clone()).collect::<Vec<_>>(),
-            &systems.iter().map(|x| x.constellation_name.clone()).collect::<Vec<_>>(),
-            &systems.iter().map(|x| x.system_name.clone()).collect::<Vec<_>>(),
-
-            &systems.iter().map(|x| x.security).collect::<Vec<_>>(),
-            &systems.iter().map(|x| x.security_str.clone()).collect::<Vec<_>>(),
-        )
-        .execute(pool)
-        .await?;
+        &systems
+            .iter()
+            .map(|x| *x.region_id)
+            .collect::<Vec<_>>(),
+        &systems
+            .iter()
+            .map(|x| *x.constellation_id)
+            .collect::<Vec<_>>(),
+        &systems
+            .iter()
+            .map(|x| *x.system_id)
+            .collect::<Vec<_>>(),
+        &systems
+            .iter()
+            .map(|x| {
+                x.region_name
+                    .clone()
+            })
+            .collect::<Vec<_>>(),
+        &systems
+            .iter()
+            .map(|x| {
+                x.constellation_name
+                    .clone()
+            })
+            .collect::<Vec<_>>(),
+        &systems
+            .iter()
+            .map(|x| {
+                x.system_name
+                    .clone()
+            })
+            .collect::<Vec<_>>(),
+        &systems
+            .iter()
+            .map(|x| x.security)
+            .collect::<Vec<_>>(),
+        &systems
+            .iter()
+            .map(|x| {
+                x.security_str
+                    .clone()
+            })
+            .collect::<Vec<_>>(),
+    )
+    .execute(pool)
+    .await?;
 
     tracing::info!("System cache populated");
     Ok(())
 }
 
 pub async fn populate_system_distance(
-    pool: &PgPool,
+    pool: &PgPool
 ) -> Result<(), Box<dyn std::error::Error>> {
     let now = std::time::Instant::now();
-    let entries = sqlx::query!("
+    let entries = sqlx::query!(
+        "
             SELECT COUNT(1) FROM system_distance_cache
-        ")
-        .fetch_one(pool)
-        .await?;
+        "
+    )
+    .fetch_one(pool)
+    .await?;
 
-    if entries.count.unwrap_or_default() > 0 {
+    if entries
+        .count
+        .unwrap_or_default()
+        > 0
+    {
         return Ok(())
     }
 
@@ -86,7 +136,8 @@ pub async fn populate_system_distance(
         .list_distances()
         .await?;
 
-    sqlx::query!("
+    sqlx::query!(
+        "
             INSERT INTO system_distance_cache (
                 system_start,
                 system_end,
@@ -98,14 +149,26 @@ pub async fn populate_system_distance(
                 $3::REAL[]
             )
         ",
-            &systems.iter().map(|x| *x.system_start).collect::<Vec<_>>(),
-            &systems.iter().map(|x| *x.system_end).collect::<Vec<_>>(),
-            &systems.iter().map(|x| *x.distance_ly).collect::<Vec<_>>(),
-        )
-        .execute(pool)
-        .await?;
+        &systems
+            .iter()
+            .map(|x| *x.system_start)
+            .collect::<Vec<_>>(),
+        &systems
+            .iter()
+            .map(|x| *x.system_end)
+            .collect::<Vec<_>>(),
+        &systems
+            .iter()
+            .map(|x| *x.distance_ly)
+            .collect::<Vec<_>>(),
+    )
+    .execute(pool)
+    .await?;
 
-    dbg!(now.elapsed().as_secs());
+    dbg!(
+        now.elapsed()
+            .as_secs()
+    );
     tracing::info!("System distance cache populated");
     Ok(())
 }

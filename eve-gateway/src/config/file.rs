@@ -1,9 +1,10 @@
-use serde::Deserialize;
-use starfoundry_lib_types::CharacterId;
 use std::collections::HashMap;
 use std::env;
 use std::fs::File;
 use std::io::Read;
+
+use serde::Deserialize;
+use starfoundry_lib_types::CharacterId;
 
 /// Represents the configuration file with all it's fields
 #[derive(Debug, Deserialize)]
@@ -17,8 +18,8 @@ pub struct ConfigFile {
 pub struct ConfigFileDomain {
     /// List of [CharacterId]s that are admins in the domain
     pub admins:             Vec<CharacterId>,
-    /// Whitelist of CharacterIds, CorporationIds or AllianceIds that are allowed
-    /// to login
+    /// Whitelist of CharacterIds, CorporationIds or AllianceIds that are
+    /// allowed to login
     /// If kept empty, everybody can login
     pub whitelist:          Vec<i64>,
     /// Scopes that are requested when a user logs in
@@ -43,14 +44,15 @@ impl ConfigFile {
         let mut toml_config = String::new();
         toml_config_file.read_to_string(&mut toml_config)?;
 
-        let config_file: ConfigFile = if let Ok(x) = toml::from_str(&toml_config) {
-            x
-        } else {
-            tracing::error!("Invalid config.toml");
-            Self {
-                domains: HashMap::new(),
-            }
-        };
+        let config_file: ConfigFile =
+            if let Ok(x) = toml::from_str(&toml_config) {
+                x
+            } else {
+                tracing::error!("Invalid config.toml");
+                Self {
+                    domains: HashMap::new(),
+                }
+            };
 
         Ok(config_file)
     }

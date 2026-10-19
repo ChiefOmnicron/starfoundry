@@ -15,5 +15,5 @@ macro_rules! sort_by_job_flat {
                 .flat_map(|x| x.entries)
                 .collect::<Vec<_>>()
         }
-    }
+    };
 }

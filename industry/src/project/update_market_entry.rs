@@ -1,27 +1,25 @@
+use axum::Json;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
-use axum::Json;
 use axum::response::IntoResponse;
-use starfoundry_lib_industry::{MarketUuid, ProjectUuid};
-use starfoundry_lib_industry::project::UpdateMarketEntry;
+use sqlx::PgPool;
 
 use crate::api_docs::{Forbidden, InternalServerError, NotFound, Unauthorized};
-use crate::AppState;
-use crate::project::error::Result;
-use crate::project::service::update_market_entry;
+use crate::project::error::{ProjectError, Result};
+use crate::project::update::UpdateMarketEntry;
+use crate::{AppState, MarketUuid, ProjectUuid};
 
 /// Delete market entry
-/// 
+///
 /// - Alternative route: `/latest/projects/{ProjectUuid}/market/{MarketUuid}`
 /// - Alternative route: `/v1/projects/{ProjectUuid}/market/{MarketUuid}`
-/// 
+///
 /// ---
-/// 
+///
 /// Deletes a market entry
-/// 
+///
 /// ## Security
 /// - authenticated
-/// 
 #[utoipa::path(
     put,
     path = "/{ProjectUuid}/market/{MarketUuid}",
@@ -45,23 +43,39 @@ use crate::project::service::update_market_entry;
     ),
 )]
 pub async fn api(
-    State(state):                   State<AppState>,
-    Path((project_id, market_id)):  Path<(ProjectUuid, MarketUuid)>,
-    Json(update):                   Json<UpdateMarketEntry>,
+    State(state): State<AppState>,
+    Path((project_id, market_id)): Path<(ProjectUuid, MarketUuid)>,
+    Json(update): Json<UpdateMarketEntry>,
 ) -> Result<impl IntoResponse> {
-    update_market_entry(
-            &state.postgres,
-            project_id,
-            market_id,
-            update,
-        )
-        .await?;
+    update_market_entry(&state.postgres, project_id, market_id, update).await?;
 
-    Ok(
-        (
-            StatusCode::NO_CONTENT,
-            Json(())
-        )
-        .into_response()
+    Ok((StatusCode::NO_CONTENT, Json(())).into_response())
+}
+
+pub async fn update_market_entry(
+    pool: &PgPool,
+    project_id: ProjectUuid,
+    market_id: MarketUuid,
+    update: UpdateMarketEntry,
+) -> Result<()> {
+    sqlx::query!(
+        r#"
+            UPDATE project_market
+            SET
+                quantity = $3,
+                cost = $4,
+                source = $5
+            WHERE project_id = $1
+            AND id = $2
+        "#,
+        *project_id,
+        *market_id,
+        update.quantity,
+        update.cost,
+        update.source,
     )
+    .execute(pool)
+    .await
+    .map(drop)
+    .map_err(ProjectError::Update)
 }

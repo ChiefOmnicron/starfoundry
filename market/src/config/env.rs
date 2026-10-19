@@ -1,17 +1,17 @@
-use starfoundry_lib_eve_gateway::ENV_EVE_GATEWAY_API;
-use starfoundry_lib_gateway::ENV_USER_AGENT;
+use starfoundry_eve_gateway::ENV_EVE_GATEWAY_API;
+use starfoundry_gateway::ENV_USER_AGENT;
 use tokio::net::TcpListener;
 
-const ENV_DATABASE_URL: &str     = "STARFOUNDRY_MARKET_DATABASE_URL";
-const ENV_APP_ADDRESS: &str      = "STARFOUNDRY_MARKET_APP_ADDRESS";
-const ENV_SERVICE_ADDRESS: &str  = "STARFOUNDRY_MARKET_SERVICE_ADDRESS";
+const ENV_DATABASE_URL: &str = "STARFOUNDRY_MARKET_DATABASE_URL";
+const ENV_APP_ADDRESS: &str = "STARFOUNDRY_MARKET_APP_ADDRESS";
+const ENV_SERVICE_ADDRESS: &str = "STARFOUNDRY_MARKET_SERVICE_ADDRESS";
 
 #[derive(Debug)]
 pub struct ConfigEnv {
-    pub database_url:     String,
+    pub database_url: String,
 
-    pub app_address:      TcpListener,
-    pub service_address:  TcpListener,
+    pub app_address:     TcpListener,
+    pub service_address: TcpListener,
 }
 
 impl ConfigEnv {
@@ -24,18 +24,24 @@ impl ConfigEnv {
         let app_address = match TcpListener::bind(app_address).await {
             Ok(x) => x,
             Err(e) => {
-                tracing::error!("Error validating config {ENV_APP_ADDRESS}. Error: {}", e);
+                tracing::error!(
+                    "Error validating config {ENV_APP_ADDRESS}. Error: {}",
+                    e
+                );
                 return Err("Error while parsing address".into());
-            }
+            },
         };
 
         let service_address = std::env::var(ENV_SERVICE_ADDRESS)?;
         let service_address = match TcpListener::bind(service_address).await {
             Ok(x) => x,
             Err(e) => {
-                tracing::error!("Error validating config {ENV_SERVICE_ADDRESS}. Error: {}", e);
+                tracing::error!(
+                    "Error validating config {ENV_SERVICE_ADDRESS}. Error: {}",
+                    e
+                );
                 return Err("Error while parsing address".into());
-            }
+            },
         };
 
         let database_url = std::env::var(ENV_DATABASE_URL)?;
@@ -52,9 +58,7 @@ impl ConfigEnv {
             ENV_DATABASE_URL,
             ENV_APP_ADDRESS,
             ENV_SERVICE_ADDRESS,
-
             ENV_USER_AGENT,
-
             ENV_EVE_GATEWAY_API,
         ]
         .iter()

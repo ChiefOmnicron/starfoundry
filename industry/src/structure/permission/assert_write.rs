@@ -2,47 +2,45 @@ use axum::extract::{Path, Request, State};
 use axum::middleware::Next;
 use axum::response::IntoResponse;
 use sqlx::PgPool;
-use starfoundry_lib_gateway::ExtractIdentity;
-use starfoundry_lib_industry::StructureUuid;
+use starfoundry_gateway::ExtractIdentity;
 use starfoundry_lib_types::CharacterId;
 
-use crate::AppState;
-use crate::structure::error::{StructureError, Result};
+use crate::structure::error::{Result, StructureError};
+use crate::{AppState, StructureUuid};
 
 pub async fn assert_write(
-    State(state):       State<AppState>,
+    State(state): State<AppState>,
     Path(structure_id): Path<StructureUuid>,
-    identity:           ExtractIdentity,
-    request:            Request,
-    next:               Next,
+    identity: ExtractIdentity,
+    request: Request,
+    next: Next,
 ) -> Result<impl IntoResponse> {
-    assert_write_check(
-            &state.postgres,
-            structure_id,
-            identity.character_id,
-        )
+    assert_write_check(&state.postgres, structure_id, identity.character_id)
         .await?;
 
-    Ok(next.run(request).await)
+    Ok(next
+        .run(request)
+        .await)
 }
 
 async fn assert_write_check(
-    pool:           &PgPool,
+    pool: &PgPool,
     structure_uuid: StructureUuid,
-    character_id:   CharacterId,
+    character_id: CharacterId,
 ) -> Result<()> {
-    let result = sqlx::query!("
+    let result = sqlx::query!(
+        "
             SELECT id
             FROM structure
             WHERE id = $1
             AND owner = $2
         ",
-            *structure_uuid,
-            *character_id,
-        )
-        .fetch_optional(pool)
-        .await
-        .map_err(|e| StructureError::FetchPermission(e, structure_uuid))?;
+        *structure_uuid,
+        *character_id,
+    )
+    .fetch_optional(pool)
+    .await
+    .map_err(|e| StructureError::FetchPermission(e, structure_uuid))?;
 
     if result.is_none() {
         Err(StructureError::Forbidden(structure_uuid, character_id))

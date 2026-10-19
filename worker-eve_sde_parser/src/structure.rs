@@ -1,49 +1,52 @@
 //! Creates the SQL-Code for blueprints
-use sqlx::PgPool;
-use starfoundry_lib_types::{GroupId, TypeId};
 use std::collections::HashMap;
 use std::time::Instant;
 
-use crate::Error;
+use sqlx::PgPool;
+use starfoundry_lib_types::{GroupId, TypeId};
+
+use crate::EveSdeParserError;
 use crate::parser::type_dogma::TypeDogma;
 use crate::parser::type_ids::TypeIdEntry;
 
 pub async fn run(
-    pool:       &PgPool,
-    type_ids:   &HashMap<TypeId, TypeIdEntry>,
+    pool: &PgPool,
+    type_ids: &HashMap<TypeId, TypeIdEntry>,
     type_dogma: &HashMap<usize, TypeDogma>,
-) -> Result<(), Error> {
+) -> Result<(), EveSdeParserError> {
     tracing::info!("Processing structure rigs");
     let start = Instant::now();
 
-    let structure_rigs = prepare_data(
-        &type_ids,
-        &type_dogma
-    ).await?;
+    let structure_rigs = prepare_data(&type_ids, &type_dogma).await?;
 
     let mut transaction = pool
         .begin()
         .await
-        .map_err(Error::TransactionError)?;
+        .map_err(EveSdeParserError::TransactionError)?;
 
     tracing::debug!("Clearing database");
-    sqlx::query!("
+    sqlx::query!(
+        "
             DELETE FROM structure_rig
-        ")
-        .execute(&mut *transaction)
-        .await
-        .map_err(Error::DeleteItems)?;
-    sqlx::query!("
+        "
+    )
+    .execute(&mut *transaction)
+    .await
+    .map_err(EveSdeParserError::DeleteItems)?;
+    sqlx::query!(
+        "
             DELETE FROM structure_service
-        ")
-        .execute(&mut *transaction)
-        .await
-        .map_err(Error::DeleteItems)?;
+        "
+    )
+    .execute(&mut *transaction)
+    .await
+    .map_err(EveSdeParserError::DeleteItems)?;
     tracing::debug!("Clearing database done");
 
     tracing::debug!("Inserting data starting");
     for structure in structure_rigs {
-        sqlx::query!("
+        sqlx::query!(
+            "
                 INSERT INTO structure_rig
                 (
                     type_id,
@@ -54,18 +57,30 @@ pub async fn run(
                     $1, $2, $3
                 )
             ",
-                &*structure.type_id,
-                &structure.structure_type_ids.into_iter().map(|x| *x).collect::<Vec<_>>() as _,
-                &structure.excluded.into_iter().map(|x| *x).collect::<Vec<_>>() as _,
-            )
-            .execute(&mut *transaction)
-            .await
-            .unwrap();
+            &*structure.type_id,
+            &structure
+                .structure_type_ids
+                .into_iter()
+                .map(|x| *x)
+                .collect::<Vec<_>>() as _,
+            &structure
+                .excluded
+                .into_iter()
+                .map(|x| *x)
+                .collect::<Vec<_>>() as _,
+        )
+        .execute(&mut *transaction)
+        .await
+        .unwrap();
     }
 
-    for structure in vec![35825, 35826, 35827, 35835, 35836, 35832, 35833, 47516, 47512, 47515, 47514, 47513, 35834, 40340] {
+    for structure in vec![
+        35825, 35826, 35827, 35835, 35836, 35832, 35833, 47516, 47512, 47515,
+        47514, 47513, 35834, 40340,
+    ] {
         let services = services(structure.into());
-        sqlx::query!("
+        sqlx::query!(
+            "
                 INSERT INTO structure_service
                 (
                     structure_type_id,
@@ -74,34 +89,39 @@ pub async fn run(
                 )
                 VALUES ($1, $2, $3)
             ",
-                structure,
-                &services.into_iter().map(|x| *x).collect::<Vec<_>>(),
-                service_slots(structure.into(), &type_dogma),
-            )
-            .execute(&mut *transaction)
-            .await
-            .unwrap();
+            structure,
+            &services
+                .into_iter()
+                .map(|x| *x)
+                .collect::<Vec<_>>(),
+            service_slots(structure.into(), &type_dogma),
+        )
+        .execute(&mut *transaction)
+        .await
+        .unwrap();
     }
     tracing::debug!("Inserting data done");
 
     transaction
         .commit()
         .await
-        .map_err(Error::TransactionError)?;
+        .map_err(EveSdeParserError::TransactionError)?;
     tracing::debug!("Transaction committed");
 
     tracing::info!(
         "Finished processing items, task took {:.2}s",
-        start.elapsed().as_secs_f64()
+        start
+            .elapsed()
+            .as_secs_f64()
     );
 
     Ok(())
 }
 
 async fn prepare_data(
-    type_ids:   &HashMap<TypeId, TypeIdEntry>,
+    type_ids: &HashMap<TypeId, TypeIdEntry>,
     type_dogma: &HashMap<usize, TypeDogma>,
-) -> Result<Vec<Structure>, Error> {
+) -> Result<Vec<Structure>, EveSdeParserError> {
     let market_groups = vec![
         // Medium Structure Engineering Rigs
         GroupId(2347),
@@ -109,7 +129,6 @@ async fn prepare_data(
         GroupId(2348),
         // X-Large Structure Engineering Rigs
         GroupId(2349),
-
         // Medium Structure Resource Processing Rigs
         GroupId(2341),
         // Large Structure Resource Processing Rigs
@@ -146,16 +165,16 @@ async fn prepare_data(
 
         let mut structure_type_ids = Vec::new();
 
-        let attribute_ids = vec![
-            1298,
-            1299,
-            1300,
-        ];
+        let attribute_ids = vec![1298, 1299, 1300];
 
-        for attribute in dogma.attributes.iter() {
+        for attribute in dogma
+            .attributes
+            .iter()
+        {
             if attribute_ids.contains(&attribute.attribute_id) {
                 if vec![1404, 1406, 1657].contains(&(attribute.value as u32)) {
-                    structure_type_ids.extend(group_to_ids(attribute.value as u32, &name));
+                    structure_type_ids
+                        .extend(group_to_ids(attribute.value as u32, &name));
                 } else {
                     structure_type_ids.push((attribute.value as u32).into());
                 }
@@ -175,7 +194,10 @@ async fn prepare_data(
     Ok(structures)
 }
 
-fn group_to_ids(group: u32, name: &str) -> Vec<TypeId> {
+fn group_to_ids(
+    group: u32,
+    name: &str,
+) -> Vec<TypeId> {
     let size = if name.starts_with("Standup M-Set") {
         "Standup M-Set"
     } else if name.starts_with("Standup L-Set") {
@@ -187,57 +209,71 @@ fn group_to_ids(group: u32, name: &str) -> Vec<TypeId> {
     };
 
     match (group, size) {
-        (1404, "Standup M-Set") => vec![
-            // Raitaru
-            TypeId(35825),
-        ],
-        (1404, "Standup L-Set") => vec![
-            // Azbel
-            TypeId(35826),
-        ],
-        (1404, "Standup XL-Set") => vec![
-            // Sotiyo
-            TypeId(35827),
-        ],
-        (1406, "Standup M-Set") => vec![
-            // Athanor
-            TypeId(35835),
-        ],
-        (1406, "Standup L-Set") => vec![
-            // Tatara
-            TypeId(35836),
-        ],
-        (1657, "Standup M-Set") => vec![
-            // Astrahus
-            TypeId(35832),
-        ],
-        (1657, "Standup L-Set") => vec![
-            // Fortizar
-            TypeId(35833),
-            // 'Moreau' Fortizar
-            TypeId(47512),
-            // 'Draccous' Fortizar
-            TypeId(47513),
-            // 'Horizon' Fortizar
-            TypeId(47514),
-            // 'Marginis' Fortizar
-            TypeId(47515),
-            // 'Prometheus' Fortizar
-            TypeId(47516),
-        ],
-        (1657, "Standup XL-Set") => vec![
-            // Keepstar
-            TypeId(35834),
-            // Upwell Palatine Keepstar
-            TypeId(40340),
-        ],
+        (1404, "Standup M-Set") => {
+            vec![
+                // Raitaru
+                TypeId(35825),
+            ]
+        },
+        (1404, "Standup L-Set") => {
+            vec![
+                // Azbel
+                TypeId(35826),
+            ]
+        },
+        (1404, "Standup XL-Set") => {
+            vec![
+                // Sotiyo
+                TypeId(35827),
+            ]
+        },
+        (1406, "Standup M-Set") => {
+            vec![
+                // Athanor
+                TypeId(35835),
+            ]
+        },
+        (1406, "Standup L-Set") => {
+            vec![
+                // Tatara
+                TypeId(35836),
+            ]
+        },
+        (1657, "Standup M-Set") => {
+            vec![
+                // Astrahus
+                TypeId(35832),
+            ]
+        },
+        (1657, "Standup L-Set") => {
+            vec![
+                // Fortizar
+                TypeId(35833),
+                // 'Moreau' Fortizar
+                TypeId(47512),
+                // 'Draccous' Fortizar
+                TypeId(47513),
+                // 'Horizon' Fortizar
+                TypeId(47514),
+                // 'Marginis' Fortizar
+                TypeId(47515),
+                // 'Prometheus' Fortizar
+                TypeId(47516),
+            ]
+        },
+        (1657, "Standup XL-Set") => {
+            vec![
+                // Keepstar
+                TypeId(35834),
+                // Upwell Palatine Keepstar
+                TypeId(40340),
+            ]
+        },
         _ => Vec::new(),
     }
 }
 
-fn mutually_exclusive_rigs(
-    type_id: TypeId,
-) -> Vec<TypeId> {
+fn mutually_exclusive_rigs(type_id: TypeId) -> Vec<TypeId> {
     match *type_id {
         37146 => vec![37147.into()],
         37147 => vec![37146.into()],
@@ -380,13 +416,11 @@ fn mutually_exclusive_rigs(
         46640 => vec![46639.into()],
         46641 => vec![46642.into()],
         46642 => vec![46641.into()],
-        _     => vec![],
+        _ => vec![],
     }
 }
 
-fn services(
-    structure_type_id: TypeId,
-) -> Vec<TypeId> {
+fn services(structure_type_id: TypeId) -> Vec<TypeId> {
     match *structure_type_id {
             35825 => vec![35894, 35891, 45550, 35886, 35878, 35899],
             35826 => vec![35894, 35892, 35891, 45550, 35886, 35878, 35881, 35899],
@@ -419,9 +453,10 @@ fn services(
 
 fn service_slots(
     structure_type_id: TypeId,
-    type_dogma:        &HashMap<usize, TypeDogma>,
+    type_dogma: &HashMap<usize, TypeDogma>,
 ) -> i32 {
-    let dogma = if let Some(x) = type_dogma.get(&(*structure_type_id as usize)) {
+    let dogma = if let Some(x) = type_dogma.get(&(*structure_type_id as usize))
+    {
         x
     } else {
         return 0i32;

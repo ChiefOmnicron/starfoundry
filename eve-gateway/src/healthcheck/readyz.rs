@@ -1,13 +1,12 @@
 use axum::extract::State;
-use axum::http::{header, StatusCode};
+use axum::http::{StatusCode, header};
 use axum::response::IntoResponse;
 
 use crate::state::AppState;
 
 /// Readyz
-/// 
+///
 /// Checks that the database connection is up and running
-/// 
 #[utoipa::path(
     get,
     path = "/readyz",
@@ -27,10 +26,10 @@ use crate::state::AppState;
         )
     ),
 )]
-pub async fn readyz(
-    State(state): State<AppState>,
-) -> impl IntoResponse {
-    let pool = state.postgres.clone();
+pub async fn readyz(State(state): State<AppState>) -> impl IntoResponse {
+    let pool = state
+        .postgres
+        .clone();
 
     let postgres_version = sqlx::query!("SELECT version()")
         .fetch_one(&pool)
@@ -39,18 +38,10 @@ pub async fn readyz(
     if postgres_version.is_err() {
         return (
             StatusCode::INTERNAL_SERVER_ERROR,
-            [(
-                header::CACHE_CONTROL, "no-cache"
-            )],
-            "db unhealthy"
+            [(header::CACHE_CONTROL, "no-cache")],
+            "db unhealthy",
         );
     }
 
-    (
-        StatusCode::OK,
-        [(
-            header::CACHE_CONTROL, "no-cache"
-        )],
-        "healthy"
-    )
+    (StatusCode::OK, [(header::CACHE_CONTROL, "no-cache")], "healthy")
 }

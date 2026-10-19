@@ -1,39 +1,39 @@
+use std::collections::HashMap;
+use std::str::FromStr;
+
+use axum::Json;
 use axum::extract::{Query, State};
 use axum::http::StatusCode;
-use axum::Json;
 use axum::response::IntoResponse;
 use base64::prelude::*;
 use sha2::{Digest, Sha256};
 use starfoundry_lib_eve_client::{EveApiClient, EveJwtToken};
-use std::collections::HashMap;
-use std::str::FromStr;
 use uuid::Uuid;
 
 use crate::api_docs::{BadRequest, InternalServerError};
+use crate::auth::JwtToken;
 use crate::auth::error::{AuthError, Result};
 use crate::auth::history::insert_into_history;
-use crate::auth::JwtToken;
-use crate::character::service::refresh_character_in_db;
+use crate::character::refresh_character_in_db;
 use crate::state::AppState;
 
-const QUERY_PARAM_CODE: &str  = "code";
+const QUERY_PARAM_CODE: &str = "code";
 const QUERY_PARAM_STATE: &str = "state";
 
 /// Callback
-/// 
+///
 /// - Alternative route: `/latest/auth/callback`
 /// - Alternative route: `/v1/auth/callback`
-/// 
+///
 /// ---
-/// 
+///
 /// This route is called after the user logs in into Eve per SSO.
 /// The `refresh_token` will be stored.
-/// 
+///
 /// The user will be redirected to the callback defined in the config file.
 /// In the response will be a cookie `refresh_token` which can be used to obtain
 /// an access_token from the service.
 /// See `/token` for more information.
-/// 
 #[utoipa::path(
     get,
     path = "/callback",
@@ -49,7 +49,7 @@ const QUERY_PARAM_STATE: &str = "state";
     ),
 )]
 pub async fn callback(
-    State(state):        State<AppState>,
+    State(state): State<AppState>,
     Query(query_params): Query<HashMap<String, String>>,
 ) -> Result<impl IntoResponse> {
     let code = query_params
@@ -62,62 +62,72 @@ pub async fn callback(
         .map_err(|_| AuthError::InvalidEveLoginResponse)?;
 
     // fetch the state_param, it should match the token we inserted earlier
-    // if it's not their, it's either a wrong request or the login window expired
-    let (domain, credential_type, main_character_id) = sqlx::query!("
+    // if it's not their, it's either a wrong request or the login window
+    // expired
+    let (domain, credential_type, main_character_id) = sqlx::query!(
+        "
             SELECT domain, credential_type, character_id
             FROM   login_attempt
             WHERE  token = $1
         ",
-            state_param,
-        )
-        .fetch_one(&state.postgres)
-        .await
-        .map(|x| (x.domain, x.credential_type, x.character_id))
-        .map_err(AuthError::GetAccessTokenError)?;
+        state_param,
+    )
+    .fetch_one(&state.postgres)
+    .await
+    .map(|x| (x.domain, x.credential_type, x.character_id))
+    .map_err(AuthError::GetAccessTokenError)?;
 
-    let auth_domain = if let Some(x) = state.auth_domains.get(&domain) {
+    let auth_domain = if let Some(x) = state
+        .auth_domains
+        .get(&domain)
+    {
         x
     } else {
         // TODO: redirect to an error page
-        return Ok((
-            StatusCode::BAD_REQUEST
-        ).into_response());
+        return Ok((StatusCode::BAD_REQUEST).into_response());
     };
 
     let token = EveApiClient::access_token(code).await?;
 
-    let token_claims = if let Ok(x) = token.validate(
-        EveApiClient::oauth_jwt_keys_url()?,
-        EveApiClient::client_id()?,
-    ).await {
+    let token_claims = if let Ok(x) = token
+        .validate(
+            EveApiClient::oauth_jwt_keys_url()?,
+            EveApiClient::client_id()?,
+        )
+        .await
+    {
         x
     } else {
-        return Ok((
-            StatusCode::BAD_REQUEST,
-        ).into_response());
+        return Ok((StatusCode::BAD_REQUEST,).into_response());
     };
 
     let character_id = EveJwtToken::extract_character_id(&token_claims.claims)?;
 
-    let existing_entry = sqlx::query!("
+    let existing_entry = sqlx::query!(
+        "
             SELECT character_id, scopes
             FROM eve_credential
             WHERE character_id = $1
             AND domain = $2
         ",
-            *character_id,
-            domain,
-        )
-        .fetch_optional(&state.postgres)
-        .await
-        .map_err(AuthError::InsertEveCredential)?;
+        *character_id,
+        domain,
+    )
+    .fetch_optional(&state.postgres)
+    .await
+    .map_err(AuthError::InsertEveCredential)?;
 
     if let Some(x) = existing_entry {
         let claims = &EveJwtToken::extract_scopes(&token_claims.claims);
 
-        if x.scopes.unwrap_or_default().len() < claims.len() {
+        if x.scopes
+            .unwrap_or_default()
+            .len()
+            < claims.len()
+        {
             // entry exists, but there are more scopes, update it
-            sqlx::query!("
+            sqlx::query!(
+                "
                 INSERT INTO eve_credential (
                     character_id,
                     domain,
@@ -142,7 +152,8 @@ pub async fn callback(
         }
     } else {
         // entry does not exist yet, insert it
-        sqlx::query!("
+        sqlx::query!(
+            "
             INSERT INTO eve_credential (
                 character_id,
                 domain,
@@ -165,38 +176,47 @@ pub async fn callback(
     let character_info = refresh_character_in_db(
         &state.postgres,
         state.eve_api_metric,
-        character_id
-    ).await?;
+        character_id,
+    )
+    .await?;
 
-    if auth_domain.whitelist.contains(&(*character_id as i64)) ||
-        auth_domain.whitelist.contains(&(*character_info.corporation_id as i64)) ||
-        auth_domain.whitelist.contains(&(*character_info.alliance_id.unwrap_or(0i32.into()) as i64)) {
+    if auth_domain
+        .whitelist
+        .contains(&(*character_id as i64))
+        || auth_domain
+            .whitelist
+            .contains(&(*character_info.corporation_id as i64))
+        || auth_domain
+            .whitelist
+            .contains(
+                &(*character_info
+                    .alliance_id
+                    .unwrap_or(0i32.into()) as i64),
+            )
+    {
     } else {
         return Ok((
             StatusCode::FORBIDDEN,
             Json(serde_json::json!({
                 "url": auth_domain.redirect,
-            }))
-        ).into_response());
+            })),
+        )
+            .into_response());
     }
 
     // skip generating a new jwt token, if an alt is logging in
-    if
-        credential_type == "ALT_CHARACTER" ||
-        credential_type == "CORPORATION" {
-
+    if credential_type == "ALT_CHARACTER" || credential_type == "CORPORATION" {
         return Ok((
             StatusCode::OK,
             Json(serde_json::json!({
                 "url": auth_domain.redirect,
                 "additional_character": true,
-            }))
-        ).into_response());
+            })),
+        )
+            .into_response());
     }
 
-    let refresh_token = JwtToken::new_refresh_token(
-        character_id,
-    )?;
+    let refresh_token = JwtToken::new_refresh_token(character_id)?;
 
     let refresh_token_hash = Sha256::digest(refresh_token.as_bytes());
     let refresh_token_hash = BASE64_STANDARD.encode(refresh_token_hash);
@@ -212,11 +232,9 @@ pub async fn callback(
         .await
         .map_err(AuthError::InsertRefreshToken)?;
 
-    if let Err(e) = insert_into_history(
-        &state.postgres,
-        character_id,
-        domain,
-    ).await {
+    if let Err(e) =
+        insert_into_history(&state.postgres, character_id, domain).await
+    {
         tracing::error!("{}", e);
     }
 
@@ -225,6 +243,7 @@ pub async fn callback(
         Json(serde_json::json!({
             "url": auth_domain.redirect,
             "refresh_token": refresh_token,
-        }))
-    ).into_response())
+        })),
+    )
+        .into_response())
 }

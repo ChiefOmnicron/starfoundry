@@ -1,37 +1,32 @@
+use jsonwebtoken::{Algorithm, DecodingKey, TokenData, Validation};
 use serde::Deserialize;
 use starfoundry_lib_types::CharacterId;
-use jsonwebtoken::{Algorithm, DecodingKey, TokenData, Validation};
 use url::Url;
 
-use crate::{EveApiClient, EveClientId, EveApiError, Result};
 use crate::utils::single_or_vec;
+use crate::{EveApiClient, EveApiError, EveClientId, Result};
 
 /// Parsed version of the response from EVE after a successful login.
-///
 #[derive(Debug, Deserialize)]
 pub struct EveJwtToken {
     /// Access token required for every request
-    pub access_token: String,
+    pub access_token:  String,
     /// Token to get a new access token
     pub refresh_token: String,
 }
 
 impl EveJwtToken {
     /// Validates the token and returns the claims from the token if it is valid
-    /// 
     pub async fn validate(
         &self,
         jwt_key_url: Url,
-        client_id:   EveClientId,
+        client_id: EveClientId,
     ) -> Result<TokenData<Claims>> {
         let jwt_keys = EveApiClient::jwt_keys(jwt_key_url).await?;
 
         let rs256_key = if let Some((modulus, exponent)) = jwt_keys.rs256() {
-            DecodingKey::from_rsa_components(
-                &modulus,
-                &exponent,
-            )
-            .map_err(|_| EveApiError::InvalidRS256Key)?
+            DecodingKey::from_rsa_components(&modulus, &exponent)
+                .map_err(|_| EveApiError::InvalidRS256Key)?
         } else {
             tracing::error!("no rs256 key");
             return Err(EveApiError::NoRs256Key);
@@ -43,15 +38,12 @@ impl EveJwtToken {
             "https://login.eveonline.com",
             "login.eveonline.com",
         ]);
-        validation.set_audience(&[
-            "EVE Online",
-            &client_id,
-        ]);
+        validation.set_audience(&["EVE Online", &client_id]);
 
         jsonwebtoken::decode::<Claims>(
             &self.access_token,
             &rs256_key,
-            &validation
+            &validation,
         )
         .map_err(EveApiError::ParseEveJwtAccessToken)
     }
@@ -66,9 +58,8 @@ impl EveJwtToken {
     /// # Returns
     ///
     /// The character id
-    ///
     pub fn extract_character_id(
-        claim: &Claims,
+        claim: &Claims
     ) -> Result<CharacterId, EveApiError> {
         let character_id = claim
             .sub
@@ -83,11 +74,10 @@ impl EveJwtToken {
     /// # Returns
     ///
     /// The character id
-    ///
-    pub fn extract_scopes(
-        claim: &Claims,
-    ) -> Vec<String> {
-        claim.scp.clone()
+    pub fn extract_scopes(claim: &Claims) -> Vec<String> {
+        claim
+            .scp
+            .clone()
     }
 }
 

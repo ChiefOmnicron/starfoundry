@@ -1,5 +1,5 @@
-use axum::http::StatusCode;
 use axum::Json;
+use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 use starfoundry_lib_eve_client::EveApiError;
 use starfoundry_lib_types::SystemId;
@@ -26,7 +26,9 @@ pub enum SystemError {
     #[error("error while resolving systems, error: '{0}'")]
     ListSystem(sqlx::Error),
 
-    #[error("error while fetching distance for start system {1} and end system {2}, error: '{0}'")]
+    #[error(
+        "error while fetching distance for start system {1} and end system {2}, error: '{0}'"
+    )]
     FetchSystemDistance(sqlx::Error, SystemId, SystemId),
     #[error("error while listing system distances, error: '{0}'")]
     ListSystemDistance(sqlx::Error),
@@ -41,26 +43,34 @@ impl IntoResponse for SystemError {
                 tracing::error!("{}", self.to_string());
                 (
                     StatusCode::NOT_FOUND,
-                    Json(
-                        ErrorResponse {
-                            error: "NOT_FOUND".into(),
-                            description: "The requested resource could not be found.".into(),
-                        }
-                    )
-                ).into_response()
-            }
+                    Json(ErrorResponse {
+                        error:       "NOT_FOUND".into(),
+                        description:
+                            "The requested resource could not be found.".into(),
+                    }),
+                )
+                    .into_response()
+            },
 
-            _ => {
+            Self::AuthError(_)
+            | Self::EveApiError(_)
+            | Self::FetchSystem(..)
+            | Self::FetchSystemBulk(_)
+            | Self::ListSystem(_)
+            | Self::FetchSystemDistance(..)
+            | Self::ListSystemDistance(_)
+            | Self::ListSystemsInRange(..) => {
                 tracing::error!("{}", self.to_string());
                 (
                     StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(
-                        ErrorResponse {
-                            error: "UNKNOWN".into(),
-                            description: "An unknown error occurred, please try again later.".into(),
-                        }
-                    )
-                ).into_response()
+                    Json(ErrorResponse {
+                        error:       "UNKNOWN".into(),
+                        description:
+                            "An unknown error occurred, please try again later."
+                                .into(),
+                    }),
+                )
+                    .into_response()
             },
         }
         .into_response()
