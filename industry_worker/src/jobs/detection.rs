@@ -48,7 +48,7 @@ pub fn job_detection(
 
     for entry in eve_jobs {
         event!(
-            Level::INFO,
+            Level::DEBUG,
             "[{}] corporation: {}",
             entry.job_id,
             entry
@@ -65,7 +65,7 @@ pub fn job_detection(
         // 1. The job is already done, so we can continue
         if finished_jobs.contains(&entry.job_id) {
             event!(
-                Level::INFO,
+                Level::DEBUG,
                 "[{}] job is already finished - continue to next",
                 entry.job_id
             );
@@ -88,7 +88,7 @@ pub fn job_detection(
                         == entry.job_id
             })
         {
-            event!(Level::INFO, "[{}] job is marked as done", entry.job_id);
+            event!(Level::DEBUG, "[{}] job is marked as done", entry.job_id);
             // The job changed its status from Building to done
             // TODO: this can probably be replaced by just checking the eve
             // status
@@ -132,7 +132,7 @@ pub fn job_detection(
                 })
             {
                 event!(
-                    Level::INFO,
+                    Level::DEBUG,
                     "[{}] found a suitable project job",
                     entry.job_id
                 );
@@ -156,7 +156,7 @@ pub fn job_detection(
                 used_job_ids.push(entry.job_id);
             } else {
                 event!(
-                    Level::INFO,
+                    Level::DEBUG,
                     "[{}] could not find a matching job, marking as unmatched",
                     entry.job_id
                 );
@@ -172,7 +172,7 @@ pub fn job_detection(
                 });
             }
         } else {
-            event!(Level::INFO, "[{}] job could not be matched", entry.job_id);
+            event!(Level::DEBUG, "[{}] job could not be matched", entry.job_id);
             unmatched_jobs.push(UnmatchedJob {
                 job:        entry.clone(),
                 reason:     UnmatchedJobReason::NoContainer,

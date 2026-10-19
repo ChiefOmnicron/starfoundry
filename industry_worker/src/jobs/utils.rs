@@ -82,6 +82,7 @@ pub async fn resolve_corporation_asset_name(
     output_location_ids: &[ItemId],
 ) -> Result<HashMap<ItemId, String>> {
     let mut containers = HashMap::new();
+    dbg!(&output_location_ids);
 
     let mut item_ids = output_location_ids
         .iter()
@@ -89,6 +90,7 @@ pub async fn resolve_corporation_asset_name(
         .collect::<Vec<_>>();
     item_ids.sort();
     item_ids.dedup();
+    dbg!(&item_ids);
 
     for item_id in item_ids {
         let result = match eve_gateway_api_client
@@ -96,7 +98,8 @@ pub async fn resolve_corporation_asset_name(
             .await
         {
             Ok(x) => x,
-            Err(_) => {
+            Err(e) => {
+                dbg!(e);
                 // ignore errors
                 continue;
             },
@@ -107,6 +110,7 @@ pub async fn resolve_corporation_asset_name(
         containers.extend(result);
     }
 
+    dbg!(&containers);
     Ok(containers)
 }
 
