@@ -9,7 +9,7 @@ use starfoundry_eve_gateway::item::load_items;
 use starfoundry_eve_gateway::metrics::{Metric, path_metrics};
 use starfoundry_eve_gateway::state::AppState;
 use starfoundry_eve_gateway::{
-    auth, character, healthcheck, industry, item, metrics, proxy, search, structure, system
+    auth, character, eve, healthcheck, industry, item, metrics, proxy, search, structure, system
 };
 use starfoundry_lib_eve_client::EveApiClientMetric;
 use tokio::select;
@@ -120,6 +120,7 @@ fn app(state: AppState) -> Router {
             .nest("/search", search::routes())
             .nest("/structures", structure::routes())
             .nest("/systems", system::routes())
+            .nest("/eve", eve::routes())
             .nest("/proxy", proxy::routes())
             .layer(ServiceBuilder::new().layer(middleware::from_fn_with_state(
                 state.clone(),

@@ -99,7 +99,7 @@ pub async fn resolve_corporation_asset_name(
         {
             Ok(x) => x,
             Err(e) => {
-                dbg!(e);
+                tracing::error!("{}", e);
                 // ignore errors
                 continue;
             },
