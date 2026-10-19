@@ -1,4 +1,4 @@
-CREATE TABLE job_detection_log(
+CREATE TABLE IF NOT EXISTS job_detection_log(
     id                  UUID        NOT NULL DEFAULT uuidv7(),
     job_id              INTEGER     NOT NULL,
     type_id             INTEGER     NOT NULL,
